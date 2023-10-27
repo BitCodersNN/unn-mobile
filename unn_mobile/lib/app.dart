@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:unn_mobile/presentation/screens/auth_page/auth_page.dart';
+import 'package:unn_mobile/ui/views/auth_page/auth_page.dart';
 
 class UnnMobile extends StatelessWidget {
   const UnnMobile({super.key});
