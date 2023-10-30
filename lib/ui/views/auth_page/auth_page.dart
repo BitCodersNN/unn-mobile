@@ -5,6 +5,18 @@ class AuthPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          "Авторизация",
+          style: TextStyle(
+            color: Color.fromRGBO(29, 96, 173, 1.0),
+            fontFamily: "Inter",
+            fontSize: 25,
+            fontWeight: FontWeight.bold
+          ),
+        ),
+      ),
+    );
   }
 }
