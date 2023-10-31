@@ -22,4 +22,27 @@ class MainPageViewModel extends BaseViewModel {
     _isDrawerItemSelected = value;
     notifyListeners();
   }
+
+  final List<String> _barScreenNames = [
+    "Лента",
+    "Расписание",
+    "Карта",
+    "Материалы",
+  ];
+  final List<String> _drawerScreenNames = [
+    "Чаты",
+    "Справки",
+    "Сотрудники",
+    "Календарь",
+    "Подразделения",
+    "Библиотечные ресурсы",
+    "Сайт оплаты",
+  ];
+  String get selectedScreenName {
+    return isDrawerItemSelected
+        ? _drawerScreenNames[_selectedDrawerItem]
+        : _barScreenNames[_selectedBarItem];
+  }
+  List<String> get drawerScreenNames => _drawerScreenNames;
+  List<String> get barScreenNames => _barScreenNames;
 }
