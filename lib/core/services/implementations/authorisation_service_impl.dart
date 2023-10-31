@@ -87,7 +87,7 @@ class AuthorisationServiceImpl implements AuthorisationService {
         "backurl": "/",
         "USER_LOGIN": login,
         "USER_PASSWORD": password,
-    });
+    }, timeoutSeconds: 15);
   }
 
   Future<HttpClientResponse> _sendCsrfRequest(String session) async {
@@ -102,7 +102,7 @@ class AuthorisationServiceImpl implements AuthorisationService {
         }
     );
 
-    return await requestSender.get();
+    return await requestSender.get(timeoutSeconds: 15);
 
   }
 
