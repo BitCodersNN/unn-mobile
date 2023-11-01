@@ -49,4 +49,5 @@ class MainPageViewModel extends BaseViewModel {
   
   ImageProvider<Object>? get userAvatar => null;
   String get userNameAndSurname => "Имя Фамилия";
+  String get userGroup => "3821Б1";
 }
