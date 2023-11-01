@@ -11,7 +11,7 @@ class Router {
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
       case Routes.mainPage:
-        return MaterialPageRoute(builder: (_) => const MainPage());
+        return MaterialPageRoute(builder: (_) => MainPage());
       case Routes.authPage:
         return MaterialPageRoute(builder: (_) => const AuthPage());
       default:
