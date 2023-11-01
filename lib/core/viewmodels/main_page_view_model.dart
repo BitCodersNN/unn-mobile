@@ -45,4 +45,7 @@ class MainPageViewModel extends BaseViewModel {
   }
   List<String> get drawerScreenNames => _drawerScreenNames;
   List<String> get barScreenNames => _barScreenNames;
+  
+  ImageProvider<Object>? get userAvatar => null;
+  String get userNameAndSurname => "Имя Фамилия";
 }
