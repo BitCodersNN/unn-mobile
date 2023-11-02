@@ -54,6 +54,10 @@ class MainPage extends StatelessWidget {
     return AppBar(
       title: Text(value.selectedScreenName),
       backgroundColor: theme.appBarTheme.backgroundColor,
+      actions: [
+        IconButton(onPressed: (){}, icon: const Icon(Icons.notifications)),
+        IconButton(onPressed: (){}, icon: const Icon(Icons.search)),
+      ],
     );
   }
 }

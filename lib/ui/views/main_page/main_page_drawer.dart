@@ -77,7 +77,7 @@ class MainPageDrawer extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.all(4.0),
                       child: Text(
-                        "Имя Фамилия",
+                        value.userNameAndSurname,
                         overflow: TextOverflow.fade,
                         textAlign: TextAlign.left,
                         style: TextStyle(
@@ -88,13 +88,13 @@ class MainPageDrawer extends StatelessWidget {
                         ),
                       ),
                     ),
-                    const Padding(
-                      padding: EdgeInsets.all(4.0),
+                    Padding(
+                      padding: const EdgeInsets.all(4.0),
                       child: Text(
-                        "3821Б1",
+                        value.userGroup,
                         overflow: TextOverflow.fade,
                         textAlign: TextAlign.left,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w500,
                           color: Color(0xFFFFFFFF),
