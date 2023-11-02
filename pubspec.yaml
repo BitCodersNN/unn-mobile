@@ -22,3 +22,11 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+
+  assets:
+    - assets/images/logo.png
+    
+  fonts:
+    - family: LetoSans
+      fonts:
+        - asset: assets/fonts/LetoSans-Bold.ttf
