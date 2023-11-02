@@ -24,8 +24,10 @@ class HttpRequestSender {
         _host = host,
         _path = path;
 
-  Future<HttpClientResponse> postForm(Map<String, dynamic> body, {int timeoutSeconds = 9999}) async {
-    final request = await _prepareHttpClientRequest(_HttpMethod.post, timeoutSeconds);
+  Future<HttpClientResponse> postForm(Map<String, dynamic> body,
+      {int timeoutSeconds = 9999}) async {
+    final request =
+        await _prepareHttpClientRequest(_HttpMethod.post, timeoutSeconds);
 
     request.headers.add("Content-Type", "application/x-www-form-urlencoded");
 
@@ -34,25 +36,24 @@ class HttpRequestSender {
             .query //it means that [k1=v1&k2=v2&...&kn=vn] encoded to unicode
         ));
 
-
     //fetch response
-	return await request.closeWithTimeout(timeoutSeconds);
+    return await request.closeWithTimeout(timeoutSeconds);
   }
 
   Future<HttpClientResponse> get({int timeoutSeconds = 9999}) async {
-    final request = await _prepareHttpClientRequest(_HttpMethod.get, timeoutSeconds);
+    final request =
+        await _prepareHttpClientRequest(_HttpMethod.get, timeoutSeconds);
 
     return await request.close();
   }
 
-  Future<HttpClientRequest> _prepareHttpClientRequest(_HttpMethod method, int timeoutSeconds) async {
+  Future<HttpClientRequest> _prepareHttpClientRequest(
+      _HttpMethod method, int timeoutSeconds) async {
     final httpClient = HttpClient();
 
-    final request = await httpClient.openUrl(method.name, _createURI())
-		.timeout(
-			Duration(seconds: timeoutSeconds),
-			onTimeout: () => throw TimeoutException("Open url timed out")
-	);
+    final request = await httpClient.openUrl(method.name, _createURI()).timeout(
+        Duration(seconds: timeoutSeconds),
+        onTimeout: () => throw TimeoutException("Open url timed out"));
 
     _headers.forEach((key, value) {
       request.headers.add(key, value);
@@ -76,12 +77,10 @@ Future<String> responseToStringBody(HttpClientResponse response) async {
 }
 
 extension on HttpClientRequest {
-	Future<HttpClientResponse> closeWithTimeout(int timeoutSeconds) async {
-		return await close().timeout(
-			Duration(seconds: timeoutSeconds),
-			onTimeout: () => throw TimeoutException("close request timed out")
-		);
-	}
+  Future<HttpClientResponse> closeWithTimeout(int timeoutSeconds) async {
+    return await close().timeout(Duration(seconds: timeoutSeconds),
+        onTimeout: () => throw TimeoutException("close request timed out"));
+  }
 }
 
 enum _HttpMethod {
@@ -89,14 +88,12 @@ enum _HttpMethod {
   post,
 }
 
-
 class RequestException implements Exception {
-	final String cause;
+  final String cause;
 
-	RequestException(this.cause);
+  RequestException(this.cause);
 }
 
 class TimeoutException extends RequestException {
-	
-	TimeoutException(super.cause);
+  TimeoutException(super.cause);
 }
