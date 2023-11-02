@@ -26,7 +26,7 @@ class LoadingPage extends StatelessWidget {
           ),
         ),
       ),
-      onModelReady:(model) => model.init(context),
+      onModelReady:(model) => model.disateRoute(context),
     );
   	}
 
