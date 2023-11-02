@@ -3,7 +3,6 @@ import 'package:injector/injector.dart';
 import 'package:unn_mobile/app.dart';
 import 'package:unn_mobile/core/viewmodels/main_page_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/schedule_screen_view_model.dart';
-import 'package:unn_mobile/ui/views/main_page/schedule/schedule.dart';
 
 void main() {
   registerDependencies();
