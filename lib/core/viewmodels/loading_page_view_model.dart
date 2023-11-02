@@ -20,7 +20,7 @@ class LoadingPageViewModel extends BaseViewModel {
 
   Future<_TypeScreen> _init() async =>
       switch (await _initializingApplicationService.refreshLogin()) {
-        null => _TypeScreen.authScreen,
+        null => await Future.delayed(const Duration(seconds: 3), () => _TypeScreen.authScreen),
         AuthRequestResult.success => _TypeScreen.mainScreen,
         AuthRequestResult.noInternet => _TypeScreen.mainScreen,
         AuthRequestResult.wrongCredentials => _TypeScreen.authScreen,
