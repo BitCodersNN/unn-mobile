@@ -7,9 +7,13 @@ class UnnMobile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: AuthPage(),
+    return MaterialApp(
+      home: const AuthPage(),
       onGenerateRoute: router.Router.generateRoute,
+      theme: ThemeData(
+        useMaterial3: true,
+        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xAA1A63B7)),
+      ),
     );
   }
 }
