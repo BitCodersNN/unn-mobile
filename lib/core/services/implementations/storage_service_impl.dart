@@ -3,7 +3,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:unn_mobile/core/services/interfaces/storage_service.dart';
 
-class StorageServiceImpl extends StorageService {
+class StorageServiceImpl implements StorageService {
   SharedPreferences? _sharedPreferences;
   final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
 
