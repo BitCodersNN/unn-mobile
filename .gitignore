@@ -70,5 +70,3 @@ doc/api/
 *.xcconfig
 ios/Podfile
 ios/Podfile.lock
-ios/Runner.xcodeproj/project.pbxproj
-ios/Runner.xcworkspace/contents.xcworkspacedata
