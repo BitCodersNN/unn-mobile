@@ -5,7 +5,7 @@ import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
 import 'package:unn_mobile/ui/router.dart';
 
-class LoaderViewModel extends BaseViewModel{
+class LoadingPageViewModel extends BaseViewModel{
   final _initializingApplicationService = Injector.appInstance.get<InitializingApplicationService>();
   
   void init(context) async{

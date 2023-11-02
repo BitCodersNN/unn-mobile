@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:unn_mobile/core/viewmodels/loader_view_model.dart';
+import 'package:unn_mobile/core/viewmodels/loading_page_view_model.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
 
-class LoaderPage extends StatelessWidget {
-  const LoaderPage({super.key});
+class LoadingPage extends StatelessWidget {
+  const LoadingPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return BaseView<LoaderViewModel>(
+    return BaseView<LoadingPageViewModel>(
       builder: (context, value, child) => 
       Scaffold(
         body: Center(
