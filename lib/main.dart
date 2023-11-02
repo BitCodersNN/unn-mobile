@@ -12,7 +12,7 @@ import 'package:unn_mobile/core/services/interfaces/storage_service.dart';
 import 'package:unn_mobile/core/viewmodels/auth_page_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/loading_page_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page_view_model.dart';
-
+import 'package:unn_mobile/core/viewmodels/schedule_screen_view_model.dart';
 
 void main() {
   registerDependencies();
@@ -31,4 +31,5 @@ void registerDependencies() {
   injector.registerDependency(() => LoadingPageViewModel());
   injector.registerDependency(() => AuthPageViewModel());
   injector.registerDependency(() => MainPageViewModel());
+  injector.registerDependency(() => ScheduleScreenViewModel());
 }
