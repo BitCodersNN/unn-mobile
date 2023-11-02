@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:injector/injector.dart';
 import 'package:unn_mobile/app.dart';
-import 'package:unn_mobile/core/services/implementations/auth_data_provider.dart';
-import 'package:unn_mobile/core/services/implementations/authorisation_service.dart';
-import 'package:unn_mobile/core/services/implementations/authorisation_refresh_service.dart';
+import 'package:unn_mobile/core/services/implementations/auth_data_provider_impl.dart';
+import 'package:unn_mobile/core/services/implementations/authorisation_service_impl.dart';
+import 'package:unn_mobile/core/services/implementations/authorisation_refresh_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/storage_service_impl.dart';
 import 'package:unn_mobile/core/services/interfaces/auth_data_provider.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
