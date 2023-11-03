@@ -19,16 +19,16 @@ class Address{
 
 class Subject{
   final String _name;
-  final SubjectType _typeSubject;
+  final SubjectType _subjectType;
   final Address _address;
   final List<String> _groups;
   final String _lecturer;
   final DateTimeRange _dateTimeRange;
 
-  Subject(this._name, this._typeSubject, this._address, this._groups, this._lecturer, this._dateTimeRange);
+  Subject(this._name, this._subjectType, this._address, this._groups, this._lecturer, this._dateTimeRange);
 
   String get name => _name;
-  SubjectType get typeSubject => _typeSubject;
+  SubjectType get subjectType => _subjectType;
   Address get address => _address;
   List<String> get groups => _groups;
   String get lecturer => _lecturer;
@@ -49,8 +49,19 @@ class Subject{
       Address(jsonMap['auditorium'] as String, jsonMap['building'] as String),
       (jsonMap['stream'] as String).split('|'),
       jsonMap['lecturer'] as String,
-      DateTimeRange(start: startDateTime, end: endDateTime)
+      DateTimeRange(start: startDateTime, end: endDateTime),
       );
   }
+
+  Map toJson() => { 
+    'name': _name, 
+    'subjectType': _subjectType.name,
+    'building': _address.building,
+    'auditorium': _address.auditorium,
+    'groups': _groups.join('|'),
+    'lecturer': _lecturer,
+    'beginLesson': _dateTimeRange.start,
+    'endLesson': _dateTimeRange.end,
+    };
 
 }
