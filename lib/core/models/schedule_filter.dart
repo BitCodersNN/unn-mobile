@@ -8,11 +8,13 @@ enum IDType{
 }
 
 class ScheduleFilter{
-  final IDType _typeID;
+  final IDType _idType;
+  final String _id;
   final DateTimeRange _dateTimeRange;
 
-  ScheduleFilter(this._typeID, this._dateTimeRange);
+  ScheduleFilter(this._idType, this._id, this._dateTimeRange);
 
-  IDType get typeID => _typeID;
+  IDType get idType => _idType;
+  String get id => _id;
   DateTimeRange get dateTimeRange => _dateTimeRange;
 }
