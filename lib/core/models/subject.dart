@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-enum TypeSubject{
+enum SubjectType{
   practice,
   lecture,
   credit,
@@ -19,7 +19,7 @@ class Address{
 
 class Subject{
   final String _name;
-  final TypeSubject _typeSubject;
+  final SubjectType _typeSubject;
   final Address _address;
   final List<String> _groups;
   final String _lecturer;
@@ -28,7 +28,7 @@ class Subject{
   Subject(this._name, this._typeSubject, this._address, this._groups, this._lecturer, this._dateTimeRange);
 
   String get name => _name;
-  TypeSubject get typeSubject => _typeSubject;
+  SubjectType get typeSubject => _typeSubject;
   Address get address => _address;
   List<String> get groups => _groups;
   String get lecturer => _lecturer;
@@ -45,7 +45,7 @@ class Subject{
 
     return Subject(
       jsonMap['name'] as String,
-      TypeSubject.values.byName(jsonMap['kindOfWork'] as String), 
+      SubjectType.values.byName(jsonMap['kindOfWork'] as String), 
       Address(jsonMap['auditorium'] as String, jsonMap['building'] as String),
       (jsonMap['stream'] as String).split('|'),
       jsonMap['lecturer'] as String,
