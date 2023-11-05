@@ -26,8 +26,15 @@ flutter:
 
   assets:
     - assets/images/logo.png
+    - assets/images/auth-logo.svg
     
   fonts:
     - family: LetoSans
       fonts:
         - asset: assets/fonts/LetoSans-Bold.ttf
+
+    - family: Inter
+      fonts:
+        - asset: assets/fonts/Inter-Regular.ttf
+        - asset: assets/fonts/Inter-Bold.ttf
+          weight: 700
