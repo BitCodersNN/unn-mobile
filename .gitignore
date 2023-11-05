@@ -66,3 +66,7 @@ doc/api/
 
 .flutter-plugins
 .flutter-plugins-dependencies
+.vscode/launch.json
+*.xcconfig
+ios/Podfile
+ios/Podfile.lock

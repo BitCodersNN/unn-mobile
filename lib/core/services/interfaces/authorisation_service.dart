@@ -6,7 +6,7 @@ enum AuthRequestResult {
   unknownError,
 }
 
-abstract class AuthorisationService {
+abstract interface class AuthorisationService {
 
   Future<AuthRequestResult> auth(String login, String password);
 
