@@ -51,7 +51,7 @@ class HttpRequestSender {
 
   /// Отправляет get запрос на сервер unn-portal
   ///
-  /// Throws [TimeoutException], если не вышло отправить запрос
+  /// Throws [TimeoutException], если превышено время выполнения запроса
   /// Throws [Exception], если произошла неизвестная ошибка
   ///
   /// [timeoutSeconds]: время ожидания
