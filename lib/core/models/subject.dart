@@ -4,10 +4,13 @@ import 'package:intl/intl.dart';
 
 enum SubjectType {
   practice,
+  laboratory,
+  consultation,
   lecture,
   credit,
   exam,
 }
+
 
 class Address {
   final String _auditorium;
@@ -40,10 +43,20 @@ class Subject {
   factory Subject.fromJson(Map<String, Object?> jsonMap) {
     DateTime startDateTime = DateFormat('y.MM.dd H:m').parse('${jsonMap['date'] as String} ${jsonMap['beginLesson'] as String}');
     DateTime endDateTime = DateFormat('y.MM.dd H:m').parse('${jsonMap['date'] as String} ${jsonMap['endLesson'] as String}');
+    
+    final subjectType = switch(jsonMap['kindOfWork'] as String) {
+      'Лекция' => SubjectType.lecture,
+      'Практика (семинарские занятия)' => SubjectType.practice,
+      'Лабораторная' => SubjectType.laboratory,
+      'Зачёт' => SubjectType.credit,
+      'Консультации перед экзаменом' => SubjectType.consultation,
+      'Экзамен' => SubjectType.exam,
+      String() => null,
+    };
 
     return Subject(
-      jsonMap['name'] as String,
-      SubjectType.values.byName(jsonMap['kindOfWork'] as String),
+      jsonMap['discipline'] as String,
+      subjectType!,
       Address(jsonMap['auditorium'] as String, jsonMap['building'] as String),
       (jsonMap['stream'] as String).split('|'),
       jsonMap['lecturer'] as String,
@@ -52,7 +65,7 @@ class Subject {
   }
 
   Map toJson() => {
-        'name': _name,
+        'discipline': _name,
         'subjectType': _subjectType.name,
         'building': _address.building,
         'auditorium': _address.auditorium,
