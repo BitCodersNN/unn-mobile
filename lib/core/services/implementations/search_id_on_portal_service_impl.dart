@@ -19,13 +19,6 @@ class SearchIdOnPortalServiceImpl implements SearchIdOnPortalService {
 
   @override
   Future<Map<String, String>?> findIDOnPortal(String value, IDType valueType) async {
-    /// Получения ID, которое используется на unn-portal
-    ///
-    /// [value]: Значение, по которому ищется ID
-    /// [valueType]: Тип значения: группа или ФИО студента, или ФИО преподователя, или аудитория
-    ///
-    /// Возращает словарь (значение: ID) или 'null', если не вышло получить ответ от портала или statusCode не равен 200
-
     final requstSender = HttpRequestSender(path: _path, queryParams: {_term: value, _type: valueType.name});
     HttpClientResponse response;
     try {
