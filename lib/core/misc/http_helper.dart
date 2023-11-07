@@ -24,6 +24,15 @@ class HttpRequestSender {
         _host = host,
         _path = path;
 
+  /// Отправляет post запрос на сервер unn-portal
+  ///
+  /// Throws [TimeoutException], если превышено время выполнения запроса
+  /// Throws [Exception], если произошла неизвестная ошибка
+  ///
+  /// [body]: тело запроса
+  /// [timeoutSeconds]: время ожидания
+  ///
+  /// Возращает результат запроса
   Future<HttpClientResponse> postForm(Map<String, dynamic> body,
       {int timeoutSeconds = 9999}) async {
     final request =
@@ -40,6 +49,14 @@ class HttpRequestSender {
     return await request.closeWithTimeout(timeoutSeconds);
   }
 
+  /// Отправляет get запрос на сервер unn-portal
+  ///
+  /// Throws [TimeoutException], если превышено время выполнения запроса
+  /// Throws [Exception], если произошла неизвестная ошибка
+  ///
+  /// [timeoutSeconds]: время ожидания
+  ///
+  /// Возращает результат запроса
   Future<HttpClientResponse> get({int timeoutSeconds = 9999}) async {
     final request =
         await _prepareHttpClientRequest(_HttpMethod.get, timeoutSeconds);
@@ -72,6 +89,11 @@ class HttpRequestSender {
   }
 }
 
+/// Конвертирует http ответ в строку
+///
+/// [response]: результат запроса
+///
+/// Возращает строку
 Future<String> responseToStringBody(HttpClientResponse response) async {
   return await response.transform(utf8.decoder).join();
 }
