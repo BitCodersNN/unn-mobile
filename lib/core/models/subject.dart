@@ -9,7 +9,6 @@ enum SubjectType {
   exam,
 }
 
-
 class Address {
   final String _auditorium;
   final String _building;
@@ -20,7 +19,7 @@ class Address {
   String get building => _building;
 }
 
-class KeysForSubjectJsonConverter{
+class KeysForSubjectJsonConverter {
   static const String discipline = 'discipline';
   static const String kindOfWork = 'kindOfWork';
   static const String auditorium = 'auditorium';
@@ -49,25 +48,27 @@ class Subject {
   String get lecturer => _lecturer;
   DateTimeRange get dateTimeRange => _dateTimeRange;
 
-  factory Subject.fromJson(Map<String, Object?> jsonMap) { // переделать
+  factory Subject.fromJson(Map<String, Object?> jsonMap) {
     return Subject(
       jsonMap[KeysForSubjectJsonConverter.discipline] as String,
       SubjectType.values.byName(jsonMap[KeysForSubjectJsonConverter.kindOfWork] as String),
       Address(jsonMap[KeysForSubjectJsonConverter.auditorium] as String, jsonMap[KeysForSubjectJsonConverter.building] as String),
       (jsonMap[KeysForSubjectJsonConverter.stream] as String).split('|'),
       jsonMap[KeysForSubjectJsonConverter.lecturer] as String,
-      DateTimeRange(start: jsonMap[KeysForSubjectJsonConverter.beginLesson] as DateTime, end: jsonMap[KeysForSubjectJsonConverter.endLesson] as DateTime),
+      DateTimeRange(
+          start: DateTime.parse(jsonMap[KeysForSubjectJsonConverter.beginLesson] as String),
+          end: DateTime.parse(jsonMap[KeysForSubjectJsonConverter.endLesson] as String)),
     );
   }
 
-  Map toJson() => { 
+  Map<String, dynamic> toJson() => {
         KeysForSubjectJsonConverter.discipline: _name,
         KeysForSubjectJsonConverter.kindOfWork: _kindOfWork.name,
         KeysForSubjectJsonConverter.building: _address.building,
         KeysForSubjectJsonConverter.auditorium: _address.auditorium,
         KeysForSubjectJsonConverter.stream: _groups.join('|'),
         KeysForSubjectJsonConverter.lecturer: _lecturer,
-        KeysForSubjectJsonConverter.beginLesson: _dateTimeRange.start,
-        KeysForSubjectJsonConverter.endLesson: _dateTimeRange.end,
+        KeysForSubjectJsonConverter.beginLesson:_dateTimeRange.start.toString(),
+        KeysForSubjectJsonConverter.endLesson: _dateTimeRange.end.toString(),
       };
 }
