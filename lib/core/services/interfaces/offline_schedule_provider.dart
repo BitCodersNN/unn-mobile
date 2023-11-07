@@ -4,7 +4,7 @@ abstract interface class OfflineScheduleProvider{
   /// Загрузка расписания из хранилища
   /// 
   /// Возращает список предметов или 'null', если нет сохранённого расписания в хранилище
-  Future<List<Subject>> loadSchedule();
+  Future<List<Subject?>> loadSchedule();
   /// Сохраняет расписание в хранилище. Если расписание уже сохранено в хранилище, то старое удаляется и записывается новое
   /// 
   /// [schedule]: Список предметов
