@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:unn_mobile/core/misc/http_helper.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
 
@@ -14,6 +15,11 @@ class AuthorisationServiceImpl implements AuthorisationService {
 
   @override
   Future<AuthRequestResult> auth(String login, String password) async {
+
+    if (await _isOffline()) {
+      return AuthRequestResult.noInternet;
+    }
+
     HttpClientResponse authResponse;
     HttpClientResponse csrfResponse;
 
@@ -91,5 +97,9 @@ class AuthorisationServiceImpl implements AuthorisationService {
         cookies: {_sessionIdCookieKey: session});
 
     return await requestSender.get(timeoutSeconds: 15);
+  }
+
+  Future<bool> _isOffline() async {
+    return await Connectivity().checkConnectivity() == ConnectivityResult.none;
   }
 }
