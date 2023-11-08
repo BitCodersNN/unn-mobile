@@ -42,12 +42,12 @@ class TextFieldWithBoxShadow extends StatelessWidget {
 								BoxShadow(
 									color: Colors.black.withOpacity(0.12),
 									blurRadius: 8.35,
-									offset: Offset(0, 3.13),
+									offset: const Offset(0, 3.13),
 								),
 								BoxShadow(
 									color: Colors.black.withOpacity(0.04),
 									blurRadius: 1.04,
-									offset: Offset(0, 3.13),
+									offset: const Offset(0, 3.13),
 								),
 							],
 							borderRadius: BorderRadius.circular(
@@ -55,7 +55,7 @@ class TextFieldWithBoxShadow extends StatelessWidget {
 							),
 						),
 					),
-					Container(
+					SizedBox(
 						// Add height of error message if it is displayed
 						height: errorText != null ? height + heightErrorMessage : height,
 						child: TextField(
