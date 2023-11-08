@@ -5,7 +5,9 @@ class TextFieldWithBoxShadow extends StatelessWidget {
 	final String? labelText;
 	final TextEditingController? controller;
 	final double height;
+
 	final bool obscuredText;
+  final bool enableSuggestions;
 
 	const TextFieldWithBoxShadow({
 		Key? key,
@@ -14,6 +16,7 @@ class TextFieldWithBoxShadow extends StatelessWidget {
 		this.controller,
 		this.height = 40,
 		this.obscuredText = false,
+		this.enableSuggestions = false
 
 	}) : super(key: key);
 
@@ -59,6 +62,7 @@ class TextFieldWithBoxShadow extends StatelessWidget {
 						// Add height of error message if it is displayed
 						height: errorText != null ? height + heightErrorMessage : height,
 						child: TextField(
+							enableSuggestions: enableSuggestions,
 							obscureText: obscuredText,
 							decoration: InputDecoration(
 								fillColor: Colors.white,
