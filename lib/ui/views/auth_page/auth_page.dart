@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:provider/provider.dart';
 import 'package:unn_mobile/core/viewmodels/auth_page_view_model.dart';
+import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
 import 'package:unn_mobile/ui/router.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
 import 'package:unn_mobile/ui/widgets/text_field_with_shadow.dart';
@@ -14,93 +14,133 @@ class AuthPage extends StatefulWidget {
 
   @override
   State<StatefulWidget> createState() {
-    return _AuthPageWithState();
+    return AuthPageWithState();
   }
+
 }
 
-class _AuthPageWithState extends State<AuthPage> {
+class AuthPageWithState extends State<AuthPage> {
 
-  // state scope
-  var _loginInput = "";
-  var _passwordInput = "";
-  late TextEditingController _loginTextController;
-  late TextEditingController _passwordTextController;
+  final _loginTextController = TextEditingController();
+  final _passwordTextController = TextEditingController();
 
-  var _submitHappens = false;
-
-  var _loginInProcess = false;
-  var _loginFailedMessage = "";
+  bool _hasSubmittedOnce = false;
 
 
-
-  // state startup init
   @override
   void initState() {
-
     super.initState();
 
-    _loginTextController = _textEditingControllerWithListener((text) {
-      setState(() {
-        _loginInput = text;
-      });
-    });
+    stateUpdater() => setState( () => {} );
 
-    _passwordTextController = _textEditingControllerWithListener((text) {
-      setState(() {
-        _passwordInput = text;
-      });
-    });
+    _loginTextController.addListener(stateUpdater);
+    _passwordTextController.addListener(stateUpdater);
   }
 
-
-  // build
   @override
   Widget build(BuildContext context) {
     return BaseView<AuthPageViewModel>(
-      builder: (context, value, child) {
+      builder: (context, viewModel, child) {
         return Scaffold(
           backgroundColor: Colors.white,
           resizeToAvoidBottomInset: false,
 
           appBar:
-          _authTitle(),
+            _authTitle(),
 
           body:
-          _authBody(context),
+            _authBody(context, viewModel),
         );
       },
     );
   }
 
-  Widget _authBody(BuildContext context) {
+
+  AppBar _authTitle() {
+    return AppBar(
+      backgroundColor: Colors.white,
+      title: Center(
+        child: Text(
+          "Авторизация",
+
+          style: _baseTextStyle(
+            textColor: _accentColor,
+            fontSize: 25,
+            fontWeight: FontWeight.bold
+          )
+        ),
+      ),
+    );
+  }
+
+  Widget _authBody(BuildContext context, AuthPageViewModel viewModel) {
     return Center(
       child: Column(
         children: [
           _padding(),
           _authLogo(),
           _padding(),
-          _authForm(context)
+          _authForm(context, viewModel)
         ],
       ),
     );
   }
 
-  Widget _authForm(BuildContext context) {
-    return Flexible(
-      child: _authFormContainer(context, elements: [
-        _authErrorMessageIfNeeded(),
-        _authFormInputLogin(),
-        _authFormInputPassword(),
-        _authFormForgetPassword(),
-        _authFormLoginButton(context)
-      ],
+  Widget _padding({double height = 40}) {
+    return SizedBox(
+        width: double.maxFinite,
+        height: height
+    );
+  }
+
+  Widget _authLogo() => SvgPicture.asset("assets/images/auth-logo.svg",);
+
+  Widget _authForm(BuildContext context, AuthPageViewModel viewModel) {
+    return Form(
+      child: Flexible(
+        child: _authFormContainer(context, elements: [
+          _authErrorMessageIfNeeded(context, viewModel),
+          _authFormInputLogin(),
+          _authFormInputPassword(),
+          _authFormForgetPassword(),
+          _authFormLoginButton(context, viewModel)
+        ],
+        ),
       ),
     );
   }
 
-  Container _authFormContainer(BuildContext context, {List<Widget> elements = const []}) {
+  Widget _authErrorMessageIfNeeded(BuildContext context, AuthPageViewModel viewModel) {
+    final authErrorMessage = viewModel.authErrorText;
+
+    if (authErrorMessage.isEmpty) {
+      return const Text("");
+    }
+
+    return Center(
+      child: RichText(
+        text: TextSpan(
+
+          style: _baseTextStyle(
+              textColor: Theme.of(context).colorScheme.error,
+              fontSize: 15
+          ),
+
+          children: [
+            const TextSpan(
+              text: "Ошибка: ",
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            TextSpan(text: "$authErrorMessage!")
+          ]
+        ),
+      ),
+    );
+  }
+
+  Widget _authFormContainer(BuildContext context, {List<Widget> elements = const []}) {
     return Container(
-      padding: EdgeInsets.only(
+      padding: const EdgeInsets.only(
         left: 20,
         right: 20,
         top: 40,
@@ -128,37 +168,11 @@ class _AuthPageWithState extends State<AuthPage> {
     );
   }
 
-  SvgPicture _authLogo() => SvgPicture.asset("assets/images/auth-logo.svg",);
-
-  AppBar _authTitle() {
-    return AppBar(
-      backgroundColor: Colors.white,
-      title: Center(
-        child: Text(
-          "Авторизация",
-
-          style: _baseTextStyle(
-            textColor: _accentColor,
-            fontSize: 25,
-            fontWeight: FontWeight.bold
-          )
-        ),
-      ),
-    );
-  }
-
-  Widget _padding({double height = 40}) {
-    return SizedBox(
-        width: double.maxFinite,
-        height: height
-    );
-  }
-
   Widget _authFormInputLogin() {
     return _inputField(
         labelText: "Логин",
         errorText: _validateInputOrElseReturnError(_InputType.login),
-        textEditingController: _loginTextController
+        textEditingController: _loginTextController,
     );
   }
 
@@ -167,8 +181,7 @@ class _AuthPageWithState extends State<AuthPage> {
         obscuredText: true,
         labelText: "Пароль",
         errorText: _validateInputOrElseReturnError(_InputType.password),
-
-        textEditingController: _passwordTextController
+        textEditingController: _passwordTextController,
     );
   }
 
@@ -188,15 +201,6 @@ class _AuthPageWithState extends State<AuthPage> {
         controller: textEditingController,
       ),
    );
-  }
-
-  TextEditingController _textEditingControllerWithListener(void Function(String text) inputListener) {
-    final controller = TextEditingController();
-    controller.addListener(() {
-      inputListener(controller.text);
-    });
-
-    return controller;
   }
 
   Widget _authFormForgetPassword() {
@@ -220,18 +224,18 @@ class _AuthPageWithState extends State<AuthPage> {
       );
   }
 
-  Widget _authFormLoginButton(BuildContext context) {
+  Widget _authFormLoginButton(BuildContext context, AuthPageViewModel viewModel) {
     return Center(
       child: Padding(
         padding: const EdgeInsets.only(top: 50),
         child: ElevatedButton(
-          onPressed: () => _loginButtonTapHandler(context),
+          onPressed: () => _loginButtonTapHandler(context, viewModel),
           style: ElevatedButton.styleFrom(
             backgroundColor: _accentColor,
             foregroundColor: _buttonTapColor,
             minimumSize: const Size(300, 50),
           ),
-          child: _loginInProcess ? const CircularProgressIndicator(color: Colors.white) :
+          child: viewModel.state == ViewState.busy ? const CircularProgressIndicator(color: Colors.white) :
           Text(
               "Войти",
               style: _baseTextStyle(
@@ -245,86 +249,49 @@ class _AuthPageWithState extends State<AuthPage> {
     );
   }
 
+
   String? _validateInputOrElseReturnError(_InputType type) {
 
-    final input = type == _InputType.login ? _loginInput : _passwordInput;
+    final value = type == _InputType.login ? _loginTextController.text : _passwordTextController.text;
 
-    if (type == _InputType.login && input.contains(" ")) {
-      return "Пробелы не допустимы!";
+    if (_hasSubmittedOnce && value.isEmpty) {
+      return "Введите ${type == _InputType.login ? "логин": "пароль"}!";
     }
 
-    if (_submitHappens && input.isEmpty) {
-      return "Введите ${type == _InputType.login ? "логин": "пароль"}!";
+    if (type == _InputType.login && value.contains(" ")) {
+      return "Пробелы не допустимы!";
     }
 
     return null;
   }
 
+  void _loginButtonTapHandler(BuildContext context, AuthPageViewModel viewModel) {
 
-
-  void _loginButtonTapHandler(BuildContext context) {
-
-    if (_loginInProcess) {
+    if (viewModel.state == ViewState.busy) {
       return;
     }
 
     setState(() {
-      _submitHappens = true;
-
-      //all of input field (password and login) are correctly
-      if (_InputType.values.where((inputType) => _validateInputOrElseReturnError(inputType) != null).isEmpty) {
-        _loginInProcess = true;
-        _loginFailedMessage = "";
-      }
-
+      _hasSubmittedOnce = true;
     });
 
-    if (_loginInProcess) {
-      final viewModel = context.read<AuthPageViewModel>();
-      viewModel.login(_loginInput, _passwordInput).then( (isLoginSuccess) {
-          setState(() {
-
-            _loginInProcess = false;
-
-            if (!isLoginSuccess) {
-              _loginFailedMessage = viewModel.authErrorText;
-            } else {
-              Navigator.pushReplacementNamed(context, Routes.mainPage);
-            }
-
-          });
-        }
-      );
+    if (_validateInputOrElseReturnError(_InputType.login) != null ||
+        _validateInputOrElseReturnError(_InputType.password) != null) {
+      return;
     }
 
-  }
+    viewModel.login(
+        _loginTextController.text,
+        _passwordTextController.text
+    ).then((isLoginSuccess) {
+      if (isLoginSuccess) {
+        Navigator.pushReplacementNamed(context, Routes.mainPage);
+      }
+    });
 
-  Widget _authErrorMessageIfNeeded() {
-    if (_loginFailedMessage.isEmpty) {
-      return const Text("");
-    }
-
-    return Center(
-      child: RichText(
-        text: TextSpan(
-
-          style: _baseTextStyle(
-              textColor: Theme.of(context).colorScheme.error,
-              fontSize: 15
-          ),
-
-          children: [
-            const TextSpan(
-              text: "Ошибка: ",
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-            TextSpan(text: "$_loginFailedMessage!")
-          ]
-        ),
-      ),
-    );
   }
 }
+
 
 enum _InputType {
   login,
