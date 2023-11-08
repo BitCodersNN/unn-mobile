@@ -16,6 +16,7 @@ dependencies:
   shared_preferences: ^2.2.2
   intl: ^0.18.1
   flutter_svg: any
+  connectivity_plus: ^5.0.1
 
 dev_dependencies:
   flutter_test:
