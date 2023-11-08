@@ -32,13 +32,14 @@ class MainPageNavigationBar extends StatelessWidget {
                 ),
                 child: Container(
                     width: double.maxFinite,
-                    height: MediaQuery.of(context).size.width * .2,
+                    height: 60,
                     color: Colors.transparent),
               ),
             ),
             NavigationBar(
               destinations: _getNavbarDestinations(
                   model, context),
+              height: 60,
               backgroundColor: Colors.transparent,
               indicatorColor: Colors.transparent,
               indicatorShape: const Border(),
