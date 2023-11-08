@@ -15,6 +15,7 @@ dependencies:
   provider: ^6.0.5
   shared_preferences: ^2.2.2
   intl: ^0.18.1
+  flutter_svg: any
   connectivity_plus: ^5.0.1
 
 dev_dependencies:
@@ -27,8 +28,15 @@ flutter:
 
   assets:
     - assets/images/logo.png
+    - assets/images/auth-logo.svg
     
   fonts:
     - family: LetoSans
       fonts:
         - asset: assets/fonts/LetoSans-Bold.ttf
+
+    - family: Inter
+      fonts:
+        - asset: assets/fonts/Inter-Regular.ttf
+        - asset: assets/fonts/Inter-Bold.ttf
+          weight: 700
