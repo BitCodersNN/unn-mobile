@@ -7,6 +7,7 @@ enum SubjectType {
   lecture,
   credit,
   exam,
+  unknown,
 }
 
 class Address {
