@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:unn_mobile/core/misc/http_helper.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
 
@@ -14,45 +15,56 @@ class AuthorisationServiceImpl implements AuthorisationService {
 
   @override
   Future<AuthRequestResult> auth(String login, String password) async {
+
+    if (await _isOffline()) {
+      return AuthRequestResult.noInternet;
+    }
+
+    HttpClientResponse authResponse;
+    HttpClientResponse csrfResponse;
+
     try {
-      // auth section
-      final HttpClientResponse authResponse =
-          await _sendAuthRequest(login, password);
-
-      if (authResponse.statusCode != 302) {
-        return AuthRequestResult.wrongCredentials;
-      }
-
-      final sessionCookie = authResponse.cookies
-          .where((cookie) => cookie.name == _sessionIdCookieKey)
-          .firstOrNull;
-      if (sessionCookie == null) {
-        return AuthRequestResult.unknownError;
-      }
-
-      // csrf section
-      final HttpClientResponse csrfResponse =
-          await _sendCsrfRequest(sessionCookie.value);
-
-      final csrfValue = csrfResponse.headers.value(_csrfHeaderName);
-
-      if (csrfValue == null) {
-        return AuthRequestResult.unknownError;
-      }
-
-      // bind properties
-      _sessionId = sessionCookie.value;
-      _csrf = csrfValue;
-      _isAuthorised = true;
-
-      // success result
-      return AuthRequestResult.success;
+      authResponse = await _sendAuthRequest(login, password);
     } on TimeoutException {
       return AuthRequestResult.noInternet;
     } on Exception catch (e) {
       log(e.toString());
       return AuthRequestResult.unknownError;
     }
+
+    if (authResponse.statusCode != 302) {
+      return AuthRequestResult.wrongCredentials;
+    }
+
+    final sessionCookie = authResponse.cookies
+        .where((cookie) => cookie.name == _sessionIdCookieKey)
+        .firstOrNull;
+    if (sessionCookie == null) {
+      return AuthRequestResult.unknownError;
+    }
+
+    try {
+      csrfResponse = await _sendCsrfRequest(sessionCookie.value);
+    } on TimeoutException {
+      return AuthRequestResult.noInternet;
+    } on Exception catch (e) {
+      log(e.toString());
+      return AuthRequestResult.unknownError;
+    }
+
+    final csrfValue = csrfResponse.headers.value(_csrfHeaderName);
+
+    if (csrfValue == null) {
+      return AuthRequestResult.unknownError;
+    }
+
+    // bind properties
+    _sessionId = sessionCookie.value;
+    _csrf = csrfValue;
+    _isAuthorised = true;
+
+    // success result
+    return AuthRequestResult.success;
   }
 
   @override
@@ -85,5 +97,9 @@ class AuthorisationServiceImpl implements AuthorisationService {
         cookies: {_sessionIdCookieKey: session});
 
     return await requestSender.get(timeoutSeconds: 15);
+  }
+
+  Future<bool> _isOffline() async {
+    return await Connectivity().checkConnectivity() == ConnectivityResult.none;
   }
 }
