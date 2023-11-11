@@ -285,7 +285,7 @@ class AuthPageWithState extends State<AuthPage> {
         _passwordTextController.text
     ).then((isLoginSuccess) {
       if (isLoginSuccess) {
-        Navigator.pushReplacementNamed(context, Routes.mainPage);
+        Navigator.pushReplacementNamed(context, '${Routes.mainPagePrefix}feed');
       }
     });
 
