@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:unn_mobile/ui/views/auth_page/auth_page.dart';
-import 'package:unn_mobile/ui/views/loading_page/loading_page.dart';
 import 'package:unn_mobile/ui/views/main_page/main_page.dart';
 
 class Routes {

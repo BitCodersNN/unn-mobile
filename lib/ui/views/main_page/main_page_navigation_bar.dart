@@ -2,7 +2,6 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:unn_mobile/core/viewmodels/main_page_view_model.dart';
-import 'package:unn_mobile/ui/router.dart';
 
 class MainPageNavigationBar extends StatelessWidget {
   final void Function(int)? onDestinationSelected;

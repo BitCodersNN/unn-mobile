@@ -1,20 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:unn_mobile/core/viewmodels/main_page_view_model.dart';
-import 'package:unn_mobile/ui/router.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
-import 'package:unn_mobile/ui/views/main_page/chat/chat.dart';
-import 'package:unn_mobile/ui/views/main_page/employees/employees.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/feed.dart';
 import 'package:unn_mobile/ui/views/main_page/main_page_drawer.dart';
 import 'package:unn_mobile/ui/views/main_page/main_page_navigation_bar.dart';
-import 'package:unn_mobile/ui/views/main_page/map/map.dart';
-import 'package:unn_mobile/ui/views/main_page/materials/materials.dart';
 import 'package:unn_mobile/ui/views/main_page/schedule/schedule.dart';
 
 class MainPage extends StatefulWidget {
   final String subroute;
 
-  MainPage({super.key, required this.subroute});
+  const MainPage({super.key, required this.subroute});
 
   @override
   State<MainPage> createState() => _MainPageState();
@@ -56,16 +51,16 @@ class _MainPageState extends State<MainPage> {
               switch (settings.name) {
                 case 'feed':
                   return MaterialPageRoute(
-                      builder: (_) => FeedScreenView(), settings: settings);
+                      builder: (_) => const FeedScreenView(), settings: settings);
                 case 'schedule':
                   return MaterialPageRoute(
-                      builder: (_) => ScheduleScreenView(), settings: settings);
+                      builder: (_) => const ScheduleScreenView(), settings: settings);
                 case 'placeholder':
                   return MaterialPageRoute(
-                      builder: (_) => Placeholder(), settings: settings);
+                      builder: (_) => const Placeholder(), settings: settings);
                 default:
                   return MaterialPageRoute(
-                      builder: (_) => Text('Unknown page'), settings: settings);
+                      builder: (_) => const Text('Unknown page'), settings: settings);
               }
             },
           ),
