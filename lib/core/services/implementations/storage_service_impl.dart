@@ -1,4 +1,5 @@
 
+import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:unn_mobile/core/services/interfaces/storage_service.dart';
@@ -38,12 +39,13 @@ class StorageServiceImpl implements StorageService {
   Future<void> write({required String key, required String value, bool secure = false}) async {
     await _initIfNeeded();
     var cacheMap = secure ? _secureCache : _nonSecureCache;
-    cacheMap.update(key, (_) => value);
+    cacheMap.update(key, (_) => value, ifAbsent:  () => value);
     secure ? await _secureStorage.write(key: key, value: value) : _sharedPreferences!.setString(key, value);
   }
 
   Future<void> _initIfNeeded() async
   {
+    WidgetsFlutterBinding.ensureInitialized();
     _sharedPreferences ??= await SharedPreferences.getInstance();
     if(_sharedPreferences == null)
     {
