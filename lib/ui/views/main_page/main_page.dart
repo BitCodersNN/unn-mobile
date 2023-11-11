@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:unn_mobile/core/viewmodels/main_page_view_model.dart';
+import 'package:unn_mobile/ui/router.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
 import 'package:unn_mobile/ui/views/main_page/chat/chat.dart';
 import 'package:unn_mobile/ui/views/main_page/employees/employees.dart';
@@ -10,10 +11,35 @@ import 'package:unn_mobile/ui/views/main_page/map/map.dart';
 import 'package:unn_mobile/ui/views/main_page/materials/materials.dart';
 import 'package:unn_mobile/ui/views/main_page/schedule/schedule.dart';
 
-class MainPage extends StatelessWidget {
+class MainPage extends StatefulWidget {
+  final String subroute;
+
+  MainPage({super.key, required this.subroute});
+
+  @override
+  State<MainPage> createState() => _MainPageState();
+}
+
+class _MainPageState extends State<MainPage> {
+  final _navigatorKey = GlobalKey<NavigatorState>();
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
-  MainPage({super.key});
+  final List<String> drawerRoutes = [
+    'placeholder',
+    'placeholder',
+    'placeholder',
+    'placeholder',
+    'placeholder',
+    'placeholder',
+    'placeholder',
+  ];
+  final List<String> navbarRoutes = [
+    'feed',
+    'schedule',
+    'placeholder',
+    'placeholder',
+  ];
+
   @override
   Widget build(BuildContext context) {
     return BaseView<MainPageViewModel>(
@@ -23,40 +49,54 @@ class MainPage extends StatelessWidget {
           appBar: getCurrentAppBar(model, context),
           drawerEdgeDragWidth: MediaQuery.of(context).size.width,
           extendBody: true,
-          body: model.isDrawerItemSelected
-              ? switch (model.selectedDrawerItem) {
-                  0 => const ChatScreenView(),
-                  1 => const EmployeesScreenView(),
-                  >= 2 => const Placeholder(),
-                  _ => const Text("Такого экрана не существует :(")
-                }
-              : switch (model.selectedBarItem) {
-                  0 => const FeedScreenView(),
-                  1 => const ScheduleScreenView(),
-                  2 => const MapScreenView(),
-                  3 => const MaterialsScreenView(),
-                  _ => const Text("Такого экрана не существует :(")
-                },
+          body: Navigator(
+            key: _navigatorKey,
+            initialRoute: widget.subroute,
+            onGenerateRoute: (settings) {
+              switch (settings.name) {
+                case 'feed':
+                  return MaterialPageRoute(
+                      builder: (_) => FeedScreenView(), settings: settings);
+                case 'schedule':
+                  return MaterialPageRoute(
+                      builder: (_) => ScheduleScreenView(), settings: settings);
+                case 'placeholder':
+                  return MaterialPageRoute(
+                      builder: (_) => Placeholder(), settings: settings);
+                default:
+                  return MaterialPageRoute(
+                      builder: (_) => Text('Unknown page'), settings: settings);
+              }
+            },
+          ),
           drawer: MainPageDrawer(onDestinationSelected: (value) {
             model.selectedDrawerItem = value;
-            Future.delayed(const Duration(milliseconds: 100),
-                () => model.isDrawerItemSelected = true);
+            model.isDrawerItemSelected = true;
             scaffoldKey.currentState!.closeDrawer();
+            _navigatorKey.currentState!.popAndPushNamed(
+              drawerRoutes[value],
+            );
           }),
-          bottomNavigationBar: MainPageNavigationBar(),
+          bottomNavigationBar: MainPageNavigationBar(
+            onDestinationSelected: (value) {
+              model.selectedBarItem = value;
+              model.isDrawerItemSelected = false;
+              _navigatorKey.currentState!.popAndPushNamed(navbarRoutes[value]);
+            },
+          ),
         );
       },
     );
   }
 
-  AppBar getCurrentAppBar(MainPageViewModel value, BuildContext context) {
+  AppBar getCurrentAppBar(MainPageViewModel model, BuildContext context) {
     final theme = Theme.of(context);
     return AppBar(
-      title: Text(value.selectedScreenName),
+      title: Text(model.selectedScreenName),
       backgroundColor: theme.appBarTheme.backgroundColor,
       actions: [
-        IconButton(onPressed: (){}, icon: const Icon(Icons.notifications)),
-        IconButton(onPressed: (){}, icon: const Icon(Icons.search)),
+        IconButton(onPressed: () {}, icon: const Icon(Icons.notifications)),
+        IconButton(onPressed: () {}, icon: const Icon(Icons.search)),
       ],
     );
   }
