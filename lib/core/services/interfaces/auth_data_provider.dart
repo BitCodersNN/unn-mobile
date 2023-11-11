@@ -6,6 +6,6 @@ abstract interface class AuthDataProvider {
   /// 
   /// Возращает объект AuthData, содержащий логин и пароль пользователя
   Future<AuthData> getAuthData();
-  // Сохраняет данные необходимы для авторизации в хранилище
+  // Сохраняет данные, необходимые для авторизации в хранилище
   Future<void> saveAuthData(AuthData authData);
 }
