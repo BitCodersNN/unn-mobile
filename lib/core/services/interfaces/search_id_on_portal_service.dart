@@ -2,7 +2,7 @@ import 'package:unn_mobile/core/models/schedule_search_result_item.dart';
 import 'package:unn_mobile/core/models/schedule_filter.dart';
 
 abstract interface class SearchIdOnPortalService {
-  /// Получения ID текущего пользователя, которое используется на unn-portal
+  /// Получение ID текущего пользователя, которое используется на unn-portal
   /// 
   /// Возращает ID или 'null', если не вышло получить ответ от портала или statusCode не равен 200
   Future<String?> getIdOfLoggedInUser();
