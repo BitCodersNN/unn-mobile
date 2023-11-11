@@ -27,7 +27,7 @@ class SearchIdOnPortalServiceImpl implements SearchIdOnPortalService {
   @override
   Future<String?> getIdOfLoggedInUser() async{
     final authDataProvider =  Injector.appInstance.get<AuthDataProvider>();
-    final login = (await authDataProvider.getAuthData()).login;
+    final login = (await authDataProvider.getAuthData()).login.substring(1);
     final requstSender = HttpRequestSender(path: _ruzapi + _studentinfo, queryParams: {_uns: login});
 
     HttpClientResponse response;
