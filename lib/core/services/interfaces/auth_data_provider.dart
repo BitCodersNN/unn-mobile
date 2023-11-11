@@ -2,7 +2,7 @@ import 'package:unn_mobile/core/models/auth_data.dart';
 
 
 abstract interface class AuthDataProvider {
-  /// Получает данные необходимы для авторизации из хранилища
+  /// Получает данные, необходимые для авторизации из хранилища
   /// 
   /// Возращает объект AuthData, содержащий логин и пароль пользователя
   Future<AuthData> getAuthData();
