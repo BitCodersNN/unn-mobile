@@ -1,5 +1,13 @@
 import 'package:unn_mobile/core/models/schedule_filter.dart';
 
+enum ExportScheduleResult {
+  success,
+  noPermission,
+  timeout,
+  statusCodeIsntOk,
+  unknownError,
+}
+
 abstract interface class ExportScheduleService{
-  Future<void> exportSchedule(ScheduleFilter scheduleFilter);
+  Future<ExportScheduleResult> exportSchedule(ScheduleFilter scheduleFilter);
 }

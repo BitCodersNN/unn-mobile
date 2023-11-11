@@ -15,6 +15,7 @@ import 'package:unn_mobile/core/viewmodels/main_page_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/schedule_screen_view_model.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   registerDependencies();
   runApp(const UnnMobile());
 }
