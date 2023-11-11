@@ -18,7 +18,7 @@ class ScheduleItemNormal extends StatelessWidget {
     final DateFormat timeFormatter = DateFormat('HH:mm');
     const ligtherTextColor = Color(0xFF717A84);
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 8.0),
       child: Container(
         decoration: BoxDecoration(
           borderRadius: const BorderRadius.all(Radius.circular(16)),
@@ -46,6 +46,7 @@ class ScheduleItemNormal extends StatelessWidget {
               left: 30,
               top: 10,
               bottom: 10,
+              right: 70,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -54,6 +55,7 @@ class ScheduleItemNormal extends StatelessWidget {
                     subject.name,
                     style: theme.textTheme.titleMedium!
                         .copyWith(fontWeight: FontWeight.bold),
+                    overflow: TextOverflow.ellipsis,
                   ),
                   Row(
                     children: [

@@ -6,5 +6,8 @@ extension SubjectTypeLocalizedNames on SubjectType{
     SubjectType.lecture => 'Лекция',
     SubjectType.credit => 'Зачёт',
     SubjectType.exam => 'Экзамен',
+    SubjectType.laboratory => 'Лабораторная работа',
+    SubjectType.consultation => 'Консультация',
+    SubjectType.unknown => 'Неизвестно'
   };
 }
