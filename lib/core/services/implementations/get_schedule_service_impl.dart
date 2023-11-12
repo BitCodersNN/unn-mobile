@@ -17,7 +17,7 @@ class GetScheduleServiceImpl implements GetScheduleService {
 
   @override
   Future<List<Subject>?> getSchedule(ScheduleFilter scheduleFilter) async {
-    var path = '$_path${scheduleFilter.idType.name}/${scheduleFilter.id}';
+    final path = '$_path${scheduleFilter.idType.name}/${scheduleFilter.id}';
     final requstSender = HttpRequestSender(path: path, queryParams: {
       _start: scheduleFilter.dateTimeRange.start
           .toIso8601String()
@@ -38,7 +38,7 @@ class GetScheduleServiceImpl implements GetScheduleService {
       return null;
     }
 
-    var statusCode = response.statusCode;
+    final statusCode = response.statusCode;
 
     if (statusCode != 200) {
       return null;
