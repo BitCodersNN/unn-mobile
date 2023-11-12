@@ -20,10 +20,6 @@ class SearchIdOnPortalServiceImpl implements SearchIdOnPortalService {
   final String _id = 'id';
   final String _description = 'description';
 
-  int? _statusCode;
-
-  int? get statusCode => _statusCode;
-
   @override
   Future<String?> getIdOfLoggedInUser() async{
     final authDataProvider =  Injector.appInstance.get<AuthDataProvider>();
@@ -38,9 +34,9 @@ class SearchIdOnPortalServiceImpl implements SearchIdOnPortalService {
       return null;
     }
 
-    _statusCode = response.statusCode;
+    final statusCode = response.statusCode;
 
-    if (_statusCode != 200) {
+    if (statusCode != 200) {
       return null;
     }
 
@@ -60,9 +56,9 @@ class SearchIdOnPortalServiceImpl implements SearchIdOnPortalService {
       return null;
     }
 
-    _statusCode = response.statusCode;
+    final statusCode = response.statusCode;
 
-    if (_statusCode != 200) {
+    if (statusCode != 200) {
       return null;
     }
 

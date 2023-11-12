@@ -13,16 +13,12 @@ class GetScheduleServiceImpl implements GetScheduleService {
   final String _start = 'start';
   final String _finish = 'finish';
   final String _lng = '1';
-  String _path = 'ruzapi/schedule/';
-
-  int? _statusCode;
-
-  int? get statusCode => _statusCode;
+  final String _path = 'ruzapi/schedule/';
 
   @override
   Future<List<Subject>?> getSchedule(ScheduleFilter scheduleFilter) async {
-    _path = '$_path${scheduleFilter.idType.name}/${scheduleFilter.id}';
-    final requstSender = HttpRequestSender(path: _path, queryParams: {
+    final path = '$_path${scheduleFilter.idType.name}/${scheduleFilter.id}';
+    final requstSender = HttpRequestSender(path: path, queryParams: {
       _start: scheduleFilter.dateTimeRange.start
           .toIso8601String()
           .split('T')[0]
@@ -42,9 +38,9 @@ class GetScheduleServiceImpl implements GetScheduleService {
       return null;
     }
 
-    _statusCode = response.statusCode;
+    final statusCode = response.statusCode;
 
-    if (_statusCode != 200) {
+    if (statusCode != 200) {
       return null;
     }
 
