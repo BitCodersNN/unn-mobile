@@ -21,7 +21,6 @@ void main() {
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown
   ]);
-  WidgetsFlutterBinding.ensureInitialized();
   registerDependencies();
   runApp(const UnnMobile());
 }
