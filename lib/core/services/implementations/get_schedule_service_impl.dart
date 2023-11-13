@@ -12,8 +12,11 @@ import 'package:unn_mobile/core/services/interfaces/getting_schedule_service.dar
 class GetScheduleServiceImpl implements GetScheduleService {
   final String _start = 'start';
   final String _finish = 'finish';
-  final String _lng = '1';
+  final String _lng = 'lng';
   final String _path = 'ruzapi/schedule/';
+  final String _date = 'date';
+  final String _dateFormat = 'y.MM.dd H:m';
+  final String _splitPaternForStream = '|';
 
   @override
   Future<List<Subject>?> getSchedule(ScheduleFilter scheduleFilter) async {
@@ -43,7 +46,6 @@ class GetScheduleServiceImpl implements GetScheduleService {
     if (statusCode != 200) {
       return null;
     }
-
     List<dynamic> jsonList = jsonDecode(await responseToStringBody(response));
 
     List<Subject> schedule = [];
@@ -56,29 +58,18 @@ class GetScheduleServiceImpl implements GetScheduleService {
   }
 
   Subject _convertFromJson(Map<String, Object?> jsonMap) {
-    DateTime startDateTime = DateFormat('y.MM.dd H:m').parse(
-        '${jsonMap['date'] as String} ${jsonMap[KeysForSubjectJsonConverter.beginLesson] as String}');
-    DateTime endDateTime = DateFormat('y.MM.dd H:m').parse(
-        '${jsonMap['date'] as String} ${jsonMap[KeysForSubjectJsonConverter.endLesson] as String}');
-
-    final subjectType = switch ((jsonMap[KeysForSubjectJsonConverter.kindOfWork] ?? "Неизвестно") as String) {
-      'Лекция' => SubjectType.lecture,
-      'Практика (семинарские занятия)' => SubjectType.practice,
-      'Лабораторная' => SubjectType.laboratory,
-      'Зачёт' => SubjectType.credit,
-      'Консультации перед экзаменом' => SubjectType.consultation,
-      'Экзамен' => SubjectType.exam,
-      'Неизвестно' => SubjectType.unknown,
-      String() => null,
-    };
+    DateTime startDateTime = DateFormat(_dateFormat).parse(
+        '${jsonMap[_date] as String} ${jsonMap[KeysForSubjectJsonConverter.beginLesson] as String}');
+    DateTime endDateTime = DateFormat(_dateFormat).parse(
+        '${jsonMap[_date] as String} ${jsonMap[KeysForSubjectJsonConverter.endLesson] as String}');
 
     return Subject(
       jsonMap[KeysForSubjectJsonConverter.discipline] as String,
-      subjectType!,
+      (jsonMap[KeysForSubjectJsonConverter.kindOfWork] ?? '') as String,
       Address(jsonMap[KeysForSubjectJsonConverter.auditorium] as String,
           jsonMap[KeysForSubjectJsonConverter.building] as String),
-      ((jsonMap[KeysForSubjectJsonConverter.stream] ?? '') as String).split('|'),
-      (jsonMap[KeysForSubjectJsonConverter.lecturer] ?? '')as String,
+      ((jsonMap[KeysForSubjectJsonConverter.stream] ?? '') as String).split(_splitPaternForStream),
+      (jsonMap[KeysForSubjectJsonConverter.lecturer] ?? '') as String,
       DateTimeRange(start: startDateTime, end: endDateTime),
     );
   }

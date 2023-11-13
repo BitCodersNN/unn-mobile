@@ -1,15 +1,5 @@
 import 'package:flutter/material.dart';
 
-enum SubjectType {
-  practice,
-  laboratory,
-  consultation,
-  lecture,
-  credit,
-  exam,
-  unknown,
-}
-
 class Address {
   final String _auditorium;
   final String _building;
@@ -33,7 +23,7 @@ class KeysForSubjectJsonConverter {
 
 class Subject {
   final String _name;
-  final SubjectType _kindOfWork;
+  final String _kindOfWork;
   final Address _address;
   final List<String> _groups;
   final String _lecturer;
@@ -43,7 +33,7 @@ class Subject {
       this._lecturer, this._dateTimeRange);
 
   String get name => _name;
-  SubjectType get subjectType => _kindOfWork;
+  String get subjectType => _kindOfWork;
   Address get address => _address;
   List<String> get groups => _groups;
   String get lecturer => _lecturer;
@@ -52,7 +42,7 @@ class Subject {
   factory Subject.fromJson(Map<String, Object?> jsonMap) {
     return Subject(
       jsonMap[KeysForSubjectJsonConverter.discipline] as String,
-      SubjectType.values.byName(jsonMap[KeysForSubjectJsonConverter.kindOfWork] as String),
+      jsonMap[KeysForSubjectJsonConverter.kindOfWork] as String,
       Address(jsonMap[KeysForSubjectJsonConverter.auditorium] as String, jsonMap[KeysForSubjectJsonConverter.building] as String),
       (jsonMap[KeysForSubjectJsonConverter.stream] as String).split('|'),
       jsonMap[KeysForSubjectJsonConverter.lecturer] as String,
@@ -64,7 +54,7 @@ class Subject {
 
   Map<String, dynamic> toJson() => {
         KeysForSubjectJsonConverter.discipline: _name,
-        KeysForSubjectJsonConverter.kindOfWork: _kindOfWork.name,
+        KeysForSubjectJsonConverter.kindOfWork: _kindOfWork,
         KeysForSubjectJsonConverter.building: _address.building,
         KeysForSubjectJsonConverter.auditorium: _address.auditorium,
         KeysForSubjectJsonConverter.stream: _groups.join('|'),
