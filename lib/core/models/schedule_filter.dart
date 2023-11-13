@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-enum IdType{
+enum IDType{
   group,
   student,
   person,
@@ -8,13 +8,13 @@ enum IdType{
 }
 
 class ScheduleFilter{
-  final IdType _idType;
+  final IDType _idType;
   final String _id;
   final DateTimeRange _dateTimeRange;
 
   ScheduleFilter(this._idType, this._id, this._dateTimeRange);
 
-  IdType get idType => _idType;
+  IDType get idType => _idType;
   String get id => _id;
   DateTimeRange get dateTimeRange => _dateTimeRange;
 }
