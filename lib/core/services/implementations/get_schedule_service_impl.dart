@@ -12,7 +12,7 @@ import 'package:unn_mobile/core/services/interfaces/getting_schedule_service.dar
 class GetScheduleServiceImpl implements GetScheduleService {
   final String _start = 'start';
   final String _finish = 'finish';
-  final String _lng = '1';
+  final String _lng = 'lng';
   final String _path = 'ruzapi/schedule/';
   final String _date = 'date';
   final String _dateFormat = 'y.MM.dd H:m';
@@ -46,7 +46,6 @@ class GetScheduleServiceImpl implements GetScheduleService {
     if (statusCode != 200) {
       return null;
     }
-
     List<dynamic> jsonList = jsonDecode(await responseToStringBody(response));
 
     List<Subject> schedule = [];
@@ -66,11 +65,11 @@ class GetScheduleServiceImpl implements GetScheduleService {
 
     return Subject(
       jsonMap[KeysForSubjectJsonConverter.discipline] as String,
-      jsonMap[KeysForSubjectJsonConverter.kindOfWork] as String,
+      (jsonMap[KeysForSubjectJsonConverter.kindOfWork] ?? '') as String,
       Address(jsonMap[KeysForSubjectJsonConverter.auditorium] as String,
           jsonMap[KeysForSubjectJsonConverter.building] as String),
       ((jsonMap[KeysForSubjectJsonConverter.stream] ?? '') as String).split(_splitPaternForStream),
-      (jsonMap[KeysForSubjectJsonConverter.lecturer] ?? '')as String,
+      (jsonMap[KeysForSubjectJsonConverter.lecturer] ?? '') as String,
       DateTimeRange(start: startDateTime, end: endDateTime),
     );
   }
