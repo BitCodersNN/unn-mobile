@@ -46,7 +46,7 @@ class SearchIdOnPortalServiceImpl implements SearchIdOnPortalService {
   }
 
   @override
-  Future<List<ScheduleSearchResultItem>?> findIDOnPortal(String value, IDType valueType) async {
+  Future<List<ScheduleSearchResultItem>?> findIDOnPortal(String value, IdType valueType) async {
     final requstSender = HttpRequestSender(path: _ruzapi + _search, queryParams: {_term: value, _type: valueType.name});
     HttpClientResponse response;
     try {
