@@ -24,6 +24,15 @@ class HttpRequestSender {
         _host = host,
         _path = path;
 
+  /// Конвертирует http ответ в строку
+  ///
+  /// [response]: результат запроса
+  ///
+  /// Возращает строку
+  static Future<String> responseToStringBody(HttpClientResponse response) async {
+    return await response.transform(utf8.decoder).join();
+  }
+
   /// Отправляет post запрос на сервер unn-portal
   ///
   /// Throws [TimeoutException], если превышено время выполнения запроса
@@ -87,15 +96,6 @@ class HttpRequestSender {
     return Uri.parse("${_useSSL ? "https" : "http"}://$_host/$_path")
         .replace(queryParameters: _queryParams);
   }
-}
-
-/// Конвертирует http ответ в строку
-///
-/// [response]: результат запроса
-///
-/// Возращает строку
-Future<String> responseToStringBody(HttpClientResponse response) async {
-  return await response.transform(utf8.decoder).join();
 }
 
 extension on HttpClientRequest {

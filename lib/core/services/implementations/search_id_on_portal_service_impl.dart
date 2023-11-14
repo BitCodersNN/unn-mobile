@@ -40,7 +40,7 @@ class SearchIdOnPortalServiceImpl implements SearchIdOnPortalService {
       return null;
     }
 
-    Map<dynamic, dynamic> jsonMap = jsonDecode(await responseToStringBody(response));
+    Map<dynamic, dynamic> jsonMap = jsonDecode(await HttpRequestSender.responseToStringBody(response));
 
     return jsonMap[_id];
   }
@@ -62,7 +62,7 @@ class SearchIdOnPortalServiceImpl implements SearchIdOnPortalService {
       return null;
     }
 
-    List<dynamic> jsonList = jsonDecode(await responseToStringBody(response));
+    List<dynamic> jsonList = jsonDecode(await HttpRequestSender.responseToStringBody(response));
 
     List<ScheduleSearchResultItem> result = [];
     for (var jsonMap in jsonList) {

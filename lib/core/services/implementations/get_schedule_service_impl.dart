@@ -46,7 +46,8 @@ class GetScheduleServiceImpl implements GetScheduleService {
     if (statusCode != 200) {
       return null;
     }
-    List<dynamic> jsonList = jsonDecode(await responseToStringBody(response));
+    
+    List<dynamic> jsonList = jsonDecode(await HttpRequestSender.responseToStringBody(response));
 
     List<Subject> schedule = [];
 
