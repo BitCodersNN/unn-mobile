@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/misc/date_time_ranges.dart';
 import 'package:unn_mobile/core/models/schedule_filter.dart';
+import 'package:unn_mobile/core/models/schedule_search_result_item.dart';
 import 'package:unn_mobile/core/models/subject.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_schedule_service.dart';
@@ -18,15 +19,23 @@ class ScheduleScreenViewModel extends BaseViewModel {
       Injector.appInstance.get<OfflineScheduleProvider>();
   final AuthorisationService _authorisationService =
       Injector.appInstance.get<AuthorisationService>();
-  String currentUserId = '';
+  String _currentUserId = '';
+
+  String selectedId = '';
+  String lastSearchQuery = '';
+
+  IDType _idType = IDType.student;
   bool _offline = false;
   bool get offline => _offline;
   Future<Map<int, List<Subject>>>? _scheduleLoader;
   Future<Map<int, List<Subject>>>? get scheduleLoader => _scheduleLoader;
   int displayedWeekOffset = 0;
   DateTimeRange get displayedWeek => _filter.dateTimeRange;
-  late ScheduleFilter _filter =
-      ScheduleFilter(IDType.student, "", DateTimeRanges.currentWeek());
+  ScheduleFilter _filter =
+      ScheduleFilter(IDType.student, '', DateTimeRanges.currentWeek());
+  String _searchPlaceholderText = '';
+  String get searchPlaceholderText => _searchPlaceholderText;
+  ScheduleFilter get filter => _filter;
   Future<void> incrementWeek() async {
     displayedWeekOffset++;
     _filter = ScheduleFilter(
@@ -78,43 +87,89 @@ class ScheduleScreenViewModel extends BaseViewModel {
     return result;
   }
 
-  void init() {
-    setState(ViewState.busy);
-    if (!_authorisationService.isAuthorised) {
-      _offline = true;
-      _scheduleLoader = _getScheduleLoader();
-    } else {
-      /*final HttpRequestSender sender = HttpRequestSender(
-          path: 'bitrix/vuz/api/profile/current',
-          cookies: {'PHPSESSID': _authorisationService.sessionId!});
+  void updateFilter(String id) {
+    _filter = ScheduleFilter(_idType, id, displayedWeek);
+    _scheduleLoader = _getScheduleLoader();
+    notifyListeners();
+  }
 
-      sender.get().then((response) async {
-        Map<String, dynamic> data =
-            jsonDecode(await responseToStringBody(response));
-        String username = data['user']['fullname'];
-        var ids = await _searchIdOnPortalService.findIDOnPortal(
-            username, IDType.student);
-        if (ids == null) {
-          throw Exception(
-              'Could not find current user. This is a bug. User name: $username');
-        }
-        _filter = ScheduleFilter(
-            IDType.student, ids.values.first, DateTimeRanges.currentWeek());
-        _scheduleLoader = _scheduleGetter();
-        notifyListeners();
-      });*/
-      _searchIdOnPortalService.getIdOfLoggedInUser().then(
+  Future<void> submitSearch(String query) async {
+    if (query.isNotEmpty) {
+      var searchResult =
+          await _searchIdOnPortalService.findIDOnPortal(query, _idType);
+      if (searchResult == null) {
+        throw Exception('schedule search result was null');
+      }
+      _filter = ScheduleFilter(_idType, searchResult[0].id, displayedWeek);
+    }
+    else {
+      _filter = ScheduleFilter(_idType, _currentUserId, displayedWeek);
+    }
+    var loader = _getScheduleLoader();
+    _scheduleLoader = loader;
+    notifyListeners();
+  }
+
+  Future<List<ScheduleSearchResultItem>> getSearchSuggestions(
+      String value) async {
+    var suggestions =
+        await _searchIdOnPortalService.findIDOnPortal(value, _idType);
+    if (suggestions == null) {
+      throw Exception('Received null from suggestions service');
+    }
+    return suggestions;
+  }
+
+  void init(IDType type) {
+    _idType = type;
+    switch (type) {
+      case IDType.student:
+        _searchPlaceholderText = 'Имя студента';
+        setState(ViewState.busy);
+        if (!_authorisationService.isAuthorised) {
+          _offline = true;
+          _scheduleLoader = _getScheduleLoader();
+        } else {
+          _searchIdOnPortalService.getIdOfLoggedInUser().then(
             (value) async {
-              if(value == null)
-              {
+              if (value == null) {
                 throw Exception('Could not find current user. This is a bug');
               }
-              _filter = ScheduleFilter(IDType.student, value, DateTimeRanges.currentWeek());
+              _currentUserId = value;
+              _filter = ScheduleFilter(
+                  IDType.student, value, DateTimeRanges.currentWeek());
               _scheduleLoader = _getScheduleLoader();
               notifyListeners();
             },
           );
+        }
+        setState(ViewState.idle);
+        break;
+      case IDType.group:
+        _searchPlaceholderText = 'Название группы';
+        setState(ViewState.busy);
+        if (!_authorisationService.isAuthorised) {
+          _offline = true;
+          _scheduleLoader = _getScheduleLoader();
+        } else {
+          _searchIdOnPortalService.getIdOfLoggedInUser().then(
+            (value) async {
+              if (value == null) {
+                throw Exception('Could not find current user. This is a bug');
+              }
+              _filter = ScheduleFilter(
+                  IDType.student, value, DateTimeRanges.currentWeek());
+              _scheduleLoader = _getScheduleLoader();
+              notifyListeners();
+            },
+          );
+        }
+        setState(ViewState.idle);
+        break;
+      case IDType.person:
+        _searchPlaceholderText = 'Имя преподавателя';
+      default:
+        break;
     }
-    setState(ViewState.idle);
   }
 }

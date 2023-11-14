@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:unn_mobile/core/misc/subject_type_localized_names.dart';
 import 'package:unn_mobile/core/models/subject.dart';
 
 class ScheduleItemNormal extends StatelessWidget {
@@ -72,7 +71,7 @@ class ScheduleItemNormal extends StatelessWidget {
                     ],
                   ),
                   Text(
-                    subject.subjectType.localizedString,
+                    subject.subjectType,
                     style: theme.textTheme.labelLarge!.copyWith(
                         color: theme.colorScheme.primary,
                         fontStyle: FontStyle.italic),
