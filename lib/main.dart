@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:injector/injector.dart';
 import 'package:unn_mobile/app.dart';
 import 'package:unn_mobile/core/services/implementations/auth_data_provider_impl.dart';
@@ -16,6 +17,10 @@ import 'package:unn_mobile/core/viewmodels/schedule_screen_view_model.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown
+  ]);
   registerDependencies();
   runApp(const UnnMobile());
 }
