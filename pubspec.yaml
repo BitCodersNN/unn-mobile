@@ -17,6 +17,9 @@ dependencies:
   intl: ^0.18.1
   flutter_svg: any
   connectivity_plus: ^5.0.1
+  device_calendar: ^4.3.2
+  icalendar_parser: ^2.0.0
+  permission_handler: ^11.0.1
 
 dev_dependencies:
   flutter_test:
