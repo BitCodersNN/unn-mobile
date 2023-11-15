@@ -1,14 +1,230 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
+import 'package:unn_mobile/core/models/schedule_filter.dart';
+import 'package:unn_mobile/core/models/subject.dart';
+import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/schedule_screen_view_model.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
+import 'package:unn_mobile/ui/views/main_page/schedule/widgets/schedule_item_normal.dart';
+import 'package:unn_mobile/ui/views/main_page/schedule/widgets/schedule_search_suggestion_item.dart';
 
-class ScheduleScreenView extends StatelessWidget {
+class ScheduleScreenView extends StatefulWidget {
   const ScheduleScreenView({super.key});
 
   @override
+  State<ScheduleScreenView> createState() => _ScheduleScreenViewState();
+}
+
+class _ScheduleScreenViewState extends State<ScheduleScreenView>
+    with SingleTickerProviderStateMixin {
+  late TabController _tabController;
+  late FocusNode _searchFocusNode;
+  @override
+  void initState() {
+    _tabController = TabController(length: 3, vsync: this);
+    _searchFocusNode = FocusNode();
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return BaseView<ScheduleScreenViewModel>(
-      builder: (context, model, child) => const Placeholder(),
+    final theme = Theme.of(context);
+    return Column(
+      children: [
+        TabBar(
+          tabs: const [
+            Tab(
+              text: 'Студент',
+            ),
+            Tab(
+              text: 'Группа',
+            ),
+            Tab(
+              text: 'Преподаватель',
+            ),
+          ],
+          controller: _tabController,
+          indicatorSize: TabBarIndicatorSize.tab,
+        ),
+        Expanded(
+          child: TabBarView(
+            controller: _tabController,
+            children: [
+              _scheduleTab(theme, IDType.student),
+              _scheduleTab(theme, IDType.group),
+              _scheduleTab(theme, IDType.person),
+            ],
+          ),
+        ),
+      ],
     );
+  }
+
+  Widget _scheduleTab(ThemeData theme, IDType type) {
+    return BaseView<ScheduleScreenViewModel>(
+      builder: (context, model, child) {
+        return Column(
+          children: [
+            SearchAnchor(
+              builder: (context, controller) {
+                return Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: SearchBar(
+                    hintText: model.searchPlaceholderText,
+                    leading: const Icon(Icons.search),
+                    focusNode: _searchFocusNode,
+                    trailing: [
+                      IconButton(
+                          onPressed: () {}, icon: const Icon(Icons.more_horiz))
+                    ],
+                    shape: MaterialStateProperty.resolveWith(
+                      (states) => const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(10),
+                        ),
+                      ),
+                    ),
+
+                    onTap: () => controller.openView(),
+                    onChanged: (_) {
+                      controller.openView();
+                    },
+                    onSubmitted: (value) async {
+                      if (model.lastSearchQuery != value) {
+                        await model.submitSearch(value);
+                      }
+                    },
+                    controller: controller,
+                  ),
+                );
+              },
+              suggestionsBuilder: (context, controller) async {
+                if(controller.text == '') return [];
+                var rawSuggestions =
+                    await model.getSearchSuggestions(controller.text);
+                return rawSuggestions.map<ScheduleSearchSuggestionItem>(
+                  (e) => ScheduleSearchSuggestionItem(
+                    itemName: e.label,
+                    itemDescription: e.description,
+                    onSelected: () {
+                      setState(() {
+                        controller.closeView(e.label);
+                        //_searchFocusNode.unfocus();
+                        Future.delayed(
+                          const Duration(milliseconds: 50),
+                          () {
+                            SystemChannels.textInput
+                                .invokeMethod('TextInput.hide');
+                          },
+                        );
+                        model.lastSearchQuery = controller.text;
+                        model.selectedId = e.id;
+                        model.updateFilter(e.id);
+                      });
+                    },
+                  ),
+                );
+              },
+            ),
+            if (model.scheduleLoader != null)
+              FutureBuilder(
+                builder: (context, snapshot) {
+                  return _customScrollView(theme, snapshot, model);
+                },
+                future: model.scheduleLoader,
+              ),
+          ],
+        );
+      },
+      onModelReady: (model) => model.init(type),
+    );
+  }
+
+  Widget _customScrollView(
+      ThemeData theme,
+      AsyncSnapshot<Map<int, List<Subject>>> snapshot,
+      ScheduleScreenViewModel model) {
+    if (!snapshot.hasData) {
+      return const Expanded(
+        child: Center(
+          child: SizedBox(
+            width: 70,
+            height: 70,
+            child: CircularProgressIndicator(),
+          ),
+        ),
+      );
+    }
+    final headerFormatter = DateFormat.yMd('ru_RU');
+    return Expanded(
+      child: CustomScrollView(
+        slivers: [
+          if (model.state != ViewState.busy && !model.offline)
+            SliverAppBar(
+              leading: IconButton(
+                onPressed: () async {
+                  await model.decrementWeek();
+                },
+                icon: const Icon(Icons.chevron_left_sharp),
+              ),
+              actions: [
+                IconButton(
+                  onPressed: () async {
+                    await model.incrementWeek();
+                  },
+                  icon: const Icon(Icons.chevron_right),
+                ),
+              ],
+              centerTitle: true,
+              title: Text(
+                  '${headerFormatter.format(model.displayedWeek.start)} - ${headerFormatter.format(model.displayedWeek.end)}'),
+              backgroundColor: theme.colorScheme.background,
+              surfaceTintColor: Colors.transparent,
+              pinned: true,
+            ),
+          SliverList(
+            delegate: SliverChildBuilderDelegate(
+              (context, index) {
+                var formatedDate = DateFormat.MMMMEEEEd('ru_RU').format(
+                    model.displayedWeek.start.add(Duration(
+                        days: snapshot.data!.keys.elementAt(index) - 1)));
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(20.0),
+                      child: Text(
+                        formatedDate,
+                        textAlign: TextAlign.left,
+                        style: theme.textTheme.titleLarge,
+                      ),
+                    ),
+                    for (int i = 0;
+                        i < snapshot.data!.values.elementAt(index).length;
+                        i++)
+                      ScheduleItemNormal(
+                          subject: snapshot.data!.values.elementAt(index)[i],
+                          even: i % 2 == 0),
+                    if (index == snapshot.data!.length - 1)
+                      const SizedBox(
+                        height: 80,
+                      )
+                  ],
+                );
+              },
+              childCount: snapshot.data!.length,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    _searchFocusNode.dispose();
+    super.dispose();
   }
 }
