@@ -10,11 +10,12 @@ import 'package:unn_mobile/core/services/interfaces/export_schedule_service.dart
 
 class ExportScheduleServiceImpl implements ExportScheduleService {
   final DeviceCalendarPlugin _deviceCalendarPlugin = DeviceCalendarPlugin();
-  final String _calendarName = 'schedule unn';
+  final String _calendarName = 'Расписание ННГУ';
   final String _ics = 'ics';
   final String _start = 'start';
   final String _finish = 'finish';
   final String _lng = '1';
+  final String _timeZone = 'Europe/Moscow';
   String _path = 'ruzapi/schedule/';
 
   int? _statusCode;
@@ -70,11 +71,9 @@ class ExportScheduleServiceImpl implements ExportScheduleService {
   Future<bool> _requestCalendarPermission() async {
     final status = await Permission.calendarFullAccess.status;
     if (status.isDenied) {
-      // print('Request');
-      return (await Permission.calendarFullAccess.request()).isGranted;
+      return (await Permission.calendar.request()).isGranted;
     } else if (status.isPermanentlyDenied) {
       await openAppSettings();
-      // print('Open settings');
       return (await Permission.calendarFullAccess.status).isGranted;
     }
 
@@ -84,7 +83,6 @@ class ExportScheduleServiceImpl implements ExportScheduleService {
   Future<String?> _findCalendarId() async{
     final calendars = await _deviceCalendarPlugin.retrieveCalendars();
     for (final calendar in calendars.data!){
-      // print(calendar.name.toString() + ' ' + calendar.id.toString());
       if (calendar.name == _calendarName){
         return calendar.id;
       }
@@ -93,16 +91,22 @@ class ExportScheduleServiceImpl implements ExportScheduleService {
   }
 
   Future<ExportScheduleResult> _addEventsInCalendar(iCalendarData, calendarID) async{
-    final location = timeZoneDatabase.locations['Europe/Moscow']!;
+    const String summary = 'summary';
+    const String location = 'location';
+    const String dtstart = 'dtstart';
+    const String dtend = 'dtend';
+    const String description = 'description';
+
+    final timeZone = timeZoneDatabase.locations[_timeZone]!;
     try {
       for (final event in iCalendarData){
         await _deviceCalendarPlugin.createOrUpdateEvent(Event(
           calendarID,
-          title: event['summary'],
-          location: event['location'],
-          start: TZDateTime.parse(location, (event['dtstart'] as IcsDateTime).dt),
-          end: TZDateTime.parse(location, (event['dtend'] as IcsDateTime).dt),
-          description: event['description'],
+          title: event[summary],
+          location: event[location],
+          start: TZDateTime.parse(timeZone, (event[dtstart] as IcsDateTime).dt),
+          end: TZDateTime.parse(timeZone, (event[dtend] as IcsDateTime).dt),
+          description: event[description],
           ));
       }
     } catch (e){

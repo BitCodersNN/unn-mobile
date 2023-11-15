@@ -43,7 +43,6 @@ post_install do |installer|
     target.build_configurations.each do |config|
       config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= [
         '$(inherited)',
-        'PERMISSION_EVENTS_FULL_ACCESS=1',
         ## dart: PermissionGroup.calendar
         'PERMISSION_EVENTS=1',
       ]
