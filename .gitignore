@@ -68,5 +68,4 @@ doc/api/
 .flutter-plugins-dependencies
 .vscode/launch.json
 *.xcconfig
-ios/Podfile
 ios/Podfile.lock
