@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/misc/date_time_ranges.dart';
@@ -36,6 +37,9 @@ class ScheduleScreenViewModel extends BaseViewModel {
   String _searchPlaceholderText = '';
   String get searchPlaceholderText => _searchPlaceholderText;
   ScheduleFilter get filter => _filter;
+
+  void Function(Map<int, List<Subject>>)? _onScheduleLoaded;
+
   Future<void> incrementWeek() async {
     displayedWeekOffset++;
     _filter = ScheduleFilter(
@@ -46,7 +50,7 @@ class ScheduleScreenViewModel extends BaseViewModel {
         end: _filter.dateTimeRange.end.add(const Duration(days: 7)),
       ),
     );
-    _scheduleLoader = _getScheduleLoader();
+    _updateScheduleLoader();
     notifyListeners();
   }
 
@@ -60,8 +64,14 @@ class ScheduleScreenViewModel extends BaseViewModel {
         end: _filter.dateTimeRange.end.subtract(const Duration(days: 7)),
       ),
     );
-    _scheduleLoader = _getScheduleLoader();
+    _updateScheduleLoader();
     notifyListeners();
+  }
+
+  FutureOr<void> _invokeOnScheduleLoaded(value) {
+    if (_onScheduleLoaded != null) {
+      _onScheduleLoaded!(value);
+    }
   }
 
   Future<Map<int, List<Subject>>> _getScheduleLoader() async {
@@ -89,7 +99,7 @@ class ScheduleScreenViewModel extends BaseViewModel {
 
   void updateFilter(String id) {
     _filter = ScheduleFilter(_idType, id, displayedWeek);
-    _scheduleLoader = _getScheduleLoader();
+    _updateScheduleLoader();
     notifyListeners();
   }
 
@@ -101,12 +111,14 @@ class ScheduleScreenViewModel extends BaseViewModel {
         throw Exception('schedule search result was null');
       }
       _filter = ScheduleFilter(_idType, searchResult[0].id, displayedWeek);
-    }
-    else {
+    } else {
       _filter = ScheduleFilter(_idType, _currentUserId, displayedWeek);
     }
     var loader = _getScheduleLoader();
     _scheduleLoader = loader;
+    _scheduleLoader!.then(
+      _invokeOnScheduleLoaded,
+    );
     notifyListeners();
   }
 
@@ -120,7 +132,9 @@ class ScheduleScreenViewModel extends BaseViewModel {
     return suggestions;
   }
 
-  void init(IDType type) {
+  void init(IDType type,
+      {void Function(Map<int, List<Subject>> schedule)? onScheduleLoaded}) {
+    _onScheduleLoaded = onScheduleLoaded;
     _idType = type;
     switch (type) {
       case IDType.student:
@@ -128,7 +142,7 @@ class ScheduleScreenViewModel extends BaseViewModel {
         setState(ViewState.busy);
         if (!_authorisationService.isAuthorised) {
           _offline = true;
-          _scheduleLoader = _getScheduleLoader();
+          _updateScheduleLoader();
         } else {
           _searchIdOnPortalService.getIdOfLoggedInUser().then(
             (value) async {
@@ -138,7 +152,7 @@ class ScheduleScreenViewModel extends BaseViewModel {
               _currentUserId = value;
               _filter = ScheduleFilter(
                   IDType.student, value, DateTimeRanges.currentWeek());
-              _scheduleLoader = _getScheduleLoader();
+              _updateScheduleLoader();
               notifyListeners();
             },
           );
@@ -150,7 +164,7 @@ class ScheduleScreenViewModel extends BaseViewModel {
         setState(ViewState.busy);
         if (!_authorisationService.isAuthorised) {
           _offline = true;
-          _scheduleLoader = _getScheduleLoader();
+          _updateScheduleLoader();
         } else {
           _searchIdOnPortalService.getIdOfLoggedInUser().then(
             (value) async {
@@ -159,7 +173,7 @@ class ScheduleScreenViewModel extends BaseViewModel {
               }
               _filter = ScheduleFilter(
                   IDType.student, value, DateTimeRanges.currentWeek());
-              _scheduleLoader = _getScheduleLoader();
+              _updateScheduleLoader();
               notifyListeners();
             },
           );
@@ -171,5 +185,12 @@ class ScheduleScreenViewModel extends BaseViewModel {
       default:
         break;
     }
+  }
+
+  void _updateScheduleLoader() {
+    _scheduleLoader = _getScheduleLoader();
+    _scheduleLoader!.then(
+      _invokeOnScheduleLoaded,
+    );
   }
 }
