@@ -1,6 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'package:scroll_to_index/scroll_to_index.dart';
+import 'package:unn_mobile/core/misc/date_time_extensions.dart';
 import 'package:unn_mobile/core/models/schedule_filter.dart';
 import 'package:unn_mobile/core/models/subject.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
@@ -20,8 +24,10 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   late FocusNode _searchFocusNode;
+  late AutoScrollController _scrollController;
   @override
   void initState() {
+    _scrollController = AutoScrollController();
     _tabController = TabController(length: 3, vsync: this);
     _searchFocusNode = FocusNode();
     super.initState();
@@ -85,7 +91,6 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView>
                         ),
                       ),
                     ),
-
                     onTap: () => controller.openView(),
                     onChanged: (_) {
                       controller.openView();
@@ -100,7 +105,7 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView>
                 );
               },
               suggestionsBuilder: (context, controller) async {
-                if(controller.text == '') return [];
+                if (controller.text == '') return [];
                 var rawSuggestions =
                     await model.getSearchSuggestions(controller.text);
                 return rawSuggestions.map<ScheduleSearchSuggestionItem>(
@@ -137,7 +142,30 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView>
           ],
         );
       },
-      onModelReady: (model) => model.init(type),
+      onModelReady: (model) {
+        model.init(
+          type,
+          onScheduleLoaded: (schedule) async {
+            int todayScheduleIndex = -1;
+            for (int i = 0; i < schedule.values.length; i++) {
+              if (schedule.values
+                  .elementAt(i)[0]
+                  .dateTimeRange
+                  .start
+                  .isSameDate(DateTime.now())) {
+                todayScheduleIndex = i;
+                break;
+              }
+            }
+            if (model.displayedWeekOffset == 0 && todayScheduleIndex != -1) {
+              await _scrollController.scrollToIndex(todayScheduleIndex,
+                  preferPosition: AutoScrollPosition.begin);
+            } else {
+              await _scrollController.scrollToIndex(0);
+            }
+          },
+        );
+      },
     );
   }
 
@@ -157,8 +185,10 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView>
       );
     }
     final headerFormatter = DateFormat.yMd('ru_RU');
+
     return Expanded(
       child: CustomScrollView(
+        controller: _scrollController,
         slivers: [
           if (model.state != ViewState.busy && !model.offline)
             SliverAppBar(
@@ -187,30 +217,38 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView>
             delegate: SliverChildBuilderDelegate(
               (context, index) {
                 var formatedDate = DateFormat.MMMMEEEEd('ru_RU').format(
-                    model.displayedWeek.start.add(Duration(
-                        days: snapshot.data!.keys.elementAt(index) - 1)));
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(20.0),
-                      child: Text(
-                        formatedDate,
-                        textAlign: TextAlign.left,
-                        style: theme.textTheme.titleLarge,
+                  model.displayedWeek.start.add(
+                    Duration(days: snapshot.data!.keys.elementAt(index) - 1),
+                  ),
+                );
+
+                return AutoScrollTag(
+                  key: ValueKey(index),
+                  controller: _scrollController,
+                  index: index,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(20.0),
+                        child: Text(
+                          formatedDate,
+                          textAlign: TextAlign.left,
+                          style: theme.textTheme.titleLarge,
+                        ),
                       ),
-                    ),
-                    for (int i = 0;
-                        i < snapshot.data!.values.elementAt(index).length;
-                        i++)
-                      ScheduleItemNormal(
-                          subject: snapshot.data!.values.elementAt(index)[i],
-                          even: i % 2 == 0),
-                    if (index == snapshot.data!.length - 1)
-                      const SizedBox(
-                        height: 80,
-                      )
-                  ],
+                      for (int i = 0;
+                          i < snapshot.data!.values.elementAt(index).length;
+                          i++)
+                        ScheduleItemNormal(
+                            subject: snapshot.data!.values.elementAt(index)[i],
+                            even: i % 2 == 0),
+                      if (index == snapshot.data!.length - 1)
+                        const SizedBox(
+                          height: 80,
+                        )
+                    ],
+                  ),
                 );
               },
               childCount: snapshot.data!.length,
@@ -225,6 +263,7 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView>
   void dispose() {
     _tabController.dispose();
     _searchFocusNode.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 }
