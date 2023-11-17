@@ -12,7 +12,7 @@ class ExportScheduleServiceImpl implements ExportScheduleService {
   final PermissionHandlerPlatform _permissionHandler = PermissionHandlerPlatform.instance;
   final DeviceCalendarPlugin _deviceCalendarPlugin = DeviceCalendarPlugin();
 
-  final String _calendarName = 'Расписание ННГУ test4';
+  final String _calendarName = 'Расписание ННГУ';
   final String _ics = 'ics';
   final String _start = 'start';
   final String _finish = 'finish';
