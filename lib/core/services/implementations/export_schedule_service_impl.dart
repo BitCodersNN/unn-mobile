@@ -3,14 +3,16 @@ import 'dart:io';
 
 import 'package:device_calendar/device_calendar.dart';
 import 'package:icalendar_parser/icalendar_parser.dart';
-import 'package:permission_handler/permission_handler.dart';
+import 'package:permission_handler_platform_interface/permission_handler_platform_interface.dart';
 import 'package:unn_mobile/core/misc/http_helper.dart';
 import 'package:unn_mobile/core/models/schedule_filter.dart';
 import 'package:unn_mobile/core/services/interfaces/export_schedule_service.dart';
 
 class ExportScheduleServiceImpl implements ExportScheduleService {
+  final PermissionHandlerPlatform _permissionHandler = PermissionHandlerPlatform.instance;
   final DeviceCalendarPlugin _deviceCalendarPlugin = DeviceCalendarPlugin();
-  final String _calendarName = 'Расписание ННГУ';
+
+  final String _calendarName = 'Расписание ННГУ test4';
   final String _ics = 'ics';
   final String _start = 'start';
   final String _finish = 'finish';
@@ -18,9 +20,6 @@ class ExportScheduleServiceImpl implements ExportScheduleService {
   final String _timeZone = 'Europe/Moscow';
   String _path = 'ruzapi/schedule/';
 
-  int? _statusCode;
-
-  int? get statusCode => _statusCode;
 
   @override
   Future<ExportScheduleResult> exportSchedule(
@@ -35,7 +34,7 @@ class ExportScheduleServiceImpl implements ExportScheduleService {
       _finish: scheduleFilter.dateTimeRange.end
           .toIso8601String()
           .split('T')[0]
-          .replaceAll('-', '.'),
+          .replaceAll('-', '.'), 
       _lng: '1',
     });
 
@@ -49,16 +48,15 @@ class ExportScheduleServiceImpl implements ExportScheduleService {
       return ExportScheduleResult.unknownError;
     }
 
-    _statusCode = response.statusCode;
-
-    if (_statusCode != 200) {
+    if (response.statusCode != 200) {
       return ExportScheduleResult.statusCodeIsntOk;
     }
 
     final iCalendarData = ICalendar.fromString(await HttpRequestSender.responseToStringBody(response)).data;
     iCalendarData.removeAt(0);
 
-    if (!(await _requestCalendarPermission())){
+    final status = await _permissionHandler.checkPermissionStatus(Permission.calendarFullAccess);
+    if (!status.isGranted) {
       return ExportScheduleResult.noPermission;
     }
 
@@ -68,29 +66,36 @@ class ExportScheduleServiceImpl implements ExportScheduleService {
     return _addEventsInCalendar(iCalendarData, calendarID);
   }
 
-  Future<bool> _requestCalendarPermission() async {
-    final status = await Permission.calendarFullAccess.status;
+  @override
+  Future<RequestCalendarPermissionResult> requestCalendarPermission() async {
+    final status = await _permissionHandler.checkPermissionStatus(Permission.calendarFullAccess);
     if (status.isDenied) {
-      return (await Permission.calendar.request()).isGranted;
+      await _permissionHandler.requestPermissions([Permission.calendarFullAccess]);
+      return ( await _permissionHandler.checkPermissionStatus(Permission.calendarFullAccess).isGranted)
+          ? RequestCalendarPermissionResult.allowed
+          : RequestCalendarPermissionResult.rejected;
     } else if (status.isPermanentlyDenied) {
-      await openAppSettings();
-      return (await Permission.calendarFullAccess.status).isGranted;
+      return RequestCalendarPermissionResult.permanentlyDenied;
     }
-
-    return true;
+    return RequestCalendarPermissionResult.allowed;
   }
 
-  Future<String?> _findCalendarId() async{
+  @override
+  Future<bool> openSettings() {
+    return _permissionHandler.openAppSettings();
+  }
+
+  Future<String?> _findCalendarId() async {
     final calendars = await _deviceCalendarPlugin.retrieveCalendars();
-    for (final calendar in calendars.data!){
-      if (calendar.name == _calendarName){
+    for (final calendar in calendars.data!) {
+      if (calendar.name == _calendarName) {
         return calendar.id;
       }
     }
     return null;
   }
 
-  Future<ExportScheduleResult> _addEventsInCalendar(iCalendarData, calendarID) async{
+  Future<ExportScheduleResult> _addEventsInCalendar(iCalendarData, calendarID) async {
     const String summary = 'summary';
     const String location = 'location';
     const String dtstart = 'dtstart';
@@ -99,7 +104,7 @@ class ExportScheduleServiceImpl implements ExportScheduleService {
 
     final timeZone = timeZoneDatabase.locations[_timeZone]!;
     try {
-      for (final event in iCalendarData){
+      for (final event in iCalendarData) {
         await _deviceCalendarPlugin.createOrUpdateEvent(Event(
           calendarID,
           title: event[summary],
@@ -107,12 +112,13 @@ class ExportScheduleServiceImpl implements ExportScheduleService {
           start: TZDateTime.parse(timeZone, (event[dtstart] as IcsDateTime).dt),
           end: TZDateTime.parse(timeZone, (event[dtend] as IcsDateTime).dt),
           description: event[description],
-          ));
+        ));
       }
-    } catch (e){
+    } catch (e) {
       log(e.toString());
       return ExportScheduleResult.unknownError;
     }
     return ExportScheduleResult.success;
   }
+  
 }

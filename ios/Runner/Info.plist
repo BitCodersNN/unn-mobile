@@ -46,8 +46,11 @@
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 
-	<key>NSCalendarsUsageDescription</key>
+    <!-- Permission options for the `calendar` group -->
+    <key>NSCalendarsUsageDescription</key>
     <string>Calendars</string>
+    <key>NSCalendarsFullAccessUsageDescription</key>
+    <string>Calendar full access</string>
 	
 </dict>
 </plist>
