@@ -22,9 +22,7 @@ class ScheduleItemNormal extends StatelessWidget {
         decoration: BoxDecoration(
           borderRadius: const BorderRadius.all(Radius.circular(16)),
           shape: BoxShape.rectangle,
-          color: even
-              ? theme.colorScheme.surfaceVariant
-              : theme.colorScheme.surface,
+          color: getSurfaceColor(theme),
         ),
         height: 90,
         child: Stack(
@@ -101,5 +99,18 @@ class ScheduleItemNormal extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Color getSurfaceColor(ThemeData theme) {
+    if (DateTime.now().isAfter(subject.dateTimeRange.start) &&
+        DateTime.now().isBefore(subject.dateTimeRange.end)) {
+      return theme.colorScheme.tertiaryContainer;
+    }
+
+    if (even) {
+      return theme.colorScheme.surfaceVariant;
+    } else {
+      return theme.colorScheme.surface;
+    }
   }
 }
