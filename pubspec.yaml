@@ -17,7 +17,13 @@ dependencies:
   intl: ^0.18.1
   flutter_svg: any
   connectivity_plus: ^5.0.1
+  device_calendar: ^4.3.2
+  icalendar_parser: ^2.0.0
+  permission_handler_android: ^12.0.1
+  permission_handler_apple: ^9.2.0
+  permission_handler_platform_interface: ^4.0.0
   scroll_to_index: ^3.0.1
+
 
 dev_dependencies:
   flutter_test:
