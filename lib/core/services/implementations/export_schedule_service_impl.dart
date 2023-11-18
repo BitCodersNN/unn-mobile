@@ -16,7 +16,7 @@ class ExportScheduleServiceImpl implements ExportScheduleService {
   final String _ics = 'ics';
   final String _start = 'start';
   final String _finish = 'finish';
-  final String _lng = '1';
+  final String _lng = 'lng';
   final String _timeZone = 'Europe/Moscow';
   String _path = 'ruzapi/schedule/';
 
