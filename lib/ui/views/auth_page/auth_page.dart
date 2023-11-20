@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:unn_mobile/core/viewmodels/auth_page_view_model.dart';
@@ -41,20 +43,44 @@ class AuthPageWithState extends State<AuthPage> {
   Widget build(BuildContext context) {
     return BaseView<AuthPageViewModel>(
       builder: (context, viewModel, child) {
+
+        final authTitle = _authTitle();
+        final authBody = _authBody(context, viewModel,
+            _evaluateAuthLogoHeightFactor(
+              context,
+              0.25,
+              authTitle.preferredSize.height
+            )
+        );
+
         return Scaffold(
           backgroundColor: Colors.white,
           resizeToAvoidBottomInset: false,
 
           appBar:
-            _authTitle(),
+            authTitle,
 
           body:
-            _authBody(context, viewModel),
+            authBody
         );
       },
     );
   }
 
+
+  double _evaluateAuthLogoHeightFactor(BuildContext context, double minimumAuthLogoHeightFactor, double titleHeight) {
+
+    // Вычисленная экспериментальным путём высота формы,
+    // с учётом высоты всех ошибок валидации и ошибки ответа от auth model
+    const maximumFormHeight = 452.0;
+
+    double screenHeight = context.heightByFactor(1);
+
+    double baseAuthLogoHeightFactor = (screenHeight - maximumFormHeight - titleHeight) / screenHeight;
+
+    return math.min(baseAuthLogoHeightFactor, minimumAuthLogoHeightFactor);
+
+  }
 
   AppBar _authTitle() {
     return AppBar(
@@ -73,40 +99,50 @@ class AuthPageWithState extends State<AuthPage> {
     );
   }
 
-  Widget _authBody(BuildContext context, AuthPageViewModel viewModel) {
+  Widget _authBody(BuildContext context, AuthPageViewModel viewModel, double authLogoHeightFactor) {
+
     return Center(
       child: Column(
+
         children: [
-          _padding(),
-          _authLogo(),
-          _padding(),
+          _authLogo(context, authLogoHeightFactor),
           _authForm(context, viewModel)
         ],
       ),
     );
   }
 
-  Widget _padding({double height = 40}) {
-    return SizedBox(
-        width: double.maxFinite,
-        height: height
+  Widget _authLogo(BuildContext context, double heightFactor) {
+
+    double logoHeightFactor = 0.8;
+    double paddingHeightFactor = (1 - logoHeightFactor) / 2;
+
+    double logoHeight = context.heightByFactor(logoHeightFactor * heightFactor);
+    double paddingHeight = context.heightByFactor(paddingHeightFactor * heightFactor);
+
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: paddingHeight),
+      child: _authLogoPic(logoHeight),
     );
   }
 
-  Widget _authLogo() => SvgPicture.asset("assets/images/auth-logo.svg",);
+  Widget _authLogoPic(double height) {
+    return SvgPicture.asset("assets/images/auth-logo.svg", height: height,);
+  }
 
   Widget _authForm(BuildContext context, AuthPageViewModel viewModel) {
-    return Form(
-      child: Flexible(
-        child: _authFormContainer(context, elements: [
-          _authErrorMessageIfNeeded(context, viewModel),
-          _authFormInputLogin(),
-          _authFormInputPassword(),
-          _authFormForgetPassword(),
-          _authFormLoginButton(context, viewModel)
-        ],
-        ),
-      ),
+
+    final formContainer = _authFormContainer(context, elements: [
+      _authErrorMessageIfNeeded(context, viewModel),
+      _authFormInputLogin(),
+      _authFormInputPassword(),
+      _authFormForgetPassword(),
+      _authFormLoginButton(context, viewModel),
+    ],
+    );
+
+    return Flexible(
+      child: formContainer,
     );
   }
 
@@ -138,12 +174,20 @@ class AuthPageWithState extends State<AuthPage> {
     );
   }
 
-  Widget _authFormContainer(BuildContext context, {List<Widget> elements = const []}) {
+  Container _authFormContainer(BuildContext context, {List<Widget> elements = const []}) {
+
+    final columnForm = Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: elements,
+    );
+
+
     return Container(
       padding: const EdgeInsets.only(
         left: 20,
         right: 20,
-        top: 40,
+        top: 20,
       ),
       height: MediaQuery.of(context).size.height,
       width: double.infinity,
@@ -161,10 +205,7 @@ class AuthPageWithState extends State<AuthPage> {
             ),
           ]
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: elements,
-      ),
+      child: columnForm
     );
   }
 
@@ -224,6 +265,7 @@ class AuthPageWithState extends State<AuthPage> {
       );
   }
 
+
   Widget _authFormLoginButton(BuildContext context, AuthPageViewModel viewModel) {
     return Center(
       child: Padding(
@@ -248,7 +290,6 @@ class AuthPageWithState extends State<AuthPage> {
       ),
     );
   }
-
 
   String? _validateInputOrElseReturnError(_InputType type) {
 
@@ -290,6 +331,14 @@ class AuthPageWithState extends State<AuthPage> {
     });
 
   }
+}
+
+extension on BuildContext {
+
+  double heightByFactor(double factor) {
+    return MediaQuery.of(this).size.height * factor;
+  }
+
 }
 
 
