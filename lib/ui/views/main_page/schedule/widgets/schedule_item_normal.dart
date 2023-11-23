@@ -102,7 +102,7 @@ class ScheduleItemNormal extends StatelessWidget {
   }
 
   Color getSurfaceColor(ThemeData theme) {
-    if (DateTime.now().isAfter(subject.dateTimeRange.start) &&
+    if (DateTime.now().isAfter(subject.dateTimeRange.start.subtract(const Duration(minutes: 5))) &&
         DateTime.now().isBefore(subject.dateTimeRange.end)) {
       return theme.colorScheme.tertiaryContainer;
     }
