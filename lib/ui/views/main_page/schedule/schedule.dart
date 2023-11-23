@@ -9,6 +9,7 @@ import 'package:unn_mobile/core/models/schedule_filter.dart';
 import 'package:unn_mobile/core/models/subject.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/schedule_screen_view_model.dart';
+import 'package:unn_mobile/ui/unn_mobile_colors.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
 import 'package:unn_mobile/ui/views/main_page/schedule/widgets/schedule_item_normal.dart';
 import 'package:unn_mobile/ui/views/main_page/schedule/widgets/schedule_search_suggestion_item.dart';
@@ -185,6 +186,7 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView>
       );
     }
     final headerFormatter = DateFormat.yMd('ru_RU');
+    final extraColors = theme.extension<UnnMobileColors>()!;
 
     return Expanded(
       child: CustomScrollView(
@@ -226,28 +228,40 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView>
                   key: ValueKey(index),
                   controller: _scrollController,
                   index: index,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(20.0),
-                        child: Text(
-                          formatedDate,
-                          textAlign: TextAlign.left,
-                          style: theme.textTheme.titleLarge,
+                  child: Container(
+                    decoration: BoxDecoration(
+                        color: (snapshot.data!.values
+                                .elementAt(index)
+                                .first
+                                .dateTimeRange
+                                .start
+                                .isSameDate(DateTime.now()))
+                            ? extraColors.scheduleDayHighlight
+                            : null),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(20.0),
+                          child: Text(
+                            formatedDate,
+                            textAlign: TextAlign.left,
+                            style: theme.textTheme.titleLarge,
+                          ),
                         ),
-                      ),
-                      for (int i = 0;
-                          i < snapshot.data!.values.elementAt(index).length;
-                          i++)
-                        ScheduleItemNormal(
-                            subject: snapshot.data!.values.elementAt(index)[i],
-                            even: i % 2 == 0),
-                      if (index == snapshot.data!.length - 1)
-                        const SizedBox(
-                          height: 80,
-                        )
-                    ],
+                        for (int i = 0;
+                            i < snapshot.data!.values.elementAt(index).length;
+                            i++)
+                          ScheduleItemNormal(
+                              subject:
+                                  snapshot.data!.values.elementAt(index)[i],
+                              even: i % 2 == 0),
+                        if (index == snapshot.data!.length - 1)
+                          const SizedBox(
+                            height: 80,
+                          )
+                      ],
+                    ),
                   ),
                 );
               },

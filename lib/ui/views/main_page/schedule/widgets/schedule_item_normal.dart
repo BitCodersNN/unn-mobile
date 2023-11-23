@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:unn_mobile/core/models/subject.dart';
+import 'package:unn_mobile/ui/unn_mobile_colors.dart';
 
 class ScheduleItemNormal extends StatelessWidget {
   final Subject subject;
@@ -102,9 +103,10 @@ class ScheduleItemNormal extends StatelessWidget {
   }
 
   Color getSurfaceColor(ThemeData theme) {
+    final extraColors = theme.extension<UnnMobileColors>()!;
     if (DateTime.now().isAfter(subject.dateTimeRange.start) &&
         DateTime.now().isBefore(subject.dateTimeRange.end)) {
-      return theme.colorScheme.tertiaryContainer;
+      return extraColors.scheduleSubjectHighlight!;
     }
 
     if (even) {
