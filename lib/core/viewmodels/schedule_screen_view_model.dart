@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:collection';
 import 'package:flutter/material.dart';
 import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/misc/date_time_ranges.dart';
@@ -82,7 +83,7 @@ class ScheduleScreenViewModel extends BaseViewModel {
     if (schedule == null) {
       throw Exception('Schedule was null');
     }
-    Map<int, List<Subject>> result = {};
+    var result = SplayTreeMap<int, List<Subject>>();
     for (Subject subject in schedule) {
       if (!result.keys.contains(subject.dateTimeRange.start.weekday)) {
         result.addEntries([
