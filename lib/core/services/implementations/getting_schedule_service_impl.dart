@@ -9,7 +9,7 @@ import 'package:unn_mobile/core/models/schedule_filter.dart';
 import 'package:unn_mobile/core/models/subject.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_schedule_service.dart';
 
-class GetScheduleServiceImpl implements GetScheduleService {
+class GettingScheduleServiceImpl implements GettingScheduleService {
   final String _start = 'start';
   final String _finish = 'finish';
   final String _lng = 'lng';

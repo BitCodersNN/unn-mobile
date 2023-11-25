@@ -6,7 +6,7 @@ import 'package:unn_mobile/app.dart';
 import 'package:unn_mobile/core/services/implementations/auth_data_provider_impl.dart';
 import 'package:unn_mobile/core/services/implementations/authorisation_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/authorisation_refresh_service_impl.dart';
-import 'package:unn_mobile/core/services/implementations/get_schedule_service_impl.dart';
+import 'package:unn_mobile/core/services/implementations/getting_schedule_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/offline_schedule_provider_impl.dart';
 import 'package:unn_mobile/core/services/implementations/search_id_on_portal_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/storage_service_impl.dart';
@@ -41,7 +41,7 @@ void registerDependencies() {
   injector.registerSingleton<AuthDataProvider>(() => AuthDataProviderImpl());
   injector.registerSingleton<AuthorisationRefreshService>(() => AuthorisationRefreshServiceImpl());
   injector.registerSingleton<SearchIdOnPortalService>(() => SearchIdOnPortalServiceImpl());
-  injector.registerSingleton<GetScheduleService>(() => GetScheduleServiceImpl());
+  injector.registerSingleton<GettingScheduleService>(() => GettingScheduleServiceImpl());
   injector.registerSingleton<OfflineScheduleProvider>(() => OfflineScheduleProviderImpl());
   
   injector.registerDependency(() => LoadingPageViewModel());
