@@ -106,31 +106,38 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView>
                 );
               },
               suggestionsBuilder: (context, controller) async {
-                if (controller.text == '') return [];
-                var rawSuggestions =
-                    await model.getSearchSuggestions(controller.text);
-                return rawSuggestions.map<ScheduleSearchSuggestionItem>(
-                  (e) => ScheduleSearchSuggestionItem(
-                    itemName: e.label,
-                    itemDescription: e.description,
-                    onSelected: () {
-                      setState(() {
-                        controller.closeView(e.label);
-                        //_searchFocusNode.unfocus();
-                        Future.delayed(
-                          const Duration(milliseconds: 50),
-                          () {
-                            SystemChannels.textInput
-                                .invokeMethod('TextInput.hide');
-                          },
-                        );
-                        model.lastSearchQuery = controller.text;
-                        model.selectedId = e.id;
-                        model.updateFilter(e.id);
-                      });
-                    },
-                  ),
-                );
+                if (controller.text == '') {
+                  final suggestions = model.getHistorySuggestions();
+                  return suggestions.map((e) => ScheduleSearchSuggestionItem(itemName: e, onSelected: () {
+                    controller.closeView(e);
+                  },));
+                } else {
+                  final rawSuggestions =
+                      await model.getSearchSuggestions(controller.text);
+                  return rawSuggestions.map<ScheduleSearchSuggestionItem>(
+                    (e) => ScheduleSearchSuggestionItem(
+                      itemName: e.label,
+                      itemDescription: e.description,
+                      onSelected: () {
+                        setState(() {
+                          controller.closeView(e.label);
+                          //_searchFocusNode.unfocus();
+                          Future.delayed(
+                            const Duration(milliseconds: 50),
+                            () {
+                              SystemChannels.textInput
+                                  .invokeMethod('TextInput.hide');
+                            },
+                          );
+                          model.lastSearchQuery = controller.text;
+                          model.addHistoryItem(e.label);
+                          model.selectedId = e.id;
+                          model.updateFilter(e.id);
+                        });
+                      },
+                    ),
+                  );
+                }
               },
             ),
             if (model.scheduleLoader != null)

@@ -9,6 +9,7 @@ import 'package:unn_mobile/core/models/subject.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_schedule_service.dart';
 import 'package:unn_mobile/core/services/interfaces/offline_schedule_provider.dart';
+import 'package:unn_mobile/core/services/interfaces/schedule_search_history_service.dart';
 import 'package:unn_mobile/core/services/interfaces/search_id_on_portal_service.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
 
@@ -21,6 +22,8 @@ class ScheduleScreenViewModel extends BaseViewModel {
       Injector.appInstance.get<OfflineScheduleProvider>();
   final AuthorisationService _authorisationService =
       Injector.appInstance.get<AuthorisationService>();
+  final ScheduleSearchHistoryService _historyService =
+      Injector.appInstance.get<ScheduleSearchHistoryService>();
   String _currentUserId = '';
 
   String selectedId = '';
@@ -106,11 +109,12 @@ class ScheduleScreenViewModel extends BaseViewModel {
 
   Future<void> submitSearch(String query) async {
     if (query.isNotEmpty) {
-      var searchResult =
+      final searchResult =
           await _searchIdOnPortalService.findIDOnPortal(query, _idType);
       if (searchResult == null) {
         throw Exception('schedule search result was null');
       }
+      addHistoryItem(query);
       _filter = ScheduleFilter(_idType, searchResult[0].id, displayedWeek);
     } else {
       _filter = ScheduleFilter(_idType, _currentUserId, displayedWeek);
@@ -123,6 +127,8 @@ class ScheduleScreenViewModel extends BaseViewModel {
     notifyListeners();
   }
 
+  FutureOr<void> addHistoryItem(String query) => _historyService.pushToHistory(type: _idType, value: query);
+
   Future<List<ScheduleSearchResultItem>> getSearchSuggestions(
       String value) async {
     var suggestions =
@@ -131,6 +137,10 @@ class ScheduleScreenViewModel extends BaseViewModel {
       throw Exception('Received null from suggestions service');
     }
     return suggestions;
+  }
+
+  List<String> getHistorySuggestions() {
+    return _historyService.getHistory(_idType);
   }
 
   void init(IDType type,
