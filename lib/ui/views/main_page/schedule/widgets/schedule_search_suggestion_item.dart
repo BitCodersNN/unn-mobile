@@ -15,23 +15,15 @@ class ScheduleSearchSuggestionItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return ListTile(
-      title: Stack(
-        fit: StackFit.passthrough,
-        clipBehavior: Clip.none,
-        children: [
-          Positioned(
-            child: Text(itemName),
-          ),
-          if (itemDescription != null)
-            Positioned(
-              top: 20,
-              child: Text(
-                itemDescription!,
-                style: theme.textTheme.labelSmall,
-              ),
-            ),
-        ],
-      ),
+      shape: const Border(bottom: BorderSide(color: Colors.black12)),
+      visualDensity: VisualDensity.compact,
+      title: Text(itemName),
+      subtitle: itemDescription != null
+          ? Text(
+              itemDescription!,
+              style: theme.textTheme.labelSmall,
+            )
+          : null,
       onTap: onSelected,
     );
   }
