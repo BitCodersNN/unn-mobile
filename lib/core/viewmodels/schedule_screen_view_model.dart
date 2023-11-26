@@ -13,8 +13,8 @@ import 'package:unn_mobile/core/services/interfaces/search_id_on_portal_service.
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
 
 class ScheduleScreenViewModel extends BaseViewModel {
-  final GetScheduleService _getScheduleService =
-      Injector.appInstance.get<GetScheduleService>();
+  final GettingScheduleService _getScheduleService =
+      Injector.appInstance.get<GettingScheduleService>();
   final SearchIdOnPortalService _searchIdOnPortalService =
       Injector.appInstance.get<SearchIdOnPortalService>();
   final OfflineScheduleProvider _offlineScheduleProvider =
