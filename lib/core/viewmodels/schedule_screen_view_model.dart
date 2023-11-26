@@ -139,8 +139,8 @@ class ScheduleScreenViewModel extends BaseViewModel {
     return suggestions;
   }
 
-  List<String> getHistorySuggestions() {
-    return _historyService.getHistory(_idType);
+  Future<List<String>> getHistorySuggestions() async {
+    return await _historyService.getHistory(_idType);
   }
 
   void init(IDType type,

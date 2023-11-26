@@ -44,15 +44,12 @@ void registerDependencies() {
       () => AuthorisationRefreshServiceImpl());
   injector.registerSingleton<SearchIdOnPortalService>(
       () => SearchIdOnPortalServiceImpl());
-  injector
-      .registerSingleton<GettingScheduleService>(() => GettingScheduleServiceImpl());
+  injector.registerSingleton<GettingScheduleService>(
+      () => GettingScheduleServiceImpl());
   injector.registerSingleton<OfflineScheduleProvider>(
       () => OfflineScheduleProviderImpl());
-  injector.registerSingleton<ScheduleSearchHistoryService>(() {
-    final service = ScheduleSearchHistoryServiceImpl();
-    service.initFromStorage();
-    return service;
-  });
+  injector.registerSingleton<ScheduleSearchHistoryService>(
+      () => ScheduleSearchHistoryServiceImpl());
 
   injector.registerDependency(() => LoadingPageViewModel());
   injector.registerDependency(() => AuthPageViewModel());

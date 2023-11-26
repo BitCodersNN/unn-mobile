@@ -107,7 +107,7 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView>
               },
               suggestionsBuilder: (context, controller) async {
                 if (controller.text == '') {
-                  final suggestions = model.getHistorySuggestions();
+                  final suggestions = await model.getHistorySuggestions();
                   return suggestions.map((e) => ScheduleSearchSuggestionItem(itemName: e, onSelected: () {
                     controller.closeView(e);
                   },));
