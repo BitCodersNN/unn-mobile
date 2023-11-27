@@ -4,9 +4,11 @@ import 'dart:io';
 
 import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/misc/http_helper.dart';
+import 'package:unn_mobile/core/models/employee_data.dart';
 import 'package:unn_mobile/core/models/schedule_search_result_item.dart';
 import 'package:unn_mobile/core/models/schedule_filter.dart';
-import 'package:unn_mobile/core/services/interfaces/auth_data_provider.dart';
+import 'package:unn_mobile/core/models/student_data.dart';
+import 'package:unn_mobile/core/services/interfaces/getting_profile_of_current_user_service.dart';
 import 'package:unn_mobile/core/services/interfaces/search_id_on_portal_service.dart';
 
 class SearchIdOnPortalServiceImpl implements SearchIdOnPortalService {
@@ -20,29 +22,42 @@ class SearchIdOnPortalServiceImpl implements SearchIdOnPortalService {
   final String _id = 'id';
   final String _description = 'description';
 
+  Future<String?> _getIdOfLoggedInStudent(String uns) async{
+    final requstSender = HttpRequestSender(path: _ruzapi + _studentinfo, queryParams: {_uns: uns});
+
+     HttpClientResponse response;
+      try {
+        response = await requstSender.get();
+      } catch (e) {
+        log(e.toString());
+        return null;
+      }
+
+      final statusCode = response.statusCode;
+
+      if (statusCode != 200) {
+        return null;
+      }
+
+      Map<dynamic, dynamic> jsonMap = jsonDecode(await HttpRequestSender.responseToStringBody(response));
+
+      return jsonMap[_id];
+  }
+
   @override
   Future<String?> getIdOfLoggedInUser() async{
-    final authDataProvider =  Injector.appInstance.get<AuthDataProvider>();
-    final login = (await authDataProvider.getAuthData()).login.substring(1);
-    final requstSender = HttpRequestSender(path: _ruzapi + _studentinfo, queryParams: {_uns: login});
+    final gettingProfileOfCurrentUser =  Injector.appInstance.get<GettingProfileOfCurrentUser>();
+    final userData = await gettingProfileOfCurrentUser.getProfileOfCurrentUser();
 
-    HttpClientResponse response;
-    try {
-      response = await requstSender.get();
-    } catch (e) {
-      log(e.toString());
-      return null;
+    if (userData is EmployeeData) {
+      return userData.syncID;
     }
 
-    final statusCode = response.statusCode;
-
-    if (statusCode != 200) {
-      return null;
+    if (userData is StudentData) {
+      return _getIdOfLoggedInStudent(userData.login!.substring(1));
     }
 
-    Map<dynamic, dynamic> jsonMap = jsonDecode(await HttpRequestSender.responseToStringBody(response));
-
-    return jsonMap[_id];
+    return null;
   }
 
   @override

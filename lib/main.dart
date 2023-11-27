@@ -6,6 +6,7 @@ import 'package:unn_mobile/app.dart';
 import 'package:unn_mobile/core/services/implementations/auth_data_provider_impl.dart';
 import 'package:unn_mobile/core/services/implementations/authorisation_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/authorisation_refresh_service_impl.dart';
+import 'package:unn_mobile/core/services/implementations/getting_profile_of_current_user_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/getting_schedule_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/offline_schedule_provider_impl.dart';
 import 'package:unn_mobile/core/services/implementations/schedule_search_history_service_impl.dart';
@@ -14,6 +15,7 @@ import 'package:unn_mobile/core/services/implementations/storage_service_impl.da
 import 'package:unn_mobile/core/services/interfaces/auth_data_provider.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation_refresh_service.dart';
+import 'package:unn_mobile/core/services/interfaces/getting_profile_of_current_user_service.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_schedule_service.dart';
 import 'package:unn_mobile/core/services/interfaces/offline_schedule_provider.dart';
 import 'package:unn_mobile/core/services/interfaces/schedule_search_history_service.dart';
@@ -50,6 +52,8 @@ void registerDependencies() {
       () => OfflineScheduleProviderImpl());
   injector.registerSingleton<ScheduleSearchHistoryService>(
       () => ScheduleSearchHistoryServiceImpl());
+  injector.registerSingleton<GettingProfileOfCurrentUser>(
+      () => GettingProfileOfCurrentUserImpl());
 
   injector.registerDependency(() => LoadingPageViewModel());
   injector.registerDependency(() => AuthPageViewModel());
