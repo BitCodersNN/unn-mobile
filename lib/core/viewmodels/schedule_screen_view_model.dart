@@ -24,7 +24,7 @@ class ScheduleScreenViewModel extends BaseViewModel {
       Injector.appInstance.get<AuthorisationService>();
   final ScheduleSearchHistoryService _historyService =
       Injector.appInstance.get<ScheduleSearchHistoryService>();
-  String _currentUserId = '';
+  final String _currentUserId = '';
 
   String selectedId = '';
   String lastSearchQuery = '';
