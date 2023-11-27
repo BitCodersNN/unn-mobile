@@ -160,9 +160,8 @@ class ScheduleScreenViewModel extends BaseViewModel {
               if (value == null) {
                 throw Exception('Could not find current user. This is a bug');
               }
-              _currentUserId = value;
               _filter = ScheduleFilter(
-                  IDType.student, value, DateTimeRanges.currentWeek());
+                  value.$1, value.$2, DateTimeRanges.currentWeek());
               _updateScheduleLoader();
               notifyListeners();
             },
@@ -183,7 +182,7 @@ class ScheduleScreenViewModel extends BaseViewModel {
                 throw Exception('Could not find current user. This is a bug');
               }
               _filter = ScheduleFilter(
-                  IDType.student, value, DateTimeRanges.currentWeek());
+                  value.$1, value.$2, DateTimeRanges.currentWeek());
               _updateScheduleLoader();
               notifyListeners();
             },

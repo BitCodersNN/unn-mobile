@@ -45,16 +45,20 @@ class SearchIdOnPortalServiceImpl implements SearchIdOnPortalService {
   }
 
   @override
-  Future<String?> getIdOfLoggedInUser() async{
+  Future<(IDType, String)?> getIdOfLoggedInUser() async{
     final gettingProfileOfCurrentUser =  Injector.appInstance.get<GettingProfileOfCurrentUser>();
     final userData = await gettingProfileOfCurrentUser.getProfileOfCurrentUser();
 
     if (userData is EmployeeData) {
-      return userData.syncID;
+      return (IDType.person, userData.syncID);
     }
 
     if (userData is StudentData) {
-      return _getIdOfLoggedInStudent(userData.login!.substring(1));
+      final id = await _getIdOfLoggedInStudent(userData.login!.substring(1));
+      if (id == null) {
+        return null;
+      }
+      return (IDType.student, id);
     }
 
     return null;
