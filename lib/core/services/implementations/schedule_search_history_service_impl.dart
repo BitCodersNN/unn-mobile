@@ -9,20 +9,16 @@ import 'package:unn_mobile/core/services/interfaces/storage_service.dart';
 
 class ScheduleSearchHistoryServiceImpl implements ScheduleSearchHistoryService {
   final Map<IDType, Queue<String>> _historyQueues = {};
-  final Map<IDType, String> _storageKeys = {
-    IDType.student: 'student',
-    IDType.group: 'group',
-    IDType.person: 'person'
-  };
   final StorageService _storage = Injector.appInstance.get<StorageService>();
   final _storageKeySuffix = 'ScheduleSearchHistory';
+  final _maxHistoryItems = 5;
   bool _isInitialized = false;
 
   ScheduleSearchHistoryServiceImpl();
 
   Future<void> _initFromStorage() async {
-    for (final type in _storageKeys.keys) {
-      final key = _storageKeys[type]! + _storageKeySuffix;
+    for (final type in IDType.values) {
+      final key = type.name + _storageKeySuffix;
       if (!(await _storage.containsKey(key: key))) {
         _historyQueues.putIfAbsent(type, () => Queue());
         continue;
@@ -50,11 +46,11 @@ class ScheduleSearchHistoryServiceImpl implements ScheduleSearchHistoryService {
       {required IDType type, required String value}) async {
     _historyQueues[type]!.remove(value);
     _historyQueues[type]!.addFirst(value);
-    if (_historyQueues[type]!.length > 5) {
+    if (_historyQueues[type]!.length > _maxHistoryItems) {
       _historyQueues[type]!.removeLast();
     }
     await _storage.write(
-        key: _storageKeys[type]! + _storageKeySuffix,
+        key: type.name + _storageKeySuffix,
         value: jsonEncode(await getHistory(type)));
   }
 }
