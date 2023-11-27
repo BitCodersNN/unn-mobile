@@ -73,7 +73,7 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView>
       builder: (context, model, child) {
         return Column(
           children: [
-            SearchAnchor(
+            if(!model.offline) SearchAnchor(
               builder: (context, controller) {
                 return Padding(
                   padding: const EdgeInsets.all(20.0),
