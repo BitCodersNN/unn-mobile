@@ -32,6 +32,7 @@ class UserData {
   final String? _email;
   final String? _phone;
   final String _sex;
+  final String _urlPhotoFirstPart = 'https://portal.unn.ru';
   final String? _urlPhoto;
 
   UserData(this._login, this._fullname, this._email, this._phone, this._sex,
@@ -45,7 +46,7 @@ class UserData {
   String? get email => _email;
   String? get phone => _phone;
   String get sex => _sex;
-  String? get urlPhoto => _urlPhoto;
+  String? get urlPhoto => _urlPhoto != null ? _urlPhotoFirstPart + _urlPhoto!.substring(1) : _urlPhoto;
 
   factory UserData.fromJson(Map<String, Object?> jsonMap) {
     final userJsonMap =
