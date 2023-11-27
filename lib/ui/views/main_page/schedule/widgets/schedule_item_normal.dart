@@ -62,10 +62,13 @@ class ScheduleItemNormal extends StatelessWidget {
                         color: ligtherTextColor,
                         size: 16,
                       ),
-                      Text(
-                        '${subject.address.auditorium}/${subject.address.building}',
-                        style: theme.textTheme.labelLarge!
-                            .copyWith(color: ligtherTextColor),
+                      Expanded(
+                        child: Text(
+                          '${subject.address.auditorium}/${subject.address.building}',
+                          style: theme.textTheme.labelLarge!
+                              .copyWith(color: ligtherTextColor),
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
                     ],
                   ),
