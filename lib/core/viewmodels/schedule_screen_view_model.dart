@@ -86,7 +86,7 @@ class ScheduleScreenViewModel extends BaseViewModel {
     if (schedule == null) {
       throw Exception('Schedule was null');
     }
-    var result = SplayTreeMap<int, List<Subject>>();
+    final result = SplayTreeMap<int, List<Subject>>();
     for (Subject subject in schedule) {
       if (!result.keys.contains(subject.dateTimeRange.start.weekday)) {
         result.addEntries([
@@ -119,7 +119,7 @@ class ScheduleScreenViewModel extends BaseViewModel {
     } else {
       _filter = ScheduleFilter(_idType, _currentUserId, displayedWeek);
     }
-    var loader = _getScheduleLoader();
+    final loader = _getScheduleLoader();
     _scheduleLoader = loader;
     _scheduleLoader!.then(
       _invokeOnScheduleLoaded,
@@ -131,7 +131,7 @@ class ScheduleScreenViewModel extends BaseViewModel {
 
   Future<List<ScheduleSearchResultItem>> getSearchSuggestions(
       String value) async {
-    var suggestions =
+    final suggestions =
         await _searchIdOnPortalService.findIDOnPortal(value, _idType);
     if (suggestions == null) {
       throw Exception('Received null from suggestions service');
