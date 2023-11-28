@@ -36,7 +36,12 @@ flutter:
   assets:
     - assets/images/logo.png
     - assets/images/auth-logo.svg
-    
+    - assets/images/authors/dmitry.png
+    - assets/images/authors/vitaly.png
+    - assets/images/authors/michail.png
+    - assets/images/authors/darya.png
+    - assets/images/authors/andrew.png
+
   fonts:
     - family: LetoSans
       fonts:
