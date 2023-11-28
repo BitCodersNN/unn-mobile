@@ -4,6 +4,7 @@ enum IDType{
   group,
   student,
   person,
+  lecturer,
   auditoriun,
 }
 
