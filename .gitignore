@@ -42,7 +42,7 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
-
+/android/key.properties
 # Files and directories created by pub
 .dart_tool/
 # If you're building an application, you may want to check-in your pubspec.lock
