@@ -5,8 +5,10 @@ import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/misc/date_time_ranges.dart';
 import 'package:unn_mobile/core/models/schedule_filter.dart';
 import 'package:unn_mobile/core/models/schedule_search_result_item.dart';
+import 'package:unn_mobile/core/models/student_data.dart';
 import 'package:unn_mobile/core/models/subject.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
+import 'package:unn_mobile/core/services/interfaces/getting_profile_of_current_user_service.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_schedule_service.dart';
 import 'package:unn_mobile/core/services/interfaces/offline_schedule_provider.dart';
 import 'package:unn_mobile/core/services/interfaces/schedule_search_history_service.dart';
@@ -18,6 +20,8 @@ class ScheduleScreenViewModel extends BaseViewModel {
       Injector.appInstance.get<GettingScheduleService>();
   final SearchIdOnPortalService _searchIdOnPortalService =
       Injector.appInstance.get<SearchIdOnPortalService>();
+  final GettingProfileOfCurrentUser _gettingProfileOfCurrentUser =
+      Injector.appInstance.get<GettingProfileOfCurrentUser>();
   final OfflineScheduleProvider _offlineScheduleProvider =
       Injector.appInstance.get<OfflineScheduleProvider>();
   final AuthorisationService _authorisationService =
@@ -79,7 +83,8 @@ class ScheduleScreenViewModel extends BaseViewModel {
   }
 
   Future<Map<int, List<Subject>>> _getScheduleLoader() async {
-    final schedule = offline
+    final List<Subject>? schedule;
+    schedule = offline
         ? await _offlineScheduleProvider.loadSchedule()
         : await _getScheduleService.getSchedule(_filter);
 
@@ -127,7 +132,8 @@ class ScheduleScreenViewModel extends BaseViewModel {
     notifyListeners();
   }
 
-  FutureOr<void> addHistoryItem(String query) => _historyService.pushToHistory(type: _idType, value: query);
+  FutureOr<void> addHistoryItem(String query) =>
+      _historyService.pushToHistory(type: _idType, value: query);
 
   Future<List<ScheduleSearchResultItem>> getSearchSuggestions(
       String value) async {
@@ -154,44 +160,76 @@ class ScheduleScreenViewModel extends BaseViewModel {
         if (!_authorisationService.isAuthorised) {
           _offline = true;
           _updateScheduleLoader();
-        } else {
-          _searchIdOnPortalService.getIdOfLoggedInUser().then(
-            (value) async {
-              if (value == null) {
-                throw Exception('Could not find current user. This is a bug');
-              }
+          break;
+        }
+        _searchIdOnPortalService.getIdOfLoggedInUser().then(
+          (value) async {
+            if (value == null) {
+              throw Exception('Could not find current user. This is a bug');
+            }
+            if (value.$1 == IDType.student) {
               _filter = ScheduleFilter(
                   value.$1, value.$2, DateTimeRanges.currentWeek());
               _updateScheduleLoader();
-              notifyListeners();
-            },
-          );
-        }
+            }
+            
+            notifyListeners();
+          },
+        );
         setState(ViewState.idle);
         break;
+
       case IDType.group:
         _searchPlaceholderText = 'Название группы';
         setState(ViewState.busy);
         if (!_authorisationService.isAuthorised) {
           _offline = true;
           _updateScheduleLoader();
-        } else {
-          _searchIdOnPortalService.getIdOfLoggedInUser().then(
-            (value) async {
-              if (value == null) {
-                throw Exception('Could not find current user. This is a bug');
-              }
-              _filter = ScheduleFilter(
-                  value.$1, value.$2, DateTimeRanges.currentWeek());
-              _updateScheduleLoader();
-              notifyListeners();
-            },
-          );
+          break;
         }
+
+        _gettingProfileOfCurrentUser.getProfileOfCurrentUser().then(
+          (value) async {
+            if (value == null) {
+              throw Exception('Could not find current user. This is a bug');
+            }
+            if (value is StudentData) {
+              final groupID = await _searchIdOnPortalService.findIDOnPortal(
+                  value.eduGroup, IDType.group);
+              _filter = ScheduleFilter(IDType.group, groupID!.first.id,
+                  DateTimeRanges.currentWeek());
+              _updateScheduleLoader();
+            }
+            notifyListeners();
+          },
+        );
+
         setState(ViewState.idle);
         break;
+
       case IDType.person:
         _searchPlaceholderText = 'Имя преподавателя';
+        setState(ViewState.busy);
+        if (!_authorisationService.isAuthorised) {
+          _offline = true;
+          _updateScheduleLoader();
+          break;
+        }
+        _searchIdOnPortalService.getIdOfLoggedInUser().then(
+          (value) async {
+            if (value == null) {
+              throw Exception('Could not find current user. This is a bug');
+            }
+
+            if (value.$1 == IDType.person) {
+              _filter = ScheduleFilter(value.$1, value.$2, DateTimeRanges.currentWeek());
+              _updateScheduleLoader();
+            }
+            notifyListeners();
+          },
+        );
+        setState(ViewState.idle);
+        break;
       default:
         break;
     }
