@@ -48,6 +48,60 @@ class ScheduleScreenViewModel extends BaseViewModel {
 
   void Function(Map<int, List<Subject>>)? _onScheduleLoaded;
 
+  bool _initGeneralPart(String placeholderText) {
+    _searchPlaceholderText = placeholderText;
+    setState(ViewState.busy);
+    if (!_authorisationService.isAuthorised) {
+      _offline = true;
+      _updateScheduleLoader();
+      return true;
+    }
+    return false;
+  }
+
+  void _initHuman(String placeholderText, IDType idType) {
+    if (_initGeneralPart(placeholderText)) {
+      return;
+    }
+    _searchIdOnPortalService.getIdOfLoggedInUser().then(
+      (value) async {
+        if (value == null) {
+          throw Exception('Could not find current user. This is a bug');
+        }
+        if (value.$1 == idType) {
+          _filter = ScheduleFilter(
+              value.$1, value.$2, DateTimeRanges.currentWeek());
+          _updateScheduleLoader();
+        }
+        notifyListeners();
+      },
+    );
+    setState(ViewState.idle);
+  }
+
+  void _initGroup() {
+    if (_initGeneralPart('Название группы')) {
+      return;
+    }
+    _gettingProfileOfCurrentUser.getProfileOfCurrentUser().then(
+      (value) async {
+        if (value == null) {
+          throw Exception('Could not find current user. This is a bug');
+        }
+        if (value is StudentData) {
+          final groupID = await _searchIdOnPortalService.findIDOnPortal(
+              value.eduGroup, IDType.group);
+          _filter = ScheduleFilter(IDType.group, groupID!.first.id,
+              DateTimeRanges.currentWeek());
+          _updateScheduleLoader();
+        }
+        notifyListeners();
+      },
+    );
+
+    setState(ViewState.idle);
+  }
+
   Future<void> incrementWeek() async {
     displayedWeekOffset++;
     _filter = ScheduleFilter(
@@ -155,80 +209,13 @@ class ScheduleScreenViewModel extends BaseViewModel {
     _idType = type;
     switch (type) {
       case IDType.student:
-        _searchPlaceholderText = 'Имя студента';
-        setState(ViewState.busy);
-        if (!_authorisationService.isAuthorised) {
-          _offline = true;
-          _updateScheduleLoader();
-          break;
-        }
-        _searchIdOnPortalService.getIdOfLoggedInUser().then(
-          (value) async {
-            if (value == null) {
-              throw Exception('Could not find current user. This is a bug');
-            }
-            if (value.$1 == IDType.student) {
-              _filter = ScheduleFilter(
-                  value.$1, value.$2, DateTimeRanges.currentWeek());
-              _updateScheduleLoader();
-            }
-            
-            notifyListeners();
-          },
-        );
-        setState(ViewState.idle);
+        _initHuman('Имя студента', IDType.student);
         break;
-
       case IDType.group:
-        _searchPlaceholderText = 'Название группы';
-        setState(ViewState.busy);
-        if (!_authorisationService.isAuthorised) {
-          _offline = true;
-          _updateScheduleLoader();
-          break;
-        }
-
-        _gettingProfileOfCurrentUser.getProfileOfCurrentUser().then(
-          (value) async {
-            if (value == null) {
-              throw Exception('Could not find current user. This is a bug');
-            }
-            if (value is StudentData) {
-              final groupID = await _searchIdOnPortalService.findIDOnPortal(
-                  value.eduGroup, IDType.group);
-              _filter = ScheduleFilter(IDType.group, groupID!.first.id,
-                  DateTimeRanges.currentWeek());
-              _updateScheduleLoader();
-            }
-            notifyListeners();
-          },
-        );
-
-        setState(ViewState.idle);
+        _initGroup();
         break;
-
       case IDType.person:
-        _searchPlaceholderText = 'Имя преподавателя';
-        setState(ViewState.busy);
-        if (!_authorisationService.isAuthorised) {
-          _offline = true;
-          _updateScheduleLoader();
-          break;
-        }
-        _searchIdOnPortalService.getIdOfLoggedInUser().then(
-          (value) async {
-            if (value == null) {
-              throw Exception('Could not find current user. This is a bug');
-            }
-
-            if (value.$1 == IDType.person) {
-              _filter = ScheduleFilter(value.$1, value.$2, DateTimeRanges.currentWeek());
-              _updateScheduleLoader();
-            }
-            notifyListeners();
-          },
-        );
-        setState(ViewState.idle);
+        _initHuman('Имя преподавателя', IDType.person);
         break;
       default:
         break;
