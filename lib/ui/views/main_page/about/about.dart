@@ -16,7 +16,7 @@ class AboutScreenView extends StatelessWidget {
   Widget build(BuildContext context) {
     return SingleChildScrollView(
         child: Padding(
-      padding: const EdgeInsets.only(top: 15),
+      padding: const EdgeInsets.only(top: 15, bottom: 100),
       child: Column(
         children: [
           Column(
@@ -31,7 +31,7 @@ class AboutScreenView extends StatelessWidget {
               fontFamily: "Inter",
               fontSize: 13,
             ),
-          )
+          ),
         ],
       ),
     ));
