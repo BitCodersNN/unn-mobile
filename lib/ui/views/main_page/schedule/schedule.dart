@@ -40,6 +40,9 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView>
     return Column(
       children: [
         TabBar(
+          indicatorSize: TabBarIndicatorSize.label,
+          tabAlignment: TabAlignment.center,
+          isScrollable: true,
           tabs: const [
             Tab(
               text: 'Студент',
@@ -52,7 +55,6 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView>
             ),
           ],
           controller: _tabController,
-          indicatorSize: TabBarIndicatorSize.tab,
         ),
         Expanded(
           child: TabBarView(
