@@ -86,6 +86,7 @@ class _MainPageState extends State<MainPage> {
           ),
         );
       },
+      onModelReady: (model) => model.init(),
     );
   }
 
