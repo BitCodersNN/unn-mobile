@@ -23,6 +23,7 @@ dependencies:
   permission_handler_apple: ^9.2.0
   permission_handler_platform_interface: ^4.0.0
   scroll_to_index: ^3.0.1
+  flutter_native_splash: ^2.3.6
 
 
 dev_dependencies:

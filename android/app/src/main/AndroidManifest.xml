@@ -9,7 +9,7 @@
         </intent>
     </queries>
     <application
-        android:label="unn_mobile"
+        android:label="ННГУ"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
