@@ -15,6 +15,7 @@ class MainPageDrawer extends StatelessWidget {
     Icons.account_tree,
     Icons.shelves,
     Icons.credit_card,
+    Icons.info,
   ];
   final void Function(int)? onDestinationSelected;
   final List<Widget> children = [];
