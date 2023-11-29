@@ -7,7 +7,7 @@ import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
 class MainPageViewModel extends BaseViewModel {
   final GettingProfileOfCurrentUser _currentUser = Injector.appInstance.get<GettingProfileOfCurrentUser>();
   int _selectedDrawerItem = 0;
-  int _selectedBarItem = 0;
+  int _selectedBarItem = 1;
   bool _isDrawerItemSelected = false;
   String _userNameAndSurname = '';
   String _userGroup = '';
