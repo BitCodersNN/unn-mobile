@@ -30,7 +30,7 @@ class LoadingPageViewModel extends BaseViewModel {
   void _goToScreen(context, _TypeScreen typeScreen) {
     final routes = switch (typeScreen) {
       _TypeScreen.authScreen => Routes.authPage,
-      _TypeScreen.mainScreen => '${Routes.mainPagePrefix}feed',
+      _TypeScreen.mainScreen => Routes.mainPagePrefix,
     };
     Navigator.of(context!).pushNamedAndRemoveUntil(routes, (route) => false);
   }
