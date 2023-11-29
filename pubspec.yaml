@@ -23,12 +23,14 @@ dependencies:
   permission_handler_apple: ^9.2.0
   permission_handler_platform_interface: ^4.0.0
   scroll_to_index: ^3.0.1
+  flutter_native_splash: ^2.3.6
 
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^2.0.0
+  flutter_launcher_icons: ^0.13.1
 
 flutter:
   uses-material-design: true
@@ -36,7 +38,12 @@ flutter:
   assets:
     - assets/images/logo.png
     - assets/images/auth-logo.svg
-    
+    - assets/images/authors/dmitry.png
+    - assets/images/authors/vitaly.png
+    - assets/images/authors/michail.png
+    - assets/images/authors/darya.png
+    - assets/images/authors/andrew.png
+
   fonts:
     - family: LetoSans
       fonts:
@@ -47,3 +54,11 @@ flutter:
         - asset: assets/fonts/Inter-Regular.ttf
         - asset: assets/fonts/Inter-Bold.ttf
           weight: 700
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/images/icon.png"
+  min_sdk_android: 19
+  remove_alpha_ios: true
+

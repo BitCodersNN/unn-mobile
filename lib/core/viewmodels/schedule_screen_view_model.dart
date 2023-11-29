@@ -15,6 +15,11 @@ import 'package:unn_mobile/core/services/interfaces/schedule_search_history_serv
 import 'package:unn_mobile/core/services/interfaces/search_id_on_portal_service.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
 
+
+class _ExclusionID {
+  static const _vacancy = (IDType.lecturer, '26579');
+}
+
 class ScheduleScreenViewModel extends BaseViewModel {
   final GettingScheduleService _getScheduleService =
       Injector.appInstance.get<GettingScheduleService>();
@@ -137,8 +142,11 @@ class ScheduleScreenViewModel extends BaseViewModel {
   }
 
   Future<Map<int, List<Subject>>> _getScheduleLoader() async {
-    final List<Subject>? schedule;
-    schedule = offline
+    if (_filter.id == '-1') {
+      _filter = ScheduleFilter(_ExclusionID._vacancy.$1, _ExclusionID._vacancy.$2, displayedWeek);
+    }
+
+    final schedule = offline
         ? await _offlineScheduleProvider.loadSchedule()
         : await _getScheduleService.getSchedule(_filter);
 
@@ -178,6 +186,7 @@ class ScheduleScreenViewModel extends BaseViewModel {
     } else {
       _filter = ScheduleFilter(_idType, _currentUserId, displayedWeek);
     }
+
     final loader = _getScheduleLoader();
     _scheduleLoader = loader;
     _scheduleLoader!.then(
@@ -191,6 +200,7 @@ class ScheduleScreenViewModel extends BaseViewModel {
 
   Future<List<ScheduleSearchResultItem>> getSearchSuggestions(
       String value) async {
+
     final suggestions =
         await _searchIdOnPortalService.findIDOnPortal(value, _idType);
     if (suggestions == null) {
