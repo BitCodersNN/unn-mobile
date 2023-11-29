@@ -21,7 +21,10 @@ class ScheduleItemNormal extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 8.0),
       child: Container(
         decoration: BoxDecoration(
-          borderRadius: const BorderRadius.all(Radius.circular(16)),
+          borderRadius: const BorderRadius.only(
+            topRight: Radius.circular(16),
+            bottomRight: Radius.circular(16),
+          ),
           shape: BoxShape.rectangle,
           color: getSurfaceColor(theme),
         ),
@@ -107,7 +110,8 @@ class ScheduleItemNormal extends StatelessWidget {
 
   Color getSurfaceColor(ThemeData theme) {
     final extraColors = theme.extension<UnnMobileColors>()!;
-    if (DateTime.now().isAfter(subject.dateTimeRange.start.subtract(const Duration(minutes: 5))) &&
+    if (DateTime.now().isAfter(
+            subject.dateTimeRange.start.subtract(const Duration(minutes: 5))) &&
         DateTime.now().isBefore(subject.dateTimeRange.end)) {
       return extraColors.scheduleSubjectHighlight!;
     }
