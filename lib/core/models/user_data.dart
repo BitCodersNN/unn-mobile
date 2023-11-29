@@ -35,7 +35,7 @@ class UserData {
   final String _urlPhotoFirstPart = 'https://portal.unn.ru';
   final String? _urlPhoto;
 
-  UserData(this._login, this._fullname, this._email, this._phone, this._sex,
+  const UserData(this._login, this._fullname, this._email, this._phone, this._sex,
       this._urlPhoto);
 
   String? get login => _login;
