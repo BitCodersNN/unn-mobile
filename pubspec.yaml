@@ -24,7 +24,7 @@ dependencies:
   permission_handler_platform_interface: ^4.0.0
   scroll_to_index: ^3.0.1
   flutter_native_splash: ^2.3.6
-
+  image: ^4.1.3
 
 dev_dependencies:
   flutter_test:
