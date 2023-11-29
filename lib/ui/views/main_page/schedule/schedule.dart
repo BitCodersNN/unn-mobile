@@ -183,7 +183,7 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView>
       ThemeData theme,
       AsyncSnapshot<Map<int, List<Subject>>> snapshot,
       ScheduleScreenViewModel model) {
-    if (!snapshot.hasData) {
+    if (!snapshot.hasData || model.state == ViewState.busy) {
       return const Expanded(
         child: Center(
           child: SizedBox(
