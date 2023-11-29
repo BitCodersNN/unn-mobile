@@ -144,6 +144,7 @@ class ScheduleScreenViewModel extends BaseViewModel {
   }
 
   Future<Map<int, List<Subject>>> _getScheduleLoader() async {
+    setState(ViewState.busy);
     if (_filter.id == '-1') {
       _filter = ScheduleFilter(_ExclusionID._vacancy.idType, _ExclusionID._vacancy.id, displayedWeek);
     }
@@ -167,6 +168,7 @@ class ScheduleScreenViewModel extends BaseViewModel {
     if (!offline && displayedWeekOffset == 0) {
       _offlineScheduleProvider.saveSchedule(schedule);
     }
+    setState(ViewState.idle);
     return result;
   }
 
@@ -217,7 +219,6 @@ class ScheduleScreenViewModel extends BaseViewModel {
 
   void init(IDType type,
       {void Function(Map<int, List<Subject>> schedule)? onScheduleLoaded}) {
-    setState(ViewState.busy);
     _onScheduleLoaded = onScheduleLoaded;
     _idType = type;
     switch (type) {
@@ -233,7 +234,6 @@ class ScheduleScreenViewModel extends BaseViewModel {
       default:
         break;
     }
-    setState(ViewState.idle);
   }
 
   void _updateScheduleLoader() {
