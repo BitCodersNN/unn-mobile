@@ -4,8 +4,8 @@ import 'package:unn_mobile/core/models/schedule_filter.dart';
 abstract interface class SearchIdOnPortalService {
   /// Получение ID текущего пользователя, которое используется на unn-portal
   /// 
-  /// Возращает ([IDType], ID) или 'null', если не вышло получить ответ от портала или statusCode не равен 200
-  Future<(IDType, String)?> getIdOfLoggedInUser();
+  /// Возращает [IDForSchedule] или 'null', если не вышло получить ответ от портала или statusCode не равен 200
+  Future<IDForSchedule?> getIdOfLoggedInUser();
   /// Получения ID, которое используется на unn-portal
   ///
   /// [value]: Значение, по которому ищется ID
