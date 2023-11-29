@@ -33,6 +33,11 @@ class ScheduleScreenViewModel extends BaseViewModel {
       Injector.appInstance.get<AuthorisationService>();
   final ScheduleSearchHistoryService _historyService =
       Injector.appInstance.get<ScheduleSearchHistoryService>();
+
+  final String _studentNameText = 'Имя студента';
+  final String _lecturerNameText = 'Имя преподавателя';
+  final String _groupNameText = 'Название группы';
+
   final String _currentUserId = '';
 
   String selectedId = '';
@@ -53,9 +58,7 @@ class ScheduleScreenViewModel extends BaseViewModel {
 
   void Function(Map<int, List<Subject>>)? _onScheduleLoaded;
 
-  bool _initGeneralPart(String placeholderText) {
-    _searchPlaceholderText = placeholderText;
-    setState(ViewState.busy);
+  bool _chekOffline() {
     if (!_authorisationService.isAuthorised) {
       _offline = true;
       _updateScheduleLoader();
@@ -65,7 +68,8 @@ class ScheduleScreenViewModel extends BaseViewModel {
   }
 
   void _initHuman(String placeholderText, IDType idType) {
-    if (_initGeneralPart(placeholderText)) {
+    _searchPlaceholderText = placeholderText;
+    if (_chekOffline()) {
       return;
     }
     _searchIdOnPortalService.getIdOfLoggedInUser().then(
@@ -81,11 +85,11 @@ class ScheduleScreenViewModel extends BaseViewModel {
         notifyListeners();
       },
     );
-    setState(ViewState.idle);
   }
 
   void _initGroup() {
-    if (_initGeneralPart('Название группы')) {
+    _searchPlaceholderText = _groupNameText;
+    if (_chekOffline()) {
       return;
     }
     _gettingProfileOfCurrentUser.getProfileOfCurrentUser().then(
@@ -103,8 +107,6 @@ class ScheduleScreenViewModel extends BaseViewModel {
         notifyListeners();
       },
     );
-
-    setState(ViewState.idle);
   }
 
   Future<void> incrementWeek() async {
@@ -179,7 +181,7 @@ class ScheduleScreenViewModel extends BaseViewModel {
       final searchResult =
           await _searchIdOnPortalService.findIDOnPortal(query, _idType);
       if (searchResult == null) {
-        throw Exception('schedule search result was null');
+        throw Exception('Schedule search result was null');
       }
       addHistoryItem(query);
       _filter = ScheduleFilter(_idType, searchResult[0].id, displayedWeek);
@@ -215,21 +217,23 @@ class ScheduleScreenViewModel extends BaseViewModel {
 
   void init(IDType type,
       {void Function(Map<int, List<Subject>> schedule)? onScheduleLoaded}) {
+    setState(ViewState.busy);
     _onScheduleLoaded = onScheduleLoaded;
     _idType = type;
     switch (type) {
       case IDType.student:
-        _initHuman('Имя студента', IDType.student);
+        _initHuman(_studentNameText, IDType.student);
         break;
       case IDType.group:
         _initGroup();
         break;
       case IDType.person:
-        _initHuman('Имя преподавателя', IDType.person);
+        _initHuman(_lecturerNameText, IDType.person);
         break;
       default:
         break;
     }
+    setState(ViewState.idle);
   }
 
   void _updateScheduleLoader() {
