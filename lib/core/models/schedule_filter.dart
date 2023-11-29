@@ -8,14 +8,25 @@ enum IDType{
   auditoriun,
 }
 
-class ScheduleFilter{
+class IDForSchedule {
   final IDType _idType;
   final String _id;
-  final DateTimeRange _dateTimeRange;
 
-  ScheduleFilter(this._idType, this._id, this._dateTimeRange);
+  const IDForSchedule(this._idType, this._id);
 
   IDType get idType => _idType;
   String get id => _id;
+}
+
+class ScheduleFilter{
+  final DateTimeRange _dateTimeRange;
+  late final IDForSchedule _id;
+
+  ScheduleFilter(idType, id, this._dateTimeRange) {
+    _id = IDForSchedule(idType, id);
+  }
+
+  IDType get idType => _id._idType;
+  String get id => _id._id;
   DateTimeRange get dateTimeRange => _dateTimeRange;
 }

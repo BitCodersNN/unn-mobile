@@ -17,7 +17,7 @@ import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
 
 
 class _ExclusionID {
-  static const _vacancy = (IDType.lecturer, '26579');
+  static const _vacancy = IDForSchedule(IDType.lecturer, '26579');
 }
 
 class ScheduleScreenViewModel extends BaseViewModel {
@@ -77,9 +77,9 @@ class ScheduleScreenViewModel extends BaseViewModel {
         if (value == null) {
           throw Exception('Could not find current user. This is a bug');
         }
-        if (value.$1 == idType) {
+        if (value.idType == idType) {
           _filter = ScheduleFilter(
-              value.$1, value.$2, DateTimeRanges.currentWeek());
+              value.idType, value.id, DateTimeRanges.currentWeek());
           _updateScheduleLoader();
         }
         notifyListeners();
@@ -145,7 +145,7 @@ class ScheduleScreenViewModel extends BaseViewModel {
 
   Future<Map<int, List<Subject>>> _getScheduleLoader() async {
     if (_filter.id == '-1') {
-      _filter = ScheduleFilter(_ExclusionID._vacancy.$1, _ExclusionID._vacancy.$2, displayedWeek);
+      _filter = ScheduleFilter(_ExclusionID._vacancy.idType, _ExclusionID._vacancy.id, displayedWeek);
     }
 
     final schedule = offline
