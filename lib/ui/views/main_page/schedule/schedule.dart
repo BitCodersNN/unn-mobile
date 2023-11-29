@@ -265,10 +265,10 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView>
                               subject:
                                   snapshot.data!.values.elementAt(index)[i],
                               even: i % 2 == 0),
-                        if (index == snapshot.data!.length - 1)
+                        /*if (index == snapshot.data!.length - 1)
                           const SizedBox(
                             height: 80,
-                          )
+                          )*/
                       ],
                     ),
                   ),

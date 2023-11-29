@@ -45,7 +45,7 @@ class _MainPageState extends State<MainPage> {
           key: scaffoldKey,
           appBar: getCurrentAppBar(model, context),
           drawerEdgeDragWidth: MediaQuery.of(context).size.width,
-          extendBody: true,
+          extendBody: false,
           body: Navigator(
             key: _navigatorKey,
             initialRoute: widget.subroute,
@@ -95,10 +95,10 @@ class _MainPageState extends State<MainPage> {
     return AppBar(
       title: Text(model.selectedScreenName),
       backgroundColor: theme.appBarTheme.backgroundColor,
-      actions: [
+      /*actions: [
         IconButton(onPressed: () {}, icon: const Icon(Icons.notifications)),
         IconButton(onPressed: () {}, icon: const Icon(Icons.search)),
-      ],
+      ],*/
     );
   }
 }
