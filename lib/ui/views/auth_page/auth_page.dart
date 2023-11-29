@@ -248,7 +248,7 @@ class AuthPageWithState extends State<AuthPage> {
     return Padding(
       padding: const EdgeInsets.only(top: 12),
       child: Text(
-        "Забыли пароль?",
+        '',//"Забыли пароль?",
         style: _baseTextStyle(
             textColor: const Color.fromRGBO(57, 71, 86, 1.0)
         ),
