@@ -52,7 +52,8 @@ void registerDependencies() {
       () => OfflineScheduleProviderImpl());
   injector.registerSingleton<ScheduleSearchHistoryService>(
       () => ScheduleSearchHistoryServiceImpl());
-  injector.registerSingleton<GettingProfileOfCurrentUser>(() => GettingProfileOfCurrentUserImpl());
+  injector.registerSingleton<GettingProfileOfCurrentUser>(
+      () => GettingProfileOfCurrentUserImpl());
 
   injector.registerDependency(() => LoadingPageViewModel());
   injector.registerDependency(() => AuthPageViewModel());

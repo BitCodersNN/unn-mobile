@@ -5,8 +5,10 @@ import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/misc/date_time_ranges.dart';
 import 'package:unn_mobile/core/models/schedule_filter.dart';
 import 'package:unn_mobile/core/models/schedule_search_result_item.dart';
+import 'package:unn_mobile/core/models/student_data.dart';
 import 'package:unn_mobile/core/models/subject.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
+import 'package:unn_mobile/core/services/interfaces/getting_profile_of_current_user_service.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_schedule_service.dart';
 import 'package:unn_mobile/core/services/interfaces/offline_schedule_provider.dart';
 import 'package:unn_mobile/core/services/interfaces/schedule_search_history_service.dart';
@@ -23,13 +25,20 @@ class ScheduleScreenViewModel extends BaseViewModel {
       Injector.appInstance.get<GettingScheduleService>();
   final SearchIdOnPortalService _searchIdOnPortalService =
       Injector.appInstance.get<SearchIdOnPortalService>();
+  final GettingProfileOfCurrentUser _gettingProfileOfCurrentUser =
+      Injector.appInstance.get<GettingProfileOfCurrentUser>();
   final OfflineScheduleProvider _offlineScheduleProvider =
       Injector.appInstance.get<OfflineScheduleProvider>();
   final AuthorisationService _authorisationService =
       Injector.appInstance.get<AuthorisationService>();
   final ScheduleSearchHistoryService _historyService =
       Injector.appInstance.get<ScheduleSearchHistoryService>();
-  String _currentUserId = '';
+
+  final String _studentNameText = 'Имя студента';
+  final String _lecturerNameText = 'Имя преподавателя';
+  final String _groupNameText = 'Название группы';
+
+  final String _currentUserId = '';
 
   String selectedId = '';
   String lastSearchQuery = '';
@@ -48,6 +57,57 @@ class ScheduleScreenViewModel extends BaseViewModel {
   ScheduleFilter get filter => _filter;
 
   void Function(Map<int, List<Subject>>)? _onScheduleLoaded;
+
+  bool _chekOffline() {
+    if (!_authorisationService.isAuthorised) {
+      _offline = true;
+      _updateScheduleLoader();
+      return true;
+    }
+    return false;
+  }
+
+  void _initHuman(String placeholderText, IDType idType) {
+    _searchPlaceholderText = placeholderText;
+    if (_chekOffline()) {
+      return;
+    }
+    _searchIdOnPortalService.getIdOfLoggedInUser().then(
+      (value) async {
+        if (value == null) {
+          throw Exception('Could not find current user. This is a bug');
+        }
+        if (value.$1 == idType) {
+          _filter = ScheduleFilter(
+              value.$1, value.$2, DateTimeRanges.currentWeek());
+          _updateScheduleLoader();
+        }
+        notifyListeners();
+      },
+    );
+  }
+
+  void _initGroup() {
+    _searchPlaceholderText = _groupNameText;
+    if (_chekOffline()) {
+      return;
+    }
+    _gettingProfileOfCurrentUser.getProfileOfCurrentUser().then(
+      (value) async {
+        if (value == null) {
+          throw Exception('Could not find current user. This is a bug');
+        }
+        if (value is StudentData) {
+          final groupID = await _searchIdOnPortalService.findIDOnPortal(
+              value.eduGroup, IDType.group);
+          _filter = ScheduleFilter(IDType.group, groupID!.first.id,
+              DateTimeRanges.currentWeek());
+          _updateScheduleLoader();
+        }
+        notifyListeners();
+      },
+    );
+  }
 
   Future<void> incrementWeek() async {
     displayedWeekOffset++;
@@ -121,7 +181,7 @@ class ScheduleScreenViewModel extends BaseViewModel {
       final searchResult =
           await _searchIdOnPortalService.findIDOnPortal(query, _idType);
       if (searchResult == null) {
-        throw Exception('schedule search result was null');
+        throw Exception('Schedule search result was null');
       }
       addHistoryItem(query);
       _filter = ScheduleFilter(_idType, searchResult[0].id, displayedWeek);
@@ -137,7 +197,8 @@ class ScheduleScreenViewModel extends BaseViewModel {
     notifyListeners();
   }
 
-  FutureOr<void> addHistoryItem(String query) => _historyService.pushToHistory(type: _idType, value: query);
+  FutureOr<void> addHistoryItem(String query) =>
+      _historyService.pushToHistory(type: _idType, value: query);
 
   Future<List<ScheduleSearchResultItem>> getSearchSuggestions(
       String value) async {
@@ -156,57 +217,23 @@ class ScheduleScreenViewModel extends BaseViewModel {
 
   void init(IDType type,
       {void Function(Map<int, List<Subject>> schedule)? onScheduleLoaded}) {
+    setState(ViewState.busy);
     _onScheduleLoaded = onScheduleLoaded;
     _idType = type;
     switch (type) {
       case IDType.student:
-        _searchPlaceholderText = 'Имя студента';
-        setState(ViewState.busy);
-        if (!_authorisationService.isAuthorised) {
-          _offline = true;
-          _updateScheduleLoader();
-        } else {
-          _searchIdOnPortalService.getIdOfLoggedInUser().then(
-            (value) async {
-              if (value == null) {
-                throw Exception('Could not find current user. This is a bug');
-              }
-              _currentUserId = value;
-              _filter = ScheduleFilter(
-                  IDType.student, value, DateTimeRanges.currentWeek());
-              _updateScheduleLoader();
-              notifyListeners();
-            },
-          );
-        }
-        setState(ViewState.idle);
+        _initHuman(_studentNameText, IDType.student);
         break;
       case IDType.group:
-        _searchPlaceholderText = 'Название группы';
-        setState(ViewState.busy);
-        if (!_authorisationService.isAuthorised) {
-          _offline = true;
-          _updateScheduleLoader();
-        } else {
-          _searchIdOnPortalService.getIdOfLoggedInUser().then(
-            (value) async {
-              if (value == null) {
-                throw Exception('Could not find current user. This is a bug');
-              }
-              _filter = ScheduleFilter(
-                  IDType.student, value, DateTimeRanges.currentWeek());
-              _updateScheduleLoader();
-              notifyListeners();
-            },
-          );
-        }
-        setState(ViewState.idle);
+        _initGroup();
         break;
       case IDType.person:
-        _searchPlaceholderText = 'Имя преподавателя';
+        _initHuman(_lecturerNameText, IDType.person);
+        break;
       default:
         break;
     }
+    setState(ViewState.idle);
   }
 
   void _updateScheduleLoader() {
