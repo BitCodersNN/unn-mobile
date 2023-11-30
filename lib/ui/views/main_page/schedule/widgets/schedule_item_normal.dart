@@ -115,7 +115,7 @@ class ScheduleItemNormal extends StatelessWidget {
   Color getSurfaceColor(ThemeData theme) {
     final extraColors = theme.extension<UnnMobileColors>()!;
     if (DateTime.now().isAfter(
-            subject.dateTimeRange.start.subtract(const Duration(minutes: 5))) &&
+            subject.dateTimeRange.start.subtract(const Duration(minutes: 10))) &&
         DateTime.now().isBefore(subject.dateTimeRange.end)) {
       return extraColors.scheduleSubjectHighlight!;
     }
