@@ -78,9 +78,11 @@ class ScheduleItemNormal extends StatelessWidget {
                   Text(
                     subject.subjectType,
                     style: theme.textTheme.labelLarge!.copyWith(
-                        color: theme.colorScheme.primary,
-                        fontStyle: FontStyle.italic),
-                  )
+                      color: theme.colorScheme.primary,
+                      fontStyle: FontStyle.italic,
+                      overflow: TextOverflow.ellipsis
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -99,7 +101,9 @@ class ScheduleItemNormal extends StatelessWidget {
               child: Text(
                 timeFormatter.format(subject.dateTimeRange.end),
                 style: theme.textTheme.titleMedium!.copyWith(
-                    fontWeight: FontWeight.bold, color: ligtherTextColor),
+                  fontWeight: FontWeight.bold,
+                  color: ligtherTextColor,
+                ),
               ),
             )
           ],
