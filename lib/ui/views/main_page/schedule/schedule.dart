@@ -9,7 +9,6 @@ import 'package:unn_mobile/core/models/schedule_filter.dart';
 import 'package:unn_mobile/core/models/subject.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/schedule_screen_view_model.dart';
-import 'package:unn_mobile/ui/unn_mobile_colors.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
 import 'package:unn_mobile/ui/views/main_page/schedule/widgets/schedule_item_normal.dart';
 import 'package:unn_mobile/ui/views/main_page/schedule/widgets/schedule_search_suggestion_item.dart';
@@ -75,73 +74,78 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView>
       builder: (context, model, child) {
         return Column(
           children: [
-            if(!model.offline) SearchAnchor(
-              builder: (context, controller) {
-                return Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: SearchBar(
-                    hintText: model.searchPlaceholderText,
-                    leading: const Icon(Icons.search),
-                    focusNode: _searchFocusNode,
-                    trailing: [
-                      IconButton(
-                          onPressed: () {}, icon: const Icon(Icons.more_horiz))
-                    ],
-                    shape: MaterialStateProperty.resolveWith(
-                      (states) => const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(
-                          Radius.circular(10),
+            if (!model.offline)
+              SearchAnchor(
+                builder: (context, controller) {
+                  return Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: SearchBar(
+                      hintText: model.searchPlaceholderText,
+                      leading: const Icon(Icons.search),
+                      focusNode: _searchFocusNode,
+                      trailing: [
+                        IconButton(
+                          onPressed: () {},
+                          icon: const Icon(Icons.more_horiz),
+                        ),
+                      ],
+                      shape: MaterialStateProperty.resolveWith(
+                        (states) => const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(10),
+                          ),
                         ),
                       ),
-                    ),
-                    onTap: () => controller.openView(),
-                    onChanged: (_) {
-                      controller.openView();
-                    },
-                    onSubmitted: (value) async {
-                      if (model.lastSearchQuery != value) {
-                        await model.submitSearch(value);
-                      }
-                    },
-                    controller: controller,
-                  ),
-                );
-              },
-              suggestionsBuilder: (context, controller) async {
-                if (controller.text == '') {
-                  final suggestions = await model.getHistorySuggestions();
-                  return suggestions.map((e) => ScheduleSearchSuggestionItem(itemName: e, onSelected: () {
-                    controller.closeView(e);
-                  },));
-                } else {
-                  final rawSuggestions =
-                      await model.getSearchSuggestions(controller.text);
-                  return rawSuggestions.map<ScheduleSearchSuggestionItem>(
-                    (e) => ScheduleSearchSuggestionItem(
-                      itemName: e.label,
-                      itemDescription: e.description,
-                      onSelected: () {
-                        setState(() {
-                          controller.closeView(e.label);
-                          //_searchFocusNode.unfocus();
-                          Future.delayed(
-                            const Duration(milliseconds: 50),
-                            () {
-                              SystemChannels.textInput
-                                  .invokeMethod('TextInput.hide');
-                            },
-                          );
-                          model.lastSearchQuery = controller.text;
-                          model.addHistoryItem(e.label);
-                          model.selectedId = e.id;
-                          model.updateFilter(e.id);
-                        });
+                      onTap: () => controller.openView(),
+                      onChanged: (_) {
+                        controller.openView();
                       },
+                      onSubmitted: (value) async {
+                        if (model.lastSearchQuery != value) {
+                          await model.submitSearch(value);
+                        }
+                      },
+                      controller: controller,
                     ),
                   );
-                }
-              },
-            ),
+                },
+                suggestionsBuilder: (context, controller) async {
+                  if (controller.text == '') {
+                    final suggestions = await model.getHistorySuggestions();
+                    return suggestions.map((e) => ScheduleSearchSuggestionItem(
+                          itemName: e,
+                          onSelected: () {
+                            controller.closeView(e);
+                          },
+                        ));
+                  } else {
+                    final rawSuggestions =
+                        await model.getSearchSuggestions(controller.text);
+                    return rawSuggestions.map<ScheduleSearchSuggestionItem>(
+                      (e) => ScheduleSearchSuggestionItem(
+                        itemName: e.label,
+                        itemDescription: e.description,
+                        onSelected: () {
+                          setState(() {
+                            controller.closeView(e.label);
+                            Future.delayed(
+                              const Duration(milliseconds: 50),
+                              () {
+                                SystemChannels.textInput
+                                    .invokeMethod('TextInput.hide');
+                              },
+                            );
+                            model.lastSearchQuery = controller.text;
+                            model.addHistoryItem(e.label);
+                            model.selectedId = e.id;
+                            model.updateFilter(e.id);
+                          });
+                        },
+                      ),
+                    );
+                  }
+                },
+              ),
             if (model.scheduleLoader != null)
               FutureBuilder(
                 builder: (context, snapshot) {
@@ -195,7 +199,6 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView>
       );
     }
     final headerFormatter = DateFormat.yMd('ru_RU');
-    final extraColors = theme.extension<UnnMobileColors>()!;
 
     return Expanded(
       child: CustomScrollView(
@@ -237,40 +240,41 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView>
                   key: ValueKey(index),
                   controller: _scrollController,
                   index: index,
-                  child: Container(
-                    decoration: BoxDecoration(
-                        color: (snapshot.data!.values
-                                .elementAt(index)
-                                .first
-                                .dateTimeRange
-                                .start
-                                .isSameDate(DateTime.now()))
-                            ? extraColors.scheduleDayHighlight
-                            : null),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.all(20.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(20.0),
+                        child: Container(
+                          decoration: (snapshot.data!.values
+                                  .elementAt(index)
+                                  .first
+                                  .dateTimeRange
+                                  .start
+                                  .isSameDate(DateTime.now()))
+                              ? BoxDecoration(
+                                  border: Border(
+                                      bottom: BorderSide(
+                                          color: theme.primaryColor)))
+                              : null,
                           child: Text(
                             formatedDate,
                             textAlign: TextAlign.left,
-                            style: theme.textTheme.titleLarge,
+                            style: theme.textTheme.titleLarge!.copyWith(),
                           ),
                         ),
-                        for (int i = 0;
-                            i < snapshot.data!.values.elementAt(index).length;
-                            i++)
-                          ScheduleItemNormal(
-                              subject:
-                                  snapshot.data!.values.elementAt(index)[i],
-                              even: i % 2 == 0),
-                        /*if (index == snapshot.data!.length - 1)
-                          const SizedBox(
-                            height: 80,
-                          )*/
-                      ],
-                    ),
+                      ),
+                      for (int i = 0;
+                          i < snapshot.data!.values.elementAt(index).length;
+                          i++)
+                        ScheduleItemNormal(
+                            subject: snapshot.data!.values.elementAt(index)[i],
+                            even: i % 2 == 0),
+                      /*if (index == snapshot.data!.length - 1)
+                        const SizedBox(
+                          height: 80,
+                        )*/
+                    ],
                   ),
                 );
               },
