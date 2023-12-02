@@ -55,7 +55,6 @@ class AuthPageWithState extends State<AuthPage> {
 
         return Scaffold(
           backgroundColor: Colors.white,
-          // resizeToAvoidBottomInset: false,
 
           appBar:
             authTitle,
