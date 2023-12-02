@@ -55,7 +55,7 @@ class AuthPageWithState extends State<AuthPage> {
 
         return Scaffold(
           backgroundColor: Colors.white,
-          resizeToAvoidBottomInset: false,
+          // resizeToAvoidBottomInset: false,
 
           appBar:
             authTitle,
@@ -205,7 +205,7 @@ class AuthPageWithState extends State<AuthPage> {
             ),
           ]
       ),
-      child: columnForm
+      child: SingleChildScrollView(child: columnForm)
     );
   }
 
