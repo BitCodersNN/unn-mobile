@@ -48,7 +48,7 @@ class Subject {
   final String _lecturer;
   final DateTimeRange _dateTimeRange;
 
-  Subject(this._name, this._kindOfWork, this._address, this._groups,
+  const Subject(this._name, this._kindOfWork, this._address, this._groups,
       this._lecturer, this._dateTimeRange);
 
   String get name => _name;
