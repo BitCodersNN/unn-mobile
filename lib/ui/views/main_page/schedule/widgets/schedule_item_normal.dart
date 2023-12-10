@@ -39,7 +39,7 @@ class ScheduleItemNormal extends StatelessWidget {
                 width: 5,
                 decoration: BoxDecoration(
                   borderRadius: const BorderRadius.all(Radius.circular(5)),
-                  color: theme.colorScheme.primary,
+                  color: getColorOfSubjectType(theme, subject.subjectTypeEnum),
                 ),
               ),
             ),
@@ -78,7 +78,7 @@ class ScheduleItemNormal extends StatelessWidget {
                   Text(
                     subject.subjectType,
                     style: theme.textTheme.labelLarge!.copyWith(
-                      color: theme.colorScheme.primary,
+                      color: getColorOfSubjectType(theme, subject.subjectTypeEnum),
                       fontStyle: FontStyle.italic,
                       overflow: TextOverflow.ellipsis
                     ),
@@ -125,5 +125,10 @@ class ScheduleItemNormal extends StatelessWidget {
     } else {
       return theme.colorScheme.surface;
     }
+  }
+
+  Color getColorOfSubjectType(ThemeData theme, SubjectType subjectType) {
+    final extraColors = theme.extension<UnnMobileColors>()!;
+    return extraColors.subjectTypeHighlight![subjectType] ?? theme.primaryColor;
   }
 }
