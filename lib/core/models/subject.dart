@@ -1,5 +1,15 @@
 import 'package:flutter/material.dart';
 
+class _AbbreviatedNamesOfSubjectTypes {
+  static const String lecture = 'лекци';
+  static const String practice = 'практик';
+  static const String seminar = 'семинарск';
+  static const String lab = 'лабораторн';
+  static const String exam = 'экзамен';
+  static const String credit = 'зачёт';
+  static const String consult = 'консультаци';
+}
+
 class Address {
   final String _auditorium;
   final String _building;
@@ -8,6 +18,15 @@ class Address {
 
   String get auditorium => _auditorium;
   String get building => _building;
+}
+
+enum SubjectType {
+  unknown,
+  lecture,
+  practice,
+  lab,
+  exam,
+  consult,
 }
 
 class KeysForSubjectJsonConverter {
@@ -39,16 +58,50 @@ class Subject {
   String get lecturer => _lecturer;
   DateTimeRange get dateTimeRange => _dateTimeRange;
 
+  SubjectType get subjectTypeEnum {
+    final subjectTypeLowerCase = subjectType.toLowerCase();
+
+    if (subjectTypeLowerCase
+        .contains(_AbbreviatedNamesOfSubjectTypes.lecture)) {
+      return SubjectType.lecture;
+    }
+
+    if (subjectTypeLowerCase
+            .contains(_AbbreviatedNamesOfSubjectTypes.practice) ||
+        (subjectTypeLowerCase
+            .contains(_AbbreviatedNamesOfSubjectTypes.seminar))) {
+      return SubjectType.practice;
+    }
+
+    if (subjectTypeLowerCase.contains(_AbbreviatedNamesOfSubjectTypes.lab)) {
+      return SubjectType.lab;
+    }
+
+    if (subjectTypeLowerCase.contains(_AbbreviatedNamesOfSubjectTypes.exam) ||
+        subjectTypeLowerCase.contains(_AbbreviatedNamesOfSubjectTypes.credit)) {
+      return SubjectType.exam;
+    }
+
+    if (subjectTypeLowerCase.contains(_AbbreviatedNamesOfSubjectTypes.consult)) {
+      return SubjectType.consult;
+    }
+
+    return SubjectType.unknown;
+  }
+
   factory Subject.fromJson(Map<String, Object?> jsonMap) {
     return Subject(
       jsonMap[KeysForSubjectJsonConverter.discipline] as String,
       jsonMap[KeysForSubjectJsonConverter.kindOfWork] as String,
-      Address(jsonMap[KeysForSubjectJsonConverter.auditorium] as String, jsonMap[KeysForSubjectJsonConverter.building] as String),
+      Address(jsonMap[KeysForSubjectJsonConverter.auditorium] as String,
+          jsonMap[KeysForSubjectJsonConverter.building] as String),
       (jsonMap[KeysForSubjectJsonConverter.stream] as String).split('|'),
       jsonMap[KeysForSubjectJsonConverter.lecturer] as String,
       DateTimeRange(
-          start: DateTime.parse(jsonMap[KeysForSubjectJsonConverter.beginLesson] as String),
-          end: DateTime.parse(jsonMap[KeysForSubjectJsonConverter.endLesson] as String)),
+          start: DateTime.parse(
+              jsonMap[KeysForSubjectJsonConverter.beginLesson] as String),
+          end: DateTime.parse(
+              jsonMap[KeysForSubjectJsonConverter.endLesson] as String)),
     );
   }
 
@@ -59,7 +112,8 @@ class Subject {
         KeysForSubjectJsonConverter.auditorium: _address.auditorium,
         KeysForSubjectJsonConverter.stream: _groups.join('|'),
         KeysForSubjectJsonConverter.lecturer: _lecturer,
-        KeysForSubjectJsonConverter.beginLesson:_dateTimeRange.start.toString(),
+        KeysForSubjectJsonConverter.beginLesson:
+            _dateTimeRange.start.toString(),
         KeysForSubjectJsonConverter.endLesson: _dateTimeRange.end.toString(),
       };
 }
