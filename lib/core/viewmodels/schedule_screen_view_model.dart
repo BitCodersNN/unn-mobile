@@ -3,6 +3,7 @@ import 'dart:collection';
 import 'package:flutter/material.dart';
 import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/misc/date_time_ranges.dart';
+import 'package:unn_mobile/core/models/employee_data.dart';
 import 'package:unn_mobile/core/models/schedule_filter.dart';
 import 'package:unn_mobile/core/models/schedule_search_result_item.dart';
 import 'package:unn_mobile/core/models/student_data.dart';
@@ -57,6 +58,13 @@ class ScheduleScreenViewModel extends BaseViewModel {
   ScheduleFilter get filter => _filter;
 
   void Function(Map<int, List<Subject>>)? _onScheduleLoaded;
+
+  static Future<Type> getUserType() async {
+    final GettingProfileOfCurrentUser gettingProfileOfCurrentUser =
+      Injector.appInstance.get<GettingProfileOfCurrentUser>();
+
+    return gettingProfileOfCurrentUser.userType ?? (await gettingProfileOfCurrentUser.getProfileOfCurrentUser()).runtimeType;
+  }
 
   bool _chekOffline() {
     if (!_authorisationService.isAuthorised) {
