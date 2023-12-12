@@ -43,6 +43,7 @@ class GettingProfileOfCurrentUserImpl implements GettingProfileOfCurrentUser {
 
     final jsonMap = jsonDecode(await HttpRequestSender.responseToStringBody(response));
     _userType =  jsonMap['type'] == 'student' ? StudentData : EmployeeData;
+    
     return jsonMap['type'] == 'student' ? StudentData.fromJson(jsonMap) : 
       jsonMap['type'] == 'employee' ? EmployeeData.fromJson(jsonMap) : null;
   }
