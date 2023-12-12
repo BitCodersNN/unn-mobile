@@ -7,8 +7,7 @@ class BaseViewModel extends ChangeNotifier {
   bool _disposed = false;
 
   void setState(ViewState viewState) {
-    if(_disposed)
-    {
+    if (_disposed) {
       return;
     }
     _state = viewState;
