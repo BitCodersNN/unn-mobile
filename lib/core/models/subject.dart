@@ -61,6 +61,16 @@ class Subject {
   SubjectType get subjectTypeEnum {
     final subjectTypeLowerCase = subjectType.toLowerCase();
 
+    if (subjectTypeLowerCase.contains(_AbbreviatedNamesOfSubjectTypes.exam) ||
+        subjectTypeLowerCase.contains(_AbbreviatedNamesOfSubjectTypes.credit)) {
+      return SubjectType.exam;
+    }
+
+    if (subjectTypeLowerCase
+        .contains(_AbbreviatedNamesOfSubjectTypes.consult)) {
+      return SubjectType.consult;
+    }
+
     if (subjectTypeLowerCase
         .contains(_AbbreviatedNamesOfSubjectTypes.lecture)) {
       return SubjectType.lecture;
@@ -75,15 +85,6 @@ class Subject {
 
     if (subjectTypeLowerCase.contains(_AbbreviatedNamesOfSubjectTypes.lab)) {
       return SubjectType.lab;
-    }
-
-    if (subjectTypeLowerCase.contains(_AbbreviatedNamesOfSubjectTypes.exam) ||
-        subjectTypeLowerCase.contains(_AbbreviatedNamesOfSubjectTypes.credit)) {
-      return SubjectType.exam;
-    }
-
-    if (subjectTypeLowerCase.contains(_AbbreviatedNamesOfSubjectTypes.consult)) {
-      return SubjectType.consult;
     }
 
     return SubjectType.unknown;
