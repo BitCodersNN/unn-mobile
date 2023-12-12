@@ -22,7 +22,7 @@ class GettingProfileOfCurrentUserImpl implements GettingProfileOfCurrentUser {
   @override
   Future<UserData?> getProfileOfCurrentUser() async {
     final authorisationService = Injector.appInstance.get<AuthorisationService>();
- 
+
     final requstSender = HttpRequestSender(path: _path, cookies: {
       _sessionIdCookieKey: authorisationService.sessionId as String,
     });
