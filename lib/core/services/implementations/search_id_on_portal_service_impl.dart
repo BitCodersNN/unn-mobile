@@ -50,7 +50,7 @@ class SearchIdOnPortalServiceImpl implements SearchIdOnPortalService {
     final userData = await gettingProfileOfCurrentUser.getProfileOfCurrentUser();
 
     if (userData is EmployeeData) {
-      return IDForSchedule(IDType.person, userData.syncID);
+      return IDForSchedule(IDType.person, userData.syncID.substring(1));
     }
 
     if (userData is StudentData) {

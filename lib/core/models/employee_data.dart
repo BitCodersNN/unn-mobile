@@ -4,7 +4,7 @@ class KeysForEmployeeDataJsonConverter {
     static const String syncID = 'sync_id';
     static const String jobType = 'job_type';
     static const String jobTitle = 'job_title';
-    static const String dapartment = 'dapartment';
+    static const String department = 'department';
     static const String child = 'child';
     static const String title = 'title';
     static const String manager = 'manager';
@@ -39,7 +39,7 @@ class EmployeeData extends UserData {
         jsonMap[KeysForEmployeeDataJsonConverter.syncID] as String,
         jsonMap[KeysForEmployeeDataJsonConverter.jobType] as String,
         jsonMap[KeysForEmployeeDataJsonConverter.jobTitle] as String,
-        ((((jsonMap[KeysForEmployeeDataJsonConverter.dapartment]
+        ((((jsonMap[KeysForEmployeeDataJsonConverter.department]
          as Map<String, Object?>)[KeysForEmployeeDataJsonConverter.child]
           as Map<String, Object?>)[KeysForEmployeeDataJsonConverter.child])
            as Map<String, Object?>)[KeysForEmployeeDataJsonConverter.title] as String,
@@ -54,7 +54,7 @@ class EmployeeData extends UserData {
       KeysForEmployeeDataJsonConverter.syncID: _syncID,
       KeysForEmployeeDataJsonConverter.jobType: _jobType,
       KeysForEmployeeDataJsonConverter.jobTitle: _jobTitle,
-      KeysForEmployeeDataJsonConverter.dapartment: {
+      KeysForEmployeeDataJsonConverter.department: {
         KeysForEmployeeDataJsonConverter.child: {
           KeysForEmployeeDataJsonConverter.child: {
             KeysForEmployeeDataJsonConverter.title: _department,
