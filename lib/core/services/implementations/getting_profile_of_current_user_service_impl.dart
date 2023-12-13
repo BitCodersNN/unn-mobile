@@ -24,7 +24,7 @@ class GettingProfileOfCurrentUserImpl implements GettingProfileOfCurrentUser {
     final authorisationService = Injector.appInstance.get<AuthorisationService>();
 
     final requstSender = HttpRequestSender(path: _path, cookies: {
-      _sessionIdCookieKey: authorisationService.sessionId as String,
+      _sessionIdCookieKey: authorisationService.sessionId ?? '',
     });
     
     HttpClientResponse response;
