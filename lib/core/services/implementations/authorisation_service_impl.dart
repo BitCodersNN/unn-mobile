@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:unn_mobile/core/misc/http_helper.dart';
+import 'package:unn_mobile/core/models/online_status_singl_data.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
 
 class AuthorisationServiceImpl implements AuthorisationService {
@@ -64,6 +65,8 @@ class AuthorisationServiceImpl implements AuthorisationService {
     _isAuthorised = true;
 
     // success result
+    OnlineStatusSinglData().isOnline = true;
+    OnlineStatusSinglData().timeOfLastOnline = DateTime.now();
     return AuthRequestResult.success;
   }
 
