@@ -3,6 +3,11 @@ import 'package:unn_mobile/core/models/student_data.dart';
 import 'package:unn_mobile/core/models/employee_data.dart';
 
 abstract interface class GettingProfileOfCurrentUser {
+
+  /// Возвращает [StudentData] или [EmployeeData] - наследников [UserData] или null,
+  /// если [getProfileOfCurrentUser] ниразу ещё не был вызван
+  Type? get userType;
+
   /// Получает профиль текущего пользователя
   /// 
   /// Возвращает [StudentData] или [EmployeeData] - наследников [UserData] или null,
