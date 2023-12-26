@@ -2,9 +2,11 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:injector/injector.dart';
 import 'package:intl/intl.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
 import 'package:unn_mobile/core/misc/date_time_extensions.dart';
+import 'package:unn_mobile/core/misc/type_of_current_user.dart';
 import 'package:unn_mobile/core/models/employee_data.dart';
 import 'package:unn_mobile/core/models/schedule_filter.dart';
 import 'package:unn_mobile/core/models/subject.dart';
@@ -30,6 +32,7 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView>
   late TabController _tabController;
   late FocusNode _searchFocusNode;
   late AutoScrollController _scrollController;
+
   @override
   void initState() {
     _scrollController = AutoScrollController();
@@ -40,53 +43,56 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView>
 
   @override
   Widget build(BuildContext context) {
-  final theme = Theme.of(context);
-  return FutureBuilder<Type>(
-    future: ScheduleScreenViewModel.getUserType(),
-    builder: (BuildContext context, AsyncSnapshot<Type> snapshot) {
-      if (snapshot.connectionState == ConnectionState.waiting) {
-        return const CircularProgressIndicator();
-      } else if (snapshot.hasError) {
-        return Text('Ошибка: ${snapshot.error}');
-      } else {
-        final userType = snapshot.data!;
-        final tabTexts = _getTabTexts(userType);
-        final idTypesForSchedulTab = _getIDTypesForSchedulTab(userType);
-        
-        return Column(
-          children: [
-            TabBar(
-              indicatorSize: TabBarIndicatorSize.label,
-              tabAlignment: TabAlignment.center,
-              isScrollable: true,
-              tabs: [
-                Tab(
-                  text: tabTexts[0],
-                ),
-                Tab(
-                  text: tabTexts[1],
-                ),
-                Tab(
-                  text: tabTexts[2],
-                ),
-              ],
-              controller: _tabController,
-            ),
-            Expanded(
-              child: TabBarView(
-                controller: _tabController,
-                children: [
-                  for (int i = 0; i < idTypesForSchedulTab.length; i++)
-                   _scheduleTab(theme, idTypesForSchedulTab[i]),
+    final theme = Theme.of(context);
+    return FutureBuilder<Type>(
+      future:
+          Injector.appInstance.get<TypeOfCurrenUser>().getTypeOfCurrentUser(),
+      builder: (BuildContext context, AsyncSnapshot<Type> snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(
+              child: SizedBox(
+                  width: 70, height: 70, child: CircularProgressIndicator()));
+        } else if (snapshot.hasError) {
+          return Text('Ошибка: ${snapshot.error}');
+        } else {
+          final userType = snapshot.data!;
+          final tabTexts = _getTabTexts(userType);
+          final idTypesForSchedulTab = _getIDTypesForSchedulTab(userType);
+
+          return Column(
+            children: [
+              TabBar(
+                indicatorSize: TabBarIndicatorSize.label,
+                tabAlignment: TabAlignment.center,
+                isScrollable: true,
+                tabs: [
+                  Tab(
+                    text: tabTexts[0],
+                  ),
+                  Tab(
+                    text: tabTexts[1],
+                  ),
+                  Tab(
+                    text: tabTexts[2],
+                  ),
                 ],
+                controller: _tabController,
               ),
-            ),
-          ],
-        );
-      }
-    },
-  );
-}
+              Expanded(
+                child: TabBarView(
+                  controller: _tabController,
+                  children: [
+                    for (int i = 0; i < idTypesForSchedulTab.length; i++)
+                      _scheduleTab(theme, idTypesForSchedulTab[i]),
+                  ],
+                ),
+              ),
+            ],
+          );
+        }
+      },
+    );
+  }
 
   Widget _scheduleTab(ThemeData theme, IDType type) {
     return BaseView<ScheduleScreenViewModel>(
@@ -316,7 +322,7 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView>
     if (userType == EmployeeData) {
       return [IDType.person, IDType.student, IDType.group];
     }
-    return [IDType.student, IDType.group, IDType.person];  
+    return [IDType.student, IDType.group, IDType.person];
   }
 
   @override

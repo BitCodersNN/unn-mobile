@@ -58,13 +58,6 @@ class ScheduleScreenViewModel extends BaseViewModel {
 
   void Function(Map<int, List<Subject>>)? _onScheduleLoaded;
 
-  static Future<Type> getUserType() async {
-    final GettingProfileOfCurrentUser gettingProfileOfCurrentUser =
-      Injector.appInstance.get<GettingProfileOfCurrentUser>();
-
-    return gettingProfileOfCurrentUser.userType ?? (await gettingProfileOfCurrentUser.getProfileOfCurrentUser()).runtimeType;
-  }
-
   bool _chekOffline() {
     if (!_authorisationService.isAuthorised) {
       _offline = true;
