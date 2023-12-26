@@ -41,8 +41,6 @@ void main() async {
 
 void registerDependencies() {
   var injector = Injector.appInstance;
-
-  OnlineStatusData();
   // register all the dependencies here:
   injector.registerSingleton<OnlineStatusData>(() => OnlineStatusData());
 
