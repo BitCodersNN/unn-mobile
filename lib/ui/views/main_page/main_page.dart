@@ -68,18 +68,24 @@ class _MainPageState extends State<MainPage> {
             },
           ),
           drawer: MainPageDrawer(onDestinationSelected: (value) {
+            bool stateChanged = !model.isDrawerItemSelected || model.selectedBarItem != value;
             model.selectedDrawerItem = value;
             model.isDrawerItemSelected = true;
             scaffoldKey.currentState!.closeDrawer();
-            _navigatorKey.currentState!.popAndPushNamed(
-              drawerRoutes[value],
-            );
+              if(stateChanged) {
+                _navigatorKey.currentState!.popAndPushNamed(
+                  drawerRoutes[value],
+              );
+            }
           }),
           bottomNavigationBar: MainPageNavigationBar(
             onDestinationSelected: (value) {
+              bool stateChanged = model.isDrawerItemSelected || model.selectedBarItem != value;
               model.selectedBarItem = value;
               model.isDrawerItemSelected = false;
-              _navigatorKey.currentState!.popAndPushNamed(navbarRoutes[value]);
+              if(stateChanged) {
+                _navigatorKey.currentState!.popAndPushNamed(navbarRoutes[value]);
+              }
             },
           ),
         );
