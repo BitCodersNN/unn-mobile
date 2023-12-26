@@ -9,7 +9,7 @@ import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
 Future<T?> tryLoginAndRetrieveData<T>(Function online, Function offline) async{
   final AuthorisationService authorisationService = Injector.appInstance.get<AuthorisationService>();
   final AuthorisationRefreshService authorisationRefreshService = Injector.appInstance.get<AuthorisationRefreshService>();
-  final onlineStatus = Injector.appInstance.get<OnlineStatusData>();
+  final OnlineStatusData onlineStatus = Injector.appInstance.get<OnlineStatusData>();
     
   if (authorisationService.sessionId == '' || !onlineStatus.isOnline) {
     final authRequestResult = await authorisationRefreshService.refreshLogin();
