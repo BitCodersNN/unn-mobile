@@ -1,12 +1,10 @@
 import 'dart:async';
 
-class OnlineStatusSinglData {
-  static final OnlineStatusSinglData _onlineStatusSinglData = OnlineStatusSinglData._internal();
-
+class OnlineStatusData {
   late DateTime timeOfLastOnline;
   
   final _controller = StreamController<bool>();
-  late bool _isOnline = false;
+  bool _isOnline = false;
 
   bool get isOnline => _isOnline;
   Stream<bool> get changeOnlineStream => _controller.stream;
@@ -17,10 +15,4 @@ class OnlineStatusSinglData {
     }
     _isOnline = value;
   }
-
-  factory OnlineStatusSinglData() {
-    return _onlineStatusSinglData;
-  }
-
-  OnlineStatusSinglData._internal();
 }

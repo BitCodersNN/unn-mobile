@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:injector/injector.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:unn_mobile/app.dart';
-import 'package:unn_mobile/core/models/online_status_singl_data.dart';
+import 'package:unn_mobile/core/models/online_status_data.dart';
 import 'package:unn_mobile/core/services/implementations/auth_data_provider_impl.dart';
 import 'package:unn_mobile/core/services/implementations/authorisation_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/authorisation_refresh_service_impl.dart';
@@ -39,8 +39,10 @@ void main() async {
 void registerDependencies() {
   var injector = Injector.appInstance;
 
-  OnlineStatusSinglData();
+  OnlineStatusData();
   // register all the dependencies here:
+  injector.registerSingleton<OnlineStatusData>(() => OnlineStatusData());
+
   injector.registerSingleton<StorageService>(() => StorageServiceImpl());
   injector.registerSingleton<AuthorisationService>(
       () => AuthorisationServiceImpl());
