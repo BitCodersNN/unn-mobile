@@ -20,7 +20,7 @@ class LoadingPage extends StatelessWidget {
               _logoTitle("ЛОБАЧЕВСКОГО"),
               const SizedBox(height: 30),
               const Image(
-                  image: AssetImage("assets/images/logo.png")
+                  image: AssetImage("assets/images/new_year_logo.png")
               ),
             ],
           ),
