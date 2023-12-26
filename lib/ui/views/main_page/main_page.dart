@@ -68,7 +68,7 @@ class _MainPageState extends State<MainPage> {
             },
           ),
           drawer: MainPageDrawer(onDestinationSelected: (value) {
-            bool stateChanged = !model.isDrawerItemSelected || model.selectedBarItem != value;
+            bool stateChanged = !model.isDrawerItemSelected || model.selectedDrawerItem != value;
             model.selectedDrawerItem = value;
             model.isDrawerItemSelected = true;
             scaffoldKey.currentState!.closeDrawer();
