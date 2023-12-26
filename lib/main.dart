@@ -60,8 +60,8 @@ void registerDependencies() {
   injector.registerSingleton<UserDataProvider>(
     () => UserDataProviderImpl());
 
-  injector.registerSingleton<TypeOfCurrenUser>(
-    () => TypeOfCurrenUser());
+  injector.registerSingleton<TypeOfCurrentUser>(
+    () => TypeOfCurrentUser());
 
   injector.registerDependency(() => LoadingPageViewModel());
   injector.registerDependency(() => AuthPageViewModel());
