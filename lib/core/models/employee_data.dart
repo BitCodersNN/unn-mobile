@@ -54,22 +54,25 @@ class EmployeeData extends UserData {
   }
 
   @override
-  Map<String, dynamic> toJson() => {
-        ...super.toJson(),
-        KeysForEmployeeDataJsonConverter.user: {
-          KeysForEmployeeDataJsonConverter.syncID: _syncID,
-        },
-        KeysForEmployeeDataJsonConverter.jobType: _jobType,
-        KeysForEmployeeDataJsonConverter.jobTitle: _jobTitle,
-        KeysForEmployeeDataJsonConverter.department: {
-          KeysForEmployeeDataJsonConverter.child: {
-            KeysForEmployeeDataJsonConverter.child: {
-              KeysForEmployeeDataJsonConverter.title: _department,
-            },
-          },
-        },
-        KeysForEmployeeDataJsonConverter.manager: {
-          KeysForEmployeeDataJsonConverter.fullname: _manager,
-        },
-      };
+Map<String, dynamic> toJson() {
+    final json = super.toJson();
+    json[KeysForEmployeeDataJsonConverter.user]
+        [KeysForEmployeeDataJsonConverter.syncID] = _syncID;
+    json[KeysForEmployeeDataJsonConverter.jobType] = _jobType;
+    json[KeysForEmployeeDataJsonConverter.jobTitle] = _jobTitle;
+    json[KeysForEmployeeDataJsonConverter.department] ??= {};
+    json[KeysForEmployeeDataJsonConverter.department]
+        [KeysForEmployeeDataJsonConverter.child] ??= {};
+    json[KeysForEmployeeDataJsonConverter.department]
+            [KeysForEmployeeDataJsonConverter.child]
+        [KeysForEmployeeDataJsonConverter.child] ??= {};
+    json[KeysForEmployeeDataJsonConverter.department]
+                [KeysForEmployeeDataJsonConverter.child]
+            [KeysForEmployeeDataJsonConverter.child]
+        [KeysForEmployeeDataJsonConverter.title] = _department;
+    json[KeysForEmployeeDataJsonConverter.manager] ??= {};
+    json[KeysForEmployeeDataJsonConverter.manager]
+        [KeysForEmployeeDataJsonConverter.fullname] = _manager;
+    return json;
+  }
 }

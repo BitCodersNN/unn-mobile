@@ -43,54 +43,40 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView>
 
   @override
   Widget build(BuildContext context) {
+    final TypeOfCurrentUser typeOfCurrnetUser =
+      Injector.appInstance.get<TypeOfCurrentUser>();
     final theme = Theme.of(context);
-    return FutureBuilder<Type>(
-      future:
-          Injector.appInstance.get<TypeOfCurrenUser>().getTypeOfCurrentUser(),
-      builder: (BuildContext context, AsyncSnapshot<Type> snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(
-              child: SizedBox(
-                  width: 70, height: 70, child: CircularProgressIndicator()));
-        } else if (snapshot.hasError) {
-          return Text('Ошибка: ${snapshot.error}');
-        } else {
-          final userType = snapshot.data!;
-          final tabTexts = _getTabTexts(userType);
-          final idTypesForSchedulTab = _getIDTypesForSchedulTab(userType);
-
-          return Column(
+    final tabTexts = _getTabTexts(typeOfCurrnetUser.typeOfUser);
+    final idTypesForSchedulTab = _getIDTypesForSchedulTab(typeOfCurrnetUser.typeOfUser);
+    return Column(
+      children: [
+        TabBar(
+          indicatorSize: TabBarIndicatorSize.label,
+          tabAlignment: TabAlignment.center,
+          isScrollable: true,
+          tabs: [
+            Tab(
+              text: tabTexts[0],
+            ),
+            Tab(
+              text: tabTexts[1],
+            ),
+            Tab(
+              text: tabTexts[2],
+            ),
+          ],
+          controller: _tabController,
+        ),
+        Expanded(
+          child: TabBarView(
+            controller: _tabController,
             children: [
-              TabBar(
-                indicatorSize: TabBarIndicatorSize.label,
-                tabAlignment: TabAlignment.center,
-                isScrollable: true,
-                tabs: [
-                  Tab(
-                    text: tabTexts[0],
-                  ),
-                  Tab(
-                    text: tabTexts[1],
-                  ),
-                  Tab(
-                    text: tabTexts[2],
-                  ),
-                ],
-                controller: _tabController,
-              ),
-              Expanded(
-                child: TabBarView(
-                  controller: _tabController,
-                  children: [
-                    for (int i = 0; i < idTypesForSchedulTab.length; i++)
-                      _scheduleTab(theme, idTypesForSchedulTab[i]),
-                  ],
-                ),
-              ),
+              for (int i = 0; i < idTypesForSchedulTab.length; i++)
+                _scheduleTab(theme, idTypesForSchedulTab[i]),
             ],
-          );
-        }
-      },
+          ),
+        ),
+      ],
     );
   }
 
