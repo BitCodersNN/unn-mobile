@@ -32,12 +32,22 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView>
   late TabController _tabController;
   late FocusNode _searchFocusNode;
   late AutoScrollController _scrollController;
-
+  late SearchController _searchController;
+  bool _searchViewOpen = false;
   @override
   void initState() {
     _scrollController = AutoScrollController();
     _tabController = TabController(length: 3, vsync: this);
     _searchFocusNode = FocusNode();
+    _searchController = SearchController();
+    _searchController.addListener(() {
+      if(_searchViewOpen && !_searchController.isOpen)
+      {
+        _searchFocusNode.unfocus();
+        SystemChannels.textInput.invokeMethod('TextInput.hide');
+      }
+      _searchViewOpen = _searchController.isOpen;
+    });
     super.initState();
   }
 
@@ -87,6 +97,8 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView>
           children: [
             if (!model.offline)
               SearchAnchor(
+                searchController: _searchController,
+                isFullScreen: true,
                 builder: (context, controller) {
                   return Padding(
                     padding: const EdgeInsets.all(20.0),
@@ -313,6 +325,7 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView>
 
   @override
   void dispose() {
+    _searchController.dispose();
     _tabController.dispose();
     _searchFocusNode.dispose();
     _scrollController.dispose();
