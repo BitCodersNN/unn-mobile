@@ -6,7 +6,7 @@ import 'package:unn_mobile/ui/views/main_page/about/about.dart';
 import 'package:unn_mobile/ui/views/main_page/main_page_drawer.dart';
 import 'package:unn_mobile/ui/views/main_page/main_page_navigation_bar.dart';
 import 'package:unn_mobile/ui/views/main_page/schedule/schedule.dart';
-import 'package:unn_mobile/ui/router.dart' as localRouter;
+import 'package:unn_mobile/ui/router.dart' as local_router;
 
 class MainPage extends StatefulWidget {
   final String subroute;
@@ -53,20 +53,20 @@ class _MainPageState extends State<MainPage> {
             onGenerateRoute: (settings) {
               switch (settings.name) {
                 case 'about':
-                  return localRouter.Router.createCustomRoute(
+                  return local_router.Router.createCustomRoute(
                     AboutScreenView(),
                   );
                 case '':
                 case 'schedule':
-                  return localRouter.Router.createCustomRoute(
+                  return local_router.Router.createCustomRoute(
                     const ScheduleScreenView(),
                   );
                 case 'placeholder':
-                  return localRouter.Router.createCustomRoute(
+                  return local_router.Router.createCustomRoute(
                     const placeholder.Placeholder(),
                   );
                 default:
-                  return localRouter.Router.createCustomRoute(
+                  return local_router.Router.createCustomRoute(
                     const Text('Unknown page'),
                   );
               }
