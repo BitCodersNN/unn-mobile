@@ -3,6 +3,8 @@ import 'dart:collection';
 import 'package:flutter/material.dart';
 import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/misc/date_time_ranges.dart';
+import 'package:unn_mobile/core/misc/try_login_and_retrieve_data.dart';
+import 'package:unn_mobile/core/models/online_status_data.dart';
 import 'package:unn_mobile/core/models/schedule_filter.dart';
 import 'package:unn_mobile/core/models/schedule_search_result_item.dart';
 import 'package:unn_mobile/core/models/student_data.dart';
@@ -32,7 +34,8 @@ class ScheduleScreenViewModel extends BaseViewModel {
       Injector.appInstance.get<AuthorisationService>();
   final ScheduleSearchHistoryService _historyService =
       Injector.appInstance.get<ScheduleSearchHistoryService>();
-
+  final OnlineStatusData _onlineStatusData =
+      Injector.appInstance.get<OnlineStatusData>();
   final String _studentNameText = 'Имя студента';
   final String _lecturerNameText = 'Имя преподавателя';
   final String _groupNameText = 'Название группы';
@@ -43,8 +46,7 @@ class ScheduleScreenViewModel extends BaseViewModel {
   String lastSearchQuery = '';
 
   IDType _idType = IDType.student;
-  bool _offline = false;
-  bool get offline => _offline;
+  bool get offline => !_onlineStatusData.isOnline;
   Future<Map<int, List<Subject>>>? _scheduleLoader;
   Future<Map<int, List<Subject>>>? get scheduleLoader => _scheduleLoader;
   int displayedWeekOffset = 0;
@@ -57,24 +59,13 @@ class ScheduleScreenViewModel extends BaseViewModel {
 
   void Function(Map<int, List<Subject>>)? _onScheduleLoaded;
 
-  bool _chekOffline() {
-    if (!_authorisationService.isAuthorised) {
-      _offline = true;
-      _updateScheduleLoader();
-      return true;
-    }
-    return false;
-  }
-
   void _initHuman(String placeholderText, IDType idType) {
     _searchPlaceholderText = placeholderText;
-    if (_chekOffline()) {
-      return;
-    }
-    _searchIdOnPortalService.getIdOfLoggedInUser().then(
+    tryLoginAndRetrieveData(_searchIdOnPortalService.getIdOfLoggedInUser, () => null).then(
       (value) async {
         if (value == null) {
-          throw Exception('Could not find current user. This is a bug');
+          _updateScheduleLoader();
+          return;
         }
         if (value.idType == idType) {
           _filter = ScheduleFilter(
@@ -82,19 +73,16 @@ class ScheduleScreenViewModel extends BaseViewModel {
           _updateScheduleLoader();
         }
         notifyListeners();
-      },
-    );
+    });
   }
 
   void _initGroup() {
     _searchPlaceholderText = _groupNameText;
-    if (_chekOffline()) {
-      return;
-    }
-    _gettingProfileOfCurrentUser.getProfileOfCurrentUser().then(
+    tryLoginAndRetrieveData(_searchIdOnPortalService.getIdOfLoggedInUser, () => null).then(
       (value) async {
         if (value == null) {
-          throw Exception('Could not find current user. This is a bug');
+          _updateScheduleLoader();
+          return;
         }
         if (value is StudentData) {
           final groupID = await _searchIdOnPortalService.findIDOnPortal(
@@ -104,8 +92,7 @@ class ScheduleScreenViewModel extends BaseViewModel {
           _updateScheduleLoader();
         }
         notifyListeners();
-      },
-    );
+    });
   }
 
   Future<void> incrementWeek() async {
@@ -157,9 +144,9 @@ class ScheduleScreenViewModel extends BaseViewModel {
           _ExclusionID._vacancy.id, displayedWeek);
     }
 
-    final schedule = offline
-        ? await _offlineScheduleProvider.loadSchedule()
-        : await _getScheduleService.getSchedule(_filter);
+    final schedule = await tryLoginAndRetrieveData(
+        () async => await _getScheduleService.getSchedule(filter),
+        _offlineScheduleProvider.loadSchedule);
 
     if (schedule == null) {
       throw Exception('Schedule was null');
