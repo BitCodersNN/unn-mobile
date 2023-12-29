@@ -1,4 +1,5 @@
 import 'package:unn_mobile/ui/views/main_page/exiting/exiting.dart';
+import 'package:unn_mobile/ui/views/main_page/main_page_tab_state.dart';
 import 'package:unn_mobile/ui/widgets/placeholder.dart' as placeholder;
 import 'package:flutter/material.dart';
 import 'package:unn_mobile/core/viewmodels/main_page_view_model.dart';
@@ -21,6 +22,9 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> {
   final _navigatorKey = GlobalKey<NavigatorState>();
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
+  final Map<int, GlobalKey> tabKeys = {
+    1: GlobalKey<State<ScheduleScreenView>>()
+  };
 
   final List<String> drawerRoutes = [
     'placeholder',
@@ -61,7 +65,7 @@ class _MainPageState extends State<MainPage> {
                 case '':
                 case 'schedule':
                   return local_router.Router.createCustomRoute(
-                    const ScheduleScreenView(),
+                    const ScheduleScreenView(key: tabKeys[1]),
                   );
                 case 'exit':
                   return local_router.Router.createCustomRoute(
@@ -79,23 +83,42 @@ class _MainPageState extends State<MainPage> {
             },
           ),
           drawer: MainPageDrawer(onDestinationSelected: (value) {
-            bool stateChanged = !model.isDrawerItemSelected || model.selectedDrawerItem != value;
+            bool stateChanged = !model.isDrawerItemSelected ||
+                model.selectedDrawerItem != value;
             model.selectedDrawerItem = value;
             model.isDrawerItemSelected = true;
             scaffoldKey.currentState!.closeDrawer();
-              if(stateChanged) {
-                _navigatorKey.currentState!.popAndPushNamed(
-                  drawerRoutes[value],
+            if (stateChanged) {
+              _navigatorKey.currentState!.popAndPushNamed(
+                drawerRoutes[value],
               );
+            } else {
+              if (tabKeys.containsKey(value + 10)) { // Ключи drawer с офсетом 10, чтобы не смешивать с ключами снизу
+                if (tabKeys[value]!.currentState != null &&
+                    tabKeys[value]!.currentState is MainPageTabState) {
+                  (tabKeys[value]!.currentState as MainPageTabState)
+                      .refreshTab();
+                }
+              }
             }
           }),
           bottomNavigationBar: MainPageNavigationBar(
             onDestinationSelected: (value) {
-              bool stateChanged = model.isDrawerItemSelected || model.selectedBarItem != value;
+              bool stateChanged =
+                  model.isDrawerItemSelected || model.selectedBarItem != value;
               model.selectedBarItem = value;
               model.isDrawerItemSelected = false;
-              if(stateChanged) {
-                _navigatorKey.currentState!.popAndPushNamed(navbarRoutes[value]);
+              if (stateChanged) {
+                _navigatorKey.currentState!
+                    .popAndPushNamed(navbarRoutes[value]);
+              } else {
+                if (tabKeys.containsKey(value)) {
+                  if (tabKeys[value]!.currentState != null &&
+                      tabKeys[value]!.currentState is MainPageTabState) {
+                    (tabKeys[value]!.currentState as MainPageTabState)
+                        .refreshTab();
+                  }
+                }
               }
             },
           ),

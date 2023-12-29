@@ -15,7 +15,6 @@ import 'package:unn_mobile/core/services/interfaces/schedule_search_history_serv
 import 'package:unn_mobile/core/services/interfaces/search_id_on_portal_service.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
 
-
 class _ExclusionID {
   static const _vacancy = IDForSchedule(IDType.lecturer, '26579');
 }
@@ -100,8 +99,8 @@ class ScheduleScreenViewModel extends BaseViewModel {
         if (value is StudentData) {
           final groupID = await _searchIdOnPortalService.findIDOnPortal(
               value.eduGroup, IDType.group);
-          _filter = ScheduleFilter(IDType.group, groupID!.first.id,
-              DateTimeRanges.currentWeek());
+          _filter = ScheduleFilter(
+              IDType.group, groupID!.first.id, DateTimeRanges.currentWeek());
           _updateScheduleLoader();
         }
         notifyListeners();
@@ -137,6 +136,14 @@ class ScheduleScreenViewModel extends BaseViewModel {
     notifyListeners();
   }
 
+  Future<void> resetWeek() async {
+    displayedWeekOffset = 0;
+    _filter = ScheduleFilter(
+        _filter.idType, _filter.id, DateTimeRanges.currentWeek());
+    _updateScheduleLoader();
+    notifyListeners();
+  }
+
   FutureOr<void> _invokeOnScheduleLoaded(value) {
     if (_onScheduleLoaded != null) {
       _onScheduleLoaded!(value);
@@ -146,7 +153,8 @@ class ScheduleScreenViewModel extends BaseViewModel {
   Future<Map<int, List<Subject>>> _getScheduleLoader() async {
     setState(ViewState.busy);
     if (_filter.id == '-1') {
-      _filter = ScheduleFilter(_ExclusionID._vacancy.idType, _ExclusionID._vacancy.id, displayedWeek);
+      _filter = ScheduleFilter(_ExclusionID._vacancy.idType,
+          _ExclusionID._vacancy.id, displayedWeek);
     }
 
     final schedule = offline
@@ -204,7 +212,6 @@ class ScheduleScreenViewModel extends BaseViewModel {
 
   Future<List<ScheduleSearchResultItem>> getSearchSuggestions(
       String value) async {
-
     final suggestions =
         await _searchIdOnPortalService.findIDOnPortal(value, _idType);
     if (suggestions == null) {
