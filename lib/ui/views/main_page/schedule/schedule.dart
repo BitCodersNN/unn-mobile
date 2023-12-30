@@ -14,7 +14,7 @@ class ScheduleScreenView extends StatefulWidget {
 }
 
 class _ScheduleScreenViewState extends State<ScheduleScreenView>
-    with SingleTickerProviderStateMixin, AutomaticKeepAliveClientMixin
+    with SingleTickerProviderStateMixin
     implements MainPageTabState {
   final String _studentText = 'Студент';
   final String _lecturerText = 'Преподаватель';
