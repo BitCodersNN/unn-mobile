@@ -36,11 +36,7 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView>
   late AutoScrollController _scrollController;
   late SearchController _searchController;
 
-  final tabKeys = [
-    GlobalKey(),
-    GlobalKey(),
-    GlobalKey()
-  ]; 
+  final tabKeys = [GlobalKey(), GlobalKey(), GlobalKey()];
 
   @override
   void initState() {
@@ -65,9 +61,10 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView>
           tabAlignment: TabAlignment.center,
           isScrollable: true,
           tabs: [
-            for(var i = 0; i < tabKeys.length; i++) Tab(
-              text: tabTexts[i],
-            ),
+            for (var i = 0; i < tabKeys.length; i++)
+              Tab(
+                text: tabTexts[i],
+              ),
           ],
           controller: _tabController,
         ),
@@ -340,9 +337,10 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView>
 
   @override
   void refreshTab() {
-    final model = (tabKeys[_tabController.index].currentState as BaseViewState<ScheduleScreenViewModel>).model;
-    if(model.displayedWeekOffset != 0)
-    {
+    final model = (tabKeys[_tabController.index].currentState
+            as BaseViewState<ScheduleScreenViewModel>)
+        .model;
+    if (model.displayedWeekOffset != 0) {
       model.resetWeek();
     }
   }
