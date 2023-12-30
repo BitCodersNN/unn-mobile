@@ -10,7 +10,7 @@ class AuthorisationRefreshServiceImpl implements AuthorisationRefreshService {
   final _authorisationService = Injector.appInstance.get<AuthorisationService>();
 
   Future<bool> _userDataExistsInStorage() async{
-    AuthData authData =  await _authDataProvider.getAuthData();
+    AuthData authData =  await _authDataProvider.getData();
     return !(authData.login == AuthData.getDefaultParameter() || authData.login == AuthData.getDefaultParameter());
   }
 
@@ -19,7 +19,7 @@ class AuthorisationRefreshServiceImpl implements AuthorisationRefreshService {
     if (!await _userDataExistsInStorage()) {
       return null;
     }
-    AuthData authData =  await _authDataProvider.getAuthData();
+    AuthData authData =  await _authDataProvider.getData();
     return _authorisationService.auth(authData.login, authData.password);
   }
 }

@@ -143,7 +143,7 @@ class ScheduleScreenViewModel extends BaseViewModel {
 
     final schedule = await tryLoginAndRetrieveData(
         () async => await _getScheduleService.getSchedule(filter),
-        _offlineScheduleProvider.loadSchedule);
+        _offlineScheduleProvider.getData);
 
     if (schedule == null) {
       throw Exception('Schedule was null');
@@ -159,7 +159,7 @@ class ScheduleScreenViewModel extends BaseViewModel {
       result[subject.dateTimeRange.start.weekday]!.add(subject);
     }
     if (!offline && displayedWeekOffset == 0) {
-      _offlineScheduleProvider.saveSchedule(schedule);
+      _offlineScheduleProvider.saveData(schedule);
     }
     setState(ViewState.idle);
     return result;
