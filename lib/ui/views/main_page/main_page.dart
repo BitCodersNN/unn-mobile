@@ -44,6 +44,7 @@ class _MainPageState extends State<MainPage> {
     'placeholder',
   ];
 
+  final drawerIdOffset = 10;
   @override
   Widget build(BuildContext context) {
     return BaseView<MainPageViewModel>(
@@ -93,7 +94,7 @@ class _MainPageState extends State<MainPage> {
                 drawerRoutes[value],
               );
             } else {
-              if (tabKeys.containsKey(value + 10)) { // Ключи drawer с офсетом 10, чтобы не смешивать с ключами снизу
+              if (tabKeys.containsKey(drawerIdOffset + value)) {
                 if (tabKeys[value]!.currentState != null &&
                     tabKeys[value]!.currentState is MainPageTabState) {
                   (tabKeys[value]!.currentState as MainPageTabState)
