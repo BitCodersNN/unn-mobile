@@ -33,31 +33,23 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView>
   late FocusNode _searchFocusNode;
   late AutoScrollController _scrollController;
   late SearchController _searchController;
-  bool _searchViewOpen = false;
   @override
   void initState() {
     _scrollController = AutoScrollController();
     _tabController = TabController(length: 3, vsync: this);
     _searchFocusNode = FocusNode();
     _searchController = SearchController();
-    _searchController.addListener(() {
-      if(_searchViewOpen && !_searchController.isOpen)
-      {
-        _searchFocusNode.unfocus();
-        SystemChannels.textInput.invokeMethod('TextInput.hide');
-      }
-      _searchViewOpen = _searchController.isOpen;
-    });
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     final TypeOfCurrentUser typeOfCurrnetUser =
-      Injector.appInstance.get<TypeOfCurrentUser>();
+        Injector.appInstance.get<TypeOfCurrentUser>();
     final theme = Theme.of(context);
     final tabTexts = _getTabTexts(typeOfCurrnetUser.typeOfUser);
-    final idTypesForSchedulTab = _getIDTypesForSchedulTab(typeOfCurrnetUser.typeOfUser);
+    final idTypesForSchedulTab =
+        _getIDTypesForSchedulTab(typeOfCurrnetUser.typeOfUser);
     return Column(
       children: [
         TabBar(
@@ -97,6 +89,19 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView>
           children: [
             if (!model.offline)
               SearchAnchor(
+                viewOnSubmitted: (value) async {
+                  if(value == '' && value != model.lastSearchQuery)
+                  {
+                    await model.submitSearch(value);
+                  }
+                  _searchController.closeView(value);
+                  Future.delayed(
+                    const Duration(milliseconds: 50),
+                    () {
+                      SystemChannels.textInput.invokeMethod('TextInput.hide');
+                    },
+                  );
+                },
                 searchController: _searchController,
                 isFullScreen: true,
                 builder: (context, controller) {
