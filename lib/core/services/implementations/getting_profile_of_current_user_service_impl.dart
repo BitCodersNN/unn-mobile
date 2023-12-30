@@ -36,7 +36,13 @@ class GettingProfileOfCurrentUserImpl implements GettingProfileOfCurrentUser {
       return null;
     }
 
-    final jsonMap = jsonDecode(await HttpRequestSender.responseToStringBody(response));
+    dynamic jsonMap;
+    try {
+      jsonMap = jsonDecode(await HttpRequestSender.responseToStringBody(response));
+    } catch (e) {
+      log(e.toString());
+      return null;
+    }
     
     return jsonMap['type'] == 'student' ? StudentData.fromJson(jsonMap) : 
       jsonMap['type'] == 'employee' ? EmployeeData.fromJson(jsonMap) : null;
