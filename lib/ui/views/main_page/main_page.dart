@@ -66,7 +66,7 @@ class _MainPageState extends State<MainPage> {
                 case '':
                 case 'schedule':
                   return local_router.Router.createCustomRoute(
-                    const ScheduleScreenView(key: tabKeys[1]),
+                    ScheduleScreenView(key: tabKeys[1]),
                   );
                 case 'exit':
                   return local_router.Router.createCustomRoute(
