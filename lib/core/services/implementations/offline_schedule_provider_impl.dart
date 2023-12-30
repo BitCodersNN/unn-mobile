@@ -13,8 +13,8 @@ class OfflineScheduleProviderImpl implements OfflineScheduleProvider {
   final _securityStorage = Injector.appInstance.get<StorageService>();
 
   @override
-  Future<List<Subject>?> loadSchedule() async {
-    if (!(await _securityStorage.containsKey(key: _OfflineScheduleProviderrKeys._scheduleKey))) {
+  Future<List<Subject>?> getData() async {
+    if (!(await isContained())) {
       return null;
     }
     var jsonList = jsonDecode((await _securityStorage.read(key: _OfflineScheduleProviderrKeys._scheduleKey))!);
@@ -28,7 +28,11 @@ class OfflineScheduleProviderImpl implements OfflineScheduleProvider {
   }
 
   @override
-  Future<void> saveSchedule(List<Subject> schedule) async {
+  Future<void> saveData(List<Subject>? schedule) async {
+    if (schedule == null) {
+      return;
+    }
+    
     dynamic jsonList = [];
     for (var subject in schedule) {
       jsonList.add(subject.toJson());
@@ -36,5 +40,10 @@ class OfflineScheduleProviderImpl implements OfflineScheduleProvider {
     await _securityStorage.write(
         key: _OfflineScheduleProviderrKeys._scheduleKey,
         value: jsonEncode(jsonList));
+  }
+  
+  @override
+  Future<bool> isContained() async {
+    return await _securityStorage.containsKey(key: _OfflineScheduleProviderrKeys._scheduleKey);
   }
 }

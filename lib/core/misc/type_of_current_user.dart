@@ -15,7 +15,7 @@ class TypeOfCurrentUser {
 
   /// Возвращает тип текущего пользователя: [Type] ([StudentData] или [EmployeeData])
   Future<Type> getTypeOfCurrentUser() async {
-    UserData? type = await _userDataProvider.getUserData() ??
+    UserData? type = await _userDataProvider.getData() ??
         await _gettingProfileOfCurrentUser.getProfileOfCurrentUser();
     return type.runtimeType;
   }

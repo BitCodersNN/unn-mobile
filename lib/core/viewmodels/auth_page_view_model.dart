@@ -22,7 +22,7 @@ class AuthPageViewModel extends BaseViewModel {
     _resetAuthError();
     var authResult = await _authorisationService.auth(user, password);
     if (authResult == AuthRequestResult.success) {
-      await _authDataProvider.saveAuthData(AuthData(user, password));
+      await _authDataProvider.saveData(AuthData(user, password));
     } else {
       _setAuthError(authResult.errorMessage);
     }

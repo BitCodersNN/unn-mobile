@@ -3,6 +3,7 @@ import 'dart:collection';
 import 'package:flutter/material.dart';
 import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/misc/date_time_ranges.dart';
+import 'package:unn_mobile/core/misc/try_login_and_retrieve_data.dart';
 import 'package:unn_mobile/core/models/schedule_filter.dart';
 import 'package:unn_mobile/core/models/schedule_search_result_item.dart';
 import 'package:unn_mobile/core/models/student_data.dart';
@@ -157,9 +158,9 @@ class ScheduleScreenViewModel extends BaseViewModel {
           _ExclusionID._vacancy.id, displayedWeek);
     }
 
-    final schedule = offline
-        ? await _offlineScheduleProvider.loadSchedule()
-        : await _getScheduleService.getSchedule(_filter);
+    final schedule = await tryLoginAndRetrieveData(
+        () async => await _getScheduleService.getSchedule(filter),
+        _offlineScheduleProvider.getData);
 
     if (schedule == null) {
       throw Exception('Schedule was null');
@@ -174,7 +175,7 @@ class ScheduleScreenViewModel extends BaseViewModel {
       result[subject.dateTimeRange.start.weekday]!.add(subject);
     }
     if (!offline && displayedWeekOffset == 0) {
-      _offlineScheduleProvider.saveSchedule(schedule);
+      _offlineScheduleProvider.saveData(schedule);
     }
     setState(ViewState.idle);
     return result;
