@@ -13,6 +13,7 @@ import 'package:unn_mobile/core/models/subject.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/schedule_screen_view_model.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
+import 'package:unn_mobile/ui/views/main_page/main_page_tab_state.dart';
 import 'package:unn_mobile/ui/views/main_page/schedule/widgets/schedule_item_normal.dart';
 import 'package:unn_mobile/ui/views/main_page/schedule/widgets/schedule_search_suggestion_item.dart';
 
@@ -24,7 +25,8 @@ class ScheduleScreenView extends StatefulWidget {
 }
 
 class _ScheduleScreenViewState extends State<ScheduleScreenView>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin
+    implements MainPageTabState {
   final String _studentText = 'Студент';
   final String _lecturerText = 'Преподаватель';
   final String _groupText = 'Группа';
@@ -33,12 +35,14 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView>
   late FocusNode _searchFocusNode;
   late AutoScrollController _scrollController;
   late SearchController _searchController;
+
+  final tabKeys = [GlobalKey(), GlobalKey(), GlobalKey()];
+
   @override
   void initState() {
     _scrollController = AutoScrollController();
     _tabController = TabController(length: 3, vsync: this);
     _searchFocusNode = FocusNode();
-    _searchController = SearchController();
     super.initState();
   }
 
@@ -57,15 +61,10 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView>
           tabAlignment: TabAlignment.center,
           isScrollable: true,
           tabs: [
-            Tab(
-              text: tabTexts[0],
-            ),
-            Tab(
-              text: tabTexts[1],
-            ),
-            Tab(
-              text: tabTexts[2],
-            ),
+            for (var i = 0; i < tabKeys.length; i++)
+              Tab(
+                text: tabTexts[i],
+              ),
           ],
           controller: _tabController,
         ),
@@ -74,7 +73,7 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView>
             controller: _tabController,
             children: [
               for (int i = 0; i < idTypesForSchedulTab.length; i++)
-                _scheduleTab(theme, idTypesForSchedulTab[i]),
+                _scheduleTab(theme, idTypesForSchedulTab[i], i),
             ],
           ),
         ),
@@ -82,8 +81,9 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView>
     );
   }
 
-  Widget _scheduleTab(ThemeData theme, IDType type) {
+  Widget _scheduleTab(ThemeData theme, IDType type, int index) {
     return BaseView<ScheduleScreenViewModel>(
+      key: tabKeys[index],
       builder: (context, model, child) {
         return Column(
           children: [
@@ -329,10 +329,19 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView>
 
   @override
   void dispose() {
-    _searchController.dispose();
     _tabController.dispose();
     _searchFocusNode.dispose();
     _scrollController.dispose();
     super.dispose();
+  }
+
+  @override
+  void refreshTab() {
+    final model = (tabKeys[_tabController.index].currentState
+            as BaseViewState<ScheduleScreenViewModel>)
+        .model;
+    if (model.displayedWeekOffset != 0) {
+      model.resetWeek();
+    }
   }
 }

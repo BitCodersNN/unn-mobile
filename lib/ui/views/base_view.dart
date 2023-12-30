@@ -10,10 +10,10 @@ class BaseView<T extends BaseViewModel> extends StatefulWidget {
   const BaseView({super.key, required this.builder, this.onModelReady});
 
   @override
-  State<BaseView<T>> createState() => _BaseViewState<T>();
+  State<BaseView<T>> createState() => BaseViewState<T>();
 }
 
-class _BaseViewState<T extends BaseViewModel> extends State<BaseView<T>> {
+class BaseViewState<T extends BaseViewModel> extends State<BaseView<T>> {
   T model = Injector.appInstance.get<T>();
 
   @override
