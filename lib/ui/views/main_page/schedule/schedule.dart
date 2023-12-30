@@ -32,7 +32,6 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView>
 
   @override
   Widget build(BuildContext context) {
-    super.build(context);
     final TypeOfCurrentUser typeOfCurrnetUser =
         Injector.appInstance.get<TypeOfCurrentUser>();
     final tabTexts = _getTabTexts(typeOfCurrnetUser.typeOfUser);
@@ -91,7 +90,4 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView>
         tabKeys[_tabController.index].currentState as ScheduleTabState;
     tabState.refreshTab();
   }
-
-  @override
-  bool get wantKeepAlive => true;
 }
