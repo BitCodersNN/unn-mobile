@@ -43,6 +43,7 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView>
     _scrollController = AutoScrollController();
     _tabController = TabController(length: 3, vsync: this);
     _searchFocusNode = FocusNode();
+    _searchController = SearchController();
     super.initState();
   }
 
