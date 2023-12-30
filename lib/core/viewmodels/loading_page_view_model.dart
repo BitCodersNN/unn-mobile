@@ -52,10 +52,13 @@ class LoadingPageViewModel extends BaseViewModel {
   }
 
   Future<void> _initUserData() async {
-    final profile = await _gettingProfileOfCurrentUser.getProfileOfCurrentUser();
-    if (profile != null) {
-      _userDataProvider.saveData((await _gettingProfileOfCurrentUser.getProfileOfCurrentUser())!);
+    if (await _userDataProvider.isContained()) {
+      await _typeOfCurrnetUser.updateTypeOfCurrentUser();    
     }
-    await _typeOfCurrnetUser.updateTypeOfCurrentUser(); 
+    else {
+      final profile = await _gettingProfileOfCurrentUser.getProfileOfCurrentUser();
+      _userDataProvider.saveData(profile);
+      _typeOfCurrnetUser.typeOfUser = profile.runtimeType;
+    }
   }
 }
