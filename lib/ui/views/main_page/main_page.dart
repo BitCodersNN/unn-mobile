@@ -1,3 +1,4 @@
+import 'package:unn_mobile/ui/views/main_page/exiting/exiting.dart';
 import 'package:unn_mobile/ui/widgets/placeholder.dart' as placeholder;
 import 'package:flutter/material.dart';
 import 'package:unn_mobile/core/viewmodels/main_page_view_model.dart';
@@ -30,6 +31,7 @@ class _MainPageState extends State<MainPage> {
     'placeholder',
     'placeholder',
     'about',
+    'exit'
   ];
   final List<String> navbarRoutes = [
     'placeholder',
@@ -60,6 +62,10 @@ class _MainPageState extends State<MainPage> {
                 case 'schedule':
                   return local_router.Router.createCustomRoute(
                     const ScheduleScreenView(),
+                  );
+                case 'exit':
+                  return local_router.Router.createCustomRoute(
+                    const ExitingPage(),
                   );
                 case 'placeholder':
                   return local_router.Router.createCustomRoute(

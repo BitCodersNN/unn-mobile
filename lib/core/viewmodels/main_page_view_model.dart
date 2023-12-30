@@ -49,6 +49,7 @@ class MainPageViewModel extends BaseViewModel {
     "Библиотечные ресурсы",
     "Сайт оплаты",
     "О нас",
+    "Выйти"
   ];
   String get selectedScreenName {
     return isDrawerItemSelected
