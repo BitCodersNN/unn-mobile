@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 class HttpRequestSender {
+  static const maxTimeout = 4;
   final String _path;
   final String _host;
   final Map<String, dynamic> _queryParams;
@@ -43,7 +44,7 @@ class HttpRequestSender {
   ///
   /// Возращает результат запроса
   Future<HttpClientResponse> postForm(Map<String, dynamic> body,
-      {int timeoutSeconds = 9999}) async {
+      {int timeoutSeconds = maxTimeout}) async {
     final request =
         await _prepareHttpClientRequest(_HttpMethod.post, timeoutSeconds);
 
@@ -66,7 +67,7 @@ class HttpRequestSender {
   /// [timeoutSeconds]: время ожидания
   ///
   /// Возращает результат запроса
-  Future<HttpClientResponse> get({int timeoutSeconds = 9999}) async {
+  Future<HttpClientResponse> get({int timeoutSeconds = maxTimeout}) async {
     final request =
         await _prepareHttpClientRequest(_HttpMethod.get, timeoutSeconds);
 
