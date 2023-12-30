@@ -90,8 +90,7 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView>
             if (!model.offline)
               SearchAnchor(
                 viewOnSubmitted: (value) async {
-                  if(value == '' && value != model.lastSearchQuery)
-                  {
+                  if (value == '' && value != model.lastSearchQuery) {
                     await model.submitSearch(value);
                   }
                   _searchController.closeView(value);
