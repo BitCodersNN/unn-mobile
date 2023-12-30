@@ -47,7 +47,7 @@ class ScheduleScreenViewModel extends BaseViewModel {
   Future<Map<int, List<Subject>>>? _scheduleLoader;
   Future<Map<int, List<Subject>>>? get scheduleLoader => _scheduleLoader;
   int displayedWeekOffset = 0;
-  DateTimeRange get displayedWeek => _filter.dateTimeRange;
+  DateTimeRange get displayedWeek => offline ?  DateTimeRanges.currentWeek() : _filter.dateTimeRange;
   ScheduleFilter _filter =
       ScheduleFilter(IDType.student, '', DateTimeRanges.currentWeek());
   String _searchPlaceholderText = '';
@@ -211,7 +211,6 @@ class ScheduleScreenViewModel extends BaseViewModel {
 
   void init(IDType type,
       {void Function(Map<int, List<Subject>> schedule)? onScheduleLoaded}) {
-    setState(ViewState.busy);
     _onScheduleLoaded = onScheduleLoaded;
     _idType = type;
     switch (type) {
@@ -227,7 +226,6 @@ class ScheduleScreenViewModel extends BaseViewModel {
       default:
         break;
     }
-    setState(ViewState.idle);
   }
 
   void _updateScheduleLoader() {
