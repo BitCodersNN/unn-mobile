@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/misc/type_of_current_user.dart';
 import 'package:unn_mobile/core/models/employee_data.dart';
-import 'package:unn_mobile/core/models/online_status_data.dart';
 import 'package:unn_mobile/core/models/schedule_filter.dart';
 import 'package:unn_mobile/ui/builders/online_status_stream_builder.dart';
 import 'package:unn_mobile/ui/views/main_page/main_page_tab_state.dart';
