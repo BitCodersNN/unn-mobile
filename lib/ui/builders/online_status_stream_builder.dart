@@ -26,7 +26,7 @@ class OnlineStatusStreamBuilder extends StatelessWidget {
                 context: context,
                 builder: (BuildContext context) => AlertDialog(
                   content: onlineStatusData.isOnline
-                      ? const Text('Используется онлайн-режим', textAlign: TextAlign.center)
+                      ? const Text('Соединение с Порталом восстановлено', textAlign: TextAlign.center)
                       : const Text('Не удалось соединиться с Порталом. Используется офлайн-режим', textAlign: TextAlign.center,),
                   contentPadding:
                       const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
