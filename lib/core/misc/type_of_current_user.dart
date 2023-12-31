@@ -11,9 +11,7 @@ class TypeOfCurrentUser {
   final GettingProfileOfCurrentUser _gettingProfileOfCurrentUser =
       Injector.appInstance.get<GettingProfileOfCurrentUser>();
 
-  Type _typeOfUser = StudentData;
-  Type get typeOfUser => _typeOfUser;
-  set typeOfUser(Type type) => typeOfUser = type;
+  Type typeOfUser = StudentData;
 
   /// Возвращает тип текущего пользователя: [Type] ([StudentData] или [EmployeeData])
   Future<Type> getTypeOfCurrentUser() async {
@@ -24,6 +22,6 @@ class TypeOfCurrentUser {
 
   /// Обновляет тип текущего пользователя
   Future<void> updateTypeOfCurrentUser() async {
-    _typeOfUser = await getTypeOfCurrentUser();
+    typeOfUser = await getTypeOfCurrentUser();
   }
 }
