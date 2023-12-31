@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:collection';
+import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/misc/date_time_ranges.dart';
@@ -197,11 +198,11 @@ class ScheduleScreenViewModel extends BaseViewModel {
 
   Future<List<ScheduleSearchResultItem>> getSearchSuggestions(
       String value) async {
-    final suggestions =
-        await _searchIdOnPortalService.findIDOnPortal(value, _idType);
-    if (suggestions == null) {
-      throw Exception('Received null from suggestions service');
-    }
+    final suggestions = await tryLoginAndRetrieveData(
+      () async => await _searchIdOnPortalService.findIDOnPortal(value, _idType),
+      () async => <ScheduleSearchResultItem>[]
+    );
+
     return suggestions;
   }
 
