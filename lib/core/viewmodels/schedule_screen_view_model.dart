@@ -197,11 +197,11 @@ class ScheduleScreenViewModel extends BaseViewModel {
 
   Future<List<ScheduleSearchResultItem>> getSearchSuggestions(
       String value) async {
-    final suggestions =
-        await _searchIdOnPortalService.findIDOnPortal(value, _idType);
-    if (suggestions == null) {
-      throw Exception('Received null from suggestions service');
-    }
+    final suggestions = await tryLoginAndRetrieveData(
+      () async => await _searchIdOnPortalService.findIDOnPortal(value, _idType),
+      () async => <ScheduleSearchResultItem>[]
+    );
+
     return suggestions;
   }
 
