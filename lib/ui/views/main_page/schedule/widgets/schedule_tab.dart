@@ -29,14 +29,13 @@ class ScheduleTabState extends State<ScheduleTab>
   final _viewKey = GlobalKey();
 
   bool _searchViewOpen = false;
-
+  String searchQueryForRestore = "";
   @override
   void initState() {
     super.initState();
     _searchController.addListener(() {
-      if (_searchViewOpen && !_searchController.isOpen) {
-        _searchFocusNode.unfocus();
-        SystemChannels.textInput.invokeMethod('TextInput.hide');
+      if (!_searchViewOpen && _searchController.isOpen) {
+        searchQueryForRestore = _searchController.text;
       }
       _searchViewOpen = _searchController.isOpen;
     });
@@ -46,6 +45,7 @@ class ScheduleTabState extends State<ScheduleTab>
   Widget build(BuildContext context) {
     super.build(context);
     final theme = Theme.of(context);
+    
     return BaseView<ScheduleScreenViewModel>(
       key: _viewKey,
       builder: (context, model, child) {
@@ -59,11 +59,21 @@ class ScheduleTabState extends State<ScheduleTab>
           children: [
             if (!model.offline)
               flutter_changed.SearchAnchor(
+                textInputAction: TextInputAction.search,
+                viewOnBackButtonClick: (value) {
+                  _searchController.text = searchQueryForRestore;
+                  Future.delayed(
+                    const Duration(milliseconds: 50),
+                    () {
+                      SystemChannels.textInput.invokeMethod('TextInput.hide');
+                    },
+                  );
+                },
                 viewOnSubmitted: (value) async {
                   if (value == '' && value != model.lastSearchQuery) {
                     await model.submitSearch(value);
                   }
-                  _searchController.closeView(value);
+                  _searchController.closeView(searchQueryForRestore);
                   Future.delayed(
                     const Duration(milliseconds: 50),
                     () {
