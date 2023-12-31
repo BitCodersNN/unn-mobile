@@ -37,7 +37,7 @@ class ScheduleScreenViewModel extends BaseViewModel {
   final String _lecturerNameText = 'Имя преподавателя';
   final String _groupNameText = 'Название группы';
 
-  final String _currentUserId = '';
+  String _currentId = '';
 
   String selectedId = '';
   String lastSearchQuery = '';
@@ -67,6 +67,7 @@ class ScheduleScreenViewModel extends BaseViewModel {
         if (value.idType == idType) {
           _filter = ScheduleFilter(
               value.idType, value.id, DateTimeRanges.currentWeek());
+          _currentId = value.id;
           _updateScheduleLoader();
         }
         notifyListeners();
@@ -86,6 +87,7 @@ class ScheduleScreenViewModel extends BaseViewModel {
               value.eduGroup, IDType.group);
           _filter = ScheduleFilter(IDType.group, groupID!.first.id,
               DateTimeRanges.currentWeek());
+          _currentId = groupID.first.id;
           _updateScheduleLoader();
         }
         notifyListeners();
@@ -181,7 +183,7 @@ class ScheduleScreenViewModel extends BaseViewModel {
       addHistoryItem(query);
       _filter = ScheduleFilter(_idType, searchResult[0].id, displayedWeek);
     } else {
-      _filter = ScheduleFilter(_idType, _currentUserId, displayedWeek);
+      _filter = ScheduleFilter(_idType, _currentId, displayedWeek);
     }
 
     final loader = _getScheduleLoader();
