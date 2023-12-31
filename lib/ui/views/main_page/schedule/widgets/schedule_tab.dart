@@ -10,6 +10,7 @@ import 'package:unn_mobile/core/viewmodels/schedule_screen_view_model.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
 import 'package:unn_mobile/ui/views/main_page/schedule/widgets/schedule_item_normal.dart';
 import 'package:unn_mobile/ui/views/main_page/schedule/widgets/schedule_search_suggestion_item.dart';
+import 'package:flutter_changed/search_anchor.dart' as flutter_changed;
 
 class ScheduleTab extends StatefulWidget {
   final IDType type;
@@ -22,7 +23,7 @@ class ScheduleTab extends StatefulWidget {
 
 class ScheduleTabState extends State<ScheduleTab>
     with AutomaticKeepAliveClientMixin {
-  final _searchController = SearchController();
+  final _searchController = flutter_changed.SearchController();
   final _searchFocusNode = FocusNode();
   final _scrollController = AutoScrollController();
   final _viewKey = GlobalKey();
@@ -57,7 +58,7 @@ class ScheduleTabState extends State<ScheduleTab>
         return Column(
           children: [
             if (!model.offline)
-              SearchAnchor(
+              flutter_changed.SearchAnchor(
                 viewOnSubmitted: (value) async {
                   if (value == '' && value != model.lastSearchQuery) {
                     await model.submitSearch(value);
