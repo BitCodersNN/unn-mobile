@@ -45,7 +45,7 @@ class ScheduleTabState extends State<ScheduleTab>
   Widget build(BuildContext context) {
     super.build(context);
     final theme = Theme.of(context);
-    
+
     return BaseView<ScheduleScreenViewModel>(
       key: _viewKey,
       builder: (context, model, child) {
@@ -119,13 +119,15 @@ class ScheduleTabState extends State<ScheduleTab>
                   );
                 },
                 suggestionsBuilder: (context, controller) async {
+                  final rawSuggestions =
+                      await model.getSearchSuggestions(controller.text); // Неэффективно, но работает >:(
                   if (controller.text == '') {
                     final suggestions = await model.getHistorySuggestions();
                     return suggestions.map((e) => ScheduleSearchSuggestionItem(
                           itemName: e,
                           onSelected: () async {
                             controller.closeView(e);
-                            if(model.lastSearchQuery != e) {
+                            if (model.lastSearchQuery != e) {
                               model.lastSearchQuery = e;
                               await model.addHistoryItem(e);
                               await model.submitSearch(e);
@@ -133,27 +135,23 @@ class ScheduleTabState extends State<ScheduleTab>
                           },
                         ));
                   } else {
-                    final rawSuggestions =
-                        await model.getSearchSuggestions(controller.text);
                     return rawSuggestions.map<ScheduleSearchSuggestionItem>(
                       (e) => ScheduleSearchSuggestionItem(
                         itemName: e.label,
                         itemDescription: e.description,
                         onSelected: () {
-                          setState(() {
-                            controller.closeView(e.label);
-                            Future.delayed(
-                              const Duration(milliseconds: 50),
-                              () {
-                                SystemChannels.textInput
-                                    .invokeMethod('TextInput.hide');
-                              },
-                            );
-                            model.lastSearchQuery = controller.text;
-                            model.addHistoryItem(e.label);
-                            model.selectedId = e.id;
-                            model.updateFilter(e.id);
-                          });
+                          controller.closeView(e.label);
+                          Future.delayed(
+                            const Duration(milliseconds: 50),
+                            () {
+                              SystemChannels.textInput
+                                  .invokeMethod('TextInput.hide');
+                            },
+                          );
+                          model.lastSearchQuery = controller.text;
+                          model.addHistoryItem(e.label);
+                          model.selectedId = e.id;
+                          model.updateFilter(e.id);
                         },
                       ),
                     );
