@@ -65,6 +65,7 @@ class _MainPageState extends State<MainPage> {
                   );
                 case '':
                 case 'schedule':
+                  tabKeys[1] = GlobalKey<State<ScheduleScreenView>>();
                   return local_router.Router.createCustomRoute(
                     ScheduleScreenView(key: tabKeys[1]),
                   );
