@@ -70,10 +70,12 @@ class ScheduleTabState extends State<ScheduleTab>
                   );
                 },
                 viewOnSubmitted: (value) async {
+                  var resultingFieldText = searchQueryForRestore;
                   if (value == '' && value != model.lastSearchQuery) {
                     await model.submitSearch(value);
+                    resultingFieldText = value;
                   }
-                  _searchController.closeView(searchQueryForRestore);
+                  _searchController.closeView(resultingFieldText);
                   Future.delayed(
                     const Duration(milliseconds: 50),
                     () {
