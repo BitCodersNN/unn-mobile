@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/models/student_data.dart';
@@ -78,7 +79,7 @@ class MainPageViewModel extends BaseViewModel {
           final StudentData studentProfile = value;
           _userNameAndSurname = '${studentProfile.name} ${studentProfile.lastname}';
           _userGroup = studentProfile.eduGroup;
-          _userAvatar = studentProfile.fullUrlPhoto == null ? null : NetworkImage(studentProfile.fullUrlPhoto!);
+          _userAvatar = studentProfile.fullUrlPhoto == null ? null : CachedNetworkImageProvider(studentProfile.fullUrlPhoto!);
         }
         setState(ViewState.idle);
       }

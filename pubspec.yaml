@@ -1,7 +1,7 @@
 name: unn_mobile
 description: A mobile application for UNN Portal website
 publish_to: 'none'
-version: 0.1.2+7
+version: 0.1.2+8
 
 environment:
   sdk: '>=3.1.2 <4.0.0'
@@ -27,6 +27,7 @@ dependencies:
   flutter_cache_manager: ^3.3.1
   flutter_changed:
     path: ./flutter_changed/
+  cached_network_image: ^3.3.1
 
 
 dev_dependencies:
