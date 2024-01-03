@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/misc/type_of_current_user.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
@@ -58,6 +59,7 @@ class LoadingPageViewModel extends BaseViewModel {
     else {
       final profile = await _gettingProfileOfCurrentUser.getProfileOfCurrentUser();
       _userDataProvider.saveData(profile);
+      DefaultCacheManager().downloadFile(profile!.fullUrlPhoto!);
       _typeOfCurrnetUser.typeOfUser = profile.runtimeType;
     }
   }
