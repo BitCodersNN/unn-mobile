@@ -1360,7 +1360,6 @@ class _SearchBarState extends State<SearchBar> {
                     child: TextField(
                       autofocus: widget.autoFocus,
                       onTap: widget.onTap,
-                      onTapAlwaysCalled: true,
                       focusNode: _focusNode,
                       onChanged: widget.onChanged,
                       onSubmitted: widget.onSubmitted,
