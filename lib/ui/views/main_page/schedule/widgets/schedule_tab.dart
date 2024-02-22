@@ -225,7 +225,20 @@ class ScheduleTabState extends State<ScheduleTab>
             pinned: true,
           ),
           if (model.state == ViewState.idle && snapshot.hasData)
-            _scheduleSliverList(model, snapshot, theme)
+            if (snapshot.data!.isNotEmpty)
+              _scheduleSliverList(model, snapshot, theme)
+            else
+              SliverToBoxAdapter(
+                child: Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      "На этой неделе занятий нет :)",
+                      style: theme.textTheme.bodyLarge,
+                    ),
+                  ),
+                ),
+              )
           else
             const SliverToBoxAdapter(
               child: Center(
