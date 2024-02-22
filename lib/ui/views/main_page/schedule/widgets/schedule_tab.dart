@@ -49,12 +49,6 @@ class ScheduleTabState extends State<ScheduleTab>
     return BaseView<ScheduleScreenViewModel>(
       key: _viewKey,
       builder: (context, model, child) {
-        if (model.state == ViewState.busy) {
-          return const Center(
-            child: SizedBox(
-                width: 200, height: 200, child: CircularProgressIndicator()),
-          );
-        }
         return Column(
           children: [
             if (!model.offline)
