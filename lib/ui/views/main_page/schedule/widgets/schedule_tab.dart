@@ -113,8 +113,8 @@ class ScheduleTabState extends State<ScheduleTab>
                   );
                 },
                 suggestionsBuilder: (context, controller) async {
-                  final rawSuggestions =
-                      await model.getSearchSuggestions(controller.text); // Неэффективно, но работает >:(
+                  final rawSuggestions = await model.getSearchSuggestions(
+                      controller.text); // Неэффективно, но работает >:(
                   if (controller.text == '') {
                     final suggestions = await model.getHistorySuggestions();
                     return suggestions.map((e) => ScheduleSearchSuggestionItem(
@@ -196,101 +196,107 @@ class ScheduleTabState extends State<ScheduleTab>
       ThemeData theme,
       AsyncSnapshot<Map<int, List<Subject>>> snapshot,
       ScheduleScreenViewModel model) {
-    if (!snapshot.hasData || model.state == ViewState.busy) {
-      return const Expanded(
-        child: Center(
-          child: SizedBox(
-            width: 70,
-            height: 70,
-            child: CircularProgressIndicator(),
-          ),
-        ),
-      );
-    }
     final headerFormatter = DateFormat.yMd('ru_RU');
 
     return Expanded(
       child: CustomScrollView(
         controller: _scrollController,
         slivers: [
-          if (model.state != ViewState.busy && !model.offline)
-            SliverAppBar(
-              leading: IconButton(
-                onPressed: () async {
-                  await model.decrementWeek();
-                },
-                icon: const Icon(Icons.chevron_left_sharp),
-              ),
-              actions: [
-                IconButton(
-                  onPressed: () async {
-                    await model.incrementWeek();
-                  },
-                  icon: const Icon(Icons.chevron_right),
-                ),
-              ],
-              centerTitle: true,
-              title: Text(
-                  '${headerFormatter.format(model.displayedWeek.start)} - ${headerFormatter.format(model.displayedWeek.end)}'),
-              backgroundColor: theme.colorScheme.background,
-              surfaceTintColor: Colors.transparent,
-              pinned: true,
-            ),
-          SliverList(
-            delegate: SliverChildBuilderDelegate(
-              (context, index) {
-                var formatedDate = DateFormat.MMMMEEEEd('ru_RU').format(
-                  model.displayedWeek.start.add(
-                    Duration(days: snapshot.data!.keys.elementAt(index) - 1),
-                  ),
-                );
-
-                return AutoScrollTag(
-                  key: ValueKey(index),
-                  controller: _scrollController,
-                  index: index,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(20.0),
-                        child: Container(
-                          decoration: (snapshot.data!.values
-                                  .elementAt(index)
-                                  .first
-                                  .dateTimeRange
-                                  .start
-                                  .isSameDate(DateTime.now()))
-                              ? BoxDecoration(
-                                  border: Border(
-                                      bottom: BorderSide(
-                                          color: theme.primaryColor)))
-                              : null,
-                          child: Text(
-                            formatedDate,
-                            textAlign: TextAlign.left,
-                            style: theme.textTheme.titleLarge!.copyWith(),
-                          ),
-                        ),
-                      ),
-                      for (int i = 0;
-                          i < snapshot.data!.values.elementAt(index).length;
-                          i++)
-                        ScheduleItemNormal(
-                            subject: snapshot.data!.values.elementAt(index)[i],
-                            even: i % 2 == 0),
-                      /*if (index == snapshot.data!.length - 1)
-                        const SizedBox(
-                          height: 80,
-                        )*/
-                    ],
-                  ),
-                );
+          SliverAppBar(
+            leading: IconButton(
+              onPressed: () async {
+                await model.decrementWeek();
               },
-              childCount: snapshot.data!.length,
+              icon: const Icon(Icons.chevron_left_sharp),
             ),
+            actions: [
+              IconButton(
+                onPressed: () async {
+                  await model.incrementWeek();
+                },
+                icon: const Icon(Icons.chevron_right),
+              ),
+            ],
+            centerTitle: true,
+            title: Text(
+                '${headerFormatter.format(model.displayedWeek.start)} - ${headerFormatter.format(model.displayedWeek.end)}'),
+            backgroundColor: theme.colorScheme.background,
+            surfaceTintColor: Colors.transparent,
+            pinned: true,
           ),
+          if (model.state == ViewState.idle && snapshot.hasData)
+            _scheduleSliverList(model, snapshot, theme)
+          else
+            const SliverToBoxAdapter(
+              child: Center(
+                child: Padding(
+                  padding: EdgeInsets.all(20.0),
+                  child: SizedBox(
+                    width: 100,
+                    height: 100,
+                    child: CircularProgressIndicator(),
+                  ),
+                ),
+              ),
+            ),
         ],
+      ),
+    );
+  }
+
+  SliverList _scheduleSliverList(ScheduleScreenViewModel model,
+      AsyncSnapshot<Map<int, List<Subject>>> snapshot, ThemeData theme) {
+    return SliverList(
+      delegate: SliverChildBuilderDelegate(
+        (context, index) {
+          var formatedDate = DateFormat.MMMMEEEEd('ru_RU').format(
+            model.displayedWeek.start.add(
+              Duration(days: snapshot.data!.keys.elementAt(index) - 1),
+            ),
+          );
+
+          return AutoScrollTag(
+            key: ValueKey(index),
+            controller: _scrollController,
+            index: index,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Container(
+                    decoration: (snapshot.data!.values
+                            .elementAt(index)
+                            .first
+                            .dateTimeRange
+                            .start
+                            .isSameDate(DateTime.now()))
+                        ? BoxDecoration(
+                            border: Border(
+                                bottom: BorderSide(color: theme.primaryColor)))
+                        : null,
+                    child: Text(
+                      formatedDate,
+                      textAlign: TextAlign.left,
+                      style: theme.textTheme.titleLarge!.copyWith(),
+                    ),
+                  ),
+                ),
+                for (int i = 0;
+                    i < snapshot.data!.values.elementAt(index).length;
+                    i++)
+                  ScheduleItemNormal(
+                      subject: snapshot.data!.values.elementAt(index)[i],
+                      even: i % 2 == 0),
+                /*if (index == snapshot.data!.length - 1)
+                      const SizedBox(
+                        height: 80,
+                      )*/
+              ],
+            ),
+          );
+        },
+        childCount: snapshot.data!.length,
       ),
     );
   }
