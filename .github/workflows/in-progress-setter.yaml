@@ -2,12 +2,12 @@ name: Move issue to In Progress column
 
 on:
   pull_request:
-    types:
-      - ready_for_review
-
+    branches:
+      - develop
 jobs:
   manage-project:
     runs-on: ubuntu-latest
+    environment: CI
     permissions:
       issues: write
     steps:
