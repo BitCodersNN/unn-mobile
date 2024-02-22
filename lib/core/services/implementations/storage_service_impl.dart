@@ -5,7 +5,9 @@ import 'package:unn_mobile/core/services/interfaces/storage_service.dart';
 
 class StorageServiceImpl implements StorageService {
   SharedPreferences? _sharedPreferences;
-  final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
+  final FlutterSecureStorage _secureStorage = const FlutterSecureStorage(aOptions: AndroidOptions(
+    encryptedSharedPreferences: true
+  ));
 
   final Map<String, String?> _secureCache = {};
   final Map<String, String?> _nonSecureCache = {};
