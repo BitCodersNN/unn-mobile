@@ -232,6 +232,9 @@ class ScheduleTabState extends State<ScheduleTab>
                 backgroundColor: theme.colorScheme.background,
                 surfaceTintColor: Colors.transparent,
                 pinned: true,
+                toolbarHeight: 50,
+                collapsedHeight: 50,
+                expandedHeight: 50,
               ),
               if (model.state == ViewState.idle && snapshot.hasData)
                 if (snapshot.data!.isNotEmpty)
