@@ -203,10 +203,19 @@ class ScheduleTabState extends State<ScheduleTab>
         builder: (context, snapshot) {
           return CustomScrollView(
             controller: _scrollController,
+            cacheExtent: 10,
             slivers: [
-              const SliverToBoxAdapter(child: SizedBox(height: 10),),
               if(!model.offline) SliverPersistentHeader(
-                delegate: PersistentHeader(widget: _searchBar(model, context)),
+                delegate: PersistentHeader(
+                  maxExtent: 60,
+                  widget: Container(
+                    color: theme.colorScheme.background,
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(0, 10, 0, 5),
+                      child: _searchBar(model, context),
+                    ),
+                  ),
+                ),
                 pinned: false,
                 floating: true,
               ),
