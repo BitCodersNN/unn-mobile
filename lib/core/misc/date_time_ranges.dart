@@ -8,6 +8,13 @@ class DateTimeRanges{
     return DateTimeRange(start: startOfWeek, end: endOfWeek);
   }
 
+  static DateTimeRange nextWeek() {
+    final startOfWeek = DateTime.now().add(Duration(days: 8 - DateTime.now().weekday));
+    final endOfWeek = startOfWeek.add(const Duration(days: 6));
+    
+    return DateTimeRange(start: startOfWeek, end: endOfWeek);
+  }
+
   static DateTimeRange currentMonth(){
     final now = DateTime.now();
     final endOfMonth = DateTime(now.year, now.month + 1, 1).subtract(const Duration(days: 1));
