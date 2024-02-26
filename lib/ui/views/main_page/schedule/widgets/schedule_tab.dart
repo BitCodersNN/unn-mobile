@@ -75,7 +75,8 @@ class ScheduleTabState extends State<ScheduleTab>
               await _scrollController.scrollToIndex(todayScheduleIndex,
                   preferPosition: AutoScrollPosition.begin);
             } else {
-              await _scrollController.scrollToIndex(0);
+              await _scrollController.scrollToIndex(0,
+                  preferPosition: AutoScrollPosition.begin);
             }
           },
         );
