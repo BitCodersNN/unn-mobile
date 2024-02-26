@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class PersistentHeader extends SliverPersistentHeaderDelegate {
   final Widget widget;
 
-  PersistentHeader({required this.widget});
+  const PersistentHeader({required this.widget});
 
   @override
   Widget build(
