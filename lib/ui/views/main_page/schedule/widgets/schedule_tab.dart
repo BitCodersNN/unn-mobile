@@ -219,7 +219,7 @@ class ScheduleTabState extends State<ScheduleTab>
                 pinned: false,
                 floating: true,
               ),
-              SliverAppBar(
+              if(snapshot.connectionState != ConnectionState.none) SliverAppBar(
                 leading: model.offline ? null : IconButton(
                   onPressed: () async {
                     await model.decrementWeek();
@@ -260,7 +260,7 @@ class ScheduleTabState extends State<ScheduleTab>
                       ),
                     ),
                   )
-              else
+              else if(snapshot.connectionState != ConnectionState.none)
                 const SliverToBoxAdapter(
                   child: Center(
                     child: Padding(
