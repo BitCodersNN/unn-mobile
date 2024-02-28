@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - "develop"
+      - "feature/227"
 jobs:
   build-deploy:
     runs-on: ubuntu-latest
