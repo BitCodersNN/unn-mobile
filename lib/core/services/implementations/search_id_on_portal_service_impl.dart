@@ -22,32 +22,36 @@ class SearchIdOnPortalServiceImpl implements SearchIdOnPortalService {
   final String _id = 'id';
   final String _description = 'description';
 
-  Future<String?> _getIdOfLoggedInStudent(String uns) async{
-    final requstSender = HttpRequestSender(path: _ruzapi + _studentinfo, queryParams: {_uns: uns});
+  Future<String?> _getIdOfLoggedInStudent(String uns) async {
+    final requstSender = HttpRequestSender(
+        path: _ruzapi + _studentinfo, queryParams: {_uns: uns});
 
-     HttpClientResponse response;
-      try {
-        response = await requstSender.get();
-      } catch (e) {
-        log(e.toString());
-        return null;
-      }
+    HttpClientResponse response;
+    try {
+      response = await requstSender.get();
+    } catch (e) {
+      log(e.toString());
+      return null;
+    }
 
-      final statusCode = response.statusCode;
+    final statusCode = response.statusCode;
 
-      if (statusCode != 200) {
-        return null;
-      }
+    if (statusCode != 200) {
+      return null;
+    }
 
-      Map<dynamic, dynamic> jsonMap = jsonDecode(await HttpRequestSender.responseToStringBody(response));
+    Map<dynamic, dynamic> jsonMap =
+        jsonDecode(await HttpRequestSender.responseToStringBody(response));
 
-      return jsonMap[_id];
+    return jsonMap[_id];
   }
 
   @override
-  Future<IDForSchedule?> getIdOfLoggedInUser() async{
-    final gettingProfileOfCurrentUser =  Injector.appInstance.get<GettingProfileOfCurrentUser>();
-    final userData = await gettingProfileOfCurrentUser.getProfileOfCurrentUser();
+  Future<IDForSchedule?> getIdOfLoggedInUser() async {
+    final gettingProfileOfCurrentUser =
+        Injector.appInstance.get<GettingProfileOfCurrentUser>();
+    final userData =
+        await gettingProfileOfCurrentUser.getProfileOfCurrentUser();
 
     if (userData is EmployeeData) {
       return IDForSchedule(IDType.person, userData.syncID);
@@ -65,8 +69,11 @@ class SearchIdOnPortalServiceImpl implements SearchIdOnPortalService {
   }
 
   @override
-  Future<List<ScheduleSearchResultItem>?> findIDOnPortal(String value, IDType valueType) async {
-    final requstSender = HttpRequestSender(path: _ruzapi + _search, queryParams: {_term: value, _type: valueType.name});
+  Future<List<ScheduleSearchResultItem>?> findIDOnPortal(
+      String value, IDType valueType) async {
+    final requstSender = HttpRequestSender(
+        path: _ruzapi + _search,
+        queryParams: {_term: value, _type: valueType.name});
     HttpClientResponse response;
     try {
       response = await requstSender.get();
@@ -81,11 +88,13 @@ class SearchIdOnPortalServiceImpl implements SearchIdOnPortalService {
       return null;
     }
 
-    List<dynamic> jsonList = jsonDecode(await HttpRequestSender.responseToStringBody(response));
+    List<dynamic> jsonList =
+        jsonDecode(await HttpRequestSender.responseToStringBody(response));
 
     List<ScheduleSearchResultItem> result = [];
     for (var jsonMap in jsonList) {
-      result.add(ScheduleSearchResultItem(jsonMap[_id], jsonMap[_label], jsonMap[_description]));
+      result.add(ScheduleSearchResultItem(
+          jsonMap[_id], jsonMap[_label], jsonMap[_description]));
     }
 
     return result;

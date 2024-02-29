@@ -27,29 +27,28 @@ class UnnMobileColors extends ThemeExtension<UnnMobileColors> {
   }
 
   @override
-  ThemeExtension<UnnMobileColors> lerp(covariant ThemeExtension<UnnMobileColors>? other, double t) {
-   if (other == null || other.runtimeType != runtimeType) {
-    return this;
-  }
+  ThemeExtension<UnnMobileColors> lerp(
+      covariant ThemeExtension<UnnMobileColors>? other, double t) {
+    if (other == null || other.runtimeType != runtimeType) {
+      return this;
+    }
 
-  UnnMobileColors otherColors = other as UnnMobileColors;
+    UnnMobileColors otherColors = other as UnnMobileColors;
 
-  return UnnMobileColors(
-    scheduleDayHighlight: Color.lerp(
-        scheduleDayHighlight, otherColors.scheduleDayHighlight, t),
+    return UnnMobileColors(
+      scheduleDayHighlight:
+          Color.lerp(scheduleDayHighlight, otherColors.scheduleDayHighlight, t),
+      scheduleSubjectHighlight: Color.lerp(
+          scheduleSubjectHighlight, otherColors.scheduleSubjectHighlight, t),
+      subjectTypeHighlight: Map.fromIterables(
+        subjectTypeHighlight!.keys,
+        subjectTypeHighlight!.keys.map((SubjectType key) {
+          final Color thisColor = subjectTypeHighlight![key]!;
+          final Color otherColor = otherColors.subjectTypeHighlight![key]!;
 
-    scheduleSubjectHighlight: Color.lerp(
-        scheduleSubjectHighlight, otherColors.scheduleSubjectHighlight, t),
-
-    subjectTypeHighlight: Map.fromIterables(
-      subjectTypeHighlight!.keys,
-      subjectTypeHighlight!.keys.map((SubjectType key) {
-        final Color thisColor = subjectTypeHighlight![key]!;
-        final Color otherColor = otherColors.subjectTypeHighlight![key]!;
-
-        return Color.lerp(thisColor, otherColor, t) ?? thisColor;
-      }),
-    ),
-  );
+          return Color.lerp(thisColor, otherColor, t) ?? thisColor;
+        }),
+      ),
+    );
   }
 }

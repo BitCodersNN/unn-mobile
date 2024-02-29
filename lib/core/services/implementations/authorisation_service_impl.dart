@@ -17,7 +17,6 @@ class AuthorisationServiceImpl implements AuthorisationService {
 
   @override
   Future<AuthRequestResult> auth(String login, String password) async {
-
     if (await _isOffline()) {
       return AuthRequestResult.noInternet;
     }

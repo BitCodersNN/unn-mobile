@@ -16,16 +16,16 @@ enum RequestCalendarPermissionResult {
 
 abstract interface class ExportScheduleService {
   /// Экспортирует расписание в дефолтный календарь устройства
-  /// 
+  ///
   /// Перед вызовом необходимо вызвать [requestCalendarPermission] и убедиться, что разрешение на использование календаря есть
-  /// 
+  ///
   /// [scheduleFilter]: Фильтр, по которому происходит получение расписания
-  /// 
+  ///
   /// Возвращает [ExportScheduleResult]
   Future<ExportScheduleResult> exportSchedule(ScheduleFilter scheduleFilter);
 
   /// Запрашивает  разрешение на использование календаря
-  /// 
+  ///
   /// Возвращает [RequestCalendarPermissionResult]:
   /// - [RequestCalendarPermissionResult.allowed] - если есть разрешение, или пользователь только что его предоставил
   /// - [RequestCalendarPermissionResult.rejected] - если пользователь не предоставил разрешение в всплывающем окне
@@ -33,7 +33,7 @@ abstract interface class ExportScheduleService {
   Future<RequestCalendarPermissionResult> requestCalendarPermission();
 
   /// Открывает настройки приложения
-  /// 
+  ///
   /// Возвращает [true], если можно открыть страницу настроек приложения, в противном случае [false]
   Future<bool> openSettings();
 }

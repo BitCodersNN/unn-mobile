@@ -51,9 +51,7 @@ class ScheduleTabState extends State<ScheduleTab>
       key: _viewKey,
       builder: (context, model, child) {
         return Column(
-          children: [
-              _customScrollView(theme, model)
-          ],
+          children: [_customScrollView(theme, model)],
         );
       },
       onModelReady: (model) {
@@ -192,91 +190,93 @@ class ScheduleTabState extends State<ScheduleTab>
   @override
   bool get wantKeepAlive => true;
 
-  Widget _customScrollView(
-      ThemeData theme,
-      ScheduleScreenViewModel model) {
+  Widget _customScrollView(ThemeData theme, ScheduleScreenViewModel model) {
     final headerFormatter = DateFormat.yMd('ru_RU');
 
     return Expanded(
       child: FutureBuilder(
-        future: model.scheduleLoader,
-        builder: (context, snapshot) {
-          return CustomScrollView(
-            controller: _scrollController,
-            cacheExtent: 10,
-            slivers: [
-              if(!model.offline) SliverPersistentHeader(
-                delegate: PersistentHeader(
-                  maxExtent: 60,
-                  widget: Container(
-                    color: theme.colorScheme.background,
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(0, 10, 0, 5),
-                      child: _searchBar(model, context),
-                    ),
-                  ),
-                ),
-                pinned: false,
-                floating: true,
-              ),
-              if(snapshot.connectionState != ConnectionState.none) SliverAppBar(
-                leading: model.offline ? null : IconButton(
-                  onPressed: () async {
-                    await model.decrementWeek();
-                  },
-                  icon: const Icon(Icons.chevron_left_sharp),
-                ),
-                automaticallyImplyLeading: false,
-                actions: [
-                  if(!model.offline) IconButton(
-                    onPressed: () async {
-                      await model.incrementWeek();
-                    },
-                    icon: const Icon(Icons.chevron_right),
-                  ),
-                ],
-                centerTitle: true,
-                title: Text(
-                    '${headerFormatter.format(model.displayedWeek.start)} - ${headerFormatter.format(model.displayedWeek.end)}'),
-                backgroundColor: theme.colorScheme.background,
-                surfaceTintColor: Colors.transparent,
-                pinned: true,
-                toolbarHeight: 50,
-                collapsedHeight: 50,
-                expandedHeight: 50,
-              ),
-              if (model.state == ViewState.idle && snapshot.hasData)
-                if (snapshot.data!.isNotEmpty)
-                  _scheduleSliverList(model, snapshot, theme)
-                else
-                  SliverToBoxAdapter(
-                    child: Center(
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                          "На этой неделе занятий нет :)",
-                          style: theme.textTheme.bodyLarge,
+          future: model.scheduleLoader,
+          builder: (context, snapshot) {
+            return CustomScrollView(
+              controller: _scrollController,
+              cacheExtent: 10,
+              slivers: [
+                if (!model.offline)
+                  SliverPersistentHeader(
+                    delegate: PersistentHeader(
+                      maxExtent: 60,
+                      widget: Container(
+                        color: theme.colorScheme.background,
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(0, 10, 0, 5),
+                          child: _searchBar(model, context),
                         ),
                       ),
                     ),
-                  )
-              else if(snapshot.connectionState != ConnectionState.none)
-                const SliverToBoxAdapter(
-                  child: Center(
-                    child: Padding(
-                      padding: EdgeInsets.all(20.0),
-                      child: SizedBox(
-                        width: 100,
-                        height: 100,
-                        child: CircularProgressIndicator(),
+                    pinned: false,
+                    floating: true,
+                  ),
+                if (snapshot.connectionState != ConnectionState.none)
+                  SliverAppBar(
+                    leading: model.offline
+                        ? null
+                        : IconButton(
+                            onPressed: () async {
+                              await model.decrementWeek();
+                            },
+                            icon: const Icon(Icons.chevron_left_sharp),
+                          ),
+                    automaticallyImplyLeading: false,
+                    actions: [
+                      if (!model.offline)
+                        IconButton(
+                          onPressed: () async {
+                            await model.incrementWeek();
+                          },
+                          icon: const Icon(Icons.chevron_right),
+                        ),
+                    ],
+                    centerTitle: true,
+                    title: Text(
+                        '${headerFormatter.format(model.displayedWeek.start)} - ${headerFormatter.format(model.displayedWeek.end)}'),
+                    backgroundColor: theme.colorScheme.background,
+                    surfaceTintColor: Colors.transparent,
+                    pinned: true,
+                    toolbarHeight: 50,
+                    collapsedHeight: 50,
+                    expandedHeight: 50,
+                  ),
+                if (model.state == ViewState.idle && snapshot.hasData)
+                  if (snapshot.data!.isNotEmpty)
+                    _scheduleSliverList(model, snapshot, theme)
+                  else
+                    SliverToBoxAdapter(
+                      child: Center(
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(
+                            "На этой неделе занятий нет :)",
+                            style: theme.textTheme.bodyLarge,
+                          ),
+                        ),
+                      ),
+                    )
+                else if (snapshot.connectionState != ConnectionState.none)
+                  const SliverToBoxAdapter(
+                    child: Center(
+                      child: Padding(
+                        padding: EdgeInsets.all(20.0),
+                        child: SizedBox(
+                          width: 100,
+                          height: 100,
+                          child: CircularProgressIndicator(),
+                        ),
                       ),
                     ),
                   ),
-                ),
-            ],
-          ); 
-        }
-      ),
+              ],
+            );
+          }),
     );
   }
 

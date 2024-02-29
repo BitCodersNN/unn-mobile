@@ -21,7 +21,8 @@ class _ExitingPageState extends State<ExitingPage> {
   void initState() {
     super.initState();
     exit().then((value) {
-      Navigator.of(context, rootNavigator: true).pushNamedAndRemoveUntil(Routes.loadingPage, (route) => false);
+      Navigator.of(context, rootNavigator: true)
+          .pushNamedAndRemoveUntil(Routes.loadingPage, (route) => false);
     });
   }
 

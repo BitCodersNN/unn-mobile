@@ -78,10 +78,10 @@ class ScheduleItemNormal extends StatelessWidget {
                   Text(
                     subject.subjectType,
                     style: theme.textTheme.labelLarge!.copyWith(
-                      color: getColorOfSubjectType(theme, subject.subjectTypeEnum),
-                      fontStyle: FontStyle.italic,
-                      overflow: TextOverflow.ellipsis
-                    ),
+                        color: getColorOfSubjectType(
+                            theme, subject.subjectTypeEnum),
+                        fontStyle: FontStyle.italic,
+                        overflow: TextOverflow.ellipsis),
                   ),
                 ],
               ),
@@ -114,8 +114,8 @@ class ScheduleItemNormal extends StatelessWidget {
 
   Color getSurfaceColor(ThemeData theme) {
     final extraColors = theme.extension<UnnMobileColors>()!;
-    if (DateTime.now().isAfter(
-            subject.dateTimeRange.start.subtract(const Duration(minutes: 10))) &&
+    if (DateTime.now().isAfter(subject.dateTimeRange.start
+            .subtract(const Duration(minutes: 10))) &&
         DateTime.now().isBefore(subject.dateTimeRange.end)) {
       return extraColors.scheduleSubjectHighlight!;
     }

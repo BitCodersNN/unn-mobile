@@ -35,8 +35,8 @@ class UserData {
   final String _urlPhotoFirstPart = 'https://portal.unn.ru';
   final String? _urlPhoto;
 
-  const UserData(this._login, this._fullname, this._email, this._phone, this._sex,
-      this._urlPhoto);
+  const UserData(this._login, this._fullname, this._email, this._phone,
+      this._sex, this._urlPhoto);
 
   String? get login => _login;
   Fullname get fullname => _fullname;
@@ -47,8 +47,8 @@ class UserData {
   String? get phone => _phone;
   String get sex => _sex;
   String? get urlPhoto => _urlPhoto;
-  String? get fullUrlPhoto => _urlPhoto != null ? _urlPhotoFirstPart + _urlPhoto! : null;
-
+  String? get fullUrlPhoto =>
+      _urlPhoto != null ? _urlPhotoFirstPart + _urlPhoto! : null;
 
   factory UserData.fromJson(Map<String, Object?> jsonMap) {
     final userJsonMap =
