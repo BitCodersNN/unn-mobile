@@ -61,19 +61,6 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView>
       ),
       offlineWidget: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.only(top: 10),
-            child: Text(
-              tabTexts[0],
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                color: Colors.black,
-                fontFamily: "Inter",
-                fontSize: 17,
-                decorationColor: Colors.blue,
-              ),
-            ),
-          ),
           expanded,
         ],
       ),
