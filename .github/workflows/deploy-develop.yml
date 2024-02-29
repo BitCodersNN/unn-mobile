@@ -43,4 +43,4 @@ jobs:
           firebase_token: ${{ secrets.FIREBASE_TOKEN }}
           app_id: ${{ secrets.FIREBASE_A_APP_ID }}
         run: |
-          firebase --debug --project unn-mobile-1 --token $firebase_token appdistribution:distribute --app "$app_id" --release-notes "$(git log -1 --pretty=%B)" "build/app/outputs/bundle/release/app-release.aab"
+          firebase --debug --project unn-mobile-1 --token $firebase_token appdistribution:distribute --groups "testers" --app "$app_id" --release-notes "$(git log -1 --pretty=%B)" "build/app/outputs/bundle/release/app-release.aab"
