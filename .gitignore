@@ -67,5 +67,8 @@ doc/api/
 .flutter-plugins
 .flutter-plugins-dependencies
 .vscode/launch.json
-
+ios/Runner/GoogleService-Info.plist
+android/app/google-services.json
+ios/firebase_app_id_file.json
+lib/firebase_options.dart
 devtools_options.yaml
