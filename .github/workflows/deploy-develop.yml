@@ -1,0 +1,46 @@
+name: deploy-develop-android
+run-name: Build and deploy develop build for Android
+on:
+  push:
+    branches:
+      - "develop"
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: develop
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.16.9'
+          channel: 'stable'
+      - name: load certificate
+        uses: mobiledevops/secret-to-file-action@v1
+        with:
+          base64-encoded-secret: ${{ secrets.APP_CERTIFICATE }}
+          filename: "keystore.jks"
+          working-directory: ./android/app
+      - name: create credentials
+        env:
+          keystore_pass: ${{ secrets.KEYSTORE_PASS }}
+        run: |
+          echo -e "storePassword: $keystore_pass\nkeyPassword: $keystore_pass\nkeyAlias: upload-unn-mobile\nstoreFile=keystore.jks\n" >> ./android/key.properties
+      - name: install firebase
+        run: curl -sL https://firebase.tools | bash
+      - name: get dependencies
+        run: flutter pub get
+      - name: configure flutterfire
+        env: 
+          firebase_token: ${{ secrets.FIREBASE_TOKEN }}
+        run: |
+          dart pub global activate flutterfire_cli
+          flutterfire configure -t $firebase_token -y -p unn-mobile-1 --platforms=android --android-package-name=ru.unn.unn_mobile
+      - name: build
+        run: flutter build appbundle
+      - name: deploy
+        env:
+          firebase_token: ${{ secrets.FIREBASE_TOKEN }}
+          app_id: ${{ secrets.FIREBASE_A_APP_ID }}
+        run: |
+          firebase --debug --project unn-mobile-1 --token $firebase_token appdistribution:distribute --groups "testers" --app "$app_id" --release-notes "$(git log -1 --pretty=%B)" "build/app/outputs/bundle/release/app-release.aab"

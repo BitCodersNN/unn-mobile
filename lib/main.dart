@@ -1,3 +1,6 @@
+import 'dart:ui';
+
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:injector/injector.dart';
@@ -29,11 +32,25 @@ import 'package:unn_mobile/core/viewmodels/auth_page_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/loading_page_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/schedule_screen_view_model.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setPreferredOrientations(
       [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  FlutterError.onError = (errorDetails) {
+    FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
+  };
+  // Pass all uncaught asynchronous errors that aren't handled by the Flutter framework to Crashlytics
+  PlatformDispatcher.instance.onError = (error, stack) {
+    FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+    return true;
+  };
+
   registerDependencies();
   await initializeDateFormatting('ru_RU', null);
   runApp(const UnnMobile());
@@ -60,11 +77,9 @@ void registerDependencies() {
       () => ScheduleSearchHistoryServiceImpl());
   injector.registerSingleton<GettingProfileOfCurrentUser>(
       () => GettingProfileOfCurrentUserImpl());
-  injector.registerSingleton<UserDataProvider>(
-    () => UserDataProviderImpl());
+  injector.registerSingleton<UserDataProvider>(() => UserDataProviderImpl());
 
-  injector.registerSingleton<TypeOfCurrentUser>(
-    () => TypeOfCurrentUser());
+  injector.registerSingleton<TypeOfCurrentUser>(() => TypeOfCurrentUser());
 
   injector.registerDependency(() => LoadingPageViewModel());
   injector.registerDependency(() => AuthPageViewModel());
