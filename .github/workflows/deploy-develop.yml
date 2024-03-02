@@ -4,6 +4,10 @@ on:
   push:
     branches:
       - "develop"
+    paths:
+      - "android/**"
+      - "lib/**"
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
