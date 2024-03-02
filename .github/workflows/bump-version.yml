@@ -7,7 +7,7 @@ permissions:
   contents: write
 jobs:
   update-version-and-push:
-    if: github.event.pull_request.head.repo.name == github.repository
+    if: github.event.pull_request.head.repo.fork == false
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
