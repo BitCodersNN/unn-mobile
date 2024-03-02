@@ -13,14 +13,13 @@ import 'package:unn_mobile/core/services/interfaces/getting_profile_of_current_u
 class GettingProfileOfCurrentUserImpl implements GettingProfileOfCurrentUser {
   final String _path = 'bitrix/vuz/api/profile/current';
   final String _sessionIdCookieKey = "PHPSESSID";
-
   
   @override
   Future<UserData?> getProfileOfCurrentUser() async {
     final authorisationService = Injector.appInstance.get<AuthorisationService>();
 
     final requstSender = HttpRequestSender(path: _path, cookies: {
-      _sessionIdCookieKey: authorisationService.sessionId as String,
+      _sessionIdCookieKey: authorisationService.sessionId ?? '',
     });
     
     HttpClientResponse response;
@@ -37,8 +36,14 @@ class GettingProfileOfCurrentUserImpl implements GettingProfileOfCurrentUser {
       return null;
     }
 
-    final jsonMap = jsonDecode(await HttpRequestSender.responseToStringBody(response));
-
+    dynamic jsonMap;
+    try {
+      jsonMap = jsonDecode(await HttpRequestSender.responseToStringBody(response));
+    } catch (e) {
+      log(e.toString());
+      return null;
+    }
+    
     return jsonMap['type'] == 'student' ? StudentData.fromJson(jsonMap) : 
       jsonMap['type'] == 'employee' ? EmployeeData.fromJson(jsonMap) : null;
   }

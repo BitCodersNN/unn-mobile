@@ -12,37 +12,49 @@ class _UserDataProvideKeys {
   static const _userDataKey = 'user_data_key';
 }
 
-
 class UserDataProviderImpl implements UserDataProvider {
   static const _student = 'StudentData';
-  static const _employee= 'EmployeeData';
+  static const _employee = 'EmployeeData';
   final _storage = Injector.appInstance.get<StorageService>();
 
   @override
-  Future<UserData?> getUserData() async{
-    if (!(await _storage.containsKey(key: _UserDataProvideKeys._userTypeKey))) {
-      return null;
-    }
-    if (!(await _storage.containsKey(key: _UserDataProvideKeys._userDataKey))) {
+  Future<UserData?> getData() async {
+    if (!(await isContained())) {
       return null;
     }
 
     UserData? userData;
-    final userType = await _storage.read(key: _UserDataProvideKeys._userTypeKey);
+    final userType =
+        await _storage.read(key: _UserDataProvideKeys._userTypeKey);
     if (userType == _student) {
-      userData = StudentData.fromJson(jsonDecode((await _storage.read(key: _UserDataProvideKeys._userDataKey))!));
+      userData = StudentData.fromJson(jsonDecode(
+          (await _storage.read(key: _UserDataProvideKeys._userDataKey))!));
+    } else if (userType == _employee) {
+      userData = EmployeeData.fromJson(jsonDecode(
+          (await _storage.read(key: _UserDataProvideKeys._userDataKey))!));
     }
-    else if (userType == _employee) {
-      userData = EmployeeData.fromJson(jsonDecode((await _storage.read(key: _UserDataProvideKeys._userDataKey))!));
-    }
-    
+
     return userData;
   }
 
   @override
-  Future<void> saveUserData(UserData userData) async {
+  Future<void> saveData(UserData? userData) async {
+    if (userData == null) {
+      return;
+    }
+
     final userType = userData.runtimeType.toString();
-    await _storage.write(key: _UserDataProvideKeys._userTypeKey, value: userType);
-    await _storage.write(key: _UserDataProvideKeys._userDataKey, value: jsonEncode(userData.toJson()));
+    await _storage.write(
+        key: _UserDataProvideKeys._userTypeKey, value: userType);
+    await _storage.write(
+        key: _UserDataProvideKeys._userDataKey,
+        value: jsonEncode(userData.toJson()));
+  }
+
+  @override
+  Future<bool> isContained() async {
+    return (await _storage.containsKey(
+            key: _UserDataProvideKeys._userTypeKey) &&
+        await _storage.containsKey(key: _UserDataProvideKeys._userDataKey));
   }
 }

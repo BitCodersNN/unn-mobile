@@ -21,7 +21,7 @@ abstract interface class ExportScheduleService {
   /// 
   /// [scheduleFilter]: Фильтр, по которому происходит получение расписания
   /// 
-  /// Возращает [ExportScheduleResult]
+  /// Возвращает [ExportScheduleResult]
   Future<ExportScheduleResult> exportSchedule(ScheduleFilter scheduleFilter);
 
   /// Запрашивает  разрешение на использование календаря

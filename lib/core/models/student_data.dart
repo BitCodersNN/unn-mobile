@@ -63,24 +63,25 @@ class StudentData extends UserData {
     }
 
     @override
-    Map<String, dynamic> toJson() => {
-    ... super.toJson(),
-    KeysForStudentDataJsonConverter.eduForm: _eduForm,
-    KeysForStudentDataJsonConverter.eduStatus: _eduStatus,
-    KeysForStudentDataJsonConverter.eduCourse: _eduCourse,
-    KeysForStudentDataJsonConverter.eduYear: _eduYear,
-    KeysForStudentDataJsonConverter.eduLevel: _eduLevel,
-    KeysForStudentDataJsonConverter.faculty: {
-      KeysForStudentDataJsonConverter.title: _faculty,
-    },
-    KeysForStudentDataJsonConverter.eduDirection: {
-      KeysForStudentDataJsonConverter.title: _eduDirection,
-    },
-    KeysForStudentDataJsonConverter.eduGroup: {
-      KeysForStudentDataJsonConverter.title: _eduGroup,
-    },
-    KeysForStudentDataJsonConverter.eduSpecialization: {
-      KeysForStudentDataJsonConverter.title: _eduSpecialization,
-    },
-  };
+    Map<String, dynamic> toJson() {
+    final json = super.toJson();
+    json[KeysForStudentDataJsonConverter.eduForm] = _eduForm;
+    json[KeysForStudentDataJsonConverter.eduStatus] = _eduStatus;
+    json[KeysForStudentDataJsonConverter.eduCourse] = _eduCourse;
+    json[KeysForStudentDataJsonConverter.eduYear] = _eduYear;
+    json[KeysForStudentDataJsonConverter.eduLevel] = _eduLevel;
+
+    json[KeysForStudentDataJsonConverter.faculty] ??= {};
+    json[KeysForStudentDataJsonConverter.faculty][KeysForStudentDataJsonConverter.title] = _faculty;
+
+    json[KeysForStudentDataJsonConverter.eduDirection] ??= {};
+    json[KeysForStudentDataJsonConverter.eduDirection][KeysForStudentDataJsonConverter.title] = _eduDirection;
+
+    json[KeysForStudentDataJsonConverter.eduGroup] ??= {};
+    json[KeysForStudentDataJsonConverter.eduGroup][KeysForStudentDataJsonConverter.title] = _eduGroup;
+
+    json[KeysForStudentDataJsonConverter.eduSpecialization] ??= {};
+    json[KeysForStudentDataJsonConverter.eduSpecialization][KeysForStudentDataJsonConverter.title] = _eduSpecialization;
+    return json;
+  }
 }

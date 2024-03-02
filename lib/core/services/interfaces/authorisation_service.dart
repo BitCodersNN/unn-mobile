@@ -11,7 +11,7 @@ abstract interface class AuthorisationService {
   /// [login]: логин на unn-portal, т.е. номер студенческого билета
   /// [password]: пароль
   ///
-  /// Возращает результат авторизаци
+  /// Возвращает результат авторизаци
   Future<AuthRequestResult> auth(String login, String password);
 
   bool get isAuthorised;

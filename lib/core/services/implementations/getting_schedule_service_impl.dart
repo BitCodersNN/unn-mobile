@@ -47,7 +47,13 @@ class GettingScheduleServiceImpl implements GettingScheduleService {
       return null;
     }
     
-    List<dynamic> jsonList = jsonDecode(await HttpRequestSender.responseToStringBody(response));
+    List<dynamic> jsonList;
+    
+    try {
+      jsonList = jsonDecode(await HttpRequestSender.responseToStringBody(response));
+    } catch(e) {
+      return null;
+    }
 
     List<Subject> schedule = [];
 
