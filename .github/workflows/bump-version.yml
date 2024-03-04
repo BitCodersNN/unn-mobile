@@ -2,7 +2,7 @@ name: bump_app_version
 run-name: Bumping app version
 on: 
   pull_request:
-    types: [ synchronize ]
+    branches: [ "develop" ]
 permissions:
   contents: write
 jobs:
