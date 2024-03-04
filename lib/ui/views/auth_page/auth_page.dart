@@ -18,22 +18,19 @@ class AuthPage extends StatefulWidget {
   State<StatefulWidget> createState() {
     return AuthPageWithState();
   }
-
 }
 
 class AuthPageWithState extends State<AuthPage> {
-
   final _loginTextController = TextEditingController();
   final _passwordTextController = TextEditingController();
 
   bool _hasSubmittedOnce = false;
 
-
   @override
   void initState() {
     super.initState();
 
-    stateUpdater() => setState( () => {} );
+    stateUpdater() => setState(() => {});
 
     _loginTextController.addListener(stateUpdater);
     _passwordTextController.addListener(stateUpdater);
@@ -43,67 +40,53 @@ class AuthPageWithState extends State<AuthPage> {
   Widget build(BuildContext context) {
     return BaseView<AuthPageViewModel>(
       builder: (context, viewModel, child) {
-
         final authTitle = _authTitle();
-        final authBody = _authBody(context, viewModel,
+        final authBody = _authBody(
+            context,
+            viewModel,
             _evaluateAuthLogoHeightFactor(
-              context,
-              0.25,
-              authTitle.preferredSize.height
-            )
-        );
+                context, 0.25, authTitle.preferredSize.height));
 
         return Scaffold(
-          backgroundColor: Colors.white,
-          resizeToAvoidBottomInset: false,
-
-          appBar:
-            authTitle,
-
-          body:
-            authBody
-        );
+            backgroundColor: Colors.white,
+            resizeToAvoidBottomInset: false,
+            appBar: authTitle,
+            body: authBody);
       },
     );
   }
 
-
-  double _evaluateAuthLogoHeightFactor(BuildContext context, double minimumAuthLogoHeightFactor, double titleHeight) {
-
+  double _evaluateAuthLogoHeightFactor(BuildContext context,
+      double minimumAuthLogoHeightFactor, double titleHeight) {
     // Вычисленная экспериментальным путём высота формы,
     // с учётом высоты всех ошибок валидации и ошибки ответа от auth model
     const maximumFormHeight = 452.0;
 
     double screenHeight = context.heightByFactor(1);
 
-    double baseAuthLogoHeightFactor = (screenHeight - maximumFormHeight - titleHeight) / screenHeight;
+    double baseAuthLogoHeightFactor =
+        (screenHeight - maximumFormHeight - titleHeight) / screenHeight;
 
     return math.min(baseAuthLogoHeightFactor, minimumAuthLogoHeightFactor);
-
   }
 
   AppBar _authTitle() {
     return AppBar(
       backgroundColor: Colors.white,
       title: Center(
-        child: Text(
-          "Авторизация",
-
-          style: _baseTextStyle(
-            textColor: _accentColor,
-            fontSize: 25,
-            fontWeight: FontWeight.bold
-          )
-        ),
+        child: Text("Авторизация",
+            style: _baseTextStyle(
+                textColor: _accentColor,
+                fontSize: 25,
+                fontWeight: FontWeight.bold)),
       ),
     );
   }
 
-  Widget _authBody(BuildContext context, AuthPageViewModel viewModel, double authLogoHeightFactor) {
-
+  Widget _authBody(BuildContext context, AuthPageViewModel viewModel,
+      double authLogoHeightFactor) {
     return Center(
       child: Column(
-
         children: [
           _authLogo(context, authLogoHeightFactor),
           _authForm(context, viewModel)
@@ -113,12 +96,12 @@ class AuthPageWithState extends State<AuthPage> {
   }
 
   Widget _authLogo(BuildContext context, double heightFactor) {
-
     double logoHeightFactor = 0.8;
     double paddingHeightFactor = (1 - logoHeightFactor) / 2;
 
     double logoHeight = context.heightByFactor(logoHeightFactor * heightFactor);
-    double paddingHeight = context.heightByFactor(paddingHeightFactor * heightFactor);
+    double paddingHeight =
+        context.heightByFactor(paddingHeightFactor * heightFactor);
 
     return Padding(
       padding: EdgeInsets.symmetric(vertical: paddingHeight),
@@ -127,18 +110,22 @@ class AuthPageWithState extends State<AuthPage> {
   }
 
   Widget _authLogoPic(double height) {
-    return SvgPicture.asset("assets/images/auth-logo.svg", height: height,);
+    return SvgPicture.asset(
+      "assets/images/auth-logo.svg",
+      height: height,
+    );
   }
 
   Widget _authForm(BuildContext context, AuthPageViewModel viewModel) {
-
-    final formContainer = _authFormContainer(context, elements: [
-      _authErrorMessageIfNeeded(context, viewModel),
-      _authFormInputLogin(),
-      _authFormInputPassword(),
-      _authFormForgetPassword(),
-      _authFormLoginButton(context, viewModel),
-    ],
+    final formContainer = _authFormContainer(
+      context,
+      elements: [
+        _authErrorMessageIfNeeded(context, viewModel),
+        _authFormInputLogin(),
+        _authFormInputPassword(),
+        _authFormForgetPassword(),
+        _authFormLoginButton(context, viewModel),
+      ],
     );
 
     return Flexible(
@@ -146,7 +133,8 @@ class AuthPageWithState extends State<AuthPage> {
     );
   }
 
-  Widget _authErrorMessageIfNeeded(BuildContext context, AuthPageViewModel viewModel) {
+  Widget _authErrorMessageIfNeeded(
+      BuildContext context, AuthPageViewModel viewModel) {
     final authErrorMessage = viewModel.authErrorText;
 
     if (authErrorMessage.isEmpty) {
@@ -156,82 +144,73 @@ class AuthPageWithState extends State<AuthPage> {
     return Center(
       child: RichText(
         text: TextSpan(
-
-          style: _baseTextStyle(
-              textColor: Theme.of(context).colorScheme.error,
-              fontSize: 15
-          ),
-
-          children: [
-            const TextSpan(
-              text: "Ошибка: ",
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-            TextSpan(text: "$authErrorMessage!")
-          ]
-        ),
+            style: _baseTextStyle(
+                textColor: Theme.of(context).colorScheme.error, fontSize: 15),
+            children: [
+              const TextSpan(
+                text: "Ошибка: ",
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              TextSpan(text: "$authErrorMessage!")
+            ]),
       ),
     );
   }
 
-  Container _authFormContainer(BuildContext context, {List<Widget> elements = const []}) {
-
+  Container _authFormContainer(BuildContext context,
+      {List<Widget> elements = const []}) {
     final columnForm = Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: elements,
     );
 
-
     return Container(
-      padding: const EdgeInsets.only(
-        left: 20,
-        right: 20,
-        top: 20,
-      ),
-      height: MediaQuery.of(context).size.height,
-      width: double.infinity,
-      decoration: BoxDecoration(
-          color: const Color.fromRGBO(249, 250, 255, 1.0),
-          borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(50.0),
-            topRight: Radius.circular(50.0),
-          ),
-          boxShadow: [
-            BoxShadow(
-              offset: const Offset(0, -1),
-              blurRadius: 10,
-              color: Colors.black.withOpacity(0.3),
+        padding: const EdgeInsets.only(
+          left: 20,
+          right: 20,
+          top: 20,
+        ),
+        height: MediaQuery.of(context).size.height,
+        width: double.infinity,
+        decoration: BoxDecoration(
+            color: const Color.fromRGBO(249, 250, 255, 1.0),
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(50.0),
+              topRight: Radius.circular(50.0),
             ),
-          ]
-      ),
-      child: columnForm
-    );
+            boxShadow: [
+              BoxShadow(
+                offset: const Offset(0, -1),
+                blurRadius: 10,
+                color: Colors.black.withOpacity(0.3),
+              ),
+            ]),
+        child: columnForm);
   }
 
   Widget _authFormInputLogin() {
     return _inputField(
-        labelText: "Логин",
-        errorText: _validateInputOrElseReturnError(_InputType.login),
-        textEditingController: _loginTextController,
+      labelText: "Логин",
+      errorText: _validateInputOrElseReturnError(_InputType.login),
+      textEditingController: _loginTextController,
     );
   }
 
   Widget _authFormInputPassword() {
     return _inputField(
-        obscuredText: true,
-        labelText: "Пароль",
-        errorText: _validateInputOrElseReturnError(_InputType.password),
-        textEditingController: _passwordTextController,
+      obscuredText: true,
+      labelText: "Пароль",
+      errorText: _validateInputOrElseReturnError(_InputType.password),
+      textEditingController: _passwordTextController,
     );
   }
 
-  Container _inputField({
-    required String labelText,
-    required TextEditingController textEditingController,
-    bool obscuredText = false,
-    String? errorText
-  }) {
+  Container _inputField(
+      {required String labelText,
+      required TextEditingController textEditingController,
+      bool obscuredText = false,
+      String? errorText}) {
     return Container(
       padding: const EdgeInsets.only(top: 30),
       child: TextFieldWithBoxShadow(
@@ -241,32 +220,31 @@ class AuthPageWithState extends State<AuthPage> {
         labelText: labelText,
         controller: textEditingController,
       ),
-   );
+    );
   }
 
   Widget _authFormForgetPassword() {
     return Padding(
       padding: const EdgeInsets.only(top: 12),
       child: Text(
-        '',//"Забыли пароль?",
-        style: _baseTextStyle(
-            textColor: const Color.fromRGBO(57, 71, 86, 1.0)
-        ),
+        '', //"Забыли пароль?",
+        style: _baseTextStyle(textColor: const Color.fromRGBO(57, 71, 86, 1.0)),
       ),
     );
   }
 
-  TextStyle _baseTextStyle({Color? textColor, double? fontSize = 17, FontWeight? fontWeight}) {
+  TextStyle _baseTextStyle(
+      {Color? textColor, double? fontSize = 17, FontWeight? fontWeight}) {
     return TextStyle(
-          fontFamily: "Inter",
-          fontSize: fontSize,
-          fontWeight: fontWeight,
-          color: textColor,
-      );
+      fontFamily: "Inter",
+      fontSize: fontSize,
+      fontWeight: fontWeight,
+      color: textColor,
+    );
   }
 
-
-  Widget _authFormLoginButton(BuildContext context, AuthPageViewModel viewModel) {
+  Widget _authFormLoginButton(
+      BuildContext context, AuthPageViewModel viewModel) {
     return Center(
       child: Padding(
         padding: const EdgeInsets.only(top: 50),
@@ -277,26 +255,28 @@ class AuthPageWithState extends State<AuthPage> {
             foregroundColor: _buttonTapColor,
             minimumSize: const Size(300, 50),
           ),
-          child: viewModel.state == ViewState.busy ? const CircularProgressIndicator(color: Colors.white) :
-          Text(
-              "Войти",
-              style: _baseTextStyle(
-                  textColor: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 15,
-              ),
-          ),
+          child: viewModel.state == ViewState.busy
+              ? const CircularProgressIndicator(color: Colors.white)
+              : Text(
+                  "Войти",
+                  style: _baseTextStyle(
+                    textColor: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 15,
+                  ),
+                ),
         ),
       ),
     );
   }
 
   String? _validateInputOrElseReturnError(_InputType type) {
-
-    final value = type == _InputType.login ? _loginTextController.text : _passwordTextController.text;
+    final value = type == _InputType.login
+        ? _loginTextController.text
+        : _passwordTextController.text;
 
     if (_hasSubmittedOnce && value.isEmpty) {
-      return "Введите ${type == _InputType.login ? "логин": "пароль"}!";
+      return "Введите ${type == _InputType.login ? "логин" : "пароль"}!";
     }
 
     if (type == _InputType.login && value.contains(" ")) {
@@ -306,8 +286,8 @@ class AuthPageWithState extends State<AuthPage> {
     return null;
   }
 
-  void _loginButtonTapHandler(BuildContext context, AuthPageViewModel viewModel) {
-
+  void _loginButtonTapHandler(
+      BuildContext context, AuthPageViewModel viewModel) {
     if (viewModel.state == ViewState.busy) {
       return;
     }
@@ -321,26 +301,21 @@ class AuthPageWithState extends State<AuthPage> {
       return;
     }
 
-    viewModel.login(
-        _loginTextController.text,
-        _passwordTextController.text
-    ).then((isLoginSuccess) {
+    viewModel
+        .login(_loginTextController.text, _passwordTextController.text)
+        .then((isLoginSuccess) {
       if (isLoginSuccess) {
         Navigator.pushReplacementNamed(context, Routes.loadingPage);
       }
     });
-
   }
 }
 
 extension on BuildContext {
-
   double heightByFactor(double factor) {
     return MediaQuery.of(this).size.height * factor;
   }
-
 }
-
 
 enum _InputType {
   login,

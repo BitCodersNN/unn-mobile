@@ -40,15 +40,14 @@ class MainPageNavigationBar extends StatelessWidget {
               ),
             ),
             NavigationBar(
-              destinations: _getNavbarDestinations(
-                  model, context),
+              destinations: _getNavbarDestinations(model, context),
               height: 60,
               backgroundColor: Colors.transparent,
               indicatorColor: Colors.transparent,
               indicatorShape: const Border(),
               animationDuration: const Duration(milliseconds: 0),
               selectedIndex: model.selectedBarItem,
-              onDestinationSelected: onDestinationSelected, 
+              onDestinationSelected: onDestinationSelected,
             ),
           ],
         );

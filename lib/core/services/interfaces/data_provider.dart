@@ -1,6 +1,6 @@
 abstract interface class DataProvider<T> {
   /// Получает данные из хранилища
-  /// 
+  ///
   /// Возрващает объект [T]
   Future<T> getData();
 

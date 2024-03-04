@@ -54,7 +54,7 @@ class EmployeeData extends UserData {
   }
 
   @override
-Map<String, dynamic> toJson() {
+  Map<String, dynamic> toJson() {
     final json = super.toJson();
     json[KeysForEmployeeDataJsonConverter.user]
         [KeysForEmployeeDataJsonConverter.syncID] = _syncID;

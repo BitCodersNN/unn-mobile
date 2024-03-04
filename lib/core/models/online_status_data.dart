@@ -2,7 +2,7 @@ import 'dart:async';
 
 class OnlineStatusData {
   late DateTime timeOfLastOnline;
-  
+
   final _controller = StreamController<bool>.broadcast();
   bool _isOnline = false;
 

@@ -30,7 +30,8 @@ class HttpRequestSender {
   /// [response]: результат запроса
   ///
   /// Возращает строку
-  static Future<String> responseToStringBody(HttpClientResponse response) async {
+  static Future<String> responseToStringBody(
+      HttpClientResponse response) async {
     return await response.transform(utf8.decoder).join();
   }
 

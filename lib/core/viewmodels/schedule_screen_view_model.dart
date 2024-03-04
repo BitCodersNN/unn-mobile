@@ -47,7 +47,8 @@ class ScheduleScreenViewModel extends BaseViewModel {
   Future<Map<int, List<Subject>>>? _scheduleLoader;
   Future<Map<int, List<Subject>>>? get scheduleLoader => _scheduleLoader;
   int displayedWeekOffset = 0;
-  DateTimeRange get displayedWeek => offline ?  DateTimeRanges.currentWeek() : _filter.dateTimeRange;
+  DateTimeRange get displayedWeek =>
+      offline ? DateTimeRanges.currentWeek() : _filter.dateTimeRange;
   ScheduleFilter _filter =
       ScheduleFilter(IDType.student, '', DateTimeRanges.currentWeek());
   String _searchPlaceholderText = '';
@@ -58,39 +59,41 @@ class ScheduleScreenViewModel extends BaseViewModel {
 
   void _initHuman(String placeholderText, IDType idType) {
     _searchPlaceholderText = placeholderText;
-    tryLoginAndRetrieveData(_searchIdOnPortalService.getIdOfLoggedInUser, () => null).then(
-      (value) async {
-        if (value == null) {
-          _updateScheduleLoader();
-          return;
-        }
-        if (value.idType == idType) {
-          _filter = ScheduleFilter(
-              value.idType, value.id, DateTimeRanges.currentWeek());
-          _currentId = value.id;
-          _updateScheduleLoader();
-        }
-        notifyListeners();
+    tryLoginAndRetrieveData(
+            _searchIdOnPortalService.getIdOfLoggedInUser, () => null)
+        .then((value) async {
+      if (value == null) {
+        _updateScheduleLoader();
+        return;
+      }
+      if (value.idType == idType) {
+        _filter = ScheduleFilter(
+            value.idType, value.id, DateTimeRanges.currentWeek());
+        _currentId = value.id;
+        _updateScheduleLoader();
+      }
+      notifyListeners();
     });
   }
 
   void _initGroup() {
     _searchPlaceholderText = _groupNameText;
-    tryLoginAndRetrieveData(_gettingProfileOfCurrentUser.getProfileOfCurrentUser, () => null).then(
-      (value) async {
-        if (value == null) {
-          _updateScheduleLoader();
-          return;
-        }
-        if (value is StudentData) {
-          final groupID = await _searchIdOnPortalService.findIDOnPortal(
-              value.eduGroup, IDType.group);
-          _filter = ScheduleFilter(IDType.group, groupID!.first.id,
-              DateTimeRanges.currentWeek());
-          _currentId = groupID.first.id;
-          _updateScheduleLoader();
-        }
-        notifyListeners();
+    tryLoginAndRetrieveData(
+            _gettingProfileOfCurrentUser.getProfileOfCurrentUser, () => null)
+        .then((value) async {
+      if (value == null) {
+        _updateScheduleLoader();
+        return;
+      }
+      if (value is StudentData) {
+        final groupID = await _searchIdOnPortalService.findIDOnPortal(
+            value.eduGroup, IDType.group);
+        _filter = ScheduleFilter(
+            IDType.group, groupID!.first.id, DateTimeRanges.currentWeek());
+        _currentId = groupID.first.id;
+        _updateScheduleLoader();
+      }
+      notifyListeners();
     });
   }
 
@@ -150,7 +153,7 @@ class ScheduleScreenViewModel extends BaseViewModel {
     if (schedule == null) {
       throw Exception('Schedule was null');
     }
-    
+
     final result = SplayTreeMap<int, List<Subject>>();
     for (Subject subject in schedule) {
       if (!result.keys.contains(subject.dateTimeRange.start.weekday)) {
@@ -200,9 +203,9 @@ class ScheduleScreenViewModel extends BaseViewModel {
   Future<List<ScheduleSearchResultItem>> getSearchSuggestions(
       String value) async {
     final suggestions = await tryLoginAndRetrieveData(
-      () async => await _searchIdOnPortalService.findIDOnPortal(value, _idType),
-      () async => <ScheduleSearchResultItem>[]
-    );
+        () async =>
+            await _searchIdOnPortalService.findIDOnPortal(value, _idType),
+        () async => <ScheduleSearchResultItem>[]);
 
     return suggestions;
   }

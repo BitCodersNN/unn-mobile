@@ -26,11 +26,11 @@ class AuthorisationRefreshServiceImpl implements AuthorisationRefreshService {
   }
 
   @override
-  Future<AuthRequestResult?> refreshLogin() async{
+  Future<AuthRequestResult?> refreshLogin() async {
     if (!await _userDataExistsInStorage()) {
       return null;
     }
-    AuthData authData =  await _authDataProvider.getData();
+    AuthData authData = await _authDataProvider.getData();
     return _authorisationService.auth(authData.login, authData.password);
   }
 }

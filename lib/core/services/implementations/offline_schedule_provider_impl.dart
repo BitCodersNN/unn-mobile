@@ -17,7 +17,8 @@ class OfflineScheduleProviderImpl implements OfflineScheduleProvider {
     if (!(await isContained())) {
       return null;
     }
-    var jsonList = jsonDecode((await _securityStorage.read(key: _OfflineScheduleProviderrKeys._scheduleKey))!);
+    var jsonList = jsonDecode((await _securityStorage.read(
+        key: _OfflineScheduleProviderrKeys._scheduleKey))!);
     List<Subject> schedule = [];
 
     for (var jsonMap in jsonList) {
@@ -32,7 +33,7 @@ class OfflineScheduleProviderImpl implements OfflineScheduleProvider {
     if (schedule == null) {
       return;
     }
-    
+
     dynamic jsonList = [];
     for (var subject in schedule) {
       jsonList.add(subject.toJson());
@@ -41,9 +42,10 @@ class OfflineScheduleProviderImpl implements OfflineScheduleProvider {
         key: _OfflineScheduleProviderrKeys._scheduleKey,
         value: jsonEncode(jsonList));
   }
-  
+
   @override
   Future<bool> isContained() async {
-    return await _securityStorage.containsKey(key: _OfflineScheduleProviderrKeys._scheduleKey);
+    return await _securityStorage.containsKey(
+        key: _OfflineScheduleProviderrKeys._scheduleKey);
   }
 }

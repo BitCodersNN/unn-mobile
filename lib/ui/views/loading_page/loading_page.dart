@@ -8,38 +8,36 @@ class LoadingPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BaseView<LoadingPageViewModel>(
-      builder: (context, value, child) => 
-      Scaffold(
+      builder: (context, value, child) => Scaffold(
         body: Center(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
-
             children: [
               _logoTitle("УНИВЕРСИТЕТ"),
               _logoTitle("ЛОБАЧЕВСКОГО"),
               const SizedBox(height: 30),
               Image(
-                  image: AssetImage(DateTime.now().month > 11 || DateTime.now().month < 3 ? "assets/images/new_year_logo.png" : "assets/images/logo.png")
-              ),
+                  image: AssetImage(
+                      DateTime.now().month > 11 || DateTime.now().month < 3
+                          ? "assets/images/new_year_logo.png"
+                          : "assets/images/logo.png")),
             ],
           ),
         ),
       ),
-      onModelReady:(model) => model.disateRoute(context),
+      onModelReady: (model) => model.disateRoute(context),
     );
-  	}
+  }
 
-	Text _logoTitle(String title) {
-		return Text(
-			title,
-			style: const TextStyle(
-				color: Color.fromRGBO(15, 104, 170, 1.0),
-				fontSize: 34.09,
-				fontFamily: "LetoSans"
-			),
-			textAlign: TextAlign.center,
-		);
-	}
-
+  Text _logoTitle(String title) {
+    return Text(
+      title,
+      style: const TextStyle(
+          color: Color.fromRGBO(15, 104, 170, 1.0),
+          fontSize: 34.09,
+          fontFamily: "LetoSans"),
+      textAlign: TextAlign.center,
+    );
+  }
 }
