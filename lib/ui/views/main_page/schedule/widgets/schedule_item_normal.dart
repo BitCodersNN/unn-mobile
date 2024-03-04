@@ -17,6 +17,8 @@ class ScheduleItemNormal extends StatelessWidget {
     final theme = Theme.of(context);
     final DateFormat timeFormatter = DateFormat('HH:mm');
     const ligtherTextColor = Color(0xFF717A84);
+    const verticalPadding = 4.0;
+    const horizontalPadding = 8.0;
     return Padding(
       padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 8.0),
       child: Container(
@@ -28,85 +30,90 @@ class ScheduleItemNormal extends StatelessWidget {
           shape: BoxShape.rectangle,
           color: getSurfaceColor(theme),
         ),
-        height: 90,
-        child: Stack(
-          children: [
-            Positioned(
-              top: 0,
-              left: 0,
-              bottom: 0,
-              child: Container(
-                width: 5,
+        child: IntrinsicHeight(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Container(
+                width: 6,
                 decoration: BoxDecoration(
-                  borderRadius: const BorderRadius.all(Radius.circular(5)),
+                  borderRadius: const BorderRadius.all(Radius.circular(3)),
                   color: getColorOfSubjectType(theme, subject.subjectTypeEnum),
                 ),
               ),
-            ),
-            Positioned(
-              left: 30,
-              top: 10,
-              bottom: 10,
-              right: 70,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    subject.name,
-                    style: theme.textTheme.titleMedium!
-                        .copyWith(fontWeight: FontWeight.bold),
-                    overflow: TextOverflow.ellipsis,
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: verticalPadding,
+                    horizontal: horizontalPadding,
                   ),
-                  Row(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Icon(
-                        Icons.location_on,
-                        color: ligtherTextColor,
-                        size: 16,
+                      Text(
+                        subject.name,
+                        style: theme.textTheme.titleMedium!
+                            .copyWith(fontWeight: FontWeight.bold),
+                        overflow: TextOverflow.ellipsis,
+                        softWrap: false,
                       ),
-                      Expanded(
-                        child: Text(
-                          '${subject.address.auditorium}/${subject.address.building}',
-                          style: theme.textTheme.labelLarge!
-                              .copyWith(color: ligtherTextColor),
-                          overflow: TextOverflow.ellipsis,
-                        ),
+                      Row(
+                        children: [
+                          const Icon(
+                            Icons.location_on,
+                            color: ligtherTextColor,
+                            size: 16,
+                          ),
+                          Expanded(
+                            child: Text(
+                              '${subject.address.auditorium}/${subject.address.building}',
+                              style: theme.textTheme.labelLarge!
+                                  .copyWith(color: ligtherTextColor),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
+                      Text(
+                        subject.subjectType,
+                        style: theme.textTheme.labelLarge!.copyWith(
+                            color: getColorOfSubjectType(
+                                theme, subject.subjectTypeEnum),
+                            fontStyle: FontStyle.italic,
+                            overflow: TextOverflow.ellipsis),
                       ),
                     ],
                   ),
-                  Text(
-                    subject.subjectType,
-                    style: theme.textTheme.labelLarge!.copyWith(
-                      color: getColorOfSubjectType(theme, subject.subjectTypeEnum),
-                      fontStyle: FontStyle.italic,
-                      overflow: TextOverflow.ellipsis
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Positioned(
-              top: 10,
-              right: 10,
-              child: Text(
-                timeFormatter.format(subject.dateTimeRange.start),
-                style: theme.textTheme.titleMedium!
-                    .copyWith(fontWeight: FontWeight.bold),
-              ),
-            ),
-            Positioned(
-              right: 10,
-              bottom: 10,
-              child: Text(
-                timeFormatter.format(subject.dateTimeRange.end),
-                style: theme.textTheme.titleMedium!.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: ligtherTextColor,
                 ),
               ),
-            )
-          ],
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  vertical: verticalPadding,
+                  horizontal: horizontalPadding,
+                ),
+                child: Column(
+                  children: [
+                    Text(
+                      timeFormatter.format(subject.dateTimeRange.start),
+                      style: theme.textTheme.titleMedium!
+                          .copyWith(fontWeight: FontWeight.bold),
+                    ),
+                    Expanded(
+                      child: Container(),
+                    ),
+                    Text(
+                      timeFormatter.format(subject.dateTimeRange.end),
+                      style: theme.textTheme.titleMedium!.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: ligtherTextColor,
+                      ),
+                    ),
+                  ],
+                ),
+              )
+            ],
+          ),
         ),
       ),
     );
@@ -114,8 +121,8 @@ class ScheduleItemNormal extends StatelessWidget {
 
   Color getSurfaceColor(ThemeData theme) {
     final extraColors = theme.extension<UnnMobileColors>()!;
-    if (DateTime.now().isAfter(
-            subject.dateTimeRange.start.subtract(const Duration(minutes: 10))) &&
+    if (DateTime.now().isAfter(subject.dateTimeRange.start
+            .subtract(const Duration(minutes: 10))) &&
         DateTime.now().isBefore(subject.dateTimeRange.end)) {
       return extraColors.scheduleSubjectHighlight!;
     }
