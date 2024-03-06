@@ -66,13 +66,15 @@ class ScheduleScreenViewModel extends BaseViewModel {
         }
         if (value.idType == idType) {
           _filter = ScheduleFilter(
-              value.idType, value.id, DateTimeRanges.currentWeek());
+              value.idType, value.id, decidePivotWeek());
           _currentId = value.id;
           _updateScheduleLoader();
         }
         notifyListeners();
     });
   }
+
+  DateTimeRange decidePivotWeek() => DateTime.now().weekday == 7 ? DateTimeRanges.nextWeek() : DateTimeRanges.currentWeek();
 
   void _initGroup() {
     _searchPlaceholderText = _groupNameText;
