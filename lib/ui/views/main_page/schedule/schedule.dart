@@ -44,17 +44,20 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView>
     return OnlineStatusStreamBuilder(
       onlineWidget: Column(
         children: [
-          TabBar(
-            indicatorSize: TabBarIndicatorSize.label,
-            tabAlignment: TabAlignment.center,
-            isScrollable: true,
-            tabs: [
-              for (var i = 0; i < tabKeys.length; i++)
-                Tab(
-                  text: tabTexts[i],
-                ),
-            ],
-            controller: _tabController,
+          MediaQuery.withClampedTextScaling(
+            maxScaleFactor: 1.5,
+            child: TabBar(
+              indicatorSize: TabBarIndicatorSize.label,
+              tabAlignment: TabAlignment.center,
+              isScrollable: true,
+              tabs: [
+                for (var i = 0; i < tabKeys.length; i++)
+                  Tab(
+                    text: tabTexts[i],
+                  ),
+              ],
+              controller: _tabController,
+            ),
           ),
           expanded,
         ],

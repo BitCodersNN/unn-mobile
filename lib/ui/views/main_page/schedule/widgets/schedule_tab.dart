@@ -117,33 +117,36 @@ class ScheduleTabState extends State<ScheduleTab>
         builder: (context, controller) {
           return Padding(
             padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
-            child: SearchBar(
-              hintText: model.searchPlaceholderText,
-              leading: const Icon(Icons.search),
-              focusNode: _searchFocusNode,
-              trailing: [
-                IconButton(
-                  onPressed: () {},
-                  icon: const Icon(Icons.more_horiz),
-                ),
-              ],
-              shape: MaterialStateProperty.resolveWith(
-                (states) => const RoundedRectangleBorder(
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(10),
+            child: MediaQuery.withClampedTextScaling(
+              maxScaleFactor: 1.5,
+              child: SearchBar(
+                hintText: model.searchPlaceholderText,
+                leading: const Icon(Icons.search),
+                focusNode: _searchFocusNode,
+                trailing: [
+                  IconButton(
+                    onPressed: () {},
+                    icon: const Icon(Icons.more_horiz),
+                  ),
+                ],
+                shape: MaterialStateProperty.resolveWith(
+                  (states) => const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(10),
+                    ),
                   ),
                 ),
+                onTap: () => controller.openView(),
+                onChanged: (_) {
+                  controller.openView();
+                },
+                onSubmitted: (value) async {
+                  if (model.lastSearchQuery != value) {
+                    await model.submitSearch(value);
+                  }
+                },
+                controller: controller,
               ),
-              onTap: () => controller.openView(),
-              onChanged: (_) {
-                controller.openView();
-              },
-              onSubmitted: (value) async {
-                if (model.lastSearchQuery != value) {
-                  await model.submitSearch(value);
-                }
-              },
-              controller: controller,
             ),
           );
         },
@@ -236,8 +239,11 @@ class ScheduleTabState extends State<ScheduleTab>
                   ),
                 ],
                 centerTitle: true,
-                title: Text(
-                    '${headerFormatter.format(model.displayedWeek.start)} - ${headerFormatter.format(model.displayedWeek.end)}'),
+                title: MediaQuery.withClampedTextScaling(
+                  maxScaleFactor: 1,
+                  child: Text(
+                      '${headerFormatter.format(model.displayedWeek.start)} - ${headerFormatter.format(model.displayedWeek.end)}'),
+                ),
                 backgroundColor: theme.colorScheme.background,
                 surfaceTintColor: Colors.transparent,
                 pinned: true,
