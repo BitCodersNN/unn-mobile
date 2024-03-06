@@ -11,18 +11,20 @@ class LoadingPage extends StatelessWidget {
       builder: (context, value, child) => 
       Scaffold(
         body: Center(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-
-            children: [
-              _logoTitle("УНИВЕРСИТЕТ"),
-              _logoTitle("ЛОБАЧЕВСКОГО"),
-              const SizedBox(height: 30),
-              Image(
-                  image: AssetImage(DateTime.now().month > 11 || DateTime.now().month < 3 ? "assets/images/new_year_logo.png" : "assets/images/logo.png")
-              ),
-            ],
+          child: MediaQuery.withNoTextScaling(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+            
+              children: [
+                _logoTitle("УНИВЕРСИТЕТ"),
+                _logoTitle("ЛОБАЧЕВСКОГО"),
+                const SizedBox(height: 30),
+                Image(
+                    image: AssetImage(DateTime.now().month > 11 || DateTime.now().month < 3 ? "assets/images/new_year_logo.png" : "assets/images/logo.png")
+                ),
+              ],
+            ),
           ),
         ),
       ),
