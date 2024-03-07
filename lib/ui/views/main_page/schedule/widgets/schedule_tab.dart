@@ -285,11 +285,11 @@ class ScheduleTabState extends State<ScheduleTab>
     return SliverList(
       delegate: SliverChildBuilderDelegate(
         (context, index) {
-          var formatedDate = DateFormat.MMMMEEEEd('ru_RU').format(
+          var formatedDate = toBeginningOfSentenceCase(DateFormat.MMMMEEEEd('ru_RU').format(
             model.displayedWeek.start.add(
               Duration(days: snapshot.data!.keys.elementAt(index) - 1),
             ),
-          );
+          ));
 
           return AutoScrollTag(
             key: ValueKey(index),
@@ -312,7 +312,7 @@ class ScheduleTabState extends State<ScheduleTab>
                                 bottom: BorderSide(color: theme.primaryColor)))
                         : null,
                     child: Text(
-                      formatedDate,
+                      formatedDate!,
                       textAlign: TextAlign.left,
                       style: theme.textTheme.titleLarge!.copyWith(),
                     ),
