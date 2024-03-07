@@ -45,6 +45,7 @@ flutter:
   assets:
     - assets/images/logo.png
     - assets/images/new_year_logo.png
+    - assets/images/march_8th_logo.png
     - assets/images/auth-logo.svg
     - assets/images/authors/dmitry.png
     - assets/images/authors/vitaly.png
