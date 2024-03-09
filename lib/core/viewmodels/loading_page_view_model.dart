@@ -64,7 +64,9 @@ class LoadingPageViewModel extends BaseViewModel {
     else {
       final profile = await _gettingProfileOfCurrentUser.getProfileOfCurrentUser();
       _userDataProvider.saveData(profile);
-      DefaultCacheManager().downloadFile(profile!.fullUrlPhoto!);
+      if(profile != null && profile.fullUrlPhoto != null) {
+        DefaultCacheManager().downloadFile(profile.fullUrlPhoto!);
+      }
       _typeOfCurrnetUser.typeOfUser = profile.runtimeType;
     }
   }
