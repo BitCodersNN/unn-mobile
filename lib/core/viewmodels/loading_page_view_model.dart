@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:injector/injector.dart';
+import 'package:unn_mobile/core/misc/loading_pages.dart';
 import 'package:unn_mobile/core/misc/type_of_current_user.dart';
+import 'package:unn_mobile/core/models/loading_page_data.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation_refresh_service.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_profile_of_current_user_service.dart';
@@ -23,6 +25,9 @@ class LoadingPageViewModel extends BaseViewModel {
       Injector.appInstance.get<GettingProfileOfCurrentUser>();
   final UserDataProvider _userDataProvider = 
       Injector.appInstance.get<UserDataProvider>();
+  final actualLoadingPage = LoadingPages().actualLoadingPage;
+
+  LoadingPageModel get loadingPageData => actualLoadingPage;
 
   void disateRoute(context) {
     _init().then((value) => _goToScreen(context, value));
