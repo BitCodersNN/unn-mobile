@@ -3,7 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:unn_mobile/core/models/subject.dart';
 import 'package:unn_mobile/ui/unn_mobile_colors.dart';
 
-class ScheduleItemNormal extends StatelessWidget {
+class ScheduleItemNormal extends StatefulWidget {
   final Subject subject;
   final bool even;
   const ScheduleItemNormal({
@@ -13,121 +13,166 @@ class ScheduleItemNormal extends StatelessWidget {
   });
 
   @override
+  State<ScheduleItemNormal> createState() => _ScheduleItemNormalState();
+}
+
+class _ScheduleItemNormalState extends State<ScheduleItemNormal>
+    with TickerProviderStateMixin {
+  bool _expanded = false;
+
+  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final extraColors = theme.extension<UnnMobileColors>()!;
     final DateFormat timeFormatter = DateFormat('HH:mm');
-    const ligtherTextColor = Color(0xFF717A84);
     const verticalPadding = 4.0;
     const horizontalPadding = 8.0;
     return Padding(
       padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 8.0),
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: const BorderRadius.only(
-            topRight: Radius.circular(16),
-            bottomRight: Radius.circular(16),
+      child: GestureDetector(
+        onTap: () {
+          setState(() {
+            _expanded = !_expanded;
+          });
+        },
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: const BorderRadius.only(
+              topRight: Radius.circular(16),
+              bottomRight: Radius.circular(16),
+            ),
+            shape: BoxShape.rectangle,
+            color: getSurfaceColor(theme),
           ),
-          shape: BoxShape.rectangle,
-          color: getSurfaceColor(theme),
-        ),
-        child: IntrinsicHeight(
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Container(
-                width: 6,
-                decoration: BoxDecoration(
-                  borderRadius: const BorderRadius.all(Radius.circular(3)),
-                  color: getColorOfSubjectType(theme, subject.subjectTypeEnum),
+          child: IntrinsicHeight(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                AnimatedContainer(
+                  duration: const Duration(milliseconds: 500),
+                  width: 6,
+                  decoration: BoxDecoration(
+                    borderRadius: const BorderRadius.all(Radius.circular(3)),
+                    color: getColorOfSubjectType(
+                        theme, widget.subject.subjectTypeEnum),
+                  ),
                 ),
-              ),
-              Expanded(
-                child: Padding(
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: verticalPadding,
+                      horizontal: horizontalPadding,
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          widget.subject.name,
+                          style: theme.textTheme.titleMedium!
+                              .copyWith(fontWeight: FontWeight.bold),
+                          overflow: _expanded
+                              ? TextOverflow.visible
+                              : TextOverflow.ellipsis,
+                          softWrap: true,
+                        ),
+                        _textWithIcon(context, Icons.location_on,
+                            "${widget.subject.address.auditorium}/${widget.subject.address.building}"),
+                        if (_expanded)
+                          _textWithIcon(
+                            context,
+                            Icons.person,
+                            widget.subject.lecturer,
+                          ),
+                        if (_expanded)
+                          _textWithIcon(
+                            context,
+                            Icons.school,
+                            "Поток: ${widget.subject.groups.join("|")}",
+                          ),
+                        Text(
+                          widget.subject.subjectType,
+                          style: theme.textTheme.labelLarge!.copyWith(
+                              color: getColorOfSubjectType(
+                                  theme, widget.subject.subjectTypeEnum),
+                              fontStyle: FontStyle.italic,
+                              overflow: TextOverflow.ellipsis),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                Padding(
                   padding: const EdgeInsets.symmetric(
                     vertical: verticalPadding,
                     horizontal: horizontalPadding,
                   ),
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        subject.name,
+                        timeFormatter
+                            .format(widget.subject.dateTimeRange.start),
                         style: theme.textTheme.titleMedium!
                             .copyWith(fontWeight: FontWeight.bold),
-                        overflow: TextOverflow.ellipsis,
-                        softWrap: false,
                       ),
-                      Row(
-                        children: [
-                          const Icon(
-                            Icons.location_on,
-                            color: ligtherTextColor,
-                            size: 16,
-                          ),
-                          Expanded(
-                            child: Text(
-                              '${subject.address.auditorium}/${subject.address.building}',
-                              style: theme.textTheme.labelLarge!
-                                  .copyWith(color: ligtherTextColor),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ],
+                      Expanded(
+                        child: Container(),
                       ),
                       Text(
-                        subject.subjectType,
-                        style: theme.textTheme.labelLarge!.copyWith(
-                            color: getColorOfSubjectType(
-                                theme, subject.subjectTypeEnum),
-                            fontStyle: FontStyle.italic,
-                            overflow: TextOverflow.ellipsis),
+                        timeFormatter.format(widget.subject.dateTimeRange.end),
+                        style: theme.textTheme.titleMedium!.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: extraColors.ligtherTextColor,
+                        ),
                       ),
                     ],
                   ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  vertical: verticalPadding,
-                  horizontal: horizontalPadding,
-                ),
-                child: Column(
-                  children: [
-                    Text(
-                      timeFormatter.format(subject.dateTimeRange.start),
-                      style: theme.textTheme.titleMedium!
-                          .copyWith(fontWeight: FontWeight.bold),
-                    ),
-                    Expanded(
-                      child: Container(),
-                    ),
-                    Text(
-                      timeFormatter.format(subject.dateTimeRange.end),
-                      style: theme.textTheme.titleMedium!.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: ligtherTextColor,
-                      ),
-                    ),
-                  ],
-                ),
-              )
-            ],
+                )
+              ],
+            ),
           ),
         ),
       ),
     );
   }
 
+  Widget _textWithIcon(BuildContext context, IconData icon, String text) {
+    final theme = Theme.of(context);
+    final extraColors = theme.extension<UnnMobileColors>()!;
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(top: 2.0, right: 4.0),
+          child: Icon(
+            icon,
+            color: extraColors.ligtherTextColor,
+            size: 16,
+          ),
+        ),
+        Expanded(
+          child: Text(
+            text,
+            style: theme.textTheme.labelLarge!
+                .copyWith(color: extraColors.ligtherTextColor),
+            overflow:
+                _expanded ? TextOverflow.visible : TextOverflow.ellipsis,
+            softWrap: _expanded,
+          ),
+        ),
+      ],
+    );
+  }
+
   Color getSurfaceColor(ThemeData theme) {
     final extraColors = theme.extension<UnnMobileColors>()!;
-    if (DateTime.now().isAfter(subject.dateTimeRange.start
+    if (DateTime.now().isAfter(widget.subject.dateTimeRange.start
             .subtract(const Duration(minutes: 10))) &&
-        DateTime.now().isBefore(subject.dateTimeRange.end)) {
+        DateTime.now().isBefore(widget.subject.dateTimeRange.end)) {
       return extraColors.scheduleSubjectHighlight!;
     }
 
-    if (even) {
+    if (widget.even) {
       return theme.colorScheme.surfaceVariant;
     } else {
       return theme.colorScheme.surface;
