@@ -1,3 +1,4 @@
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:injector/injector.dart';
@@ -23,7 +24,7 @@ class LoadingPageViewModel extends BaseViewModel {
       Injector.appInstance.get<TypeOfCurrentUser>();
   final GettingProfileOfCurrentUser _gettingProfileOfCurrentUser =
       Injector.appInstance.get<GettingProfileOfCurrentUser>();
-  final UserDataProvider _userDataProvider = 
+  final UserDataProvider _userDataProvider =
       Injector.appInstance.get<UserDataProvider>();
   final actualLoadingPage = LoadingPages().actualLoadingPage;
 
@@ -34,12 +35,20 @@ class LoadingPageViewModel extends BaseViewModel {
   }
 
   Future<_TypeScreen> _init() async {
-    _TypeScreen typeScreen = switch (await _initializingApplicationService.refreshLogin()) {
+    AuthRequestResult? authRequestResult;
+    late _TypeScreen typeScreen;
+
+    try {
+      authRequestResult = await _initializingApplicationService.refreshLogin();
+    } catch (e, stacktrace) {
+      await FirebaseCrashlytics.instance
+          .log("Exception: $e\nStackTrace: \n$stacktrace");
+    }
+    typeScreen = switch (authRequestResult) {
       null => _TypeScreen.authScreen,
       AuthRequestResult.success => _TypeScreen.mainScreen,
       AuthRequestResult.noInternet => _TypeScreen.mainScreen,
       AuthRequestResult.wrongCredentials => _TypeScreen.authScreen,
-      AuthRequestResult.unknownError => throw Exception('Unknown Error'),
     };
 
     if (typeScreen == _TypeScreen.mainScreen) {
@@ -59,10 +68,10 @@ class LoadingPageViewModel extends BaseViewModel {
 
   Future<void> _initUserData() async {
     if (await _userDataProvider.isContained()) {
-      await _typeOfCurrnetUser.updateTypeOfCurrentUser();    
-    }
-    else {
-      final profile = await _gettingProfileOfCurrentUser.getProfileOfCurrentUser();
+      await _typeOfCurrnetUser.updateTypeOfCurrentUser();
+    } else {
+      final profile =
+          await _gettingProfileOfCurrentUser.getProfileOfCurrentUser();
       _userDataProvider.saveData(profile);
       if (profile != null && profile.fullUrlPhoto != null) {
         DefaultCacheManager().downloadFile(profile.fullUrlPhoto!);

@@ -1,7 +1,7 @@
 import 'dart:convert';
-import 'dart:developer';
 import 'dart:io';
 
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:unn_mobile/core/misc/http_helper.dart';
@@ -36,8 +36,9 @@ class GettingScheduleServiceImpl implements GettingScheduleService {
     HttpClientResponse response;
     try {
       response = await requstSender.get();
-    } catch (e) {
-      log(e.toString());
+    } catch (error, stackTrace) {
+      await FirebaseCrashlytics.instance.log(
+          "Exception: $error\nStackTrace: $stackTrace");
       return null;
     }
 
@@ -51,7 +52,9 @@ class GettingScheduleServiceImpl implements GettingScheduleService {
     
     try {
       jsonList = jsonDecode(await HttpRequestSender.responseToStringBody(response));
-    } catch(e) {
+    } catch(error, stackTrace) {
+      await FirebaseCrashlytics.instance.log(
+          "Exception: $error\nStackTrace: $stackTrace");
       return null;
     }
 

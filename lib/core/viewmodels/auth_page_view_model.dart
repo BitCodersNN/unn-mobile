@@ -1,5 +1,6 @@
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:injector/injector.dart';
-import 'package:unn_mobile/core/misc/auth_error_messages.dart';
+import 'package:unn_mobile/core/misc/custom_errors/auth_error_messages.dart';
 import 'package:unn_mobile/core/models/auth_data.dart';
 import 'package:unn_mobile/core/services/interfaces/auth_data_provider.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
@@ -20,12 +21,22 @@ class AuthPageViewModel extends BaseViewModel {
   Future<bool> login(String user, String password) async {
     setState(ViewState.busy);
     _resetAuthError();
-    var authResult = await _authorisationService.auth(user, password);
-    if (authResult == AuthRequestResult.success) {
-      await _authDataProvider.saveData(AuthData(user, password));
-    } else {
-      _setAuthError(authResult.errorMessage);
+
+    late AuthRequestResult authResult;
+
+    try {
+      authResult = await _authorisationService.auth(user, password);
+    } catch (e, stacktrace) {
+      await FirebaseCrashlytics.instance
+          .log("Exception: $e\nStackTrace: \n$stacktrace");
+    } finally {
+      if (authResult == AuthRequestResult.success) {
+        await _authDataProvider.saveData(AuthData(user, password));
+      } else {
+        _setAuthError(authResult.errorMessage);
+      }
     }
+
     setState(ViewState.idle);
     return authResult == AuthRequestResult.success;
   }
