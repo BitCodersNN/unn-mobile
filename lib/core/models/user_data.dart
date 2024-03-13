@@ -1,4 +1,4 @@
-class KeysForUserDataJsonConverter {
+class _KeysForUserDataJsonConverter {
   static const String user = 'user';
   static const String login = 'login';
   static const String name = 'name';
@@ -52,32 +52,32 @@ class UserData {
 
   factory UserData.fromJson(Map<String, Object?> jsonMap) {
     final userJsonMap =
-        jsonMap[KeysForUserDataJsonConverter.user] as Map<String, Object?>;
+        jsonMap[_KeysForUserDataJsonConverter.user] as Map<String, Object?>;
     return UserData(
-        userJsonMap[KeysForUserDataJsonConverter.login] as String?,
+        userJsonMap[_KeysForUserDataJsonConverter.login] as String?,
         Fullname(
-            userJsonMap[KeysForUserDataJsonConverter.name] as String?,
-            userJsonMap[KeysForUserDataJsonConverter.lastname] as String?,
-            userJsonMap[KeysForUserDataJsonConverter.surname] as String?),
-        userJsonMap[KeysForUserDataJsonConverter.email] as String?,
-        userJsonMap[KeysForUserDataJsonConverter.phone] as String?,
-        userJsonMap[KeysForUserDataJsonConverter.sex] as String,
-        (userJsonMap[KeysForUserDataJsonConverter.photo]
-                as Map<String, Object?>)[KeysForUserDataJsonConverter.orig]
+            userJsonMap[_KeysForUserDataJsonConverter.name] as String?,
+            userJsonMap[_KeysForUserDataJsonConverter.lastname] as String?,
+            userJsonMap[_KeysForUserDataJsonConverter.surname] as String?),
+        userJsonMap[_KeysForUserDataJsonConverter.email] as String?,
+        userJsonMap[_KeysForUserDataJsonConverter.phone] as String?,
+        userJsonMap[_KeysForUserDataJsonConverter.sex] as String,
+        (userJsonMap[_KeysForUserDataJsonConverter.photo]
+                as Map<String, Object?>)[_KeysForUserDataJsonConverter.orig]
             as String?);
   }
 
   Map<String, dynamic> toJson() => {
-        KeysForUserDataJsonConverter.user: {
-          KeysForUserDataJsonConverter.login: _login,
-          KeysForUserDataJsonConverter.name: _fullname.name,
-          KeysForUserDataJsonConverter.lastname: _fullname.lastname,
-          KeysForUserDataJsonConverter.surname: _fullname.surname,
-          KeysForUserDataJsonConverter.email: _email,
-          KeysForUserDataJsonConverter.phone: _phone,
-          KeysForUserDataJsonConverter.sex: _sex,
-          KeysForUserDataJsonConverter.photo: {
-            KeysForUserDataJsonConverter.orig: _urlPhoto,
+        _KeysForUserDataJsonConverter.user: {
+          _KeysForUserDataJsonConverter.login: _login,
+          _KeysForUserDataJsonConverter.name: _fullname.name,
+          _KeysForUserDataJsonConverter.lastname: _fullname.lastname,
+          _KeysForUserDataJsonConverter.surname: _fullname.surname,
+          _KeysForUserDataJsonConverter.email: _email,
+          _KeysForUserDataJsonConverter.phone: _phone,
+          _KeysForUserDataJsonConverter.sex: _sex,
+          _KeysForUserDataJsonConverter.photo: {
+            _KeysForUserDataJsonConverter.orig: _urlPhoto,
           },
         }
       };
