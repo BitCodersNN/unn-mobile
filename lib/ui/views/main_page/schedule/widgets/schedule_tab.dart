@@ -158,12 +158,7 @@ class ScheduleTabState extends State<ScheduleTab>
             return suggestions.map((e) => ScheduleSearchSuggestionItem(
                   itemName: e,
                   onSelected: () async {
-                    controller.closeView(e);
-                    if (model.lastSearchQuery != e) {
-                      model.lastSearchQuery = e;
-                      await model.addHistoryItem(e);
-                      await model.submitSearch(e);
-                    }
+                    controller.text = e;
                   },
                 ));
           } else {
