@@ -1,3 +1,5 @@
+import 'package:unn_mobile/core/misc/custom_errors/auth_errors.dart';
+
 enum AuthRequestResult {
   success,
   noInternet,
@@ -11,9 +13,9 @@ abstract interface class AuthorisationService {
   /// [password]: пароль
   /// 
   /// Выбрасывает исключения:
-  ///   1. SessionCookieException - если session cookie имеет значени null
-  ///   2. CsrfValueException - если csrf value имеет значени null
-  ///   3. Exception - если возникло непредвиденное исключение
+  ///   1. [SessionCookieException] - если session cookie имеет значени null
+  ///   2. [CsrfValueException] - если csrf value имеет значени null
+  ///   3. [Exception] - если возникло непредвиденное исключение
   ///
   /// Возвращает результат авторизаци
   Future<AuthRequestResult> auth(String login, String password);

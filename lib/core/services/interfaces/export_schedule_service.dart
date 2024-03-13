@@ -21,7 +21,7 @@ abstract interface class ExportScheduleService {
   /// [scheduleFilter]: Фильтр, по которому происходит получение расписания
   /// 
   /// Выбрасывает исключение:
-  ///  1. Exception - если возникло непредвиденное исключение
+  ///  1. [Exception] - если возникло непредвиденное исключение
   /// 
   /// Возвращает [ExportScheduleResult]
   Future<ExportScheduleResult> exportSchedule(ScheduleFilter scheduleFilter);

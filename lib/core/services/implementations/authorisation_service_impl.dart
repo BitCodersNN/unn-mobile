@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:injector/injector.dart';
-import 'package:unn_mobile/core/misc/custom_errors/auth_erros.dart';
+import 'package:unn_mobile/core/misc/custom_errors/auth_errors.dart';
 import 'package:unn_mobile/core/misc/http_helper.dart';
 import 'package:unn_mobile/core/models/online_status_data.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
