@@ -29,7 +29,7 @@ class GettingBlogPostsImpl implements GettingBlogPosts {
 
     HttpClientResponse response;
     try {
-      response = await requstSender.get(timeoutSeconds: 10);
+      response = await requstSender.get(timeoutSeconds: 60);
     } catch (error, stackTrace) {
       await FirebaseCrashlytics.instance
           .log("Exception: $error\nStackTrace: $stackTrace");
@@ -54,7 +54,7 @@ class GettingBlogPostsImpl implements GettingBlogPosts {
     List<BlogData>? blogPosts;
     try {
       blogPosts = jsonList
-          .map((blogPostJson) => BlogData.fromJson(blogPostJson))
+          .map<BlogData>((blogPostJson) => BlogData.fromJson(blogPostJson))
           .toList();
     } catch (error, stackTrace) {
       await FirebaseCrashlytics.instance.recordError(error, stackTrace);
