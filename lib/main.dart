@@ -11,6 +11,7 @@ import 'package:unn_mobile/core/misc/type_of_current_user.dart';
 import 'package:unn_mobile/core/services/implementations/auth_data_provider_impl.dart';
 import 'package:unn_mobile/core/services/implementations/authorisation_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/authorisation_refresh_service_impl.dart';
+import 'package:unn_mobile/core/services/implementations/getting_blog_posts_impl.dart';
 import 'package:unn_mobile/core/services/implementations/getting_profile_of_current_user_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/getting_schedule_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/offline_schedule_provider_impl.dart';
@@ -21,6 +22,7 @@ import 'package:unn_mobile/core/services/implementations/user_data_provider_impl
 import 'package:unn_mobile/core/services/interfaces/auth_data_provider.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation_refresh_service.dart';
+import 'package:unn_mobile/core/services/interfaces/getting_blog_posts.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_profile_of_current_user_service.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_schedule_service.dart';
 import 'package:unn_mobile/core/services/interfaces/offline_schedule_provider.dart';
@@ -78,6 +80,7 @@ void registerDependencies() {
   injector.registerSingleton<GettingProfileOfCurrentUser>(
       () => GettingProfileOfCurrentUserImpl());
   injector.registerSingleton<UserDataProvider>(() => UserDataProviderImpl());
+  injector.registerSingleton<GettingBlogPosts>(() => GettingBlogPostsImpl());
 
   injector.registerSingleton<TypeOfCurrentUser>(() => TypeOfCurrentUser());
 
