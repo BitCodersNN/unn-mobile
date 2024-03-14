@@ -6,21 +6,23 @@ import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/misc/http_helper.dart';
 import 'package:unn_mobile/core/models/blog_data.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
+import 'package:unn_mobile/core/services/interfaces/getting_blog_posts.dart';
 
-class GettingBlogPosts {
-  final int _numberOfPostsReturnedInRequest = 50;
+class GettingBlogPostsImpl implements GettingBlogPosts {
+  final int _numberOfPostsPerPage = 50;
   final String _path = 'rest/log.blogpost.get.json';
   final String _sessid = 'sessid';
   final String _start = 'start';
   final String _sessionIdCookieKey = "PHPSESSID";
 
-  Future<List<BlogData>?> getBlogPost({int offset = 0}) async {
+  @override
+  Future<List<BlogData>?> getBlogPost({int pageNumber = 0}) async {
     final authorisationService =
         Injector.appInstance.get<AuthorisationService>();
 
     final requstSender = HttpRequestSender(path: _path, queryParams: {
       _sessid: authorisationService.csrf ?? '',
-      _start: (_numberOfPostsReturnedInRequest * offset).toString(),
+      _start: (_numberOfPostsPerPage * pageNumber).toString(),
     }, cookies: {
       _sessionIdCookieKey: authorisationService.sessionId ?? '',
     });
@@ -29,8 +31,8 @@ class GettingBlogPosts {
     try {
       response = await requstSender.get(timeoutSeconds: 10);
     } catch (error, stackTrace) {
-      await FirebaseCrashlytics.instance.log(
-          "Exception: $error\nStackTrace: $stackTrace");
+      await FirebaseCrashlytics.instance
+          .log("Exception: $error\nStackTrace: $stackTrace");
       return null;
     }
 
@@ -45,8 +47,7 @@ class GettingBlogPosts {
     try {
       jsonList = jsonDecode(str)['result'];
     } catch (erorr, stackTrace) {
-      await FirebaseCrashlytics.instance
-          .recordError(erorr, stackTrace);
+      await FirebaseCrashlytics.instance.recordError(erorr, stackTrace);
       return null;
     }
     List<BlogData> blogPosts = jsonList
