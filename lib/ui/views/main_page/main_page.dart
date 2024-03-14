@@ -1,4 +1,5 @@
 import 'package:unn_mobile/ui/views/main_page/exiting/exiting.dart';
+import 'package:unn_mobile/ui/views/main_page/feed/feed.dart';
 import 'package:unn_mobile/ui/views/main_page/main_page_tab_state.dart';
 import 'package:unn_mobile/ui/widgets/placeholder.dart' as placeholder;
 import 'package:flutter/material.dart';
@@ -38,7 +39,7 @@ class _MainPageState extends State<MainPage> {
     'exit'
   ];
   final List<String> navbarRoutes = [
-    'placeholder',
+    'feed',
     'schedule',
     'placeholder',
     'placeholder',
@@ -63,6 +64,10 @@ class _MainPageState extends State<MainPage> {
                   return local_router.Router.createCustomRoute(
                     AboutScreenView(),
                   );
+                case 'feed':
+                return local_router.Router.createCustomRoute(
+                  FeedScreenView(),
+                );
                 case '':
                 case 'schedule':
                   tabKeys[1] = GlobalKey<State<ScheduleScreenView>>();

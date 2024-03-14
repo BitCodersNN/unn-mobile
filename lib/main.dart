@@ -29,6 +29,7 @@ import 'package:unn_mobile/core/services/interfaces/search_id_on_portal_service.
 import 'package:unn_mobile/core/services/interfaces/storage_service.dart';
 import 'package:unn_mobile/core/services/interfaces/user_data_provider.dart';
 import 'package:unn_mobile/core/viewmodels/auth_page_view_model.dart';
+import 'package:unn_mobile/core/viewmodels/feed_screen_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/loading_page_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/schedule_screen_view_model.dart';
@@ -85,4 +86,6 @@ void registerDependencies() {
   injector.registerDependency(() => AuthPageViewModel());
   injector.registerDependency(() => MainPageViewModel());
   injector.registerDependency(() => ScheduleScreenViewModel());
+  injector.registerDependency(() => FeedScreenViewModel());
+
 }
