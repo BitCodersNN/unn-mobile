@@ -25,45 +25,54 @@ class StudentData extends UserData {
   final String _eduSpecialization;
 
   StudentData(
-    UserData userData,
-    this._eduForm,
-    this._eduStatus,
-    this._eduCourse,
-    this._eduYear,
-    this._eduLevel, 
-    this._faculty, 
-    this._eduDirection, 
-    this._eduGroup, 
-    this._eduSpecialization
-    ):  super(userData.login, userData.fullname, userData.email, userData.phone, userData.sex, userData.urlPhoto);
+      UserData userData,
+      this._eduForm,
+      this._eduStatus,
+      this._eduCourse,
+      this._eduYear,
+      this._eduLevel,
+      this._faculty,
+      this._eduDirection,
+      this._eduGroup,
+      this._eduSpecialization)
+      : super(userData.login, userData.fullname, userData.email, userData.phone,
+            userData.sex, userData.urlPhoto);
 
-    String get eduForm => _eduForm;
-    String get eduStatus => _eduStatus;
-    int get eduCourse => _eduCourse;
-    int get eduYear => _eduYear;
-    String get eduLevel => _eduLevel;
-    String get faculty => _faculty;
-    String get eduDirection => _eduDirection;
-    String get eduGroup => _eduGroup;
-    String get eduSpecialization => _eduSpecialization;
+  String get eduForm => _eduForm;
+  String get eduStatus => _eduStatus;
+  int get eduCourse => _eduCourse;
+  int get eduYear => _eduYear;
+  String get eduLevel => _eduLevel;
+  String get faculty => _faculty;
+  String get eduDirection => _eduDirection;
+  String get eduGroup => _eduGroup;
+  String get eduSpecialization => _eduSpecialization;
 
-    factory StudentData.fromJson(Map<String, Object?> jsonMap) {
-      return StudentData(
-        UserData.fromJson(jsonMap),
-        jsonMap[_KeysForStudentDataJsonConverter.eduForm] as String,
-        jsonMap[_KeysForStudentDataJsonConverter.eduStatus] as String,
-        jsonMap[_KeysForStudentDataJsonConverter.eduCourse] as int,
-        jsonMap[_KeysForStudentDataJsonConverter.eduYear] as int,
-        jsonMap[_KeysForStudentDataJsonConverter.eduLevel] as String,
-        (jsonMap[_KeysForStudentDataJsonConverter.faculty] as Map<String, Object?>)[_KeysForStudentDataJsonConverter.title] as String,
-        (jsonMap[_KeysForStudentDataJsonConverter.eduDirection] as Map<String, Object?>)[_KeysForStudentDataJsonConverter.title] as String,
-        (jsonMap[_KeysForStudentDataJsonConverter.eduGroup] as Map<String, Object?>)[_KeysForStudentDataJsonConverter.title] as String,
-        (jsonMap[_KeysForStudentDataJsonConverter.eduSpecialization] as Map<String, Object?>)[_KeysForStudentDataJsonConverter.title] as String,
-      );
-    }
+  factory StudentData.fromJson(Map<String, Object?> jsonMap) {
+    return StudentData(
+      UserData.fromJson(jsonMap),
+      jsonMap[_KeysForStudentDataJsonConverter.eduForm] as String,
+      jsonMap[_KeysForStudentDataJsonConverter.eduStatus] as String,
+      jsonMap[_KeysForStudentDataJsonConverter.eduCourse] as int,
+      jsonMap[_KeysForStudentDataJsonConverter.eduYear] as int,
+      jsonMap[_KeysForStudentDataJsonConverter.eduLevel] as String,
+      (jsonMap[_KeysForStudentDataJsonConverter.faculty]
+              as Map<String, Object?>)[_KeysForStudentDataJsonConverter.title]
+          as String,
+      (jsonMap[_KeysForStudentDataJsonConverter.eduDirection]
+              as Map<String, Object?>)[_KeysForStudentDataJsonConverter.title]
+          as String,
+      (jsonMap[_KeysForStudentDataJsonConverter.eduGroup]
+              as Map<String, Object?>)[_KeysForStudentDataJsonConverter.title]
+          as String,
+      (jsonMap[_KeysForStudentDataJsonConverter.eduSpecialization]
+              as Map<String, Object?>)[_KeysForStudentDataJsonConverter.title]
+          as String,
+    );
+  }
 
-    @override
-    Map<String, dynamic> toJson() {
+  @override
+  Map<String, dynamic> toJson() {
     final json = super.toJson();
     json[_KeysForStudentDataJsonConverter.eduForm] = _eduForm;
     json[_KeysForStudentDataJsonConverter.eduStatus] = _eduStatus;
@@ -72,16 +81,20 @@ class StudentData extends UserData {
     json[_KeysForStudentDataJsonConverter.eduLevel] = _eduLevel;
 
     json[_KeysForStudentDataJsonConverter.faculty] ??= {};
-    json[_KeysForStudentDataJsonConverter.faculty][_KeysForStudentDataJsonConverter.title] = _faculty;
+    json[_KeysForStudentDataJsonConverter.faculty]
+        [_KeysForStudentDataJsonConverter.title] = _faculty;
 
     json[_KeysForStudentDataJsonConverter.eduDirection] ??= {};
-    json[_KeysForStudentDataJsonConverter.eduDirection][_KeysForStudentDataJsonConverter.title] = _eduDirection;
+    json[_KeysForStudentDataJsonConverter.eduDirection]
+        [_KeysForStudentDataJsonConverter.title] = _eduDirection;
 
     json[_KeysForStudentDataJsonConverter.eduGroup] ??= {};
-    json[_KeysForStudentDataJsonConverter.eduGroup][_KeysForStudentDataJsonConverter.title] = _eduGroup;
+    json[_KeysForStudentDataJsonConverter.eduGroup]
+        [_KeysForStudentDataJsonConverter.title] = _eduGroup;
 
     json[_KeysForStudentDataJsonConverter.eduSpecialization] ??= {};
-    json[_KeysForStudentDataJsonConverter.eduSpecialization][_KeysForStudentDataJsonConverter.title] = _eduSpecialization;
+    json[_KeysForStudentDataJsonConverter.eduSpecialization]
+        [_KeysForStudentDataJsonConverter.title] = _eduSpecialization;
     return json;
   }
 }

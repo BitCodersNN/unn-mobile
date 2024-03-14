@@ -50,9 +50,15 @@ class GettingBlogPostsImpl implements GettingBlogPosts {
       await FirebaseCrashlytics.instance.recordError(erorr, stackTrace);
       return null;
     }
-    List<BlogData> blogPosts = jsonList
-        .map((blogPostJson) => BlogData.fromJson(blogPostJson))
-        .toList();
+
+    List<BlogData>? blogPosts;
+    try {
+      blogPosts = jsonList
+          .map((blogPostJson) => BlogData.fromJson(blogPostJson))
+          .toList();
+    } catch (error, stackTrace) {
+      await FirebaseCrashlytics.instance.recordError(error, stackTrace);
+    }
 
     return blogPosts;
   }
