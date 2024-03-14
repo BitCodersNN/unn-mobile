@@ -19,9 +19,8 @@ Future<T?> tryLoginAndRetrieveData<T>(Function online, Function offline) async {
     AuthRequestResult? authRequestResult;
     try {
       authRequestResult = await authorisationRefreshService.refreshLogin();
-    } catch (e, stacktrace) {
-      await FirebaseCrashlytics.instance
-          .log("Exception: $e\nStackTrace: \n$stacktrace");
+    } catch (error, stackTrace) {
+      await FirebaseCrashlytics.instance.recordError(error, stackTrace);
     }
 
     if (authRequestResult != AuthRequestResult.success) {

@@ -27,8 +27,7 @@ class GettingProfileOfCurrentUserImpl implements GettingProfileOfCurrentUser {
     try {
       response = await requstSender.get();
     } catch (error, stackTrace) {
-      await FirebaseCrashlytics.instance
-          .log("Exception: $error\nStackTrace: $stackTrace");
+      await FirebaseCrashlytics.instance.recordError(error, stackTrace);
       return null;
     }
 
@@ -43,8 +42,7 @@ class GettingProfileOfCurrentUserImpl implements GettingProfileOfCurrentUser {
       jsonMap =
           jsonDecode(await HttpRequestSender.responseToStringBody(response));
     } catch (error, stackTrace) {
-      await FirebaseCrashlytics.instance
-          .log("Exception: $error\nStackTrace: $stackTrace");
+      await FirebaseCrashlytics.instance.recordError(error, stackTrace);
       return null;
     }
 

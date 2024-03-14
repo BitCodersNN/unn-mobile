@@ -37,8 +37,8 @@ class GettingScheduleServiceImpl implements GettingScheduleService {
     try {
       response = await requstSender.get();
     } catch (error, stackTrace) {
-      await FirebaseCrashlytics.instance.log(
-          "Exception: $error\nStackTrace: $stackTrace");
+      await FirebaseCrashlytics.instance
+          .log("Exception: $error\nStackTrace: $stackTrace");
       return null;
     }
 
@@ -47,14 +47,14 @@ class GettingScheduleServiceImpl implements GettingScheduleService {
     if (statusCode != 200) {
       return null;
     }
-    
+
     List<dynamic> jsonList;
-    
+
     try {
-      jsonList = jsonDecode(await HttpRequestSender.responseToStringBody(response));
-    } catch(error, stackTrace) {
-      await FirebaseCrashlytics.instance.log(
-          "Exception: $error\nStackTrace: $stackTrace");
+      jsonList =
+          jsonDecode(await HttpRequestSender.responseToStringBody(response));
+    } catch (error, stackTrace) {
+      await FirebaseCrashlytics.instance.recordError(error, stackTrace);
       return null;
     }
 
@@ -78,7 +78,8 @@ class GettingScheduleServiceImpl implements GettingScheduleService {
       (jsonMap[KeysForSubjectJsonConverter.kindOfWork] ?? '') as String,
       Address(jsonMap[KeysForSubjectJsonConverter.auditorium] as String,
           jsonMap[KeysForSubjectJsonConverter.building] as String),
-      ((jsonMap[KeysForSubjectJsonConverter.stream] ?? '') as String).split(_splitPaternForStream),
+      ((jsonMap[KeysForSubjectJsonConverter.stream] ?? '') as String)
+          .split(_splitPaternForStream),
       (jsonMap[KeysForSubjectJsonConverter.lecturer] ?? '') as String,
       DateTimeRange(start: startDateTime, end: endDateTime),
     );

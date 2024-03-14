@@ -30,8 +30,7 @@ class SearchIdOnPortalServiceImpl implements SearchIdOnPortalService {
     try {
       response = await requstSender.get();
     } catch (error, stackTrace) {
-      await FirebaseCrashlytics.instance
-          .log("Exception: $error\nStackTrace: $stackTrace");
+      await FirebaseCrashlytics.instance.recordError(error, stackTrace);
       return null;
     }
 
@@ -79,8 +78,7 @@ class SearchIdOnPortalServiceImpl implements SearchIdOnPortalService {
     try {
       response = await requstSender.get();
     } catch (error, stackTrace) {
-      await FirebaseCrashlytics.instance
-          .log("Exception: $error\nStackTrace: $stackTrace");
+      await FirebaseCrashlytics.instance.recordError(error, stackTrace);
       return null;
     }
 

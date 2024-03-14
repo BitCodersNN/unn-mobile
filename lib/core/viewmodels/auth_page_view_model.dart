@@ -22,26 +22,27 @@ class AuthPageViewModel extends BaseViewModel {
     setState(ViewState.busy);
     _resetAuthError();
 
-    late AuthRequestResult authResult;
+    AuthRequestResult? authResult;
 
     try {
       authResult = await _authorisationService.auth(user, password);
-    } catch (e, stacktrace) {
-      await FirebaseCrashlytics.instance
-          .log("Exception: $e\nStackTrace: \n$stacktrace");
-    } finally {
-      if (authResult == AuthRequestResult.success) {
-        await _authDataProvider.saveData(AuthData(user, password));
-      } else {
-        _setAuthError(authResult.errorMessage);
-      }
+    } catch (error, stackTrace) {
+      await FirebaseCrashlytics.instance.recordError(error, stackTrace);
+    }
+
+    if (authResult == AuthRequestResult.success) {
+      await _authDataProvider.saveData(AuthData(user, password));
+    } else {
+      authResult != null
+          ? _setAuthError(text: authResult.errorMessage)
+          : _setAuthError();
     }
 
     setState(ViewState.idle);
     return authResult == AuthRequestResult.success;
   }
 
-  void _setAuthError(String text) {
+  void _setAuthError({String text = 'Неизвестная ошибка'}) {
     _hasAuthError = true;
     _authErrorText = text;
   }

@@ -40,9 +40,8 @@ class LoadingPageViewModel extends BaseViewModel {
 
     try {
       authRequestResult = await _initializingApplicationService.refreshLogin();
-    } catch (e, stacktrace) {
-      await FirebaseCrashlytics.instance
-          .log("Exception: $e\nStackTrace: \n$stacktrace");
+    } catch (error, stackTrace) {
+      await FirebaseCrashlytics.instance.recordError(error, stackTrace);
     }
     typeScreen = switch (authRequestResult) {
       null => _TypeScreen.authScreen,
