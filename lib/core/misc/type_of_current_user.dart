@@ -11,9 +11,10 @@ class TypeOfCurrentUser {
   final GettingProfileOfCurrentUser _gettingProfileOfCurrentUser =
       Injector.appInstance.get<GettingProfileOfCurrentUser>();
 
+  /// Хранит тип текущего пользователя: [Type] ([StudentData] или [EmployeeData]) или [Null] в случае ошибки
   Type typeOfUser = StudentData;
 
-  /// Возвращает тип текущего пользователя: [Type] ([StudentData] или [EmployeeData])
+  /// Получает тип авторизованного пользователя. Возвращает типы ([Type]) [StudentData] или [EmployeeData], или [Null] при ошибке
   Future<Type> getTypeOfCurrentUser() async {
     UserData? type = await _userDataProvider.getData() ??
         await _gettingProfileOfCurrentUser.getProfileOfCurrentUser();
