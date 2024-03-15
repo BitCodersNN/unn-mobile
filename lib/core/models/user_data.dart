@@ -9,6 +9,7 @@ class _KeysForUserDataJsonConverter {
   static const String sex = 'sex';
   static const String photo = 'photo';
   static const String orig = 'orig';
+  static const String notes = 'notes';
 }
 
 class Fullname {
@@ -32,11 +33,12 @@ class UserData {
   final String? _email;
   final String? _phone;
   final String _sex;
+  final String? _notes;
   final String _urlPhotoFirstPart = 'https://portal.unn.ru';
   final String? _urlPhoto;
 
   const UserData(this._login, this._fullname, this._email, this._phone,
-      this._sex, this._urlPhoto);
+      this._sex, this._urlPhoto, this._notes);
 
   String? get login => _login;
   Fullname get fullname => _fullname;
@@ -46,6 +48,7 @@ class UserData {
   String? get email => _email;
   String? get phone => _phone;
   String get sex => _sex;
+  String? get notes => _notes;
   String? get urlPhoto => _urlPhoto;
   String? get fullUrlPhoto =>
       _urlPhoto != null ? _urlPhotoFirstPart + _urlPhoto! : null;
@@ -54,17 +57,19 @@ class UserData {
     final userJsonMap =
         jsonMap[_KeysForUserDataJsonConverter.user] as Map<String, Object?>;
     return UserData(
-        userJsonMap[_KeysForUserDataJsonConverter.login] as String?,
-        Fullname(
-            userJsonMap[_KeysForUserDataJsonConverter.name] as String?,
-            userJsonMap[_KeysForUserDataJsonConverter.lastname] as String?,
-            userJsonMap[_KeysForUserDataJsonConverter.surname] as String?),
-        userJsonMap[_KeysForUserDataJsonConverter.email] as String?,
-        userJsonMap[_KeysForUserDataJsonConverter.phone] as String?,
-        userJsonMap[_KeysForUserDataJsonConverter.sex] as String,
-        (userJsonMap[_KeysForUserDataJsonConverter.photo]
-                as Map<String, Object?>)[_KeysForUserDataJsonConverter.orig]
-            as String?);
+      userJsonMap[_KeysForUserDataJsonConverter.login] as String?,
+      Fullname(
+          userJsonMap[_KeysForUserDataJsonConverter.name] as String?,
+          userJsonMap[_KeysForUserDataJsonConverter.lastname] as String?,
+          userJsonMap[_KeysForUserDataJsonConverter.surname] as String?),
+      userJsonMap[_KeysForUserDataJsonConverter.email] as String?,
+      userJsonMap[_KeysForUserDataJsonConverter.phone] as String?,
+      userJsonMap[_KeysForUserDataJsonConverter.sex] as String,
+      (userJsonMap[_KeysForUserDataJsonConverter.photo]
+              as Map<String, Object?>)[_KeysForUserDataJsonConverter.orig]
+          as String?,
+      userJsonMap[_KeysForUserDataJsonConverter.notes] as String?,
+    );
   }
 
   Map<String, dynamic> toJson() => {
@@ -76,6 +81,7 @@ class UserData {
           _KeysForUserDataJsonConverter.email: _email,
           _KeysForUserDataJsonConverter.phone: _phone,
           _KeysForUserDataJsonConverter.sex: _sex,
+          _KeysForUserDataJsonConverter.notes: _notes,
           _KeysForUserDataJsonConverter.photo: {
             _KeysForUserDataJsonConverter.orig: _urlPhoto,
           },
