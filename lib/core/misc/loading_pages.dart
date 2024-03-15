@@ -6,10 +6,12 @@ enum LoadingPageType {
   main,
   newYear,
   march8th,
+  april1st,
 }
 
 class _HolidayDates {
   static DateTime march8th = DateTime(DateTime.now().year, DateTime.march, 8);
+  static DateTime april1st = DateTime(DateTime.now().year, DateTime.april, 1);
 }
 
 class _LoadingPages {
@@ -17,45 +19,40 @@ class _LoadingPages {
     imagePath: 'assets/images/logo.png',
   );
 
-  static LoadingPageModel newYear = LoadingPageModel(
-    imagePath: 'assets/images/new_year_logo.png'
-  );
+  static LoadingPageModel newYear =
+      LoadingPageModel(imagePath: 'assets/images/new_year_logo.png');
 
   static LoadingPageModel march8th = LoadingPageModel(
     titleStyle: const TextStyle(
-          color: Color.fromRGBO(144, 21, 84, 1.0),
-          fontSize: 34.09,
-          fontFamily: "LetoSans"),
+        color: Color.fromRGBO(144, 21, 84, 1.0),
+        fontSize: 34.09,
+        fontFamily: "LetoSans"),
     imagePath: 'assets/images/march_8th_logo.png',
     description: 'С 8 Марта!',
     descriptionStyle: const TextStyle(
-      color: Color.fromRGBO(144, 21, 84, 1.0),
-      fontSize: 25,
-      fontFamily: "LetoSans"),
-);
+        color: Color.fromRGBO(144, 21, 84, 1.0),
+        fontSize: 25,
+        fontFamily: "LetoSans"),
+  );
+
+  static LoadingPageModel april1st = LoadingPageModel(
+      title: 'УНИВЕРСИТЕТ \n АЛЕКСЕЕВА',
+      imagePath: 'assets/images/april_1st_logo.png');
 }
 
 class LoadingPages {
-  late final Map<LoadingPageType, LoadingPageModel> _loadingPages;
-
-  LoadingPages() {
-    _loadingPages = {
-      LoadingPageType.main: _LoadingPages.main,
-      LoadingPageType.newYear: _LoadingPages.newYear,
-      LoadingPageType.march8th: _LoadingPages.march8th,
-    };
-  }
-
   LoadingPageModel get actualLoadingPage {
     DateTime today = DateTime.now();
 
-    LoadingPageModel loadingPage = _loadingPages[LoadingPageType.main]!;
+    LoadingPageModel loadingPage = _LoadingPages.main;
 
     if (today.month == DateTime.december && today.day > 15 ||
         today.month < DateTime.february) {
-      loadingPage = _loadingPages[LoadingPageType.newYear]!;
+      loadingPage = _LoadingPages.newYear;
     } else if (today.isSameDate(_HolidayDates.march8th)) {
-      loadingPage = _loadingPages[LoadingPageType.march8th]!;
+      loadingPage = _LoadingPages.march8th;
+    } else if (today.isSameDate(_HolidayDates.april1st)) {
+      loadingPage = _LoadingPages.april1st;
     }
 
     return loadingPage;
