@@ -42,6 +42,8 @@ class GettingBlogPostsImpl implements GettingBlogPosts {
     final statusCode = response.statusCode;
 
     if (statusCode != 200) {
+      await FirebaseCrashlytics.instance.log(
+          '${runtimeType.toString()}: statusCode = $statusCode; pageNumber = $pageNumber; postId = $postId');
       return null;
     }
 

@@ -45,6 +45,8 @@ class GettingScheduleServiceImpl implements GettingScheduleService {
     final statusCode = response.statusCode;
 
     if (statusCode != 200) {
+      await FirebaseCrashlytics.instance.log(
+          '${runtimeType.toString()}: statusCode = $statusCode; scheduleId = ${scheduleFilter.id}');
       return null;
     }
 

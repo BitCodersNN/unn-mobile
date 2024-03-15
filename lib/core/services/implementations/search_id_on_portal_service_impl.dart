@@ -37,6 +37,8 @@ class SearchIdOnPortalServiceImpl implements SearchIdOnPortalService {
     final statusCode = response.statusCode;
 
     if (statusCode != 200) {
+      await FirebaseCrashlytics.instance.log(
+          '${runtimeType.toString()}: statusCode = $statusCode; userLogin = $uns');
       return null;
     }
 
@@ -85,6 +87,8 @@ class SearchIdOnPortalServiceImpl implements SearchIdOnPortalService {
     final statusCode = response.statusCode;
 
     if (statusCode != 200) {
+      await FirebaseCrashlytics.instance.log(
+          '${runtimeType.toString()}: statusCode = $statusCode; value = $value; valueType = $valueType');
       return null;
     }
 
