@@ -19,7 +19,7 @@ class GettingProfileOfCurrentUserImpl implements GettingProfileOfCurrentUser {
   Future<UserData?> getProfileOfCurrentUser() async {
     final authorisationService =
         Injector.appInstance.get<AuthorisationService>();
-    await GettingBlogPostsImpl().getBlogPosts();
+
     final requstSender = HttpRequestSender(path: _path, cookies: {
       _sessionIdCookieKey: authorisationService.sessionId ?? '',
     });
