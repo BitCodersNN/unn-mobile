@@ -27,7 +27,7 @@ class EmployeeData extends UserData {
     this._department,
     this._manager,
   ) : super(userData.login, userData.fullname, userData.email, userData.phone,
-            userData.sex, userData.urlPhoto);
+            userData.sex, userData.urlPhoto, userData.notes);
 
   String get syncID => _syncID;
   String get jobType => _jobType;
@@ -54,7 +54,7 @@ class EmployeeData extends UserData {
   }
 
   @override
-Map<String, dynamic> toJson() {
+  Map<String, dynamic> toJson() {
     final json = super.toJson();
     json[_KeysForEmployeeDataJsonConverter.user]
         [_KeysForEmployeeDataJsonConverter.syncID] = _syncID;

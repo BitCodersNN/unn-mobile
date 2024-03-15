@@ -1,7 +1,7 @@
 class _KeysForBlogDataJsonConverter {
   static const String id = 'ID';
   static const String blogId = 'BLOG_ID';
-  static const String userId = 'AUTHOR_ID';
+  static const String authorID = 'AUTHOR_ID';
   static const String title = 'TITLE';
   static const String detailText = 'DETAIL_TEXT';
   static const String datePublish = 'DATE_PUBLISH';
@@ -11,18 +11,18 @@ class _KeysForBlogDataJsonConverter {
 class BlogData {
   final int _id;
   final int _blogId;
-  final int _userId;
+  final int _authorID;
   final String _title;
   final String _detailText;
   final DateTime _datePublish;
   final List<String>? _files;
 
-  BlogData(this._id, this._blogId, this._userId, this._title, this._detailText,
+  BlogData(this._id, this._blogId, this._authorID, this._title, this._detailText,
       this._datePublish, this._files);
 
   int get id => _id;
   int get blogId => _blogId;
-  int get userId => _userId;
+  int get authorID => _authorID;
   String get title => _title;
   String get detailText => _detailText;
   DateTime get datePublish => _datePublish;
@@ -31,7 +31,7 @@ class BlogData {
   factory BlogData.fromJson(Map<String, Object?> jsonMap) => BlogData(
         int.parse(jsonMap[_KeysForBlogDataJsonConverter.id] as String),
         int.parse(jsonMap[_KeysForBlogDataJsonConverter.blogId] as String),
-        int.parse(jsonMap[_KeysForBlogDataJsonConverter.userId] as String),
+        int.parse(jsonMap[_KeysForBlogDataJsonConverter.authorID] as String),
          jsonMap[_KeysForBlogDataJsonConverter.title] as String,
         jsonMap[_KeysForBlogDataJsonConverter.detailText] as String,
         DateTime.parse(
@@ -44,7 +44,7 @@ class BlogData {
   Map<String, dynamic> toJson() => {
     _KeysForBlogDataJsonConverter.id: _id,
     _KeysForBlogDataJsonConverter.blogId: _blogId,
-    _KeysForBlogDataJsonConverter.userId: userId,
+    _KeysForBlogDataJsonConverter.authorID: authorID,
      _KeysForBlogDataJsonConverter.title: _title,
     _KeysForBlogDataJsonConverter.detailText: detailText,
     _KeysForBlogDataJsonConverter.datePublish: _datePublish.toString(),
