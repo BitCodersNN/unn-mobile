@@ -36,7 +36,7 @@ class StudentData extends UserData {
       this._eduGroup,
       this._eduSpecialization)
       : super(userData.login, userData.fullname, userData.email, userData.phone,
-            userData.sex, userData.urlPhoto);
+            userData.sex, userData.urlPhoto, userData.notes);
 
   String get eduForm => _eduForm;
   String get eduStatus => _eduStatus;

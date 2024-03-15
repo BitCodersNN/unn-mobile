@@ -14,15 +14,18 @@ class GettingBlogPostsImpl implements GettingBlogPosts {
   final String _sessid = 'sessid';
   final String _start = 'start';
   final String _sessionIdCookieKey = "PHPSESSID";
+  final String _postId = 'POST_ID';
 
   @override
-  Future<List<BlogData>?> getBlogPost({int pageNumber = 0}) async {
+  Future<List<BlogData>?> getBlogPosts(
+      {int pageNumber = 0, int? postId}) async {
     final authorisationService =
         Injector.appInstance.get<AuthorisationService>();
 
     final requstSender = HttpRequestSender(path: _path, queryParams: {
       _sessid: authorisationService.csrf ?? '',
       _start: (_numberOfPostsPerPage * pageNumber).toString(),
+      _postId: postId.toString(),
     }, cookies: {
       _sessionIdCookieKey: authorisationService.sessionId ?? '',
     });
@@ -58,6 +61,10 @@ class GettingBlogPostsImpl implements GettingBlogPosts {
           .toList();
     } catch (error, stackTrace) {
       await FirebaseCrashlytics.instance.recordError(error, stackTrace);
+    }
+
+    if (blogPosts != null) {
+      blogPosts.sort((a, b) => b.datePublish.compareTo(a.datePublish));
     }
 
     return blogPosts;
