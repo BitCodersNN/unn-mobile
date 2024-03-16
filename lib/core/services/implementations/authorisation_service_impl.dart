@@ -1,8 +1,8 @@
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:injector/injector.dart';
+import 'package:unn_mobile/core/misc/custom_errors/auth_errors.dart';
 import 'package:unn_mobile/core/misc/http_helper.dart';
 import 'package:unn_mobile/core/models/online_status_data.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
@@ -17,7 +17,6 @@ class AuthorisationServiceImpl implements AuthorisationService {
 
   @override
   Future<AuthRequestResult> auth(String login, String password) async {
-
     if (await _isOffline()) {
       return AuthRequestResult.noInternet;
     }
@@ -29,9 +28,8 @@ class AuthorisationServiceImpl implements AuthorisationService {
       authResponse = await _sendAuthRequest(login, password);
     } on TimeoutException {
       return AuthRequestResult.noInternet;
-    } on Exception catch (e) {
-      log(e.toString());
-      return AuthRequestResult.unknownError;
+    } on Exception catch (_) {
+      rethrow;
     }
 
     if (authResponse.statusCode != 302) {
@@ -41,23 +39,27 @@ class AuthorisationServiceImpl implements AuthorisationService {
     final sessionCookie = authResponse.cookies
         .where((cookie) => cookie.name == _sessionIdCookieKey)
         .firstOrNull;
+
     if (sessionCookie == null) {
-      return AuthRequestResult.unknownError;
+      throw SessionCookieException(
+          message: 'sessionCookie is null',
+          privateInformation: {'user_login': login});
     }
 
     try {
       csrfResponse = await _sendCsrfRequest(sessionCookie.value);
     } on TimeoutException {
       return AuthRequestResult.noInternet;
-    } on Exception catch (e) {
-      log(e.toString());
-      return AuthRequestResult.unknownError;
+    } on Exception catch (_) {
+      rethrow;
     }
 
     final csrfValue = csrfResponse.headers.value(_csrfHeaderName);
 
     if (csrfValue == null) {
-      return AuthRequestResult.unknownError;
+      throw CsrfValueException(
+          message: 'csrfValue is null',
+          privateInformation: {'user_login': login});
     }
 
     // bind properties

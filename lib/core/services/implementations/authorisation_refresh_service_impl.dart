@@ -1,4 +1,4 @@
-import 'dart:developer';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/services.dart';
 import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/services/interfaces/auth_data_provider.dart';
@@ -19,18 +19,20 @@ class AuthorisationRefreshServiceImpl implements AuthorisationRefreshService {
       return !(authData.login == AuthData.getDefaultParameter() ||
           authData.login == AuthData.getDefaultParameter());
     } on PlatformException catch (error) {
-      log("Exception: ${error.message}; code: ${error.code}\nStackTrace: \n${error.stacktrace}");
+      await FirebaseCrashlytics.instance.log(
+          "Exception: ${error.message}; code: ${error.code}\nStackTrace: \n${error.stacktrace}");
       _storage.clear();
       return false;
     }
   }
 
   @override
-  Future<AuthRequestResult?> refreshLogin() async{
+  Future<AuthRequestResult?> refreshLogin() async {
     if (!await _userDataExistsInStorage()) {
       return null;
     }
-    AuthData authData =  await _authDataProvider.getData();
-    return _authorisationService.auth(authData.login, authData.password);
+    AuthData authData = await _authDataProvider.getData();
+
+    return await _authorisationService.auth(authData.login, authData.password);
   }
 }
