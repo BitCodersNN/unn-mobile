@@ -1,7 +1,7 @@
 import 'dart:convert';
-import 'dart:developer';
 import 'dart:io';
 
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:unn_mobile/core/misc/http_helper.dart';
@@ -21,7 +21,7 @@ class GettingScheduleServiceImpl implements GettingScheduleService {
   @override
   Future<List<Subject>?> getSchedule(ScheduleFilter scheduleFilter) async {
     final path = '$_path${scheduleFilter.idType.name}/${scheduleFilter.id}';
-    final requstSender = HttpRequestSender(path: path, queryParams: {
+    final requestSender = HttpRequestSender(path: path, queryParams: {
       _start: scheduleFilter.dateTimeRange.start
           .toIso8601String()
           .split('T')[0]
@@ -35,23 +35,28 @@ class GettingScheduleServiceImpl implements GettingScheduleService {
 
     HttpClientResponse response;
     try {
-      response = await requstSender.get();
-    } catch (e) {
-      log(e.toString());
+      response = await requestSender.get();
+    } catch (error, stackTrace) {
+      await FirebaseCrashlytics.instance
+          .log("Exception: $error\nStackTrace: $stackTrace");
       return null;
     }
 
     final statusCode = response.statusCode;
 
     if (statusCode != 200) {
+      await FirebaseCrashlytics.instance.log(
+          '${runtimeType.toString()}: statusCode = $statusCode; scheduleId = ${scheduleFilter.id}');
       return null;
     }
-    
+
     List<dynamic> jsonList;
-    
+
     try {
-      jsonList = jsonDecode(await HttpRequestSender.responseToStringBody(response));
-    } catch(e) {
+      jsonList =
+          jsonDecode(await HttpRequestSender.responseToStringBody(response));
+    } catch (error, stackTrace) {
+      await FirebaseCrashlytics.instance.recordError(error, stackTrace);
       return null;
     }
 
@@ -75,7 +80,8 @@ class GettingScheduleServiceImpl implements GettingScheduleService {
       (jsonMap[KeysForSubjectJsonConverter.kindOfWork] ?? '') as String,
       Address(jsonMap[KeysForSubjectJsonConverter.auditorium] as String,
           jsonMap[KeysForSubjectJsonConverter.building] as String),
-      ((jsonMap[KeysForSubjectJsonConverter.stream] ?? '') as String).split(_splitPaternForStream),
+      ((jsonMap[KeysForSubjectJsonConverter.stream] ?? '') as String)
+          .split(_splitPaternForStream),
       (jsonMap[KeysForSubjectJsonConverter.lecturer] ?? '') as String,
       DateTimeRange(start: startDateTime, end: endDateTime),
     );
