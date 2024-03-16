@@ -18,13 +18,13 @@ class GettingProfileOfCurrentUserImpl implements GettingProfileOfCurrentUser {
   Future<UserData?> getProfileOfCurrentUser() async {
     final authorisationService = Injector.appInstance.get<AuthorisationService>();
 
-    final requstSender = HttpRequestSender(path: _path, cookies: {
+    final requestSender = HttpRequestSender(path: _path, cookies: {
       _sessionIdCookieKey: authorisationService.sessionId ?? '',
     });
     
     HttpClientResponse response;
     try {
-      response = await requstSender.get();
+      response = await requestSender.get();
     } catch (e) {
       log(e.toString());
       return null;
