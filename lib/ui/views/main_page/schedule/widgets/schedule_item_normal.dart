@@ -20,6 +20,7 @@ class ScheduleItemNormal extends StatefulWidget {
 class _ScheduleItemNormalState extends State<ScheduleItemNormal>
     with TickerProviderStateMixin {
   bool _expanded = false;
+  final vutsScheduleUri = "http://www.ivo.unn.ru/raspisanie-vuts/";
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +34,7 @@ class _ScheduleItemNormalState extends State<ScheduleItemNormal>
       child: GestureDetector(
         onTap: () async {
           if (widget.subject.name == "Военная подготовка") {
-            final Uri url = Uri.parse('http://www.ivo.unn.ru/raspisanie-vuts/');
+            final Uri url = Uri.parse(vutsScheduleUri);
             if (!await launchUrl(url)) {
               throw Exception("Could not launch $url");
             }
