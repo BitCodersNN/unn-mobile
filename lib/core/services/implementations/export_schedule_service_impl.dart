@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:device_calendar/device_calendar.dart';
@@ -9,7 +8,8 @@ import 'package:unn_mobile/core/models/schedule_filter.dart';
 import 'package:unn_mobile/core/services/interfaces/export_schedule_service.dart';
 
 class ExportScheduleServiceImpl implements ExportScheduleService {
-  final PermissionHandlerPlatform _permissionHandler = PermissionHandlerPlatform.instance;
+  final PermissionHandlerPlatform _permissionHandler =
+      PermissionHandlerPlatform.instance;
   final DeviceCalendarPlugin _deviceCalendarPlugin = DeviceCalendarPlugin();
 
   final String _calendarName = 'Расписание ННГУ';
@@ -19,7 +19,6 @@ class ExportScheduleServiceImpl implements ExportScheduleService {
   final String _lng = 'lng';
   final String _timeZone = 'Europe/Moscow';
   String _path = 'ruzapi/schedule/';
-
 
   @override
   Future<ExportScheduleResult> exportSchedule(
@@ -34,7 +33,7 @@ class ExportScheduleServiceImpl implements ExportScheduleService {
       _finish: scheduleFilter.dateTimeRange.end
           .toIso8601String()
           .split('T')[0]
-          .replaceAll('-', '.'), 
+          .replaceAll('-', '.'),
       _lng: '1',
     });
 
@@ -44,34 +43,41 @@ class ExportScheduleServiceImpl implements ExportScheduleService {
     } on TimeoutException {
       return ExportScheduleResult.timeout;
     } catch (e) {
-      log(e.toString());
-      return ExportScheduleResult.unknownError;
+      rethrow;
     }
 
     if (response.statusCode != 200) {
       return ExportScheduleResult.statusCodeIsntOk;
     }
 
-    final iCalendarData = ICalendar.fromString(await HttpRequestSender.responseToStringBody(response)).data;
+    final iCalendarData = ICalendar.fromString(
+            await HttpRequestSender.responseToStringBody(response))
+        .data;
     iCalendarData.removeAt(0);
 
-    final status = await _permissionHandler.checkPermissionStatus(Permission.calendarFullAccess);
+    final status = await _permissionHandler
+        .checkPermissionStatus(Permission.calendarFullAccess);
     if (!status.isGranted) {
       return ExportScheduleResult.noPermission;
     }
 
     String? calendarID = await _findCalendarId();
-    calendarID ??= (await _deviceCalendarPlugin.createCalendar(_calendarName)).data;
+    calendarID ??=
+        (await _deviceCalendarPlugin.createCalendar(_calendarName)).data;
 
     return _addEventsInCalendar(iCalendarData, calendarID);
   }
 
   @override
   Future<RequestCalendarPermissionResult> requestCalendarPermission() async {
-    final status = await _permissionHandler.checkPermissionStatus(Permission.calendarFullAccess);
+    final status = await _permissionHandler
+        .checkPermissionStatus(Permission.calendarFullAccess);
     if (status.isDenied) {
-      await _permissionHandler.requestPermissions([Permission.calendarFullAccess]);
-      return ( await _permissionHandler.checkPermissionStatus(Permission.calendarFullAccess).isGranted)
+      await _permissionHandler
+          .requestPermissions([Permission.calendarFullAccess]);
+      return (await _permissionHandler
+              .checkPermissionStatus(Permission.calendarFullAccess)
+              .isGranted)
           ? RequestCalendarPermissionResult.allowed
           : RequestCalendarPermissionResult.rejected;
     } else if (status.isPermanentlyDenied) {
@@ -95,7 +101,8 @@ class ExportScheduleServiceImpl implements ExportScheduleService {
     return null;
   }
 
-  Future<ExportScheduleResult> _addEventsInCalendar(iCalendarData, calendarID) async {
+  Future<ExportScheduleResult> _addEventsInCalendar(
+      iCalendarData, calendarID) async {
     const String summary = 'summary';
     const String location = 'location';
     const String dtstart = 'dtstart';
@@ -115,10 +122,8 @@ class ExportScheduleServiceImpl implements ExportScheduleService {
         ));
       }
     } catch (e) {
-      log(e.toString());
-      return ExportScheduleResult.unknownError;
+      rethrow;
     }
     return ExportScheduleResult.success;
   }
-  
 }
