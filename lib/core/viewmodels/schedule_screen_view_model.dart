@@ -9,6 +9,7 @@ import 'package:unn_mobile/core/models/schedule_filter.dart';
 import 'package:unn_mobile/core/models/schedule_search_result_item.dart';
 import 'package:unn_mobile/core/models/student_data.dart';
 import 'package:unn_mobile/core/models/subject.dart';
+import 'package:unn_mobile/core/services/interfaces/export_schedule_service.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_profile_of_current_user_service.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_schedule_service.dart';
 import 'package:unn_mobile/core/services/interfaces/offline_schedule_provider.dart';
@@ -33,6 +34,7 @@ class ScheduleScreenViewModel extends BaseViewModel {
       Injector.appInstance.get<ScheduleSearchHistoryService>();
   final OnlineStatusData _onlineStatusData =
       Injector.appInstance.get<OnlineStatusData>();
+  final ExportScheduleService _exportScheduleService = Injector.appInstance.get<ExportScheduleService>();
   final String _studentNameText = 'Имя студента';
   final String _lecturerNameText = 'Имя преподавателя';
   final String _groupNameText = 'Название группы';
@@ -237,5 +239,17 @@ class ScheduleScreenViewModel extends BaseViewModel {
     _scheduleLoader!.then(
       _invokeOnScheduleLoaded,
     );
+  }
+
+  Future<RequestCalendarPermissionResult> askForExportPermission() async {
+    return await _exportScheduleService.requestCalendarPermission();
+  }
+  Future openSettingsWindow() async {
+    await _exportScheduleService.openSettings();
+  }
+  Future<bool> exportSchedule(DateTimeRange range) async {
+    final exportScheduleFilter = ScheduleFilter(_idType, _currentId, range);
+    final res = await _exportScheduleService.exportSchedule(exportScheduleFilter);
+    return res == ExportScheduleResult.success;
   }
 }
