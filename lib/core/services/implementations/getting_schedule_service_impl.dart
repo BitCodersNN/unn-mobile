@@ -21,7 +21,7 @@ class GettingScheduleServiceImpl implements GettingScheduleService {
   @override
   Future<List<Subject>?> getSchedule(ScheduleFilter scheduleFilter) async {
     final path = '$_path${scheduleFilter.idType.name}/${scheduleFilter.id}';
-    final requstSender = HttpRequestSender(path: path, queryParams: {
+    final requestSender = HttpRequestSender(path: path, queryParams: {
       _start: scheduleFilter.dateTimeRange.start
           .toIso8601String()
           .split('T')[0]

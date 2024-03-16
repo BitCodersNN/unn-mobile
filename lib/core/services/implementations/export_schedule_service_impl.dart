@@ -25,7 +25,7 @@ class ExportScheduleServiceImpl implements ExportScheduleService {
       ScheduleFilter scheduleFilter) async {
     _path = '$_path${scheduleFilter.idType.name}/${scheduleFilter.id}.$_ics';
 
-    final requstSender = HttpRequestSender(path: _path, queryParams: {
+    final requestSender = HttpRequestSender(path: _path, queryParams: {
       _start: scheduleFilter.dateTimeRange.start
           .toIso8601String()
           .split('T')[0]
@@ -39,7 +39,7 @@ class ExportScheduleServiceImpl implements ExportScheduleService {
 
     HttpClientResponse response;
     try {
-      response = await requstSender.get();
+      response = await requestSender.get();
     } on TimeoutException {
       return ExportScheduleResult.timeout;
     } catch (e) {
