@@ -31,6 +31,7 @@ dependencies:
   firebase_core: ^2.25.4
   firebase_crashlytics: ^3.4.15
   firebase_analytics: ^10.8.6
+  url_launcher: ^6.2.5
 
 
 dev_dependencies:

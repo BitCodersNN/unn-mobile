@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:unn_mobile/core/models/subject.dart';
 import 'package:unn_mobile/ui/unn_mobile_colors.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ScheduleItemNormal extends StatefulWidget {
   final Subject subject;
@@ -30,10 +31,17 @@ class _ScheduleItemNormalState extends State<ScheduleItemNormal>
     return Padding(
       padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 8.0),
       child: GestureDetector(
-        onTap: () {
-          setState(() {
-            _expanded = !_expanded;
-          });
+        onTap: () async {
+          if (widget.subject.name == "Военная подготовка") {
+            final Uri url = Uri.parse('http://www.ivo.unn.ru/raspisanie-vuts/');
+            if (!await launchUrl(url)) {
+              throw Exception("Could not launch $url");
+            }
+          } else {
+            setState(() {
+              _expanded = !_expanded;
+            });
+          }
         },
         child: Container(
           decoration: BoxDecoration(
@@ -155,8 +163,7 @@ class _ScheduleItemNormalState extends State<ScheduleItemNormal>
             text,
             style: theme.textTheme.labelLarge!
                 .copyWith(color: extraColors.ligtherTextColor),
-            overflow:
-                _expanded ? TextOverflow.visible : TextOverflow.ellipsis,
+            overflow: _expanded ? TextOverflow.visible : TextOverflow.ellipsis,
             softWrap: _expanded,
           ),
         ),
