@@ -1,6 +1,6 @@
 import 'package:unn_mobile/core/models/user_data.dart';
 
-class KeysForEmployeeDataJsonConverter {
+class _KeysForEmployeeDataJsonConverter {
   static const String user = 'user';
   static const String syncID = 'sync_id';
   static const String jobType = 'job_type';
@@ -27,7 +27,7 @@ class EmployeeData extends UserData {
     this._department,
     this._manager,
   ) : super(userData.login, userData.fullname, userData.email, userData.phone,
-            userData.sex, userData.urlPhoto);
+            userData.sex, userData.urlPhoto, userData.notes);
 
   String get syncID => _syncID;
   String get jobType => _jobType;
@@ -38,41 +38,41 @@ class EmployeeData extends UserData {
   factory EmployeeData.fromJson(Map<String, Object?> jsonMap) {
     return EmployeeData(
         UserData.fromJson(jsonMap),
-        (jsonMap[KeysForEmployeeDataJsonConverter.user]
-                as Map<String, Object?>)[KeysForEmployeeDataJsonConverter.syncID]
+        (jsonMap[_KeysForEmployeeDataJsonConverter.user]
+                as Map<String, Object?>)[_KeysForEmployeeDataJsonConverter.syncID]
             as String,
-        jsonMap[KeysForEmployeeDataJsonConverter.jobType] as String,
-        jsonMap[KeysForEmployeeDataJsonConverter.jobTitle] as String,
-        ((((jsonMap[KeysForEmployeeDataJsonConverter.department] as Map<String,
-                        Object?>)[KeysForEmployeeDataJsonConverter.child]
-                    as Map<String, Object?>)[KeysForEmployeeDataJsonConverter.child])
-                as Map<String, Object?>)[KeysForEmployeeDataJsonConverter.title]
+        jsonMap[_KeysForEmployeeDataJsonConverter.jobType] as String,
+        jsonMap[_KeysForEmployeeDataJsonConverter.jobTitle] as String,
+        ((((jsonMap[_KeysForEmployeeDataJsonConverter.department] as Map<String,
+                        Object?>)[_KeysForEmployeeDataJsonConverter.child]
+                    as Map<String, Object?>)[_KeysForEmployeeDataJsonConverter.child])
+                as Map<String, Object?>)[_KeysForEmployeeDataJsonConverter.title]
             as String,
-        (jsonMap[KeysForEmployeeDataJsonConverter.manager]
-                as Map<String, Object?>)[KeysForEmployeeDataJsonConverter.fullname]
+        (jsonMap[_KeysForEmployeeDataJsonConverter.manager]
+                as Map<String, Object?>)[_KeysForEmployeeDataJsonConverter.fullname]
             as String);
   }
 
   @override
-Map<String, dynamic> toJson() {
+  Map<String, dynamic> toJson() {
     final json = super.toJson();
-    json[KeysForEmployeeDataJsonConverter.user]
-        [KeysForEmployeeDataJsonConverter.syncID] = _syncID;
-    json[KeysForEmployeeDataJsonConverter.jobType] = _jobType;
-    json[KeysForEmployeeDataJsonConverter.jobTitle] = _jobTitle;
-    json[KeysForEmployeeDataJsonConverter.department] ??= {};
-    json[KeysForEmployeeDataJsonConverter.department]
-        [KeysForEmployeeDataJsonConverter.child] ??= {};
-    json[KeysForEmployeeDataJsonConverter.department]
-            [KeysForEmployeeDataJsonConverter.child]
-        [KeysForEmployeeDataJsonConverter.child] ??= {};
-    json[KeysForEmployeeDataJsonConverter.department]
-                [KeysForEmployeeDataJsonConverter.child]
-            [KeysForEmployeeDataJsonConverter.child]
-        [KeysForEmployeeDataJsonConverter.title] = _department;
-    json[KeysForEmployeeDataJsonConverter.manager] ??= {};
-    json[KeysForEmployeeDataJsonConverter.manager]
-        [KeysForEmployeeDataJsonConverter.fullname] = _manager;
+    json[_KeysForEmployeeDataJsonConverter.user]
+        [_KeysForEmployeeDataJsonConverter.syncID] = _syncID;
+    json[_KeysForEmployeeDataJsonConverter.jobType] = _jobType;
+    json[_KeysForEmployeeDataJsonConverter.jobTitle] = _jobTitle;
+    json[_KeysForEmployeeDataJsonConverter.department] ??= {};
+    json[_KeysForEmployeeDataJsonConverter.department]
+        [_KeysForEmployeeDataJsonConverter.child] ??= {};
+    json[_KeysForEmployeeDataJsonConverter.department]
+            [_KeysForEmployeeDataJsonConverter.child]
+        [_KeysForEmployeeDataJsonConverter.child] ??= {};
+    json[_KeysForEmployeeDataJsonConverter.department]
+                [_KeysForEmployeeDataJsonConverter.child]
+            [_KeysForEmployeeDataJsonConverter.child]
+        [_KeysForEmployeeDataJsonConverter.title] = _department;
+    json[_KeysForEmployeeDataJsonConverter.manager] ??= {};
+    json[_KeysForEmployeeDataJsonConverter.manager]
+        [_KeysForEmployeeDataJsonConverter.fullname] = _manager;
     return json;
   }
 }
