@@ -228,9 +228,9 @@ class ScheduleScreenViewModel extends BaseViewModel {
     String value,
   ) async {
     final suggestions = await tryLoginAndRetrieveData(
-        () async =>
-            await _searchIdOnPortalService.findIDOnPortal(value, _idType),
-        () async => <ScheduleSearchResultItem>[],);
+      () async => await _searchIdOnPortalService.findIDOnPortal(value, _idType),
+      () async => <ScheduleSearchResultItem>[],
+    );
 
     return suggestions;
   }
