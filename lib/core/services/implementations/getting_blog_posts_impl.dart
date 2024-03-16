@@ -22,7 +22,7 @@ class GettingBlogPostsImpl implements GettingBlogPosts {
     final authorisationService =
         Injector.appInstance.get<AuthorisationService>();
 
-    final requstSender = HttpRequestSender(path: _path, queryParams: {
+    final requestSender = HttpRequestSender(path: _path, queryParams: {
       _sessid: authorisationService.csrf ?? '',
       _start: (_numberOfPostsPerPage * pageNumber).toString(),
       _postId: postId.toString(),
@@ -32,7 +32,7 @@ class GettingBlogPostsImpl implements GettingBlogPosts {
 
     HttpClientResponse response;
     try {
-      response = await requstSender.get(timeoutSeconds: 60);
+      response = await requestSender.get(timeoutSeconds: 60);
     } catch (error, stackTrace) {
       await FirebaseCrashlytics.instance
           .log("Exception: $error\nStackTrace: $stackTrace");
