@@ -40,6 +40,8 @@ class GettingProfileImpl implements GettingProfile {
     final statusCode = response.statusCode;
 
     if (statusCode != 200) {
+      await FirebaseCrashlytics.instance.log(
+          '${runtimeType.toString()}: statusCode = $statusCode; authorId = $authorId');
       return null;
     }
 
@@ -75,6 +77,8 @@ class GettingProfileImpl implements GettingProfile {
     final statusCode = response.statusCode;
 
     if (statusCode != 200) {
+      await FirebaseCrashlytics.instance.log(
+          '${runtimeType.toString()}: statusCode = $statusCode; userId = $userId');
       return null;
     }
 
