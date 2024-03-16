@@ -230,7 +230,7 @@ class ScheduleScreenViewModel extends BaseViewModel {
     final suggestions = await tryLoginAndRetrieveData(
         () async =>
             await _searchIdOnPortalService.findIDOnPortal(value, _idType),
-        () async => <ScheduleSearchResultItem>[]);
+        () async => <ScheduleSearchResultItem>[],);
 
     return suggestions;
   }
