@@ -25,7 +25,7 @@ class GettingProfileOfCurrentUserImpl implements GettingProfileOfCurrentUser {
 
     HttpClientResponse response;
     try {
-      response = await requstSender.get();
+      response = await requestSender.get();
     } catch (error, stackTrace) {
       await FirebaseCrashlytics.instance.recordError(error, stackTrace);
       return null;

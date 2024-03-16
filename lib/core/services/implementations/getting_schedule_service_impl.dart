@@ -35,7 +35,7 @@ class GettingScheduleServiceImpl implements GettingScheduleService {
 
     HttpClientResponse response;
     try {
-      response = await requstSender.get();
+      response = await requestSender.get();
     } catch (error, stackTrace) {
       await FirebaseCrashlytics.instance
           .log("Exception: $error\nStackTrace: $stackTrace");
