@@ -23,12 +23,12 @@ class SearchIdOnPortalServiceImpl implements SearchIdOnPortalService {
   final String _description = 'description';
 
   Future<String?> _getIdOfLoggedInStudent(String uns) async {
-    final requstSender = HttpRequestSender(
+    final requestSender = HttpRequestSender(
         path: _ruzapi + _studentinfo, queryParams: {_uns: uns});
 
     HttpClientResponse response;
     try {
-      response = await requstSender.get();
+      response = await requestSender.get();
     } catch (error, stackTrace) {
       await FirebaseCrashlytics.instance.recordError(error, stackTrace);
       return null;
@@ -73,12 +73,12 @@ class SearchIdOnPortalServiceImpl implements SearchIdOnPortalService {
   @override
   Future<List<ScheduleSearchResultItem>?> findIDOnPortal(
       String value, IDType valueType) async {
-    final requstSender = HttpRequestSender(
+    final requestSender = HttpRequestSender(
         path: _ruzapi + _search,
         queryParams: {_term: value, _type: valueType.name});
     HttpClientResponse response;
     try {
-      response = await requstSender.get();
+      response = await requestSender.get();
     } catch (error, stackTrace) {
       await FirebaseCrashlytics.instance.recordError(error, stackTrace);
       return null;
