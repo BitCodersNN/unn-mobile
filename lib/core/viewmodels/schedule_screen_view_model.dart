@@ -64,8 +64,9 @@ class ScheduleScreenViewModel extends BaseViewModel {
   void _initHuman(String placeholderText, IDType idType) {
     _searchPlaceholderText = placeholderText;
     tryLoginAndRetrieveData(
-            _searchIdOnPortalService.getIdOfLoggedInUser, () => null)
-        .then((value) async {
+      _searchIdOnPortalService.getIdOfLoggedInUser,
+      () => null,
+    ).then((value) async {
       if (value == null) {
         _updateScheduleLoader();
         return;
@@ -82,20 +83,25 @@ class ScheduleScreenViewModel extends BaseViewModel {
   void _initGroup() {
     _searchPlaceholderText = _groupNameText;
     tryLoginAndRetrieveData(
-            _gettingProfileOfCurrentUser.getProfileOfCurrentUser, () => null)
-        .then((value) async {
+      _gettingProfileOfCurrentUser.getProfileOfCurrentUser,
+      () => null,
+    ).then((value) async {
       if (value == null) {
         _updateScheduleLoader();
         return;
       }
+
       if (value is StudentData) {
         final groupID = await _searchIdOnPortalService.findIDOnPortal(
-            value.eduGroup, IDType.group);
+          value.eduGroup,
+          IDType.group,
+        );
         _filter =
             ScheduleFilter(IDType.group, groupID!.first.id, decidePivotWeek());
         _currentId = groupID.first.id;
         _updateScheduleLoader();
       }
+
       notifyListeners();
     });
   }
@@ -149,13 +155,17 @@ class ScheduleScreenViewModel extends BaseViewModel {
   Future<Map<int, List<Subject>>> _getScheduleLoader() async {
     setState(ViewState.busy);
     if (_filter.id == '-1') {
-      _filter = ScheduleFilter(_ExclusionID._vacancy.idType,
-          _ExclusionID._vacancy.id, displayedWeek);
+      _filter = ScheduleFilter(
+        _ExclusionID._vacancy.idType,
+        _ExclusionID._vacancy.id,
+        displayedWeek,
+      );
     }
 
     final schedule = await tryLoginAndRetrieveData(
-        () async => await _getScheduleService.getSchedule(filter),
-        _offlineScheduleProvider.getData);
+      () async => await _getScheduleService.getSchedule(filter),
+      _offlineScheduleProvider.getData,
+    );
 
     if (schedule == null) {
       throw Exception('Schedule was null');
@@ -165,14 +175,19 @@ class ScheduleScreenViewModel extends BaseViewModel {
     for (Subject subject in schedule) {
       if (!result.keys.contains(subject.dateTimeRange.start.weekday)) {
         result.addEntries([
-          MapEntry<int, List<Subject>>(subject.dateTimeRange.start.weekday, [])
+          MapEntry<int, List<Subject>>(
+            subject.dateTimeRange.start.weekday,
+            [],
+          )
         ]);
       }
       result[subject.dateTimeRange.start.weekday]!.add(subject);
     }
+
     if (!offline && displayedWeekOffset == 0 && filter.id == _currentId) {
       _offlineScheduleProvider.saveData(schedule);
     }
+
     setState(ViewState.idle);
     return result;
   }
@@ -187,9 +202,11 @@ class ScheduleScreenViewModel extends BaseViewModel {
     if (query.isNotEmpty) {
       final searchResult =
           await _searchIdOnPortalService.findIDOnPortal(query, _idType);
+
       if (searchResult == null) {
         throw Exception('Schedule search result was null');
       }
+
       addHistoryItem(query);
       _filter = ScheduleFilter(_idType, searchResult[0].id, displayedWeek);
     } else {
@@ -208,7 +225,8 @@ class ScheduleScreenViewModel extends BaseViewModel {
       _historyService.pushToHistory(type: _idType, value: query);
 
   Future<List<ScheduleSearchResultItem>> getSearchSuggestions(
-      String value) async {
+    String value,
+  ) async {
     final suggestions = await tryLoginAndRetrieveData(
         () async =>
             await _searchIdOnPortalService.findIDOnPortal(value, _idType),
@@ -221,8 +239,10 @@ class ScheduleScreenViewModel extends BaseViewModel {
     return await _historyService.getHistory(_idType);
   }
 
-  void init(IDType type,
-      {void Function(Map<int, List<Subject>> schedule)? onScheduleLoaded}) {
+  void init(
+    IDType type, {
+    void Function(Map<int, List<Subject>> schedule)? onScheduleLoaded,
+  }) {
     _onScheduleLoaded = onScheduleLoaded;
     _idType = type;
     switch (type) {
