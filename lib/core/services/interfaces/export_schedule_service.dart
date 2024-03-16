@@ -5,7 +5,6 @@ enum ExportScheduleResult {
   noPermission,
   timeout,
   statusCodeIsntOk,
-  unknownError,
 }
 
 enum RequestCalendarPermissionResult {
@@ -20,6 +19,9 @@ abstract interface class ExportScheduleService {
   /// Перед вызовом необходимо вызвать [requestCalendarPermission] и убедиться, что разрешение на использование календаря есть
   /// 
   /// [scheduleFilter]: Фильтр, по которому происходит получение расписания
+  /// 
+  /// Выбрасывает исключение:
+  ///  1. [Exception] - если возникло непредвиденное исключение
   /// 
   /// Возвращает [ExportScheduleResult]
   Future<ExportScheduleResult> exportSchedule(ScheduleFilter scheduleFilter);
