@@ -62,7 +62,9 @@ class _ScheduleItemNormalState extends State<ScheduleItemNormal>
                   decoration: BoxDecoration(
                     borderRadius: const BorderRadius.all(Radius.circular(3)),
                     color: getColorOfSubjectType(
-                        theme, widget.subject.subjectTypeEnum),
+                      theme,
+                      widget.subject.subjectTypeEnum,
+                    ),
                   ),
                 ),
                 Expanded(
@@ -84,8 +86,11 @@ class _ScheduleItemNormalState extends State<ScheduleItemNormal>
                               : TextOverflow.ellipsis,
                           softWrap: true,
                         ),
-                        _textWithIcon(context, Icons.location_on,
-                            "${widget.subject.address.auditorium}/${widget.subject.address.building}"),
+                        _textWithIcon(
+                          context,
+                          Icons.location_on,
+                          "${widget.subject.address.auditorium}/${widget.subject.address.building}",
+                        ),
                         if (_expanded)
                           _textWithIcon(
                             context,
@@ -101,10 +106,13 @@ class _ScheduleItemNormalState extends State<ScheduleItemNormal>
                         Text(
                           widget.subject.subjectType,
                           style: theme.textTheme.labelLarge!.copyWith(
-                              color: getColorOfSubjectType(
-                                  theme, widget.subject.subjectTypeEnum),
-                              fontStyle: FontStyle.italic,
-                              overflow: TextOverflow.ellipsis),
+                            color: getColorOfSubjectType(
+                              theme,
+                              widget.subject.subjectTypeEnum,
+                            ),
+                            fontStyle: FontStyle.italic,
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         ),
                       ],
                     ),
