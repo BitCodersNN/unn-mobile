@@ -140,7 +140,7 @@ class ScheduleTabState extends State<ScheduleTab>
                           if (permission ==
                               RequestCalendarPermissionResult
                                   .permanentlyDenied) {
-                            if (mounted) {
+                            if (context.mounted) {
                               await showDialog(
                                 context: context,
                                 builder: (context) => AlertDialog(
@@ -148,7 +148,7 @@ class ScheduleTabState extends State<ScheduleTab>
                                     TextButton(
                                       onPressed: () async {
                                         await model.openSettingsWindow();
-                                        if (mounted) {
+                                        if (context.mounted) {
                                           Navigator.pop(context);
                                         }
                                       },
@@ -170,7 +170,7 @@ class ScheduleTabState extends State<ScheduleTab>
                           } else if (permission ==
                               RequestCalendarPermissionResult.allowed) {
                             int? selectedRange;
-                            if (mounted) {
+                            if (context.mounted) {
                               selectedRange = await showDialog(
                                 context: context,
                                 builder: (context) {
@@ -183,7 +183,7 @@ class ScheduleTabState extends State<ScheduleTab>
                             }
                             if (selectedRange != null) {
                               bool result = await model.exportSchedule(_exportRanges.keys.toList()[selectedRange]);
-                              if (mounted) {
+                              if (context.mounted) {
                                 showDialog(
                                   context: context,
                                   builder: (context) => MessageDialog(
