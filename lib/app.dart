@@ -21,8 +21,9 @@ class UnnMobile extends StatelessWidget {
           surfaceVariant: const Color(0xFFEFF1FB),
         ),
         textTheme: Typography.blackRedwoodCity,
-        extensions: const [UnnMobileColors(
-            scheduleDayHighlight: Color(0xFFEEEEEE), 
+        extensions: const [
+          UnnMobileColors(
+            scheduleDayHighlight: Color(0xFFEEEEEE),
             scheduleSubjectHighlight: Color(0xFFFFF6E8),
             subjectTypeHighlight: {
               SubjectType.lecture: Color(0xFF1CA49C),
@@ -32,8 +33,9 @@ class UnnMobile extends StatelessWidget {
               SubjectType.consult: Color(0xFF7D60D1),
               SubjectType.unknown: Color(0xFF6E757C),
             },
-            )
-          ]
+            ligtherTextColor: Color(0xFF717A84),
+          )
+        ],
       ),
     );
   }
