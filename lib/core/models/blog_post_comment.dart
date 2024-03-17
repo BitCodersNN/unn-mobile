@@ -13,4 +13,15 @@ class BlogPostComment {
       required this.dateTime,
       required this.message,
       this.attachedFiles = const []});
+
+  Map<String, dynamic> toJson() {
+    return {
+      "id": id,
+      "dateTime": dateTime,
+      "authorId": authorId,
+      "authorName": authorName,
+      "message": message,
+      "attachedFiles": attachedFiles,
+    };
+  }
 }
