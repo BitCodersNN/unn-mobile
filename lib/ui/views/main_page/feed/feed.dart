@@ -9,7 +9,11 @@ class FeedScreenView extends StatelessWidget {
   Widget build(BuildContext context) {
     return BaseView<FeedScreenViewModel>(
       builder: (context, value, child) {
-        return Text("World");
+        return const Center(
+          child: Image(
+            image: AssetImage("assets/images/chick_in_the_egg.png"),
+          ),
+        );
       },
     );
   }

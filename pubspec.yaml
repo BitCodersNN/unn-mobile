@@ -44,6 +44,7 @@ flutter:
   uses-material-design: true
 
   assets:
+    - assets/images/chick_in_the_egg.png
     - assets/images/logo.png
     - assets/images/new_year_logo.png
     - assets/images/march_8th_logo.png
