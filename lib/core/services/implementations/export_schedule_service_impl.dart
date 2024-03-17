@@ -55,9 +55,8 @@ class ExportScheduleServiceImpl implements ExportScheduleService {
         .data;
     iCalendarData.removeAt(0);
 
-    final status = await _permissionHandler
-        .checkPermissionStatus(Permission.calendarFullAccess);
-    if (!status.isGranted) {
+    final status = await requestCalendarPermission();
+    if (status != RequestCalendarPermissionResult.allowed) {
       return ExportScheduleResult.noPermission;
     }
 
