@@ -73,11 +73,10 @@ class ExportScheduleServiceImpl implements ExportScheduleService {
     final status = await _permissionHandler
         .checkPermissionStatus(Permission.calendarFullAccess);
     if (status.isDenied) {
-      await _permissionHandler
+      final permissionStatuses = await _permissionHandler
           .requestPermissions([Permission.calendarFullAccess]);
-      return (await _permissionHandler
-              .checkPermissionStatus(Permission.calendarFullAccess)
-              .isGranted)
+      return (permissionStatuses[Permission.calendarFullAccess] ==
+              PermissionStatus.granted)
           ? RequestCalendarPermissionResult.allowed
           : RequestCalendarPermissionResult.rejected;
     } else if (status.isPermanentlyDenied) {
