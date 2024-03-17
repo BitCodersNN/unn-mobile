@@ -51,7 +51,10 @@ class ScheduleScreenViewModel extends BaseViewModel {
   Future<Map<int, List<Subject>>>? get scheduleLoader => _scheduleLoader;
   int displayedWeekOffset = 0;
   DateTimeRange get displayedWeek =>
-      offline ? DateTimeRanges.currentWeek() : _filter.dateTimeRange;
+      offline ? decidePivotWeek() : _filter.dateTimeRange;
+  // По идее - надо использовать decidePivotWeek, 
+  // но его нельзя в инициализации использовать. 
+  // Поэтому используем как есть, потом в init создаём как надо
   ScheduleFilter _filter = ScheduleFilter(
     IDType.student,
     '',
@@ -69,6 +72,11 @@ class ScheduleScreenViewModel extends BaseViewModel {
 
   void _initHuman(String placeholderText, IDType idType) {
     _searchPlaceholderText = placeholderText;
+    _filter = ScheduleFilter(
+      _filter.idType,
+      _filter.id,
+      decidePivotWeek(),
+    );
     tryLoginAndRetrieveData(
       _searchIdOnPortalService.getIdOfLoggedInUser,
       () => null,
@@ -156,7 +164,7 @@ class ScheduleScreenViewModel extends BaseViewModel {
     _filter = ScheduleFilter(
       _filter.idType,
       _filter.id,
-      DateTimeRanges.currentWeek(),
+      decidePivotWeek(),
     );
     _updateScheduleLoader();
     notifyListeners();
