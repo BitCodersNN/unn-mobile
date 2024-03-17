@@ -66,7 +66,7 @@ class _MainPageState extends State<MainPage> {
                   );
                 case 'feed':
                 return local_router.Router.createCustomRoute(
-                  FeedScreenView(),
+                  const FeedScreenView(),
                 );
                 case '':
                 case 'schedule':
