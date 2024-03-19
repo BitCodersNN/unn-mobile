@@ -1,0 +1,3 @@
+[submodule "flutter_bbcode"]
+	path = flutter_bbcode
+	url = https://github.com/KriseevM/flutter_bbcode.git
