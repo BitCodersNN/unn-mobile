@@ -13,14 +13,6 @@ class FeedScreenView extends StatelessWidget {
   final data2 = "someText [url]example.com[/url] [URL]example.com[/URL]";
   @override
   Widget build(BuildContext context) {
-    return BaseView<FeedScreenViewModel>(
-      builder: (context, value, child) {
-        return const Center(
-          child: Image(
-            image: AssetImage("assets/images/chick_in_the_egg.png"),
-          ),
-        );
-      },
-    );
+    return const Placeholder();
   }
 }
