@@ -22,7 +22,7 @@ class StudentData extends UserData {
   final String _faculty;
   final String _eduDirection;
   final String _eduGroup;
-  final String _eduSpecialization;
+  final String? _eduSpecialization;
 
   StudentData(
       UserData userData,
@@ -46,7 +46,7 @@ class StudentData extends UserData {
   String get faculty => _faculty;
   String get eduDirection => _eduDirection;
   String get eduGroup => _eduGroup;
-  String get eduSpecialization => _eduSpecialization;
+  String? get eduSpecialization => _eduSpecialization;
 
   factory StudentData.fromJson(Map<String, Object?> jsonMap) {
     return StudentData(
@@ -66,8 +66,8 @@ class StudentData extends UserData {
               as Map<String, Object?>)[_KeysForStudentDataJsonConverter.title]
           as String,
       (jsonMap[_KeysForStudentDataJsonConverter.eduSpecialization]
-              as Map<String, Object?>)[_KeysForStudentDataJsonConverter.title]
-          as String,
+              as Map<String, Object?>?)?[_KeysForStudentDataJsonConverter.title]
+          as String?,
     );
   }
 
