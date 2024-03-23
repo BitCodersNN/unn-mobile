@@ -1,6 +1,6 @@
-import 'dart:ui';
-
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:injector/injector.dart';
@@ -12,6 +12,7 @@ import 'package:unn_mobile/core/services/implementations/auth_data_provider_impl
 import 'package:unn_mobile/core/services/implementations/authorisation_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/authorisation_refresh_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/getting_blog_post_comments_impl.dart';
+import 'package:unn_mobile/core/services/implementations/export_schedule_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/getting_blog_posts_impl.dart';
 import 'package:unn_mobile/core/services/implementations/getting_profile_impl.dart';
 import 'package:unn_mobile/core/services/implementations/getting_profile_of_current_user_service_impl.dart';
@@ -25,6 +26,7 @@ import 'package:unn_mobile/core/services/interfaces/auth_data_provider.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation_refresh_service.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_blog_post_comments.dart';
+import 'package:unn_mobile/core/services/interfaces/export_schedule_service.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_blog_posts.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_profile.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_profile_of_current_user_service.dart';
@@ -35,6 +37,7 @@ import 'package:unn_mobile/core/services/interfaces/search_id_on_portal_service.
 import 'package:unn_mobile/core/services/interfaces/storage_service.dart';
 import 'package:unn_mobile/core/services/interfaces/user_data_provider.dart';
 import 'package:unn_mobile/core/viewmodels/auth_page_view_model.dart';
+import 'package:unn_mobile/core/viewmodels/feed_screen_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/loading_page_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/schedule_screen_view_model.dart';
@@ -48,15 +51,17 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  FlutterError.onError = (errorDetails) {
-    FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
-  };
-  // Pass all uncaught asynchronous errors that aren't handled by the Flutter framework to Crashlytics
-  PlatformDispatcher.instance.onError = (error, stack) {
-    FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
-    return true;
-  };
-
+  if (!kDebugMode) {
+    FlutterError.onError = (errorDetails) {
+      FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
+    };
+    // Pass all uncaught asynchronous errors that aren't handled by the Flutter framework to Crashlytics
+    PlatformDispatcher.instance.onError = (error, stack) {
+      FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+      return true;
+    };
+  }
+  FirebaseAnalytics.instance.setAnalyticsCollectionEnabled(!kDebugMode);
   registerDependencies();
   await initializeDateFormatting('ru_RU', null);
   runApp(const UnnMobile());
@@ -68,6 +73,7 @@ void registerDependencies() {
   injector.registerSingleton<OnlineStatusData>(() => OnlineStatusData());
 
   injector.registerSingleton<StorageService>(() => StorageServiceImpl());
+  injector.registerSingleton<ExportScheduleService>(() => ExportScheduleServiceImpl());
   injector.registerSingleton<AuthorisationService>(
       () => AuthorisationServiceImpl());
   injector.registerSingleton<AuthDataProvider>(() => AuthDataProviderImpl());
@@ -94,4 +100,6 @@ void registerDependencies() {
   injector.registerDependency(() => AuthPageViewModel());
   injector.registerDependency(() => MainPageViewModel());
   injector.registerDependency(() => ScheduleScreenViewModel());
+  injector.registerDependency(() => FeedScreenViewModel());
+
 }

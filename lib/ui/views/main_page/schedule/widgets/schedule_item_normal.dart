@@ -164,6 +164,7 @@ class _ScheduleItemNormalState extends State<ScheduleItemNormal>
           child: Icon(
             icon,
             color: extraColors.ligtherTextColor,
+            applyTextScaling: true,
             size: 16,
           ),
         ),

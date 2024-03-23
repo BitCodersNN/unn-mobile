@@ -9,6 +9,7 @@ import 'package:unn_mobile/core/models/schedule_filter.dart';
 import 'package:unn_mobile/core/models/schedule_search_result_item.dart';
 import 'package:unn_mobile/core/models/student_data.dart';
 import 'package:unn_mobile/core/models/subject.dart';
+import 'package:unn_mobile/core/services/interfaces/export_schedule_service.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_profile_of_current_user_service.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_schedule_service.dart';
 import 'package:unn_mobile/core/services/interfaces/offline_schedule_provider.dart';
@@ -33,6 +34,8 @@ class ScheduleScreenViewModel extends BaseViewModel {
       Injector.appInstance.get<ScheduleSearchHistoryService>();
   final OnlineStatusData _onlineStatusData =
       Injector.appInstance.get<OnlineStatusData>();
+  final ExportScheduleService _exportScheduleService =
+      Injector.appInstance.get<ExportScheduleService>();
   final String _studentNameText = 'Имя студента';
   final String _lecturerNameText = 'Имя преподавателя';
   final String _groupNameText = 'Название группы';
@@ -48,9 +51,15 @@ class ScheduleScreenViewModel extends BaseViewModel {
   Future<Map<int, List<Subject>>>? get scheduleLoader => _scheduleLoader;
   int displayedWeekOffset = 0;
   DateTimeRange get displayedWeek =>
-      offline ? DateTimeRanges.currentWeek() : _filter.dateTimeRange;
-  ScheduleFilter _filter =
-      ScheduleFilter(IDType.student, '', DateTimeRanges.currentWeek());
+      offline ? decidePivotWeek() : _filter.dateTimeRange;
+  // По идее - надо использовать decidePivotWeek, 
+  // но его нельзя в инициализации использовать. 
+  // Поэтому используем как есть, потом в init создаём как надо
+  ScheduleFilter _filter = ScheduleFilter(
+    IDType.student,
+    '',
+    DateTimeRanges.currentWeek(),
+  );
   String _searchPlaceholderText = '';
   String get searchPlaceholderText => _searchPlaceholderText;
   ScheduleFilter get filter => _filter;
@@ -63,6 +72,11 @@ class ScheduleScreenViewModel extends BaseViewModel {
 
   void _initHuman(String placeholderText, IDType idType) {
     _searchPlaceholderText = placeholderText;
+    _filter = ScheduleFilter(
+      _filter.idType,
+      _filter.id,
+      decidePivotWeek(),
+    );
     tryLoginAndRetrieveData(
       _searchIdOnPortalService.getIdOfLoggedInUser,
       () => null,
@@ -96,8 +110,11 @@ class ScheduleScreenViewModel extends BaseViewModel {
           value.eduGroup,
           IDType.group,
         );
-        _filter =
-            ScheduleFilter(IDType.group, groupID!.first.id, decidePivotWeek());
+        _filter = ScheduleFilter(
+          IDType.group,
+          groupID!.first.id,
+          decidePivotWeek(),
+        );
         _currentId = groupID.first.id;
         _updateScheduleLoader();
       }
@@ -112,10 +129,12 @@ class ScheduleScreenViewModel extends BaseViewModel {
       _filter.idType,
       _filter.id,
       DateTimeRange(
-        start: _filter.dateTimeRange.start
-            .add(const Duration(days: DateTime.daysPerWeek)),
-        end: _filter.dateTimeRange.end
-            .add(const Duration(days: DateTime.daysPerWeek)),
+        start: _filter.dateTimeRange.start.add(
+          const Duration(days: DateTime.daysPerWeek),
+        ),
+        end: _filter.dateTimeRange.end.add(
+          const Duration(days: DateTime.daysPerWeek),
+        ),
       ),
     );
     _updateScheduleLoader();
@@ -128,10 +147,12 @@ class ScheduleScreenViewModel extends BaseViewModel {
       _filter.idType,
       _filter.id,
       DateTimeRange(
-        start: _filter.dateTimeRange.start
-            .subtract(const Duration(days: DateTime.daysPerWeek)),
-        end: _filter.dateTimeRange.end
-            .subtract(const Duration(days: DateTime.daysPerWeek)),
+        start: _filter.dateTimeRange.start.subtract(
+          const Duration(days: DateTime.daysPerWeek),
+        ),
+        end: _filter.dateTimeRange.end.subtract(
+          const Duration(days: DateTime.daysPerWeek),
+        ),
       ),
     );
     _updateScheduleLoader();
@@ -141,7 +162,10 @@ class ScheduleScreenViewModel extends BaseViewModel {
   Future<void> resetWeek() async {
     displayedWeekOffset = 0;
     _filter = ScheduleFilter(
-        _filter.idType, _filter.id, DateTimeRanges.currentWeek());
+      _filter.idType,
+      _filter.id,
+      decidePivotWeek(),
+    );
     _updateScheduleLoader();
     notifyListeners();
   }
@@ -262,8 +286,21 @@ class ScheduleScreenViewModel extends BaseViewModel {
 
   void _updateScheduleLoader() {
     _scheduleLoader = _getScheduleLoader();
-    _scheduleLoader!.then(
-      _invokeOnScheduleLoaded,
-    );
+    _scheduleLoader!.then(_invokeOnScheduleLoaded);
+  }
+
+  Future<RequestCalendarPermissionResult> askForExportPermission() async {
+    return await _exportScheduleService.requestCalendarPermission();
+  }
+
+  Future openSettingsWindow() async {
+    await _exportScheduleService.openSettings();
+  }
+
+  Future<bool> exportSchedule(DateTimeRange range) async {
+    final exportScheduleFilter = ScheduleFilter(_idType, _currentId, range);
+    final res =
+        await _exportScheduleService.exportSchedule(exportScheduleFilter);
+    return res == ExportScheduleResult.success;
   }
 }
