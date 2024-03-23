@@ -10,8 +10,10 @@ import 'package:unn_mobile/core/services/interfaces/getting_blog_post_comments.d
 
 class GettingBlogPostCommentsImpl implements GettingBlogPostComments {
   @override
-  Future<List<BlogPostComment>?> searchBlogPostComments(
-      {required int postId, int pageNumber = 1}) async {
+  Future<List<BlogPostComment>?> searchBlogPostComments({
+    required int postId,
+    int pageNumber = 1,
+  }) async {
     final authService = Injector.appInstance.get<AuthorisationService>();
 
     final sessionId = authService.sessionId;
@@ -24,10 +26,11 @@ class GettingBlogPostCommentsImpl implements GettingBlogPostComments {
     }
 
     final bodyAsString = await getRawBodyOfBlogComments(
-        postId: postId,
-        pageNumber: pageNumber,
-        csrf: csrf,
-        sessionId: sessionId);
+      postId: postId,
+      pageNumber: pageNumber,
+      csrf: csrf,
+      sessionId: sessionId,
+    );
 
     if (bodyAsString == null) {
       return null;
@@ -36,31 +39,35 @@ class GettingBlogPostCommentsImpl implements GettingBlogPostComments {
     return parseComments(bodyAsString);
   }
 
-  Future<String?> getRawBodyOfBlogComments(
-      {required int postId,
-      int pageNumber = 0,
-      required String csrf,
-      required String sessionId}) async {
-    var requestSender =
-        HttpRequestSender(path: "/bitrix/services/main/ajax.php", queryParams: {
-      "mode": "class",
-      "action": "navigateComment",
-      "c": "bitrix:socialnetwork.blog.post.comment",
-    }, headers: {
-      "X-Bitrix-Csrf-Token": csrf
-    }, cookies: {
-      "PHPSESSID": sessionId
-    });
+  Future<String?> getRawBodyOfBlogComments({
+    required int postId,
+    int pageNumber = 0,
+    required String csrf,
+    required String sessionId,
+  }) async {
+    final requestSender = HttpRequestSender(
+      path: "/bitrix/services/main/ajax.php",
+      queryParams: {
+        "mode": "class",
+        "action": "navigateComment",
+        "c": "bitrix:socialnetwork.blog.post.comment",
+      },
+      headers: {"X-Bitrix-Csrf-Token": csrf},
+      cookies: {"PHPSESSID": sessionId},
+    );
 
     final HttpClientResponse response;
     try {
-      response = await requestSender.postForm({
-        "ENTITY_XML_ID": "BLOG_$postId",
-        "AJAX_POST": "Y",
-        "MODE": "LIST",
-        "comment_post_id": postId.toString(),
-        "PAGEN_1": pageNumber.toString()
-      }, timeoutSeconds: 30);
+      response = await requestSender.postForm(
+        {
+          "ENTITY_XML_ID": "BLOG_$postId",
+          "AJAX_POST": "Y",
+          "MODE": "LIST",
+          "comment_post_id": postId.toString(),
+          "PAGEN_1": pageNumber.toString()
+        },
+        timeoutSeconds: 30,
+      );
     } catch (error, stackTrace) {
       await FirebaseCrashlytics.instance
           .log("Exception: $error\nStackTrace: $stackTrace");
@@ -68,6 +75,8 @@ class GettingBlogPostCommentsImpl implements GettingBlogPostComments {
     }
 
     if (response.statusCode != 200) {
+      await FirebaseCrashlytics.instance.log(
+          '${runtimeType.toString()}: statusCode = ${response.statusCode}');
       return null;
     }
 
@@ -96,10 +105,10 @@ class GettingBlogPostCommentsImpl implements GettingBlogPostComments {
     final dateTimeRegExp =
         RegExp(r'<a.*?class=\s*"[^"]*feed-com-time[^"]*"[^>]*>([^<]+)<\/a>');
 
-    var authorMatches = authorRegExp.allMatches(htmlBody).iterator;
-    var dateTimeMatches = dateTimeRegExp.allMatches(htmlBody).iterator;
+    final authorMatches = authorRegExp.allMatches(htmlBody).iterator;
+    final dateTimeMatches = dateTimeRegExp.allMatches(htmlBody).iterator;
 
-    for (var messageMatch in commentIdAndMessageRegExp.allMatches(htmlBody)) {
+    for (final messageMatch in commentIdAndMessageRegExp.allMatches(htmlBody)) {
       if (!authorMatches.moveNext()) {
         FirebaseCrashlytics.instance
             .log("GettingBlogPostCommentsService-parser: no author matches");
@@ -124,12 +133,13 @@ class GettingBlogPostCommentsImpl implements GettingBlogPostComments {
 
       if (id != null && authorId != null) {
         comments.add(BlogPostComment(
-            id: id,
-            authorId: authorId,
-            authorName: authorName ?? "unknown",
-            dateTime: dateTime ?? "unknown",
-            message: message ?? "unknown",
-            attachedFiles: commentsAttachedFilesId[id] ?? []));
+          id: id,
+          authorId: authorId,
+          authorName: authorName ?? "unknown",
+          dateTime: dateTime ?? "unknown",
+          message: message ?? "unknown",
+          attachedFiles: commentsAttachedFilesId[id] ?? [],
+        ));
       }
     }
 
@@ -140,11 +150,11 @@ class GettingBlogPostCommentsImpl implements GettingBlogPostComments {
     final filesRegExp = RegExp(
         r"top\.arComDFiles(\d+) = BX\.util\.array_merge\(\(top\.arComDFiles\d+ \|\| \[\]\), \[(.*?)\]");
 
-    var commentIdToAttachFiles = <int, List<int>>{};
+    final commentIdToAttachFiles = <int, List<int>>{};
 
     filesRegExp.allMatches(htmlBody).forEach((match) {
-      var commentId = match.group(1);
-      var filesListAsString = match.group(2);
+      final commentId = match.group(1);
+      final filesListAsString = match.group(2);
 
       if (commentId != null && filesListAsString != null) {
         final commentIdAsInt = commentId.toInt();
