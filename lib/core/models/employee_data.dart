@@ -37,20 +37,18 @@ class EmployeeData extends UserData {
 
   factory EmployeeData.fromJson(Map<String, Object?> jsonMap) {
     return EmployeeData(
-        UserData.fromJson(jsonMap),
-        (jsonMap[_KeysForEmployeeDataJsonConverter.user]
-                as Map<String, Object?>)[_KeysForEmployeeDataJsonConverter.syncID]
-            as String,
-        jsonMap[_KeysForEmployeeDataJsonConverter.jobType] as String,
-        jsonMap[_KeysForEmployeeDataJsonConverter.jobTitle] as String,
-        ((((jsonMap[_KeysForEmployeeDataJsonConverter.department] as Map<String,
-                        Object?>)[_KeysForEmployeeDataJsonConverter.child]
-                    as Map<String, Object?>)[_KeysForEmployeeDataJsonConverter.child])
-                as Map<String, Object?>)[_KeysForEmployeeDataJsonConverter.title]
-            as String,
-        (jsonMap[_KeysForEmployeeDataJsonConverter.manager]
-                as Map<String, Object?>)[_KeysForEmployeeDataJsonConverter.fullname]
-            as String);
+      UserData.fromJson(jsonMap),
+      (jsonMap[_KeysForEmployeeDataJsonConverter.user]
+              as Map<String, Object?>)[_KeysForEmployeeDataJsonConverter.syncID]
+          as String,
+      jsonMap[_KeysForEmployeeDataJsonConverter.jobType] as String,
+      jsonMap[_KeysForEmployeeDataJsonConverter.jobTitle] as String,
+      (jsonMap[_KeysForEmployeeDataJsonConverter.department]
+              as Map<String, Object?>)[_KeysForEmployeeDataJsonConverter.title]
+          as String,
+      (jsonMap[_KeysForEmployeeDataJsonConverter.manager] as Map<String,
+          Object?>)[_KeysForEmployeeDataJsonConverter.fullname] as String,
+    );
   }
 
   @override
@@ -67,8 +65,6 @@ class EmployeeData extends UserData {
             [_KeysForEmployeeDataJsonConverter.child]
         [_KeysForEmployeeDataJsonConverter.child] ??= {};
     json[_KeysForEmployeeDataJsonConverter.department]
-                [_KeysForEmployeeDataJsonConverter.child]
-            [_KeysForEmployeeDataJsonConverter.child]
         [_KeysForEmployeeDataJsonConverter.title] = _department;
     json[_KeysForEmployeeDataJsonConverter.manager] ??= {};
     json[_KeysForEmployeeDataJsonConverter.manager]
