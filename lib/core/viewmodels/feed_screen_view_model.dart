@@ -19,12 +19,13 @@ class FeedScreenViewModel extends BaseViewModel {
   Future<List<BlogData>?>? blogPostsLoader;
 
   Future<UserData?> getUserProfileByAuthorID(int authorId) async {
-    final userData =
-        _gettingProfileService.getProfileByAuthorIdFromPost(authorId: authorId);
+    final userData = await _gettingProfileService.getProfileByAuthorIdFromPost(
+        authorId: authorId);
     if (userData == null) {
       FirebaseCrashlytics.instance
           .log("Could not find a user with id $authorId");
     }
+    return userData;
   }
 
   String getUserInitials(UserData userData) {
