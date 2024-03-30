@@ -22,5 +22,5 @@ abstract interface class GettingBlogPostComments {
 	///     1. Не удалось получить ответ от портала
 	///     2. statusCode не равен 200
 	///     3. Не вышло декодировать ответ
-	Future<List<BlogPostComment>?> searchBlogPostComments({required int postId, int pageNumber = 1});
+	Future<List<BlogPostComment>?> getBlogPostComments({required int postId, int pageNumber = 1});
 }

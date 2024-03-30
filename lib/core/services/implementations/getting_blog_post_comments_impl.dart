@@ -10,7 +10,7 @@ import 'package:unn_mobile/core/services/interfaces/getting_blog_post_comments.d
 
 class GettingBlogPostCommentsImpl implements GettingBlogPostComments {
   @override
-  Future<List<BlogPostComment>?> searchBlogPostComments({
+  Future<List<BlogPostComment>?> getBlogPostComments({
     required int postId,
     int pageNumber = 1,
   }) async {
@@ -87,6 +87,8 @@ class GettingBlogPostCommentsImpl implements GettingBlogPostComments {
     final Map<String, dynamic> parsedJson = json.decode(jsonStr);
 
     if (!parsedJson.containsKey("messageList")) {
+      FirebaseCrashlytics.instance.log(
+          '${runtimeType.toString()}: json doesn\'t contain the messageList key');
       return null;
     }
 
