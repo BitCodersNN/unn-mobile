@@ -37,7 +37,6 @@ class FeedStreamUpdaterServiceImpl
     if (_busy) {
       return;
     }
-    debugPrint("new page");
     try {
       _busy = true;
       notifyListeners();
