@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:async/async.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
@@ -17,12 +15,11 @@ class FeedStreamUpdaterServiceImpl
       Injector.appInstance.get<GettingBlogPosts>();
   final GettingProfile _gettingProfileService =
       Injector.appInstance.get<GettingProfile>();
-
   bool _busy = false;
-  bool _updating = false;
 
   CancelableOperation<void>? currentOperation;
 
+  @override
   bool get isBusy => _busy;
 
   final List<PostWithLoadedInfo> _postsList = [];
