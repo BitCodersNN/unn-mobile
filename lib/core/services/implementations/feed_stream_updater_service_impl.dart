@@ -15,15 +15,18 @@ class FeedStreamUpdaterServiceImpl
       Injector.appInstance.get<GettingBlogPosts>();
   final GettingProfile _gettingProfileService =
       Injector.appInstance.get<GettingProfile>();
+
   bool _busy = false;
 
-  CancelableOperation<void>? currentOperation;
+  CancelableOperation<void>? _currentOperation;
+
+  final List<PostWithLoadedInfo> _postsList = [];
+
+  int _lastLoadedPage = 0;
 
   @override
   bool get isBusy => _busy;
 
-  final List<PostWithLoadedInfo> _postsList = [];
-  int _lastLoadedPage = 0;
   @override
   Future<bool> checkForUpdates() {
     throw UnimplementedError();
@@ -43,13 +46,13 @@ class FeedStreamUpdaterServiceImpl
       final posts = await _gettingBlogPostsService.getBlogPosts(
         pageNumber: _lastLoadedPage + 1,
       );
-      if (currentOperation != null) {
-        await currentOperation!.cancel();
+      if (_currentOperation != null) {
+        await _currentOperation!.cancel();
       }
-      currentOperation = CancelableOperation.fromFuture(
+      _currentOperation = CancelableOperation.fromFuture(
         _addPostsToStream(posts, true),
       );
-      await currentOperation?.valueOrCancellation();
+      await _currentOperation?.valueOrCancellation();
       _lastLoadedPage++;
     } on Exception catch (error, stackTrace) {
       FirebaseCrashlytics.instance.recordError(error, stackTrace);
@@ -67,13 +70,13 @@ class FeedStreamUpdaterServiceImpl
       _busy = true;
       final newPosts = await _gettingBlogPostsService.getBlogPosts();
       if (newPosts != null) {
-        await currentOperation?.valueOrCancellation();
+        await _currentOperation?.valueOrCancellation();
         _busy = true;
         _postsList.clear();
-        currentOperation = CancelableOperation.fromFuture(
+        _currentOperation = CancelableOperation.fromFuture(
           _addPostsToStream(newPosts, true)
         );
-        await currentOperation?.valueOrCancellation();
+        await _currentOperation?.valueOrCancellation();
       }
     } on Exception catch (error, stackTrace) {
       FirebaseCrashlytics.instance.recordError(error, stackTrace);
