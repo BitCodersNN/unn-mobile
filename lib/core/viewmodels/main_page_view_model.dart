@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/models/student_data.dart';
+import 'package:unn_mobile/core/services/interfaces/feed_stream_updater_service.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_profile_of_current_user_service.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
 
@@ -67,6 +68,7 @@ class MainPageViewModel extends BaseViewModel {
   void init()
   {
     setState(ViewState.busy);
+    Injector.appInstance.get<FeedUpdaterService>().updateFeed();
     _currentUser.getProfileOfCurrentUser().then(
       (value) {
         if(value == null)
