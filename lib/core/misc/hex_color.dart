@@ -6,13 +6,14 @@ extension ColorParser on Color {
   /// String is in the format "aabbcc" or "ffaabbcc" with an optional leading "#".
   static Color? fromHex(String hexString) {
     final buffer = StringBuffer();
-    if (hexString.length == 6 || hexString.length == 7) buffer.write('ff');
+    if (hexString.length == 6 || hexString.length == 7) {
+      buffer.write('ff');
+    }
     buffer.write(hexString.replaceFirst('#', ''));
     int? intColor = int.tryParse(buffer.toString(), radix: 16);
     if (intColor != null) {
       return Color(intColor);
-    }
-    else {
+    } else {
       return null;
     }
   }

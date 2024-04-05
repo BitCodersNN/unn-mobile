@@ -56,8 +56,8 @@ class FeedScreenView extends StatelessWidget {
   Container feedPost(ThemeData theme, FeedScreenViewModel model,
       PostWithLoadedInfo post, HtmlUnescape unescaper) {
     return Container(
-      margin: const EdgeInsets.only(left: 0, bottom: 0, right: 0, top: 12),
-      padding: const EdgeInsets.only(top: 20, bottom: 20, left: 20, right: 20),
+      margin: const EdgeInsets.only(top: 12),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(0.0),
