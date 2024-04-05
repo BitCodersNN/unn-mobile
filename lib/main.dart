@@ -13,6 +13,7 @@ import 'package:unn_mobile/core/services/implementations/authorisation_service_i
 import 'package:unn_mobile/core/services/implementations/authorisation_refresh_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/getting_blog_post_comments_impl.dart';
 import 'package:unn_mobile/core/services/implementations/export_schedule_service_impl.dart';
+import 'package:unn_mobile/core/services/implementations/feed_stream_updater_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/getting_blog_posts_impl.dart';
 import 'package:unn_mobile/core/services/implementations/getting_profile_impl.dart';
 import 'package:unn_mobile/core/services/implementations/getting_profile_of_current_user_service_impl.dart';
@@ -27,6 +28,7 @@ import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation_refresh_service.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_blog_post_comments.dart';
 import 'package:unn_mobile/core/services/interfaces/export_schedule_service.dart';
+import 'package:unn_mobile/core/services/interfaces/feed_stream_updater_service.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_blog_posts.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_profile.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_profile_of_current_user_service.dart';
@@ -93,7 +95,7 @@ void registerDependencies() {
   injector.registerSingleton<GettingBlogPosts>(() => GettingBlogPostsImpl());
   injector.registerSingleton<GettingBlogPostComments>(() => GettingBlogPostCommentsImpl());
   injector.registerSingleton<GettingProfile>(() => GettingProfileImpl());
-
+  injector.registerSingleton<FeedUpdaterService>(() => FeedStreamUpdaterServiceImpl());
   injector.registerSingleton<TypeOfCurrentUser>(() => TypeOfCurrentUser());
 
   injector.registerDependency(() => LoadingPageViewModel());
