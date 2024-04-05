@@ -8,6 +8,20 @@ import 'package:unn_mobile/core/models/blog_post_comment.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_blog_post_comments.dart';
 
+class _JsonKeys {
+  static const _messageListKey = 'messageList';
+}
+
+class _RegularExpSource {
+  static const commentIdAndMessage = r"top\.text\d+ = text(\d+) = '([^']*)'";
+  static const author =
+      r'<span class="feed-com-name.*?feed-author-name-(\d+)">([^<]+)<\/span>';
+  static const dateTime =
+      r'<a.*?class=\s*"[^"]*feed-com-time[^"]*"[^>]*>([^<]+)<\/a>';
+  static const files =
+      r"top\.arComDFiles(\d+) = BX\.util\.array_merge\(\(top\.arComDFiles\d+ \|\| \[\]\), \[(.*?)\]";
+}
+
 class GettingBlogPostCommentsImpl implements GettingBlogPostComments {
   @override
   Future<List<BlogPostComment>?> getBlogPostComments({
@@ -84,28 +98,33 @@ class GettingBlogPostCommentsImpl implements GettingBlogPostComments {
   }
 
   List<BlogPostComment>? parseComments(String jsonStr) {
+    const unknownString = 'unknown';
+
     final Map<String, dynamic> parsedJson = json.decode(jsonStr);
 
-    if (!parsedJson.containsKey("messageList")) {
+    if (!parsedJson.containsKey(_JsonKeys._messageListKey)) {
       FirebaseCrashlytics.instance.log(
           '${runtimeType.toString()}: json doesn\'t contain the messageList key');
       return null;
     }
 
-    final htmlBody = parsedJson['messageList'] as String;
+    final htmlBody = parsedJson[_JsonKeys._messageListKey] as String;
 
     final comments = <BlogPostComment>[];
 
     final commentsAttachedFilesId = parseCommentsFilesId(htmlBody);
 
-    final commentIdAndMessageRegExp =
-        RegExp(r"top\.text\d+ = text(\d+) = '([^']*)'");
+    final commentIdAndMessageRegExp = RegExp(
+      _RegularExpSource.commentIdAndMessage,
+    );
 
     final authorRegExp = RegExp(
-        r'<span class="feed-com-name.*?feed-author-name-(\d+)">([^<]+)<\/span>');
+      _RegularExpSource.author,
+    );
 
-    final dateTimeRegExp =
-        RegExp(r'<a.*?class=\s*"[^"]*feed-com-time[^"]*"[^>]*>([^<]+)<\/a>');
+    final dateTimeRegExp = RegExp(
+      _RegularExpSource.dateTime,
+    );
 
     final authorMatches = authorRegExp.allMatches(htmlBody).iterator;
     final dateTimeMatches = dateTimeRegExp.allMatches(htmlBody).iterator;
@@ -137,9 +156,9 @@ class GettingBlogPostCommentsImpl implements GettingBlogPostComments {
         comments.add(BlogPostComment(
           id: id,
           authorId: authorId,
-          authorName: authorName ?? "unknown",
-          dateTime: dateTime ?? "unknown",
-          message: message ?? "unknown",
+          authorName: authorName ?? unknownString,
+          dateTime: dateTime ?? unknownString,
+          message: message ?? unknownString,
           attachedFiles: commentsAttachedFilesId[id] ?? [],
         ));
       }
@@ -150,7 +169,8 @@ class GettingBlogPostCommentsImpl implements GettingBlogPostComments {
 
   Map<int, List<int>> parseCommentsFilesId(String htmlBody) {
     final filesRegExp = RegExp(
-        r"top\.arComDFiles(\d+) = BX\.util\.array_merge\(\(top\.arComDFiles\d+ \|\| \[\]\), \[(.*?)\]");
+      _RegularExpSource.files,
+    );
 
     final commentIdToAttachFiles = <int, List<int>>{};
 
