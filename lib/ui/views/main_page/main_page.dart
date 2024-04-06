@@ -65,9 +65,9 @@ class _MainPageState extends State<MainPage> {
                     AboutScreenView(),
                   );
                 case 'feed':
-                return local_router.Router.createCustomRoute(
-                  const FeedScreenView(),
-                );
+                  return local_router.Router.createCustomRoute(
+                    const FeedScreenView(),
+                  );
                 case '':
                 case 'schedule':
                   tabKeys[1] = GlobalKey<State<ScheduleScreenView>>();
