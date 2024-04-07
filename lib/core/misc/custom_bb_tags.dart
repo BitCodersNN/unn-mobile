@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:unn_mobile/core/misc/hex_color.dart';
 import 'package:flutter_bbcode/flutter_bbcode.dart';
 import 'package:bbob_dart/bbob_dart.dart' as bbob;
@@ -160,6 +161,70 @@ class CodeTag extends WrappedStyleTag {
 
 class DiskTag extends StyleTag {
   DiskTag() : super("disk");
+
+  @override
+  TextStyle transformStyle(
+      TextStyle oldStyle, Map<String, String>? attributes) {
+    return oldStyle;
+  }
+}
+
+class TableTag extends WrappedStyleTag {
+  TableTag() : super("table");
+
+  @override
+  List<InlineSpan> wrap(
+    FlutterRenderer renderer,
+    bbob.Element element,
+    List<InlineSpan> spans,
+  ) {
+    if (spans.first.toPlainText() == "\n") spans.removeAt(0);
+    if (spans.last.toPlainText() == "\n") spans.removeLast();
+
+    return [
+      WidgetSpan(
+        child: Center(
+          child: Column(
+            children: [
+              RichText(
+                textWidthBasis: TextWidthBasis.longestLine,
+                text: TextSpan(children: spans),
+              ),
+            ],
+          ),
+        ),
+      ),
+    ];
+  }
+}
+
+class TRTag extends WrappedStyleTag {
+  TRTag() : super("tr");
+
+  @override
+  List<InlineSpan> wrap(
+      FlutterRenderer renderer, bbob.Element element, List<InlineSpan> spans) {
+    return spans.map(
+      (e) {
+        return WidgetSpan(
+          child: Container(
+            decoration: BoxDecoration(border: Border.all(color: Colors.black)),
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: RichText(
+                text: e,
+                textWidthBasis: TextWidthBasis.longestLine,
+              ),
+            ),
+          ),
+        );
+      },
+    ).toList();
+  }
+}
+
+class TDTag extends StyleTag {
+  TDTag() : super("td");
 
   @override
   TextStyle transformStyle(

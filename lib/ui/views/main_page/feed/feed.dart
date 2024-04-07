@@ -156,6 +156,9 @@ class FeedScreenView extends StatelessWidget {
         .addTag(FontTag())
         .addTag(CodeTag())
         .addTag(DiskTag())
+        .addTag(TableTag())
+        .addTag(TRTag())
+        .addTag(TDTag())
         .replaceTag(NewColorTag());
   }
 
