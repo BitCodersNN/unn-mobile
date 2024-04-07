@@ -5,7 +5,7 @@ import 'package:unn_mobile/core/models/subject.dart';
 import 'package:unn_mobile/core/services/interfaces/offline_schedule_provider.dart';
 import 'package:unn_mobile/core/services/interfaces/storage_service.dart';
 
-class _OfflineScheduleProviderrKeys {
+class _OfflineScheduleProviderKeys {
   static const scheduleKey = 'schedule_key';
 }
 
@@ -18,7 +18,7 @@ class OfflineScheduleProviderImpl implements OfflineScheduleProvider {
       return null;
     }
     final jsonList = jsonDecode((await _securityStorage.read(
-        key: _OfflineScheduleProviderrKeys.scheduleKey))!);
+        key: _OfflineScheduleProviderKeys.scheduleKey))!);
     List<Subject> schedule = [];
 
     for (final jsonMap in jsonList) {
@@ -39,13 +39,13 @@ class OfflineScheduleProviderImpl implements OfflineScheduleProvider {
       jsonList.add(subject.toJson());
     }
     await _securityStorage.write(
-        key: _OfflineScheduleProviderrKeys.scheduleKey,
+        key: _OfflineScheduleProviderKeys.scheduleKey,
         value: jsonEncode(jsonList));
   }
 
   @override
   Future<bool> isContained() async {
     return await _securityStorage.containsKey(
-        key: _OfflineScheduleProviderrKeys.scheduleKey);
+        key: _OfflineScheduleProviderKeys.scheduleKey);
   }
 }
