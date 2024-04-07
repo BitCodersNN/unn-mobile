@@ -160,7 +160,8 @@ class FeedScreenView extends StatelessWidget {
         .addTag(custom_tags.TRTag())
         .addTag(custom_tags.TDTag())
         .replaceTag(custom_tags.ColorTag())
-        .replaceTag(custom_tags.ImgTag());
+        .replaceTag(custom_tags.ImgTag())
+        .replaceTag(custom_tags.SpoilerTag());
   }
 
   CircleAvatar _circleAvatar(ThemeData theme, UserData? userData) {
@@ -178,3 +179,4 @@ class FeedScreenView extends StatelessWidget {
     );
   }
 }
+

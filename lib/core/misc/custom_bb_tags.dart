@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:unn_mobile/core/misc/hex_color.dart';
 import 'package:flutter_bbcode/flutter_bbcode.dart';
 import 'package:bbob_dart/bbob_dart.dart' as bbob;
+import 'package:unn_mobile/ui/widgets/spoiler_display.dart';
 
 class PTag extends StyleTag {
   PTag() : super("p");
@@ -274,6 +275,30 @@ class ImgTag extends AdvancedTag {
       WidgetSpan(
         child: image,
       ),
+    ];
+  }
+}
+
+class SpoilerTag extends WrappedStyleTag {
+  SpoilerTag() : super("spoiler");
+
+  @override
+  List<InlineSpan> wrap(
+      FlutterRenderer renderer, bbob.Element element, List<InlineSpan> spans) {
+    late String text;
+    if (element.attributes.isNotEmpty) {
+      text = "Spoiler: ${element.attributes.values.join(' ')}";
+    } else {
+      text = "Spoiler";
+    }
+
+    return [
+      WidgetSpan(
+          child: SpoilerDisplay(
+        spoilerText: text,
+        content: spans,
+        selectable: renderer.stylesheet.selectableText,
+      ))
     ];
   }
 }
