@@ -7,14 +7,15 @@ import 'package:unn_mobile/core/models/post_with_loaded_info.dart';
 import 'package:unn_mobile/core/services/interfaces/feed_stream_updater_service.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_blog_posts.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_profile.dart';
+import 'package:unn_mobile/core/services/interfaces/post_with_loaded_info_provider.dart';
 
 class FeedStreamUpdaterServiceImpl
     with ChangeNotifier
     implements FeedUpdaterService {
-  final GettingBlogPosts _gettingBlogPostsService =
-      Injector.appInstance.get<GettingBlogPosts>();
-  final GettingProfile _gettingProfileService =
-      Injector.appInstance.get<GettingProfile>();
+  final _gettingBlogPostsService = Injector.appInstance.get<GettingBlogPosts>();
+  final _gettingProfileService = Injector.appInstance.get<GettingProfile>();
+  final _postWithLoadedInfoProvider =
+      Injector.appInstance.get<PostWithLoadedInfoProvider>();
 
   bool _busy = false;
 
@@ -73,9 +74,8 @@ class FeedStreamUpdaterServiceImpl
         await _currentOperation?.valueOrCancellation();
         _busy = true;
         _postsList.clear();
-        _currentOperation = CancelableOperation.fromFuture(
-          _addPostsToStream(newPosts, true)
-        );
+        _currentOperation =
+            CancelableOperation.fromFuture(_addPostsToStream(newPosts, true));
         await _currentOperation?.valueOrCancellation();
       }
     } on Exception catch (error, stackTrace) {
@@ -99,6 +99,10 @@ class FeedStreamUpdaterServiceImpl
           notifyListeners();
         }
       }
+    }
+    
+    if (_lastLoadedPage == 0) {
+      _postWithLoadedInfoProvider.saveData(_postsList);
     }
   }
 }

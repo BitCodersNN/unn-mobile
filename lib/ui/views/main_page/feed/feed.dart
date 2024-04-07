@@ -7,6 +7,7 @@ import 'package:unn_mobile/core/misc/user_functions.dart';
 import 'package:unn_mobile/core/models/post_with_loaded_info.dart';
 import 'package:unn_mobile/core/models/user_data.dart';
 import 'package:unn_mobile/core/viewmodels/feed_screen_view_model.dart';
+import 'package:unn_mobile/ui/unn_mobile_colors.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:intl/intl.dart';
@@ -59,7 +60,11 @@ class FeedScreenView extends StatelessWidget {
       margin: const EdgeInsets.only(top: 12),
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: _getPostBackgroundColor(
+          theme,
+          model.dateTimeWhenPostsWereLastSaved,
+          post.post.datePublish,
+        ),
         borderRadius: BorderRadius.circular(0.0),
         boxShadow: const [
           BoxShadow(
@@ -172,5 +177,17 @@ class FeedScreenView extends StatelessWidget {
             )
           : null,
     );
+  }
+
+  Color _getPostBackgroundColor(
+    ThemeData theme,
+    DateTime dateTimeWhenPostsWereLastSaved,
+    DateTime datePublish,
+  ) {
+    final colors = theme.extension<UnnMobileColors>()!;
+    final color = dateTimeWhenPostsWereLastSaved.isBefore(datePublish)
+        ? colors.newPostHiglaght
+        : colors.defaultPostHighlight;
+    return color ?? theme.primaryColor;
   }
 }

@@ -19,6 +19,7 @@ import 'package:unn_mobile/core/services/implementations/getting_profile_impl.da
 import 'package:unn_mobile/core/services/implementations/getting_profile_of_current_user_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/getting_schedule_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/offline_schedule_provider_impl.dart';
+import 'package:unn_mobile/core/services/implementations/post_with_loaded_info_provider_impl.dart';
 import 'package:unn_mobile/core/services/implementations/schedule_search_history_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/search_id_on_portal_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/storage_service_impl.dart';
@@ -34,6 +35,7 @@ import 'package:unn_mobile/core/services/interfaces/getting_profile.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_profile_of_current_user_service.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_schedule_service.dart';
 import 'package:unn_mobile/core/services/interfaces/offline_schedule_provider.dart';
+import 'package:unn_mobile/core/services/interfaces/post_with_loaded_info_provider.dart';
 import 'package:unn_mobile/core/services/interfaces/schedule_search_history_service.dart';
 import 'package:unn_mobile/core/services/interfaces/search_id_on_portal_service.dart';
 import 'package:unn_mobile/core/services/interfaces/storage_service.dart';
@@ -75,7 +77,8 @@ void registerDependencies() {
   injector.registerSingleton<OnlineStatusData>(() => OnlineStatusData());
 
   injector.registerSingleton<StorageService>(() => StorageServiceImpl());
-  injector.registerSingleton<ExportScheduleService>(() => ExportScheduleServiceImpl());
+  injector.registerSingleton<ExportScheduleService>(
+      () => ExportScheduleServiceImpl());
   injector.registerSingleton<AuthorisationService>(
       () => AuthorisationServiceImpl());
   injector.registerSingleton<AuthDataProvider>(() => AuthDataProviderImpl());
@@ -93,15 +96,18 @@ void registerDependencies() {
       () => GettingProfileOfCurrentUserImpl());
   injector.registerSingleton<UserDataProvider>(() => UserDataProviderImpl());
   injector.registerSingleton<GettingBlogPosts>(() => GettingBlogPostsImpl());
-  injector.registerSingleton<GettingBlogPostComments>(() => GettingBlogPostCommentsImpl());
+  injector.registerSingleton<GettingBlogPostComments>(
+      () => GettingBlogPostCommentsImpl());
   injector.registerSingleton<GettingProfile>(() => GettingProfileImpl());
-  injector.registerSingleton<FeedUpdaterService>(() => FeedStreamUpdaterServiceImpl());
+  injector.registerSingleton<FeedUpdaterService>(
+      () => FeedStreamUpdaterServiceImpl());
   injector.registerSingleton<TypeOfCurrentUser>(() => TypeOfCurrentUser());
+  injector.registerSingleton<PostWithLoadedInfoProvider>(
+      () => PostWithLoadedInfoProviderImpl());
 
   injector.registerDependency(() => LoadingPageViewModel());
   injector.registerDependency(() => AuthPageViewModel());
   injector.registerDependency(() => MainPageViewModel());
   injector.registerDependency(() => ScheduleScreenViewModel());
   injector.registerDependency(() => FeedScreenViewModel());
-
 }

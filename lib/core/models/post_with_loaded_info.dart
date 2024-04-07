@@ -1,6 +1,11 @@
 import 'package:unn_mobile/core/models/blog_data.dart';
 import 'package:unn_mobile/core/models/user_data.dart';
 
+class KeysForPostWithLoadedInfoJsonConverter {
+  static const String author = 'author';
+  static const String post = 'post';
+}
+
 class PostWithLoadedInfo {
   final UserData _author;
   final BlogData _post;
@@ -11,4 +16,20 @@ class PostWithLoadedInfo {
 
   UserData get author => _author;
   BlogData get post => _post;
+
+  factory PostWithLoadedInfo.fromJson(Map<String, Object?> jsonMap) {
+    return PostWithLoadedInfo(
+      author: UserData.fromJson(
+          jsonMap[KeysForPostWithLoadedInfoJsonConverter.author]
+              as Map<String, Object?>),
+      post: BlogData.fromJson(
+          jsonMap[KeysForPostWithLoadedInfoJsonConverter.post]
+              as Map<String, Object?>),
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+        KeysForPostWithLoadedInfoJsonConverter.author: author.toJson(),
+        KeysForPostWithLoadedInfoJsonConverter.post: post.toJson(),
+      };
 }

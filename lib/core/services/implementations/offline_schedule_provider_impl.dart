@@ -6,7 +6,7 @@ import 'package:unn_mobile/core/services/interfaces/offline_schedule_provider.da
 import 'package:unn_mobile/core/services/interfaces/storage_service.dart';
 
 class _OfflineScheduleProviderrKeys {
-  static const _scheduleKey = 'schedule_key';
+  static const scheduleKey = 'schedule_key';
 }
 
 class OfflineScheduleProviderImpl implements OfflineScheduleProvider {
@@ -17,10 +17,11 @@ class OfflineScheduleProviderImpl implements OfflineScheduleProvider {
     if (!(await isContained())) {
       return null;
     }
-    var jsonList = jsonDecode((await _securityStorage.read(key: _OfflineScheduleProviderrKeys._scheduleKey))!);
+    final jsonList = jsonDecode((await _securityStorage.read(
+        key: _OfflineScheduleProviderrKeys.scheduleKey))!);
     List<Subject> schedule = [];
 
-    for (var jsonMap in jsonList) {
+    for (final jsonMap in jsonList) {
       schedule.add(Subject.fromJson(jsonMap));
     }
 
@@ -32,18 +33,19 @@ class OfflineScheduleProviderImpl implements OfflineScheduleProvider {
     if (schedule == null) {
       return;
     }
-    
+
     dynamic jsonList = [];
-    for (var subject in schedule) {
+    for (final subject in schedule) {
       jsonList.add(subject.toJson());
     }
     await _securityStorage.write(
-        key: _OfflineScheduleProviderrKeys._scheduleKey,
+        key: _OfflineScheduleProviderrKeys.scheduleKey,
         value: jsonEncode(jsonList));
   }
-  
+
   @override
   Future<bool> isContained() async {
-    return await _securityStorage.containsKey(key: _OfflineScheduleProviderrKeys._scheduleKey);
+    return await _securityStorage.containsKey(
+        key: _OfflineScheduleProviderrKeys.scheduleKey);
   }
 }
