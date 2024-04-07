@@ -60,11 +60,9 @@ class FeedScreenView extends StatelessWidget {
       margin: const EdgeInsets.only(top: 12),
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: _getPostBackgroundColor(
-          theme,
-          model.dateTimeWhenPostsWereLastSaved,
-          post.post.datePublish,
-        ),
+        color: model.isNewPost(post.post.datePublish)
+            ? theme.extension<UnnMobileColors>()!.newPostHiglaght
+            : theme.extension<UnnMobileColors>()!.defaultPostHighlight,
         borderRadius: BorderRadius.circular(0.0),
         boxShadow: const [
           BoxShadow(
@@ -177,17 +175,5 @@ class FeedScreenView extends StatelessWidget {
             )
           : null,
     );
-  }
-
-  Color _getPostBackgroundColor(
-    ThemeData theme,
-    DateTime dateTimeWhenPostsWereLastSaved,
-    DateTime datePublish,
-  ) {
-    final colors = theme.extension<UnnMobileColors>()!;
-    final color = dateTimeWhenPostsWereLastSaved.isBefore(datePublish)
-        ? colors.newPostHiglaght
-        : colors.defaultPostHighlight;
-    return color ?? theme.primaryColor;
   }
 }

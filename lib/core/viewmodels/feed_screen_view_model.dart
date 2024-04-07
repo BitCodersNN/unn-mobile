@@ -13,9 +13,6 @@ class FeedScreenViewModel extends BaseViewModel {
 
   bool get isLoadingPosts => _feedStreamUpdater.isBusy;
 
-  DateTime get dateTimeWhenPostsWereLastSaved =>
-      _dateTimeWhenPostsWereLastSaved ?? DateTime.now();
-
   void init() {
     _udateDateTimeWhenPostsWereLastSaved();
     _feedStreamUpdater.addListener(() {
@@ -24,7 +21,7 @@ class FeedScreenViewModel extends BaseViewModel {
   }
 
   Future<void> updateFeed() async {
-    _udateDateTimeWhenPostsWereLastSaved();
+    await _udateDateTimeWhenPostsWereLastSaved();
     await _feedStreamUpdater.updateFeed();
   }
 
@@ -32,9 +29,14 @@ class FeedScreenViewModel extends BaseViewModel {
     _feedStreamUpdater.loadNextPage();
   }
 
+  bool isNewPost(DateTime datePublish) {
+    return _dateTimeWhenPostsWereLastSaved!.isBefore(datePublish);
+  }
+
   Future<void> _udateDateTimeWhenPostsWereLastSaved() async {
-    _dateTimeWhenPostsWereLastSaved = _dateTimeWhenPostsWereLastSaved =
-        await _postWithLoadedInfoProvider.getDateTimeWhenPostsWereLastGettedFromPoratal();
+    _dateTimeWhenPostsWereLastSaved = await _postWithLoadedInfoProvider
+        .getDateTimeWhenPostsWereLastGettedFromPoratal();
+
     await _postWithLoadedInfoProvider
         .saveDateTimeWhenPostsWereLastGettedFromPoratal(DateTime.now());
   }
