@@ -32,10 +32,10 @@ class FeedScreenViewModel extends BaseViewModel {
     _feedStreamUpdater.loadNextPage();
   }
 
-  void _udateDateTimeWhenPostsWereLastSaved() async {
+  Future<void> _udateDateTimeWhenPostsWereLastSaved() async {
     _dateTimeWhenPostsWereLastSaved = _dateTimeWhenPostsWereLastSaved =
-        await _postWithLoadedInfoProvider.getDateTimeWhenPostsWereLastSaved();
+        await _postWithLoadedInfoProvider.getDateTimeWhenPostsWereLastGettedFromPoratal();
     await _postWithLoadedInfoProvider
-        .saveDateTimeWhenPostsWereLastSaved(DateTime.now());
+        .saveDateTimeWhenPostsWereLastGettedFromPoratal(DateTime.now());
   }
 }
