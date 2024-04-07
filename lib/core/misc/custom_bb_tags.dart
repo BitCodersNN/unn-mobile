@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:unn_mobile/core/misc/hex_color.dart';
 import 'package:flutter_bbcode/flutter_bbcode.dart';
 import 'package:bbob_dart/bbob_dart.dart' as bbob;
@@ -35,8 +34,8 @@ class SizeTag extends StyleTag {
   }
 }
 
-class NewColorTag extends StyleTag {
-  NewColorTag() : super("color");
+class ColorTag extends StyleTag {
+  ColorTag() : super("color");
 
   @override
   TextStyle transformStyle(
@@ -230,5 +229,51 @@ class TDTag extends StyleTag {
   TextStyle transformStyle(
       TextStyle oldStyle, Map<String, String>? attributes) {
     return oldStyle;
+  }
+}
+
+class ImgTag extends AdvancedTag {
+  ImgTag() : super("img");
+
+  @override
+  List<InlineSpan> parse(FlutterRenderer renderer, bbob.Element element) {
+    if (element.children.isEmpty) {
+      return [TextSpan(text: "[$tag]")];
+    }
+
+    String imageUrl = element.children.first.textContent;
+    double? width;
+    double? height;
+    var widthKey = "WIDTH";
+    var heightKey = "HEIGHT";
+    if (element.attributes.containsKey(widthKey)) {
+      width = double.tryParse(element.attributes[widthKey]!);
+    }
+    if (element.attributes.containsKey(heightKey)) {
+      height = double.tryParse(element.attributes[heightKey]!);
+    }
+    final image = Image.network(
+      imageUrl,
+      width: width,
+      height: height,
+      errorBuilder: (context, error, stack) => Text("[$tag]"),
+    );
+
+    if (renderer.peekTapAction() != null) {
+      return [
+        WidgetSpan(
+          child: GestureDetector(
+            onTap: renderer.peekTapAction(),
+            child: image,
+          ),
+        ),
+      ];
+    }
+
+    return [
+      WidgetSpan(
+        child: image,
+      ),
+    ];
   }
 }

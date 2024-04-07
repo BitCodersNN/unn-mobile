@@ -2,7 +2,7 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bbcode/flutter_bbcode.dart';
 import 'package:html_unescape/html_unescape.dart';
-import 'package:unn_mobile/core/misc/custom_bb_tags.dart';
+import 'package:unn_mobile/core/misc/custom_bb_tags.dart' as custom_tags;
 import 'package:unn_mobile/core/misc/user_functions.dart';
 import 'package:unn_mobile/core/models/post_with_loaded_info.dart';
 import 'package:unn_mobile/core/models/user_data.dart';
@@ -140,10 +140,10 @@ class FeedScreenView extends StatelessWidget {
             },
           ),
         )
-        .addTag(PTag())
-        .addTag(SizeTag())
+        .addTag(custom_tags.PTag())
+        .addTag(custom_tags.SizeTag())
         .addTag(
-          VideoTag(
+          custom_tags.VideoTag(
             onTap: (url) async {
               if (!await launchUrl(Uri.parse(url),
                   mode: LaunchMode.platformDefault)) {
@@ -152,14 +152,15 @@ class FeedScreenView extends StatelessWidget {
             },
           ),
         )
-        .addTag(JustifyAlignTag())
-        .addTag(FontTag())
-        .addTag(CodeTag())
-        .addTag(DiskTag())
-        .addTag(TableTag())
-        .addTag(TRTag())
-        .addTag(TDTag())
-        .replaceTag(NewColorTag());
+        .addTag(custom_tags.JustifyAlignTag())
+        .addTag(custom_tags.FontTag())
+        .addTag(custom_tags.CodeTag())
+        .addTag(custom_tags.DiskTag())
+        .addTag(custom_tags.TableTag())
+        .addTag(custom_tags.TRTag())
+        .addTag(custom_tags.TDTag())
+        .replaceTag(custom_tags.ColorTag())
+        .replaceTag(custom_tags.ImgTag());
   }
 
   CircleAvatar _circleAvatar(ThemeData theme, UserData? userData) {
