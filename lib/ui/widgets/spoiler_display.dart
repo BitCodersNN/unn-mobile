@@ -6,13 +6,13 @@ class SpoilerDisplay extends StatefulWidget {
   final double elevation;
   final bool selectable;
 
-  const SpoilerDisplay(
-      {Key? key,
-      required this.spoilerText,
-      required this.content,
-      this.elevation = 2,
-      this.selectable = true})
-      : super(key: key);
+  const SpoilerDisplay({
+    Key? key,
+    required this.spoilerText,
+    required this.content,
+    this.elevation = 2,
+    this.selectable = true,
+  }) : super(key: key);
 
   @override
   State<SpoilerDisplay> createState() => _SpoilerDisplayState();
@@ -29,7 +29,9 @@ class _SpoilerDisplayState extends State<SpoilerDisplay> {
       child: Container(
         decoration: BoxDecoration(
           color: theme.highlightColor,
-          borderRadius: const BorderRadius.all(Radius.circular(8.0))
+          borderRadius: const BorderRadius.all(
+            Radius.circular(8.0),
+          ),
         ),
         child: Padding(
           padding: const EdgeInsets.all(8.0),

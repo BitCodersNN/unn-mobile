@@ -19,7 +19,9 @@ class SizeTag extends StyleTag {
 
   @override
   TextStyle transformStyle(
-      TextStyle oldStyle, Map<String, String>? attributes) {
+    TextStyle oldStyle,
+    Map<String, String>? attributes,
+  ) {
     if (attributes?.entries.isEmpty ?? true) {
       return oldStyle;
     }
@@ -40,7 +42,9 @@ class ColorTag extends StyleTag {
 
   @override
   TextStyle transformStyle(
-      TextStyle oldStyle, Map<String, String>? attributes) {
+    TextStyle oldStyle,
+    Map<String, String>? attributes,
+  ) {
     if (attributes?.entries.isEmpty ?? true) {
       return oldStyle;
     }
@@ -58,7 +62,10 @@ class JustifyAlignTag extends WrappedStyleTag {
 
   @override
   List<InlineSpan> wrap(
-      FlutterRenderer renderer, bbob.Element element, List<InlineSpan> spans) {
+    FlutterRenderer renderer,
+    bbob.Element element,
+    List<InlineSpan> spans,
+  ) {
     return [
       WidgetSpan(
         child: SizedBox(
@@ -140,21 +147,22 @@ class CodeTag extends WrappedStyleTag {
   ) {
     return [
       WidgetSpan(
-          child: Container(
-        decoration: const BoxDecoration(
-          color: Colors.black12,
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: SizedBox(
-            width: double.infinity,
-            child: RichText(
-              text: TextSpan(children: spans),
-              textAlign: TextAlign.left,
+        child: Container(
+          decoration: const BoxDecoration(
+            color: Colors.black12,
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: SizedBox(
+              width: double.infinity,
+              child: RichText(
+                text: TextSpan(children: spans),
+                textAlign: TextAlign.left,
+              ),
             ),
           ),
         ),
-      ))
+      )
     ];
   }
 }
@@ -178,8 +186,12 @@ class TableTag extends WrappedStyleTag {
     bbob.Element element,
     List<InlineSpan> spans,
   ) {
-    if (spans.first.toPlainText() == "\n") spans.removeAt(0);
-    if (spans.last.toPlainText() == "\n") spans.removeLast();
+    if (spans.first.toPlainText() == "\n") {
+      spans.removeAt(0);
+    }
+    if (spans.last.toPlainText() == "\n") {
+      spans.removeLast();
+    }
 
     return [
       WidgetSpan(
@@ -245,8 +257,8 @@ class ImgTag extends AdvancedTag {
     String imageUrl = element.children.first.textContent;
     double? width;
     double? height;
-    var widthKey = "WIDTH";
-    var heightKey = "HEIGHT";
+    const widthKey = "WIDTH";
+    const heightKey = "HEIGHT";
     if (element.attributes.containsKey(widthKey)) {
       width = double.tryParse(element.attributes[widthKey]!);
     }
@@ -284,7 +296,10 @@ class SpoilerTag extends WrappedStyleTag {
 
   @override
   List<InlineSpan> wrap(
-      FlutterRenderer renderer, bbob.Element element, List<InlineSpan> spans) {
+    FlutterRenderer renderer,
+    bbob.Element element,
+    List<InlineSpan> spans,
+  ) {
     late String text;
     if (element.attributes.isNotEmpty) {
       text = "Spoiler: ${element.attributes.values.join(' ')}";
@@ -294,11 +309,12 @@ class SpoilerTag extends WrappedStyleTag {
 
     return [
       WidgetSpan(
-          child: SpoilerDisplay(
-        spoilerText: text,
-        content: spans,
-        selectable: renderer.stylesheet.selectableText,
-      ))
+        child: SpoilerDisplay(
+          spoilerText: text,
+          content: spans,
+          selectable: renderer.stylesheet.selectableText,
+        ),
+      ),
     ];
   }
 }
