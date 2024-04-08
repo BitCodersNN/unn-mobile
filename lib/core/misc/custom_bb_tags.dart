@@ -215,7 +215,10 @@ class TRTag extends WrappedStyleTag {
 
   @override
   List<InlineSpan> wrap(
-      FlutterRenderer renderer, bbob.Element element, List<InlineSpan> spans) {
+    FlutterRenderer renderer,
+    bbob.Element element,
+    List<InlineSpan> spans,
+  ) {
     return spans.map(
       (e) {
         return WidgetSpan(
@@ -240,7 +243,9 @@ class TDTag extends StyleTag {
 
   @override
   TextStyle transformStyle(
-      TextStyle oldStyle, Map<String, String>? attributes) {
+    TextStyle oldStyle,
+    Map<String, String>? attributes,
+  ) {
     return oldStyle;
   }
 }
@@ -254,7 +259,7 @@ class ImgTag extends AdvancedTag {
       return [TextSpan(text: "[$tag]")];
     }
 
-    String imageUrl = element.children.first.textContent;
+    final String imageUrl = element.children.first.textContent;
     double? width;
     double? height;
     const widthKey = "WIDTH";
