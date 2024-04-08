@@ -166,7 +166,7 @@ class FeedScreenView extends StatelessWidget {
       child: userAvatar == null
           ? Text(
               style: theme.textTheme.headlineSmall!.copyWith(
-                color: theme.colorScheme.onBackground,
+                color: theme.colorScheme.onSurface,
               ),
               getUserInitials(userData),
             )

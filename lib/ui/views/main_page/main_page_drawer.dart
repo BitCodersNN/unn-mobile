@@ -75,7 +75,7 @@ class MainPageDrawer extends StatelessWidget {
                     child: value.userAvatar == null
                         ? Text(
                             style: theme.textTheme.headlineLarge!.copyWith(
-                                color: theme.colorScheme.onBackground),
+                                color: theme.colorScheme.onSurface),
                             value.userNameAndSurname
                                 .replaceAll(RegExp('[а-яё ]'), ''))
                         : null,

@@ -92,7 +92,7 @@ class ScheduleTabState extends State<ScheduleTab>
 
   Widget _searchBar(ScheduleScreenViewModel model, BuildContext context) {
     return Container(
-      color: Theme.of(context).colorScheme.background,
+      color: Theme.of(context).colorScheme.surface,
       child: flutter_changed.SearchAnchor(
         textInputAction: TextInputAction.search,
         viewOnBackButtonClick: (value) {
@@ -214,7 +214,7 @@ class ScheduleTabState extends State<ScheduleTab>
                     },
                   )
                 ],
-                shape: MaterialStateProperty.resolveWith(
+                shape: WidgetStateProperty.resolveWith(
                   (states) => const RoundedRectangleBorder(
                     borderRadius: BorderRadius.all(
                       Radius.circular(10),
@@ -296,7 +296,7 @@ class ScheduleTabState extends State<ScheduleTab>
                     delegate: PersistentHeader(
                       maxExtent: 60,
                       widget: Container(
-                        color: theme.colorScheme.background,
+                        color: theme.colorScheme.surface,
                         child: Padding(
                           padding: const EdgeInsets.fromLTRB(0, 10, 0, 5),
                           child: _searchBar(model, context),
@@ -332,7 +332,7 @@ class ScheduleTabState extends State<ScheduleTab>
                       child: Text(
                           '${headerFormatter.format(model.displayedWeek.start)} - ${headerFormatter.format(model.displayedWeek.end)}'),
                     ),
-                    backgroundColor: theme.colorScheme.background,
+                    backgroundColor: theme.colorScheme.surface,
                     surfaceTintColor: Colors.transparent,
                     pinned: true,
                     toolbarHeight: 50,
