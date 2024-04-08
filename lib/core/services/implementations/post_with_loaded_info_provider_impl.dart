@@ -12,7 +12,7 @@ class _PostWithLoadedInfoProviderKeys {
 }
 
 class PostWithLoadedInfoProviderImpl implements PostWithLoadedInfoProvider {
-  final _securityStorage = Injector.appInstance.get<StorageService>();
+  final _storage = Injector.appInstance.get<StorageService>();
 
   @override
   Future<List<PostWithLoadedInfo>?> getData() async {
@@ -21,7 +21,7 @@ class PostWithLoadedInfoProviderImpl implements PostWithLoadedInfoProvider {
     }
 
     final jsonList = jsonDecode(
-      (await _securityStorage.read(
+      (await _storage.read(
         key: _PostWithLoadedInfoProviderKeys.postWithLoadedInfoKey,
       ))!,
     );
@@ -41,7 +41,7 @@ class PostWithLoadedInfoProviderImpl implements PostWithLoadedInfoProvider {
       return null;
     }
 
-    final dateTimeString = await _securityStorage.read(
+    final dateTimeString = await _storage.read(
       key: _PostWithLoadedInfoProviderKeys.dateTimeWhenPostsWereLastSaved,
     );
 
@@ -54,7 +54,7 @@ class PostWithLoadedInfoProviderImpl implements PostWithLoadedInfoProvider {
 
   @override
   Future<bool> isContained() async {
-    return await _securityStorage.containsKey(
+    return await _storage.containsKey(
         key: _PostWithLoadedInfoProviderKeys.postWithLoadedInfoKey);
   }
 
@@ -69,7 +69,7 @@ class PostWithLoadedInfoProviderImpl implements PostWithLoadedInfoProvider {
       jsonList.add(postWithLoadedInfo.toJson());
     }
 
-    await _securityStorage.write(
+    await _storage.write(
       key: _PostWithLoadedInfoProviderKeys.postWithLoadedInfoKey,
       value: jsonEncode(jsonList),
     );
@@ -77,7 +77,7 @@ class PostWithLoadedInfoProviderImpl implements PostWithLoadedInfoProvider {
 
   @override
   Future<void> saveDateTimeWhenPostsWereLastGettedFromPoratal(DateTime dateTime) async {
-    await _securityStorage.write(
+    await _storage.write(
       key: _PostWithLoadedInfoProviderKeys.dateTimeWhenPostsWereLastSaved,
       value: dateTime.toString(),
     );
