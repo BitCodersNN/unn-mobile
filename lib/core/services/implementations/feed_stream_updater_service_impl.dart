@@ -25,6 +25,11 @@ class FeedStreamUpdaterServiceImpl
 
   int _lastLoadedPage = 0;
 
+  late DateTime _dateTimePublishedPost;
+
+  @override
+  DateTime get dateTimePublishedPost => _dateTimePublishedPost;
+
   @override
   bool get isBusy => _busy;
 
@@ -89,6 +94,13 @@ class FeedStreamUpdaterServiceImpl
     if (posts == null) {
       throw Exception("Could not load posts");
     }
+
+    if (_lastLoadedPage == 0) {
+      _dateTimePublishedPost =
+          await _postWithLoadedInfoProvider.getDateTimePublishedPost() ??
+              DateTime.now();
+    }
+
     for (final post in posts) {
       _busy = true;
       final postAuthor = await _gettingProfileService
@@ -100,9 +112,11 @@ class FeedStreamUpdaterServiceImpl
         }
       }
     }
-    
+
     if (_lastLoadedPage == 0) {
-      _postWithLoadedInfoProvider.saveData(_postsList);
+      await _postWithLoadedInfoProvider.saveData(_postsList);
+      await _postWithLoadedInfoProvider
+          .saveDateTimePublishedPost(posts[0].datePublish);
     }
   }
 }

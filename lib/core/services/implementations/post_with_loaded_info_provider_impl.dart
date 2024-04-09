@@ -36,7 +36,7 @@ class PostWithLoadedInfoProviderImpl implements PostWithLoadedInfoProvider {
   }
 
   @override
-  Future<DateTime?> getDateTimeWhenPostsWereLastGettedFromPoratal() async {
+  Future<DateTime?> getDateTimePublishedPost() async {
     if (!(await isContained())) {
       return null;
     }
@@ -76,7 +76,7 @@ class PostWithLoadedInfoProviderImpl implements PostWithLoadedInfoProvider {
   }
 
   @override
-  Future<void> saveDateTimeWhenPostsWereLastGettedFromPoratal(DateTime dateTime) async {
+  Future<void> saveDateTimePublishedPost(DateTime dateTime) async {
     await _storage.write(
       key: _PostWithLoadedInfoProviderKeys.dateTimeWhenPostsWereLastSaved,
       value: dateTime.toString(),

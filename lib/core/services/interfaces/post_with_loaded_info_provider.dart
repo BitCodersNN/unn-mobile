@@ -12,7 +12,7 @@ abstract interface class PostWithLoadedInfoProvider
   /// Получение даты, когда впоследний раз был выполнен запрос на получение постов с портала, из хранилища
   ///
   /// Возвращает [DateTime] или 'null', если нет сохранённой даты в хранилище
-  Future<DateTime?> getDateTimeWhenPostsWereLastGettedFromPoratal();
+  Future<DateTime?> getDateTimePublishedPost();
 
   /// Проверяет наличие постов в хранилище
   @override
@@ -27,7 +27,7 @@ abstract interface class PostWithLoadedInfoProvider
   /// Сохраняет дату в хранилище. Если дата уже сохранена в хранилище, то старая удаляется и записывается новая
   ///
   /// [dateTime]: Дата
-  Future<void> saveDateTimeWhenPostsWereLastGettedFromPoratal(
+  Future<void> saveDateTimePublishedPost(
     DateTime dateTime,
   );
 }

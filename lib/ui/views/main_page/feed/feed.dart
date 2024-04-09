@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bbcode/flutter_bbcode.dart';
@@ -54,8 +56,12 @@ class FeedScreenView extends StatelessWidget {
     );
   }
 
-  Container feedPost(ThemeData theme, FeedScreenViewModel model,
-      PostWithLoadedInfo post, HtmlUnescape unescaper) {
+  Container feedPost(
+    ThemeData theme,
+    FeedScreenViewModel model,
+    PostWithLoadedInfo post,
+    HtmlUnescape unescaper,
+  ) {
     return Container(
       margin: const EdgeInsets.only(top: 12),
       padding: const EdgeInsets.all(20),
