@@ -7,14 +7,15 @@ import 'package:unn_mobile/core/models/post_with_loaded_info.dart';
 import 'package:unn_mobile/core/services/interfaces/feed_stream_updater_service.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_blog_posts.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_profile.dart';
+import 'package:unn_mobile/core/services/interfaces/post_with_loaded_info_provider.dart';
 
 class FeedStreamUpdaterServiceImpl
     with ChangeNotifier
     implements FeedUpdaterService {
-  final GettingBlogPosts _gettingBlogPostsService =
-      Injector.appInstance.get<GettingBlogPosts>();
-  final GettingProfile _gettingProfileService =
-      Injector.appInstance.get<GettingProfile>();
+  final _gettingBlogPostsService = Injector.appInstance.get<GettingBlogPosts>();
+  final _gettingProfileService = Injector.appInstance.get<GettingProfile>();
+  final _postWithLoadedInfoProvider =
+      Injector.appInstance.get<PostWithLoadedInfoProvider>();
 
   bool _busy = false;
 
@@ -23,6 +24,15 @@ class FeedStreamUpdaterServiceImpl
   final List<PostWithLoadedInfo> _postsList = [];
 
   int _lastLoadedPage = 0;
+
+  DateTime? _lastViewedPostDateTime;
+
+  @override
+  DateTime get lastViewedPostDateTime {
+    final lastViewedPostDateTime = _lastViewedPostDateTime;
+    _lastViewedPostDateTime = _postsList.first.post.datePublish;
+    return lastViewedPostDateTime!;
+  }
 
   @override
   bool get isBusy => _busy;
@@ -73,9 +83,8 @@ class FeedStreamUpdaterServiceImpl
         await _currentOperation?.valueOrCancellation();
         _busy = true;
         _postsList.clear();
-        _currentOperation = CancelableOperation.fromFuture(
-          _addPostsToStream(newPosts, true)
-        );
+        _currentOperation =
+            CancelableOperation.fromFuture(_addPostsToStream(newPosts, true));
         await _currentOperation?.valueOrCancellation();
       }
     } on Exception catch (error, stackTrace) {
@@ -89,6 +98,13 @@ class FeedStreamUpdaterServiceImpl
     if (posts == null) {
       throw Exception("Could not load posts");
     }
+
+    if (_lastLoadedPage == 0) {
+      _lastViewedPostDateTime =
+          await _postWithLoadedInfoProvider.getDateTimePublishedPost() ??
+              DateTime.now();
+    }
+
     for (final post in posts) {
       _busy = true;
       final postAuthor = await _gettingProfileService
@@ -99,6 +115,12 @@ class FeedStreamUpdaterServiceImpl
           notifyListeners();
         }
       }
+    }
+
+    if (_lastLoadedPage == 0) {
+      await _postWithLoadedInfoProvider.saveData(_postsList);
+      await _postWithLoadedInfoProvider
+          .saveDateTimePublishedPost(posts[0].datePublish);
     }
   }
 }

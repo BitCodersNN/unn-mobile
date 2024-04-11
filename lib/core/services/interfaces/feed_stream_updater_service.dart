@@ -10,4 +10,5 @@ abstract interface class FeedUpdaterService with ChangeNotifier {
   Future<void> loadNextPage();
   bool get isBusy;
   int get lastLoadedPage;
+  DateTime get lastViewedPostDateTime;
 }

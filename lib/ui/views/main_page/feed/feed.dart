@@ -7,6 +7,7 @@ import 'package:unn_mobile/core/misc/user_functions.dart';
 import 'package:unn_mobile/core/models/post_with_loaded_info.dart';
 import 'package:unn_mobile/core/models/user_data.dart';
 import 'package:unn_mobile/core/viewmodels/feed_screen_view_model.dart';
+import 'package:unn_mobile/ui/unn_mobile_colors.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:intl/intl.dart';
@@ -53,13 +54,19 @@ class FeedScreenView extends StatelessWidget {
     );
   }
 
-  Container feedPost(ThemeData theme, FeedScreenViewModel model,
-      PostWithLoadedInfo post, HtmlUnescape unescaper) {
+  Container feedPost(
+    ThemeData theme,
+    FeedScreenViewModel model,
+    PostWithLoadedInfo post,
+    HtmlUnescape unescaper,
+  ) {
     return Container(
       margin: const EdgeInsets.only(top: 12),
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: model.isNewPost(post.post.datePublish)
+            ? theme.extension<UnnMobileColors>()!.newPostHiglaght
+            : theme.extension<UnnMobileColors>()!.defaultPostHighlight,
         borderRadius: BorderRadius.circular(0.0),
         boxShadow: const [
           BoxShadow(
