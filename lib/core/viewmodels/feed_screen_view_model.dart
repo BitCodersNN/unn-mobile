@@ -5,12 +5,11 @@ import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
 
 class FeedScreenViewModel extends BaseViewModel {
   final _feedStreamUpdater = Injector.appInstance.get<FeedUpdaterService>();
-  late DateTime _lastViewedPostDateTime;
+  DateTime? _lastViewedPostDateTime;
   List<PostWithLoadedInfo> get posts => _feedStreamUpdater.feedPosts;
   bool get isLoadingPosts => _feedStreamUpdater.isBusy;
 
   void init() {
-    _lastViewedPostDateTime = _feedStreamUpdater.lastViewedPostDateTime;
     _feedStreamUpdater.addListener(() {
       notifyListeners();
     });
@@ -21,7 +20,8 @@ class FeedScreenViewModel extends BaseViewModel {
   }
 
   bool isNewPost(DateTime dateTimePublish) {
-    return _lastViewedPostDateTime.isBefore(dateTimePublish);
+    _lastViewedPostDateTime ??= _feedStreamUpdater.lastViewedPostDateTime;
+    return _lastViewedPostDateTime!.isBefore(dateTimePublish);
   }
 
   void loadNextPage() {

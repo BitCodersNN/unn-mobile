@@ -28,10 +28,13 @@ class FeedStreamUpdaterServiceImpl
   DateTime? _lastViewedPostDateTime;
 
   @override
-  DateTime get lastViewedPostDateTime {
+  DateTime? get lastViewedPostDateTime {
     final lastViewedPostDateTime = _lastViewedPostDateTime;
-    _lastViewedPostDateTime = _postsList.first.post.datePublish;
-    return lastViewedPostDateTime!;
+    if (_postsList.isNotEmpty) {
+      _lastViewedPostDateTime = _postsList.first.post.datePublish;
+    }
+
+    return lastViewedPostDateTime;
   }
 
   @override
@@ -78,8 +81,18 @@ class FeedStreamUpdaterServiceImpl
   Future<void> updateFeed() async {
     try {
       _busy = true;
+      _lastViewedPostDateTime =
+          await _postWithLoadedInfoProvider.getDateTimePublishedPost();
+
       final newPosts = await _gettingBlogPostsService.getBlogPosts();
+
       if (newPosts != null) {
+        if (_lastLoadedPage == 0) {
+          await _postWithLoadedInfoProvider
+              .saveDateTimePublishedPost(newPosts.first.datePublish);
+          await _postWithLoadedInfoProvider.saveData(_postsList);
+        }
+
         await _currentOperation?.valueOrCancellation();
         _busy = true;
         _postsList.clear();
@@ -99,12 +112,6 @@ class FeedStreamUpdaterServiceImpl
       throw Exception("Could not load posts");
     }
 
-    if (_lastLoadedPage == 0) {
-      _lastViewedPostDateTime =
-          await _postWithLoadedInfoProvider.getDateTimePublishedPost() ??
-              DateTime.now();
-    }
-
     for (final post in posts) {
       _busy = true;
       final postAuthor = await _gettingProfileService
@@ -115,12 +122,6 @@ class FeedStreamUpdaterServiceImpl
           notifyListeners();
         }
       }
-    }
-
-    if (_lastLoadedPage == 0) {
-      await _postWithLoadedInfoProvider.saveData(_postsList);
-      await _postWithLoadedInfoProvider
-          .saveDateTimePublishedPost(posts[0].datePublish);
     }
   }
 }
