@@ -25,10 +25,14 @@ class FeedStreamUpdaterServiceImpl
 
   int _lastLoadedPage = 0;
 
-  late DateTime _dateTimePublishedPost;
+  DateTime? _lastViewedPostDateTime;
 
   @override
-  DateTime get dateTimePublishedPost => _dateTimePublishedPost;
+  DateTime get lastViewedPostDateTime {
+    final lastViewedPostDateTime = _lastViewedPostDateTime;
+    _lastViewedPostDateTime = _postsList.first.post.datePublish;
+    return lastViewedPostDateTime!;
+  }
 
   @override
   bool get isBusy => _busy;
@@ -96,7 +100,7 @@ class FeedStreamUpdaterServiceImpl
     }
 
     if (_lastLoadedPage == 0) {
-      _dateTimePublishedPost =
+      _lastViewedPostDateTime =
           await _postWithLoadedInfoProvider.getDateTimePublishedPost() ??
               DateTime.now();
     }
