@@ -8,19 +8,19 @@ class _KeysForFileDataJsonConverter {
 class FileData {
   final int _id;
   final String _name;
-  final int _sizeInByte;
+  final int _sizeInBytes;
   final String _downloadUrl;
 
   FileData(
     this._id,
     this._name,
-    this._sizeInByte,
+    this._sizeInBytes,
     this._downloadUrl,
   );
 
   int get id => _id;
   String get name => _name;
-  int get sizeInByte => _sizeInByte;
+  int get sizeInBytes => _sizeInBytes;
   String get downloadUrl => _downloadUrl;
 
   factory FileData.fromJson(Map<String, Object?> jsonMap) => FileData(
@@ -33,7 +33,7 @@ class FileData {
   Map<String, dynamic> toJson() => {
         _KeysForFileDataJsonConverter.id: _id,
         _KeysForFileDataJsonConverter.name: _name,
-        _KeysForFileDataJsonConverter.size: _sizeInByte,
+        _KeysForFileDataJsonConverter.size: _sizeInBytes,
         _KeysForFileDataJsonConverter.downloadUrl: _downloadUrl,
       };
 }

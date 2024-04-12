@@ -24,26 +24,26 @@ class PostWithLoadedInfo {
   UserData get author => _author;
   BlogData get post => _post;
   List<FileData> get files => _files;
- 
+
   factory PostWithLoadedInfo.fromJson(Map<String, Object?> jsonMap) {
     return PostWithLoadedInfo(
-        author: UserData.fromJson(
-            jsonMap[KeysForPostWithLoadedInfoJsonConverter.author]
-                as Map<String, Object?>),
-        post: BlogData.fromJson(
-            jsonMap[KeysForPostWithLoadedInfoJsonConverter.post]
-                as Map<String, Object?>),
-        files:
-          (jsonMap[KeysForPostWithLoadedInfoJsonConverter.files]
-                    as List<dynamic>)
-                .map((element) => FileData.fromJson(element))
-                .toList(),
-        );
+      author: UserData.fromJson(
+          jsonMap[KeysForPostWithLoadedInfoJsonConverter.author]
+              as Map<String, Object?>),
+      post: BlogData.fromJson(
+          jsonMap[KeysForPostWithLoadedInfoJsonConverter.post]
+              as Map<String, Object?>),
+      files: (jsonMap[KeysForPostWithLoadedInfoJsonConverter.files]
+              as List<dynamic>)
+          .map((element) => FileData.fromJson(element))
+          .toList(),
+    );
   }
 
   Map<String, dynamic> toJson() => {
         KeysForPostWithLoadedInfoJsonConverter.author: _author.toJson(),
         KeysForPostWithLoadedInfoJsonConverter.post: _post.toJson(),
-        KeysForPostWithLoadedInfoJsonConverter.files: files.map((file) => file.toJson()).toList(),
+        KeysForPostWithLoadedInfoJsonConverter.files:
+            files.map((file) => file.toJson()).toList(),
       };
 }

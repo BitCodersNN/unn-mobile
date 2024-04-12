@@ -16,7 +16,7 @@ class GettingFileDataImpl implements GettingFileData {
 
   @override
   Future<FileData?> getFileData({
-    int id = 0,
+    required int id,
   }) async {
     final authorisationService =
         Injector.appInstance.get<AuthorisationService>();

@@ -8,13 +8,13 @@ enum SizeUnit {
 }
 
 class SizeConverter {
-  final int _base = 10;
-  final Map<SizeUnit?, int> _exponents = {
-    SizeUnit.byte: 0,
-    SizeUnit.kilobyte: 3,
-    SizeUnit.megabyte: 6,
-    SizeUnit.gigabyte: 9,
-    null: 3,
+  static const int _base = 10;
+  final Map<SizeUnit?, num> _coefficients = {
+    SizeUnit.byte: pow(_base, 0),
+    SizeUnit.kilobyte: pow(_base, 3),
+    SizeUnit.megabyte: pow(_base, 6),
+    SizeUnit.gigabyte: pow(_base, 9),
+    null: pow(_base, 3),
   };
   SizeUnit? _lastUsedUnit;
   /// Возвращает единицы измерения, используемые в последней операции
@@ -26,14 +26,14 @@ class SizeConverter {
   /// [unit] - требуемая единица измерения. Если не указано, то преобразование будет произведено в максимально возможное значение, но при этом часть целого числа не будет равна 0.
   /// 
   /// Возвращает новый размер и сохраняет единицу измерения в [lastUsedUnit]
-  double convertBitsToSize(int bytes, [SizeUnit? unit]) {
+  double convertBytesToSize(int bytes, [SizeUnit? unit]) {
     double size = bytes.toDouble();
 
     switch (unit) {
       case null:
         size = _convertBitsToUnknownSize(size);
       default:
-        size /= pow(_base, _exponents[unit]!);
+        size /= _coefficients[unit]!.toInt();
         _lastUsedUnit = unit;
     }
 
@@ -42,9 +42,9 @@ class SizeConverter {
 
   double _convertBitsToUnknownSize(double size) {
     int counter = 0;
-    while (size > pow(_base, _exponents[null]!)) {
+    while (size > _coefficients[null]!.toInt()) {
       counter++;
-      size /= pow(_base, _exponents[null]!);
+      size /= _coefficients[null]!.toInt();
     }
     switch (counter) {
       case 0:

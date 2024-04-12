@@ -5,6 +5,6 @@ abstract interface class GettingFileData {
   ///
   /// Возвращает [FileData] или null, если не вышло получить ответ от портала или statusCode не равен 200
   Future<FileData?> getFileData({
-    int id = 0,
+    required int id,
   });
 }
