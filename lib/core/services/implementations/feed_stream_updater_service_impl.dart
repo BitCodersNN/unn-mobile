@@ -5,10 +5,13 @@ import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/models/blog_data.dart';
 import 'package:unn_mobile/core/models/file_data.dart';
 import 'package:unn_mobile/core/models/post_with_loaded_info.dart';
+import 'package:unn_mobile/core/models/rating_list.dart';
 import 'package:unn_mobile/core/services/interfaces/feed_stream_updater_service.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_blog_posts.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_file_data.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_profile.dart';
+import 'package:unn_mobile/core/services/interfaces/getting_rating_list.dart';
+import 'package:unn_mobile/core/services/interfaces/getting_vote_key_signed.dart';
 import 'package:unn_mobile/core/services/interfaces/post_with_loaded_info_provider.dart';
 
 class FeedStreamUpdaterServiceImpl
@@ -17,6 +20,9 @@ class FeedStreamUpdaterServiceImpl
   final _gettingBlogPostsService = Injector.appInstance.get<GettingBlogPosts>();
   final _gettingProfileService = Injector.appInstance.get<GettingProfile>();
   final _gettingFileData = Injector.appInstance.get<GettingFileData>();
+  final _gettingRatingList = Injector.appInstance.get<GettingRatingList>();
+  final _gettingVoteKeySigned =
+      Injector.appInstance.get<GettingVoteKeySigned>();
   final _postWithLoadedInfoProvider =
       Injector.appInstance.get<PostWithLoadedInfoProvider>();
 
@@ -116,27 +122,47 @@ class FeedStreamUpdaterServiceImpl
 
     for (final post in posts) {
       _busy = true;
-      final postAuthor = await _gettingProfileService
-          .getProfileByAuthorIdFromPost(authorId: post.authorID);
+      final futures = <Future>[];
 
-      List<FileData> filesData = [];
-      if (post.files != null) {
-        for (final fileId in post.files!) {
-          final fileData =
-              await _gettingFileData.getFileData(id: int.parse(fileId));
-          fileData != null ? filesData.add(fileData) : null;
-        }
+      futures.add(_gettingProfileService.getProfileByAuthorIdFromPost(
+          authorId: post.authorID));
+
+      for (final fileId in post.files ?? []) {
+        futures.add(_gettingFileData.getFileData(id: int.parse(fileId)));
       }
 
-      if (postAuthor != null) {
-        _postsList.add(PostWithLoadedInfo(
-          author: postAuthor,
+      futures.add(
+        _gettingRatingList.getRatingList(
+          voteKeySigned: await _gettingVoteKeySigned.getVoteKeySigned(
+                post.authorID,
+                post.id,
+              ) ??
+              '',
+        ),
+      );
+      final data = await Future.wait(futures);
+
+      if (data[0] == null) {
+        return;
+      }
+
+      final author = data.first;
+      final files = <FileData>[];
+      for (int i = 0; i < (post.files?.length ?? 0); i++) {
+        files.add(data[i + 1]);
+      }
+      final ratingList = data[1 + files.length] ?? RatingList();
+
+      _postsList.add(
+        PostWithLoadedInfo(
+          author: author,
           post: post,
-          files: filesData,
-        ));
-        if (notify) {
-          notifyListeners();
-        }
+          files: files,
+          ratingList: ratingList,
+        ),
+      );
+      if (notify) {
+        notifyListeners();
       }
     }
   }
