@@ -70,6 +70,13 @@ class CommentsPageViewModel extends BaseViewModel {
     notifyListeners();
   }
 
+  void refresh() {
+    commentLoaders.clear();
+    lastPage = 1;
+    commentLoaders.add(loadComments(1));
+    notifyListeners();
+  }
+
   bool get commentsAvailable => lastPage < totalPages;
   void init(BlogData post) {
     this.post = post;
