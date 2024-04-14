@@ -20,35 +20,41 @@ class CommentsPage extends StatelessWidget {
       ),
       body: BaseView<CommentsPageViewModel>(
         builder: (context, model, child) {
-          return SingleChildScrollView(
-            child: Column(
-              children: [
-                FeedScreenView.feedPost(context, post),
-                Text("Комментарии"),
-                for (final commentsPage in model.commentLoaders)
-                  FutureBuilder(
-                    future: commentsPage,
-                    builder: (context, snapshot) {
-                      if (snapshot.hasData) {
-                        return Column(
-                          children: [
-                            for (final comment in snapshot.data!)
-                              if (comment != null) commentView(comment),
-                            if (model.commentsAvailable)
-                              GestureDetector(
-                                onTap: () {
-                                  return model.loadMoreComments();
-                                },
-                                child: const Text("Еще комментарии"),
-                              ),
-                          ],
-                        );
-                      } else {
-                        return const Text("Загрузка");
-                      }
-                    },
-                  ),
-              ],
+          return RefreshIndicator(
+            onRefresh: () async {
+              model.refresh();
+            },
+            child: SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              child: Column(
+                children: [
+                  FeedScreenView.feedPost(context, post),
+                  Text("Комментарии"),
+                  for (final commentsPage in model.commentLoaders)
+                    FutureBuilder(
+                      future: commentsPage,
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          return Column(
+                            children: [
+                              for (final comment in snapshot.data!)
+                                if (comment != null) commentView(comment),
+                              if (model.commentsAvailable)
+                                GestureDetector(
+                                  onTap: () {
+                                    return model.loadMoreComments();
+                                  },
+                                  child: const Text("Еще комментарии"),
+                                ),
+                            ],
+                          );
+                        } else {
+                          return const Text("Загрузка");
+                        }
+                      },
+                    ),
+                ],
+              ),
             ),
           );
         },
