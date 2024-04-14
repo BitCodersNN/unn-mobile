@@ -323,3 +323,13 @@ class SpoilerTag extends WrappedStyleTag {
     ];
   }
 }
+
+class UserTag extends StyleTag {
+  UserTag() : super("user");
+
+  @override
+  TextStyle transformStyle(TextStyle oldStyle, Map<String, String>? attributes) {
+    return oldStyle;
+  }
+
+}

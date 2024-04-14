@@ -201,6 +201,7 @@ class FeedScreenView extends StatelessWidget {
         .addTag(custom_tags.TableTag())
         .addTag(custom_tags.TRTag())
         .addTag(custom_tags.TDTag())
+        .addTag(custom_tags.UserTag())
         .replaceTag(custom_tags.ColorTag())
         .replaceTag(custom_tags.ImgTag())
         .replaceTag(custom_tags.SpoilerTag());
@@ -265,7 +266,12 @@ class _AttachedFileState extends State<AttachedFile> {
       return await downloadingFiles[fileData.downloadUrl];
     }
     downloadingFiles.putIfAbsent(fileData.downloadUrl, () => downloadFile());
-    File? file = await downloadingFiles[fileData.downloadUrl];
+    File? file;
+    try {
+      file = await downloadingFiles[fileData.downloadUrl];
+    } catch (error, stack) {
+      FirebaseCrashlytics.instance.recordError(error, stack);
+    }
     downloadingFiles.remove(fileData.downloadUrl);
     return file;
   }
@@ -342,13 +348,15 @@ class _AttachedFileState extends State<AttachedFile> {
                                         return snapshot.connectionState ==
                                                     ConnectionState.done &&
                                                 snapshot.hasData
-                                            ? SizedBox(
-                                                width: double.infinity,
-                                                child: PhotoView(
-                                                  imageProvider:
-                                                      FileImage(snapshot.data!),
-                                                ),
-                                              )
+                                            ? snapshot.data != null
+                                                ? SizedBox(
+                                                    width: double.infinity,
+                                                    child: PhotoView(
+                                                      imageProvider: FileImage(
+                                                          snapshot.data!),
+                                                    ),
+                                                  )
+                                                : Text("Ошибка")
                                             : const Center(
                                                 child:
                                                     CircularProgressIndicator(),

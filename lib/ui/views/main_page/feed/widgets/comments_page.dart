@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bbcode/flutter_bbcode.dart';
+import 'package:html_unescape/html_unescape.dart';
 import 'package:unn_mobile/core/models/blog_post_comment_with_loaded_info.dart';
 import 'package:unn_mobile/core/models/post_with_loaded_info.dart';
 import 'package:unn_mobile/core/viewmodels/comments_page_view_model.dart';
@@ -57,6 +58,7 @@ class CommentsPage extends StatelessWidget {
   }
 
   Widget commentView(BlogPostCommentWithLoadedInfo comment) {
+    final unescaper = HtmlUnescape();
     return Column(
       children: [
         Row(
@@ -71,7 +73,7 @@ class CommentsPage extends StatelessWidget {
           ],
         ),
         BBCodeText(
-          data: comment.comment.message,
+          data: unescaper.convert(comment.comment.message),
           stylesheet: FeedScreenView.getBBStyleSheet(),
         ),
         for (final file in comment.files)
