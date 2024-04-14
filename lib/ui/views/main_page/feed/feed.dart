@@ -78,6 +78,8 @@ class FeedScreenView extends StatelessWidget {
   }) {
     final theme = Theme.of(context);
     final unescaper = HtmlUnescape();
+    bool hasAttachments = post.files.isNotEmpty;
+
     return GestureDetector(
       onTap: () {
         Navigator.of(
@@ -103,6 +105,7 @@ class FeedScreenView extends StatelessWidget {
           ],
         ),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
@@ -157,13 +160,54 @@ class FeedScreenView extends StatelessWidget {
                 );
               },
             ),
+            const SizedBox(height: 15.0),
             for (final file in post.files)
               AttachedFile(
                 fileData: file,
               ),
-            SizedBox(
-              width: double.infinity,
-              child: Text("Комментарии: ${post.post.numberOfComments}"),
+            const Padding(
+              padding: EdgeInsets.only(left: 4, bottom: 0, right: 4, top: 10),
+              child: Divider(
+                thickness: 0.4,
+                color: Color.fromARGB(255, 152, 158, 169),
+              ),
+            ),
+            Row(
+              children: [
+                const Padding(
+                  padding: EdgeInsets.only(top: 10),
+                  child: Icon(
+                    Icons.message,
+                    color: Color.fromARGB(255, 152, 158, 169),
+                    size: 30,
+                  ),
+                ),
+                SizedBox(width: 6),
+                const Padding(
+                  padding: EdgeInsets.only(top: 6),
+                  child: Text(
+                    "Комментарии:",
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Color.fromARGB(255, 152, 158, 169),
+                      fontStyle: FontStyle.italic,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                ),
+                SizedBox(width: 6),
+                Padding(
+                  padding: EdgeInsets.only(top: 6),
+                  child: Text(
+                    "${post.post.numberOfComments}",
+                    style: const TextStyle(
+                      fontSize: 14,
+                      color: Color.fromARGB(255, 152, 158, 169),
+                      fontStyle: FontStyle.italic,
+                    ),
+                  ),
+                )
+              ],
             ),
           ],
         ),
@@ -310,12 +354,40 @@ class _AttachedFileState extends State<AttachedFile> {
     return SizedBox(
       width: double.infinity,
       child: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.only(left: 0),
         child: FutureBuilder(
             future: downloadingFiles[fileData.downloadUrl],
             builder: (context, snapshot) {
+              IconData iconData;
+              switch (path.extension(fileData.name.toLowerCase())) {
+                case '.jpg':
+                case '.png':
+                case '.jpeg':
+                case '.webp':
+                  iconData = Icons.image;
+                  break;
+                case '.mp3':
+                  iconData = Icons.headset;
+                  break;
+                case '.gif':
+                  iconData = Icons.gif;
+                  break;
+                default:
+                  iconData = Icons.description;
+                  break;
+              }
               return Row(
                 children: [
+                  Padding(
+                    padding: const EdgeInsets.only(left: 0),
+                    child: Icon(
+                      iconData,
+                      size: 30,
+                      color: Color.fromRGBO(169, 198, 239,
+                          0.914), // Здесь можно задать любой цвет
+                    ),
+                  ),
+                  const SizedBox(width: 8),
                   if (snapshot.connectionState != ConnectionState.none &&
                       !snapshot.hasData)
                     const CircularProgressIndicator(),
