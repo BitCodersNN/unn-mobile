@@ -1,18 +1,16 @@
 import 'dart:io';
+
 import 'package:extended_image/extended_image.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:injector/injector.dart';
 import 'package:open_filex/open_filex.dart';
+import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
-import 'package:photo_view/photo_view.dart';
 import 'package:unn_mobile/core/misc/size_converter.dart';
 import 'package:unn_mobile/core/models/file_data.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
-import 'package:path/path.dart' as path;
 
 class AttachedFile extends StatefulWidget {
   final FileData _fileData;
