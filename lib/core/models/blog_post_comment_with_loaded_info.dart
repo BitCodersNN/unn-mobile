@@ -7,6 +7,9 @@ class BlogPostCommentWithLoadedInfo {
   final UserData author;
   final List<FileData> files;
 
-  BlogPostCommentWithLoadedInfo(
-      {required this.comment, required this.author, required this.files});
+  BlogPostCommentWithLoadedInfo({
+    required this.comment,
+    required this.author,
+    required this.files,
+  });
 }

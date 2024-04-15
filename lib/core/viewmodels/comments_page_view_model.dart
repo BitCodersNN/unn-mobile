@@ -25,7 +25,8 @@ class CommentsPageViewModel extends BaseViewModel {
   ) async {
     List<FileData> files = [];
     final authorFuture = _gettingProfileService.getProfileByAuthorIdFromPost(
-        authorId: comment.authorId);
+      authorId: comment.authorId,
+    );
     for (final fileId in comment.attachedFiles) {
       final fileData = await _gettingFileDataService.getFileData(id: fileId);
       if (fileData != null) {
@@ -33,34 +34,42 @@ class CommentsPageViewModel extends BaseViewModel {
       }
     }
     final author = await authorFuture;
-    if(author == null) {
+    if (author == null) {
       return null;
     }
-    return BlogPostCommentWithLoadedInfo(comment: comment, author: author, files: files);
+    return BlogPostCommentWithLoadedInfo(
+        comment: comment, author: author, files: files);
   }
 
   Future<List<BlogPostCommentWithLoadedInfo?>> loadComments(int page) async {
     if (post == null) {
       return [];
     }
-    if(page == 1) {
-      final comNumbers = (await Injector.appInstance.get<GettingBlogPosts>().getBlogPosts(postId: post!.id))?[0].numberOfComments;
-      if(comNumbers != null) {
-        var commentsPerPage = 20;
-        totalPages = comNumbers ~/ commentsPerPage + ((comNumbers % commentsPerPage == 0) ? 0 : 1);
+    if (page == 1) {
+      final comNumbers = (await Injector.appInstance
+              .get<GettingBlogPosts>()
+              .getBlogPosts(postId: post!.id))?[0]
+          .numberOfComments;
+      if (comNumbers != null) {
+        const commentsPerPage = 20;
+        totalPages = comNumbers ~/ commentsPerPage +
+            ((comNumbers % commentsPerPage == 0) ? 0 : 1);
       }
     }
     final comments = await _gettingBlogPostCommentsService.getBlogPostComments(
       postId: post!.id,
       pageNumber: page,
     );
-    if(comments == null) {
+    if (comments == null) {
       return [];
     }
-    return await Future.wait(comments.map((e) => loadCommentInfo(e),));
+    return await Future.wait(comments.map(
+      (e) => loadCommentInfo(e),
+    ));
   }
+
   void loadMoreComments() {
-    if(lastPage == totalPages) {
+    if (lastPage == totalPages) {
       return;
     }
     lastPage++;

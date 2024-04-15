@@ -260,10 +260,4 @@ class _AttachedFileState extends State<AttachedFile> {
       ),
     );
   }
-
-  bool? imagePreviewOnDrag(Offset offset,
-      {required ScaleEndDetails details,
-      required ExtendedImageSlidePageState state}) {
-    return true;
-  }
 }

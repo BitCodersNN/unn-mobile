@@ -80,7 +80,9 @@ class CommentsPage extends StatelessWidget {
   }
 
   Widget commentView(
-      BlogPostCommentWithLoadedInfo comment, BuildContext context) {
+    BlogPostCommentWithLoadedInfo comment,
+    BuildContext context,
+  ) {
     final unescaper = HtmlUnescape();
 
     final theme = Theme.of(context);

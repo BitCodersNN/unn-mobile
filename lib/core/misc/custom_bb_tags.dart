@@ -331,5 +331,4 @@ class UserTag extends StyleTag {
   TextStyle transformStyle(TextStyle oldStyle, Map<String, String>? attributes) {
     return oldStyle;
   }
-
 }

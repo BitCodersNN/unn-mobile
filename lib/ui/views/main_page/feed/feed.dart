@@ -37,8 +37,9 @@ class FeedScreenView extends StatelessWidget {
                 return feedPost(
                   context,
                   model.posts[index],
-                  isNewPost:
-                      model.isNewPost(model.posts[index].post.datePublish),
+                  isNewPost: model.isNewPost(
+                    model.posts[index].post.datePublish,
+                  ),
                   showCommentsCount: true,
                 );
               },
@@ -75,10 +76,14 @@ class FeedScreenView extends StatelessWidget {
           return;
         }
         await Navigator.of(
-                context.findRootAncestorStateOfType<NavigatorState>()!.context)
-            .push(MaterialPageRoute(builder: (context) {
-          return CommentsPage(post: post);
-        }));
+          context.findRootAncestorStateOfType<NavigatorState>()!.context,
+        ).push(
+          MaterialPageRoute(
+            builder: (context) {
+              return CommentsPage(post: post);
+            },
+          ),
+        );
       },
       child: Container(
         margin: const EdgeInsets.only(top: 12),
