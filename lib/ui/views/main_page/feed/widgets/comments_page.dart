@@ -8,6 +8,7 @@ import 'package:unn_mobile/core/models/post_with_loaded_info.dart';
 import 'package:unn_mobile/core/viewmodels/comments_page_view_model.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/feed.dart';
+import 'package:unn_mobile/ui/views/main_page/feed/widgets/attached_file.dart';
 
 class CommentsPage extends StatelessWidget {
   final PostWithLoadedInfo post;
@@ -24,12 +25,13 @@ class CommentsPage extends StatelessWidget {
           return RefreshIndicator(
             onRefresh: () async {
               model.refresh();
+              await model.commentLoaders.first;
             },
             child: SingleChildScrollView(
               physics: const AlwaysScrollableScrollPhysics(),
               child: Column(
                 children: [
-                  FeedScreenView.feedPost(context, post),
+                  FeedScreenView.feedPost(context, post, processClicks: false),
                   const Padding(
                     padding: EdgeInsets.only(top: 20, bottom: 0),
                     child: Text(
@@ -106,6 +108,7 @@ class CommentsPage extends StatelessWidget {
                     ? Text(
                         style: theme.textTheme.headlineSmall!.copyWith(
                           color: theme.colorScheme.onBackground,
+                          fontSize: 20,
                         ),
                         getUserInitials(comment.author),
                       )
@@ -132,15 +135,18 @@ class CommentsPage extends StatelessWidget {
         ),
         Padding(
           padding:
-              const EdgeInsets.only(left: 16, bottom: 10, right: 10, top: 15),
+              const EdgeInsets.only(left: 16, bottom: 10, right: 10, top: 16),
           child: BBCodeText(
             data: unescaper.convert(comment.comment.message),
             stylesheet: FeedScreenView.getBBStyleSheet(),
           ),
         ),
         for (final file in comment.files)
-          AttachedFile(
-            fileData: file,
+          Padding(
+            padding: const EdgeInsets.only(left: 16),
+            child: AttachedFile(
+              fileData: file,
+            ),
           ),
       ],
     );
