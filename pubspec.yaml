@@ -46,16 +46,21 @@ flutter:
 
   assets:
     - assets/images/chick_in_the_egg.png
-    - assets/images/logo.png
-    - assets/images/new_year_logo.png
-    - assets/images/march_8th_logo.png
-    - assets/images/april_1st_logo.png
+    - assets/images/logos/logo.png
+    - assets/images/logos/new_year_logo.png
+    - assets/images/logos/march_8th_logo.png
+    - assets/images/logos/april_1st_logo.png
     - assets/images/auth-logo.svg
     - assets/images/authors/dmitry.png
     - assets/images/authors/vitaly.png
     - assets/images/authors/michail.png
     - assets/images/authors/darya.png
     - assets/images/authors/andrew.png
+    - assets/images/quest/1.png
+    - assets/images/quest/2.png
+    - assets/images/quest/3.png
+    - assets/images/quest/4.png
+
 
   fonts:
     - family: LetoSans
@@ -74,4 +79,3 @@ flutter_launcher_icons:
   image_path: "assets/images/icon.png"
   min_sdk_android: 19
   remove_alpha_ios: true
-
