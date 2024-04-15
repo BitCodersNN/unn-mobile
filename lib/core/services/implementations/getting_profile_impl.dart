@@ -109,7 +109,7 @@ class GettingProfileImpl implements GettingProfile {
           ? StudentData.fromJson(profileJsonMap)
           : userType == _employee
               ? EmployeeData.fromJson(profileJsonMap)
-              : null;
+              : UserData.fromJson(profileJsonMap);
     } catch (error, stackTrace) {
       await FirebaseCrashlytics.instance
           .recordError(error, stackTrace, information: [jsonMap.toString()]);
