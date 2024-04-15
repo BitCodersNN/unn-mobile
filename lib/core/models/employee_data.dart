@@ -17,7 +17,7 @@ class EmployeeData extends UserData {
   final String _jobType;
   final String _jobTitle;
   final String _department;
-  final String _manager;
+  final String? _manager;
 
   EmployeeData(
     UserData userData,
@@ -33,7 +33,7 @@ class EmployeeData extends UserData {
   String get jobType => _jobType;
   String get jobTitel => _jobTitle;
   String get department => _department;
-  String get manager => _manager;
+  String? get manager => _manager;
 
   factory EmployeeData.fromJson(Map<String, Object?> jsonMap) {
     return EmployeeData(
@@ -47,7 +47,7 @@ class EmployeeData extends UserData {
               as Map<String, Object?>)[_KeysForEmployeeDataJsonConverter.title]
           as String,
       (jsonMap[_KeysForEmployeeDataJsonConverter.manager] as Map<String,
-          Object?>)[_KeysForEmployeeDataJsonConverter.fullname] as String,
+          Object?>?)?[_KeysForEmployeeDataJsonConverter.fullname] as String?,
     );
   }
 

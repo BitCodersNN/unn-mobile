@@ -16,6 +16,10 @@ class GettingProfileImpl implements GettingProfile {
   final String _sessionIdCookieKey = "PHPSESSID";
   final String _profiles = 'profiles';
   final String _id = 'id';
+  final String _user = 'user';
+  final String _type = 'type';
+  final String _student = 'student';
+  final String _employee = 'employee';
 
   @override
   Future<int?> getProfileIdByAuthorIdFromPost({required int authorId}) async {
@@ -84,19 +88,27 @@ class GettingProfileImpl implements GettingProfile {
 
     dynamic jsonMap;
     try {
-      jsonMap = jsonDecode(
-          await HttpRequestSender.responseToStringBody(response))[_profiles][0];
+      jsonMap =
+          jsonDecode(await HttpRequestSender.responseToStringBody(response));
     } catch (error, stackTrace) {
       await FirebaseCrashlytics.instance.recordError(error, stackTrace);
       return null;
     }
 
+    final profileJsonMap = jsonMap[_profiles][0];
+    final userType = profileJsonMap[_type];
+
+    // Костыль, т.к. на сайте есть небольшой процент профилей, отличающихся от остальных
+    if (profileJsonMap[_user] == null) {
+      profileJsonMap[_user] = jsonMap;
+    }
+
     UserData? userData;
     try {
-      userData = jsonMap['type'] == 'student'
-          ? StudentData.fromJson(jsonMap)
-          : jsonMap['type'] == 'employee'
-              ? EmployeeData.fromJson(jsonMap)
+      userData = (userType == _student)
+          ? StudentData.fromJson(profileJsonMap)
+          : userType == _employee
+              ? EmployeeData.fromJson(profileJsonMap)
               : null;
     } catch (error, stackTrace) {
       await FirebaseCrashlytics.instance
