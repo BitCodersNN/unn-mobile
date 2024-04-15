@@ -147,7 +147,7 @@ class GettingBlogPostCommentsImpl implements GettingBlogPostComments {
       final dateTimeMatch = dateTimeMatches.current;
 
       final id = messageMatch.group(1).toInt();
-      final message = messageMatch.group(2);
+      final message = messageMatch.group(2)?.replaceAll("\\n", "\n");
       final authorId = authorMatch.group(1).toInt();
       final authorName = authorMatch.group(2);
       final dateTime = dateTimeMatch.group(1);

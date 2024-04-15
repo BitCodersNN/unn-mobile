@@ -1,0 +1,156 @@
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bbcode/flutter_bbcode.dart';
+import 'package:html_unescape/html_unescape.dart';
+import 'package:unn_mobile/core/misc/user_functions.dart';
+import 'package:unn_mobile/core/models/blog_post_comment_with_loaded_info.dart';
+import 'package:unn_mobile/core/models/post_with_loaded_info.dart';
+import 'package:unn_mobile/core/viewmodels/comments_page_view_model.dart';
+import 'package:unn_mobile/ui/views/base_view.dart';
+import 'package:unn_mobile/ui/views/main_page/feed/feed.dart';
+import 'package:unn_mobile/ui/views/main_page/feed/widgets/attached_file.dart';
+
+class CommentsPage extends StatelessWidget {
+  final PostWithLoadedInfo post;
+
+  const CommentsPage({super.key, required this.post});
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Запись"),
+      ),
+      body: BaseView<CommentsPageViewModel>(
+        builder: (context, model, child) {
+          return RefreshIndicator(
+            onRefresh: () async {
+              model.refresh();
+              await model.commentLoaders.first;
+            },
+            child: SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              child: Column(
+                children: [
+                  FeedScreenView.feedPost(context, post, processClicks: false),
+                  const Padding(
+                    padding: EdgeInsets.only(top: 20, bottom: 0),
+                    child: Text(
+                      "КОММЕНТАРИИ",
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Color.fromARGB(255, 152, 158, 169),
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                  for (final commentsPage in model.commentLoaders)
+                    FutureBuilder(
+                      future: commentsPage,
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          return Column(
+                            children: [
+                              for (final comment in snapshot.data!)
+                                if (comment != null)
+                                  commentView(comment, context),
+                              if (model.commentsAvailable)
+                                GestureDetector(
+                                  onTap: () {
+                                    return model.loadMoreComments();
+                                  },
+                                  child: const Text("Еще комментарии"),
+                                ),
+                            ],
+                          );
+                        } else {
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        }
+                      },
+                    ),
+                ],
+              ),
+            ),
+          );
+        },
+        onModelReady: (p0) => p0.init(post.post),
+      ),
+    );
+  }
+
+  Widget commentView(
+    BlogPostCommentWithLoadedInfo comment,
+    BuildContext context,
+  ) {
+    final unescaper = HtmlUnescape();
+
+    final theme = Theme.of(context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Padding(
+          padding: EdgeInsets.only(left: 18, bottom: 10, right: 18),
+          child: Divider(
+            thickness: 0.3,
+            color: Color.fromARGB(255, 152, 158, 169),
+          ),
+        ),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(left: 16),
+              child: CircleAvatar(
+                backgroundImage: comment.author.fullUrlPhoto != null
+                    ? CachedNetworkImageProvider(comment.author.fullUrlPhoto!)
+                    : null,
+                radius: 20,
+                child: comment.author.fullUrlPhoto == null
+                    ? Text(
+                        style: theme.textTheme.headlineSmall!.copyWith(
+                          color: theme.colorScheme.onBackground,
+                          fontSize: 20,
+                        ),
+                        getUserInitials(comment.author),
+                      )
+                    : null,
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 8),
+                  Text(
+                    '${comment.author.fullname.lastname} ${comment.author.fullname.name} ${comment.author.fullname.surname} ',
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        Padding(
+          padding:
+              const EdgeInsets.only(left: 16, bottom: 10, right: 10, top: 16),
+          child: BBCodeText(
+            data: unescaper.convert(comment.comment.message),
+            stylesheet: FeedScreenView.getBBStyleSheet(),
+          ),
+        ),
+        for (final file in comment.files)
+          Padding(
+            padding: const EdgeInsets.only(left: 16),
+            child: AttachedFile(
+              fileData: file,
+            ),
+          ),
+      ],
+    );
+  }
+}

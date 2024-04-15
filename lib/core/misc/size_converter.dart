@@ -7,6 +7,21 @@ enum SizeUnit {
   gigabyte,
 }
 
+extension UnitNames on SizeUnit {
+  String getUnitString() {
+    switch(this) {
+      case SizeUnit.byte:
+        return 'Б';
+      case SizeUnit.kilobyte:
+        return 'КБ';
+      case SizeUnit.megabyte:
+        return 'МБ';
+      case SizeUnit.gigabyte:
+        return 'ГБ';
+    }
+  }
+}
+
 class SizeConverter {
   static const int _base = 10;
   final Map<SizeUnit?, num> _coefficients = {
