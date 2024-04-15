@@ -29,7 +29,6 @@ class FeedScreenView extends StatelessWidget {
   Widget build(BuildContext context) {
     return BaseView<FeedScreenViewModel>(
       builder: (context, model, child) {
-        final theme = Theme.of(context);
         return NotificationListener<ScrollEndNotification>(
           child: RefreshIndicator(
             onRefresh: model.updateFeed,
@@ -78,11 +77,9 @@ class FeedScreenView extends StatelessWidget {
   }) {
     final theme = Theme.of(context);
     final unescaper = HtmlUnescape();
-    bool hasAttachments = post.files.isNotEmpty;
-
     return GestureDetector(
-      onTap: () {
-        Navigator.of(
+      onTap: () async {
+        await Navigator.of(
                 context.findRootAncestorStateOfType<NavigatorState>()!.context)
             .push(MaterialPageRoute(builder: (context) {
           return CommentsPage(post: post);
@@ -182,7 +179,7 @@ class FeedScreenView extends StatelessWidget {
                     size: 30,
                   ),
                 ),
-                SizedBox(width: 6),
+                const SizedBox(width: 6),
                 const Padding(
                   padding: EdgeInsets.only(top: 6),
                   child: Text(
@@ -195,9 +192,9 @@ class FeedScreenView extends StatelessWidget {
                     ),
                   ),
                 ),
-                SizedBox(width: 6),
+                const SizedBox(width: 6),
                 Padding(
-                  padding: EdgeInsets.only(top: 6),
+                  padding: const EdgeInsets.only(top: 6),
                   child: Text(
                     "${post.post.numberOfComments}",
                     style: const TextStyle(
@@ -383,7 +380,7 @@ class _AttachedFileState extends State<AttachedFile> {
                     child: Icon(
                       iconData,
                       size: 30,
-                      color: Color.fromRGBO(169, 198, 239,
+                      color: const Color.fromRGBO(169, 198, 239,
                           0.914), // Здесь можно задать любой цвет
                     ),
                   ),
@@ -428,7 +425,7 @@ class _AttachedFileState extends State<AttachedFile> {
                                                           snapshot.data!),
                                                     ),
                                                   )
-                                                : Text("Ошибка")
+                                                : const Text("Ошибка")
                                             : const Center(
                                                 child:
                                                     CircularProgressIndicator(),
@@ -488,7 +485,7 @@ class _AttachedFileState extends State<AttachedFile> {
                             overflow: TextOverflow.ellipsis,
                           ),
                           Text(
-                            '${path.extension(fileData.name).substring(1)} | ${sizeConverter.convertBytesToSize(fileData.sizeInBytes)} ${sizeConverter.lastUsedUnit}',
+                            '${path.extension(fileData.name).substring(1)} | ${sizeConverter.convertBytesToSize(fileData.sizeInBytes)} ${sizeConverter.lastUsedUnit!.name}',
                           )
                         ],
                       ),

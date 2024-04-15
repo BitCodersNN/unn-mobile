@@ -2,7 +2,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bbcode/flutter_bbcode.dart';
 import 'package:html_unescape/html_unescape.dart';
-import 'package:path/path.dart';
 import 'package:unn_mobile/core/misc/user_functions.dart';
 import 'package:unn_mobile/core/models/blog_post_comment_with_loaded_info.dart';
 import 'package:unn_mobile/core/models/post_with_loaded_info.dart';
@@ -18,7 +17,7 @@ class CommentsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Запись"),
+        title: const Text("Запись"),
       ),
       body: BaseView<CommentsPageViewModel>(
         builder: (context, model, child) {
@@ -97,7 +96,7 @@ class CommentsPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
-              padding: EdgeInsets.only(left: 16),
+              padding: const EdgeInsets.only(left: 16),
               child: CircleAvatar(
                 backgroundImage: comment.author.fullUrlPhoto != null
                     ? CachedNetworkImageProvider(comment.author.fullUrlPhoto!)

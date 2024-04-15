@@ -49,7 +49,6 @@ import 'package:unn_mobile/core/viewmodels/feed_screen_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/loading_page_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/schedule_screen_view_model.dart';
-import 'package:unn_mobile/ui/views/main_page/feed/widgets/comments_page.dart';
 import 'firebase_options.dart';
 
 void main() async {
