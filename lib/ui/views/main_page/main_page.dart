@@ -1,6 +1,10 @@
+import 'package:unn_mobile/ui/views/main_page/employees/employees.dart';
 import 'package:unn_mobile/ui/views/main_page/exiting/exiting.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/feed.dart';
 import 'package:unn_mobile/ui/views/main_page/main_page_tab_state.dart';
+import 'package:unn_mobile/ui/views/main_page/map/map.dart';
+import 'package:unn_mobile/ui/views/main_page/materials/materials.dart';
+import 'package:unn_mobile/ui/views/main_page/payment_site/payment_site.dart';
 import 'package:unn_mobile/ui/widgets/placeholder.dart' as placeholder;
 import 'package:flutter/material.dart';
 import 'package:unn_mobile/core/viewmodels/main_page_view_model.dart';
@@ -30,18 +34,19 @@ class _MainPageState extends State<MainPage> {
   final List<String> drawerRoutes = [
     'placeholder',
     'placeholder',
+    'employees',
     'placeholder',
     'placeholder',
     'placeholder',
-    'placeholder',
-    'placeholder',
+    'payment_site',
     'about',
     'exit'
   ];
   final List<String> navbarRoutes = [
     'feed',
     'schedule',
-    'placeholder',
+    'map',
+    'materials',
     'placeholder',
   ];
 
@@ -73,6 +78,22 @@ class _MainPageState extends State<MainPage> {
                   tabKeys[1] = GlobalKey<State<ScheduleScreenView>>();
                   return local_router.Router.createCustomRoute(
                     ScheduleScreenView(key: tabKeys[1]),
+                  );
+                case 'map':
+                  return local_router.Router.createCustomRoute(
+                    const MapScreenView(),
+                  );
+                case 'materials':
+                  return local_router.Router.createCustomRoute(
+                    const MaterialsScreenView(),
+                  );
+                case 'employees':
+                  return local_router.Router.createCustomRoute(
+                    const EmployeesScreenView(),
+                  );
+                case 'payment_site':
+                  return local_router.Router.createCustomRoute(
+                    const PaymentSiteScreenView(),
                   );
                 case 'exit':
                   return local_router.Router.createCustomRoute(
