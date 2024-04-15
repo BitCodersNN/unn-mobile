@@ -84,7 +84,8 @@ class FeedStreamUpdaterServiceImpl
     try {
       _busy = true;
       _lastViewedPostDateTime =
-          await _postWithLoadedInfoProvider.getDateTimePublishedPost();
+          await _postWithLoadedInfoProvider.getDateTimePublishedPost() ??
+              DateTime.now();
 
       final newPosts = await _gettingBlogPostsService.getBlogPosts();
 
