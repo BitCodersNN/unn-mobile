@@ -32,6 +32,9 @@ class AboutScreenView extends StatelessWidget {
               fontSize: 13,
             ),
           ),
+          const Image(
+            image: AssetImage("assets/images/quest/3.png"),
+          )
         ],
       ),
     ));

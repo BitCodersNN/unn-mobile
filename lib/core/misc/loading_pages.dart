@@ -16,18 +16,18 @@ class _HolidayDates {
 
 class _LoadingPages {
   static LoadingPageModel main = LoadingPageModel(
-    imagePath: 'assets/images/logo.png',
+    imagePath: 'assets/images/logos/logo.png',
   );
 
   static LoadingPageModel newYear =
-      LoadingPageModel(imagePath: 'assets/images/new_year_logo.png');
+      LoadingPageModel(imagePath: 'assets/images/logos/new_year_logo.png');
 
   static LoadingPageModel march8th = LoadingPageModel(
     titleStyle: const TextStyle(
         color: Color.fromRGBO(144, 21, 84, 1.0),
         fontSize: 34.09,
         fontFamily: "LetoSans"),
-    imagePath: 'assets/images/march_8th_logo.png',
+    imagePath: 'assets/images/logos/march_8th_logo.png',
     description: 'С 8 Марта!',
     descriptionStyle: const TextStyle(
         color: Color.fromRGBO(144, 21, 84, 1.0),
@@ -37,7 +37,7 @@ class _LoadingPages {
 
   static LoadingPageModel april1st = LoadingPageModel(
       title: 'УНИВЕРСИТЕТ \n АЛЕКСЕЕВА',
-      imagePath: 'assets/images/april_1st_logo.png');
+      imagePath: 'assets/images/logos/april_1st_logo.png');
 }
 
 class LoadingPages {
