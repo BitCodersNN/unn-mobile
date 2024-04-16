@@ -26,6 +26,9 @@ class FeedScreenView extends StatelessWidget {
             child: ListView.builder(
               itemCount: model.posts.length + (model.isLoadingPosts ? 1 : 0),
               itemBuilder: (context, index) {
+                if(index > model.posts.length) {
+                  return null;
+                }
                 if (index == model.posts.length) {
                   return const SizedBox(
                     height: 64,

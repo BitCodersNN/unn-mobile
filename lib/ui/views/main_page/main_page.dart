@@ -5,6 +5,7 @@ import 'package:unn_mobile/ui/views/main_page/main_page_tab_state.dart';
 import 'package:unn_mobile/ui/views/main_page/map/map.dart';
 import 'package:unn_mobile/ui/views/main_page/materials/materials.dart';
 import 'package:unn_mobile/ui/views/main_page/payment_site/payment_site.dart';
+import 'package:unn_mobile/ui/views/main_page/settings/settings.dart';
 import 'package:unn_mobile/ui/widgets/placeholder.dart' as placeholder;
 import 'package:flutter/material.dart';
 import 'package:unn_mobile/core/viewmodels/main_page_view_model.dart';
@@ -39,6 +40,7 @@ class _MainPageState extends State<MainPage> {
     'placeholder',
     'placeholder',
     'payment_site',
+    'settings',
     'about',
     'exit'
   ];
@@ -72,6 +74,7 @@ class _MainPageState extends State<MainPage> {
                 case 'feed':
                   return local_router.Router.createCustomRoute(
                     const FeedScreenView(),
+                    
                   );
                 case '':
                 case 'schedule':
@@ -95,9 +98,9 @@ class _MainPageState extends State<MainPage> {
                   return local_router.Router.createCustomRoute(
                     const PaymentSiteScreenView(),
                   );
-                case 'exit':
+                case 'settings':
                   return local_router.Router.createCustomRoute(
-                    const ExitingPage(),
+                    const SettingsScreenView(),
                   );
                 case 'placeholder':
                   return local_router.Router.createCustomRoute(
