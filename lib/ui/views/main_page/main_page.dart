@@ -1,5 +1,4 @@
 import 'package:unn_mobile/ui/views/main_page/employees/employees.dart';
-import 'package:unn_mobile/ui/views/main_page/exiting/exiting.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/feed.dart';
 import 'package:unn_mobile/ui/views/main_page/main_page_tab_state.dart';
 import 'package:unn_mobile/ui/views/main_page/map/map.dart';
