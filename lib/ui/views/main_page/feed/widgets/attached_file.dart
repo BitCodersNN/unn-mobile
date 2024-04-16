@@ -170,9 +170,9 @@ class _AttachedFileState extends State<AttachedFile> {
                         }
                         break;
                       default:
-                        final f = await downloadFileWrapper();
-                        if (f != null) {
-                          final openResult = await OpenFilex.open(f.path);
+                        final file = await downloadFileWrapper();
+                        if (file != null) {
+                          final openResult = await OpenFilex.open(file.path);
                           switch (openResult.type) {
                             case ResultType.error:
                               if (context.mounted) {

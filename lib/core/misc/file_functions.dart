@@ -11,8 +11,10 @@ Future<String?> getDownloadPath() async {
       directory.createSync();
     }
   } catch (err, stack) {
-    FirebaseCrashlytics.instance
-        .recordError("Cannot get download folder path: $err", stack);
+    FirebaseCrashlytics.instance.recordError(
+      "Cannot get download folder path: $err",
+      stack,
+    );
   }
   return directory?.path;
 }
