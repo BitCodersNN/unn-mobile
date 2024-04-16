@@ -7,10 +7,11 @@ import 'package:flutter/material.dart';
 import 'package:injector/injector.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:path/path.dart' as path;
-import 'package:path_provider/path_provider.dart';
+import 'package:unn_mobile/core/misc/file_functions.dart';
 import 'package:unn_mobile/core/misc/size_converter.dart';
 import 'package:unn_mobile/core/models/file_data.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
+import 'package:unn_mobile/ui/unn_mobile_colors.dart';
 
 class AttachedFile extends StatefulWidget {
   final FileData _fileData;
@@ -21,31 +22,6 @@ class AttachedFile extends StatefulWidget {
 }
 
 class _AttachedFileState extends State<AttachedFile> {
-  Future<String?> getDownloadPath() async {
-    Directory? directory;
-    try {
-      if (Platform.isIOS) {
-        directory = await getApplicationDocumentsDirectory();
-      } else {
-        directory = Directory('/storage/emulated/0/Download');
-        // Put file in global download folder, if for an unknown reason it didn't exist, we fallback
-        if (!await directory.exists()) {
-          directory = await getExternalStorageDirectory();
-        }
-        if (directory != null) {
-          directory = Directory('${directory.path}/unnmobile');
-          if (!(await directory.exists())) {
-            await directory.create();
-          }
-        }
-      }
-    } catch (err, stack) {
-      FirebaseCrashlytics.instance
-          .recordError("Cannot get download folder path: $err", stack);
-    }
-    return directory?.path;
-  }
-
   FileData get fileData => widget._fileData;
 
   static Map<String, Future<File?>> downloadingFiles = {};
@@ -54,6 +30,7 @@ class _AttachedFileState extends State<AttachedFile> {
     if (downloadingFiles.containsKey(fileData.downloadUrl)) {
       return await downloadingFiles[fileData.downloadUrl];
     }
+
     downloadingFiles.putIfAbsent(fileData.downloadUrl, () => downloadFile());
     File? file;
     try {
@@ -76,6 +53,7 @@ class _AttachedFileState extends State<AttachedFile> {
     }
     final storedFile = File('$downloadsPath/${fileData.name}');
     if (!storedFile.existsSync()) {
+      setState(() {});
       HttpClient client = HttpClient();
       try {
         final request =
@@ -96,167 +74,195 @@ class _AttachedFileState extends State<AttachedFile> {
   @override
   Widget build(BuildContext context) {
     final sizeConverter = SizeConverter();
-    return SizedBox(
-      width: double.infinity,
-      child: Padding(
-        padding: const EdgeInsets.only(left: 0),
-        child: FutureBuilder(
-            future: downloadingFiles[fileData.downloadUrl],
-            builder: (context, snapshot) {
-              IconData iconData;
-              switch (path.extension(fileData.name.toLowerCase())) {
-                case '.jpg':
-                case '.png':
-                case '.jpeg':
-                case '.webp':
-                  iconData = Icons.image;
-                  break;
-                case '.mp3':
-                  iconData = Icons.headset;
-                  break;
-                case '.gif':
-                  iconData = Icons.gif;
-                  break;
-                default:
-                  iconData = Icons.description;
-                  break;
-              }
-              return GestureDetector(
-                onTap: () async {
-                  if (downloadingFiles.containsKey(fileData.downloadUrl)) {
-                    return;
-                  }
-                  switch (path.extension(fileData.name.toLowerCase())) {
-                    case '.jpg':
-                    case '.png':
-                    case '.jpeg':
-                    case '.gif':
-                    case '.webp':
-                      if (context.mounted) {
-                        await showDialog(
-                          context: context,
-                          builder: (context) {
-                            return FutureBuilder(
-                              future: downloadFileWrapper(),
-                              builder: (context, snapshot) {
-                                if (snapshot.connectionState ==
-                                            ConnectionState.done &&
-                                        snapshot.hasData) {
-                                  if (snapshot.data != null) {
-                                    return ExtendedImageSlidePage(
-                                            slideAxis: SlideAxis.vertical,
-                                            child: ExtendedImage(
-                                              enableLoadState: true,
-                                              mode: ExtendedImageMode.gesture,
-                                              initGestureConfigHandler:
-                                                  (state) {
-                                                return GestureConfig(
-                                                  minScale: 0.9,
-                                                  animationMinScale: 0.7,
-                                                  maxScale: 3.0,
-                                                  animationMaxScale: 3.5,
-                                                  speed: 1.0,
-                                                  inertialSpeed: 100.0,
-                                                  initialScale: 1.0,
-                                                  inPageView: false,
-                                                  initialAlignment:
-                                                      InitialAlignment.center,
-                                                );
-                                              },
-                                              image:
-                                                  FileImage(snapshot.data!),
-                                              enableSlideOutPage: true,
-                                            ),
-                                          );
-                                  } else {
-                                    return const Text("Ошибка");
-                                  }
-                                } else {
-                                  return const Center(
-                                        child: CircularProgressIndicator(),
+    final theme = Theme.of(context);
+    final extraColors = theme.extension<UnnMobileColors>();
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8.0),
+      child: SizedBox(
+        width: double.infinity,
+        child: Padding(
+          padding: const EdgeInsets.only(left: 0),
+          child: FutureBuilder(
+              future: downloadingFiles[fileData.downloadUrl],
+              builder: (context, snapshot) {
+                IconData iconData;
+                switch (path.extension(fileData.name.toLowerCase())) {
+                  case '.jpg':
+                  case '.png':
+                  case '.jpeg':
+                  case '.webp':
+                    iconData = Icons.image;
+                    break;
+                  case '.mp3':
+                    iconData = Icons.headset;
+                    break;
+                  case '.gif':
+                    iconData = Icons.gif;
+                    break;
+                  default:
+                    iconData = Icons.description;
+                    break;
+                }
+                return GestureDetector(
+                  onTap: () async {
+                    if (downloadingFiles.containsKey(fileData.downloadUrl)) {
+                      return;
+                    }
+                    switch (path.extension(fileData.name.toLowerCase())) {
+                      case '.jpg':
+                      case '.png':
+                      case '.jpeg':
+                      case '.gif':
+                      case '.webp':
+                        if (context.mounted) {
+                          await showDialog(
+                            context: context,
+                            builder: (context) {
+                              return FutureBuilder(
+                                future: downloadFileWrapper(),
+                                builder: (context, snapshot) {
+                                  if (snapshot.connectionState ==
+                                          ConnectionState.done &&
+                                      snapshot.hasData) {
+                                    if (snapshot.data != null) {
+                                      return ExtendedImageSlidePage(
+                                        slideAxis: SlideAxis.vertical,
+                                        child: ExtendedImage(
+                                          enableLoadState: true,
+                                          mode: ExtendedImageMode.gesture,
+                                          initGestureConfigHandler: (state) {
+                                            return GestureConfig(
+                                              minScale: 0.9,
+                                              animationMinScale: 0.7,
+                                              maxScale: 3.0,
+                                              animationMaxScale: 3.5,
+                                              speed: 1.0,
+                                              inertialSpeed: 100.0,
+                                              initialScale: 1.0,
+                                              inPageView: false,
+                                              initialAlignment:
+                                                  InitialAlignment.center,
+                                            );
+                                          },
+                                          image: FileImage(snapshot.data!),
+                                          enableSlideOutPage: true,
+                                        ),
                                       );
-                                }
-                              },
-                            );
-                          },
-                        );
-                      }
-                      break;
-                    default:
-                      final f = await downloadFileWrapper();
-                      if (f != null) {
-                        final openResult = await OpenFilex.open(f.path);
-                        switch (openResult.type) {
-                          case ResultType.error:
-                            if (context.mounted) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text("Неизвестная ошибка"),
-                                ),
+                                    } else {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        const SnackBar(
+                                          content: Text("Произошла ошибка"),
+                                        ),
+                                      );
+                                      Navigator.pop(context);
+                                      return const CircularProgressIndicator();
+                                    }
+                                  } else {
+                                    return const Center(
+                                      child: CircularProgressIndicator(),
+                                    );
+                                  }
+                                },
                               );
-                            }
-                            break;
-                          case ResultType.noAppToOpen:
-                            if (context.mounted) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text("Нет подходящей программы"),
-                                ),
-                              );
-                            }
-                            break;
-                          case ResultType.permissionDenied:
-                            if (context.mounted) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text("Нет доступа к файлам"),
-                                ),
-                              );
-                            }
-                            break;
-                          default:
-                            break;
+                            },
+                          );
                         }
-                      }
-                      break;
-                  }
-                },
-                child: Row(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(left: 0),
-                      child: Icon(
-                        iconData,
-                        size: 30,
-                        color: const Color.fromRGBO(169, 198, 239,
-                            0.914), // Здесь можно задать любой цвет
-                      ),
+                        break;
+                      default:
+                        final file = await downloadFileWrapper();
+                        if (file != null) {
+                          final openResult = await OpenFilex.open(file.path);
+                          switch (openResult.type) {
+                            case ResultType.error:
+                              if (context.mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text("Неизвестная ошибка"),
+                                  ),
+                                );
+                              }
+                              break;
+                            case ResultType.noAppToOpen:
+                              if (context.mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text("Нет подходящей программы"),
+                                  ),
+                                );
+                              }
+                              break;
+                            case ResultType.permissionDenied:
+                              if (context.mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text("Нет доступа к файлам"),
+                                  ),
+                                );
+                              }
+                              break;
+                            default:
+                              break;
+                          }
+                        }
+                        break;
+                    }
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: theme.cardColor,
                     ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            fileData.name,
-                            overflow: TextOverflow.ellipsis,
+                    child: Row(
+                      children: [
+                        Icon(
+                          iconData,
+                          size: 30,
+                          color: const Color.fromRGBO(
+                            169,
+                            198,
+                            239,
+                            0.914,
+                          ), // Здесь можно задать любой цвет
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Text(
+                                    path.withoutExtension(fileData.name),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  if (snapshot.connectionState !=
+                                          ConnectionState.none &&
+                                      !snapshot.hasData)
+                                    const Padding(
+                                      padding:
+                                          EdgeInsets.symmetric(horizontal: 8.0),
+                                      child: SizedBox(
+                                        height: 16,
+                                        width: 16,
+                                        child: CircularProgressIndicator(),
+                                      ),
+                                    ),
+                                ],
+                              ),
+                              Text(
+                                '${path.extension(fileData.name).substring(1)} | ${sizeConverter.convertBytesToSize(fileData.sizeInBytes).toStringAsFixed(2)} ${sizeConverter.lastUsedUnit!.getUnitString()}',
+                                style: TextStyle(
+                                    color: extraColors?.ligtherTextColor),
+                              )
+                            ],
                           ),
-                          Text(
-                            '${path.extension(fileData.name).substring(1)} | ${sizeConverter.convertBytesToSize(fileData.sizeInBytes).toStringAsFixed(2)} ${sizeConverter.lastUsedUnit!.getUnitString()}',
-                          )
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
-                    if (snapshot.connectionState != ConnectionState.none &&
-                        !snapshot.hasData)
-                      const SizedBox(
-                        height: 16,
-                        width: 16,
-                        child: CircularProgressIndicator()),
-                  ],
-                ),
-              );
-            }),
+                  ),
+                );
+              }),
+        ),
       ),
     );
   }
