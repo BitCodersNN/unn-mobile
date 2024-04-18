@@ -73,6 +73,8 @@ class FeedScreenView extends StatelessWidget {
   }) {
     final theme = Theme.of(context);
     final unescaper = HtmlUnescape();
+    final extraColors = theme.extension<UnnMobileColors>();
+    const idkWhatColor = Color(0xFF989EA9);
     return GestureDetector(
       onTap: () async {
         if (!processClicks) {
@@ -93,8 +95,8 @@ class FeedScreenView extends StatelessWidget {
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
           color: isNewPost
-              ? theme.extension<UnnMobileColors>()!.newPostHiglaght
-              : theme.extension<UnnMobileColors>()!.defaultPostHighlight,
+              ? extraColors!.newPostHiglaght
+              : extraColors!.defaultPostHighlight,
           borderRadius: BorderRadius.circular(0.0),
           boxShadow: const [
             BoxShadow(
@@ -126,12 +128,13 @@ class FeedScreenView extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      DateFormat('d MMMM yyyy, HH:mm', 'ru_RU')
-                          .format(post.post.datePublish),
+                      DateFormat('d MMMM yyyy, HH:mm', 'ru_RU').format(
+                        post.post.datePublish.toLocal(),
+                      ),
                       style: const TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.normal,
-                        color: Color.fromARGB(255, 106, 111, 122),
+                        color: Color(0xFF6A6F7A),
                       ),
                     ),
                   ],
@@ -164,13 +167,16 @@ class FeedScreenView extends StatelessWidget {
             for (final file in post.files)
               AttachedFile(
                 fileData: file,
+                backgroundColor: isNewPost
+                    ? extraColors.newPostHiglaght
+                    : extraColors.defaultPostHighlight,
               ),
             if (showCommentsCount)
               const Padding(
-                padding: EdgeInsets.only(left: 4, bottom: 0, right: 4, top: 10),
+                padding: EdgeInsets.only(left: 4, right: 4, top: 10),
                 child: Divider(
                   thickness: 0.4,
-                  color: Color.fromARGB(255, 152, 158, 169),
+                  color: idkWhatColor,
                 ),
               ),
             if (showCommentsCount)
@@ -180,7 +186,7 @@ class FeedScreenView extends StatelessWidget {
                     padding: EdgeInsets.only(top: 10),
                     child: Icon(
                       Icons.message,
-                      color: Color.fromARGB(255, 152, 158, 169),
+                      color: idkWhatColor,
                       size: 30,
                     ),
                   ),
@@ -191,7 +197,7 @@ class FeedScreenView extends StatelessWidget {
                       "Комментарии:",
                       style: TextStyle(
                         fontSize: 14,
-                        color: Color.fromARGB(255, 152, 158, 169),
+                        color: idkWhatColor,
                         fontStyle: FontStyle.italic,
                         fontWeight: FontWeight.w400,
                       ),
@@ -204,7 +210,7 @@ class FeedScreenView extends StatelessWidget {
                       "${post.post.numberOfComments}",
                       style: const TextStyle(
                         fontSize: 14,
-                        color: Color.fromARGB(255, 152, 158, 169),
+                        color: idkWhatColor,
                         fontStyle: FontStyle.italic,
                       ),
                     ),

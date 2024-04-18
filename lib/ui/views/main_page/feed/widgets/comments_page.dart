@@ -6,6 +6,7 @@ import 'package:unn_mobile/core/misc/user_functions.dart';
 import 'package:unn_mobile/core/models/blog_post_comment_with_loaded_info.dart';
 import 'package:unn_mobile/core/models/post_with_loaded_info.dart';
 import 'package:unn_mobile/core/viewmodels/comments_page_view_model.dart';
+import 'package:unn_mobile/ui/unn_mobile_colors.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/feed.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/widgets/attached_file.dart';
@@ -27,50 +28,59 @@ class CommentsPage extends StatelessWidget {
               model.refresh();
               await model.commentLoaders.first;
             },
-            child: SingleChildScrollView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              child: Column(
-                children: [
-                  FeedScreenView.feedPost(context, post, processClicks: false),
-                  const Padding(
-                    padding: EdgeInsets.only(top: 20, bottom: 0),
-                    child: Text(
-                      "КОММЕНТАРИИ",
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Color.fromARGB(255, 152, 158, 169),
-                        fontWeight: FontWeight.w600,
+            child: NotificationListener<ScrollEndNotification>(
+              child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                child: Column(
+                  children: [
+                    FeedScreenView.feedPost(
+                      context,
+                      post,
+                      processClicks: false,
+                    ),
+                    const Padding(
+                      padding: EdgeInsets.only(top: 20, bottom: 0),
+                      child: Text(
+                        "КОММЕНТАРИИ",
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Color.fromARGB(255, 152, 158, 169),
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ),
-                  ),
-                  for (final commentsPage in model.commentLoaders)
-                    FutureBuilder(
-                      future: commentsPage,
-                      builder: (context, snapshot) {
-                        if (snapshot.hasData) {
-                          return Column(
-                            children: [
-                              for (final comment in snapshot.data!)
-                                if (comment != null)
-                                  commentView(comment, context),
-                              if (model.commentsAvailable)
-                                GestureDetector(
-                                  onTap: () {
-                                    return model.loadMoreComments();
-                                  },
-                                  child: const Text("Еще комментарии"),
-                                ),
-                            ],
-                          );
-                        } else {
-                          return const Center(
-                            child: CircularProgressIndicator(),
-                          );
-                        }
-                      },
-                    ),
-                ],
+                    for (final commentsPage in model.commentLoaders)
+                      FutureBuilder(
+                        future: commentsPage,
+                        builder: (context, snapshot) {
+                          if (snapshot.hasData) {
+                            return Column(
+                              children: [
+                                for (final comment in snapshot.data!)
+                                  if (comment != null)
+                                    commentView(comment, context),
+                              ],
+                            );
+                          } else {
+                            return const Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          }
+                        },
+                      ),
+                  ],
+                ),
               ),
+              onNotification: (scrollEnd) {
+                final metrics = scrollEnd.metrics;
+                if (metrics.atEdge) {
+                  bool isTop = metrics.pixels == 0;
+                  if (!isTop) {
+                    model.loadMoreComments();
+                  }
+                }
+                return true;
+              },
             ),
           );
         },
@@ -148,6 +158,8 @@ class CommentsPage extends StatelessWidget {
             padding: const EdgeInsets.only(left: 16),
             child: AttachedFile(
               fileData: file,
+              backgroundColor:
+                  theme.extension<UnnMobileColors>()!.defaultPostHighlight,
             ),
           ),
       ],
