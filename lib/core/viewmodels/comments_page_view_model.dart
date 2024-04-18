@@ -4,7 +4,6 @@ import 'package:unn_mobile/core/models/blog_data.dart';
 import 'package:unn_mobile/core/models/blog_post_comment.dart';
 import 'package:unn_mobile/core/models/blog_post_comment_with_loaded_info.dart';
 import 'package:unn_mobile/core/models/file_data.dart';
-import 'package:unn_mobile/core/models/user_data.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_blog_post_comments.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_blog_posts.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_file_data.dart';
