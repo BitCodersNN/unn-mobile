@@ -1,8 +1,10 @@
 import 'package:injector/injector.dart';
+import 'package:unn_mobile/core/misc/lru_cache.dart';
 import 'package:unn_mobile/core/models/blog_data.dart';
 import 'package:unn_mobile/core/models/blog_post_comment.dart';
 import 'package:unn_mobile/core/models/blog_post_comment_with_loaded_info.dart';
 import 'package:unn_mobile/core/models/file_data.dart';
+import 'package:unn_mobile/core/models/user_data.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_blog_post_comments.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_blog_posts.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_file_data.dart';
@@ -14,6 +16,11 @@ class CommentsPageViewModel extends BaseViewModel {
       Injector.appInstance.get<GettingBlogPostComments>();
   final _gettingProfileService = Injector.appInstance.get<GettingProfile>();
   final _gettingFileDataService = Injector.appInstance.get<GettingFileData>();
+  final _lruCacheBlogPostCommentWithLoadedInfo =
+      Injector.appInstance.get<LRUCache<int, BlogPostCommentWithLoadedInfo>>(
+    dependencyName: 'LRUCacheBlogPostCommentWithLoadedInfo',
+  );
+
   BlogData? post;
   List<Future<List<BlogPostCommentWithLoadedInfo?>>> commentLoaders = [];
 
@@ -23,22 +30,36 @@ class CommentsPageViewModel extends BaseViewModel {
   Future<BlogPostCommentWithLoadedInfo?> loadCommentInfo(
     BlogPostComment comment,
   ) async {
-    List<FileData> files = [];
-    final authorFuture = _gettingProfileService.getProfileByAuthorIdFromPost(
+    List<Future> futures = [];
+
+    BlogPostCommentWithLoadedInfo? blogPostCommentWithLoadedInfo =
+        _lruCacheBlogPostCommentWithLoadedInfo.get(comment.authorId);
+
+    if (blogPostCommentWithLoadedInfo != null) {
+      return blogPostCommentWithLoadedInfo;
+    }
+
+    futures.add(_gettingProfileService.getProfileByAuthorIdFromPost(
       authorId: comment.authorId,
-    );
+    ));
+
     for (final fileId in comment.attachedFiles) {
-      final fileData = await _gettingFileDataService.getFileData(id: fileId);
-      if (fileData != null) {
-        files.add(fileData);
-      }
+      futures.add(_gettingFileDataService.getFileData(id: fileId));
     }
-    final author = await authorFuture;
-    if (author == null) {
-      return null;
-    }
-    return BlogPostCommentWithLoadedInfo(
-        comment: comment, author: author, files: files);
+    final data = await Future.wait(futures);
+
+    blogPostCommentWithLoadedInfo = BlogPostCommentWithLoadedInfo(
+      comment: comment,
+      author: data.first,
+      files: List<FileData>.from(data.getRange(1, data.length)),
+    );
+
+    _lruCacheBlogPostCommentWithLoadedInfo.save(
+      comment.authorId,
+      blogPostCommentWithLoadedInfo,
+    );
+
+    return blogPostCommentWithLoadedInfo;
   }
 
   Future<List<BlogPostCommentWithLoadedInfo?>> loadComments(int page) async {

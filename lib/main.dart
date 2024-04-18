@@ -7,7 +7,9 @@ import 'package:flutter/services.dart';
 import 'package:injector/injector.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:unn_mobile/app.dart';
+import 'package:unn_mobile/core/misc/lru_cache.dart';
 import 'package:unn_mobile/core/misc/type_of_current_user.dart';
+import 'package:unn_mobile/core/models/blog_post_comment_with_loaded_info.dart';
 import 'package:unn_mobile/core/models/online_status_data.dart';
 import 'package:unn_mobile/core/services/implementations/auth_data_provider_impl.dart';
 import 'package:unn_mobile/core/services/implementations/authorisation_refresh_service_impl.dart';
@@ -108,6 +110,10 @@ void registerDependencies() {
   injector.registerSingleton<PostWithLoadedInfoProvider>(
       () => PostWithLoadedInfoProviderImpl());
   injector.registerSingleton<GettingFileData>(() => GettingFileDataImpl());
+  injector.registerSingleton<LRUCache<int, BlogPostCommentWithLoadedInfo>>(
+    () => LRUCache<int, BlogPostCommentWithLoadedInfo>(50),
+    dependencyName: 'LRUCacheBlogPostCommentWithLoadedInfo',
+  );
 
   injector.registerDependency(() => LoadingPageViewModel());
   injector.registerDependency(() => AuthPageViewModel());
