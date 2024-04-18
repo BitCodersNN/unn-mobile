@@ -15,7 +15,8 @@ import 'package:unn_mobile/ui/unn_mobile_colors.dart';
 
 class AttachedFile extends StatefulWidget {
   final FileData _fileData;
-  const AttachedFile({super.key, required fileData}) : _fileData = fileData;
+  final Color _backgroundColor;
+  const AttachedFile({super.key, required fileData, required backgroundColor}) : _fileData = fileData, _backgroundColor = backgroundColor;
 
   @override
   State<AttachedFile> createState() => _AttachedFileState();
@@ -210,7 +211,7 @@ class _AttachedFileState extends State<AttachedFile> {
                   },
                   child: Container(
                     decoration: BoxDecoration(
-                      color: theme.cardColor,
+                      color: widget._backgroundColor, 
                     ),
                     child: Row(
                       children: [

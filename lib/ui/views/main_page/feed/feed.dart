@@ -73,6 +73,7 @@ class FeedScreenView extends StatelessWidget {
   }) {
     final theme = Theme.of(context);
     final unescaper = HtmlUnescape();
+    final extraColors = theme.extension<UnnMobileColors>();
     return GestureDetector(
       onTap: () async {
         if (!processClicks) {
@@ -93,8 +94,8 @@ class FeedScreenView extends StatelessWidget {
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
           color: isNewPost
-              ? theme.extension<UnnMobileColors>()!.newPostHiglaght
-              : theme.extension<UnnMobileColors>()!.defaultPostHighlight,
+              ? extraColors!.newPostHiglaght
+              : extraColors!.defaultPostHighlight,
           borderRadius: BorderRadius.circular(0.0),
           boxShadow: const [
             BoxShadow(
@@ -164,6 +165,7 @@ class FeedScreenView extends StatelessWidget {
             for (final file in post.files)
               AttachedFile(
                 fileData: file,
+                backgroundColor: isNewPost ? extraColors.newPostHiglaght : extraColors.defaultPostHighlight,
               ),
             if (showCommentsCount)
               const Padding(
