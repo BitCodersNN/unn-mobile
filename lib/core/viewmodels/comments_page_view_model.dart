@@ -4,6 +4,7 @@ import 'package:unn_mobile/core/models/blog_data.dart';
 import 'package:unn_mobile/core/models/blog_post_comment.dart';
 import 'package:unn_mobile/core/models/blog_post_comment_with_loaded_info.dart';
 import 'package:unn_mobile/core/models/file_data.dart';
+import 'package:unn_mobile/core/models/user_data.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_blog_post_comments.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_blog_posts.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_file_data.dart';
@@ -19,6 +20,9 @@ class CommentsPageViewModel extends BaseViewModel {
       Injector.appInstance.get<LRUCache<int, BlogPostCommentWithLoadedInfo>>(
     dependencyName: 'LRUCacheBlogPostCommentWithLoadedInfo',
   );
+  final _lruCacheProfile = Injector.appInstance.get<LRUCache<int, UserData>>(
+    dependencyName: 'LRUCacheUserData',
+  );
 
   BlogData? post;
   List<Future<List<BlogPostCommentWithLoadedInfo?>>> commentLoaders = [];
@@ -29,7 +33,7 @@ class CommentsPageViewModel extends BaseViewModel {
   Future<BlogPostCommentWithLoadedInfo?> loadCommentInfo(
     BlogPostComment comment,
   ) async {
-    List<Future> futures = [];
+    final futures = <Future>[];
 
     BlogPostCommentWithLoadedInfo? blogPostCommentWithLoadedInfo =
         _lruCacheBlogPostCommentWithLoadedInfo.get(comment.id);
@@ -38,19 +42,31 @@ class CommentsPageViewModel extends BaseViewModel {
       return blogPostCommentWithLoadedInfo;
     }
 
-    futures.add(_gettingProfileService.getProfileByAuthorIdFromPost(
-      authorId: comment.authorId,
-    ));
+    UserData? profile = _lruCacheProfile.get(comment.authorId);
+
+    if (profile == null) {
+      futures.add(_gettingProfileService.getProfileByAuthorIdFromPost(
+        authorId: comment.authorId,
+      ));
+    }
 
     for (final fileId in comment.attachedFiles) {
       futures.add(_gettingFileDataService.getFileData(id: fileId));
     }
+    
     final data = await Future.wait(futures);
+
+    profile ??= data.first;
 
     blogPostCommentWithLoadedInfo = BlogPostCommentWithLoadedInfo(
       comment: comment,
-      author: data.first,
-      files: List<FileData>.from(data.getRange(1, data.length)),
+      author: profile!,
+      files: data.isNotEmpty ? List<FileData>.from(data.getRange(1, data.length)) : [],
+    );
+
+    _lruCacheProfile.save(
+      comment.authorId,
+      profile,
     );
 
     _lruCacheBlogPostCommentWithLoadedInfo.save(
@@ -66,10 +82,11 @@ class CommentsPageViewModel extends BaseViewModel {
       return [];
     }
     if (page == 1) {
-      final comNumbers = (await Injector.appInstance
-              .get<GettingBlogPosts>()
-              .getBlogPosts(postId: post!.id))?[0]
-          .numberOfComments;
+      final comNumbers =
+          (await Injector.appInstance.get<GettingBlogPosts>().getBlogPosts(
+                    postId: post!.id,
+                  ))?[0]
+              .numberOfComments;
       if (comNumbers != null) {
         const commentsPerPage = 20;
         totalPages = comNumbers ~/ commentsPerPage +
