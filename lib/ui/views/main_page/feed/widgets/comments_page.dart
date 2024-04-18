@@ -33,8 +33,11 @@ class CommentsPage extends StatelessWidget {
                 physics: const AlwaysScrollableScrollPhysics(),
                 child: Column(
                   children: [
-                    FeedScreenView.feedPost(context, post,
-                        processClicks: false),
+                    FeedScreenView.feedPost(
+                      context,
+                      post,
+                      processClicks: false,
+                    ),
                     const Padding(
                       padding: EdgeInsets.only(top: 20, bottom: 0),
                       child: Text(
@@ -155,7 +158,8 @@ class CommentsPage extends StatelessWidget {
             padding: const EdgeInsets.only(left: 16),
             child: AttachedFile(
               fileData: file,
-              backgroundColor: theme.extension<UnnMobileColors>()!.defaultPostHighlight,
+              backgroundColor:
+                  theme.extension<UnnMobileColors>()!.defaultPostHighlight,
             ),
           ),
       ],
