@@ -32,7 +32,7 @@ class CommentsPageViewModel extends BaseViewModel {
     List<Future> futures = [];
 
     BlogPostCommentWithLoadedInfo? blogPostCommentWithLoadedInfo =
-        _lruCacheBlogPostCommentWithLoadedInfo.get(comment.authorId);
+        _lruCacheBlogPostCommentWithLoadedInfo.get(comment.id);
 
     if (blogPostCommentWithLoadedInfo != null) {
       return blogPostCommentWithLoadedInfo;
@@ -54,7 +54,7 @@ class CommentsPageViewModel extends BaseViewModel {
     );
 
     _lruCacheBlogPostCommentWithLoadedInfo.save(
-      comment.authorId,
+      comment.id,
       blogPostCommentWithLoadedInfo,
     );
 
