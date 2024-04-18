@@ -236,9 +236,11 @@ class _AttachedFileState extends State<AttachedFile> {
                           children: [
                             Row(
                               children: [
-                                Text(
-                                  path.withoutExtension(fileData.name),
-                                  overflow: TextOverflow.ellipsis,
+                                Expanded(
+                                  child: Text(
+                                    path.withoutExtension(fileData.name),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
                                 ),
                                 if (snapshot.connectionState !=
                                         ConnectionState.none &&
