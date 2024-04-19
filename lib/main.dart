@@ -8,6 +8,7 @@ import 'package:injector/injector.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:unn_mobile/app.dart';
 import 'package:unn_mobile/core/misc/lru_cache.dart';
+import 'package:unn_mobile/core/misc/type_defs.dart';
 import 'package:unn_mobile/core/misc/type_of_current_user.dart';
 import 'package:unn_mobile/core/models/blog_post_comment_with_loaded_info.dart';
 import 'package:unn_mobile/core/models/online_status_data.dart';
@@ -111,13 +112,11 @@ void registerDependencies() {
   injector.registerSingleton<PostWithLoadedInfoProvider>(
       () => PostWithLoadedInfoProviderImpl());
   injector.registerSingleton<GettingFileData>(() => GettingFileDataImpl());
-  injector.registerSingleton<LRUCache<int, BlogPostCommentWithLoadedInfo>>(
-    () => LRUCache<int, BlogPostCommentWithLoadedInfo>(50),
-    dependencyName: 'LRUCacheBlogPostCommentWithLoadedInfo',
+  injector.registerSingleton<LRUCacheBlogPostCommentWithLoadedInfo>(
+    () => LRUCacheBlogPostCommentWithLoadedInfo(50),
   );
-  injector.registerSingleton<LRUCache<int, UserData>>(
-    () => LRUCache<int, UserData>(50),
-    dependencyName: 'LRUCacheUserData',
+  injector.registerSingleton<LRUCacheUserData>(
+    () => LRUCacheUserData(50),
   );
 
   injector.registerDependency(() => LoadingPageViewModel());

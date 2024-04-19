@@ -2,7 +2,7 @@ import 'package:async/async.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:injector/injector.dart';
-import 'package:unn_mobile/core/misc/lru_cache.dart';
+import 'package:unn_mobile/core/misc/type_defs.dart';
 import 'package:unn_mobile/core/models/blog_data.dart';
 import 'package:unn_mobile/core/models/file_data.dart';
 import 'package:unn_mobile/core/models/post_with_loaded_info.dart';
@@ -21,9 +21,8 @@ class FeedStreamUpdaterServiceImpl
   final _gettingFileData = Injector.appInstance.get<GettingFileData>();
   final _postWithLoadedInfoProvider =
       Injector.appInstance.get<PostWithLoadedInfoProvider>();
-  final _lruCacheProfile = Injector.appInstance.get<LRUCache<int, UserData>>(
-    dependencyName: 'LRUCacheUserData',
-  );
+  final _lruCacheProfile = Injector.appInstance.get<LRUCacheUserData>();
+
 
   bool _busy = false;
 

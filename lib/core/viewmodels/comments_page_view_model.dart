@@ -1,5 +1,5 @@
 import 'package:injector/injector.dart';
-import 'package:unn_mobile/core/misc/lru_cache.dart';
+import 'package:unn_mobile/core/misc/type_defs.dart';
 import 'package:unn_mobile/core/models/blog_data.dart';
 import 'package:unn_mobile/core/models/blog_post_comment.dart';
 import 'package:unn_mobile/core/models/blog_post_comment_with_loaded_info.dart';
@@ -17,12 +17,8 @@ class CommentsPageViewModel extends BaseViewModel {
   final _gettingProfileService = Injector.appInstance.get<GettingProfile>();
   final _gettingFileDataService = Injector.appInstance.get<GettingFileData>();
   final _lruCacheBlogPostCommentWithLoadedInfo =
-      Injector.appInstance.get<LRUCache<int, BlogPostCommentWithLoadedInfo>>(
-    dependencyName: 'LRUCacheBlogPostCommentWithLoadedInfo',
-  );
-  final _lruCacheProfile = Injector.appInstance.get<LRUCache<int, UserData>>(
-    dependencyName: 'LRUCacheUserData',
-  );
+      Injector.appInstance.get<LRUCacheBlogPostCommentWithLoadedInfo>();
+  final _lruCacheProfile = Injector.appInstance.get<LRUCacheUserData>();
 
   BlogData? post;
   List<Future<List<BlogPostCommentWithLoadedInfo?>>> commentLoaders = [];
