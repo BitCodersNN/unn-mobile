@@ -2,9 +2,11 @@ import 'package:async/async.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:injector/injector.dart';
+import 'package:unn_mobile/core/misc/type_defs.dart';
 import 'package:unn_mobile/core/models/blog_data.dart';
 import 'package:unn_mobile/core/models/file_data.dart';
 import 'package:unn_mobile/core/models/post_with_loaded_info.dart';
+import 'package:unn_mobile/core/models/user_data.dart';
 import 'package:unn_mobile/core/services/interfaces/feed_stream_updater_service.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_blog_posts.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_file_data.dart';
@@ -19,6 +21,8 @@ class FeedStreamUpdaterServiceImpl
   final _gettingFileData = Injector.appInstance.get<GettingFileData>();
   final _postWithLoadedInfoProvider =
       Injector.appInstance.get<PostWithLoadedInfoProvider>();
+  final _lruCacheProfile = Injector.appInstance.get<LRUCacheUserData>();
+
 
   bool _busy = false;
 
@@ -117,27 +121,39 @@ class FeedStreamUpdaterServiceImpl
 
     for (final post in posts) {
       _busy = true;
-      final postAuthor = await _gettingProfileService
-          .getProfileByAuthorIdFromPost(authorId: post.authorID);
+      final futures = <Future>[];
+      UserData? postAuthor = _lruCacheProfile.get(post.authorID);
 
-      List<FileData> filesData = [];
-      if (post.files != null) {
-        for (final fileId in post.files!) {
-          final fileData =
-              await _gettingFileData.getFileData(id: int.parse(fileId));
-          fileData != null ? filesData.add(fileData) : null;
-        }
+      if (postAuthor == null) {
+        futures.add(
+          _gettingProfileService.getProfileByAuthorIdFromPost(
+            authorId: post.authorID,
+          ),
+        );
       }
 
-      if (postAuthor != null) {
-        _postsList.add(PostWithLoadedInfo(
-          author: postAuthor,
-          post: post,
-          files: filesData,
-        ));
-        if (notify) {
-          notifyListeners();
-        }
+      for (final fileId in post.files ?? []) {
+        futures.add(_gettingFileData.getFileData(id: int.parse(fileId)));
+      }
+
+      final data = await Future.wait(futures);
+      final startPosFilesInData = postAuthor == null ? 1 : 0;
+      postAuthor ??= data.first;
+
+      if (postAuthor == null) {
+        return;
+      }
+
+      _lruCacheProfile.save(post.authorID, postAuthor);
+      _postsList.add(PostWithLoadedInfo(
+        author: postAuthor,
+        post: post,
+        files: List<FileData>.from(
+            data.getRange(startPosFilesInData, data.length)),
+      ));
+
+      if (notify) {
+        notifyListeners();
       }
     }
   }
