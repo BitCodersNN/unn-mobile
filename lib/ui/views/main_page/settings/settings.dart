@@ -4,6 +4,7 @@ import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/misc/file_functions.dart';
 import 'package:unn_mobile/core/services/interfaces/storage_service.dart';
 import 'package:unn_mobile/ui/router.dart';
+import 'package:unn_mobile/ui/widgets/adaptive_dialog_action.dart';
 
 class SettingsScreenView extends StatelessWidget {
   const SettingsScreenView({super.key});
@@ -37,10 +38,10 @@ class SettingsScreenView extends StatelessWidget {
             onPressed: () async {
               await showDialog(
                 context: context,
-                builder: (context) => AlertDialog(
+                builder: (context) => AlertDialog.adaptive(
                   title: const Text("Выйти из аккаунта?"),
                   actions: [
-                    TextButton(
+                    AdaptiveDialogAction(
                       onPressed: () async {
                         await clearEverything();
                         if (context.mounted) {
@@ -55,7 +56,7 @@ class SettingsScreenView extends StatelessWidget {
                         style: TextStyle(color: theme.colorScheme.error),
                       ),
                     ),
-                    TextButton(
+                    AdaptiveDialogAction(
                         onPressed: () {
                           Navigator.pop(context);
                         },
