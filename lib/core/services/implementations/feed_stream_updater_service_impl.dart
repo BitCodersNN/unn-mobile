@@ -138,19 +138,21 @@ class FeedStreamUpdaterServiceImpl
       }
 
       final data = await Future.wait(futures);
+      final startPosFilesInData = postAuthor == null ? 1 : 0;
       postAuthor ??= data.first;
 
       if (postAuthor == null) {
         return;
       }
-      
+
       _lruCacheProfile.save(post.authorID, postAuthor);
       _postsList.add(PostWithLoadedInfo(
         author: postAuthor,
         post: post,
-        files: data.isNotEmpty ? List<FileData>.from(data.getRange(1, data.length)) : [],
+        files: List<FileData>.from(
+            data.getRange(startPosFilesInData, data.length)),
       ));
-      
+
       if (notify) {
         notifyListeners();
       }

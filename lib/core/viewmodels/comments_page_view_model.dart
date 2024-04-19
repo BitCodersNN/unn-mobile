@@ -53,15 +53,17 @@ class CommentsPageViewModel extends BaseViewModel {
     for (final fileId in comment.attachedFiles) {
       futures.add(_gettingFileDataService.getFileData(id: fileId));
     }
-    
+
     final data = await Future.wait(futures);
 
+    final startPosFilesInData = profile == null ? 1 : 0;
     profile ??= data.first;
 
     blogPostCommentWithLoadedInfo = BlogPostCommentWithLoadedInfo(
       comment: comment,
       author: profile!,
-      files: data.isNotEmpty ? List<FileData>.from(data.getRange(1, data.length)) : [],
+      files:
+          List<FileData>.from(data.getRange(startPosFilesInData, data.length)),
     );
 
     _lruCacheProfile.save(
