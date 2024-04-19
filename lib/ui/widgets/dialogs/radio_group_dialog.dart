@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:unn_mobile/ui/widgets/adaptive_dialog_action.dart';
 
 class RadioGroupDialog extends StatefulWidget {
   final List<Widget> radioLabels;
@@ -22,7 +21,7 @@ class _RadioGroupDialogState extends State<RadioGroupDialog> {
   int? selectedValue = 0;
   @override
   Widget build(BuildContext context) {
-    return AlertDialog.adaptive(
+    return AlertDialog(
       title: widget.label,
       content: Column(
         mainAxisSize: MainAxisSize.min,
@@ -43,13 +42,13 @@ class _RadioGroupDialogState extends State<RadioGroupDialog> {
         ),
       ),
       actions: [
-        AdaptiveDialogAction(
+        TextButton(
           onPressed: () {
             Navigator.pop(context);
           },
           child: widget.cancelButtonChild,
         ),
-        AdaptiveDialogAction(
+        TextButton(
           onPressed: () {
             Navigator.pop(context, selectedValue);
           },
