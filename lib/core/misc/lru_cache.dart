@@ -19,7 +19,7 @@ class LRUCache<Key, Value> {
   void save(Key key, Value newValue) {
     Value? value = cache.remove(key);
     if (value != null) {
-      cache[key] = value;
+      cache[key] = newValue;
     } else {
       if (cache.length >= maxSize) {
         cache.remove(cache.keys.first);
