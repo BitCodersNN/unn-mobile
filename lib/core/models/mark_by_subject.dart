@@ -18,6 +18,17 @@ class _MarkTypeString {
   static const String perfectly = 'превосходно';
 }
 
+class _MarkTypeDouble {
+  static const double notCredited = 0;
+  static const double credited = 1;
+  static const double notSatisfactory = 2;
+  static const double satisfactory = 3;
+  static const double good = 4;
+  static const double veryGood = 4.5;
+  static const double excellent = 5;
+  static const double perfectly = 5.5;
+}
+
 enum MarkType {
   notCredited,
   credited,
@@ -33,21 +44,21 @@ extension MarkTypeExtension on MarkType {
   double parseDouble() {
     switch (this) {
       case MarkType.notCredited:
-        return 0;
+        return _MarkTypeDouble.notCredited;
       case MarkType.credited:
-        return 1;
+        return _MarkTypeDouble.credited;
       case MarkType.notSatisfactory:
-        return 2;
+        return _MarkTypeDouble.notSatisfactory;
       case MarkType.satisfactory:
-        return 3;
+        return _MarkTypeDouble.satisfactory;
       case MarkType.good:
-        return 4;
+        return _MarkTypeDouble.good;
       case MarkType.veryGood:
-        return 4.5;
+        return _MarkTypeDouble.veryGood;
       case MarkType.excellent:
-        return 5;
+        return _MarkTypeDouble.excellent;
       case MarkType.perfectly:
-        return 5.5;
+        return _MarkTypeDouble.perfectly;
     }
   }
 
@@ -74,21 +85,21 @@ extension MarkTypeExtension on MarkType {
 
   static MarkType fromDouble(double value) {
     switch (value) {
-      case 0:
+      case _MarkTypeDouble.notCredited:
         return MarkType.notCredited;
-      case 1:
+      case _MarkTypeDouble.credited:
         return MarkType.credited;
-      case 2:
+      case _MarkTypeDouble.notSatisfactory:
         return MarkType.notSatisfactory;
-      case 3:
+      case _MarkTypeDouble.satisfactory:
         return MarkType.satisfactory;
-      case 4:
+      case _MarkTypeDouble.good:
         return MarkType.good;
-      case 4.5:
+      case _MarkTypeDouble.veryGood:
         return MarkType.veryGood;
-      case 5:
+      case _MarkTypeDouble.excellent:
         return MarkType.excellent;
-      case 5.5:
+      case _MarkTypeDouble.perfectly:
         return MarkType.perfectly;
       default:
         throw Exception("Unknown value for Status enum");
