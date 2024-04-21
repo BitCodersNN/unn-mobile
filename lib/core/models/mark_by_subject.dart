@@ -136,7 +136,7 @@ class MarkBySubject {
   final String _controlType;
   final DateTime _date;
   final int _hours;
-  final String _lecturers;
+  final String? _lecturers;
   final MarkType _markType;
   final String _subject;
 
@@ -144,7 +144,7 @@ class MarkBySubject {
     required String controlType,
     required DateTime date,
     required int hours,
-    required String lecturers,
+    required String? lecturers,
     required MarkType markType,
     required String subject,
   })  : _controlType = controlType,
@@ -156,7 +156,7 @@ class MarkBySubject {
 
   DateTime get date => _date;
   int get hours => _hours;
-  String get lecturers => _lecturers;
+  String? get lecturers => _lecturers;
   MarkType get markType => _markType;
   String get controlType => _controlType;
   int get creditedHours => hours ~/ _creditedHoursPerHour;
@@ -170,7 +170,7 @@ class MarkBySubject {
         jsonMap[_AbbreviatedNamesOfSubjectTypes.date] as String,
       ),
       hours: jsonMap[_AbbreviatedNamesOfSubjectTypes.hours] as int,
-      lecturers: jsonMap[_AbbreviatedNamesOfSubjectTypes.lecturers] as String,
+      lecturers: jsonMap[_AbbreviatedNamesOfSubjectTypes.lecturers] as String?,
       markType: MarkTypeExtension.fromDouble(
         jsonMap[_AbbreviatedNamesOfSubjectTypes.mark] as double,
       ),
