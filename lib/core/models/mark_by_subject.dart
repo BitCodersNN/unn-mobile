@@ -7,6 +7,17 @@ class _AbbreviatedNamesOfSubjectTypes {
   static const String subject = 'subject';
 }
 
+class _MarkTypeString {
+  static const String notCredited = 'не зачтено';
+  static const String credited = 'зачтено';
+  static const String notSatisfactory = 'не удовлетворительно';
+  static const String satisfactory = 'удовлетворительно';
+  static const String good = 'хорошо';
+  static const String veryGood = 'очень хорошо';
+  static const String excellent = 'отлично';
+  static const String perfectly = 'превосходно';
+}
+
 enum MarkType {
   notCredited,
   credited,
@@ -43,21 +54,21 @@ extension MarkTypeExtension on MarkType {
   String parseString() {
     switch (this) {
       case MarkType.notCredited:
-        return 'не зачтено';
+        return _MarkTypeString.notCredited;
       case MarkType.credited:
-        return 'зачтено';
+        return _MarkTypeString.credited;
       case MarkType.notSatisfactory:
-        return 'не удовлетворительно';
+        return _MarkTypeString.notSatisfactory;
       case MarkType.satisfactory:
-        return 'удовлетворительно';
+        return _MarkTypeString.satisfactory;
       case MarkType.good:
-        return 'хорошо';
+        return _MarkTypeString.good;
       case MarkType.veryGood:
-        return 'очень хорошо';
+        return _MarkTypeString.veryGood;
       case MarkType.excellent:
-        return 'отлично';
+        return _MarkTypeString.excellent;
       case MarkType.perfectly:
-        return 'превосходно';
+        return _MarkTypeString.perfectly;
     }
   }
 
@@ -86,21 +97,21 @@ extension MarkTypeExtension on MarkType {
 
   static MarkType fromString(String value) {
     switch (value) {
-      case 'не зачтено':
+      case _MarkTypeString.notCredited:
         return MarkType.notCredited;
-      case 'зачтено':
+      case _MarkTypeString.credited:
         return MarkType.credited;
-      case 'не удовлетворительно':
+      case _MarkTypeString.notSatisfactory:
         return MarkType.notSatisfactory;
-      case 'удовлетворительно':
+      case _MarkTypeString.satisfactory:
         return MarkType.satisfactory;
-      case 'хорошо':
+      case _MarkTypeString.good:
         return MarkType.good;
-      case 'очень хорошо':
+      case _MarkTypeString.veryGood:
         return MarkType.veryGood;
-      case 'отлично':
+      case _MarkTypeString.excellent:
         return MarkType.excellent;
-      case 'превосходно':
+      case _MarkTypeString.perfectly:
         return MarkType.perfectly;
       default:
         throw Exception("Unknown value for Status enum");
