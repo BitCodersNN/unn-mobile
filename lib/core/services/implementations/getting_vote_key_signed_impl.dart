@@ -18,13 +18,13 @@ class GettingVoteKeySignedImpl implements GettingVoteKeySigned {
   final String _csrfKey = 'X-Bitrix-Csrf-Token';
 
   @override
-  Future<String?> getVoteKeySigned(
-    int userId,
-    int id,
-  ) async {
+  Future<String?> getVoteKeySigned({
+    required int authorId,
+    required int postId,
+  }) async {
     final authorisationService =
         Injector.appInstance.get<AuthorisationService>();
-    final path = '$_path$_user/$userId/$_blog/$id/';
+    final path = '$_path$_user/$authorId/$_blog/$postId/';
 
     final requestSender = HttpRequestSender(
       path: path,
@@ -66,7 +66,8 @@ class GettingVoteKeySignedImpl implements GettingVoteKeySigned {
 
     String? keySignedMatches;
     try {
-      keySignedMatches = (keySigned.firstMatch(responseStr)?.group(0) as String);
+      keySignedMatches =
+          (keySigned.firstMatch(responseStr)?.group(0) as String);
     } catch (error, stackTrace) {
       await FirebaseCrashlytics.instance.recordError(error, stackTrace);
       return null;

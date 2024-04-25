@@ -145,8 +145,8 @@ class FeedStreamUpdaterServiceImpl
       futures.add(
         _gettingRatingList.getRatingList(
           voteKeySigned: await _gettingVoteKeySigned.getVoteKeySigned(
-                post.authorID,
-                post.id,
+                authorId: post.authorID,
+                postId: post.id,
               ) ??
               '',
         ),

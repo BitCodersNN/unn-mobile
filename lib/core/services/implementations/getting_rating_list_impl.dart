@@ -27,7 +27,7 @@ class GettingRatingListImpl implements GettingRatingList {
   final String _reactions = 'reactions';
 
   @override
-  Future<RatingList?> getUsersListByReaction({
+  Future<RatingList?> getReactionListByReaction({
     required String voteKeySigned,
     required ReactionType reactionType,
     int pageNumber = 0,
@@ -190,7 +190,7 @@ class GettingRatingListImpl implements GettingRatingList {
       for (var pageNumber = 1;
           pageNumber <= value ~/ numberOfReactionsInPage + 1;
           pageNumber++) {
-        futures.add(getUsersListByReaction(
+        futures.add(getReactionListByReaction(
           voteKeySigned: voteKeySigned,
           reactionType: key,
           pageNumber: pageNumber,
