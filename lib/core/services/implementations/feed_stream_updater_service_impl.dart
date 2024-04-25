@@ -29,7 +29,6 @@ class FeedStreamUpdaterServiceImpl
       Injector.appInstance.get<PostWithLoadedInfoProvider>();
   final _lruCacheProfile = Injector.appInstance.get<LRUCacheUserData>();
 
-
   bool _busy = false;
 
   CancelableOperation<void>? _currentOperation;
@@ -142,7 +141,7 @@ class FeedStreamUpdaterServiceImpl
       for (final fileId in post.files ?? []) {
         futures.add(_gettingFileData.getFileData(id: int.parse(fileId)));
       }
-      
+
       futures.add(
         _gettingRatingList.getRatingList(
           voteKeySigned: await _gettingVoteKeySigned.getVoteKeySigned(
@@ -154,8 +153,10 @@ class FeedStreamUpdaterServiceImpl
       );
 
       final data = await Future.wait(futures);
-      
+
       final startPosFilesInData = postAuthor == null ? 1 : 0;
+      final endPosFilesInData =
+          startPosFilesInData + (post.files ?? []).length - 1;
       postAuthor ??= data.first;
 
       if (postAuthor == null) {
@@ -163,13 +164,15 @@ class FeedStreamUpdaterServiceImpl
       }
 
       _lruCacheProfile.save(post.authorID, postAuthor);
-      
+
       _postsList.add(PostWithLoadedInfo(
         author: postAuthor,
         post: post,
-        files: List<FileData>.from(
-            data.getRange(startPosFilesInData, startPosFilesInData + post.files?.length ?? 0)),
-        ratingList: data[1 + files.length] ?? RatingList(),
+        files: List<FileData>.from(data.getRange(
+          startPosFilesInData,
+          startPosFilesInData + endPosFilesInData,
+        )),
+        ratingList: data[endPosFilesInData + 1] ?? RatingList(),
       ));
 
       if (notify) {
