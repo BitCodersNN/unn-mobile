@@ -2,7 +2,7 @@ name: unn_mobile
 description: A mobile application for UNN Portal website
 publish_to: 'none'
 
-version: 0.1.3+172
+version: 0.2.1+179
 
 environment:
   sdk: '>=3.1.2 <4.0.0'
@@ -39,7 +39,10 @@ dependencies:
   bbob_dart: 
     path: ./flutter_bbcode/bbob_dart/
   html_unescape: ^2.0.0
-
+  path_provider: ^2.1.3
+  open_filex: ^4.4.0
+  path: 
+  extended_image: ^8.2.0
 
 dev_dependencies:
   flutter_test:
@@ -52,16 +55,21 @@ flutter:
 
   assets:
     - assets/images/chick_in_the_egg.png
-    - assets/images/logo.png
-    - assets/images/new_year_logo.png
-    - assets/images/march_8th_logo.png
-    - assets/images/april_1st_logo.png
+    - assets/images/logos/logo.png
+    - assets/images/logos/new_year_logo.png
+    - assets/images/logos/march_8th_logo.png
+    - assets/images/logos/april_1st_logo.png
     - assets/images/auth-logo.svg
     - assets/images/authors/dmitry.png
     - assets/images/authors/vitaly.png
     - assets/images/authors/michail.png
     - assets/images/authors/darya.png
     - assets/images/authors/andrew.png
+    - assets/images/quest/1.png
+    - assets/images/quest/2.png
+    - assets/images/quest/3.png
+    - assets/images/quest/4.png
+
 
   fonts:
     - family: LetoSans
@@ -80,4 +88,3 @@ flutter_launcher_icons:
   image_path: "assets/images/icon.png"
   min_sdk_android: 19
   remove_alpha_ios: true
-

@@ -1,4 +1,5 @@
 import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -6,14 +7,15 @@ import 'package:flutter/services.dart';
 import 'package:injector/injector.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:unn_mobile/app.dart';
-import 'package:unn_mobile/core/models/online_status_data.dart';
+import 'package:unn_mobile/core/misc/type_defs.dart';
 import 'package:unn_mobile/core/misc/type_of_current_user.dart';
+import 'package:unn_mobile/core/models/online_status_data.dart';
 import 'package:unn_mobile/core/services/implementations/auth_data_provider_impl.dart';
-import 'package:unn_mobile/core/services/implementations/authorisation_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/authorisation_refresh_service_impl.dart';
-import 'package:unn_mobile/core/services/implementations/getting_blog_post_comments_impl.dart';
+import 'package:unn_mobile/core/services/implementations/authorisation_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/export_schedule_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/feed_stream_updater_service_impl.dart';
+import 'package:unn_mobile/core/services/implementations/getting_blog_post_comments_impl.dart';
 import 'package:unn_mobile/core/services/implementations/getting_blog_posts_impl.dart';
 import 'package:unn_mobile/core/services/implementations/getting_file_data_impl.dart';
 import 'package:unn_mobile/core/services/implementations/getting_profile_impl.dart';
@@ -28,11 +30,11 @@ import 'package:unn_mobile/core/services/implementations/search_id_on_portal_ser
 import 'package:unn_mobile/core/services/implementations/storage_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/user_data_provider_impl.dart';
 import 'package:unn_mobile/core/services/interfaces/auth_data_provider.dart';
-import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation_refresh_service.dart';
-import 'package:unn_mobile/core/services/interfaces/getting_blog_post_comments.dart';
+import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
 import 'package:unn_mobile/core/services/interfaces/export_schedule_service.dart';
 import 'package:unn_mobile/core/services/interfaces/feed_stream_updater_service.dart';
+import 'package:unn_mobile/core/services/interfaces/getting_blog_post_comments.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_blog_posts.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_file_data.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_profile.dart';
@@ -47,11 +49,11 @@ import 'package:unn_mobile/core/services/interfaces/search_id_on_portal_service.
 import 'package:unn_mobile/core/services/interfaces/storage_service.dart';
 import 'package:unn_mobile/core/services/interfaces/user_data_provider.dart';
 import 'package:unn_mobile/core/viewmodels/auth_page_view_model.dart';
+import 'package:unn_mobile/core/viewmodels/comments_page_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/feed_screen_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/loading_page_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/schedule_screen_view_model.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -113,10 +115,17 @@ void registerDependencies() {
   injector.registerSingleton<GettingFileData>(() => GettingFileDataImpl());
   injector.registerSingleton<GettingRatingList>(() => GettingRatingListImpl());
   injector.registerSingleton<GettingVoteKeySigned>(() => GettingVoteKeySignedImpl());
+  injector.registerSingleton<LRUCacheBlogPostCommentWithLoadedInfo>(
+    () => LRUCacheBlogPostCommentWithLoadedInfo(50),
+  );
+  injector.registerSingleton<LRUCacheUserData>(
+    () => LRUCacheUserData(50),
+  );
 
   injector.registerDependency(() => LoadingPageViewModel());
   injector.registerDependency(() => AuthPageViewModel());
   injector.registerDependency(() => MainPageViewModel());
   injector.registerDependency(() => ScheduleScreenViewModel());
   injector.registerDependency(() => FeedScreenViewModel());
+  injector.registerDependency(() => CommentsPageViewModel());
 }

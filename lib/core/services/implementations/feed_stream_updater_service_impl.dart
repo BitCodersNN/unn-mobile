@@ -2,10 +2,12 @@ import 'package:async/async.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:injector/injector.dart';
+import 'package:unn_mobile/core/misc/type_defs.dart';
 import 'package:unn_mobile/core/models/blog_data.dart';
 import 'package:unn_mobile/core/models/file_data.dart';
 import 'package:unn_mobile/core/models/post_with_loaded_info.dart';
 import 'package:unn_mobile/core/models/rating_list.dart';
+import 'package:unn_mobile/core/models/user_data.dart';
 import 'package:unn_mobile/core/services/interfaces/feed_stream_updater_service.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_blog_posts.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_file_data.dart';
@@ -25,6 +27,8 @@ class FeedStreamUpdaterServiceImpl
       Injector.appInstance.get<GettingVoteKeySigned>();
   final _postWithLoadedInfoProvider =
       Injector.appInstance.get<PostWithLoadedInfoProvider>();
+  final _lruCacheProfile = Injector.appInstance.get<LRUCacheUserData>();
+
 
   bool _busy = false;
 
@@ -90,7 +94,8 @@ class FeedStreamUpdaterServiceImpl
     try {
       _busy = true;
       _lastViewedPostDateTime =
-          await _postWithLoadedInfoProvider.getDateTimePublishedPost();
+          await _postWithLoadedInfoProvider.getDateTimePublishedPost() ??
+              DateTime.now();
 
       final newPosts = await _gettingBlogPostsService.getBlogPosts();
 
@@ -124,13 +129,20 @@ class FeedStreamUpdaterServiceImpl
       _busy = true;
       final futures = <Future>[];
 
-      futures.add(_gettingProfileService.getProfileByAuthorIdFromPost(
-          authorId: post.authorID));
+      UserData? postAuthor = _lruCacheProfile.get(post.authorID);
+
+      if (postAuthor == null) {
+        futures.add(
+          _gettingProfileService.getProfileByAuthorIdFromPost(
+            authorId: post.authorID,
+          ),
+        );
+      }
 
       for (final fileId in post.files ?? []) {
         futures.add(_gettingFileData.getFileData(id: int.parse(fileId)));
       }
-
+      
       futures.add(
         _gettingRatingList.getRatingList(
           voteKeySigned: await _gettingVoteKeySigned.getVoteKeySigned(
@@ -140,27 +152,26 @@ class FeedStreamUpdaterServiceImpl
               '',
         ),
       );
-      final data = await Future.wait(futures);
 
-      if (data[0] == null) {
+      final data = await Future.wait(futures);
+      
+      final startPosFilesInData = postAuthor == null ? 1 : 0;
+      postAuthor ??= data.first;
+
+      if (postAuthor == null) {
         return;
       }
 
-      final author = data.first;
-      final files = <FileData>[];
-      for (int i = 0; i < (post.files?.length ?? 0); i++) {
-        files.add(data[i + 1]);
-      }
-      final ratingList = data[1 + files.length] ?? RatingList();
+      _lruCacheProfile.save(post.authorID, postAuthor);
+      
+      _postsList.add(PostWithLoadedInfo(
+        author: postAuthor,
+        post: post,
+        files: List<FileData>.from(
+            data.getRange(startPosFilesInData, startPosFilesInData + post.files?.length ?? 0)),
+        ratingList: data[1 + files.length] ?? RatingList(),
+      ));
 
-      _postsList.add(
-        PostWithLoadedInfo(
-          author: author,
-          post: post,
-          files: files,
-          ratingList: ratingList,
-        ),
-      );
       if (notify) {
         notifyListeners();
       }

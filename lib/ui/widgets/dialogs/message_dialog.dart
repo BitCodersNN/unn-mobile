@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:unn_mobile/ui/widgets/adaptive_dialog_action.dart';
 
 class MessageDialog extends StatelessWidget {
   const MessageDialog({
@@ -10,16 +11,13 @@ class MessageDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
+    return AlertDialog.adaptive(
       content: message,
       contentPadding: const EdgeInsets.fromLTRB(20, 20, 20, 12),
       buttonPadding: EdgeInsets.zero,
-      actionsPadding: const EdgeInsets.symmetric(
-         horizontal: 20,
-         vertical: 8
-      ),
+      actionsPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
       actions: <Widget>[
-        TextButton(
+        AdaptiveDialogAction(
           child: const Text('OK'),
           onPressed: () {
             Navigator.of(context).pop();
