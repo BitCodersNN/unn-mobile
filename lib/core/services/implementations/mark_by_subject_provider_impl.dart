@@ -25,14 +25,14 @@ class MarkBySubjectProviderImpl implements MarkBySubjectProvider {
 
     final Map<String, dynamic> jsonMap = json.decode(jsonString);
 
-    final Map<int, List<MarkBySubject>> recordBook = {};
+    final Map<int, List<MarkBySubject>> gradeBook = {};
     jsonMap.forEach((key, value) {
       final List<MarkBySubject> marksList = (value as List)
           .map((item) => MarkBySubject.fromJson(item as Map<String, dynamic>))
           .toList();
-      recordBook[int.parse(key)] = marksList;
+      gradeBook[int.parse(key)] = marksList;
     });
-    return recordBook;
+    return gradeBook;
   }
 
   @override
@@ -43,12 +43,12 @@ class MarkBySubjectProviderImpl implements MarkBySubjectProvider {
   }
 
   @override
-  Future<void> saveData(Map<int, List<MarkBySubject>>? recordBook) async {
-    if (recordBook == null) {
+  Future<void> saveData(Map<int, List<MarkBySubject>>? gradeBook) async {
+    if (gradeBook == null) {
       return;
     }
     final Map<String, dynamic> jsonMap = {};
-    recordBook.forEach((key, value) {
+    gradeBook.forEach((key, value) {
       final List<dynamic> jsonList =
           value.map((item) => item.toJson()).toList();
       jsonMap[key.toString()] = jsonList;

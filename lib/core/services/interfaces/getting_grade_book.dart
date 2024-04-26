@@ -1,6 +1,6 @@
 import 'package:unn_mobile/core/models/mark_by_subject.dart';
 
-abstract interface class GettingRecordBook {
+abstract interface class GettingGradeBook {
   /// Получает зачетную книжку пользователя
   ///
   /// Возвращает [Map]:
@@ -10,5 +10,5 @@ abstract interface class GettingRecordBook {
   ///   1. Не вышло получить ответ от портала
   ///   2. statusCode не равен 200
   ///   3. Не вышло декодировать ответ
-  Future<Map<int, List<MarkBySubject>>?> getRecordBook();
+  Future<Map<int, List<MarkBySubject>>?> getGradeBook();
 }

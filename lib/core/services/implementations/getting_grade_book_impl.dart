@@ -14,12 +14,12 @@ class _JsonKeys {
   static const String data = 'data';
 }
 
-class GettingRecordBookImpl implements GettingRecordBook {
+class GettingGradeBookImpl implements GettingGradeBook {
   final String _path = 'bitrix/vuz/api/marks2';
   final String _sessionIdCookieKey = 'PHPSESSID';
 
   @override
-  Future<Map<int, List<MarkBySubject>>?> getRecordBook() async {
+  Future<Map<int, List<MarkBySubject>>?> getGradeBook() async {
     final authorisationService =
         Injector.appInstance.get<AuthorisationService>();
 

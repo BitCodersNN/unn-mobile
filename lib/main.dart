@@ -139,7 +139,7 @@ void registerDependencies() {
   injector.registerSingleton<LRUCacheUserData>(
     () => LRUCacheUserData(50),
   );
-  injector.registerSingleton<GettingRecordBook>(() => GettingRecordBookImpl());
+  injector.registerSingleton<GettingGradeBook>(() => GettingGradeBookImpl());
   injector.registerSingleton<MarkBySubjectProvider>(
     () => MarkBySubjectProviderImpl(),
   );
