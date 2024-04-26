@@ -141,7 +141,8 @@ void registerDependencies() {
   );
   injector.registerSingleton<GettingRecordBook>(() => GettingRecordBookImpl());
   injector.registerSingleton<MarkBySubjectProvider>(
-      () => MarkBySubjectProviderImpl());
+    () => MarkBySubjectProviderImpl(),
+  );
 
   injector.registerDependency(() => LoadingPageViewModel());
   injector.registerDependency(() => AuthPageViewModel());
