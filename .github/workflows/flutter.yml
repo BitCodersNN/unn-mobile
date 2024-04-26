@@ -4,7 +4,7 @@
 # documentation.
 
 name: Flutter Analyze
-run-name: Analyze formatting in PR \#${{ github.event.number }}
+run-name: Analyze formatting in PR ${{ github.event.number }}
 
 on:
   pull_request:

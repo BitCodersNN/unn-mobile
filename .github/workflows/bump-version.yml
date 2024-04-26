@@ -1,5 +1,5 @@
 name: Change app version
-run-name: Change app version in PR \#${{ github.event.number }}
+run-name: Change app version in PR ${{ github.event.number }}
 on: 
   pull_request:
     branches: [ "develop" ]
