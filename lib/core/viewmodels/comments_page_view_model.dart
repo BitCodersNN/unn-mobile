@@ -44,9 +44,11 @@ class CommentsPageViewModel extends BaseViewModel {
     UserData? profile = _lruCacheProfile.get(comment.authorId);
 
     if (profile == null) {
-      futures.add(_gettingProfileService.getProfileByAuthorIdFromPost(
-        authorId: comment.authorId,
-      ));
+      futures.add(
+        _gettingProfileService.getProfileByAuthorIdFromPost(
+          authorId: comment.authorId,
+        ),
+      );
     }
 
     for (final fileId in comment.attachedFiles) {
@@ -117,9 +119,11 @@ class CommentsPageViewModel extends BaseViewModel {
     if (comments == null) {
       return [];
     }
-    return await Future.wait(comments.map(
-      (e) => loadCommentInfo(e),
-    ));
+    return await Future.wait(
+      comments.map(
+        (e) => loadCommentInfo(e),
+      ),
+    );
   }
 
   void loadMoreComments() {

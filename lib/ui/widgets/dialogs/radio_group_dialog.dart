@@ -9,8 +9,8 @@ class RadioGroupDialog extends StatefulWidget {
     super.key,
     required this.radioLabels,
     this.label,
-    this.okButtonChild = const Text("OK"),
-    this.cancelButtonChild = const Text("Отмена"),
+    this.okButtonChild = const Text('OK'),
+    this.cancelButtonChild = const Text('Отмена'),
   });
 
   @override

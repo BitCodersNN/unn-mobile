@@ -8,8 +8,8 @@ import 'package:unn_mobile/core/models/online_status_data.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
 
 class AuthorisationServiceImpl implements AuthorisationService {
-  final String _sessionIdCookieKey = "PHPSESSID";
-  final String _csrfHeaderName = "x-bitrix-new-csrf";
+  final String _sessionIdCookieKey = 'PHPSESSID';
+  final String _csrfHeaderName = 'x-bitrix-new-csrf';
 
   String? _sessionId;
   String? _csrf;
@@ -42,8 +42,9 @@ class AuthorisationServiceImpl implements AuthorisationService {
 
     if (sessionCookie == null) {
       throw SessionCookieException(
-          message: 'sessionCookie is null',
-          privateInformation: {'user_login': login});
+        message: 'sessionCookie is null',
+        privateInformation: {'user_login': login},
+      );
     }
 
     try {
@@ -58,8 +59,9 @@ class AuthorisationServiceImpl implements AuthorisationService {
 
     if (csrfValue == null) {
       throw CsrfValueException(
-          message: 'csrfValue is null',
-          privateInformation: {'user_login': login});
+        message: 'csrfValue is null',
+        privateInformation: {'user_login': login},
+      );
     }
 
     // bind properties
@@ -85,24 +87,30 @@ class AuthorisationServiceImpl implements AuthorisationService {
   String? get sessionId => _sessionId;
 
   Future<HttpClientResponse> _sendAuthRequest(
-      String login, String password) async {
+    String login,
+    String password,
+  ) async {
     final requestSender =
-        HttpRequestSender(path: "auth/", queryParams: {"login": "yes"});
+        HttpRequestSender(path: 'auth/', queryParams: {'login': 'yes'});
 
-    return await requestSender.postForm({
-      "AUTH_FORM": "Y",
-      "TYPE": "AUTH",
-      "backurl": "/",
-      "USER_LOGIN": login,
-      "USER_PASSWORD": password,
-    }, timeoutSeconds: 15);
+    return await requestSender.postForm(
+      {
+        'AUTH_FORM': 'Y',
+        'TYPE': 'AUTH',
+        'backurl': '/',
+        'USER_LOGIN': login,
+        'USER_PASSWORD': password,
+      },
+      timeoutSeconds: 15,
+    );
   }
 
   Future<HttpClientResponse> _sendCsrfRequest(String session) async {
     final requestSender = HttpRequestSender(
-        path: "bitrix/services/main/ajax.php",
-        queryParams: {"action": "socialnetwork.api.livefeed.getNextPage"},
-        cookies: {_sessionIdCookieKey: session});
+      path: 'bitrix/services/main/ajax.php',
+      queryParams: {'action': 'socialnetwork.api.livefeed.getNextPage'},
+      cookies: {_sessionIdCookieKey: session},
+    );
 
     return await requestSender.get(timeoutSeconds: 15);
   }

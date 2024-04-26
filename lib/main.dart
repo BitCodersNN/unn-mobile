@@ -54,12 +54,13 @@ import 'package:unn_mobile/core/viewmodels/feed_screen_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/loading_page_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/schedule_screen_view_model.dart';
-import 'firebase_options.dart';
+import 'package:unn_mobile/firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setPreferredOrientations(
-      [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
+    [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown],
+  );
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
@@ -80,41 +81,54 @@ void main() async {
 }
 
 void registerDependencies() {
-  var injector = Injector.appInstance;
+  final injector = Injector.appInstance;
   // register all the dependencies here:
   injector.registerSingleton<OnlineStatusData>(() => OnlineStatusData());
 
   injector.registerSingleton<StorageService>(() => StorageServiceImpl());
   injector.registerSingleton<ExportScheduleService>(
-      () => ExportScheduleServiceImpl());
+    () => ExportScheduleServiceImpl(),
+  );
   injector.registerSingleton<AuthorisationService>(
-      () => AuthorisationServiceImpl());
+    () => AuthorisationServiceImpl(),
+  );
   injector.registerSingleton<AuthDataProvider>(() => AuthDataProviderImpl());
   injector.registerSingleton<AuthorisationRefreshService>(
-      () => AuthorisationRefreshServiceImpl());
+    () => AuthorisationRefreshServiceImpl(),
+  );
   injector.registerSingleton<SearchIdOnPortalService>(
-      () => SearchIdOnPortalServiceImpl());
+    () => SearchIdOnPortalServiceImpl(),
+  );
   injector.registerSingleton<GettingScheduleService>(
-      () => GettingScheduleServiceImpl());
+    () => GettingScheduleServiceImpl(),
+  );
   injector.registerSingleton<OfflineScheduleProvider>(
-      () => OfflineScheduleProviderImpl());
+    () => OfflineScheduleProviderImpl(),
+  );
   injector.registerSingleton<ScheduleSearchHistoryService>(
-      () => ScheduleSearchHistoryServiceImpl());
+    () => ScheduleSearchHistoryServiceImpl(),
+  );
   injector.registerSingleton<GettingProfileOfCurrentUser>(
-      () => GettingProfileOfCurrentUserImpl());
+    () => GettingProfileOfCurrentUserImpl(),
+  );
   injector.registerSingleton<UserDataProvider>(() => UserDataProviderImpl());
   injector.registerSingleton<GettingBlogPosts>(() => GettingBlogPostsImpl());
   injector.registerSingleton<GettingBlogPostComments>(
-      () => GettingBlogPostCommentsImpl());
+    () => GettingBlogPostCommentsImpl(),
+  );
   injector.registerSingleton<GettingProfile>(() => GettingProfileImpl());
   injector.registerSingleton<FeedUpdaterService>(
-      () => FeedStreamUpdaterServiceImpl());
+    () => FeedStreamUpdaterServiceImpl(),
+  );
   injector.registerSingleton<TypeOfCurrentUser>(() => TypeOfCurrentUser());
   injector.registerSingleton<PostWithLoadedInfoProvider>(
-      () => PostWithLoadedInfoProviderImpl());
+    () => PostWithLoadedInfoProviderImpl(),
+  );
   injector.registerSingleton<GettingFileData>(() => GettingFileDataImpl());
   injector.registerSingleton<GettingRatingList>(() => GettingRatingListImpl());
-  injector.registerSingleton<GettingVoteKeySigned>(() => GettingVoteKeySignedImpl());
+  injector.registerSingleton<GettingVoteKeySigned>(
+    () => GettingVoteKeySignedImpl(),
+  );
   injector.registerSingleton<LRUCacheBlogPostCommentWithLoadedInfo>(
     () => LRUCacheBlogPostCommentWithLoadedInfo(50),
   );

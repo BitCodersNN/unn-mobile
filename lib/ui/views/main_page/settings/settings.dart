@@ -27,19 +27,19 @@ class SettingsScreenView extends StatelessWidget {
               if (context.mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
-                    content: Text("Кэш очищен"),
+                    content: Text('Кэш очищен'),
                   ),
                 );
               }
             },
-            child: const Text("Очистить кэш"),
+            child: const Text('Очистить кэш'),
           ),
           TextButton(
             onPressed: () async {
               await showDialog(
                 context: context,
                 builder: (context) => AlertDialog.adaptive(
-                  title: const Text("Выйти из аккаунта?"),
+                  title: const Text('Выйти из аккаунта?'),
                   actions: [
                     AdaptiveDialogAction(
                       onPressed: () async {
@@ -52,24 +52,25 @@ class SettingsScreenView extends StatelessWidget {
                         }
                       },
                       child: Text(
-                        "Выйти",
+                        'Выйти',
                         style: TextStyle(color: theme.colorScheme.error),
                       ),
                     ),
                     AdaptiveDialogAction(
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                        child: const Text("Отмена"))
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: const Text('Отмена'),
+                    ),
                   ],
                 ),
               );
             },
             child: Text(
-              "Выйти из аккаунта",
+              'Выйти из аккаунта',
               style: TextStyle(color: theme.colorScheme.error),
             ),
-          )
+          ),
         ],
       ),
     );

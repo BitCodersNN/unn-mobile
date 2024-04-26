@@ -46,7 +46,8 @@ class BlogData {
         jsonMap[_KeysForBlogDataJsonConverter.title] as String,
         jsonMap[_KeysForBlogDataJsonConverter.detailText] as String,
         DateTime.parse(
-            jsonMap[_KeysForBlogDataJsonConverter.datePublish] as String),
+          jsonMap[_KeysForBlogDataJsonConverter.datePublish] as String,
+        ),
         int.parse(jsonMap[_KeysForBlogDataJsonConverter.numComments] as String),
         (jsonMap[_KeysForBlogDataJsonConverter.files] as List<dynamic>?)
             ?.map((element) => element.toString())

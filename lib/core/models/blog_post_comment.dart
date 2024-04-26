@@ -30,9 +30,11 @@ class BlogPostComment {
   factory BlogPostComment.fromJson(Map<String, Object?> jsonMap) =>
       BlogPostComment(
         id: int.parse(
-            jsonMap[_KeysForBlogPostCommentJsonConverter.id] as String),
+          jsonMap[_KeysForBlogPostCommentJsonConverter.id] as String,
+        ),
         authorId: int.parse(
-            jsonMap[_KeysForBlogPostCommentJsonConverter.authorId] as String),
+          jsonMap[_KeysForBlogPostCommentJsonConverter.authorId] as String,
+        ),
         authorName:
             jsonMap[_KeysForBlogPostCommentJsonConverter.authorName] as String,
         dateTime:

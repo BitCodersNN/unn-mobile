@@ -13,7 +13,7 @@ import 'package:unn_mobile/core/services/interfaces/getting_profile.dart';
 class GettingProfileImpl implements GettingProfile {
   final String _path = 'bitrix/vuz/api/user/';
   final String _pathSecondPartForGettingId = 'bx/';
-  final String _sessionIdCookieKey = "PHPSESSID";
+  final String _sessionIdCookieKey = 'PHPSESSID';
   final String _profiles = 'profiles';
   final String _id = 'id';
   final String _user = 'user';
@@ -45,14 +45,16 @@ class GettingProfileImpl implements GettingProfile {
 
     if (statusCode != 200) {
       await FirebaseCrashlytics.instance.log(
-          '${runtimeType.toString()}: statusCode = $statusCode; authorId = $authorId');
+        '${runtimeType.toString()}: statusCode = $statusCode; authorId = $authorId',
+      );
       return null;
     }
 
     int? id;
     try {
       id = jsonDecode(
-          await HttpRequestSender.responseToStringBody(response))[_id];
+        await HttpRequestSender.responseToStringBody(response),
+      )[_id];
     } catch (error, stackTrace) {
       await FirebaseCrashlytics.instance.recordError(error, stackTrace);
     }
@@ -65,10 +67,12 @@ class GettingProfileImpl implements GettingProfile {
     final authorisationService =
         Injector.appInstance.get<AuthorisationService>();
 
-    final requestSender =
-        HttpRequestSender(path: _path + userId.toString(), cookies: {
-      _sessionIdCookieKey: authorisationService.sessionId ?? '',
-    });
+    final requestSender = HttpRequestSender(
+      path: _path + userId.toString(),
+      cookies: {
+        _sessionIdCookieKey: authorisationService.sessionId ?? '',
+      },
+    );
 
     HttpClientResponse response;
     try {
@@ -82,7 +86,8 @@ class GettingProfileImpl implements GettingProfile {
 
     if (statusCode != 200) {
       await FirebaseCrashlytics.instance.log(
-          '${runtimeType.toString()}: statusCode = $statusCode; userId = $userId');
+        '${runtimeType.toString()}: statusCode = $statusCode; userId = $userId',
+      );
       return null;
     }
 
@@ -119,8 +124,9 @@ class GettingProfileImpl implements GettingProfile {
   }
 
   @override
-  Future<UserData?> getProfileByAuthorIdFromPost(
-      {required int authorId}) async {
+  Future<UserData?> getProfileByAuthorIdFromPost({
+    required int authorId,
+  }) async {
     final userId = await getProfileIdByAuthorIdFromPost(authorId: authorId);
     if (userId == null) {
       return null;

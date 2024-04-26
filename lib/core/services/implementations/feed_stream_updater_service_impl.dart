@@ -121,7 +121,7 @@ class FeedStreamUpdaterServiceImpl
 
   Future<void> _addPostsToStream(List<BlogData>? posts, bool notify) async {
     if (posts == null) {
-      throw Exception("Could not load posts");
+      throw Exception('Could not load posts');
     }
 
     for (final post in posts) {
@@ -158,7 +158,8 @@ class FeedStreamUpdaterServiceImpl
       final data = await Future.wait(futures);
 
       final startPosFilesInData = postAuthor == null ? 1 : 0;
-      final posRatingListInData = startPosFilesInData + (post.files ?? []).length;
+      final posRatingListInData =
+          startPosFilesInData + (post.files ?? []).length;
       postAuthor ??= data.first;
 
       if (postAuthor == null) {
@@ -167,21 +168,25 @@ class FeedStreamUpdaterServiceImpl
 
       _lruCacheProfile.save(post.authorID, postAuthor);
 
-      List<FileData?> files = List<FileData?>.from(data.getRange(
-        startPosFilesInData,
-        posRatingListInData,
-      ));
-      List<FileData> filteredFiles = files //
+      final List<FileData?> files = List<FileData?>.from(
+        data.getRange(
+          startPosFilesInData,
+          posRatingListInData,
+        ),
+      );
+      final List<FileData> filteredFiles = files //
           .where((element) => element != null)
           .map((e) => e!)
           .toList();
 
-      _postsList.add(PostWithLoadedInfo(
-        author: postAuthor,
-        post: post,
-        files: filteredFiles,
-        ratingList: data[posRatingListInData] ?? RatingList(),
-      ));
+      _postsList.add(
+        PostWithLoadedInfo(
+          author: postAuthor,
+          post: post,
+          files: filteredFiles,
+          ratingList: data[posRatingListInData] ?? RatingList(),
+        ),
+      );
 
       if (notify) {
         notifyListeners();

@@ -34,18 +34,21 @@ class PostWithLoadedInfo {
   factory PostWithLoadedInfo.fromJson(Map<String, Object?> jsonMap) {
     return PostWithLoadedInfo(
       author: UserData.fromJson(
-          jsonMap[KeysForPostWithLoadedInfoJsonConverter.author]
-              as Map<String, Object?>),
+        jsonMap[KeysForPostWithLoadedInfoJsonConverter.author]
+            as Map<String, Object?>,
+      ),
       post: BlogData.fromJson(
-          jsonMap[KeysForPostWithLoadedInfoJsonConverter.post]
-              as Map<String, Object?>),
+        jsonMap[KeysForPostWithLoadedInfoJsonConverter.post]
+            as Map<String, Object?>,
+      ),
       files: (jsonMap[KeysForPostWithLoadedInfoJsonConverter.files]
               as List<dynamic>)
           .map((element) => FileData.fromJson(element))
           .toList(),
       ratingList: RatingList.fromJson(
-          jsonMap[KeysForPostWithLoadedInfoJsonConverter.ratingList]
-              as Map<String, Object?>),
+        jsonMap[KeysForPostWithLoadedInfoJsonConverter.ratingList]
+            as Map<String, Object?>,
+      ),
     );
   }
 

@@ -48,8 +48,14 @@ class Subject {
   final String _lecturer;
   final DateTimeRange _dateTimeRange;
 
-  const Subject(this._name, this._kindOfWork, this._address, this._groups,
-      this._lecturer, this._dateTimeRange);
+  const Subject(
+    this._name,
+    this._kindOfWork,
+    this._address,
+    this._groups,
+    this._lecturer,
+    this._dateTimeRange,
+  );
 
   String get name => _name;
   String get subjectType => _kindOfWork;
@@ -94,15 +100,20 @@ class Subject {
     return Subject(
       jsonMap[KeysForSubjectJsonConverter.discipline] as String,
       jsonMap[KeysForSubjectJsonConverter.kindOfWork] as String,
-      Address(jsonMap[KeysForSubjectJsonConverter.auditorium] as String,
-          jsonMap[KeysForSubjectJsonConverter.building] as String),
+      Address(
+        jsonMap[KeysForSubjectJsonConverter.auditorium] as String,
+        jsonMap[KeysForSubjectJsonConverter.building] as String,
+      ),
       (jsonMap[KeysForSubjectJsonConverter.stream] as String).split('|'),
       jsonMap[KeysForSubjectJsonConverter.lecturer] as String,
       DateTimeRange(
-          start: DateTime.parse(
-              jsonMap[KeysForSubjectJsonConverter.beginLesson] as String),
-          end: DateTime.parse(
-              jsonMap[KeysForSubjectJsonConverter.endLesson] as String)),
+        start: DateTime.parse(
+          jsonMap[KeysForSubjectJsonConverter.beginLesson] as String,
+        ),
+        end: DateTime.parse(
+          jsonMap[KeysForSubjectJsonConverter.endLesson] as String,
+        ),
+      ),
     );
   }
 

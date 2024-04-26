@@ -11,7 +11,7 @@ abstract interface class AuthorisationService {
   ///
   /// [login]: логин на unn-portal, т.е. номер студенческого билета
   /// [password]: пароль
-  /// 
+  ///
   /// Выбрасывает исключения:
   ///   1. [SessionCookieException] - если session cookie имеет значени null
   ///   2. [CsrfValueException] - если csrf value имеет значени null

@@ -15,15 +15,19 @@ class LoadingPage extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                _text(model.loadingPageData.title,
-                    model.loadingPageData.titleStyle),
+                _text(
+                  model.loadingPageData.title,
+                  model.loadingPageData.titleStyle,
+                ),
                 const SizedBox(height: 30),
                 Image(image: AssetImage(model.loadingPageData.imagePath)),
                 const SizedBox(height: 30),
                 if (model.actualLoadingPage.description != null &&
                     model.actualLoadingPage.descriptionStyle != null)
-                  _text(model.actualLoadingPage.description!,
-                      model.actualLoadingPage.descriptionStyle!)
+                  _text(
+                    model.actualLoadingPage.description!,
+                    model.actualLoadingPage.descriptionStyle!,
+                  ),
               ],
             ),
           ),
@@ -33,8 +37,11 @@ class LoadingPage extends StatelessWidget {
     );
   }
 
-  Text _text(String title, TextStyle textStyle,
-      {TextAlign textAlign = TextAlign.center}) {
+  Text _text(
+    String title,
+    TextStyle textStyle, {
+    TextAlign textAlign = TextAlign.center,
+  }) {
     return Text(
       title,
       style: textStyle,

@@ -11,14 +11,14 @@ class HttpRequestSender {
   final Map<String, String> _headers;
   final Map<String, String> _cookies;
 
-  HttpRequestSender(
-      {bool useSSL = true,
-      String host = "portal.unn.ru",
-      required String path,
-      Map<String, dynamic> queryParams = const {},
-      Map<String, String> headers = const {},
-      Map<String, String> cookies = const {}})
-      : _cookies = cookies,
+  HttpRequestSender({
+    bool useSSL = true,
+    String host = 'portal.unn.ru',
+    required String path,
+    Map<String, dynamic> queryParams = const {},
+    Map<String, String> headers = const {},
+    Map<String, String> cookies = const {},
+  })  : _cookies = cookies,
         _headers = headers,
         _useSSL = useSSL,
         _queryParams = queryParams,
@@ -30,7 +30,9 @@ class HttpRequestSender {
   /// [response]: результат запроса
   ///
   /// Возращает строку
-  static Future<String> responseToStringBody(HttpClientResponse response) async {
+  static Future<String> responseToStringBody(
+    HttpClientResponse response,
+  ) async {
     return await response.transform(utf8.decoder).join();
   }
 
@@ -43,17 +45,22 @@ class HttpRequestSender {
   /// [timeoutSeconds]: время ожидания
   ///
   /// Возращает результат запроса
-  Future<HttpClientResponse> postForm(Map<String, dynamic> body,
-      {int timeoutSeconds = maxTimeout}) async {
+  Future<HttpClientResponse> postForm(
+    Map<String, dynamic> body, {
+    int timeoutSeconds = maxTimeout,
+  }) async {
     final request =
         await _prepareHttpClientRequest(_HttpMethod.post, timeoutSeconds);
 
-    request.headers.add("Content-Type", "application/x-www-form-urlencoded");
+    request.headers.add('Content-Type', 'application/x-www-form-urlencoded');
 
     //add body
-    request.add(utf8.encode(Uri(queryParameters: body)
-            .query //it means that [k1=v1&k2=v2&...&kn=vn] encoded to unicode
-        ));
+    request.add(
+      utf8.encode(
+        Uri(queryParameters: body)
+            .query, //it means that [k1=v1&k2=v2&...&kn=vn] encoded to unicode
+      ),
+    );
 
     //fetch response
     return await request.closeWithTimeout(timeoutSeconds);
@@ -75,12 +82,15 @@ class HttpRequestSender {
   }
 
   Future<HttpClientRequest> _prepareHttpClientRequest(
-      _HttpMethod method, int timeoutSeconds) async {
+    _HttpMethod method,
+    int timeoutSeconds,
+  ) async {
     final httpClient = HttpClient();
 
     final request = await httpClient.openUrl(method.name, _createURI()).timeout(
-        Duration(seconds: timeoutSeconds),
-        onTimeout: () => throw TimeoutException("Open url timed out"));
+          Duration(seconds: timeoutSeconds),
+          onTimeout: () => throw TimeoutException('Open url timed out'),
+        );
 
     _headers.forEach((key, value) {
       request.headers.add(key, value);
@@ -101,8 +111,10 @@ class HttpRequestSender {
 
 extension on HttpClientRequest {
   Future<HttpClientResponse> closeWithTimeout(int timeoutSeconds) async {
-    return await close().timeout(Duration(seconds: timeoutSeconds),
-        onTimeout: () => throw TimeoutException("close request timed out"));
+    return await close().timeout(
+      Duration(seconds: timeoutSeconds),
+      onTimeout: () => throw TimeoutException('close request timed out'),
+    );
   }
 }
 

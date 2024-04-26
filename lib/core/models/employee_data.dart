@@ -25,8 +25,15 @@ class EmployeeData extends UserData {
     this._jobTitle,
     this._department,
     this._manager,
-  ) : super(userData.login, userData.fullname, userData.email, userData.phone,
-            userData.sex, userData.urlPhoto, userData.notes);
+  ) : super(
+          userData.login,
+          userData.fullname,
+          userData.email,
+          userData.phone,
+          userData.sex,
+          userData.urlPhoto,
+          userData.notes,
+        );
 
   String get syncID => _syncID;
   String get jobType => _jobType;
