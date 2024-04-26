@@ -1,4 +1,4 @@
-class Paths {
+class ApiPaths {
   static const String host = 'portal.unn.ru';
   static const String auth = 'auth/';
   static const String ajax = 'bitrix/services/main/ajax.php';

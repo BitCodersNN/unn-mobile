@@ -21,7 +21,7 @@ class GettingFileDataImpl implements GettingFileData {
         Injector.appInstance.get<AuthorisationService>();
 
     final requestSender = HttpRequestSender(
-      path: Paths.diskAttachedObjectGet,
+      path: ApiPaths.diskAttachedObjectGet,
       queryParams: {
         StringForSessionIdentifier.sessid: authorisationService.csrf ?? '',
         _id: id.toString(),

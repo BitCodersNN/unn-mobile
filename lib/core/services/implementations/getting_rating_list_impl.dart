@@ -30,7 +30,7 @@ class GettingRatingListImpl implements GettingRatingList {
     int pageNumber = 0,
   }) async {
     final requestSender = HttpRequestSender(
-      path: Paths.ajax,
+      path: ApiPaths.ajax,
       queryParams: {
         Action.actionKey: Action.ratingList,
       },
@@ -102,7 +102,7 @@ class GettingRatingListImpl implements GettingRatingList {
     required String voteKeySigned,
   }) async {
     final requestSender = HttpRequestSender(
-      path: Paths.ajax,
+      path: ApiPaths.ajax,
       queryParams: {
         Action.actionKey: Action.ratingList,
       },

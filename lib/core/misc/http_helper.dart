@@ -15,7 +15,7 @@ class HttpRequestSender {
 
   HttpRequestSender({
     bool useSSL = true,
-    String host = Paths.host,
+    String host = ApiPaths.host,
     required String path,
     Map<String, dynamic> queryParams = const {},
     Map<String, String> headers = const {},

@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:injector/injector.dart';
-import 'package:unn_mobile/core/constants/regulat_expression.dart';
+import 'package:unn_mobile/core/constants/regular_expression.dart';
 import 'package:unn_mobile/core/constants/string_for_api.dart';
 import 'package:unn_mobile/core/constants/string_for_session_identifier.dart';
 import 'package:unn_mobile/core/misc/http_helper.dart';
@@ -19,7 +19,7 @@ class GettingVoteKeySignedImpl implements GettingVoteKeySigned {
   }) async {
     final authorisationService =
         Injector.appInstance.get<AuthorisationService>();
-    final path = '${Paths.personalUser}/$authorId/$_blog/$postId/';
+    final path = '${ApiPaths.personalUser}/$authorId/$_blog/$postId/';
 
     final requestSender = HttpRequestSender(
       path: path,
@@ -57,14 +57,11 @@ class GettingVoteKeySignedImpl implements GettingVoteKeySigned {
       return null;
     }
 
-    final keySignedRegExp = RegExp(
-      RegularExpSource.keySigned,
-    );
-
     String? keySignedMatches;
     try {
-      keySignedMatches =
-          (keySignedRegExp.firstMatch(responseStr)?.group(0) as String);
+      keySignedMatches = (RegularExpression.keySignedRegExp
+          .firstMatch(responseStr)
+          ?.group(0) as String);
     } catch (error, stackTrace) {
       await FirebaseCrashlytics.instance.recordError(error, stackTrace);
       return null;

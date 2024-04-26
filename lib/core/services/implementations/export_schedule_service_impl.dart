@@ -25,7 +25,7 @@ class ExportScheduleServiceImpl implements ExportScheduleService {
     ScheduleFilter scheduleFilter,
   ) async {
     final path =
-        '${Paths.schedule}${scheduleFilter.idType.name}/${scheduleFilter.id}.$_ics';
+        '${ApiPaths.schedule}${scheduleFilter.idType.name}/${scheduleFilter.id}.$_ics';
 
     final requestSender = HttpRequestSender(
       path: path,

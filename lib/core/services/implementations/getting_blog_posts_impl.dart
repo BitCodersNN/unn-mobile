@@ -24,7 +24,7 @@ class GettingBlogPostsImpl implements GettingBlogPosts {
         Injector.appInstance.get<AuthorisationService>();
 
     final requestSender = HttpRequestSender(
-      path: Paths.blogpostGet,
+      path: ApiPaths.blogpostGet,
       queryParams: {
         StringForSessionIdentifier.sessid: authorisationService.csrf ?? '',
         _start: (_numberOfPostsPerPage * pageNumber).toString(),

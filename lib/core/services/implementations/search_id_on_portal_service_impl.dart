@@ -22,7 +22,7 @@ class SearchIdOnPortalServiceImpl implements SearchIdOnPortalService {
 
   Future<String?> _getIdOfLoggedInStudent(String uns) async {
     final requestSender = HttpRequestSender(
-      path: Paths.studentInfo,
+      path: ApiPaths.studentInfo,
       queryParams: {_uns: uns},
     );
 
@@ -77,7 +77,7 @@ class SearchIdOnPortalServiceImpl implements SearchIdOnPortalService {
     IDType valueType,
   ) async {
     final requestSender = HttpRequestSender(
-      path: Paths.search,
+      path: ApiPaths.search,
       queryParams: {_term: value, _type: valueType.name},
     );
     HttpClientResponse response;

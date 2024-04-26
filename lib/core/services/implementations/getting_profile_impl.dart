@@ -23,7 +23,7 @@ class GettingProfileImpl implements GettingProfile {
         Injector.appInstance.get<AuthorisationService>();
 
     final requestSender = HttpRequestSender(
-      path: Paths.user + _pathSecondPartForGettingId + authorId.toString(),
+      path: ApiPaths.user + _pathSecondPartForGettingId + authorId.toString(),
       cookies: {
         StringForSessionIdentifier.sessionIdCookieKey:
             authorisationService.sessionId ?? '',
@@ -65,7 +65,7 @@ class GettingProfileImpl implements GettingProfile {
         Injector.appInstance.get<AuthorisationService>();
 
     final requestSender = HttpRequestSender(
-      path: Paths.user + userId.toString(),
+      path: ApiPaths.user + userId.toString(),
       cookies: {
         StringForSessionIdentifier.sessionIdCookieKey:
             authorisationService.sessionId ?? '',

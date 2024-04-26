@@ -95,7 +95,7 @@ class AuthorisationServiceImpl implements AuthorisationService {
     String password,
   ) async {
     final requestSender =
-        HttpRequestSender(path: Paths.auth, queryParams: {'login': 'yes'});
+        HttpRequestSender(path: ApiPaths.auth, queryParams: {'login': 'yes'});
 
     return await requestSender.postForm(
       {
@@ -111,7 +111,7 @@ class AuthorisationServiceImpl implements AuthorisationService {
 
   Future<HttpClientResponse> _sendCsrfRequest(String session) async {
     final requestSender = HttpRequestSender(
-      path: Paths.ajax,
+      path: ApiPaths.ajax,
       queryParams: {Action.actionKey: Action.getNextPage},
       cookies: {StringForSessionIdentifier.sessionIdCookieKey: session},
     );

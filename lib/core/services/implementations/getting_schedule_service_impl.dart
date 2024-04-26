@@ -21,7 +21,7 @@ class GettingScheduleServiceImpl implements GettingScheduleService {
   @override
   Future<List<Subject>?> getSchedule(ScheduleFilter scheduleFilter) async {
     final path =
-        '${Paths.schedule}${scheduleFilter.idType.name}/${scheduleFilter.id}';
+        '${ApiPaths.schedule}${scheduleFilter.idType.name}/${scheduleFilter.id}';
     final requestSender = HttpRequestSender(
       path: path,
       queryParams: {
