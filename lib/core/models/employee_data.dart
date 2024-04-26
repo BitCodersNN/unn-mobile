@@ -30,7 +30,7 @@ class EmployeeData extends UserData {
 
   String get syncID => _syncID;
   String get jobType => _jobType;
-  String get jobTitel => _jobTitle;
+  String get jobTitle => _jobTitle;
   String get department => _department;
   String? get manager => _manager;
 
