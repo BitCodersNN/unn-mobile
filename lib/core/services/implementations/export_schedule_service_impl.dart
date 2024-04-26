@@ -22,20 +22,24 @@ class ExportScheduleServiceImpl implements ExportScheduleService {
 
   @override
   Future<ExportScheduleResult> exportSchedule(
-      ScheduleFilter scheduleFilter) async {
+    ScheduleFilter scheduleFilter,
+  ) async {
     _path = '$_path${scheduleFilter.idType.name}/${scheduleFilter.id}.$_ics';
 
-    final requestSender = HttpRequestSender(path: _path, queryParams: {
-      _start: scheduleFilter.dateTimeRange.start
-          .toIso8601String()
-          .split('T')[0]
-          .replaceAll('-', '.'),
-      _finish: scheduleFilter.dateTimeRange.end
-          .toIso8601String()
-          .split('T')[0]
-          .replaceAll('-', '.'),
-      _lng: '1',
-    });
+    final requestSender = HttpRequestSender(
+      path: _path,
+      queryParams: {
+        _start: scheduleFilter.dateTimeRange.start
+            .toIso8601String()
+            .split('T')[0]
+            .replaceAll('-', '.'),
+        _finish: scheduleFilter.dateTimeRange.end
+            .toIso8601String()
+            .split('T')[0]
+            .replaceAll('-', '.'),
+        _lng: '1',
+      },
+    );
 
     HttpClientResponse response;
     try {
@@ -51,8 +55,8 @@ class ExportScheduleServiceImpl implements ExportScheduleService {
     }
 
     final iCalendarData = ICalendar.fromString(
-            await HttpRequestSender.responseToStringBody(response))
-        .data;
+      await HttpRequestSender.responseToStringBody(response),
+    ).data;
     iCalendarData.removeAt(0);
 
     final status = await _permissionHandler
@@ -101,7 +105,9 @@ class ExportScheduleServiceImpl implements ExportScheduleService {
   }
 
   Future<ExportScheduleResult> _addEventsInCalendar(
-      iCalendarData, calendarID) async {
+    iCalendarData,
+    calendarID,
+  ) async {
     const String summary = 'summary';
     const String location = 'location';
     const String dtstart = 'dtstart';
@@ -111,14 +117,17 @@ class ExportScheduleServiceImpl implements ExportScheduleService {
     final timeZone = timeZoneDatabase.locations[_timeZone]!;
     try {
       for (final event in iCalendarData) {
-        await _deviceCalendarPlugin.createOrUpdateEvent(Event(
-          calendarID,
-          title: event[summary],
-          location: event[location],
-          start: TZDateTime.parse(timeZone, (event[dtstart] as IcsDateTime).dt),
-          end: TZDateTime.parse(timeZone, (event[dtend] as IcsDateTime).dt),
-          description: event[description],
-        ));
+        await _deviceCalendarPlugin.createOrUpdateEvent(
+          Event(
+            calendarID,
+            title: event[summary],
+            location: event[location],
+            start:
+                TZDateTime.parse(timeZone, (event[dtstart] as IcsDateTime).dt),
+            end: TZDateTime.parse(timeZone, (event[dtend] as IcsDateTime).dt),
+            description: event[description],
+          ),
+        );
       }
     } catch (e) {
       rethrow;

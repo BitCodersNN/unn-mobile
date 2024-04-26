@@ -24,7 +24,9 @@ class SearchIdOnPortalServiceImpl implements SearchIdOnPortalService {
 
   Future<String?> _getIdOfLoggedInStudent(String uns) async {
     final requestSender = HttpRequestSender(
-        path: _ruzapi + _studentinfo, queryParams: {_uns: uns});
+      path: _ruzapi + _studentinfo,
+      queryParams: {_uns: uns},
+    );
 
     HttpClientResponse response;
     try {
@@ -38,11 +40,12 @@ class SearchIdOnPortalServiceImpl implements SearchIdOnPortalService {
 
     if (statusCode != 200) {
       await FirebaseCrashlytics.instance.log(
-          '${runtimeType.toString()}: statusCode = $statusCode; userLogin = $uns');
+        '${runtimeType.toString()}: statusCode = $statusCode; userLogin = $uns',
+      );
       return null;
     }
 
-    Map<dynamic, dynamic> jsonMap =
+    final Map<dynamic, dynamic> jsonMap =
         jsonDecode(await HttpRequestSender.responseToStringBody(response));
 
     return jsonMap[_id];
@@ -72,10 +75,13 @@ class SearchIdOnPortalServiceImpl implements SearchIdOnPortalService {
 
   @override
   Future<List<ScheduleSearchResultItem>?> findIDOnPortal(
-      String value, IDType valueType) async {
+    String value,
+    IDType valueType,
+  ) async {
     final requestSender = HttpRequestSender(
-        path: _ruzapi + _search,
-        queryParams: {_term: value, _type: valueType.name});
+      path: _ruzapi + _search,
+      queryParams: {_term: value, _type: valueType.name},
+    );
     HttpClientResponse response;
     try {
       response = await requestSender.get();
@@ -88,17 +94,23 @@ class SearchIdOnPortalServiceImpl implements SearchIdOnPortalService {
 
     if (statusCode != 200) {
       await FirebaseCrashlytics.instance.log(
-          '${runtimeType.toString()}: statusCode = $statusCode; value = $value; valueType = $valueType');
+        '${runtimeType.toString()}: statusCode = $statusCode; value = $value; valueType = $valueType',
+      );
       return null;
     }
 
-    List<dynamic> jsonList =
+    final List<dynamic> jsonList =
         jsonDecode(await HttpRequestSender.responseToStringBody(response));
 
-    List<ScheduleSearchResultItem> result = [];
-    for (var jsonMap in jsonList) {
-      result.add(ScheduleSearchResultItem(
-          jsonMap[_id], jsonMap[_label], jsonMap[_description]));
+    final List<ScheduleSearchResultItem> result = [];
+    for (final jsonMap in jsonList) {
+      result.add(
+        ScheduleSearchResultItem(
+          jsonMap[_id],
+          jsonMap[_label],
+          jsonMap[_description],
+        ),
+      );
     }
 
     return result;

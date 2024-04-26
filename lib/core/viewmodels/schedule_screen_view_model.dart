@@ -52,8 +52,8 @@ class ScheduleScreenViewModel extends BaseViewModel {
   int displayedWeekOffset = 0;
   DateTimeRange get displayedWeek =>
       offline ? decidePivotWeek() : _filter.dateTimeRange;
-  // По идее - надо использовать decidePivotWeek, 
-  // но его нельзя в инициализации использовать. 
+  // По идее - надо использовать decidePivotWeek,
+  // но его нельзя в инициализации использовать.
   // Поэтому используем как есть, потом в init создаём как надо
   ScheduleFilter _filter = ScheduleFilter(
     IDType.student,
@@ -196,13 +196,13 @@ class ScheduleScreenViewModel extends BaseViewModel {
     }
 
     final result = SplayTreeMap<int, List<Subject>>();
-    for (Subject subject in schedule) {
+    for (final Subject subject in schedule) {
       if (!result.keys.contains(subject.dateTimeRange.start.weekday)) {
         result.addEntries([
           MapEntry<int, List<Subject>>(
             subject.dateTimeRange.start.weekday,
             [],
-          )
+          ),
         ]);
       }
       result[subject.dateTimeRange.start.weekday]!.add(subject);

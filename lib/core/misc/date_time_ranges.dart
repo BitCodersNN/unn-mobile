@@ -25,7 +25,9 @@ class DateTimeRanges {
         DateTime(now.year, now.month + 1, 1).subtract(const Duration(days: 1));
 
     return DateTimeRange(
-        start: DateTime(now.year, now.month, 1), end: endOfMonth);
+      start: DateTime(now.year, now.month, 1),
+      end: endOfMonth,
+    );
   }
 
   static DateTimeRange currentSemester() {
@@ -42,15 +44,15 @@ class DateTimeRanges {
   }
 
   static DateTimeRange untilEndOfWeek() {
-    DateTime now = DateTime.now();
-    DateTime endOfWeek =
+    final DateTime now = DateTime.now();
+    final DateTime endOfWeek =
         now.add(Duration(days: DateTime.daysPerWeek - now.weekday));
 
     return DateTimeRange(start: now, end: endOfWeek);
   }
 
   static DateTimeRange untilEndOfMonth() {
-    DateTime now = DateTime.now();
+    final DateTime now = DateTime.now();
     final endOfMonth =
         DateTime(now.year, now.month + 1, 1).subtract(const Duration(days: 1));
 

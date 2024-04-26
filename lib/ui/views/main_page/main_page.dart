@@ -28,7 +28,7 @@ class _MainPageState extends State<MainPage> {
   final _navigatorKey = GlobalKey<NavigatorState>();
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
   final Map<int, GlobalKey> tabKeys = {
-    1: GlobalKey<State<ScheduleScreenView>>()
+    1: GlobalKey<State<ScheduleScreenView>>(),
   };
 
   final List<String> drawerRoutes = [
@@ -41,7 +41,7 @@ class _MainPageState extends State<MainPage> {
     'payment_site',
     'settings',
     'about',
-    'exit'
+    'exit',
   ];
   final List<String> navbarRoutes = [
     'feed',
@@ -73,7 +73,6 @@ class _MainPageState extends State<MainPage> {
                 case 'feed':
                   return local_router.Router.createCustomRoute(
                     const FeedScreenView(),
-                    
                   );
                 case '':
                 case 'schedule':
@@ -112,29 +111,31 @@ class _MainPageState extends State<MainPage> {
               }
             },
           ),
-          drawer: MainPageDrawer(onDestinationSelected: (value) {
-            bool stateChanged = !model.isDrawerItemSelected ||
-                model.selectedDrawerItem != value;
-            model.selectedDrawerItem = value;
-            model.isDrawerItemSelected = true;
-            scaffoldKey.currentState!.closeDrawer();
-            if (stateChanged) {
-              _navigatorKey.currentState!.popAndPushNamed(
-                drawerRoutes[value],
-              );
-            } else {
-              if (tabKeys.containsKey(drawerIdOffset + value)) {
-                if (tabKeys[value]!.currentState != null &&
-                    tabKeys[value]!.currentState is MainPageTabState) {
-                  (tabKeys[value]!.currentState as MainPageTabState)
-                      .refreshTab();
+          drawer: MainPageDrawer(
+            onDestinationSelected: (value) {
+              final bool stateChanged = !model.isDrawerItemSelected ||
+                  model.selectedDrawerItem != value;
+              model.selectedDrawerItem = value;
+              model.isDrawerItemSelected = true;
+              scaffoldKey.currentState!.closeDrawer();
+              if (stateChanged) {
+                _navigatorKey.currentState!.popAndPushNamed(
+                  drawerRoutes[value],
+                );
+              } else {
+                if (tabKeys.containsKey(drawerIdOffset + value)) {
+                  if (tabKeys[value]!.currentState != null &&
+                      tabKeys[value]!.currentState is MainPageTabState) {
+                    (tabKeys[value]!.currentState as MainPageTabState)
+                        .refreshTab();
+                  }
                 }
               }
-            }
-          }),
+            },
+          ),
           bottomNavigationBar: MainPageNavigationBar(
             onDestinationSelected: (value) {
-              bool stateChanged =
+              final bool stateChanged =
                   model.isDrawerItemSelected || model.selectedBarItem != value;
               model.selectedBarItem = value;
               model.isDrawerItemSelected = false;

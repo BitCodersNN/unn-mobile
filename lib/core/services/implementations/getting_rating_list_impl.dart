@@ -45,7 +45,7 @@ class GettingRatingListImpl implements GettingRatingList {
       },
     );
 
-    Map<String, dynamic> body = {
+    final Map<String, dynamic> body = {
       _ratingVoteTypeId: voteKeySigned.split('-')[0],
       _ratingVoteKeySigned: voteKeySigned,
       _ratingVoteEntityId: voteKeySigned.split('-')[1].split('.')[0],
@@ -63,7 +63,7 @@ class GettingRatingListImpl implements GettingRatingList {
       );
     } catch (error, stackTrace) {
       await FirebaseCrashlytics.instance
-          .log("Exception: $error\nStackTrace: $stackTrace");
+          .log('Exception: $error\nStackTrace: $stackTrace');
       return null;
     }
 
@@ -77,7 +77,8 @@ class GettingRatingListImpl implements GettingRatingList {
     dynamic jsonMap;
     try {
       jsonMap = jsonDecode(
-          await HttpRequestSender.responseToStringBody(response))[_data];
+        await HttpRequestSender.responseToStringBody(response),
+      )[_data];
     } catch (error, stackTrace) {
       await FirebaseCrashlytics.instance.recordError(error, stackTrace);
       return null;
@@ -115,7 +116,7 @@ class GettingRatingListImpl implements GettingRatingList {
       },
     );
 
-    Map<String, dynamic> body = {
+    final Map<String, dynamic> body = {
       _ratingVoteTypeId: voteKeySigned.split('-')[0],
       _ratingVoteKeySigned: voteKeySigned,
       _ratingVoteEntityId: voteKeySigned.split('-')[1].split('.')[0],
@@ -131,7 +132,7 @@ class GettingRatingListImpl implements GettingRatingList {
       );
     } catch (error, stackTrace) {
       await FirebaseCrashlytics.instance
-          .log("Exception: $error\nStackTrace: $stackTrace");
+          .log('Exception: $error\nStackTrace: $stackTrace');
       return null;
     }
 
@@ -192,11 +193,13 @@ class GettingRatingListImpl implements GettingRatingList {
       for (var pageNumber = 1;
           pageNumber <= value ~/ reactionCountPerPage + 1;
           pageNumber++) {
-        futures.add(getReactionListByReaction(
-          voteKeySigned: voteKeySigned,
-          reactionType: key,
-          pageNumber: pageNumber,
-        ));
+        futures.add(
+          getReactionListByReaction(
+            voteKeySigned: voteKeySigned,
+            reactionType: key,
+            pageNumber: pageNumber,
+          ),
+        );
       }
     });
 

@@ -53,14 +53,14 @@ class _AttachedFileState extends State<AttachedFile> {
     if (authService.sessionId == null) {
       return null;
     }
-    String? downloadsPath = await getDownloadPath();
+    final String? downloadsPath = await getDownloadPath();
     if (downloadsPath == null) {
       return null;
     }
     final storedFile = File('$downloadsPath/${fileData.name}');
     if (!storedFile.existsSync()) {
       setState(() {});
-      HttpClient client = HttpClient();
+      final HttpClient client = HttpClient();
       try {
         final request =
             await client.openUrl('get', Uri.parse(fileData.downloadUrl));
@@ -157,7 +157,7 @@ class _AttachedFileState extends State<AttachedFile> {
                                   } else {
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       const SnackBar(
-                                        content: Text("Произошла ошибка"),
+                                        content: Text('Произошла ошибка'),
                                       ),
                                     );
                                     Navigator.pop(context);
@@ -183,7 +183,7 @@ class _AttachedFileState extends State<AttachedFile> {
                             if (context.mounted) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
-                                  content: Text("Неизвестная ошибка"),
+                                  content: Text('Неизвестная ошибка'),
                                 ),
                               );
                             }
@@ -192,7 +192,7 @@ class _AttachedFileState extends State<AttachedFile> {
                             if (context.mounted) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
-                                  content: Text("Нет подходящей программы"),
+                                  content: Text('Нет подходящей программы'),
                                 ),
                               );
                             }
@@ -201,7 +201,7 @@ class _AttachedFileState extends State<AttachedFile> {
                             if (context.mounted) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
-                                  content: Text("Нет доступа к файлам"),
+                                  content: Text('Нет доступа к файлам'),
                                 ),
                               );
                             }

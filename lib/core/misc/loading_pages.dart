@@ -24,25 +24,28 @@ class _LoadingPages {
 
   static LoadingPageModel march8th = LoadingPageModel(
     titleStyle: const TextStyle(
-        color: Color.fromRGBO(144, 21, 84, 1.0),
-        fontSize: 34.09,
-        fontFamily: "LetoSans"),
+      color: Color.fromRGBO(144, 21, 84, 1.0),
+      fontSize: 34.09,
+      fontFamily: 'LetoSans',
+    ),
     imagePath: 'assets/images/logos/march_8th_logo.png',
     description: 'С 8 Марта!',
     descriptionStyle: const TextStyle(
-        color: Color.fromRGBO(144, 21, 84, 1.0),
-        fontSize: 25,
-        fontFamily: "LetoSans"),
+      color: Color.fromRGBO(144, 21, 84, 1.0),
+      fontSize: 25,
+      fontFamily: 'LetoSans',
+    ),
   );
 
   static LoadingPageModel april1st = LoadingPageModel(
-      title: 'УНИВЕРСИТЕТ \n АЛЕКСЕЕВА',
-      imagePath: 'assets/images/logos/april_1st_logo.png');
+    title: 'УНИВЕРСИТЕТ \n АЛЕКСЕЕВА',
+    imagePath: 'assets/images/logos/april_1st_logo.png',
+  );
 }
 
 class LoadingPages {
   LoadingPageModel get actualLoadingPage {
-    DateTime today = DateTime.now();
+    final DateTime today = DateTime.now();
 
     LoadingPageModel loadingPage = _LoadingPages.main;
 

@@ -21,24 +21,27 @@ class GettingScheduleServiceImpl implements GettingScheduleService {
   @override
   Future<List<Subject>?> getSchedule(ScheduleFilter scheduleFilter) async {
     final path = '$_path${scheduleFilter.idType.name}/${scheduleFilter.id}';
-    final requestSender = HttpRequestSender(path: path, queryParams: {
-      _start: scheduleFilter.dateTimeRange.start
-          .toIso8601String()
-          .split('T')[0]
-          .replaceAll('-', '.'),
-      _finish: scheduleFilter.dateTimeRange.end
-          .toIso8601String()
-          .split('T')[0]
-          .replaceAll('-', '.'),
-      _lng: '1',
-    });
+    final requestSender = HttpRequestSender(
+      path: path,
+      queryParams: {
+        _start: scheduleFilter.dateTimeRange.start
+            .toIso8601String()
+            .split('T')[0]
+            .replaceAll('-', '.'),
+        _finish: scheduleFilter.dateTimeRange.end
+            .toIso8601String()
+            .split('T')[0]
+            .replaceAll('-', '.'),
+        _lng: '1',
+      },
+    );
 
     HttpClientResponse response;
     try {
       response = await requestSender.get();
     } catch (error, stackTrace) {
       await FirebaseCrashlytics.instance
-          .log("Exception: $error\nStackTrace: $stackTrace");
+          .log('Exception: $error\nStackTrace: $stackTrace');
       return null;
     }
 
@@ -46,7 +49,8 @@ class GettingScheduleServiceImpl implements GettingScheduleService {
 
     if (statusCode != 200) {
       await FirebaseCrashlytics.instance.log(
-          '${runtimeType.toString()}: statusCode = $statusCode; scheduleId = ${scheduleFilter.id}');
+        '${runtimeType.toString()}: statusCode = $statusCode; scheduleId = ${scheduleFilter.id}',
+      );
       return null;
     }
 
@@ -60,9 +64,9 @@ class GettingScheduleServiceImpl implements GettingScheduleService {
       return null;
     }
 
-    List<Subject> schedule = [];
+    final List<Subject> schedule = [];
 
-    for (var jsonMap in jsonList) {
+    for (final jsonMap in jsonList) {
       schedule.add(_convertFromJson(jsonMap));
     }
 
@@ -70,16 +74,20 @@ class GettingScheduleServiceImpl implements GettingScheduleService {
   }
 
   Subject _convertFromJson(Map<String, Object?> jsonMap) {
-    DateTime startDateTime = DateFormat(_dateFormat).parse(
-        '${jsonMap[_date] as String} ${jsonMap[KeysForSubjectJsonConverter.beginLesson] as String}');
-    DateTime endDateTime = DateFormat(_dateFormat).parse(
-        '${jsonMap[_date] as String} ${jsonMap[KeysForSubjectJsonConverter.endLesson] as String}');
+    final DateTime startDateTime = DateFormat(_dateFormat).parse(
+      '${jsonMap[_date] as String} ${jsonMap[KeysForSubjectJsonConverter.beginLesson] as String}',
+    );
+    final DateTime endDateTime = DateFormat(_dateFormat).parse(
+      '${jsonMap[_date] as String} ${jsonMap[KeysForSubjectJsonConverter.endLesson] as String}',
+    );
 
     return Subject(
       jsonMap[KeysForSubjectJsonConverter.discipline] as String,
       (jsonMap[KeysForSubjectJsonConverter.kindOfWork] ?? '') as String,
-      Address(jsonMap[KeysForSubjectJsonConverter.auditorium] as String,
-          jsonMap[KeysForSubjectJsonConverter.building] as String),
+      Address(
+        jsonMap[KeysForSubjectJsonConverter.auditorium] as String,
+        jsonMap[KeysForSubjectJsonConverter.building] as String,
+      ),
       ((jsonMap[KeysForSubjectJsonConverter.stream] ?? '') as String)
           .split(_splitPaternForStream),
       (jsonMap[KeysForSubjectJsonConverter.lecturer] ?? '') as String,

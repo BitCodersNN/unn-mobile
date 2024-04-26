@@ -29,7 +29,8 @@ class ReactionUserInfo {
     this._photoSrc,
   );
 
-  factory ReactionUserInfo.fromJson(Map<String, Object?> jsonMap) => ReactionUserInfo(
+  factory ReactionUserInfo.fromJson(Map<String, Object?> jsonMap) =>
+      ReactionUserInfo(
         int.parse(jsonMap[_KeysForUserInfoJsonConverter.id] as String),
         jsonMap[_KeysForUserInfoJsonConverter.fullname] as String,
         jsonMap[_KeysForUserInfoJsonConverter.photoSrc] as String?,
@@ -52,8 +53,11 @@ class RatingList {
     _ratingList = ratingList;
   }
 
-  void addReactions(ReactionType reactionType, List<ReactionUserInfo> userInfo) {
-    int initialSize = _ratingList.length;
+  void addReactions(
+    ReactionType reactionType,
+    List<ReactionUserInfo> userInfo,
+  ) {
+    final int initialSize = _ratingList.length;
     _ratingList.putIfAbsent(reactionType, () => userInfo);
 
     if (_ratingList.length == initialSize) {
@@ -78,7 +82,7 @@ class RatingList {
       return _ratingList[reactionType];
     }
 
-    List<ReactionUserInfo> users = [];
+    final List<ReactionUserInfo> users = [];
     for (final list in _ratingList.values) {
       users.addAll(list);
     }
@@ -86,11 +90,11 @@ class RatingList {
   }
 
   factory RatingList.fromJson(Map<String, Object?> jsonMap) {
-    Map<ReactionType, List<ReactionUserInfo>> ratingList = {};
+    final Map<ReactionType, List<ReactionUserInfo>> ratingList = {};
 
     jsonMap.forEach((key, value) {
       if (value is List) {
-        List<ReactionUserInfo> userList = [];
+        final List<ReactionUserInfo> userList = [];
         for (final userJson in value) {
           if (userJson is Map<String, dynamic>) {
             userList.add(ReactionUserInfo.fromJson(userJson));
@@ -105,7 +109,7 @@ class RatingList {
   }
 
   Map<String, dynamic> toJson() {
-    Map<String, dynamic> json = {};
+    final Map<String, dynamic> json = {};
     _ratingList.forEach((key, value) {
       json[key.toString()] = value.map((user) => user.toJson()).toList();
     });

@@ -51,7 +51,7 @@ class FeedScreenView extends StatelessWidget {
           onNotification: (scrollEnd) {
             final metrics = scrollEnd.metrics;
             if (metrics.atEdge) {
-              bool isTop = metrics.pixels == 0;
+              final bool isTop = metrics.pixels == 0;
               if (!isTop) {
                 model.loadNextPage();
               }
@@ -121,7 +121,7 @@ class FeedScreenView extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "${post.author.fullname.lastname} ${post.author.fullname.name} ${post.author.fullname.surname}",
+                      '${post.author.fullname.lastname} ${post.author.fullname.name} ${post.author.fullname.surname}',
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         color: Color(0xFF1A63B7),
@@ -150,14 +150,14 @@ class FeedScreenView extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Text(
-                      "Failed to parse BBCode correctly. ",
+                      'Failed to parse BBCode correctly. ',
                       style: TextStyle(color: Colors.red),
                     ),
                     const Text(
-                      "This usually means on of the tags is not properly handling unexpected input.\n",
+                      'This usually means on of the tags is not properly handling unexpected input.\n',
                     ),
-                    const Text("Original text: "),
-                    Text(post.post.detailText.replaceAll("\n", "\n#")),
+                    const Text('Original text: '),
+                    Text(post.post.detailText.replaceAll('\n', '\n#')),
                     Text(error.toString()),
                   ],
                 );
@@ -194,7 +194,7 @@ class FeedScreenView extends StatelessWidget {
                   const Padding(
                     padding: EdgeInsets.only(top: 6),
                     child: Text(
-                      "Комментарии:",
+                      'Комментарии:',
                       style: TextStyle(
                         fontSize: 14,
                         color: idkWhatColor,
@@ -207,14 +207,14 @@ class FeedScreenView extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.only(top: 6),
                     child: Text(
-                      "${post.post.numberOfComments}",
+                      '${post.post.numberOfComments}',
                       style: const TextStyle(
                         fontSize: 14,
                         color: idkWhatColor,
                         fontStyle: FontStyle.italic,
                       ),
                     ),
-                  )
+                  ),
                 ],
               ),
           ],
@@ -229,7 +229,7 @@ class FeedScreenView extends StatelessWidget {
           UrlTag(
             onTap: (url) async {
               if (!await launchUrl(Uri.parse(url))) {
-                FirebaseCrashlytics.instance.log("Could not launch url $url");
+                FirebaseCrashlytics.instance.log('Could not launch url $url');
               }
             },
           ),
@@ -239,9 +239,11 @@ class FeedScreenView extends StatelessWidget {
         .addTag(
           custom_tags.VideoTag(
             onTap: (url) async {
-              if (!await launchUrl(Uri.parse(url),
-                  mode: LaunchMode.platformDefault)) {
-                FirebaseCrashlytics.instance.log("Could not launch url $url");
+              if (!await launchUrl(
+                Uri.parse(url),
+                mode: LaunchMode.platformDefault,
+              )) {
+                FirebaseCrashlytics.instance.log('Could not launch url $url');
               }
             },
           ),
