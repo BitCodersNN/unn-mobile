@@ -26,7 +26,7 @@ class PostWithLoadedInfoProviderImpl implements PostWithLoadedInfoProvider {
       ))!,
     );
 
-    List<PostWithLoadedInfo> postWithLoadedInfo = [];
+    final List<PostWithLoadedInfo> postWithLoadedInfo = [];
 
     for (final jsonMap in jsonList) {
       postWithLoadedInfo.add(PostWithLoadedInfo.fromJson(jsonMap));
@@ -55,7 +55,8 @@ class PostWithLoadedInfoProviderImpl implements PostWithLoadedInfoProvider {
   @override
   Future<bool> isContained() async {
     return await _storage.containsKey(
-        key: _PostWithLoadedInfoProviderKeys.postWithLoadedInfoKey);
+      key: _PostWithLoadedInfoProviderKeys.postWithLoadedInfoKey,
+    );
   }
 
   @override
@@ -64,7 +65,7 @@ class PostWithLoadedInfoProviderImpl implements PostWithLoadedInfoProvider {
       return;
     }
 
-    dynamic jsonList = [];
+    final dynamic jsonList = [];
     for (final postWithLoadedInfo in data) {
       jsonList.add(postWithLoadedInfo.toJson());
     }

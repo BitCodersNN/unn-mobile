@@ -36,7 +36,7 @@ class UnnMobile extends StatelessWidget {
               SubjectType.unknown: Color(0xFF6E757C),
             },
             ligtherTextColor: Color(0xFF717A84),
-          )
+          ),
         ],
       ),
     );

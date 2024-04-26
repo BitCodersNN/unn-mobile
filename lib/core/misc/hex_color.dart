@@ -10,7 +10,7 @@ extension ColorParser on Color {
       buffer.write('ff');
     }
     buffer.write(hexString.replaceFirst('#', ''));
-    int? intColor = int.tryParse(buffer.toString(), radix: 16);
+    final int? intColor = int.tryParse(buffer.toString(), radix: 16);
     if (intColor != null) {
       return Color(intColor);
     } else {

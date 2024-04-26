@@ -19,7 +19,7 @@ class CommentsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Запись"),
+        title: const Text('Запись'),
       ),
       body: BaseView<CommentsPageViewModel>(
         builder: (context, model, child) {
@@ -41,7 +41,7 @@ class CommentsPage extends StatelessWidget {
                     const Padding(
                       padding: EdgeInsets.only(top: 20, bottom: 0),
                       child: Text(
-                        "КОММЕНТАРИИ",
+                        'КОММЕНТАРИИ',
                         style: TextStyle(
                           fontSize: 14,
                           color: Color.fromARGB(255, 152, 158, 169),
@@ -74,7 +74,7 @@ class CommentsPage extends StatelessWidget {
               onNotification: (scrollEnd) {
                 final metrics = scrollEnd.metrics;
                 if (metrics.atEdge) {
-                  bool isTop = metrics.pixels == 0;
+                  final bool isTop = metrics.pixels == 0;
                   if (!isTop) {
                     model.loadMoreComments();
                   }

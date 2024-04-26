@@ -29,19 +29,23 @@ class UserDataProviderImpl implements UserDataProvider {
       key: _UserDataProvideKeys._userTypeKey,
     );
 
-    String? userInfo = await _storage.read(
+    final String? userInfo = await _storage.read(
       key: _UserDataProvideKeys._userDataKey,
     );
 
     try {
       if (userType == _student) {
-        userData = StudentData.fromJson(jsonDecode(
-          userInfo!,
-        ));
+        userData = StudentData.fromJson(
+          jsonDecode(
+            userInfo!,
+          ),
+        );
       } else if (userType == _employee) {
-        userData = EmployeeData.fromJson(jsonDecode(
-          userInfo!,
-        ));
+        userData = EmployeeData.fromJson(
+          jsonDecode(
+            userInfo!,
+          ),
+        );
       }
     } catch (e, stackTrace) {
       await FirebaseCrashlytics.instance
@@ -71,7 +75,8 @@ class UserDataProviderImpl implements UserDataProvider {
   @override
   Future<bool> isContained() async {
     return (await _storage.containsKey(
-            key: _UserDataProvideKeys._userTypeKey) &&
+          key: _UserDataProvideKeys._userTypeKey,
+        ) &&
         await _storage.containsKey(key: _UserDataProvideKeys._userDataKey));
   }
 }

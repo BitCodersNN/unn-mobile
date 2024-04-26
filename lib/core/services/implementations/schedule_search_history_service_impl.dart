@@ -23,9 +23,11 @@ class ScheduleSearchHistoryServiceImpl implements ScheduleSearchHistoryService {
         _historyQueues.putIfAbsent(type, () => Queue());
         continue;
       }
-      Iterable rawHistory = jsonDecode((await _storage.read(key: key))!);
+      final Iterable rawHistory = jsonDecode((await _storage.read(key: key))!);
       _historyQueues.putIfAbsent(
-          type, () => Queue.from(rawHistory.map((e) => e.toString())));
+        type,
+        () => Queue.from(rawHistory.map((e) => e.toString())),
+      );
     }
     _isInitialized = true;
   }
@@ -42,15 +44,18 @@ class ScheduleSearchHistoryServiceImpl implements ScheduleSearchHistoryService {
   }
 
   @override
-  FutureOr<void> pushToHistory(
-      {required IDType type, required String value}) async {
+  FutureOr<void> pushToHistory({
+    required IDType type,
+    required String value,
+  }) async {
     _historyQueues[type]!.remove(value);
     _historyQueues[type]!.addFirst(value);
     if (_historyQueues[type]!.length > _maxHistoryItems) {
       _historyQueues[type]!.removeLast();
     }
     await _storage.write(
-        key: type.name + _storageKeySuffix,
-        value: jsonEncode(await getHistory(type)));
+      key: type.name + _storageKeySuffix,
+      value: jsonEncode(await getHistory(type)),
+    );
   }
 }

@@ -7,7 +7,7 @@ class LRUCache<Key, Value> {
   LRUCache(this.maxSize) : cache = LinkedHashMap<Key, Value>();
 
   Value? get(Key key) {
-    Value? value = cache.remove(key);
+    final Value? value = cache.remove(key);
 
     if (value != null) {
       cache[key] = value;
@@ -17,7 +17,7 @@ class LRUCache<Key, Value> {
   }
 
   void save(Key key, Value newValue) {
-    Value? value = cache.remove(key);
+    final Value? value = cache.remove(key);
     if (value != null) {
       cache[key] = newValue;
     } else {

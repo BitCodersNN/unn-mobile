@@ -47,7 +47,7 @@ class UnnMobileColors extends ThemeExtension<UnnMobileColors> {
       return this;
     }
 
-    UnnMobileColors otherColors = other as UnnMobileColors;
+    final UnnMobileColors otherColors = other as UnnMobileColors;
 
     return UnnMobileColors(
       scheduleDayHighlight: Color.lerp(

@@ -12,7 +12,7 @@ Future<String?> getDownloadPath() async {
     }
   } catch (err, stack) {
     FirebaseCrashlytics.instance.recordError(
-      "Cannot get download folder path: $err",
+      'Cannot get download folder path: $err',
       stack,
     );
   }

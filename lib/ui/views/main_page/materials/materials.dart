@@ -11,7 +11,7 @@ class MaterialsScreenView extends StatelessWidget {
       builder: (context, value, child) {
         return const Center(
           child: Image(
-            image: AssetImage("assets/images/quest/1.png"),
+            image: AssetImage('assets/images/quest/1.png'),
           ),
         );
       },

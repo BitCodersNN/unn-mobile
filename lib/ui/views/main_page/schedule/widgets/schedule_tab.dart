@@ -33,12 +33,12 @@ class ScheduleTabState extends State<ScheduleTab>
   final _scrollController = AutoScrollController();
   final _viewKey = GlobalKey();
   final Map<DateTimeRange, Widget> _exportRanges = {
-    DateTimeRanges.untilEndOfWeek() : const Text("До конца этой недели"),
-    DateTimeRanges.untilEndOfMonth() :const Text("До конца этого месяца"),
-    DateTimeRanges.untilEndOfSemester(): const  Text("До конца этого семестра"),
+    DateTimeRanges.untilEndOfWeek(): const Text('До конца этой недели'),
+    DateTimeRanges.untilEndOfMonth(): const Text('До конца этого месяца'),
+    DateTimeRanges.untilEndOfSemester(): const Text('До конца этого семестра'),
   };
   bool _searchViewOpen = false;
-  String searchQueryForRestore = "";
+  String searchQueryForRestore = '';
   @override
   void initState() {
     super.initState();
@@ -78,11 +78,15 @@ class ScheduleTabState extends State<ScheduleTab>
               }
             }
             if (model.displayedWeekOffset == 0 && todayScheduleIndex != -1) {
-              await _scrollController.scrollToIndex(todayScheduleIndex,
-                  preferPosition: AutoScrollPosition.begin);
+              await _scrollController.scrollToIndex(
+                todayScheduleIndex,
+                preferPosition: AutoScrollPosition.begin,
+              );
             } else {
-              await _scrollController.scrollToIndex(0,
-                  preferPosition: AutoScrollPosition.begin);
+              await _scrollController.scrollToIndex(
+                0,
+                preferPosition: AutoScrollPosition.begin,
+              );
             }
           },
         );
@@ -133,7 +137,7 @@ class ScheduleTabState extends State<ScheduleTab>
                   MenuAnchor(
                     menuChildren: [
                       MenuItemButton(
-                        child: const Text("Экспорт в календарь"),
+                        child: const Text('Экспорт в календарь'),
                         onPressed: () async {
                           final permission =
                               await model.askForExportPermission();
@@ -152,17 +156,17 @@ class ScheduleTabState extends State<ScheduleTab>
                                           Navigator.pop(context);
                                         }
                                       },
-                                      child: const Text("Настройки"),
+                                      child: const Text('Настройки'),
                                     ),
                                     TextButton(
                                       onPressed: () {
                                         Navigator.pop(context);
                                       },
-                                      child: const Text("Отмена"),
+                                      child: const Text('Отмена'),
                                     ),
                                   ],
                                   content: const Text(
-                                    "Приложению запрещён доступ к календарю. Разрешите его в настройках, чтобы экспортировать расписание.",
+                                    'Приложению запрещён доступ к календарю. Разрешите его в настройках, чтобы экспортировать расписание.',
                                   ),
                                 ),
                               );
@@ -175,22 +179,26 @@ class ScheduleTabState extends State<ScheduleTab>
                                 context: context,
                                 builder: (context) {
                                   return RadioGroupDialog(
-                                    label: const Text("Экспортировать расписание: "),
+                                    label: const Text(
+                                      'Экспортировать расписание: ',
+                                    ),
                                     radioLabels: _exportRanges.values.toList(),
                                   );
                                 },
                               );
                             }
                             if (selectedRange != null) {
-                              bool result = await model.exportSchedule(_exportRanges.keys.toList()[selectedRange]);
+                              final bool result = await model.exportSchedule(
+                                _exportRanges.keys.toList()[selectedRange],
+                              );
                               if (context.mounted) {
                                 showDialog(
                                   context: context,
                                   builder: (context) => MessageDialog(
                                     message: Text(
                                       result
-                                          ? "Расписание экспортировано в календарь \"Расписание ННГУ\". \nВозможно, понадобится включить настройку Device Calendar в приложении календаря."
-                                          : "Не удалось экспортировать. Попробуйте снова.",
+                                          ? 'Расписание экспортировано в календарь "Расписание ННГУ". \nВозможно, понадобится включить настройку Device Calendar в приложении календаря.'
+                                          : 'Не удалось экспортировать. Попробуйте снова.',
                                       textAlign: TextAlign.center,
                                     ),
                                   ),
@@ -199,20 +207,21 @@ class ScheduleTabState extends State<ScheduleTab>
                             }
                           }
                         },
-                      )
+                      ),
                     ],
                     builder: (context, controller, child) {
                       return IconButton(
-                          onPressed: () {
-                            if (controller.isOpen) {
-                              controller.close();
-                            } else {
-                              controller.open();
-                            }
-                          },
-                          icon: const Icon(Icons.more_horiz));
+                        onPressed: () {
+                          if (controller.isOpen) {
+                            controller.close();
+                          } else {
+                            controller.open();
+                          }
+                        },
+                        icon: const Icon(Icons.more_horiz),
+                      );
                     },
-                  )
+                  ),
                 ],
                 shape: MaterialStateProperty.resolveWith(
                   (states) => const RoundedRectangleBorder(
@@ -237,20 +246,23 @@ class ScheduleTabState extends State<ScheduleTab>
         },
         suggestionsBuilder: (context, controller) async {
           final rawSuggestions = await model.getSearchSuggestions(
-              controller.text); // Неэффективно, но работает >:(
+            controller.text,
+          ); // Неэффективно, но работает >:(
           if (controller.text == '') {
             final suggestions = await model.getHistorySuggestions();
-            return suggestions.map((e) => ScheduleSearchSuggestionItem(
-                  itemName: e,
-                  onSelected: () async {
-                    controller.closeView(e);
-                    if (model.lastSearchQuery != e) {
-                      model.lastSearchQuery = e;
-                      await model.addHistoryItem(e);
-                      await model.submitSearch(e);
-                    }
-                  },
-                ));
+            return suggestions.map(
+              (e) => ScheduleSearchSuggestionItem(
+                itemName: e,
+                onSelected: () async {
+                  controller.closeView(e);
+                  if (model.lastSearchQuery != e) {
+                    model.lastSearchQuery = e;
+                    await model.addHistoryItem(e);
+                    await model.submitSearch(e);
+                  }
+                },
+              ),
+            );
           } else {
             return rawSuggestions.map<ScheduleSearchSuggestionItem>(
               (e) => ScheduleSearchSuggestionItem(
@@ -285,105 +297,111 @@ class ScheduleTabState extends State<ScheduleTab>
 
     return Expanded(
       child: FutureBuilder(
-          future: model.scheduleLoader,
-          builder: (context, snapshot) {
-            return CustomScrollView(
-              controller: _scrollController,
-              cacheExtent: 10,
-              slivers: [
-                if (!model.offline)
-                  SliverPersistentHeader(
-                    delegate: PersistentHeader(
-                      maxExtent: 60,
-                      widget: Container(
-                        color: theme.colorScheme.background,
-                        child: Padding(
-                          padding: const EdgeInsets.fromLTRB(0, 10, 0, 5),
-                          child: _searchBar(model, context),
-                        ),
+        future: model.scheduleLoader,
+        builder: (context, snapshot) {
+          return CustomScrollView(
+            controller: _scrollController,
+            cacheExtent: 10,
+            slivers: [
+              if (!model.offline)
+                SliverPersistentHeader(
+                  delegate: PersistentHeader(
+                    maxExtent: 60,
+                    widget: Container(
+                      color: theme.colorScheme.background,
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(0, 10, 0, 5),
+                        child: _searchBar(model, context),
                       ),
                     ),
-                    pinned: false,
-                    floating: true,
                   ),
-                if (snapshot.connectionState != ConnectionState.none)
-                  SliverAppBar(
-                    leading: model.offline
-                        ? null
-                        : IconButton(
-                            onPressed: () async {
-                              await model.decrementWeek();
-                            },
-                            icon: const Icon(Icons.chevron_left_sharp),
-                          ),
-                    automaticallyImplyLeading: false,
-                    actions: [
-                      if (!model.offline)
-                        IconButton(
+                  pinned: false,
+                  floating: true,
+                ),
+              if (snapshot.connectionState != ConnectionState.none)
+                SliverAppBar(
+                  leading: model.offline
+                      ? null
+                      : IconButton(
                           onPressed: () async {
-                            await model.incrementWeek();
+                            await model.decrementWeek();
                           },
-                          icon: const Icon(Icons.chevron_right),
+                          icon: const Icon(Icons.chevron_left_sharp),
                         ),
-                    ],
-                    centerTitle: true,
-                    title: MediaQuery.withClampedTextScaling(
-                      maxScaleFactor: 1,
-                      child: Text(
-                          '${headerFormatter.format(model.displayedWeek.start)} - ${headerFormatter.format(model.displayedWeek.end)}'),
-                    ),
-                    backgroundColor: theme.colorScheme.background,
-                    surfaceTintColor: Colors.transparent,
-                    pinned: true,
-                    toolbarHeight: 50,
-                    collapsedHeight: 50,
-                    expandedHeight: 50,
-                  ),
-                if (model.state == ViewState.idle && snapshot.hasData)
-                  if (snapshot.data!.isNotEmpty)
-                    _scheduleSliverList(model, snapshot, theme)
-                  else
-                    SliverToBoxAdapter(
-                      child: Center(
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(
-                            "На этой неделе занятий нет :)",
-                            style: theme.textTheme.bodyLarge,
-                          ),
-                        ),
+                  automaticallyImplyLeading: false,
+                  actions: [
+                    if (!model.offline)
+                      IconButton(
+                        onPressed: () async {
+                          await model.incrementWeek();
+                        },
+                        icon: const Icon(Icons.chevron_right),
                       ),
-                    )
-                else if (snapshot.connectionState != ConnectionState.none)
-                  const SliverToBoxAdapter(
+                  ],
+                  centerTitle: true,
+                  title: MediaQuery.withClampedTextScaling(
+                    maxScaleFactor: 1,
+                    child: Text(
+                      '${headerFormatter.format(model.displayedWeek.start)} - ${headerFormatter.format(model.displayedWeek.end)}',
+                    ),
+                  ),
+                  backgroundColor: theme.colorScheme.background,
+                  surfaceTintColor: Colors.transparent,
+                  pinned: true,
+                  toolbarHeight: 50,
+                  collapsedHeight: 50,
+                  expandedHeight: 50,
+                ),
+              if (model.state == ViewState.idle && snapshot.hasData)
+                if (snapshot.data!.isNotEmpty)
+                  _scheduleSliverList(model, snapshot, theme)
+                else
+                  SliverToBoxAdapter(
                     child: Center(
                       child: Padding(
-                        padding: EdgeInsets.all(20.0),
-                        child: SizedBox(
-                          width: 100,
-                          height: 100,
-                          child: CircularProgressIndicator(),
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          'На этой неделе занятий нет :)',
+                          style: theme.textTheme.bodyLarge,
                         ),
                       ),
                     ),
+                  )
+              else if (snapshot.connectionState != ConnectionState.none)
+                const SliverToBoxAdapter(
+                  child: Center(
+                    child: Padding(
+                      padding: EdgeInsets.all(20.0),
+                      child: SizedBox(
+                        width: 100,
+                        height: 100,
+                        child: CircularProgressIndicator(),
+                      ),
+                    ),
                   ),
-              ],
-            );
-          }),
+                ),
+            ],
+          );
+        },
+      ),
     );
   }
 
-  SliverList _scheduleSliverList(ScheduleScreenViewModel model,
-      AsyncSnapshot<Map<int, List<Subject>>> snapshot, ThemeData theme) {
+  SliverList _scheduleSliverList(
+    ScheduleScreenViewModel model,
+    AsyncSnapshot<Map<int, List<Subject>>> snapshot,
+    ThemeData theme,
+  ) {
     return SliverList(
       delegate: SliverChildBuilderDelegate(
         (context, index) {
-          var formatedDate =
-              toBeginningOfSentenceCase(DateFormat.MMMMEEEEd('ru_RU').format(
-            model.displayedWeek.start.add(
-              Duration(days: snapshot.data!.keys.elementAt(index) - 1),
+          final formatedDate = toBeginningOfSentenceCase(
+            DateFormat.MMMMEEEEd('ru_RU').format(
+              model.displayedWeek.start.add(
+                Duration(days: snapshot.data!.keys.elementAt(index) - 1),
+              ),
             ),
-          ));
+          );
 
           return AutoScrollTag(
             key: ValueKey(index),
@@ -403,7 +421,9 @@ class ScheduleTabState extends State<ScheduleTab>
                             .isSameDate(DateTime.now()))
                         ? BoxDecoration(
                             border: Border(
-                                bottom: BorderSide(color: theme.primaryColor)))
+                              bottom: BorderSide(color: theme.primaryColor),
+                            ),
+                          )
                         : null,
                     child: Text(
                       formatedDate!,
@@ -416,8 +436,9 @@ class ScheduleTabState extends State<ScheduleTab>
                     i < snapshot.data!.values.elementAt(index).length;
                     i++)
                   ScheduleItemNormal(
-                      subject: snapshot.data!.values.elementAt(index)[i],
-                      even: i % 2 == 0),
+                    subject: snapshot.data!.values.elementAt(index)[i],
+                    even: i % 2 == 0,
+                  ),
               ],
             ),
           );

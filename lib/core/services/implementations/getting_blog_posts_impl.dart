@@ -13,29 +13,35 @@ class GettingBlogPostsImpl implements GettingBlogPosts {
   final String _path = 'rest/log.blogpost.get.json';
   final String _sessid = 'sessid';
   final String _start = 'start';
-  final String _sessionIdCookieKey = "PHPSESSID";
+  final String _sessionIdCookieKey = 'PHPSESSID';
   final String _postId = 'POST_ID';
 
   @override
-  Future<List<BlogData>?> getBlogPosts(
-      {int pageNumber = 0, int? postId}) async {
+  Future<List<BlogData>?> getBlogPosts({
+    int pageNumber = 0,
+    int? postId,
+  }) async {
     final authorisationService =
         Injector.appInstance.get<AuthorisationService>();
 
-    final requestSender = HttpRequestSender(path: _path, queryParams: {
-      _sessid: authorisationService.csrf ?? '',
-      _start: (_numberOfPostsPerPage * pageNumber).toString(),
-      _postId: postId.toString(),
-    }, cookies: {
-      _sessionIdCookieKey: authorisationService.sessionId ?? '',
-    });
+    final requestSender = HttpRequestSender(
+      path: _path,
+      queryParams: {
+        _sessid: authorisationService.csrf ?? '',
+        _start: (_numberOfPostsPerPage * pageNumber).toString(),
+        _postId: postId.toString(),
+      },
+      cookies: {
+        _sessionIdCookieKey: authorisationService.sessionId ?? '',
+      },
+    );
 
     HttpClientResponse response;
     try {
       response = await requestSender.get(timeoutSeconds: 60);
     } catch (error, stackTrace) {
       await FirebaseCrashlytics.instance
-          .log("Exception: $error\nStackTrace: $stackTrace");
+          .log('Exception: $error\nStackTrace: $stackTrace');
       return null;
     }
 
@@ -43,7 +49,8 @@ class GettingBlogPostsImpl implements GettingBlogPosts {
 
     if (statusCode != 200) {
       await FirebaseCrashlytics.instance.log(
-          '${runtimeType.toString()}: statusCode = $statusCode; pageNumber = $pageNumber; postId = $postId');
+        '${runtimeType.toString()}: statusCode = $statusCode; pageNumber = $pageNumber; postId = $postId',
+      );
       return null;
     }
 

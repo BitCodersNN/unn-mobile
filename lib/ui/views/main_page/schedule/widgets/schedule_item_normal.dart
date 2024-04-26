@@ -20,7 +20,7 @@ class ScheduleItemNormal extends StatefulWidget {
 class _ScheduleItemNormalState extends State<ScheduleItemNormal>
     with TickerProviderStateMixin {
   bool _expanded = false;
-  final vutsScheduleUri = "http://www.ivo.unn.ru/raspisanie-vuts/";
+  final vutsScheduleUri = 'http://www.ivo.unn.ru/raspisanie-vuts/';
 
   @override
   Widget build(BuildContext context) {
@@ -33,10 +33,10 @@ class _ScheduleItemNormalState extends State<ScheduleItemNormal>
       padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 8.0),
       child: GestureDetector(
         onTap: () async {
-          if (widget.subject.name == "Военная подготовка") {
+          if (widget.subject.name == 'Военная подготовка') {
             final Uri url = Uri.parse(vutsScheduleUri);
             if (!await launchUrl(url)) {
-              throw Exception("Could not launch $url");
+              throw Exception('Could not launch $url');
             }
           } else {
             setState(() {
@@ -90,7 +90,7 @@ class _ScheduleItemNormalState extends State<ScheduleItemNormal>
                         _textWithIcon(
                           context,
                           Icons.location_on,
-                          "${widget.subject.address.auditorium}/${widget.subject.address.building}",
+                          '${widget.subject.address.auditorium}/${widget.subject.address.building}',
                         ),
                         if (_expanded)
                           _textWithIcon(
@@ -144,7 +144,7 @@ class _ScheduleItemNormalState extends State<ScheduleItemNormal>
                       ),
                     ],
                   ),
-                )
+                ),
               ],
             ),
           ),
@@ -183,8 +183,10 @@ class _ScheduleItemNormalState extends State<ScheduleItemNormal>
 
   Color getSurfaceColor(ThemeData theme) {
     final extraColors = theme.extension<UnnMobileColors>()!;
-    if (DateTime.now().isAfter(widget.subject.dateTimeRange.start
-            .subtract(const Duration(minutes: 10))) &&
+    if (DateTime.now().isAfter(
+          widget.subject.dateTimeRange.start
+              .subtract(const Duration(minutes: 10)),
+        ) &&
         DateTime.now().isBefore(widget.subject.dateTimeRange.end)) {
       return extraColors.scheduleSubjectHighlight!;
     }

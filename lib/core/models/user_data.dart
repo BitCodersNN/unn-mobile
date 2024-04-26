@@ -37,8 +37,15 @@ class UserData {
   final String _urlPhotoFirstPart = 'https://portal.unn.ru';
   final String? _urlPhoto;
 
-  const UserData(this._login, this._fullname, this._email, this._phone,
-      this._sex, this._urlPhoto, this._notes);
+  const UserData(
+    this._login,
+    this._fullname,
+    this._email,
+    this._phone,
+    this._sex,
+    this._urlPhoto,
+    this._notes,
+  );
 
   String? get login => _login;
   Fullname get fullname => _fullname;
@@ -59,9 +66,10 @@ class UserData {
     return UserData(
       userJsonMap[_KeysForUserDataJsonConverter.login] as String?,
       Fullname(
-          userJsonMap[_KeysForUserDataJsonConverter.name] as String?,
-          userJsonMap[_KeysForUserDataJsonConverter.lastname] as String?,
-          userJsonMap[_KeysForUserDataJsonConverter.surname] as String?),
+        userJsonMap[_KeysForUserDataJsonConverter.name] as String?,
+        userJsonMap[_KeysForUserDataJsonConverter.lastname] as String?,
+        userJsonMap[_KeysForUserDataJsonConverter.surname] as String?,
+      ),
       userJsonMap[_KeysForUserDataJsonConverter.email] as String?,
       userJsonMap[_KeysForUserDataJsonConverter.phone] as String?,
       userJsonMap[_KeysForUserDataJsonConverter.sex] as String,
@@ -85,6 +93,6 @@ class UserData {
           _KeysForUserDataJsonConverter.photo: {
             _KeysForUserDataJsonConverter.orig: _urlPhoto,
           },
-        }
+        },
       };
 }
