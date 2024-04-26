@@ -45,7 +45,6 @@ import 'package:unn_mobile/core/services/interfaces/getting_rating_list.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_schedule_service.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_vote_key_signed.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_record_book.dart';
-import 'package:unn_mobile/core/services/interfaces/getting_schedule_service.dart';
 import 'package:unn_mobile/core/services/interfaces/mark_by_subject_provider.dart';
 import 'package:unn_mobile/core/services/interfaces/offline_schedule_provider.dart';
 import 'package:unn_mobile/core/services/interfaces/post_with_loaded_info_provider.dart';
