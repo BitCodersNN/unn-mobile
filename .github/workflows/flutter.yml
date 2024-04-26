@@ -4,6 +4,7 @@
 # documentation.
 
 name: Flutter Analyze
+run-name: Analyze formatting in PR \#${{ github.event.number }}
 
 on:
   pull_request:
@@ -12,7 +13,7 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 jobs:
-  build:
+  check-format:
     if: github.event.pull_request.head.repo.fork == false
     runs-on: ubuntu-latest
 
