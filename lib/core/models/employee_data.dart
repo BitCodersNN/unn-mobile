@@ -60,11 +60,6 @@ class EmployeeData extends UserData {
     json[_KeysForEmployeeDataJsonConverter.jobTitle] = _jobTitle;
     json[_KeysForEmployeeDataJsonConverter.department] ??= {};
     json[_KeysForEmployeeDataJsonConverter.department]
-        [_KeysForEmployeeDataJsonConverter.child] ??= {};
-    json[_KeysForEmployeeDataJsonConverter.department]
-            [_KeysForEmployeeDataJsonConverter.child]
-        [_KeysForEmployeeDataJsonConverter.child] ??= {};
-    json[_KeysForEmployeeDataJsonConverter.department]
         [_KeysForEmployeeDataJsonConverter.title] = _department;
     json[_KeysForEmployeeDataJsonConverter.manager] ??= {};
     json[_KeysForEmployeeDataJsonConverter.manager]
