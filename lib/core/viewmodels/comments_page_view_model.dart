@@ -4,11 +4,13 @@ import 'package:unn_mobile/core/models/blog_data.dart';
 import 'package:unn_mobile/core/models/blog_post_comment.dart';
 import 'package:unn_mobile/core/models/blog_post_comment_with_loaded_info.dart';
 import 'package:unn_mobile/core/models/file_data.dart';
+import 'package:unn_mobile/core/models/rating_list.dart';
 import 'package:unn_mobile/core/models/user_data.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_blog_post_comments.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_blog_posts.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_file_data.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_profile.dart';
+import 'package:unn_mobile/core/services/interfaces/getting_rating_list.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
 
 class CommentsPageViewModel extends BaseViewModel {
@@ -19,6 +21,7 @@ class CommentsPageViewModel extends BaseViewModel {
   final _lruCacheBlogPostCommentWithLoadedInfo =
       Injector.appInstance.get<LRUCacheBlogPostCommentWithLoadedInfo>();
   final _lruCacheProfile = Injector.appInstance.get<LRUCacheUserData>();
+  final _gettingRatingList = Injector.appInstance.get<GettingRatingList>();
 
   BlogData? post;
   List<Future<List<BlogPostCommentWithLoadedInfo?>>> commentLoaders = [];
@@ -50,16 +53,32 @@ class CommentsPageViewModel extends BaseViewModel {
       futures.add(_gettingFileDataService.getFileData(id: fileId));
     }
 
+    futures.add(_gettingRatingList.getRatingList(
+      voteKeySigned: comment.keySigned,
+    ));
+
     final data = await Future.wait(futures);
 
     final startPosFilesInData = profile == null ? 1 : 0;
+    final posRatingListInData =
+        startPosFilesInData + (comment.attachedFiles).length;
+
     profile ??= data.first;
+
+    List<FileData?> files = List<FileData?>.from(data.getRange(
+      startPosFilesInData,
+      posRatingListInData,
+    ));
+    List<FileData> filteredFiles = files //
+        .where((element) => element != null)
+        .map((e) => e!)
+        .toList();
 
     blogPostCommentWithLoadedInfo = BlogPostCommentWithLoadedInfo(
       comment: comment,
       author: profile!,
-      files:
-          List<FileData>.from(data.getRange(startPosFilesInData, data.length)),
+      files: filteredFiles,
+      ratingList: data[posRatingListInData] ?? RatingList(),
     );
 
     _lruCacheProfile.save(

@@ -4,6 +4,7 @@ class _KeysForBlogPostCommentJsonConverter {
   static const String authorId = 'authorId';
   static const String authorName = 'authorName';
   static const String message = 'message';
+  static const String keySigned = 'keySigned';
   static const String attachedFiles = 'attachedFiles';
 }
 
@@ -14,6 +15,7 @@ class BlogPostComment {
   final String dateTime;
   final String message;
   final List<int> attachedFiles;
+  final String keySigned;
 
   BlogPostComment({
     required this.id,
@@ -21,6 +23,7 @@ class BlogPostComment {
     required this.authorName,
     required this.dateTime,
     required this.message,
+    required this.keySigned,
     this.attachedFiles = const [],
   });
 
@@ -36,6 +39,8 @@ class BlogPostComment {
             jsonMap[_KeysForBlogPostCommentJsonConverter.dateTime] as String,
         message:
             jsonMap[_KeysForBlogPostCommentJsonConverter.message] as String,
+        keySigned:
+            jsonMap[_KeysForBlogPostCommentJsonConverter.keySigned] as String,
         attachedFiles:
             (jsonMap[_KeysForBlogPostCommentJsonConverter.attachedFiles]
                     as List<dynamic>)
@@ -50,6 +55,7 @@ class BlogPostComment {
       _KeysForBlogPostCommentJsonConverter.authorId: authorId,
       _KeysForBlogPostCommentJsonConverter.authorName: authorName,
       _KeysForBlogPostCommentJsonConverter.message: message,
+      _KeysForBlogPostCommentJsonConverter.keySigned: keySigned,
       _KeysForBlogPostCommentJsonConverter.attachedFiles: attachedFiles,
     };
   }
