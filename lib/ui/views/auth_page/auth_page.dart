@@ -8,7 +8,7 @@ import 'package:unn_mobile/ui/router.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
 import 'package:unn_mobile/ui/widgets/text_field_with_shadow.dart';
 
-const _accentColor = Color.fromRGBO(26, 99, 183, 1.0);
+const _accentColor = Color(0xFF1A63B7);
 const _buttonTapColor = Colors.lightBlueAccent;
 
 class AuthPage extends StatefulWidget {
@@ -196,7 +196,7 @@ class AuthPageWithState extends State<AuthPage> {
       height: MediaQuery.of(context).size.height,
       width: double.infinity,
       decoration: BoxDecoration(
-        color: const Color.fromRGBO(249, 250, 255, 1.0),
+        color: const Color(0xFFF9FAFF),
         borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(50.0),
           topRight: Radius.circular(50.0),
@@ -254,7 +254,7 @@ class AuthPageWithState extends State<AuthPage> {
       child: Text(
         '', //"Забыли пароль?",
         style: _baseTextStyle(
-          textColor: const Color.fromRGBO(57, 71, 86, 1.0),
+          textColor: const Color(0xFF394756),
         ),
       ),
     );

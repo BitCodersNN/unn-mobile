@@ -73,7 +73,7 @@ class TextFieldWithBoxShadow extends StatelessWidget {
                   labelStyle: const TextStyle(
                     fontFamily: 'Inter',
                     fontSize: 17,
-                    color: Color.fromRGBO(113, 122, 132, 1.0),
+                    color: Color(0xFF717A84),
                   ),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(

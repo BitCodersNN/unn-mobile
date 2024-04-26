@@ -31,7 +31,7 @@ class AboutScreenView extends StatelessWidget {
               'По всем вопросам можно обращаться: unnmobile@mail.ru',
               textAlign: TextAlign.center,
               style: TextStyle(
-                color: Color.fromRGBO(113, 122, 132, 1.0),
+                color: Color(0xFF717A84),
                 fontFamily: 'Inter',
                 fontSize: 13,
               ),
@@ -64,7 +64,7 @@ class _AuthorProfileWidget extends StatelessWidget {
             BoxShadow(
               offset: Offset(0, 0),
               blurRadius: 16,
-              color: Color.fromRGBO(82, 125, 175, 0.13),
+              color: Color(0x20527DAF),
             ),
           ],
         ),
@@ -87,7 +87,7 @@ class _AuthorProfileWidget extends StatelessWidget {
                       fontSize: 15,
                       fontFamily: 'Inter',
                       fontWeight: FontWeight.w600,
-                      color: Color.fromRGBO(40, 40, 40, 1.0),
+                      color: Color(0xFF282828),
                     ),
                   ),
                   Text(
@@ -96,7 +96,7 @@ class _AuthorProfileWidget extends StatelessWidget {
                     style: const TextStyle(
                       fontSize: 13,
                       fontFamily: 'Inter',
-                      color: Color.fromRGBO(113, 122, 132, 1.0),
+                      color: Color(0xFF717A84),
                     ),
                   ),
                 ],

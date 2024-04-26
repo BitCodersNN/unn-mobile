@@ -222,12 +222,7 @@ class _AttachedFileState extends State<AttachedFile> {
                       Icon(
                         iconData,
                         size: 30,
-                        color: const Color.fromRGBO(
-                          169,
-                          198,
-                          239,
-                          0.914,
-                        ), // Здесь можно задать любой цвет
+                        color: const Color(0xE9A9C6EF), // Здесь можно задать любой цвет
                       ),
                       const SizedBox(width: 8),
                       Expanded(

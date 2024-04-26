@@ -102,7 +102,7 @@ class FeedScreenView extends StatelessWidget {
             BoxShadow(
               offset: Offset(0, 0),
               blurRadius: 9,
-              color: Color.fromRGBO(82, 125, 175, 0.2),
+              color: Color(0x33527DAF),
             ),
           ],
         ),

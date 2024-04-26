@@ -10,7 +10,7 @@ class LoadingPageModel {
   LoadingPageModel({
     String title = 'УНИВЕРСИТЕТ \n ЛОБАЧЕВСКОГО',
     TextStyle titleStyle = const TextStyle(
-      color: Color.fromRGBO(15, 104, 170, 1.0),
+      color: Color(0xFF0F68AA),
       fontSize: 34.09,
       fontFamily: 'LetoSans',
     ),

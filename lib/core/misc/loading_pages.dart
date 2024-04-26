@@ -24,14 +24,14 @@ class _LoadingPages {
 
   static LoadingPageModel march8th = LoadingPageModel(
     titleStyle: const TextStyle(
-      color: Color.fromRGBO(144, 21, 84, 1.0),
+      color: Color(0xFF901554),
       fontSize: 34.09,
       fontFamily: 'LetoSans',
     ),
     imagePath: 'assets/images/logos/march_8th_logo.png',
     description: 'С 8 Марта!',
     descriptionStyle: const TextStyle(
-      color: Color.fromRGBO(144, 21, 84, 1.0),
+      color: Color(0xFF901554),
       fontSize: 25,
       fontFamily: 'LetoSans',
     ),
