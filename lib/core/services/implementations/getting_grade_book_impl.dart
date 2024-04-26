@@ -6,7 +6,7 @@ import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/misc/http_helper.dart';
 import 'package:unn_mobile/core/models/mark_by_subject.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
-import 'package:unn_mobile/core/services/interfaces/getting_record_book.dart';
+import 'package:unn_mobile/core/services/interfaces/getting_grade_book.dart';
 
 class _JsonKeys {
   static const String semesters = 'semesters';
