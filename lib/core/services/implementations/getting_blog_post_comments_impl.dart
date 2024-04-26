@@ -20,6 +20,7 @@ class _RegularExpSource {
       r'<a.*?class=\s*"[^"]*feed-com-time[^"]*"[^>]*>([^<]+)<\/a>';
   static const files =
       r'top\.arComDFiles(\d+) = BX\.util\.array_merge\(\(top\.arComDFiles\d+ \|\| \[\]\), \[(.*?)\]';
+  static const keySigned = r"keySigned: '.*',";
 }
 
 class GettingBlogPostCommentsImpl implements GettingBlogPostComments {
@@ -128,8 +129,13 @@ class GettingBlogPostCommentsImpl implements GettingBlogPostComments {
       _RegularExpSource.dateTime,
     );
 
+    final keySignedRegExp = RegExp(
+      _RegularExpSource.keySigned,
+    );
+
     final authorMatches = authorRegExp.allMatches(htmlBody).iterator;
     final dateTimeMatches = dateTimeRegExp.allMatches(htmlBody).iterator;
+    final keySignedMatches = keySignedRegExp.allMatches(htmlBody).iterator;
 
     for (final messageMatch in commentIdAndMessageRegExp.allMatches(htmlBody)) {
       if (!authorMatches.moveNext()) {
@@ -146,13 +152,22 @@ class GettingBlogPostCommentsImpl implements GettingBlogPostComments {
         break;
       }
 
+      if (!keySignedMatches.moveNext()) {
+        FirebaseCrashlytics.instance
+            .log('GettingBlogPostCommentsService-parser: no keySigned matches');
+        break;
+      }
+
       final dateTimeMatch = dateTimeMatches.current;
+      final keySignedMatche = keySignedMatches.current;
 
       final id = messageMatch.group(1).toInt();
       final message = messageMatch.group(2)?.replaceAll('\\n', '\n');
       final authorId = authorMatch.group(1).toInt();
       final authorName = authorMatch.group(2);
       final dateTime = dateTimeMatch.group(1);
+      final keySigned =
+          keySignedMatche.group(0)?.split(' \'')[1].split('\'')[0];
 
       if (id != null && authorId != null) {
         comments.add(
@@ -162,6 +177,7 @@ class GettingBlogPostCommentsImpl implements GettingBlogPostComments {
             authorName: authorName ?? unknownString,
             dateTime: dateTime ?? unknownString,
             message: message ?? unknownString,
+            keySigned: keySigned ?? unknownString,
             attachedFiles: commentsAttachedFilesId[id] ?? [],
           ),
         );
