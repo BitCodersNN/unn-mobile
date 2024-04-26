@@ -55,9 +55,11 @@ class CommentsPageViewModel extends BaseViewModel {
       futures.add(_gettingFileDataService.getFileData(id: fileId));
     }
 
-    futures.add(_gettingRatingList.getRatingList(
-      voteKeySigned: comment.keySigned,
-    ));
+    futures.add(
+      _gettingRatingList.getRatingList(
+        voteKeySigned: comment.keySigned,
+      ),
+    );
 
     final data = await Future.wait(futures);
 
@@ -67,11 +69,13 @@ class CommentsPageViewModel extends BaseViewModel {
 
     profile ??= data.first;
 
-    List<FileData?> files = List<FileData?>.from(data.getRange(
-      startPosFilesInData,
-      posRatingListInData,
-    ));
-    List<FileData> filteredFiles = files //
+    final List<FileData?> files = List<FileData?>.from(
+      data.getRange(
+        startPosFilesInData,
+        posRatingListInData,
+      ),
+    );
+    final List<FileData> filteredFiles = files //
         .where((element) => element != null)
         .map((e) => e!)
         .toList();
