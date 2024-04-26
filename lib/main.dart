@@ -20,7 +20,9 @@ import 'package:unn_mobile/core/services/implementations/getting_blog_posts_impl
 import 'package:unn_mobile/core/services/implementations/getting_file_data_impl.dart';
 import 'package:unn_mobile/core/services/implementations/getting_profile_impl.dart';
 import 'package:unn_mobile/core/services/implementations/getting_profile_of_current_user_service_impl.dart';
+import 'package:unn_mobile/core/services/implementations/getting_rating_list_impl.dart';
 import 'package:unn_mobile/core/services/implementations/getting_schedule_service_impl.dart';
+import 'package:unn_mobile/core/services/implementations/getting_vote_key_signed_impl.dart';
 import 'package:unn_mobile/core/services/implementations/offline_schedule_provider_impl.dart';
 import 'package:unn_mobile/core/services/implementations/post_with_loaded_info_provider_impl.dart';
 import 'package:unn_mobile/core/services/implementations/schedule_search_history_service_impl.dart';
@@ -37,7 +39,9 @@ import 'package:unn_mobile/core/services/interfaces/getting_blog_posts.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_file_data.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_profile.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_profile_of_current_user_service.dart';
+import 'package:unn_mobile/core/services/interfaces/getting_rating_list.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_schedule_service.dart';
+import 'package:unn_mobile/core/services/interfaces/getting_vote_key_signed.dart';
 import 'package:unn_mobile/core/services/interfaces/offline_schedule_provider.dart';
 import 'package:unn_mobile/core/services/interfaces/post_with_loaded_info_provider.dart';
 import 'package:unn_mobile/core/services/interfaces/schedule_search_history_service.dart';
@@ -109,6 +113,8 @@ void registerDependencies() {
   injector.registerSingleton<PostWithLoadedInfoProvider>(
       () => PostWithLoadedInfoProviderImpl());
   injector.registerSingleton<GettingFileData>(() => GettingFileDataImpl());
+  injector.registerSingleton<GettingRatingList>(() => GettingRatingListImpl());
+  injector.registerSingleton<GettingVoteKeySigned>(() => GettingVoteKeySignedImpl());
   injector.registerSingleton<LRUCacheBlogPostCommentWithLoadedInfo>(
     () => LRUCacheBlogPostCommentWithLoadedInfo(50),
   );
