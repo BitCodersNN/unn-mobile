@@ -1,4 +1,4 @@
-class _AbbreviatedNamesOfSubjectTypes {
+class _KeysForMarkBySubjectJsonConverter {
   static const String controlType = 'control_type';
   static const String date = 'date';
   static const String hours = 'hours';
@@ -165,27 +165,31 @@ class MarkBySubject {
   factory MarkBySubject.fromJson(Map<String, Object?> jsonMap) {
     return MarkBySubject(
       controlType:
-          jsonMap[_AbbreviatedNamesOfSubjectTypes.controlType] as String,
+          jsonMap[_KeysForMarkBySubjectJsonConverter.controlType] as String,
       date: DateTime.parse(
-        jsonMap[_AbbreviatedNamesOfSubjectTypes.date] as String,
+        jsonMap[_KeysForMarkBySubjectJsonConverter.date] as String,
       ),
-      hours: jsonMap[_AbbreviatedNamesOfSubjectTypes.hours] as int,
-      lecturers: jsonMap[_AbbreviatedNamesOfSubjectTypes.lecturers] as String?,
+      hours: int.parse(
+        jsonMap[_KeysForMarkBySubjectJsonConverter.hours] as String,
+      ),
+      lecturers:
+          jsonMap[_KeysForMarkBySubjectJsonConverter.lecturers] as String?,
       markType: MarkTypeExtension.fromDouble(
-        jsonMap[_AbbreviatedNamesOfSubjectTypes.mark] as double,
+        (jsonMap[_KeysForMarkBySubjectJsonConverter.mark] as dynamic)
+            .toDouble(),
       ),
-      subject: jsonMap[_AbbreviatedNamesOfSubjectTypes.subject] as String,
+      subject: jsonMap[_KeysForMarkBySubjectJsonConverter.subject] as String,
     );
   }
 
   Map<String, Object?> toJson() {
     return {
-      _AbbreviatedNamesOfSubjectTypes.controlType: controlType,
-      _AbbreviatedNamesOfSubjectTypes.date: date.toIso8601String(),
-      _AbbreviatedNamesOfSubjectTypes.hours: hours,
-      _AbbreviatedNamesOfSubjectTypes.lecturers: lecturers,
-      _AbbreviatedNamesOfSubjectTypes.mark: markType.parseDouble(),
-      _AbbreviatedNamesOfSubjectTypes.subject: subject,
+      _KeysForMarkBySubjectJsonConverter.controlType: controlType,
+      _KeysForMarkBySubjectJsonConverter.date: date.toIso8601String(),
+      _KeysForMarkBySubjectJsonConverter.hours: hours,
+      _KeysForMarkBySubjectJsonConverter.lecturers: lecturers,
+      _KeysForMarkBySubjectJsonConverter.mark: markType.parseDouble(),
+      _KeysForMarkBySubjectJsonConverter.subject: subject,
     };
   }
 }
