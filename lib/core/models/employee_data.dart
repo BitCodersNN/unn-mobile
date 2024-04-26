@@ -6,7 +6,6 @@ class _KeysForEmployeeDataJsonConverter {
   static const String jobType = 'job_type';
   static const String jobTitle = 'job_title';
   static const String department = 'department';
-  static const String child = 'child';
   static const String title = 'title';
   static const String manager = 'manager';
   static const String fullname = 'fullname';
@@ -31,7 +30,7 @@ class EmployeeData extends UserData {
 
   String get syncID => _syncID;
   String get jobType => _jobType;
-  String get jobTitel => _jobTitle;
+  String get jobTitle => _jobTitle;
   String get department => _department;
   String? get manager => _manager;
 
@@ -59,11 +58,6 @@ class EmployeeData extends UserData {
     json[_KeysForEmployeeDataJsonConverter.jobType] = _jobType;
     json[_KeysForEmployeeDataJsonConverter.jobTitle] = _jobTitle;
     json[_KeysForEmployeeDataJsonConverter.department] ??= {};
-    json[_KeysForEmployeeDataJsonConverter.department]
-        [_KeysForEmployeeDataJsonConverter.child] ??= {};
-    json[_KeysForEmployeeDataJsonConverter.department]
-            [_KeysForEmployeeDataJsonConverter.child]
-        [_KeysForEmployeeDataJsonConverter.child] ??= {};
     json[_KeysForEmployeeDataJsonConverter.department]
         [_KeysForEmployeeDataJsonConverter.title] = _department;
     json[_KeysForEmployeeDataJsonConverter.manager] ??= {};

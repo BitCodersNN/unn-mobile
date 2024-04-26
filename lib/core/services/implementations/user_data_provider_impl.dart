@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/models/employee_data.dart';
 import 'package:unn_mobile/core/models/student_data.dart';
@@ -24,14 +25,27 @@ class UserDataProviderImpl implements UserDataProvider {
     }
 
     UserData? userData;
-    final userType =
-        await _storage.read(key: _UserDataProvideKeys._userTypeKey);
-    if (userType == _student) {
-      userData = StudentData.fromJson(jsonDecode(
-          (await _storage.read(key: _UserDataProvideKeys._userDataKey))!));
-    } else if (userType == _employee) {
-      userData = EmployeeData.fromJson(jsonDecode(
-          (await _storage.read(key: _UserDataProvideKeys._userDataKey))!));
+    final userType = await _storage.read(
+      key: _UserDataProvideKeys._userTypeKey,
+    );
+
+    String? userInfo = await _storage.read(
+      key: _UserDataProvideKeys._userDataKey,
+    );
+
+    try {
+      if (userType == _student) {
+        userData = StudentData.fromJson(jsonDecode(
+          userInfo!,
+        ));
+      } else if (userType == _employee) {
+        userData = EmployeeData.fromJson(jsonDecode(
+          userInfo!,
+        ));
+      }
+    } catch (e, stackTrace) {
+      await FirebaseCrashlytics.instance
+          .recordError(e, stackTrace, information: [userInfo!]);
     }
 
     return userData;
@@ -45,10 +59,13 @@ class UserDataProviderImpl implements UserDataProvider {
 
     final userType = userData.runtimeType.toString();
     await _storage.write(
-        key: _UserDataProvideKeys._userTypeKey, value: userType);
+      key: _UserDataProvideKeys._userTypeKey,
+      value: userType,
+    );
     await _storage.write(
-        key: _UserDataProvideKeys._userDataKey,
-        value: jsonEncode(userData.toJson()));
+      key: _UserDataProvideKeys._userDataKey,
+      value: jsonEncode(userData.toJson()),
+    );
   }
 
   @override
