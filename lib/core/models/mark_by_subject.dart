@@ -186,7 +186,7 @@ class MarkBySubject {
     return {
       _KeysForMarkBySubjectJsonConverter.controlType: controlType,
       _KeysForMarkBySubjectJsonConverter.date: date.toIso8601String(),
-      _KeysForMarkBySubjectJsonConverter.hours: hours,
+      _KeysForMarkBySubjectJsonConverter.hours: hours.toString(),
       _KeysForMarkBySubjectJsonConverter.lecturers: lecturers,
       _KeysForMarkBySubjectJsonConverter.mark: markType.parseDouble(),
       _KeysForMarkBySubjectJsonConverter.subject: subject,

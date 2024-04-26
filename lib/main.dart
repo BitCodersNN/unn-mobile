@@ -23,6 +23,8 @@ import 'package:unn_mobile/core/services/implementations/getting_profile_of_curr
 import 'package:unn_mobile/core/services/implementations/getting_rating_list_impl.dart';
 import 'package:unn_mobile/core/services/implementations/getting_schedule_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/getting_vote_key_signed_impl.dart';
+import 'package:unn_mobile/core/services/implementations/getting_record_book_impl.dart';
+import 'package:unn_mobile/core/services/implementations/mark_by_subject_provider_impl.dart';
 import 'package:unn_mobile/core/services/implementations/offline_schedule_provider_impl.dart';
 import 'package:unn_mobile/core/services/implementations/post_with_loaded_info_provider_impl.dart';
 import 'package:unn_mobile/core/services/implementations/schedule_search_history_service_impl.dart';
@@ -42,6 +44,9 @@ import 'package:unn_mobile/core/services/interfaces/getting_profile_of_current_u
 import 'package:unn_mobile/core/services/interfaces/getting_rating_list.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_schedule_service.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_vote_key_signed.dart';
+import 'package:unn_mobile/core/services/interfaces/getting_record_book.dart';
+import 'package:unn_mobile/core/services/interfaces/getting_schedule_service.dart';
+import 'package:unn_mobile/core/services/interfaces/mark_by_subject_provider.dart';
 import 'package:unn_mobile/core/services/interfaces/offline_schedule_provider.dart';
 import 'package:unn_mobile/core/services/interfaces/post_with_loaded_info_provider.dart';
 import 'package:unn_mobile/core/services/interfaces/schedule_search_history_service.dart';
@@ -121,6 +126,9 @@ void registerDependencies() {
   injector.registerSingleton<LRUCacheUserData>(
     () => LRUCacheUserData(50),
   );
+  injector.registerSingleton<GettingRecordBook>(() => GettingRecordBookImpl());
+  injector.registerSingleton<MarkBySubjectProvider>(
+      () => MarkBySubjectProviderImpl());
 
   injector.registerDependency(() => LoadingPageViewModel());
   injector.registerDependency(() => AuthPageViewModel());
