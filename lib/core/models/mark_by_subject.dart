@@ -15,7 +15,7 @@ class _MarkTypeString {
   static const String good = 'хорошо';
   static const String veryGood = 'очень хорошо';
   static const String excellent = 'отлично';
-  static const String perfectly = 'превосходно';
+  static const String perfect = 'превосходно';
 }
 
 class _MarkTypeDouble {
