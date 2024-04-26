@@ -34,21 +34,24 @@ class MainPageNavigationBar extends StatelessWidget {
                   sigmaY: 6.0,
                 ),
                 child: Container(
-                    width: double.maxFinite,
-                    height: 60,
-                    color: Colors.transparent),
+                  width: double.maxFinite,
+                  height: 60,
+                  color: Colors.transparent,
+                ),
               ),
             ),
             NavigationBar(
               destinations: _getNavbarDestinations(
-                  model, context),
+                model,
+                context,
+              ),
               height: 60,
               backgroundColor: Colors.transparent,
               indicatorColor: Colors.transparent,
               indicatorShape: const Border(),
               animationDuration: const Duration(milliseconds: 0),
               selectedIndex: model.selectedBarItem,
-              onDestinationSelected: onDestinationSelected, 
+              onDestinationSelected: onDestinationSelected,
             ),
           ],
         );
@@ -57,19 +60,25 @@ class MainPageNavigationBar extends StatelessWidget {
   }
 
   List<Widget> _getNavbarDestinations(
-      MainPageViewModel model, BuildContext context) {
-    List<Widget> destinations = [];
+    MainPageViewModel model,
+    BuildContext context,
+  ) {
+    final List<Widget> destinations = [];
     final theme = Theme.of(context);
     for (int i = 0; i < model.barScreenNames.length; ++i) {
-      var isIconSelected =
+      final isIconSelected =
           !model.isDrawerItemSelected && model.selectedBarItem == i;
-      destinations.add(NavigationDestination(
+      destinations.add(
+        NavigationDestination(
           icon: Icon(
-              isIconSelected ? selectedBarIcons[i] : unselectedBarIcons[i],
-              color: isIconSelected
-                  ? theme.primaryColor
-                  : theme.colorScheme.onBackground),
-          label: model.barScreenNames[i]));
+            isIconSelected ? selectedBarIcons[i] : unselectedBarIcons[i],
+            color: isIconSelected
+                ? theme.primaryColor
+                : theme.colorScheme.onBackground,
+          ),
+          label: model.barScreenNames[i],
+        ),
+      );
     }
     return destinations;
   }

@@ -19,7 +19,7 @@ class _RegularExpSource {
   static const dateTime =
       r'<a.*?class=\s*"[^"]*feed-com-time[^"]*"[^>]*>([^<]+)<\/a>';
   static const files =
-      r"top\.arComDFiles(\d+) = BX\.util\.array_merge\(\(top\.arComDFiles\d+ \|\| \[\]\), \[(.*?)\]";
+      r'top\.arComDFiles(\d+) = BX\.util\.array_merge\(\(top\.arComDFiles\d+ \|\| \[\]\), \[(.*?)\]';
 }
 
 class GettingBlogPostCommentsImpl implements GettingBlogPostComments {
@@ -35,7 +35,7 @@ class GettingBlogPostCommentsImpl implements GettingBlogPostComments {
 
     if (sessionId == null || csrf == null) {
       FirebaseCrashlytics.instance
-          .log("GettingBlogPostCommentsService: Error, user not authorized");
+          .log('GettingBlogPostCommentsService: Error, user not authorized');
       return null;
     }
 
@@ -60,37 +60,38 @@ class GettingBlogPostCommentsImpl implements GettingBlogPostComments {
     required String sessionId,
   }) async {
     final requestSender = HttpRequestSender(
-      path: "/bitrix/services/main/ajax.php",
+      path: '/bitrix/services/main/ajax.php',
       queryParams: {
-        "mode": "class",
-        "action": "navigateComment",
-        "c": "bitrix:socialnetwork.blog.post.comment",
+        'mode': 'class',
+        'action': 'navigateComment',
+        'c': 'bitrix:socialnetwork.blog.post.comment',
       },
-      headers: {"X-Bitrix-Csrf-Token": csrf},
-      cookies: {"PHPSESSID": sessionId},
+      headers: {'X-Bitrix-Csrf-Token': csrf},
+      cookies: {'PHPSESSID': sessionId},
     );
 
     final HttpClientResponse response;
     try {
       response = await requestSender.postForm(
         {
-          "ENTITY_XML_ID": "BLOG_$postId",
-          "AJAX_POST": "Y",
-          "MODE": "LIST",
-          "comment_post_id": postId.toString(),
-          "PAGEN_1": pageNumber.toString()
+          'ENTITY_XML_ID': 'BLOG_$postId',
+          'AJAX_POST': 'Y',
+          'MODE': 'LIST',
+          'comment_post_id': postId.toString(),
+          'PAGEN_1': pageNumber.toString(),
         },
         timeoutSeconds: 30,
       );
     } catch (error, stackTrace) {
       await FirebaseCrashlytics.instance
-          .log("Exception: $error\nStackTrace: $stackTrace");
+          .log('Exception: $error\nStackTrace: $stackTrace');
       return null;
     }
 
     if (response.statusCode != 200) {
       await FirebaseCrashlytics.instance.log(
-          '${runtimeType.toString()}: statusCode = ${response.statusCode}');
+        '${runtimeType.toString()}: statusCode = ${response.statusCode}',
+      );
       return null;
     }
 
@@ -104,7 +105,8 @@ class GettingBlogPostCommentsImpl implements GettingBlogPostComments {
 
     if (!parsedJson.containsKey(_JsonKeys._messageListKey)) {
       FirebaseCrashlytics.instance.log(
-          '${runtimeType.toString()}: json doesn\'t contain the messageList key');
+        '${runtimeType.toString()}: json doesn\'t contain the messageList key',
+      );
       return null;
     }
 
@@ -132,7 +134,7 @@ class GettingBlogPostCommentsImpl implements GettingBlogPostComments {
     for (final messageMatch in commentIdAndMessageRegExp.allMatches(htmlBody)) {
       if (!authorMatches.moveNext()) {
         FirebaseCrashlytics.instance
-            .log("GettingBlogPostCommentsService-parser: no author matches");
+            .log('GettingBlogPostCommentsService-parser: no author matches');
         break;
       }
 
@@ -140,27 +142,29 @@ class GettingBlogPostCommentsImpl implements GettingBlogPostComments {
 
       if (!dateTimeMatches.moveNext()) {
         FirebaseCrashlytics.instance
-            .log("GettingBlogPostCommentsService-parser: no dateTime matches");
+            .log('GettingBlogPostCommentsService-parser: no dateTime matches');
         break;
       }
 
       final dateTimeMatch = dateTimeMatches.current;
 
       final id = messageMatch.group(1).toInt();
-      final message = messageMatch.group(2)?.replaceAll("\\n", "\n");
+      final message = messageMatch.group(2)?.replaceAll('\\n', '\n');
       final authorId = authorMatch.group(1).toInt();
       final authorName = authorMatch.group(2);
       final dateTime = dateTimeMatch.group(1);
 
       if (id != null && authorId != null) {
-        comments.add(BlogPostComment(
-          id: id,
-          authorId: authorId,
-          authorName: authorName ?? unknownString,
-          dateTime: dateTime ?? unknownString,
-          message: message ?? unknownString,
-          attachedFiles: commentsAttachedFilesId[id] ?? [],
-        ));
+        comments.add(
+          BlogPostComment(
+            id: id,
+            authorId: authorId,
+            authorName: authorName ?? unknownString,
+            dateTime: dateTime ?? unknownString,
+            message: message ?? unknownString,
+            attachedFiles: commentsAttachedFilesId[id] ?? [],
+          ),
+        );
       }
     }
 
@@ -182,7 +186,7 @@ class GettingBlogPostCommentsImpl implements GettingBlogPostComments {
         final commentIdAsInt = commentId.toInt();
         if (commentIdAsInt != null) {
           commentIdToAttachFiles[commentIdAsInt] =
-              filesListAsString.split(",").map((idAsString) {
+              filesListAsString.split(',').map((idAsString) {
             return idAsString.substring(1, idAsString.length - 1).toInt()!;
           }).toList();
         }

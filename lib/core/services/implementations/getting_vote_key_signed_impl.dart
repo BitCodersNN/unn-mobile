@@ -41,13 +41,14 @@ class GettingVoteKeySignedImpl implements GettingVoteKeySigned {
       response = await requestSender.get(timeoutSeconds: 60);
     } catch (error, stackTrace) {
       await FirebaseCrashlytics.instance
-          .log("Exception: $error\nStackTrace: $stackTrace");
+          .log('Exception: $error\nStackTrace: $stackTrace');
       return null;
     }
 
     if (response.statusCode != 200) {
       await FirebaseCrashlytics.instance.log(
-          '${runtimeType.toString()}: statusCode = ${response.statusCode}');
+        '${runtimeType.toString()}: statusCode = ${response.statusCode}',
+      );
       return null;
     }
 

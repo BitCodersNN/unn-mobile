@@ -11,7 +11,7 @@ class EmployeesScreenView extends StatelessWidget {
       builder: (context, value, child) {
         return const Center(
           child: Image(
-            image: AssetImage("assets/images/quest/2.png"),
+            image: AssetImage('assets/images/quest/2.png'),
           ),
         );
       },

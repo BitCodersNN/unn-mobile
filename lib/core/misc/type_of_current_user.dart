@@ -16,7 +16,7 @@ class TypeOfCurrentUser {
 
   /// Получает тип авторизованного пользователя. Возвращает типы ([Type]) [StudentData] или [EmployeeData], или [Null] при ошибке
   Future<Type> getTypeOfCurrentUser() async {
-    UserData? type = await _userDataProvider.getData() ??
+    final UserData? type = await _userDataProvider.getData() ??
         await _gettingProfileOfCurrentUser.getProfileOfCurrentUser();
     return type.runtimeType;
   }

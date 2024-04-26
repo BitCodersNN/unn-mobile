@@ -1,4 +1,4 @@
-class ScheduleSearchResultItem{
+class ScheduleSearchResultItem {
   final String _id;
   final String _label;
   final String _description;

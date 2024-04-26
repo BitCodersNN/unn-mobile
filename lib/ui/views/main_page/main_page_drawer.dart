@@ -41,9 +41,11 @@ class MainPageDrawer extends StatelessWidget {
   }
 
   List<Widget> _generateChildren(
-      MainPageViewModel value, BuildContext context) {
+    MainPageViewModel value,
+    BuildContext context,
+  ) {
     final theme = Theme.of(context);
-    List<Widget> drawerChildren = [
+    final List<Widget> drawerChildren = [
       _getDrawerHeader(theme, value),
       for (int i = 0; i < value.drawerScreenNames.length; i++)
         NavigationDrawerDestination(
@@ -75,9 +77,11 @@ class MainPageDrawer extends StatelessWidget {
                     child: value.userAvatar == null
                         ? Text(
                             style: theme.textTheme.headlineLarge!.copyWith(
-                                color: theme.colorScheme.onBackground),
+                              color: theme.colorScheme.onBackground,
+                            ),
                             value.userNameAndSurname
-                                .replaceAll(RegExp('[а-яё ]'), ''))
+                                .replaceAll(RegExp('[а-яё ]'), ''),
+                          )
                         : null,
                   ),
                 ),
@@ -96,7 +100,7 @@ class MainPageDrawer extends StatelessWidget {
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
                         color: theme.colorScheme.onPrimary,
-                        fontFamily: "Inter",
+                        fontFamily: 'Inter',
                       ),
                     ),
                   ),
@@ -110,12 +114,12 @@ class MainPageDrawer extends StatelessWidget {
                         fontSize: 14,
                         fontWeight: FontWeight.w500,
                         color: Color(0xFFFFFFFF),
-                        fontFamily: "Inter",
+                        fontFamily: 'Inter',
                       ),
                     ),
                   ),
                 ],
-              )
+              ),
             ],
           ),
         ),

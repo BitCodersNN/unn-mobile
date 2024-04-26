@@ -5,11 +5,12 @@ class ScheduleSearchSuggestionItem extends StatelessWidget {
 
   final String? itemDescription;
   final void Function() onSelected;
-  const ScheduleSearchSuggestionItem(
-      {super.key,
-      required this.itemName,
-      this.itemDescription,
-      required this.onSelected});
+  const ScheduleSearchSuggestionItem({
+    super.key,
+    required this.itemName,
+    this.itemDescription,
+    required this.onSelected,
+  });
 
   @override
   Widget build(BuildContext context) {

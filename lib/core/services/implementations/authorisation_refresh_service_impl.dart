@@ -15,12 +15,13 @@ class AuthorisationRefreshServiceImpl implements AuthorisationRefreshService {
 
   Future<bool> _userDataExistsInStorage() async {
     try {
-      AuthData authData = await _authDataProvider.getData();
+      final AuthData authData = await _authDataProvider.getData();
       return !(authData.login == AuthData.getDefaultParameter() ||
           authData.login == AuthData.getDefaultParameter());
     } on PlatformException catch (error) {
       await FirebaseCrashlytics.instance.log(
-          "Exception: ${error.message}; code: ${error.code}\nStackTrace: \n${error.stacktrace}");
+        'Exception: ${error.message}; code: ${error.code}\nStackTrace: \n${error.stacktrace}',
+      );
       _storage.clear();
       return false;
     }
@@ -31,7 +32,7 @@ class AuthorisationRefreshServiceImpl implements AuthorisationRefreshService {
     if (!await _userDataExistsInStorage()) {
       return null;
     }
-    AuthData authData = await _authDataProvider.getData();
+    final AuthData authData = await _authDataProvider.getData();
 
     return await _authorisationService.auth(authData.login, authData.password);
   }

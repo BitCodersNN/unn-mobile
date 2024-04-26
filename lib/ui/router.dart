@@ -4,9 +4,9 @@ import 'package:unn_mobile/ui/views/loading_page/loading_page.dart';
 import 'package:unn_mobile/ui/views/main_page/main_page.dart';
 
 class Routes {
-  static const String mainPagePrefix = "main/";
-  static const String authPage = "auth";
-  static const String loadingPage = "loading";
+  static const String mainPagePrefix = 'main/';
+  static const String authPage = 'auth';
+  static const String loadingPage = 'loading';
 }
 
 class Router {
@@ -32,8 +32,10 @@ class Router {
     }
   }
 
-  static Route<dynamic> createCustomRoute(page,
-      {duration = const Duration(milliseconds: 0)}) {
+  static Route<dynamic> createCustomRoute(
+    page, {
+    duration = const Duration(milliseconds: 0),
+  }) {
     return PageRouteBuilder(
       transitionDuration: duration,
       pageBuilder: (context, animation, secondaryAnimation) => page,
