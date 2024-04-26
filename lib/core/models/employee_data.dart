@@ -6,7 +6,6 @@ class _KeysForEmployeeDataJsonConverter {
   static const String jobType = 'job_type';
   static const String jobTitle = 'job_title';
   static const String department = 'department';
-  static const String child = 'child';
   static const String title = 'title';
   static const String manager = 'manager';
   static const String fullname = 'fullname';
