@@ -21,11 +21,11 @@ class MarkBySubjectProviderImpl implements MarkBySubjectProvider {
       key: _OfflineMarkBySubjectProviderKeys.markBySubject,
     ))!);
     
-    Map<String, dynamic> jsonMap = json.decode(jsonString);
+    final Map<String, dynamic> jsonMap = json.decode(jsonString);
 
-    Map<int, List<MarkBySubject>> recordBook = {};
+    final Map<int, List<MarkBySubject>> recordBook = {};
     jsonMap.forEach((key, value) {
-      List<MarkBySubject> marksList = (value as List)
+      final List<MarkBySubject> marksList = (value as List)
           .map((item) => MarkBySubject.fromJson(item as Map<String, dynamic>))
           .toList();
       recordBook[int.parse(key)] = marksList;
@@ -44,13 +44,13 @@ class MarkBySubjectProviderImpl implements MarkBySubjectProvider {
     if (recordBook == null) {
       return;
     }
-    Map<String, dynamic> jsonMap = {};
+    final Map<String, dynamic> jsonMap = {};
     recordBook.forEach((key, value) {
       List<dynamic> jsonList = value.map((item) => item.toJson()).toList();
       jsonMap[key.toString()] = jsonList;
     });
 
-    String jsonString = json.encode(jsonMap);
+    final String jsonString = json.encode(jsonMap);
 
     await _storage.write(
       key: _OfflineMarkBySubjectProviderKeys.markBySubject,

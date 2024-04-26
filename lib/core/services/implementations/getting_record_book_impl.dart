@@ -16,16 +16,19 @@ class _JsonKeys {
 
 class GettingRecordBookImpl implements GettingRecordBook {
   final String _path = 'bitrix/vuz/api/marks2';
-  final String _sessionIdCookieKey = "PHPSESSID";
+  final String _sessionIdCookieKey = 'PHPSESSID';
 
   @override
   Future<Map<int, List<MarkBySubject>>?> getRecordBook() async {
     final authorisationService =
         Injector.appInstance.get<AuthorisationService>();
 
-    final requestSender = HttpRequestSender(path: _path, cookies: {
-      _sessionIdCookieKey: authorisationService.sessionId ?? '',
-    });
+    final requestSender = HttpRequestSender(
+      path: _path,
+      cookies: {
+        _sessionIdCookieKey: authorisationService.sessionId ?? '',
+      },
+    );
 
     HttpClientResponse response;
     try {
@@ -46,21 +49,23 @@ class GettingRecordBookImpl implements GettingRecordBook {
 
     dynamic jsonMap;
     try {
-      jsonMap = jsonDecode(await HttpRequestSender.responseToStringBody(
-        response,
-      ));
+      jsonMap = jsonDecode(
+        await HttpRequestSender.responseToStringBody(
+          response,
+        ),
+      );
     } catch (error, stackTrace) {
       await FirebaseCrashlytics.instance.recordError(error, stackTrace);
       return null;
     }
 
-    Map<int, List<MarkBySubject>> marks = {};
+    final Map<int, List<MarkBySubject>> marks = {};
     for (final course in jsonMap) {
       for (final semesterInfo in course[_JsonKeys.semesters] ?? []) {
         final semester = semesterInfo[_JsonKeys.semester]?.toInt();
         final data = semesterInfo[_JsonKeys.data] ?? [];
         if (semester != null) {
-          List<MarkBySubject> semesterMarks = data
+          final List<MarkBySubject> semesterMarks = data
               .map<MarkBySubject>(
                 (markBySubject) => MarkBySubject.fromJson(markBySubject),
               )
