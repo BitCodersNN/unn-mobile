@@ -2,15 +2,14 @@ import 'dart:io';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:injector/injector.dart';
+import 'package:unn_mobile/core/constants/string_for_api.dart';
+import 'package:unn_mobile/core/constants/string_for_session_identifier.dart';
 import 'package:unn_mobile/core/misc/custom_errors/auth_errors.dart';
 import 'package:unn_mobile/core/misc/http_helper.dart';
 import 'package:unn_mobile/core/models/online_status_data.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
 
 class AuthorisationServiceImpl implements AuthorisationService {
-  final String _sessionIdCookieKey = 'PHPSESSID';
-  final String _csrfHeaderName = 'x-bitrix-new-csrf';
-
   String? _sessionId;
   String? _csrf;
   bool _isAuthorised = false;
@@ -37,7 +36,10 @@ class AuthorisationServiceImpl implements AuthorisationService {
     }
 
     final sessionCookie = authResponse.cookies
-        .where((cookie) => cookie.name == _sessionIdCookieKey)
+        .where(
+          (cookie) =>
+              cookie.name == StringForSessionIdentifier.sessionIdCookieKey,
+        )
         .firstOrNull;
 
     if (sessionCookie == null) {
@@ -55,7 +57,9 @@ class AuthorisationServiceImpl implements AuthorisationService {
       rethrow;
     }
 
-    final csrfValue = csrfResponse.headers.value(_csrfHeaderName);
+    final csrfValue = csrfResponse.headers.value(
+      StringForSessionIdentifier.csrfHeaderName,
+    );
 
     if (csrfValue == null) {
       throw CsrfValueException(
@@ -91,7 +95,7 @@ class AuthorisationServiceImpl implements AuthorisationService {
     String password,
   ) async {
     final requestSender =
-        HttpRequestSender(path: 'auth/', queryParams: {'login': 'yes'});
+        HttpRequestSender(path: Paths.auth, queryParams: {'login': 'yes'});
 
     return await requestSender.postForm(
       {
@@ -107,9 +111,9 @@ class AuthorisationServiceImpl implements AuthorisationService {
 
   Future<HttpClientResponse> _sendCsrfRequest(String session) async {
     final requestSender = HttpRequestSender(
-      path: 'bitrix/services/main/ajax.php',
-      queryParams: {'action': 'socialnetwork.api.livefeed.getNextPage'},
-      cookies: {_sessionIdCookieKey: session},
+      path: Paths.ajax,
+      queryParams: {Action.actionKey: Action.getNextPage},
+      cookies: {StringForSessionIdentifier.sessionIdCookieKey: session},
     );
 
     return await requestSender.get(timeoutSeconds: 15);

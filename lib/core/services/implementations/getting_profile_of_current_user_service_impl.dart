@@ -3,6 +3,9 @@ import 'dart:io';
 
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:injector/injector.dart';
+import 'package:unn_mobile/core/constants/string_for_api.dart';
+import 'package:unn_mobile/core/constants/string_for_profiles.dart';
+import 'package:unn_mobile/core/constants/string_for_session_identifier.dart';
 import 'package:unn_mobile/core/misc/http_helper.dart';
 import 'package:unn_mobile/core/models/employee_data.dart';
 import 'package:unn_mobile/core/models/student_data.dart';
@@ -11,18 +14,16 @@ import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_profile_of_current_user_service.dart';
 
 class GettingProfileOfCurrentUserImpl implements GettingProfileOfCurrentUser {
-  final String _path = 'bitrix/vuz/api/profile/current';
-  final String _sessionIdCookieKey = 'PHPSESSID';
-
   @override
   Future<UserData?> getProfileOfCurrentUser() async {
     final authorisationService =
         Injector.appInstance.get<AuthorisationService>();
 
     final requestSender = HttpRequestSender(
-      path: _path,
+      path: Paths.currentProfile,
       cookies: {
-        _sessionIdCookieKey: authorisationService.sessionId ?? '',
+        StringForSessionIdentifier.sessionIdCookieKey:
+            authorisationService.sessionId ?? '',
       },
     );
 
@@ -53,9 +54,9 @@ class GettingProfileOfCurrentUserImpl implements GettingProfileOfCurrentUser {
 
     UserData? userData;
     try {
-      userData = jsonMap['type'] == 'student'
+      userData = jsonMap[Profiles.type] == Profiles.student
           ? StudentData.fromJson(jsonMap)
-          : jsonMap['type'] == 'employee'
+          : jsonMap[Profiles.type] == Profiles.employee
               ? EmployeeData.fromJson(jsonMap)
               : null;
     } catch (e, stackTrace) {

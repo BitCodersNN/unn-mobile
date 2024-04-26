@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:injector/injector.dart';
+import 'package:unn_mobile/core/constants/string_for_api.dart';
 import 'package:unn_mobile/core/misc/http_helper.dart';
 import 'package:unn_mobile/core/models/employee_data.dart';
 import 'package:unn_mobile/core/models/schedule_search_result_item.dart';
@@ -12,9 +13,6 @@ import 'package:unn_mobile/core/services/interfaces/getting_profile_of_current_u
 import 'package:unn_mobile/core/services/interfaces/search_id_on_portal_service.dart';
 
 class SearchIdOnPortalServiceImpl implements SearchIdOnPortalService {
-  final String _ruzapi = 'ruzapi/';
-  final String _studentinfo = 'studentinfo/';
-  final String _search = 'search';
   final String _uns = 'uns';
   final String _term = 'term';
   final String _type = 'type';
@@ -24,7 +22,7 @@ class SearchIdOnPortalServiceImpl implements SearchIdOnPortalService {
 
   Future<String?> _getIdOfLoggedInStudent(String uns) async {
     final requestSender = HttpRequestSender(
-      path: _ruzapi + _studentinfo,
+      path: Paths.studentInfo,
       queryParams: {_uns: uns},
     );
 
@@ -79,7 +77,7 @@ class SearchIdOnPortalServiceImpl implements SearchIdOnPortalService {
     IDType valueType,
   ) async {
     final requestSender = HttpRequestSender(
-      path: _ruzapi + _search,
+      path: Paths.search,
       queryParams: {_term: value, _type: valueType.name},
     );
     HttpClientResponse response;

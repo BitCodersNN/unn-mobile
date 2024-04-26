@@ -3,6 +3,9 @@ import 'dart:io';
 
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:injector/injector.dart';
+import 'package:unn_mobile/core/constants/regulat_expression.dart';
+import 'package:unn_mobile/core/constants/string_for_api.dart';
+import 'package:unn_mobile/core/constants/string_for_session_identifier.dart';
 import 'package:unn_mobile/core/misc/http_helper.dart';
 import 'package:unn_mobile/core/models/blog_post_comment.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
@@ -10,17 +13,6 @@ import 'package:unn_mobile/core/services/interfaces/getting_blog_post_comments.d
 
 class _JsonKeys {
   static const _messageListKey = 'messageList';
-}
-
-class _RegularExpSource {
-  static const commentIdAndMessage = r"top\.text\d+ = text(\d+) = '([^']*)'";
-  static const author =
-      r'<span class="feed-com-name.*?feed-author-name-(\d+)">([^<]+)<\/span>';
-  static const dateTime =
-      r'<a.*?class=\s*"[^"]*feed-com-time[^"]*"[^>]*>([^<]+)<\/a>';
-  static const files =
-      r'top\.arComDFiles(\d+) = BX\.util\.array_merge\(\(top\.arComDFiles\d+ \|\| \[\]\), \[(.*?)\]';
-  static const keySigned = r"keySigned: '.*',";
 }
 
 class GettingBlogPostCommentsImpl implements GettingBlogPostComments {
@@ -61,14 +53,14 @@ class GettingBlogPostCommentsImpl implements GettingBlogPostComments {
     required String sessionId,
   }) async {
     final requestSender = HttpRequestSender(
-      path: '/bitrix/services/main/ajax.php',
+      path: Paths.ajax,
       queryParams: {
         'mode': 'class',
-        'action': 'navigateComment',
-        'c': 'bitrix:socialnetwork.blog.post.comment',
+        Action.actionKey: Action.navigateComment,
+        'c': Action.comment,
       },
-      headers: {'X-Bitrix-Csrf-Token': csrf},
-      cookies: {'PHPSESSID': sessionId},
+      headers: {StringForSessionIdentifier.csrfToken: csrf},
+      cookies: {StringForSessionIdentifier.sessionIdCookieKey: sessionId},
     );
 
     final HttpClientResponse response;
@@ -118,19 +110,19 @@ class GettingBlogPostCommentsImpl implements GettingBlogPostComments {
     final commentsAttachedFilesId = parseCommentsFilesId(htmlBody);
 
     final commentIdAndMessageRegExp = RegExp(
-      _RegularExpSource.commentIdAndMessage,
+      RegularExpSource.commentIdAndMessage,
     );
 
     final authorRegExp = RegExp(
-      _RegularExpSource.author,
+      RegularExpSource.author,
     );
 
     final dateTimeRegExp = RegExp(
-      _RegularExpSource.dateTime,
+      RegularExpSource.dateTime,
     );
 
     final keySignedRegExp = RegExp(
-      _RegularExpSource.keySigned,
+      RegularExpSource.keySigned,
     );
 
     final authorMatches = authorRegExp.allMatches(htmlBody).iterator;
@@ -189,7 +181,7 @@ class GettingBlogPostCommentsImpl implements GettingBlogPostComments {
 
   Map<int, List<int>> parseCommentsFilesId(String htmlBody) {
     final filesRegExp = RegExp(
-      _RegularExpSource.files,
+      RegularExpSource.files,
     );
 
     final commentIdToAttachFiles = <int, List<int>>{};

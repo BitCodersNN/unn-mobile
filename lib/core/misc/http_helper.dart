@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:unn_mobile/core/constants/string_for_api.dart';
+
 class HttpRequestSender {
   static const maxTimeout = 4;
   final String _path;
@@ -13,7 +15,7 @@ class HttpRequestSender {
 
   HttpRequestSender({
     bool useSSL = true,
-    String host = 'portal.unn.ru',
+    String host = Paths.host,
     required String path,
     Map<String, dynamic> queryParams = const {},
     Map<String, String> headers = const {},
