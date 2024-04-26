@@ -165,13 +165,23 @@ class FeedStreamUpdaterServiceImpl
 
       _lruCacheProfile.save(post.authorID, postAuthor);
 
+      List<FileData?> files = List<FileData?>.from(data.getRange(
+        startPosFilesInData,
+        startPosFilesInData + endPosFilesInData,
+      ));
+      List<FileData> filteredFiles = files
+          .where(
+            (element) => element != null,
+          )
+          .map(
+            (e) => e!,
+          )
+          .toList();
+
       _postsList.add(PostWithLoadedInfo(
         author: postAuthor,
         post: post,
-        files: List<FileData>.from(data.getRange(
-          startPosFilesInData,
-          startPosFilesInData + endPosFilesInData,
-        )),
+        files: filteredFiles,
         ratingList: data[endPosFilesInData + 1] ?? RatingList(),
       ));
 
