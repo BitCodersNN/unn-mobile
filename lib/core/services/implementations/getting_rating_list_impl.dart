@@ -69,7 +69,8 @@ class GettingRatingListImpl implements GettingRatingList {
 
     if (response.statusCode != 200) {
       await FirebaseCrashlytics.instance.log(
-          '${runtimeType.toString()}: statusCode = ${response.statusCode}');
+        '${runtimeType.toString()}: statusCode = ${response.statusCode}',
+      );
       return null;
     }
 
@@ -136,7 +137,8 @@ class GettingRatingListImpl implements GettingRatingList {
 
     if (response.statusCode != 200) {
       await FirebaseCrashlytics.instance.log(
-          '${runtimeType.toString()}: statusCode = ${response.statusCode}');
+        '${runtimeType.toString()}: statusCode = ${response.statusCode}',
+      );
       return null;
     }
 
@@ -171,7 +173,7 @@ class GettingRatingListImpl implements GettingRatingList {
   Future<RatingList?> getRatingList({
     required String voteKeySigned,
   }) async {
-    const int numberOfReactionsInPage = 20;
+    const int reactionCountPerPage = 20;
 
     if (voteKeySigned == '') {
       return null;
@@ -188,7 +190,7 @@ class GettingRatingListImpl implements GettingRatingList {
 
     numbersOfReactions.forEach((key, value) {
       for (var pageNumber = 1;
-          pageNumber <= value ~/ numberOfReactionsInPage + 1;
+          pageNumber <= value ~/ reactionCountPerPage + 1;
           pageNumber++) {
         futures.add(getReactionListByReaction(
           voteKeySigned: voteKeySigned,

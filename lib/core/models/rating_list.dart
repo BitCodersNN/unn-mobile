@@ -14,7 +14,7 @@ enum ReactionType {
   facepalm,
 }
 
-class UserInfo {
+class ReactionUserInfo {
   final int _id;
   final String _fullname;
   final String? _photoSrc;
@@ -23,13 +23,13 @@ class UserInfo {
   String get fullname => _fullname;
   String? get photoSrc => _photoSrc;
 
-  UserInfo(
+  ReactionUserInfo(
     this._id,
     this._fullname,
     this._photoSrc,
   );
 
-  factory UserInfo.fromJson(Map<String, Object?> jsonMap) => UserInfo(
+  factory ReactionUserInfo.fromJson(Map<String, Object?> jsonMap) => ReactionUserInfo(
         int.parse(jsonMap[_KeysForUserInfoJsonConverter.id] as String),
         jsonMap[_KeysForUserInfoJsonConverter.fullname] as String,
         jsonMap[_KeysForUserInfoJsonConverter.photoSrc] as String?,
@@ -43,16 +43,16 @@ class UserInfo {
 }
 
 class RatingList {
-  late Map<ReactionType, List<UserInfo>> _ratingList;
+  late Map<ReactionType, List<ReactionUserInfo>> _ratingList;
 
-  Map<ReactionType, List<UserInfo>> get ratingList => _ratingList;
+  Map<ReactionType, List<ReactionUserInfo>> get ratingList => _ratingList;
 
-  RatingList([Map<ReactionType, List<UserInfo>>? ratingList]) {
+  RatingList([Map<ReactionType, List<ReactionUserInfo>>? ratingList]) {
     ratingList ??= {};
     _ratingList = ratingList;
   }
 
-  void addReactions(ReactionType reactionType, List<UserInfo> userInfo) {
+  void addReactions(ReactionType reactionType, List<ReactionUserInfo> userInfo) {
     int initialSize = _ratingList.length;
     _ratingList.putIfAbsent(reactionType, () => userInfo);
 
@@ -73,12 +73,12 @@ class RatingList {
     return totalSize;
   }
 
-  List<UserInfo>? getUsers([ReactionType? reactionType]) {
+  List<ReactionUserInfo>? getUsers([ReactionType? reactionType]) {
     if (reactionType != null) {
       return _ratingList[reactionType];
     }
 
-    List<UserInfo> users = [];
+    List<ReactionUserInfo> users = [];
     for (final list in _ratingList.values) {
       users.addAll(list);
     }
@@ -86,14 +86,14 @@ class RatingList {
   }
 
   factory RatingList.fromJson(Map<String, Object?> jsonMap) {
-    Map<ReactionType, List<UserInfo>> ratingList = {};
+    Map<ReactionType, List<ReactionUserInfo>> ratingList = {};
 
     jsonMap.forEach((key, value) {
       if (value is List) {
-        List<UserInfo> userList = [];
+        List<ReactionUserInfo> userList = [];
         for (final userJson in value) {
           if (userJson is Map<String, dynamic>) {
-            userList.add(UserInfo.fromJson(userJson));
+            userList.add(ReactionUserInfo.fromJson(userJson));
           }
         }
         ratingList[ReactionType.values.firstWhere((e) => e.toString() == key)] =

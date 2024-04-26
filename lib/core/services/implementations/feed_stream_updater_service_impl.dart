@@ -143,20 +143,22 @@ class FeedStreamUpdaterServiceImpl
       }
 
       futures.add(
-        _gettingRatingList.getRatingList(
-          voteKeySigned: await _gettingVoteKeySigned.getVoteKeySigned(
-                authorId: post.authorID,
-                postId: post.id,
-              ) ??
-              '',
-        ),
+        _gettingVoteKeySigned
+            .getVoteKeySigned(
+          authorId: post.authorID,
+          postId: post.id,
+        )
+            .then((voteKeySigned) {
+          return _gettingRatingList.getRatingList(
+            voteKeySigned: voteKeySigned ?? '',
+          );
+        }),
       );
 
       final data = await Future.wait(futures);
 
       final startPosFilesInData = postAuthor == null ? 1 : 0;
-      final endPosFilesInData =
-          startPosFilesInData + (post.files ?? []).length - 1;
+      final posRatingListInData = startPosFilesInData + (post.files ?? []).length;
       postAuthor ??= data.first;
 
       if (postAuthor == null) {
@@ -167,22 +169,18 @@ class FeedStreamUpdaterServiceImpl
 
       List<FileData?> files = List<FileData?>.from(data.getRange(
         startPosFilesInData,
-        startPosFilesInData + endPosFilesInData,
+        posRatingListInData,
       ));
-      List<FileData> filteredFiles = files
-          .where(
-            (element) => element != null,
-          )
-          .map(
-            (e) => e!,
-          )
+      List<FileData> filteredFiles = files //
+          .where((element) => element != null)
+          .map((e) => e!)
           .toList();
 
       _postsList.add(PostWithLoadedInfo(
         author: postAuthor,
         post: post,
         files: filteredFiles,
-        ratingList: data[endPosFilesInData + 1] ?? RatingList(),
+        ratingList: data[posRatingListInData] ?? RatingList(),
       ));
 
       if (notify) {

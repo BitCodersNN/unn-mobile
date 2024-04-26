@@ -11,8 +11,7 @@ class _RegularExpSource {
 }
 
 class GettingVoteKeySignedImpl implements GettingVoteKeySigned {
-  final String _path = 'company/personal/';
-  final String _user = 'user';
+  final String _path = 'company/personal/user';
   final String _blog = 'blog';
   final String _sessionIdCookieKey = 'PHPSESSID';
   final String _csrfKey = 'X-Bitrix-Csrf-Token';
@@ -24,7 +23,7 @@ class GettingVoteKeySignedImpl implements GettingVoteKeySigned {
   }) async {
     final authorisationService =
         Injector.appInstance.get<AuthorisationService>();
-    final path = '$_path$_user/$authorId/$_blog/$postId/';
+    final path = '$_path/$authorId/$_blog/$postId/';
 
     final requestSender = HttpRequestSender(
       path: path,
