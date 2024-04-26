@@ -26,7 +26,7 @@ class _MarkTypeDouble {
   static const double good = 4;
   static const double veryGood = 4.5;
   static const double excellent = 5;
-  static const double perfectly = 5.5;
+  static const double perfect = 5.5;
 }
 
 enum MarkType {
@@ -37,7 +37,7 @@ enum MarkType {
   good,
   veryGood,
   excellent,
-  perfectly,
+  perfect,
 }
 
 extension MarkTypeExtension on MarkType {
@@ -57,8 +57,8 @@ extension MarkTypeExtension on MarkType {
         return _MarkTypeDouble.veryGood;
       case MarkType.excellent:
         return _MarkTypeDouble.excellent;
-      case MarkType.perfectly:
-        return _MarkTypeDouble.perfectly;
+      case MarkType.perfect:
+        return _MarkTypeDouble.perfect;
     }
   }
 
@@ -78,8 +78,8 @@ extension MarkTypeExtension on MarkType {
         return _MarkTypeString.veryGood;
       case MarkType.excellent:
         return _MarkTypeString.excellent;
-      case MarkType.perfectly:
-        return _MarkTypeString.perfectly;
+      case MarkType.perfect:
+        return _MarkTypeString.perfect;
     }
   }
 
@@ -99,8 +99,8 @@ extension MarkTypeExtension on MarkType {
         return MarkType.veryGood;
       case _MarkTypeDouble.excellent:
         return MarkType.excellent;
-      case _MarkTypeDouble.perfectly:
-        return MarkType.perfectly;
+      case _MarkTypeDouble.perfect:
+        return MarkType.perfect;
       default:
         throw Exception('Unknown value for Status enum');
     }
@@ -122,8 +122,8 @@ extension MarkTypeExtension on MarkType {
         return MarkType.veryGood;
       case _MarkTypeString.excellent:
         return MarkType.excellent;
-      case _MarkTypeString.perfectly:
-        return MarkType.perfectly;
+      case _MarkTypeString.perfect:
+        return MarkType.perfect;
       default:
         throw Exception('Unknown value for Status enum');
     }
