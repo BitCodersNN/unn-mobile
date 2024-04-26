@@ -1,1 +1,13 @@
 include: package:flutter_lints/flutter.yaml
+
+analyzer:
+  exclude: ["build/**", "flutter_bbcode"]
+
+linter:
+  rules:
+    - cancel_subscriptions
+    - prefer_single_quotes
+    - always_use_package_imports
+    - require_trailing_commas
+    - prefer_final_locals
+    - prefer_final_in_for_each
