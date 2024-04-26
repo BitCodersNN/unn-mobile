@@ -6,11 +6,14 @@ import 'package:unn_mobile/core/misc/type_defs.dart';
 import 'package:unn_mobile/core/models/blog_data.dart';
 import 'package:unn_mobile/core/models/file_data.dart';
 import 'package:unn_mobile/core/models/post_with_loaded_info.dart';
+import 'package:unn_mobile/core/models/rating_list.dart';
 import 'package:unn_mobile/core/models/user_data.dart';
 import 'package:unn_mobile/core/services/interfaces/feed_stream_updater_service.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_blog_posts.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_file_data.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_profile.dart';
+import 'package:unn_mobile/core/services/interfaces/getting_rating_list.dart';
+import 'package:unn_mobile/core/services/interfaces/getting_vote_key_signed.dart';
 import 'package:unn_mobile/core/services/interfaces/post_with_loaded_info_provider.dart';
 
 class FeedStreamUpdaterServiceImpl
@@ -19,10 +22,12 @@ class FeedStreamUpdaterServiceImpl
   final _gettingBlogPostsService = Injector.appInstance.get<GettingBlogPosts>();
   final _gettingProfileService = Injector.appInstance.get<GettingProfile>();
   final _gettingFileData = Injector.appInstance.get<GettingFileData>();
+  final _gettingRatingList = Injector.appInstance.get<GettingRatingList>();
+  final _gettingVoteKeySigned =
+      Injector.appInstance.get<GettingVoteKeySigned>();
   final _postWithLoadedInfoProvider =
       Injector.appInstance.get<PostWithLoadedInfoProvider>();
   final _lruCacheProfile = Injector.appInstance.get<LRUCacheUserData>();
-
 
   bool _busy = false;
 
@@ -122,6 +127,7 @@ class FeedStreamUpdaterServiceImpl
     for (final post in posts) {
       _busy = true;
       final futures = <Future>[];
+
       UserData? postAuthor = _lruCacheProfile.get(post.authorID);
 
       if (postAuthor == null) {
@@ -136,8 +142,23 @@ class FeedStreamUpdaterServiceImpl
         futures.add(_gettingFileData.getFileData(id: int.parse(fileId)));
       }
 
+      futures.add(
+        _gettingVoteKeySigned
+            .getVoteKeySigned(
+          authorId: post.authorID,
+          postId: post.id,
+        )
+            .then((voteKeySigned) {
+          return _gettingRatingList.getRatingList(
+            voteKeySigned: voteKeySigned ?? '',
+          );
+        }),
+      );
+
       final data = await Future.wait(futures);
+
       final startPosFilesInData = postAuthor == null ? 1 : 0;
+      final posRatingListInData = startPosFilesInData + (post.files ?? []).length;
       postAuthor ??= data.first;
 
       if (postAuthor == null) {
@@ -145,11 +166,21 @@ class FeedStreamUpdaterServiceImpl
       }
 
       _lruCacheProfile.save(post.authorID, postAuthor);
+
+      List<FileData?> files = List<FileData?>.from(data.getRange(
+        startPosFilesInData,
+        posRatingListInData,
+      ));
+      List<FileData> filteredFiles = files //
+          .where((element) => element != null)
+          .map((e) => e!)
+          .toList();
+
       _postsList.add(PostWithLoadedInfo(
         author: postAuthor,
         post: post,
-        files: List<FileData>.from(
-            data.getRange(startPosFilesInData, data.length)),
+        files: filteredFiles,
+        ratingList: data[posRatingListInData] ?? RatingList(),
       ));
 
       if (notify) {
