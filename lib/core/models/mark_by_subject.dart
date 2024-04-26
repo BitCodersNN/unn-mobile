@@ -102,7 +102,7 @@ extension MarkTypeExtension on MarkType {
       case _MarkTypeDouble.perfectly:
         return MarkType.perfectly;
       default:
-        throw Exception("Unknown value for Status enum");
+        throw Exception('Unknown value for Status enum');
     }
   }
 
@@ -125,7 +125,7 @@ extension MarkTypeExtension on MarkType {
       case _MarkTypeString.perfectly:
         return MarkType.perfectly;
       default:
-        throw Exception("Unknown value for Status enum");
+        throw Exception('Unknown value for Status enum');
     }
   }
 }

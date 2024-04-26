@@ -17,10 +17,12 @@ class MarkBySubjectProviderImpl implements MarkBySubjectProvider {
     if (!(await isContained())) {
       return null;
     }
-    final jsonString = jsonDecode((await _storage.read(
-      key: _OfflineMarkBySubjectProviderKeys.markBySubject,
-    ))!);
-    
+    final jsonString = jsonDecode(
+      (await _storage.read(
+        key: _OfflineMarkBySubjectProviderKeys.markBySubject,
+      ))!,
+    );
+
     final Map<String, dynamic> jsonMap = json.decode(jsonString);
 
     final Map<int, List<MarkBySubject>> recordBook = {};
@@ -36,7 +38,8 @@ class MarkBySubjectProviderImpl implements MarkBySubjectProvider {
   @override
   Future<bool> isContained() async {
     return await _storage.containsKey(
-        key: _OfflineMarkBySubjectProviderKeys.markBySubject);
+      key: _OfflineMarkBySubjectProviderKeys.markBySubject,
+    );
   }
 
   @override
@@ -46,7 +49,8 @@ class MarkBySubjectProviderImpl implements MarkBySubjectProvider {
     }
     final Map<String, dynamic> jsonMap = {};
     recordBook.forEach((key, value) {
-      List<dynamic> jsonList = value.map((item) => item.toJson()).toList();
+      final List<dynamic> jsonList =
+          value.map((item) => item.toJson()).toList();
       jsonMap[key.toString()] = jsonList;
     });
 
