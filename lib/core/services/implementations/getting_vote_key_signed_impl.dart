@@ -19,7 +19,7 @@ class GettingVoteKeySignedImpl implements GettingVoteKeySigned {
   }) async {
     final authorisationService =
         Injector.appInstance.get<AuthorisationService>();
-    final path = '${ApiPaths.personalUser}/$authorId/$_blog/$postId/';
+    final path = '${ApiPaths.companyPersonalUser}/$authorId/$_blog/$postId/';
 
     final requestSender = HttpRequestSender(
       path: path,

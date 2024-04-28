@@ -94,8 +94,10 @@ class AuthorisationServiceImpl implements AuthorisationService {
     String login,
     String password,
   ) async {
-    final requestSender =
-        HttpRequestSender(path: ApiPaths.auth, queryParams: {'login': 'yes'});
+    final requestSender = HttpRequestSender(
+      path: ApiPaths.auth,
+      queryParams: {'login': 'yes'},
+    );
 
     return await requestSender.postForm(
       {
