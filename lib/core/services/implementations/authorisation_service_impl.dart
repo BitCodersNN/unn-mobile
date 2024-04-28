@@ -58,7 +58,7 @@ class AuthorisationServiceImpl implements AuthorisationService {
     }
 
     final csrfValue = csrfResponse.headers.value(
-      StringForSessionIdentifier.csrfHeaderName,
+      StringForSessionIdentifier.newCsrf,
     );
 
     if (csrfValue == null) {
