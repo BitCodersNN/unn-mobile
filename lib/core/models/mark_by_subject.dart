@@ -8,25 +8,52 @@ class _KeysForMarkBySubjectJsonConverter {
 }
 
 class _MarkTypeString {
-  static const String notCredited = 'не зачтено';
-  static const String credited = 'зачтено';
-  static const String notSatisfactory = 'не удовлетворительно';
-  static const String satisfactory = 'удовлетворительно';
-  static const String good = 'хорошо';
-  static const String veryGood = 'очень хорошо';
-  static const String excellent = 'отлично';
-  static const String perfect = 'превосходно';
+  static const Map<MarkType, String> _map = {
+    MarkType.notCredited: 'Не зачтено',
+    MarkType.credited: 'Зачтено',
+    MarkType.notSatisfactory: 'Неудовлетворительно',
+    MarkType.satisfactory: 'Удовлетворительно',
+    MarkType.good: 'Хорошо',
+    MarkType.veryGood: 'Очень хорошо',
+    MarkType.excellent: 'Отлично',
+    MarkType.perfect: 'Превосходно',
+  };
+
+  static String parse(MarkType markType) => _map[markType]!;
+  static MarkType fromString(String value) => _map.entries
+      .firstWhere(
+        (e) => e.value == value,
+        orElse: () => throw Exception('Unknown value for MarkType enum'),
+      )
+      .key;
 }
 
 class _MarkTypeDouble {
-  static const double notCredited = 0;
-  static const double credited = 1;
-  static const double notSatisfactory = 2;
-  static const double satisfactory = 3;
-  static const double good = 4;
-  static const double veryGood = 4.5;
-  static const double excellent = 5;
-  static const double perfect = 5.5;
+  static const Map<MarkType, double> _map = {
+    MarkType.notCredited: 0.0,
+    MarkType.credited: 1.0,
+    MarkType.notSatisfactory: 2.0,
+    MarkType.satisfactory: 3.0,
+    MarkType.good: 4.0,
+    MarkType.veryGood: 4.5,
+    MarkType.excellent: 5.0,
+    MarkType.perfect: 5.5,
+  };
+
+  static double parse(MarkType markType) => _map[markType]!;
+  static MarkType fromDouble(double value) => _map.entries
+      .firstWhere(
+        (e) => e.value == value,
+        orElse: () => throw Exception('Unknown value for MarkType enum'),
+      )
+      .key;
+}
+
+extension MarkTypeExtension on MarkType {
+  double convertToDouble() => _MarkTypeDouble.parse(this);
+  String convertToString() => _MarkTypeString.parse(this);
+  static MarkType fromDouble(double value) => _MarkTypeDouble.fromDouble(value);
+  static MarkType fromString(String value) => _MarkTypeString.fromString(value);
 }
 
 enum MarkType {
@@ -40,98 +67,8 @@ enum MarkType {
   perfect,
 }
 
-extension MarkTypeExtension on MarkType {
-  double parseDouble() {
-    switch (this) {
-      case MarkType.notCredited:
-        return _MarkTypeDouble.notCredited;
-      case MarkType.credited:
-        return _MarkTypeDouble.credited;
-      case MarkType.notSatisfactory:
-        return _MarkTypeDouble.notSatisfactory;
-      case MarkType.satisfactory:
-        return _MarkTypeDouble.satisfactory;
-      case MarkType.good:
-        return _MarkTypeDouble.good;
-      case MarkType.veryGood:
-        return _MarkTypeDouble.veryGood;
-      case MarkType.excellent:
-        return _MarkTypeDouble.excellent;
-      case MarkType.perfect:
-        return _MarkTypeDouble.perfect;
-    }
-  }
-
-  String parseString() {
-    switch (this) {
-      case MarkType.notCredited:
-        return _MarkTypeString.notCredited;
-      case MarkType.credited:
-        return _MarkTypeString.credited;
-      case MarkType.notSatisfactory:
-        return _MarkTypeString.notSatisfactory;
-      case MarkType.satisfactory:
-        return _MarkTypeString.satisfactory;
-      case MarkType.good:
-        return _MarkTypeString.good;
-      case MarkType.veryGood:
-        return _MarkTypeString.veryGood;
-      case MarkType.excellent:
-        return _MarkTypeString.excellent;
-      case MarkType.perfect:
-        return _MarkTypeString.perfect;
-    }
-  }
-
-  static MarkType fromDouble(double value) {
-    switch (value) {
-      case _MarkTypeDouble.notCredited:
-        return MarkType.notCredited;
-      case _MarkTypeDouble.credited:
-        return MarkType.credited;
-      case _MarkTypeDouble.notSatisfactory:
-        return MarkType.notSatisfactory;
-      case _MarkTypeDouble.satisfactory:
-        return MarkType.satisfactory;
-      case _MarkTypeDouble.good:
-        return MarkType.good;
-      case _MarkTypeDouble.veryGood:
-        return MarkType.veryGood;
-      case _MarkTypeDouble.excellent:
-        return MarkType.excellent;
-      case _MarkTypeDouble.perfect:
-        return MarkType.perfect;
-      default:
-        throw Exception('Unknown value for Status enum');
-    }
-  }
-
-  static MarkType fromString(String value) {
-    switch (value) {
-      case _MarkTypeString.notCredited:
-        return MarkType.notCredited;
-      case _MarkTypeString.credited:
-        return MarkType.credited;
-      case _MarkTypeString.notSatisfactory:
-        return MarkType.notSatisfactory;
-      case _MarkTypeString.satisfactory:
-        return MarkType.satisfactory;
-      case _MarkTypeString.good:
-        return MarkType.good;
-      case _MarkTypeString.veryGood:
-        return MarkType.veryGood;
-      case _MarkTypeString.excellent:
-        return MarkType.excellent;
-      case _MarkTypeString.perfect:
-        return MarkType.perfect;
-      default:
-        throw Exception('Unknown value for Status enum');
-    }
-  }
-}
-
 class MarkBySubject {
-  final int _creditedHoursPerHour = 36;
+  final int _hoursPerCreditedHour = 36;
 
   final String _controlType;
   final DateTime _date;
@@ -159,7 +96,7 @@ class MarkBySubject {
   String? get lecturers => _lecturers;
   MarkType get markType => _markType;
   String get controlType => _controlType;
-  int get creditedHours => hours ~/ _creditedHoursPerHour;
+  int get creditedHours => hours ~/ _hoursPerCreditedHour;
   String get subject => _subject;
 
   factory MarkBySubject.fromJson(Map<String, Object?> jsonMap) {
@@ -188,7 +125,7 @@ class MarkBySubject {
       _KeysForMarkBySubjectJsonConverter.date: date.toIso8601String(),
       _KeysForMarkBySubjectJsonConverter.hours: hours.toString(),
       _KeysForMarkBySubjectJsonConverter.lecturers: lecturers,
-      _KeysForMarkBySubjectJsonConverter.mark: markType.parseDouble(),
+      _KeysForMarkBySubjectJsonConverter.mark: markType.convertToString(),
       _KeysForMarkBySubjectJsonConverter.subject: subject,
     };
   }
