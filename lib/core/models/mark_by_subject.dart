@@ -49,13 +49,6 @@ class _MarkTypeDouble {
       .key;
 }
 
-extension MarkTypeExtension on MarkType {
-  double convertToDouble() => _MarkTypeDouble.parse(this);
-  String convertToString() => _MarkTypeString.parse(this);
-  static MarkType fromDouble(double value) => _MarkTypeDouble.fromDouble(value);
-  static MarkType fromString(String value) => _MarkTypeString.fromString(value);
-}
-
 enum MarkType {
   notCredited,
   credited,
@@ -64,7 +57,17 @@ enum MarkType {
   good,
   veryGood,
   excellent,
-  perfect,
+  perfect;
+
+  factory MarkType.fromString(String value) =>
+      _MarkTypeString.fromString(value);
+  factory MarkType.fromDouble(double value) =>
+      _MarkTypeDouble.fromDouble(value);
+}
+
+extension MarkTypeExtension on MarkType {
+  double convertToDouble() => _MarkTypeDouble.parse(this);
+  String convertToString() => _MarkTypeString.parse(this);
 }
 
 class MarkBySubject {
@@ -111,7 +114,7 @@ class MarkBySubject {
       ),
       lecturers:
           jsonMap[_KeysForMarkBySubjectJsonConverter.lecturers] as String?,
-      markType: MarkTypeExtension.fromDouble(
+      markType: MarkType.fromDouble(
         (jsonMap[_KeysForMarkBySubjectJsonConverter.mark] as dynamic)
             .toDouble(),
       ),
