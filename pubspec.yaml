@@ -69,7 +69,13 @@ flutter:
     - assets/images/quest/2.png
     - assets/images/quest/3.png
     - assets/images/quest/4.png
-
+    - assets/images/reactions/angry.png
+    - assets/images/reactions/confused.png
+    - assets/images/reactions/facepalm.png
+    - assets/images/reactions/laugh.png
+    - assets/images/reactions/like.png
+    - assets/images/reactions/love.png
+    - assets/images/reactions/sad.png
 
   fonts:
     - family: LetoSans
