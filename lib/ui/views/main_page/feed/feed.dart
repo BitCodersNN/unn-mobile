@@ -75,6 +75,7 @@ class FeedScreenView extends StatelessWidget {
     final unescaper = HtmlUnescape();
     final extraColors = theme.extension<UnnMobileColors>();
     const idkWhatColor = Color(0xFF989EA9);
+    final reactionsSize = MediaQuery.textScalerOf(context).scale(16.0);
     return GestureDetector(
       onTap: () async {
         if (!processClicks) {
@@ -163,7 +164,7 @@ class FeedScreenView extends StatelessWidget {
                 );
               },
             ),
-            const SizedBox(height: 15.0),
+            const SizedBox(height: 16.0),
             for (final file in post.files)
               AttachedFile(
                 fileData: file,
@@ -179,44 +180,77 @@ class FeedScreenView extends StatelessWidget {
                   color: idkWhatColor,
                 ),
               ),
-            if (showCommentsCount)
-              Row(
-                children: [
-                  const Padding(
-                    padding: EdgeInsets.only(top: 10),
-                    child: Icon(
-                      Icons.message,
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                if (showCommentsCount)
+                  const Icon(
+                    Icons.message,
+                    color: idkWhatColor,
+                    size: 30,
+                  ),
+                if (showCommentsCount) const SizedBox(width: 6),
+                if (showCommentsCount)
+                  const Text(
+                    'Комментарии:',
+                    style: TextStyle(
+                      fontSize: 14,
                       color: idkWhatColor,
-                      size: 30,
+                      fontStyle: FontStyle.italic,
+                      fontWeight: FontWeight.w400,
                     ),
                   ),
-                  const SizedBox(width: 6),
-                  const Padding(
-                    padding: EdgeInsets.only(top: 6),
-                    child: Text(
-                      'Комментарии:',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: idkWhatColor,
-                        fontStyle: FontStyle.italic,
-                        fontWeight: FontWeight.w400,
-                      ),
+                if (showCommentsCount) const SizedBox(width: 6),
+                if (showCommentsCount)
+                  Text(
+                    '${post.post.numberOfComments}',
+                    style: const TextStyle(
+                      fontSize: 14,
+                      color: idkWhatColor,
+                      fontStyle: FontStyle.italic,
                     ),
                   ),
-                  const SizedBox(width: 6),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 6),
-                    child: Text(
-                      '${post.post.numberOfComments}',
-                      style: const TextStyle(
-                        fontSize: 14,
-                        color: idkWhatColor,
-                        fontStyle: FontStyle.italic,
-                      ),
+                Expanded(
+                  child: Container(),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: SizedBox(
+                    width:
+                        post.ratingList.ratingList.length * reactionsSize / 2 +
+                            reactionsSize / 2,
+                    height: reactionsSize,
+                    child: Stack(
+                      children: [
+                        for (int i = 0;
+                            i < post.ratingList.ratingList.length;
+                            i++)
+                          Positioned(
+                            top: 0.0,
+                            left: reactionsSize / 2 * i,
+                            child: Image(
+                              width: reactionsSize,
+                              height: reactionsSize,
+                              image: AssetImage(
+                                post.ratingList.ratingList.keys
+                                    .toList(growable: false)[i]
+                                    .assetName,
+                              ),
+                            ),
+                          ),
+                      ],
                     ),
                   ),
-                ],
-              ),
+                ),
+                Text(
+                  '${post.ratingList.getTotalNumberOfReactions() > 0 ? post.ratingList.getTotalNumberOfReactions() : ""}',
+                  style: const TextStyle(
+                    fontSize: 14.0,
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
+              ],
+            ),
           ],
         ),
       ),
