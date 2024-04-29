@@ -3,9 +3,9 @@ import 'dart:io';
 
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:injector/injector.dart';
-import 'package:unn_mobile/core/constants/regular_expression.dart';
-import 'package:unn_mobile/core/constants/string_for_api.dart';
-import 'package:unn_mobile/core/constants/string_for_session_identifier.dart';
+import 'package:unn_mobile/core/constants/regular_expressions.dart';
+import 'package:unn_mobile/core/constants/api_url_strings.dart';
+import 'package:unn_mobile/core/constants/session_identifier_strings.dart';
 import 'package:unn_mobile/core/misc/http_helper.dart';
 import 'package:unn_mobile/core/models/blog_post_comment.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
@@ -56,11 +56,11 @@ class GettingBlogPostCommentsImpl implements GettingBlogPostComments {
       path: ApiPaths.ajax,
       queryParams: {
         'mode': 'class',
-        Action.actionKey: Action.navigateComment,
-        'c': Action.comment,
+        AjaxActionStrings.actionKey: AjaxActionStrings.navigateComment,
+        'c': AjaxActionStrings.comment,
       },
-      headers: {StringForSessionIdentifier.csrfToken: csrf},
-      cookies: {StringForSessionIdentifier.sessionIdCookieKey: sessionId},
+      headers: {SessionIdentifierStrings.csrfToken: csrf},
+      cookies: {SessionIdentifierStrings.sessionIdCookieKey: sessionId},
     );
 
     final HttpClientResponse response;
@@ -110,14 +110,14 @@ class GettingBlogPostCommentsImpl implements GettingBlogPostComments {
     final commentsAttachedFilesId = parseCommentsFilesId(htmlBody);
 
     final authorMatches =
-        RegularExpression.authorRegExp.allMatches(htmlBody).iterator;
+        RegularExpressions.authorRegExp.allMatches(htmlBody).iterator;
     final dateTimeMatches =
-        RegularExpression.dateTimeRegExp.allMatches(htmlBody).iterator;
+        RegularExpressions.dateTimeRegExp.allMatches(htmlBody).iterator;
     final keySignedMatches =
-        RegularExpression.keySignedRegExp.allMatches(htmlBody).iterator;
+        RegularExpressions.keySignedRegExp.allMatches(htmlBody).iterator;
 
     for (final messageMatch
-        in RegularExpression.commentIdAndMessageRegExp.allMatches(htmlBody)) {
+        in RegularExpressions.commentIdAndMessageRegExp.allMatches(htmlBody)) {
       if (!authorMatches.moveNext()) {
         FirebaseCrashlytics.instance
             .log('GettingBlogPostCommentsService-parser: no author matches');
@@ -170,7 +170,7 @@ class GettingBlogPostCommentsImpl implements GettingBlogPostComments {
   Map<int, List<int>> parseCommentsFilesId(String htmlBody) {
     final commentIdToAttachFiles = <int, List<int>>{};
 
-    RegularExpression.filesRegExp.allMatches(htmlBody).forEach((match) {
+    RegularExpressions.filesRegExp.allMatches(htmlBody).forEach((match) {
       final commentId = match.group(1);
       final filesListAsString = match.group(2);
 

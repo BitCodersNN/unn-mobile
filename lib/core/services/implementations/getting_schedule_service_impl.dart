@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:unn_mobile/core/constants/string_for_api.dart';
+import 'package:unn_mobile/core/constants/api_url_strings.dart';
 import 'package:unn_mobile/core/misc/http_helper.dart';
 import 'package:unn_mobile/core/models/schedule_filter.dart';
 import 'package:unn_mobile/core/models/subject.dart';

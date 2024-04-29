@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:unn_mobile/core/constants/string_for_api.dart';
+import 'package:unn_mobile/core/constants/api_url_strings.dart';
 
 class HttpRequestSender {
   static const maxTimeout = 4;

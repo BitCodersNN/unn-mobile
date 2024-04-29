@@ -2,9 +2,9 @@ import 'dart:io';
 
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:injector/injector.dart';
-import 'package:unn_mobile/core/constants/regular_expression.dart';
-import 'package:unn_mobile/core/constants/string_for_api.dart';
-import 'package:unn_mobile/core/constants/string_for_session_identifier.dart';
+import 'package:unn_mobile/core/constants/regular_expressions.dart';
+import 'package:unn_mobile/core/constants/api_url_strings.dart';
+import 'package:unn_mobile/core/constants/session_identifier_strings.dart';
 import 'package:unn_mobile/core/misc/http_helper.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_vote_key_signed.dart';
@@ -24,10 +24,10 @@ class GettingVoteKeySignedImpl implements GettingVoteKeySigned {
     final requestSender = HttpRequestSender(
       path: path,
       headers: {
-        StringForSessionIdentifier.csrfToken: authorisationService.csrf ?? '',
+        SessionIdentifierStrings.csrfToken: authorisationService.csrf ?? '',
       },
       cookies: {
-        StringForSessionIdentifier.sessionIdCookieKey:
+        SessionIdentifierStrings.sessionIdCookieKey:
             authorisationService.sessionId ?? '',
       },
     );
@@ -59,7 +59,7 @@ class GettingVoteKeySignedImpl implements GettingVoteKeySigned {
 
     String? keySignedMatches;
     try {
-      keySignedMatches = (RegularExpression.keySignedRegExp
+      keySignedMatches = (RegularExpressions.keySignedRegExp
           .firstMatch(responseStr)
           ?.group(0) as String);
     } catch (error, stackTrace) {

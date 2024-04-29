@@ -3,8 +3,8 @@ import 'dart:io';
 
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:injector/injector.dart';
-import 'package:unn_mobile/core/constants/string_for_api.dart';
-import 'package:unn_mobile/core/constants/string_for_session_identifier.dart';
+import 'package:unn_mobile/core/constants/api_url_strings.dart';
+import 'package:unn_mobile/core/constants/session_identifier_strings.dart';
 import 'package:unn_mobile/core/misc/http_helper.dart';
 import 'package:unn_mobile/core/models/file_data.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
@@ -23,11 +23,11 @@ class GettingFileDataImpl implements GettingFileData {
     final requestSender = HttpRequestSender(
       path: ApiPaths.diskAttachedObjectGet,
       queryParams: {
-        StringForSessionIdentifier.sessid: authorisationService.csrf ?? '',
+        SessionIdentifierStrings.sessid: authorisationService.csrf ?? '',
         _id: id.toString(),
       },
       cookies: {
-        StringForSessionIdentifier.sessionIdCookieKey:
+        SessionIdentifierStrings.sessionIdCookieKey:
             authorisationService.sessionId ?? '',
       },
     );

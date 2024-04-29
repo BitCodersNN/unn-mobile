@@ -3,9 +3,9 @@ import 'dart:io';
 
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:injector/injector.dart';
-import 'package:unn_mobile/core/constants/string_for_api.dart';
-import 'package:unn_mobile/core/constants/string_for_profiles.dart';
-import 'package:unn_mobile/core/constants/string_for_session_identifier.dart';
+import 'package:unn_mobile/core/constants/api_url_strings.dart';
+import 'package:unn_mobile/core/constants/profiles_strings.dart';
+import 'package:unn_mobile/core/constants/session_identifier_strings.dart';
 import 'package:unn_mobile/core/misc/http_helper.dart';
 import 'package:unn_mobile/core/models/employee_data.dart';
 import 'package:unn_mobile/core/models/student_data.dart';
@@ -22,7 +22,7 @@ class GettingProfileOfCurrentUserImpl implements GettingProfileOfCurrentUser {
     final requestSender = HttpRequestSender(
       path: ApiPaths.currentProfile,
       cookies: {
-        StringForSessionIdentifier.sessionIdCookieKey:
+        SessionIdentifierStrings.sessionIdCookieKey:
             authorisationService.sessionId ?? '',
       },
     );
@@ -54,9 +54,9 @@ class GettingProfileOfCurrentUserImpl implements GettingProfileOfCurrentUser {
 
     UserData? userData;
     try {
-      userData = jsonMap[Profiles.type] == Profiles.student
+      userData = jsonMap[ProfilesStrings.type] == ProfilesStrings.student
           ? StudentData.fromJson(jsonMap)
-          : jsonMap[Profiles.type] == Profiles.employee
+          : jsonMap[ProfilesStrings.type] == ProfilesStrings.employee
               ? EmployeeData.fromJson(jsonMap)
               : null;
     } catch (e, stackTrace) {

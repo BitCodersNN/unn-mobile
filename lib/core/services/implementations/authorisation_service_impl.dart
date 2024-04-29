@@ -2,8 +2,8 @@ import 'dart:io';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:injector/injector.dart';
-import 'package:unn_mobile/core/constants/string_for_api.dart';
-import 'package:unn_mobile/core/constants/string_for_session_identifier.dart';
+import 'package:unn_mobile/core/constants/api_url_strings.dart';
+import 'package:unn_mobile/core/constants/session_identifier_strings.dart';
 import 'package:unn_mobile/core/misc/custom_errors/auth_errors.dart';
 import 'package:unn_mobile/core/misc/http_helper.dart';
 import 'package:unn_mobile/core/models/online_status_data.dart';
@@ -38,7 +38,7 @@ class AuthorisationServiceImpl implements AuthorisationService {
     final sessionCookie = authResponse.cookies
         .where(
           (cookie) =>
-              cookie.name == StringForSessionIdentifier.sessionIdCookieKey,
+              cookie.name == SessionIdentifierStrings.sessionIdCookieKey,
         )
         .firstOrNull;
 
@@ -58,7 +58,7 @@ class AuthorisationServiceImpl implements AuthorisationService {
     }
 
     final csrfValue = csrfResponse.headers.value(
-      StringForSessionIdentifier.newCsrf,
+      SessionIdentifierStrings.newCsrf,
     );
 
     if (csrfValue == null) {
@@ -114,8 +114,8 @@ class AuthorisationServiceImpl implements AuthorisationService {
   Future<HttpClientResponse> _sendCsrfRequest(String session) async {
     final requestSender = HttpRequestSender(
       path: ApiPaths.ajax,
-      queryParams: {Action.actionKey: Action.getNextPage},
-      cookies: {StringForSessionIdentifier.sessionIdCookieKey: session},
+      queryParams: {AjaxActionStrings.actionKey: AjaxActionStrings.getNextPage},
+      cookies: {SessionIdentifierStrings.sessionIdCookieKey: session},
     );
 
     return await requestSender.get(timeoutSeconds: 15);

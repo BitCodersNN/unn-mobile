@@ -9,7 +9,7 @@ class _RegularExpressionSource {
       r'top\.arComDFiles(\d+) = BX\.util\.array_merge\(\(top\.arComDFiles\d+ \|\| \[\]\), \[(.*?)\]';
 }
 
-class RegularExpression {
+class RegularExpressions {
   static final commentIdAndMessageRegExp = RegExp(
     _RegularExpressionSource.commentIdAndMessage,
   );

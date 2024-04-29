@@ -3,9 +3,9 @@ import 'dart:io';
 
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:injector/injector.dart';
-import 'package:unn_mobile/core/constants/string_for_api.dart';
-import 'package:unn_mobile/core/constants/string_for_profiles.dart';
-import 'package:unn_mobile/core/constants/string_for_session_identifier.dart';
+import 'package:unn_mobile/core/constants/api_url_strings.dart';
+import 'package:unn_mobile/core/constants/profiles_strings.dart';
+import 'package:unn_mobile/core/constants/session_identifier_strings.dart';
 import 'package:unn_mobile/core/misc/http_helper.dart';
 import 'package:unn_mobile/core/models/employee_data.dart';
 import 'package:unn_mobile/core/models/student_data.dart';
@@ -25,7 +25,7 @@ class GettingProfileImpl implements GettingProfile {
     final requestSender = HttpRequestSender(
       path: ApiPaths.user + _pathSecondPartForGettingId + authorId.toString(),
       cookies: {
-        StringForSessionIdentifier.sessionIdCookieKey:
+        SessionIdentifierStrings.sessionIdCookieKey:
             authorisationService.sessionId ?? '',
       },
     );
@@ -67,7 +67,7 @@ class GettingProfileImpl implements GettingProfile {
     final requestSender = HttpRequestSender(
       path: ApiPaths.user + userId.toString(),
       cookies: {
-        StringForSessionIdentifier.sessionIdCookieKey:
+        SessionIdentifierStrings.sessionIdCookieKey:
             authorisationService.sessionId ?? '',
       },
     );
@@ -98,19 +98,19 @@ class GettingProfileImpl implements GettingProfile {
       return null;
     }
 
-    final profileJsonMap = jsonMap[Profiles.profilesKey][0];
-    final userType = profileJsonMap[Profiles.type];
+    final profileJsonMap = jsonMap[ProfilesStrings.profilesKey][0];
+    final userType = profileJsonMap[ProfilesStrings.type];
 
     // Костыль, т.к. на сайте есть небольшой процент профилей, отличающихся от остальных
-    if (profileJsonMap[Profiles.user] == null) {
-      profileJsonMap[Profiles.user] = jsonMap;
+    if (profileJsonMap[ProfilesStrings.user] == null) {
+      profileJsonMap[ProfilesStrings.user] = jsonMap;
     }
 
     UserData? userData;
     try {
-      userData = (userType == Profiles.student)
+      userData = (userType == ProfilesStrings.student)
           ? StudentData.fromJson(profileJsonMap)
-          : userType == Profiles.employee
+          : userType == ProfilesStrings.employee
               ? EmployeeData.fromJson(profileJsonMap)
               : UserData.fromJson(profileJsonMap);
     } catch (error, stackTrace) {

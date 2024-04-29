@@ -36,7 +36,7 @@ class ApiPaths {
   static const String marks = 'bitrix/vuz/api/marks2';
 }
 
-class Action {
+class AjaxActionStrings {
   /// QueryParams для указания action
   static const String actionKey = 'action';
 

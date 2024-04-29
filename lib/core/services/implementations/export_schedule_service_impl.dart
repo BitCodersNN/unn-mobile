@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:device_calendar/device_calendar.dart';
 import 'package:icalendar_parser/icalendar_parser.dart';
 import 'package:permission_handler_platform_interface/permission_handler_platform_interface.dart';
-import 'package:unn_mobile/core/constants/string_for_api.dart';
+import 'package:unn_mobile/core/constants/api_url_strings.dart';
 import 'package:unn_mobile/core/misc/http_helper.dart';
 import 'package:unn_mobile/core/models/schedule_filter.dart';
 import 'package:unn_mobile/core/services/interfaces/export_schedule_service.dart';

@@ -3,7 +3,7 @@ import 'dart:io';
 
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:injector/injector.dart';
-import 'package:unn_mobile/core/constants/string_for_api.dart';
+import 'package:unn_mobile/core/constants/api_url_strings.dart';
 import 'package:unn_mobile/core/misc/http_helper.dart';
 import 'package:unn_mobile/core/models/employee_data.dart';
 import 'package:unn_mobile/core/models/schedule_search_result_item.dart';
