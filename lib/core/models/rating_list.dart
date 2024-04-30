@@ -90,12 +90,7 @@ class RatingList {
     if (reactionType != null) {
       return _ratingList[reactionType]?.length;
     }
-
-    int totalSize = 0;
-    for (final list in _ratingList.values) {
-      totalSize += list.length;
-    }
-    return totalSize;
+    return getTotalNumberOfReactions();
   }
 
   List<ReactionUserInfo>? getUsers([ReactionType? reactionType]) {
