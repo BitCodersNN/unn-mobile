@@ -3,6 +3,9 @@ import 'dart:io';
 
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:injector/injector.dart';
+import 'package:unn_mobile/core/constants/api_url_strings.dart';
+import 'package:unn_mobile/core/constants/profiles_strings.dart';
+import 'package:unn_mobile/core/constants/session_identifier_strings.dart';
 import 'package:unn_mobile/core/misc/http_helper.dart';
 import 'package:unn_mobile/core/models/employee_data.dart';
 import 'package:unn_mobile/core/models/student_data.dart';
@@ -11,15 +14,8 @@ import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_profile.dart';
 
 class GettingProfileImpl implements GettingProfile {
-  final String _path = 'bitrix/vuz/api/user/';
   final String _pathSecondPartForGettingId = 'bx/';
-  final String _sessionIdCookieKey = 'PHPSESSID';
-  final String _profiles = 'profiles';
   final String _id = 'id';
-  final String _user = 'user';
-  final String _type = 'type';
-  final String _student = 'student';
-  final String _employee = 'employee';
 
   @override
   Future<int?> getProfileIdByAuthorIdFromPost({required int authorId}) async {
@@ -27,9 +23,10 @@ class GettingProfileImpl implements GettingProfile {
         Injector.appInstance.get<AuthorisationService>();
 
     final requestSender = HttpRequestSender(
-      path: _path + _pathSecondPartForGettingId + authorId.toString(),
+      path: ApiPaths.user + _pathSecondPartForGettingId + authorId.toString(),
       cookies: {
-        _sessionIdCookieKey: authorisationService.sessionId ?? '',
+        SessionIdentifierStrings.sessionIdCookieKey:
+            authorisationService.sessionId ?? '',
       },
     );
 
@@ -68,9 +65,10 @@ class GettingProfileImpl implements GettingProfile {
         Injector.appInstance.get<AuthorisationService>();
 
     final requestSender = HttpRequestSender(
-      path: _path + userId.toString(),
+      path: ApiPaths.user + userId.toString(),
       cookies: {
-        _sessionIdCookieKey: authorisationService.sessionId ?? '',
+        SessionIdentifierStrings.sessionIdCookieKey:
+            authorisationService.sessionId ?? '',
       },
     );
 
@@ -100,19 +98,19 @@ class GettingProfileImpl implements GettingProfile {
       return null;
     }
 
-    final profileJsonMap = jsonMap[_profiles][0];
-    final userType = profileJsonMap[_type];
+    final profileJsonMap = jsonMap[ProfilesStrings.profilesKey][0];
+    final userType = profileJsonMap[ProfilesStrings.type];
 
     // Костыль, т.к. на сайте есть небольшой процент профилей, отличающихся от остальных
-    if (profileJsonMap[_user] == null) {
-      profileJsonMap[_user] = jsonMap;
+    if (profileJsonMap[ProfilesStrings.user] == null) {
+      profileJsonMap[ProfilesStrings.user] = jsonMap;
     }
 
     UserData? userData;
     try {
-      userData = (userType == _student)
+      userData = (userType == ProfilesStrings.student)
           ? StudentData.fromJson(profileJsonMap)
-          : userType == _employee
+          : userType == ProfilesStrings.employee
               ? EmployeeData.fromJson(profileJsonMap)
               : UserData.fromJson(profileJsonMap);
     } catch (error, stackTrace) {

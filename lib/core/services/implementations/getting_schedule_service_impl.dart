@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:unn_mobile/core/constants/api_url_strings.dart';
 import 'package:unn_mobile/core/misc/http_helper.dart';
 import 'package:unn_mobile/core/models/schedule_filter.dart';
 import 'package:unn_mobile/core/models/subject.dart';
@@ -13,14 +14,14 @@ class GettingScheduleServiceImpl implements GettingScheduleService {
   final String _start = 'start';
   final String _finish = 'finish';
   final String _lng = 'lng';
-  final String _path = 'ruzapi/schedule/';
   final String _date = 'date';
   final String _dateFormat = 'y.MM.dd H:m';
   final String _splitPaternForStream = '|';
 
   @override
   Future<List<Subject>?> getSchedule(ScheduleFilter scheduleFilter) async {
-    final path = '$_path${scheduleFilter.idType.name}/${scheduleFilter.id}';
+    final path =
+        '${ApiPaths.schedule}${scheduleFilter.idType.name}/${scheduleFilter.id}';
     final requestSender = HttpRequestSender(
       path: path,
       queryParams: {
