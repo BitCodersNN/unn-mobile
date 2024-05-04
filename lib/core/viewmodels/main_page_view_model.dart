@@ -44,6 +44,7 @@ class MainPageViewModel extends BaseViewModel {
     'Материалы',
   ];
   final List<String> _drawerScreenNames = [
+    'Зачётная книжка',
     'Настройки',
     'О нас',
   ];

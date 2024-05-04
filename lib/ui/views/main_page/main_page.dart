@@ -1,4 +1,5 @@
 import 'package:unn_mobile/ui/views/main_page/feed/feed.dart';
+import 'package:unn_mobile/ui/views/main_page/grades/grades.dart';
 import 'package:unn_mobile/ui/views/main_page/main_page_tab_state.dart';
 import 'package:unn_mobile/ui/views/main_page/settings/settings.dart';
 import 'package:unn_mobile/ui/widgets/placeholder.dart' as placeholder;
@@ -28,6 +29,7 @@ class _MainPageState extends State<MainPage> {
   };
 
   final List<String> drawerRoutes = [
+    'grades',
     'settings',
     'about',
   ];
@@ -60,6 +62,10 @@ class _MainPageState extends State<MainPage> {
                 case 'feed':
                   return local_router.Router.createCustomRoute(
                     const FeedScreenView(),
+                  );
+                case 'grades':
+                  return local_router.Router.createCustomRoute(
+                    const GradesScreenView(),
                   );
                 case '':
                 case 'schedule':

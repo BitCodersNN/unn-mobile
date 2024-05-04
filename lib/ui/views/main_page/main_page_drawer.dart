@@ -8,6 +8,7 @@ class MainPageDrawer extends StatelessWidget {
     this.onDestinationSelected,
   });
   final List<IconData> drawerIcons = [
+    Icons.book,
     Icons.settings,
     Icons.info,
   ];
