@@ -3,6 +3,8 @@ import 'dart:io';
 
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:injector/injector.dart';
+import 'package:unn_mobile/core/constants/api_url_strings.dart';
+import 'package:unn_mobile/core/constants/session_identifier_strings.dart';
 import 'package:unn_mobile/core/misc/http_helper.dart';
 import 'package:unn_mobile/core/models/blog_data.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
@@ -10,10 +12,7 @@ import 'package:unn_mobile/core/services/interfaces/getting_blog_posts.dart';
 
 class GettingBlogPostsImpl implements GettingBlogPosts {
   final int _numberOfPostsPerPage = 50;
-  final String _path = 'rest/log.blogpost.get.json';
-  final String _sessid = 'sessid';
   final String _start = 'start';
-  final String _sessionIdCookieKey = 'PHPSESSID';
   final String _postId = 'POST_ID';
 
   @override
@@ -25,14 +24,15 @@ class GettingBlogPostsImpl implements GettingBlogPosts {
         Injector.appInstance.get<AuthorisationService>();
 
     final requestSender = HttpRequestSender(
-      path: _path,
+      path: ApiPaths.blogpostGet,
       queryParams: {
-        _sessid: authorisationService.csrf ?? '',
+        SessionIdentifierStrings.sessid: authorisationService.csrf ?? '',
         _start: (_numberOfPostsPerPage * pageNumber).toString(),
         _postId: postId.toString(),
       },
       cookies: {
-        _sessionIdCookieKey: authorisationService.sessionId ?? '',
+        SessionIdentifierStrings.sessionIdCookieKey:
+            authorisationService.sessionId ?? '',
       },
     );
 
