@@ -76,46 +76,34 @@ class GradesScreenView extends StatelessWidget {
                               ),
                               children: [
                                 TableRow(
-                                  children: [
+                                  decoration: BoxDecoration(
+                                    color: theme.highlightColor,
+                                  ),
+                                  children: const [
                                     TableCell(
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                          color: theme.highlightColor,
-                                        ),
-                                        child: const Padding(
-                                          padding: EdgeInsets.all(8.0),
-                                          child: Text(
-                                            'Дисциплина',
-                                            textAlign: TextAlign.center,
-                                          ),
+                                      child: Padding(
+                                        padding: EdgeInsets.all(8.0),
+                                        child: Text(
+                                          'Дисциплина',
+                                          textAlign: TextAlign.center,
                                         ),
                                       ),
                                     ),
                                     TableCell(
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                          color: theme.highlightColor,
-                                        ),
-                                        child: const Padding(
-                                          padding: EdgeInsets.all(8.0),
-                                          child: Text(
-                                            'Вид контроля',
-                                            textAlign: TextAlign.center,
-                                          ),
+                                      child: Padding(
+                                        padding: EdgeInsets.all(8.0),
+                                        child: Text(
+                                          'Вид контроля',
+                                          textAlign: TextAlign.center,
                                         ),
                                       ),
                                     ),
                                     TableCell(
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                          color: theme.highlightColor,
-                                        ),
-                                        child: const Padding(
-                                          padding: EdgeInsets.all(8.0),
-                                          child: Text(
-                                            'Оценка',
-                                            textAlign: TextAlign.center,
-                                          ),
+                                      child: Padding(
+                                        padding: EdgeInsets.all(8.0),
+                                        child: Text(
+                                          'Оценка',
+                                          textAlign: TextAlign.center,
                                         ),
                                       ),
                                     ),
