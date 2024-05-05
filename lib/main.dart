@@ -55,6 +55,7 @@ import 'package:unn_mobile/core/services/interfaces/user_data_provider.dart';
 import 'package:unn_mobile/core/viewmodels/auth_page_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/comments_page_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/feed_screen_view_model.dart';
+import 'package:unn_mobile/core/viewmodels/grades_screen_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/loading_page_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/schedule_screen_view_model.dart';
@@ -150,4 +151,5 @@ void registerDependencies() {
   injector.registerDependency(() => ScheduleScreenViewModel());
   injector.registerDependency(() => FeedScreenViewModel());
   injector.registerDependency(() => CommentsPageViewModel());
+  injector.registerDependency(() => GradesScreenViewModel());
 }
