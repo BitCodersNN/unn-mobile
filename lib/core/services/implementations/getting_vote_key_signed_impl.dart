@@ -2,19 +2,15 @@ import 'dart:io';
 
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:injector/injector.dart';
+import 'package:unn_mobile/core/constants/regular_expressions.dart';
+import 'package:unn_mobile/core/constants/api_url_strings.dart';
+import 'package:unn_mobile/core/constants/session_identifier_strings.dart';
 import 'package:unn_mobile/core/misc/http_helper.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_vote_key_signed.dart';
 
-class _RegularExpSource {
-  static const keySigned = r"keySigned: '.*',";
-}
-
 class GettingVoteKeySignedImpl implements GettingVoteKeySigned {
-  final String _path = 'company/personal/user';
   final String _blog = 'blog';
-  final String _sessionIdCookieKey = 'PHPSESSID';
-  final String _csrfKey = 'X-Bitrix-Csrf-Token';
 
   @override
   Future<String?> getVoteKeySigned({
@@ -23,15 +19,16 @@ class GettingVoteKeySignedImpl implements GettingVoteKeySigned {
   }) async {
     final authorisationService =
         Injector.appInstance.get<AuthorisationService>();
-    final path = '$_path/$authorId/$_blog/$postId/';
+    final path = '${ApiPaths.companyPersonalUser}/$authorId/$_blog/$postId/';
 
     final requestSender = HttpRequestSender(
       path: path,
       headers: {
-        _csrfKey: authorisationService.csrf ?? '',
+        SessionIdentifierStrings.csrfToken: authorisationService.csrf ?? '',
       },
       cookies: {
-        _sessionIdCookieKey: authorisationService.sessionId ?? '',
+        SessionIdentifierStrings.sessionIdCookieKey:
+            authorisationService.sessionId ?? '',
       },
     );
 
@@ -60,14 +57,11 @@ class GettingVoteKeySignedImpl implements GettingVoteKeySigned {
       return null;
     }
 
-    final keySigned = RegExp(
-      _RegularExpSource.keySigned,
-    );
-
     String? keySignedMatches;
     try {
-      keySignedMatches =
-          (keySigned.firstMatch(responseStr)?.group(0) as String);
+      keySignedMatches = (RegularExpressions.keySignedRegExp
+          .firstMatch(responseStr)
+          ?.group(0) as String);
     } catch (error, stackTrace) {
       await FirebaseCrashlytics.instance.recordError(error, stackTrace);
       return null;

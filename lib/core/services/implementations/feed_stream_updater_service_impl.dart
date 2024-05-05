@@ -99,15 +99,15 @@ class FeedStreamUpdaterServiceImpl
       final newPosts = await _gettingBlogPostsService.getBlogPosts();
 
       if (newPosts != null) {
-        if (_lastLoadedPage == 0) {
-          await _postWithLoadedInfoProvider
-              .saveDateTimePublishedPost(newPosts.first.datePublish);
-          await _postWithLoadedInfoProvider.saveData(_postsList);
-        }
+        await _postWithLoadedInfoProvider
+            .saveDateTimePublishedPost(newPosts.first.datePublish);
+        await _postWithLoadedInfoProvider.saveData(_postsList);
 
         await _currentOperation?.valueOrCancellation();
         _busy = true;
+        _lastLoadedPage = 0;
         _postsList.clear();
+
         _currentOperation =
             CancelableOperation.fromFuture(_addPostsToStream(newPosts, true));
         await _currentOperation?.valueOrCancellation();

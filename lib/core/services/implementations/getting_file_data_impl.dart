@@ -3,16 +3,15 @@ import 'dart:io';
 
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:injector/injector.dart';
+import 'package:unn_mobile/core/constants/api_url_strings.dart';
+import 'package:unn_mobile/core/constants/session_identifier_strings.dart';
 import 'package:unn_mobile/core/misc/http_helper.dart';
 import 'package:unn_mobile/core/models/file_data.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_file_data.dart';
 
 class GettingFileDataImpl implements GettingFileData {
-  final String _path = 'rest/disk.attachedObject.get';
-  final String _sessid = 'sessid';
   final String _id = 'id';
-  final String _sessionIdCookieKey = 'PHPSESSID';
 
   @override
   Future<FileData?> getFileData({
@@ -22,13 +21,14 @@ class GettingFileDataImpl implements GettingFileData {
         Injector.appInstance.get<AuthorisationService>();
 
     final requestSender = HttpRequestSender(
-      path: _path,
+      path: ApiPaths.diskAttachedObjectGet,
       queryParams: {
-        _sessid: authorisationService.csrf ?? '',
+        SessionIdentifierStrings.sessid: authorisationService.csrf ?? '',
         _id: id.toString(),
       },
       cookies: {
-        _sessionIdCookieKey: authorisationService.sessionId ?? '',
+        SessionIdentifierStrings.sessionIdCookieKey:
+            authorisationService.sessionId ?? '',
       },
     );
 
