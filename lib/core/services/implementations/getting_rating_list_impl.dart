@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/constants/api_url_strings.dart';
+import 'package:unn_mobile/core/constants/rating_list_strings.dart';
 import 'package:unn_mobile/core/constants/session_identifier_strings.dart';
 import 'package:unn_mobile/core/misc/http_helper.dart';
 import 'package:unn_mobile/core/models/rating_list.dart';
@@ -13,13 +14,6 @@ import 'package:unn_mobile/core/services/interfaces/getting_rating_list.dart';
 class GettingRatingListImpl implements GettingRatingList {
   final _authorisationService =
       Injector.appInstance.get<AuthorisationService>();
-  final String _ratingVoteTypeId = 'params[RATING_VOTE_TYPE_ID]';
-  final String _ratingVoteKeySigned = 'params[RATING_VOTE_KEY_SIGNED]';
-  final String _ratingVoteEntityId = 'params[RATING_VOTE_ENTITY_ID]';
-  final String _ratingVoteListPage = 'params[RATING_VOTE_LIST_PAGE]';
-  final String _ratingVoteReaction = 'params[RATING_VOTE_REACTION]';
-  final String _pathToUserProfile = 'params[PATH_TO_USER_PROFILE]';
-  final String _valueOfpathToUserProfile = '/company/personal/user/#user_id#/';
   final String _data = 'data';
   final String _reactions = 'reactions';
 
@@ -44,12 +38,13 @@ class GettingRatingListImpl implements GettingRatingList {
     );
 
     final Map<String, dynamic> body = {
-      _ratingVoteTypeId: voteKeySigned.split('-')[0],
-      _ratingVoteKeySigned: voteKeySigned,
-      _ratingVoteEntityId: voteKeySigned.split('-')[1].split('.')[0],
-      _ratingVoteListPage: pageNumber.toString(),
-      _ratingVoteReaction: reactionType.name,
-      _pathToUserProfile: _valueOfpathToUserProfile,
+      RatingListStrings.voteTypeId: voteKeySigned.split('-')[0],
+      RatingListStrings.voteKeySigned: voteKeySigned,
+      RatingListStrings.voteEntityId: voteKeySigned.split('-')[1].split('.')[0],
+      RatingListStrings.voteListPage: pageNumber.toString(),
+      RatingListStrings.voteReaction: reactionType.name,
+      RatingListStrings.pathToUserProfile:
+          RatingListStrings.valueOfpathToUserProfile,
     };
 
     final HttpClientResponse response;
@@ -116,10 +111,11 @@ class GettingRatingListImpl implements GettingRatingList {
     );
 
     final Map<String, dynamic> body = {
-      _ratingVoteTypeId: voteKeySigned.split('-')[0],
-      _ratingVoteKeySigned: voteKeySigned,
-      _ratingVoteEntityId: voteKeySigned.split('-')[1].split('.')[0],
-      _pathToUserProfile: _valueOfpathToUserProfile,
+      RatingListStrings.voteTypeId: voteKeySigned.split('-')[0],
+      RatingListStrings.voteKeySigned: voteKeySigned,
+      RatingListStrings.voteEntityId: voteKeySigned.split('-')[1].split('.')[0],
+      RatingListStrings.pathToUserProfile:
+          RatingListStrings.valueOfpathToUserProfile,
     };
 
     final HttpClientResponse response;

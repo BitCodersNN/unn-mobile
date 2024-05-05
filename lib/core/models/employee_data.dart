@@ -26,6 +26,7 @@ class EmployeeData extends UserData {
     this._department,
     this._manager,
   ) : super(
+          userData.bitrixId,
           userData.login,
           userData.fullname,
           userData.email,

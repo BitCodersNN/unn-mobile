@@ -36,6 +36,7 @@ class StudentData extends UserData {
     this._eduGroup,
     this._eduSpecialization,
   ) : super(
+          userData.bitrixId,
           userData.login,
           userData.fullname,
           userData.email,

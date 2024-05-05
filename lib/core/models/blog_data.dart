@@ -10,6 +10,8 @@ class _KeysForBlogDataJsonConverter {
 }
 
 class BlogData {
+  String? keySigned;
+
   final int _id;
   final int _blogId;
   final int _authorID;
