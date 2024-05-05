@@ -3,9 +3,14 @@ import 'package:unn_mobile/core/models/mark_by_subject.dart';
 import 'package:unn_mobile/core/viewmodels/grades_screen_view_model.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
 
-class GradesScreenView extends StatelessWidget {
+class GradesScreenView extends StatefulWidget {
   const GradesScreenView({super.key});
 
+  @override
+  State<GradesScreenView> createState() => _GradesScreenViewState();
+}
+
+class _GradesScreenViewState extends State<GradesScreenView> {
   @override
   Widget build(BuildContext context) {
     return BaseView<GradesScreenViewModel>(
@@ -146,8 +151,19 @@ class GradesScreenView extends StatelessWidget {
               ),
             );
           } else {
-            return const Center(
-              child: Text('Ещё нет загруженной версии зачётной книжки'),
+            return Center(
+              child: Column(
+                children: [
+                  const Text('Ещё нет загруженной версии зачётной книжки'),
+                  TextButton(
+                    onPressed: () {
+                      // Force redraw
+                      setState(() {});
+                    },
+                    child: const Text('Обновить'),
+                  ),
+                ],
+              ),
             );
           }
         }
