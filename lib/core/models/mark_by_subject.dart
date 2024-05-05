@@ -128,7 +128,7 @@ class MarkBySubject {
       _KeysForMarkBySubjectJsonConverter.date: date.toIso8601String(),
       _KeysForMarkBySubjectJsonConverter.hours: hours.toString(),
       _KeysForMarkBySubjectJsonConverter.lecturers: lecturers,
-      _KeysForMarkBySubjectJsonConverter.mark: markType.convertToString(),
+      _KeysForMarkBySubjectJsonConverter.mark: markType.convertToDouble(),
       _KeysForMarkBySubjectJsonConverter.subject: subject,
     };
   }
