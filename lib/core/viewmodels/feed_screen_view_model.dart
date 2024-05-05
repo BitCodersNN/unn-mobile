@@ -9,6 +9,8 @@ class FeedScreenViewModel extends BaseViewModel {
   List<PostWithLoadedInfo> get posts => _feedStreamUpdater.feedPosts;
   bool get isLoadingPosts => _feedStreamUpdater.isBusy;
 
+  Map<int, int> reactionsMap = {};
+
   void init() {
     _feedStreamUpdater.addListener(() {
       notifyListeners();
@@ -26,5 +28,16 @@ class FeedScreenViewModel extends BaseViewModel {
 
   void loadNextPage() {
     _feedStreamUpdater.loadNextPage();
+  }
+
+  void addLike(PostWithLoadedInfo post) {
+    // print('Liked post: ${post.post.id}');
+  }
+
+  void addReaction(PostWithLoadedInfo post, int reactionId) {
+    reactionsMap[post.post.id] = reactionId;
+
+    // print('Reaction post: ${post.post.id}');
+    // print('current reaction: ${reactionId}');
   }
 }

@@ -17,6 +17,7 @@ class CommentsPage extends StatelessWidget {
   const CommentsPage({super.key, required this.post});
   @override
   Widget build(BuildContext context) {
+    FeedScreenView feedScreenView = FeedScreenView();
     return Scaffold(
       appBar: AppBar(
         title: const Text('Запись'),
@@ -33,7 +34,7 @@ class CommentsPage extends StatelessWidget {
                 physics: const AlwaysScrollableScrollPhysics(),
                 child: Column(
                   children: [
-                    FeedScreenView.feedPost(
+                    feedScreenView.feedPost(
                       context,
                       post,
                       processClicks: false,
@@ -91,8 +92,10 @@ class CommentsPage extends StatelessWidget {
 
   Widget commentView(
     BlogPostCommentWithLoadedInfo comment,
+    
     BuildContext context,
   ) {
+     FeedScreenView feedScreenView = FeedScreenView();
     final unescaper = HtmlUnescape();
 
     final theme = Theme.of(context);
@@ -150,7 +153,7 @@ class CommentsPage extends StatelessWidget {
               const EdgeInsets.only(left: 16, bottom: 10, right: 10, top: 16),
           child: BBCodeText(
             data: unescaper.convert(comment.comment.message),
-            stylesheet: FeedScreenView.getBBStyleSheet(),
+            stylesheet: feedScreenView.getBBStyleSheet(),
           ),
         ),
         for (final file in comment.files)

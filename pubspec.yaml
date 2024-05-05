@@ -74,6 +74,7 @@ flutter:
     - assets/images/reactions/facepalm.png
     - assets/images/reactions/laugh.png
     - assets/images/reactions/like.png
+    - assets/images/reactions/default_like.png
     - assets/images/reactions/love.png
     - assets/images/reactions/sad.png
 
