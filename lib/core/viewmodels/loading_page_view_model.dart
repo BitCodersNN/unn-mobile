@@ -66,6 +66,11 @@ class LoadingPageViewModel extends BaseViewModel {
   }
 
   Future<void> _initUserData() async {
+    // Вообще это надо сделать только при первом заходе, чтобы обновить в хранилище информацию
+    final profile =
+        await _gettingProfileOfCurrentUser.getProfileOfCurrentUser();
+    _userDataProvider.saveData(profile);
+
     if (await _userDataProvider.isContained()) {
       await _typeOfCurrnetUser.updateTypeOfCurrentUser();
     } else {
