@@ -68,33 +68,38 @@ class FeedScreenView extends StatelessWidget {
     );
   }
 
-  Widget _circleAvatarWithCaption(int id, String imagePath, String caption,
-      BuildContext context, PostWithLoadedInfo post) {
+  Widget _circleAvatarWithCaption(
+    int id,
+    String imagePath,
+    String caption,
+    BuildContext context,
+    PostWithLoadedInfo post,
+  ) {
     return GestureDetector(
       onTap: () {
         currentReaction = id;
         reactionsMap[post.post.id] = currentReaction;
-        print("Current reaction = $currentReaction");
-        print("Reactions Map: $reactionsMap");
         Navigator.of(context).pop();
       },
       child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 0),
+        padding: const EdgeInsets.symmetric(horizontal: 0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Row(children: [
-              SizedBox(width: 4),
-              CircleAvatar(
-                radius: 21,
-                backgroundImage: AssetImage(imagePath),
-              ),
-              SizedBox(width: 5),
-            ]),
-            SizedBox(height: 4),
+            Row(
+              children: [
+                const SizedBox(width: 4),
+                CircleAvatar(
+                  radius: 21,
+                  backgroundImage: AssetImage(imagePath),
+                ),
+                const SizedBox(width: 5),
+              ],
+            ),
+            const SizedBox(height: 4),
             Text(
               caption,
-              style: TextStyle(fontSize: 9, color: Colors.grey),
+              style: const TextStyle(fontSize: 9, color: Colors.grey),
             ),
           ],
         ),
@@ -107,7 +112,7 @@ class FeedScreenView extends StatelessWidget {
       context: context,
       builder: (context) {
         return Container(
-          padding: EdgeInsets.all(16),
+          padding: const EdgeInsets.all(16),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -127,7 +132,7 @@ class FeedScreenView extends StatelessWidget {
                   color: Color.fromARGB(229, 162, 162, 162),
                 ),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -135,52 +140,59 @@ class FeedScreenView extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       _circleAvatarWithCaption(
-                          1,
-                          'assets/images/reactions/like.png',
-                          'Нравится',
-                          context,
-                          post),
+                        1,
+                        'assets/images/reactions/like.png',
+                        'Нравится',
+                        context,
+                        post,
+                      ),
                       _circleAvatarWithCaption(
-                          2,
-                          'assets/images/reactions/love.png',
-                          'Восторг',
-                          context,
-                          post),
+                        2,
+                        'assets/images/reactions/love.png',
+                        'Восторг',
+                        context,
+                        post,
+                      ),
                       _circleAvatarWithCaption(
-                          3,
-                          'assets/images/reactions/laugh.png',
-                          'Смешно',
-                          context,
-                          post),
+                        3,
+                        'assets/images/reactions/laugh.png',
+                        'Смешно',
+                        context,
+                        post,
+                      ),
                       _circleAvatarWithCaption(
-                          4,
-                          'assets/images/reactions/confused.png',
-                          'Ого!',
-                          context,
-                          post),
+                        4,
+                        'assets/images/reactions/confused.png',
+                        'Ого!',
+                        context,
+                        post,
+                      ),
                       _circleAvatarWithCaption(
-                          5,
-                          'assets/images/reactions/facepalm.png',
-                          'Facepalm',
-                          context,
-                          post),
+                        5,
+                        'assets/images/reactions/facepalm.png',
+                        'Facepalm',
+                        context,
+                        post,
+                      ),
                       _circleAvatarWithCaption(
-                          6,
-                          'assets/images/reactions/sad.png',
-                          'Печаль',
-                          context,
-                          post),
+                        6,
+                        'assets/images/reactions/sad.png',
+                        'Печаль',
+                        context,
+                        post,
+                      ),
                       _circleAvatarWithCaption(
-                          7,
-                          'assets/images/reactions/angry.png',
-                          'Ъуъ!',
-                          context,
-                          post),
+                        7,
+                        'assets/images/reactions/angry.png',
+                        'Ъуъ!',
+                        context,
+                        post,
+                      ),
                     ],
-                  )
+                  ),
                 ],
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
             ],
           ),
         );
@@ -195,7 +207,7 @@ class FeedScreenView extends StatelessWidget {
     bool showCommentsCount = false,
     bool processClicks = true,
   }) {
-    int flag = 1;
+    const int flag = 1;
     final model = FeedScreenViewModel();
     final theme = Theme.of(context);
     final unescaper = HtmlUnescape();
@@ -208,30 +220,54 @@ class FeedScreenView extends StatelessWidget {
 
       switch (reactionNumber) {
         case 1:
-          return Image.asset('assets/images/reactions/like.png',
-              width: 23, height: 23);
+          return Image.asset(
+            'assets/images/reactions/like.png',
+            width: 23,
+            height: 23,
+          );
         case 2:
-          return Image.asset('assets/images/reactions/love.png',
-              width: 23, height: 23);
+          return Image.asset(
+            'assets/images/reactions/love.png',
+            width: 23,
+            height: 23,
+          );
         case 3:
-          return Image.asset('assets/images/reactions/laugh.png',
-              width: 23, height: 23);
+          return Image.asset(
+            'assets/images/reactions/laugh.png',
+            width: 23,
+            height: 23,
+          );
         case 4:
-          return Image.asset('assets/images/reactions/confused.png',
-              width: 23, height: 23);
+          return Image.asset(
+            'assets/images/reactions/confused.png',
+            width: 23,
+            height: 23,
+          );
         case 5:
-          return Image.asset('assets/images/reactions/facepalm.png',
-              width: 23, height: 23);
+          return Image.asset(
+            'assets/images/reactions/facepalm.png',
+            width: 23,
+            height: 23,
+          );
         case 6:
-          return Image.asset('assets/images/reactions/sad.png',
-              width: 23, height: 23);
+          return Image.asset(
+            'assets/images/reactions/sad.png',
+            width: 23,
+            height: 23,
+          );
         case 7:
-          return Image.asset('assets/images/reactions/angry.png',
-              width: 23, height: 23);
+          return Image.asset(
+            'assets/images/reactions/angry.png',
+            width: 23,
+            height: 23,
+          );
         case 0:
         default:
-          return Image.asset('assets/images/reactions/default_like.png',
-              width: 23, height: 23);
+          return Image.asset(
+            'assets/images/reactions/default_like.png',
+            width: 23,
+            height: 23,
+          );
       }
     }
 
@@ -339,8 +375,6 @@ class FeedScreenView extends StatelessWidget {
                     model.addLike(post);
                   },
                   onLongPress: () {
-                    print(
-                        'reactionsMap[post.post.id] ${reactionsMap[post.post.id]}');
                     chooseReaction(context, post, flag);
                   },
                   child: Container(
@@ -414,8 +448,12 @@ class FeedScreenView extends StatelessWidget {
                   ),
                 ),
                 Container(
-                  padding:
-                      EdgeInsets.only(top: 6, bottom: 6, right: 8, left: 12),
+                  padding: const EdgeInsets.only(
+                    top: 6,
+                    bottom: 6,
+                    right: 8,
+                    left: 12,
+                  ),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
@@ -429,7 +467,7 @@ class FeedScreenView extends StatelessWidget {
                             child: Container(
                               width: 21,
                               height: 21,
-                              color: Color.fromARGB(105, 198, 217, 249),
+                              color: const Color.fromARGB(105, 198, 217, 249),
                               child: Image.asset(
                                 post.ratingList.ratingList.keys
                                     .toList(growable: false)[i]

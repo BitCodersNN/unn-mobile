@@ -17,7 +17,7 @@ class CommentsPage extends StatelessWidget {
   const CommentsPage({super.key, required this.post});
   @override
   Widget build(BuildContext context) {
-    FeedScreenView feedScreenView = FeedScreenView();
+    const FeedScreenView feedScreenView = FeedScreenView();
     return Scaffold(
       appBar: AppBar(
         title: const Text('Запись'),
@@ -92,10 +92,9 @@ class CommentsPage extends StatelessWidget {
 
   Widget commentView(
     BlogPostCommentWithLoadedInfo comment,
-    
     BuildContext context,
   ) {
-     FeedScreenView feedScreenView = FeedScreenView();
+    const FeedScreenView feedScreenView = FeedScreenView();
     final unescaper = HtmlUnescape();
 
     final theme = Theme.of(context);
