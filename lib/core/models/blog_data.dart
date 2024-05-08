@@ -14,7 +14,7 @@ class BlogData {
 
   final int _id;
   final int _blogId;
-  final int _authorID;
+  final int _bitrixID;
   final String _title;
   final String _detailText;
   final DateTime _datePublish;
@@ -24,7 +24,7 @@ class BlogData {
   BlogData(
     this._id,
     this._blogId,
-    this._authorID,
+    this._bitrixID,
     this._title,
     this._detailText,
     this._datePublish,
@@ -34,7 +34,7 @@ class BlogData {
 
   int get id => _id;
   int get blogId => _blogId;
-  int get authorID => _authorID;
+  int get bitrixID => _bitrixID;
   String get title => _title;
   String get detailText => _detailText;
   DateTime get datePublish => _datePublish;
@@ -59,7 +59,7 @@ class BlogData {
   Map<String, dynamic> toJson() => {
         _KeysForBlogDataJsonConverter.id: _id,
         _KeysForBlogDataJsonConverter.blogId: _blogId,
-        _KeysForBlogDataJsonConverter.authorID: authorID,
+        _KeysForBlogDataJsonConverter.authorID: bitrixID,
         _KeysForBlogDataJsonConverter.title: _title,
         _KeysForBlogDataJsonConverter.detailText: detailText,
         _KeysForBlogDataJsonConverter.datePublish: _datePublish.toString(),

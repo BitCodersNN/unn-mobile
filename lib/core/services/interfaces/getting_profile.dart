@@ -11,7 +11,7 @@ abstract interface class GettingProfile {
   ///   1. Не вышло получить ответ от портала
   ///   2. statusCode не равен 200
   ///   3. Не вышло декодировать ответ
-  Future<int?> getProfileIdByAuthorIdFromPost({required int authorId});
+  Future<int?> getProfileIdByBitrixID({required int bitrixID});
 
   /// Получает профиль по id
   ///
@@ -28,7 +28,7 @@ abstract interface class GettingProfile {
   /// [authorId]: id автора поста
   ///
   /// Возвращает [StudentData] или [EmployeeData] - наследников [UserData] или null, если:
-  ///   1. [getProfileIdByAuthorIdFromPost] вернул null
+  ///   1. [getProfileIdByBitrixID] вернул null
   ///   2. [getProfile] вернул null
   Future<UserData?> getProfileByAuthorIdFromPost({required int authorId});
 }

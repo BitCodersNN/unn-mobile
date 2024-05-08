@@ -15,16 +15,16 @@ enum ReactionType {
 }
 
 class ReactionUserInfo {
-  final int _id;
+  final int _bitrixId;
   final String _fullname;
   final String? _photoSrc;
 
-  int get id => _id;
+  int get bitrixId => _bitrixId;
   String get fullname => _fullname;
   String? get photoSrc => _photoSrc;
 
   ReactionUserInfo(
-    this._id,
+    this._bitrixId,
     this._fullname,
     this._photoSrc,
   );
@@ -37,7 +37,7 @@ class ReactionUserInfo {
       );
 
   Map<String, dynamic> toJson() => {
-        _KeysForUserInfoJsonConverter.id: _id,
+        _KeysForUserInfoJsonConverter.id: _bitrixId,
         _KeysForUserInfoJsonConverter.fullname: _fullname,
         _KeysForUserInfoJsonConverter.photoSrc: _photoSrc,
       };
@@ -70,7 +70,7 @@ class RatingList {
   ) {
     for (final reactionType in _ratingList.keys) {
       final listReactionUserInfo = _ratingList[reactionType] ?? [];
-      listReactionUserInfo.removeWhere((element) => element.id == userId);
+      listReactionUserInfo.removeWhere((element) => element.bitrixId == userId);
     }
   }
 
@@ -96,6 +96,15 @@ class RatingList {
       users.addAll(list);
     }
     return users;
+  }
+
+  ReactionType? getReactionByUser(int bitrixId) {
+    final entry = _ratingList.entries.firstWhere(
+      (entry) => entry.value.any((user) => user._bitrixId == bitrixId),
+      orElse: () => const MapEntry(ReactionType.like, []),
+    );
+
+    return entry.value.isNotEmpty ? entry.key : null; 
   }
 
   factory RatingList.fromJson(Map<String, Object?> jsonMap) {
