@@ -12,7 +12,7 @@ class AppOpenTracker {
 
   String? get lastVisitedVersion => _lastVisitedVersion;
 
-  Future<bool> isFirstAppOpenForVersion() async {
+  Future<bool> isFirstTimeOpenOnVersion() async {
     final appVersion = await _getAppVersion();
 
     _lastVisitedVersion ??= await _storage.read(

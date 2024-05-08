@@ -67,7 +67,7 @@ class LoadingPageViewModel extends BaseViewModel {
   }
 
   Future<void> _initUserData() async {
-    if (await _appOpenTracker.isFirstAppOpenForVersion()) {
+    if (await _appOpenTracker.isFirstTimeOpenOnVersion()) {
       final profile =
           await _gettingProfileOfCurrentUser.getProfileOfCurrentUser();
       _userDataProvider.saveData(profile);
