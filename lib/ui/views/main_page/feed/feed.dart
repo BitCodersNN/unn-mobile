@@ -74,12 +74,14 @@ class FeedScreenView extends StatelessWidget {
     String caption,
     BuildContext context,
     PostWithLoadedInfo post,
+    bool isLiked,
   ) {
     return GestureDetector(
       onTap: () {
         currentReaction = id;
         reactionsMap[post.post.id] = currentReaction;
         Navigator.of(context).pop();
+        isLiked = true;
       },
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 0),
@@ -107,7 +109,8 @@ class FeedScreenView extends StatelessWidget {
     );
   }
 
-  void chooseReaction(BuildContext context, PostWithLoadedInfo post, flag) {
+  void chooseReaction(
+      BuildContext context, PostWithLoadedInfo post, bool isLiked) {
     showModalBottomSheet(
       context: context,
       builder: (context) {
@@ -145,6 +148,7 @@ class FeedScreenView extends StatelessWidget {
                         'Нравится',
                         context,
                         post,
+                        isLiked,
                       ),
                       _circleAvatarWithCaption(
                         2,
@@ -152,6 +156,7 @@ class FeedScreenView extends StatelessWidget {
                         'Восторг',
                         context,
                         post,
+                        isLiked,
                       ),
                       _circleAvatarWithCaption(
                         3,
@@ -159,6 +164,7 @@ class FeedScreenView extends StatelessWidget {
                         'Смешно',
                         context,
                         post,
+                        isLiked,
                       ),
                       _circleAvatarWithCaption(
                         4,
@@ -166,6 +172,7 @@ class FeedScreenView extends StatelessWidget {
                         'Ого!',
                         context,
                         post,
+                        isLiked,
                       ),
                       _circleAvatarWithCaption(
                         5,
@@ -173,6 +180,7 @@ class FeedScreenView extends StatelessWidget {
                         'Facepalm',
                         context,
                         post,
+                        isLiked,
                       ),
                       _circleAvatarWithCaption(
                         6,
@@ -180,6 +188,7 @@ class FeedScreenView extends StatelessWidget {
                         'Печаль',
                         context,
                         post,
+                        isLiked,
                       ),
                       _circleAvatarWithCaption(
                         7,
@@ -187,6 +196,7 @@ class FeedScreenView extends StatelessWidget {
                         'Ъуъ!',
                         context,
                         post,
+                        isLiked,
                       ),
                     ],
                   ),
@@ -207,7 +217,7 @@ class FeedScreenView extends StatelessWidget {
     bool showCommentsCount = false,
     bool processClicks = true,
   }) {
-    const int flag = 1;
+    bool isLiked = false;
     final model = FeedScreenViewModel();
     final theme = Theme.of(context);
     final unescaper = HtmlUnescape();
@@ -258,6 +268,12 @@ class FeedScreenView extends StatelessWidget {
         case 7:
           return Image.asset(
             'assets/images/reactions/angry.png',
+            width: 23,
+            height: 23,
+          );
+        case 8:
+          return Image.asset(
+            'assets/images/reactions/active_like.png',
             width: 23,
             height: 23,
           );
@@ -368,20 +384,25 @@ class FeedScreenView extends StatelessWidget {
               children: [
                 GestureDetector(
                   onTap: () {
-                    if (reactionsMap[post.post.id] != null) {
+                    if((reactionsMap[post.post.id] == null)||(reactionsMap[post.post.id] == 0)){
+                      model.addLike(post);
+                      isLiked = true;
+                      reactionsMap[post.post.id] = 8;
+                    } else{
+                      isLiked = false;
                       reactionsMap[post.post.id] = 0;
                     }
-
-                    model.addLike(post);
                   },
                   onLongPress: () {
-                    chooseReaction(context, post, flag);
+                    chooseReaction(context, post, isLiked);
                   },
                   child: Container(
                     padding:
                         const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     decoration: BoxDecoration(
+                      // color: idkWhatColor.withOpacity(0.1),
                       color: idkWhatColor.withOpacity(0.1),
+
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Row(

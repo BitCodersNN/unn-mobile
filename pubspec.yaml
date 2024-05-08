@@ -78,6 +78,7 @@ flutter:
     - assets/images/reactions/default_like.png
     - assets/images/reactions/love.png
     - assets/images/reactions/sad.png
+    - assets/images/reactions/active_like.png
 
   fonts:
     - family: LetoSans
