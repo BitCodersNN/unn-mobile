@@ -104,7 +104,7 @@ class RatingList {
       orElse: () => const MapEntry(ReactionType.like, []),
     );
 
-    return entry.value.isNotEmpty ? entry.key : null; 
+    return entry.value.isNotEmpty ? entry.key : null;
   }
 
   factory RatingList.fromJson(Map<String, Object?> jsonMap) {
