@@ -10,7 +10,7 @@ class _KeysForBlogPostCommentJsonConverter {
 
 class BlogPostComment {
   final int id;
-  final int authorId;
+  final int bitrixID;
   final String authorName;
   final String dateTime;
   final String message;
@@ -19,7 +19,7 @@ class BlogPostComment {
 
   BlogPostComment({
     required this.id,
-    required this.authorId,
+    required this.bitrixID,
     required this.authorName,
     required this.dateTime,
     required this.message,
@@ -32,7 +32,7 @@ class BlogPostComment {
         id: int.parse(
           jsonMap[_KeysForBlogPostCommentJsonConverter.id] as String,
         ),
-        authorId: int.parse(
+        bitrixID: int.parse(
           jsonMap[_KeysForBlogPostCommentJsonConverter.authorId] as String,
         ),
         authorName:
@@ -54,7 +54,7 @@ class BlogPostComment {
     return {
       _KeysForBlogPostCommentJsonConverter.id: id,
       _KeysForBlogPostCommentJsonConverter.dateTime: dateTime,
-      _KeysForBlogPostCommentJsonConverter.authorId: authorId,
+      _KeysForBlogPostCommentJsonConverter.authorId: bitrixID,
       _KeysForBlogPostCommentJsonConverter.authorName: authorName,
       _KeysForBlogPostCommentJsonConverter.message: message,
       _KeysForBlogPostCommentJsonConverter.keySigned: keySigned,

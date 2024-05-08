@@ -128,12 +128,12 @@ class FeedStreamUpdaterServiceImpl
       _busy = true;
       final futures = <Future>[];
 
-      UserData? postAuthor = _lruCacheProfile.get(post.authorID);
+      UserData? postAuthor = _lruCacheProfile.get(post.bitrixID);
 
       if (postAuthor == null) {
         futures.add(
           _gettingProfileService.getProfileByAuthorIdFromPost(
-            authorId: post.authorID,
+            authorId: post.bitrixID,
           ),
         );
       }
@@ -145,7 +145,7 @@ class FeedStreamUpdaterServiceImpl
       futures.add(
         _gettingVoteKeySigned
             .getVoteKeySigned(
-          authorId: post.authorID,
+          authorId: post.bitrixID,
           postId: post.id,
         )
             .then((voteKeySigned) {
@@ -167,7 +167,7 @@ class FeedStreamUpdaterServiceImpl
         return;
       }
 
-      _lruCacheProfile.save(post.authorID, postAuthor);
+      _lruCacheProfile.save(post.bitrixID, postAuthor);
 
       final List<FileData?> files = List<FileData?>.from(
         data.getRange(

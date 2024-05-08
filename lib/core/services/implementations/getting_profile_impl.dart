@@ -18,12 +18,12 @@ class GettingProfileImpl implements GettingProfile {
   final String _id = 'id';
 
   @override
-  Future<int?> getProfileIdByAuthorIdFromPost({required int authorId}) async {
+  Future<int?> getProfileIdByBitrixID({required int bitrixID}) async {
     final authorisationService =
         Injector.appInstance.get<AuthorisationService>();
 
     final requestSender = HttpRequestSender(
-      path: ApiPaths.user + _pathSecondPartForGettingId + authorId.toString(),
+      path: ApiPaths.user + _pathSecondPartForGettingId + bitrixID.toString(),
       cookies: {
         SessionIdentifierStrings.sessionIdCookieKey:
             authorisationService.sessionId ?? '',
@@ -42,7 +42,7 @@ class GettingProfileImpl implements GettingProfile {
 
     if (statusCode != 200) {
       await FirebaseCrashlytics.instance.log(
-        '${runtimeType.toString()}: statusCode = $statusCode; authorId = $authorId',
+        '${runtimeType.toString()}: statusCode = $statusCode; authorId = $bitrixID',
       );
       return null;
     }
@@ -125,7 +125,7 @@ class GettingProfileImpl implements GettingProfile {
   Future<UserData?> getProfileByAuthorIdFromPost({
     required int authorId,
   }) async {
-    final userId = await getProfileIdByAuthorIdFromPost(authorId: authorId);
+    final userId = await getProfileIdByBitrixID(bitrixID: authorId);
     if (userId == null) {
       return null;
     }
