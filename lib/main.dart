@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:injector/injector.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:unn_mobile/app.dart';
+import 'package:unn_mobile/core/misc/app_open_tracker.dart';
 import 'package:unn_mobile/core/misc/type_defs.dart';
 import 'package:unn_mobile/core/misc/type_of_current_user.dart';
 import 'package:unn_mobile/core/models/online_status_data.dart';
@@ -55,6 +56,7 @@ import 'package:unn_mobile/core/services/interfaces/user_data_provider.dart';
 import 'package:unn_mobile/core/viewmodels/auth_page_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/comments_page_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/feed_screen_view_model.dart';
+import 'package:unn_mobile/core/viewmodels/grades_screen_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/loading_page_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/schedule_screen_view_model.dart';
@@ -143,6 +145,7 @@ void registerDependencies() {
   injector.registerSingleton<MarkBySubjectProvider>(
     () => MarkBySubjectProviderImpl(),
   );
+  injector.registerSingleton<AppOpenTracker>(() => AppOpenTracker());
 
   injector.registerDependency(() => LoadingPageViewModel());
   injector.registerDependency(() => AuthPageViewModel());
@@ -150,4 +153,5 @@ void registerDependencies() {
   injector.registerDependency(() => ScheduleScreenViewModel());
   injector.registerDependency(() => FeedScreenViewModel());
   injector.registerDependency(() => CommentsPageViewModel());
+  injector.registerDependency(() => GradesScreenViewModel());
 }

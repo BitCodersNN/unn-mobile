@@ -51,4 +51,10 @@ class AjaxActionStrings {
 
   /// Для получения реакций к посту/комментарию в живой ленте
   static const String ratingList = 'main.rating.list';
+
+  /// Для управления реакцией к посту/комментарию в живой ленте
+  static const String ratingVote = 'main.rating.vote';
+
+  /// Для управления реакцией к посту/комментарию в живой ленте
+  static const String addLike = 'addLike';
 }

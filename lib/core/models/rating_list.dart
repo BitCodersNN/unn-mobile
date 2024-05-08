@@ -85,6 +85,15 @@ class RatingList {
     }
     return total;
   }
+  
+  void removeReaction(
+    int userId,
+  ) {
+    for (final reactionType in _ratingList.keys) {
+      final listReactionUserInfo = _ratingList[reactionType] ?? [];
+      listReactionUserInfo.removeWhere((element) => element.id == userId);
+    }
+  }
 
   int? getNumberOfReactions([ReactionType? reactionType]) {
     if (reactionType != null) {

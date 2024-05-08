@@ -1,4 +1,5 @@
 class _KeysForUserDataJsonConverter {
+  static const String bitrixId = 'bitrix_id';
   static const String user = 'user';
   static const String login = 'login';
   static const String name = 'name';
@@ -28,6 +29,7 @@ class Fullname {
 }
 
 class UserData {
+  final int _bitrixId;
   final String? _login;
   final Fullname _fullname;
   final String? _email;
@@ -38,6 +40,7 @@ class UserData {
   final String? _urlPhoto;
 
   const UserData(
+    this._bitrixId,
     this._login,
     this._fullname,
     this._email,
@@ -47,6 +50,7 @@ class UserData {
     this._notes,
   );
 
+  int get bitrixId => _bitrixId;
   String? get login => _login;
   Fullname get fullname => _fullname;
   String? get name => _fullname.name;
@@ -64,6 +68,7 @@ class UserData {
     final userJsonMap =
         jsonMap[_KeysForUserDataJsonConverter.user] as Map<String, Object?>;
     return UserData(
+      userJsonMap[_KeysForUserDataJsonConverter.bitrixId] as int,
       userJsonMap[_KeysForUserDataJsonConverter.login] as String?,
       Fullname(
         userJsonMap[_KeysForUserDataJsonConverter.name] as String?,
@@ -82,6 +87,7 @@ class UserData {
 
   Map<String, dynamic> toJson() => {
         _KeysForUserDataJsonConverter.user: {
+          _KeysForUserDataJsonConverter.bitrixId: _bitrixId,
           _KeysForUserDataJsonConverter.login: _login,
           _KeysForUserDataJsonConverter.name: _fullname.name,
           _KeysForUserDataJsonConverter.lastname: _fullname.lastname,

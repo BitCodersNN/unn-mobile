@@ -149,6 +149,7 @@ class FeedStreamUpdaterServiceImpl
           postId: post.id,
         )
             .then((voteKeySigned) {
+          post.keySigned = voteKeySigned;
           return _gettingRatingList.getRatingList(
             voteKeySigned: voteKeySigned ?? '',
           );
