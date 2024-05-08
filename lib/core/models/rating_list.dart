@@ -85,7 +85,7 @@ class RatingList {
     }
     return total;
   }
-  
+
   void removeReaction(
     int userId,
   ) {
