@@ -2,6 +2,7 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:injector/injector.dart';
+import 'package:unn_mobile/core/misc/app_open_tracker.dart';
 import 'package:unn_mobile/core/misc/loading_pages.dart';
 import 'package:unn_mobile/core/misc/type_of_current_user.dart';
 import 'package:unn_mobile/core/models/loading_page_data.dart';
@@ -20,12 +21,12 @@ enum _TypeScreen {
 class LoadingPageViewModel extends BaseViewModel {
   final _initializingApplicationService =
       Injector.appInstance.get<AuthorisationRefreshService>();
-  final TypeOfCurrentUser _typeOfCurrnetUser =
-      Injector.appInstance.get<TypeOfCurrentUser>();
-  final GettingProfileOfCurrentUser _gettingProfileOfCurrentUser =
+  final _typeOfCurrnetUser = Injector.appInstance.get<TypeOfCurrentUser>();
+  final _gettingProfileOfCurrentUser =
       Injector.appInstance.get<GettingProfileOfCurrentUser>();
-  final UserDataProvider _userDataProvider =
-      Injector.appInstance.get<UserDataProvider>();
+  final _userDataProvider = Injector.appInstance.get<UserDataProvider>();
+  final _appOpenTracker = Injector.appInstance.get<AppOpenTracker>();
+
   final actualLoadingPage = LoadingPages().actualLoadingPage;
 
   LoadingPageModel get loadingPageData => actualLoadingPage;
@@ -66,10 +67,11 @@ class LoadingPageViewModel extends BaseViewModel {
   }
 
   Future<void> _initUserData() async {
-    // Вообще это надо сделать только при первом заходе, чтобы обновить в хранилище информацию
-    final profile =
-        await _gettingProfileOfCurrentUser.getProfileOfCurrentUser();
-    _userDataProvider.saveData(profile);
+    if (await _appOpenTracker.isFirstTimeOpenOnVersion()) {
+      final profile =
+          await _gettingProfileOfCurrentUser.getProfileOfCurrentUser();
+      _userDataProvider.saveData(profile);
+    }
 
     if (await _userDataProvider.isContained()) {
       await _typeOfCurrnetUser.updateTypeOfCurrentUser();

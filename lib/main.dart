@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:injector/injector.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:unn_mobile/app.dart';
+import 'package:unn_mobile/core/misc/app_open_tracker.dart';
 import 'package:unn_mobile/core/misc/type_defs.dart';
 import 'package:unn_mobile/core/misc/type_of_current_user.dart';
 import 'package:unn_mobile/core/models/online_status_data.dart';
@@ -144,6 +145,7 @@ void registerDependencies() {
   injector.registerSingleton<MarkBySubjectProvider>(
     () => MarkBySubjectProviderImpl(),
   );
+  injector.registerSingleton<AppOpenTracker>(() => AppOpenTracker());
 
   injector.registerDependency(() => LoadingPageViewModel());
   injector.registerDependency(() => AuthPageViewModel());
