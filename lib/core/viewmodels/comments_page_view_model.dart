@@ -41,12 +41,12 @@ class CommentsPageViewModel extends BaseViewModel {
       return blogPostCommentWithLoadedInfo;
     }
 
-    UserData? profile = _lruCacheProfile.get(comment.authorId);
+    UserData? profile = _lruCacheProfile.get(comment.bitrixID);
 
     if (profile == null) {
       futures.add(
         _gettingProfileService.getProfileByAuthorIdFromPost(
-          authorId: comment.authorId,
+          authorId: comment.bitrixID,
         ),
       );
     }
@@ -88,7 +88,7 @@ class CommentsPageViewModel extends BaseViewModel {
     );
 
     _lruCacheProfile.save(
-      comment.authorId,
+      comment.bitrixID,
       profile,
     );
 
