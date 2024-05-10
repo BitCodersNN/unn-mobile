@@ -384,11 +384,12 @@ class FeedScreenView extends StatelessWidget {
               children: [
                 GestureDetector(
                   onTap: () {
-                    if((reactionsMap[post.post.id] == null)||(reactionsMap[post.post.id] == 0)){
+                    if ((reactionsMap[post.post.id] == null) ||
+                        (reactionsMap[post.post.id] == 0)) {
                       model.addLike(post);
                       isLiked = true;
                       reactionsMap[post.post.id] = 8;
-                    } else{
+                    } else {
                       isLiked = false;
                       reactionsMap[post.post.id] = 0;
                     }
@@ -400,9 +401,7 @@ class FeedScreenView extends StatelessWidget {
                     padding:
                         const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     decoration: BoxDecoration(
-                      // color: idkWhatColor.withOpacity(0.1),
                       color: idkWhatColor.withOpacity(0.1),
-
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Row(
