@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:injector/injector.dart';
-import 'package:unn_mobile/core/misc/type_of_current_user.dart';
+import 'package:unn_mobile/core/misc/current_user_sync_storage.dart';
 import 'package:unn_mobile/core/models/employee_data.dart';
 import 'package:unn_mobile/core/models/schedule_filter.dart';
 import 'package:unn_mobile/ui/builders/online_status_stream_builder.dart';
@@ -33,8 +33,8 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView>
 
   @override
   Widget build(BuildContext context) {
-    final TypeOfCurrentUser typeOfCurrnetUser =
-        Injector.appInstance.get<TypeOfCurrentUser>();
+    final CurrentUserSyncStorage typeOfCurrnetUser =
+        Injector.appInstance.get<CurrentUserSyncStorage>();
     final tabTexts = _getTabTexts(typeOfCurrnetUser.typeOfUser);
     final idTypesForSchedulTab =
         _getIDTypesForSchedulTab(typeOfCurrnetUser.typeOfUser);

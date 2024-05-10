@@ -9,7 +9,7 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:unn_mobile/app.dart';
 import 'package:unn_mobile/core/misc/app_open_tracker.dart';
 import 'package:unn_mobile/core/misc/type_defs.dart';
-import 'package:unn_mobile/core/misc/type_of_current_user.dart';
+import 'package:unn_mobile/core/misc/current_user_sync_storage.dart';
 import 'package:unn_mobile/core/models/online_status_data.dart';
 import 'package:unn_mobile/core/services/implementations/auth_data_provider_impl.dart';
 import 'package:unn_mobile/core/services/implementations/authorisation_refresh_service_impl.dart';
@@ -28,6 +28,7 @@ import 'package:unn_mobile/core/services/implementations/getting_grade_book_impl
 import 'package:unn_mobile/core/services/implementations/mark_by_subject_provider_impl.dart';
 import 'package:unn_mobile/core/services/implementations/offline_schedule_provider_impl.dart';
 import 'package:unn_mobile/core/services/implementations/post_with_loaded_info_provider_impl.dart';
+import 'package:unn_mobile/core/services/implementations/reaction_manager_impl.dart';
 import 'package:unn_mobile/core/services/implementations/schedule_search_history_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/search_id_on_portal_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/storage_service_impl.dart';
@@ -49,6 +50,7 @@ import 'package:unn_mobile/core/services/interfaces/getting_grade_book.dart';
 import 'package:unn_mobile/core/services/interfaces/mark_by_subject_provider.dart';
 import 'package:unn_mobile/core/services/interfaces/offline_schedule_provider.dart';
 import 'package:unn_mobile/core/services/interfaces/post_with_loaded_info_provider.dart';
+import 'package:unn_mobile/core/services/interfaces/reaction_manager.dart';
 import 'package:unn_mobile/core/services/interfaces/schedule_search_history_service.dart';
 import 'package:unn_mobile/core/services/interfaces/search_id_on_portal_service.dart';
 import 'package:unn_mobile/core/services/interfaces/storage_service.dart';
@@ -126,7 +128,9 @@ void registerDependencies() {
   injector.registerSingleton<FeedUpdaterService>(
     () => FeedStreamUpdaterServiceImpl(),
   );
-  injector.registerSingleton<TypeOfCurrentUser>(() => TypeOfCurrentUser());
+  injector.registerSingleton<CurrentUserSyncStorage>(
+    () => CurrentUserSyncStorage(),
+  );
   injector.registerSingleton<PostWithLoadedInfoProvider>(
     () => PostWithLoadedInfoProviderImpl(),
   );
@@ -146,6 +150,7 @@ void registerDependencies() {
     () => MarkBySubjectProviderImpl(),
   );
   injector.registerSingleton<AppOpenTracker>(() => AppOpenTracker());
+  injector.registerSingleton<ReactionManager>(() => ReactionManagerImpl());
 
   injector.registerDependency(() => LoadingPageViewModel());
   injector.registerDependency(() => AuthPageViewModel());

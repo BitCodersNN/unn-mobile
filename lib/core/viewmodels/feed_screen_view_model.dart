@@ -1,19 +1,23 @@
 import 'package:injector/injector.dart';
+import 'package:unn_mobile/core/misc/current_user_sync_storage.dart';
 import 'package:unn_mobile/core/models/post_with_loaded_info.dart';
+import 'package:unn_mobile/core/models/rating_list.dart';
 import 'package:unn_mobile/core/services/interfaces/feed_stream_updater_service.dart';
+import 'package:unn_mobile/core/services/interfaces/reaction_manager.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
 
 class FeedScreenViewModel extends BaseViewModel {
   final _feedStreamUpdater = Injector.appInstance.get<FeedUpdaterService>();
+  final _currentUserSyncStorage =
+      Injector.appInstance.get<CurrentUserSyncStorage>();
+  final _reactionManager = Injector.appInstance.get<ReactionManager>();
   DateTime? _lastViewedPostDateTime;
   List<PostWithLoadedInfo> get posts => _feedStreamUpdater.feedPosts;
   bool get isLoadingPosts => _feedStreamUpdater.isBusy;
 
-  Map<int, int> reactionsMap = {};
-
   void init() {
     _feedStreamUpdater.addListener(() {
-      notifyListeners();
+      super.notifyListeners();
     });
   }
 
@@ -30,14 +34,73 @@ class FeedScreenViewModel extends BaseViewModel {
     _feedStreamUpdater.loadNextPage();
   }
 
-  void addLike(PostWithLoadedInfo post) {
-    // print('Liked post: ${post.post.id}');
+  ReactionType? getReactionToPost(PostWithLoadedInfo post) {
+    final profileId = _currentUserSyncStorage.currentUserData?.bitrixId;
+    return profileId != null
+        ? post.ratingList.getReactionByUser(profileId)
+        : null;
   }
 
-  void addReaction(PostWithLoadedInfo post, int reactionId) {
-    reactionsMap[post.post.id] = reactionId;
+  void _setReactionToPost(
+    PostWithLoadedInfo post,
+    ReactionType? reaction,
+  ) async {
+    if (post.post.keySigned == null) {
+      return;
+    }
+    final profileId = _currentUserSyncStorage.currentUserData?.bitrixId;
+    if (profileId == null) {
+      return;
+    }
+    if (reaction == null) {
+      // Сохраняем то, что сейчас есть в списке
+      final currentReactionInfo =
+          post.ratingList.getReactionInfoByUser(profileId);
+      final currentReaction = post.ratingList.getReactionByUser(profileId);
+      if (currentReactionInfo == null || currentReaction == null) {
+        return;
+      }
+      // Временно удаляем реакцию, чтобы показать действие
+      post.ratingList.removeReaction(profileId);
+      super.notifyListeners();
+      if (!await _reactionManager.removeReaction(post.post.keySigned!)) {
+        // Если реакция не удалилась - восстанавливаем её
+        post.ratingList.addReactions(currentReaction, [currentReactionInfo]);
+        super.notifyListeners();
+      }
+    } else {
+      // Добавляем временно, чтобы сразу показать действие
+      post.ratingList
+          .addReactions(reaction, [ReactionUserInfo(profileId, '', '')]);
+      super.notifyListeners();
+      final reactionUserInfo =
+          await _reactionManager.addReaction(reaction, post.post.keySigned!);
+      // Удаляем временную реакцию
+      post.ratingList.removeReaction(profileId);
+      if (reactionUserInfo != null) {
+        // Если реакция реально добавилась - фиксируем это
+        post.ratingList.addReactions(reaction, [reactionUserInfo]);
+      }
+      super.notifyListeners();
+    }
+  }
 
-    // print('Reaction post: ${post.post.id}');
-    // print('current reaction: ${reactionId}');
+  void toggleLike(PostWithLoadedInfo post) {
+    if (getReactionToPost(post) != null) {
+      _setReactionToPost(post, null);
+    } else {
+      _setReactionToPost(post, ReactionType.like);
+    }
+    super.notifyListeners();
+  }
+
+  void toggleReaction(PostWithLoadedInfo post, ReactionType reaction) async {
+    if (getReactionToPost(post) == reaction) {
+      _setReactionToPost(post, null);
+    } else {
+      _setReactionToPost(post, null);
+      _setReactionToPost(post, reaction);
+    }
+    super.notifyListeners();
   }
 }

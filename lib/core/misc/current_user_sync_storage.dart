@@ -5,24 +5,28 @@ import 'package:unn_mobile/core/models/user_data.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_profile_of_current_user_service.dart';
 import 'package:unn_mobile/core/services/interfaces/user_data_provider.dart';
 
-class TypeOfCurrentUser {
+class CurrentUserSyncStorage {
   final UserDataProvider _userDataProvider =
       Injector.appInstance.get<UserDataProvider>();
   final GettingProfileOfCurrentUser _gettingProfileOfCurrentUser =
       Injector.appInstance.get<GettingProfileOfCurrentUser>();
 
-  /// Хранит тип текущего пользователя: [Type] ([StudentData] или [EmployeeData]) или [Null] в случае ошибки
-  Type typeOfUser = StudentData;
+  UserData? _currentUserData;
 
-  /// Получает тип авторизованного пользователя. Возвращает типы ([Type]) [StudentData] или [EmployeeData], или [Null] при ошибке
-  Future<Type> getTypeOfCurrentUser() async {
-    final UserData? type = await _userDataProvider.getData() ??
-        await _gettingProfileOfCurrentUser.getProfileOfCurrentUser();
-    return type.runtimeType;
-  }
+  /// Хранит информацию о текущем пользователе
+  UserData? get currentUserData => _currentUserData;
+
+  /// Хранит тип текущего пользователя: [Type] ([StudentData] или [EmployeeData]) или [Null] в случае ошибки
+  Type get typeOfUser => _currentUserData.runtimeType;
 
   /// Обновляет тип текущего пользователя
-  Future<void> updateTypeOfCurrentUser() async {
-    typeOfUser = await getTypeOfCurrentUser();
+  Future<void> updateCurrentUserInfo() async {
+    if (await _userDataProvider.isContained()) {
+      _currentUserData = await _userDataProvider.getData();
+    } else {
+      _currentUserData =
+          await _gettingProfileOfCurrentUser.getProfileOfCurrentUser();
+      _userDataProvider.saveData(_currentUserData);
+    }
   }
 }

@@ -123,6 +123,16 @@ class RatingList {
     return entry.value.isNotEmpty ? entry.key : null;
   }
 
+  ReactionUserInfo? getReactionInfoByUser(int bitrixId) {
+    final entry = _ratingList.entries.firstWhere(
+      (entry) => entry.value.any((user) => user._bitrixId == bitrixId),
+      orElse: () => const MapEntry(ReactionType.like, []),
+    );
+    return entry.value.isNotEmpty
+        ? entry.value.firstWhere((element) => element._bitrixId == bitrixId)
+        : null;
+  }
+
   factory RatingList.fromJson(Map<String, Object?> jsonMap) {
     final Map<ReactionType, List<ReactionUserInfo>> ratingList = {};
 

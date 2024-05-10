@@ -6,6 +6,7 @@ import 'package:unn_mobile/core/misc/user_functions.dart';
 import 'package:unn_mobile/core/models/blog_post_comment_with_loaded_info.dart';
 import 'package:unn_mobile/core/models/post_with_loaded_info.dart';
 import 'package:unn_mobile/core/viewmodels/comments_page_view_model.dart';
+import 'package:unn_mobile/core/viewmodels/feed_screen_view_model.dart';
 import 'package:unn_mobile/ui/unn_mobile_colors.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/feed.dart';
@@ -13,11 +14,15 @@ import 'package:unn_mobile/ui/views/main_page/feed/widgets/attached_file.dart';
 
 class CommentsPage extends StatelessWidget {
   final PostWithLoadedInfo post;
+  final FeedScreenViewModel feedViewModel;
 
-  const CommentsPage({super.key, required this.post});
+  const CommentsPage({
+    super.key,
+    required this.post,
+    required this.feedViewModel,
+  });
   @override
   Widget build(BuildContext context) {
-    const FeedScreenView feedScreenView = FeedScreenView();
     return Scaffold(
       appBar: AppBar(
         title: const Text('Запись'),
@@ -34,10 +39,14 @@ class CommentsPage extends StatelessWidget {
                 physics: const AlwaysScrollableScrollPhysics(),
                 child: Column(
                   children: [
-                    feedScreenView.feedPost(
-                      context,
-                      post,
-                      processClicks: false,
+                    ListenableBuilder(
+                      listenable: feedViewModel,
+                      builder: (context, child) => FeedScreenViewState.feedPost(
+                        context,
+                        post,
+                        feedViewModel,
+                        processClicks: false,
+                      ),
                     ),
                     const Padding(
                       padding: EdgeInsets.only(top: 20, bottom: 0),
@@ -80,7 +89,7 @@ class CommentsPage extends StatelessWidget {
                     model.loadMoreComments();
                   }
                 }
-                return true;
+                return false;
               },
             ),
           );
@@ -94,7 +103,6 @@ class CommentsPage extends StatelessWidget {
     BlogPostCommentWithLoadedInfo comment,
     BuildContext context,
   ) {
-    const FeedScreenView feedScreenView = FeedScreenView();
     final unescaper = HtmlUnescape();
 
     final theme = Theme.of(context);
@@ -152,7 +160,7 @@ class CommentsPage extends StatelessWidget {
               const EdgeInsets.only(left: 16, bottom: 10, right: 10, top: 16),
           child: BBCodeText(
             data: unescaper.convert(comment.comment.message),
-            stylesheet: feedScreenView.getBBStyleSheet(),
+            stylesheet: FeedScreenViewState.getBBStyleSheet(),
           ),
         ),
         for (final file in comment.files)

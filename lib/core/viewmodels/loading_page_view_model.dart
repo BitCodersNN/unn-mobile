@@ -4,7 +4,7 @@ import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/misc/app_open_tracker.dart';
 import 'package:unn_mobile/core/misc/loading_pages.dart';
-import 'package:unn_mobile/core/misc/type_of_current_user.dart';
+import 'package:unn_mobile/core/misc/current_user_sync_storage.dart';
 import 'package:unn_mobile/core/models/loading_page_data.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation_refresh_service.dart';
@@ -21,7 +21,7 @@ enum _TypeScreen {
 class LoadingPageViewModel extends BaseViewModel {
   final _initializingApplicationService =
       Injector.appInstance.get<AuthorisationRefreshService>();
-  final _typeOfCurrnetUser = Injector.appInstance.get<TypeOfCurrentUser>();
+  final _typeOfCurrentUser = Injector.appInstance.get<CurrentUserSyncStorage>();
   final _gettingProfileOfCurrentUser =
       Injector.appInstance.get<GettingProfileOfCurrentUser>();
   final _userDataProvider = Injector.appInstance.get<UserDataProvider>();
@@ -73,16 +73,12 @@ class LoadingPageViewModel extends BaseViewModel {
       _userDataProvider.saveData(profile);
     }
 
-    if (await _userDataProvider.isContained()) {
-      await _typeOfCurrnetUser.updateTypeOfCurrentUser();
-    } else {
-      final profile =
-          await _gettingProfileOfCurrentUser.getProfileOfCurrentUser();
-      _userDataProvider.saveData(profile);
-      if (profile != null && profile.fullUrlPhoto != null) {
-        DefaultCacheManager().downloadFile(profile.fullUrlPhoto!);
-      }
-      _typeOfCurrnetUser.typeOfUser = profile.runtimeType;
+    await _typeOfCurrentUser.updateCurrentUserInfo();
+    if (_typeOfCurrentUser.currentUserData != null &&
+        _typeOfCurrentUser.currentUserData!.fullUrlPhoto != null) {
+      DefaultCacheManager().downloadFile(
+        _typeOfCurrentUser.currentUserData!.fullUrlPhoto!,
+      );
     }
   }
 }
