@@ -115,7 +115,6 @@ class FeedScreenViewState extends State<FeedScreenView> {
     BuildContext context,
     FeedScreenViewModel model,
     PostWithLoadedInfo post,
-    flag,
   ) {
     showModalBottomSheet(
       context: context,
@@ -224,7 +223,6 @@ class FeedScreenViewState extends State<FeedScreenView> {
     bool showCommentsCount = false,
     bool processClicks = true,
   }) {
-    const int flag = 1;
     final theme = Theme.of(context);
     final unescaper = HtmlUnescape();
     final extraColors = theme.extension<UnnMobileColors>();
@@ -235,7 +233,7 @@ class FeedScreenViewState extends State<FeedScreenView> {
       switch (model.getReactionToPost(post)) {
         case ReactionType.like:
           return Image.asset(
-            'assets/images/reactions/like.png',
+            'assets/images/reactions/active_like.png',
             width: 23,
             height: 23,
           );
@@ -384,7 +382,7 @@ class FeedScreenViewState extends State<FeedScreenView> {
                     model.toggleLike(post);
                   },
                   onLongPress: () {
-                    chooseReaction(context, model, post, flag);
+                    chooseReaction(context, model, post);
                   },
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 200),

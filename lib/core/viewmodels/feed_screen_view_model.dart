@@ -15,6 +15,8 @@ class FeedScreenViewModel extends BaseViewModel {
   List<PostWithLoadedInfo> get posts => _feedStreamUpdater.feedPosts;
   bool get isLoadingPosts => _feedStreamUpdater.isBusy;
 
+  final pendingReactionChanges = <int>{};
+
   void init() {
     _feedStreamUpdater.addListener(() {
       super.notifyListeners();
@@ -60,6 +62,7 @@ class FeedScreenViewModel extends BaseViewModel {
       if (currentReactionInfo == null || currentReaction == null) {
         return;
       }
+      pendingReactionChanges.add(post.post.id);
       // Временно удаляем реакцию, чтобы показать действие
       post.ratingList.removeReaction(profileId);
       super.notifyListeners();
@@ -68,7 +71,9 @@ class FeedScreenViewModel extends BaseViewModel {
         post.ratingList.addReactions(currentReaction, [currentReactionInfo]);
         super.notifyListeners();
       }
+      pendingReactionChanges.remove(post.post.id);
     } else {
+      pendingReactionChanges.add(post.post.id);
       // Добавляем временно, чтобы сразу показать действие
       post.ratingList
           .addReactions(reaction, [ReactionUserInfo(profileId, '', '')]);
@@ -81,11 +86,15 @@ class FeedScreenViewModel extends BaseViewModel {
         // Если реакция реально добавилась - фиксируем это
         post.ratingList.addReactions(reaction, [reactionUserInfo]);
       }
+      pendingReactionChanges.remove(post.post.id);
       super.notifyListeners();
     }
   }
 
   void toggleLike(PostWithLoadedInfo post) {
+    if (pendingReactionChanges.contains(post.post.id)) {
+      return;
+    }
     if (getReactionToPost(post) != null) {
       _setReactionToPost(post, null);
     } else {
@@ -95,6 +104,9 @@ class FeedScreenViewModel extends BaseViewModel {
   }
 
   void toggleReaction(PostWithLoadedInfo post, ReactionType reaction) async {
+    if (pendingReactionChanges.contains(post.post.id)) {
+      return;
+    }
     if (getReactionToPost(post) == reaction) {
       _setReactionToPost(post, null);
     } else {
