@@ -1,7 +1,10 @@
+import 'package:injector/injector.dart';
+import 'package:unn_mobile/core/misc/app_open_tracker.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/feed.dart';
 import 'package:unn_mobile/ui/views/main_page/grades/grades.dart';
 import 'package:unn_mobile/ui/views/main_page/main_page_tab_state.dart';
 import 'package:unn_mobile/ui/views/main_page/settings/settings.dart';
+import 'package:unn_mobile/ui/widgets/dialogs/changelog_dialog.dart';
 import 'package:unn_mobile/ui/widgets/placeholder.dart' as placeholder;
 import 'package:flutter/material.dart';
 import 'package:unn_mobile/core/viewmodels/main_page_view_model.dart';
@@ -41,6 +44,25 @@ class _MainPageState extends State<MainPage> {
   ];
 
   final drawerIdOffset = 10;
+
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (await Injector.appInstance
+          .get<AppOpenTracker>()
+          .isFirstTimeOpenOnVersion()) {
+        if (mounted) {
+          await showDialog(
+            context: context,
+            builder: (context) => const ChangelogDialog(),
+          );
+        }
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return BaseView<MainPageViewModel>(
