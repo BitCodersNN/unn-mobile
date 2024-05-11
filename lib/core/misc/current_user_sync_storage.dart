@@ -19,7 +19,7 @@ class CurrentUserSyncStorage {
   /// Хранит тип текущего пользователя: [Type] ([StudentData] или [EmployeeData]) или [Null] в случае ошибки
   Type get typeOfUser => _currentUserData.runtimeType;
 
-  /// Обновляет тип текущего пользователя
+  /// Обновляет хранимую информацию о текущем пользователе
   Future<void> updateCurrentUserInfo() async {
     if (await _userDataProvider.isContained()) {
       _currentUserData = await _userDataProvider.getData();
