@@ -132,7 +132,7 @@ class RatingList {
         ? entry.value.firstWhere((element) => element._bitrixId == bitrixId)
         : null;
   }
-  
+
   factory RatingList.fromJson(Map<String, Object?> jsonMap) {
     final Map<ReactionType, List<ReactionUserInfo>> ratingList = {};
 
