@@ -4,14 +4,39 @@ class _KeysForUserInfoJsonConverter {
   static const String photoSrc = 'PHOTO_SRC';
 }
 
+const String _reactionAssetsDirectory = 'assets/images/reactions';
+const Map<ReactionType, String> _reactionAssets = {
+  ReactionType.like: '$_reactionAssetsDirectory/like.png',
+  ReactionType.angry: '$_reactionAssetsDirectory/angry.png',
+  ReactionType.cry: '$_reactionAssetsDirectory/sad.png',
+  ReactionType.laugh: '$_reactionAssetsDirectory/laugh.png',
+  ReactionType.facepalm: '$_reactionAssetsDirectory/facepalm.png',
+  ReactionType.kiss: '$_reactionAssetsDirectory/love.png',
+  ReactionType.wonder: '$_reactionAssetsDirectory/confused.png',
+};
+
+const Map<ReactionType, String> _reactionNames = {
+  ReactionType.like: 'Нравится',
+  ReactionType.angry: 'Ъуъ!',
+  ReactionType.cry: 'Печаль',
+  ReactionType.laugh: 'Смешно',
+  ReactionType.facepalm: 'Facepalm',
+  ReactionType.kiss: 'Восторг',
+  ReactionType.wonder: 'Ого!',
+};
+
 enum ReactionType {
   like,
   kiss,
   laugh,
   wonder,
   cry,
-  angry,
   facepalm,
+  angry,
+  ; // О_о
+
+  String get assetName => _reactionAssets[this]!;
+  String get caption => _reactionNames[this]!;
 }
 
 class ReactionUserInfo {
@@ -65,6 +90,14 @@ class RatingList {
     }
   }
 
+  int getTotalNumberOfReactions() {
+    int total = 0;
+    for (final element in _ratingList.values) {
+      total += element.length;
+    }
+    return total;
+  }
+
   void removeReaction(
     int userId,
   ) {
@@ -78,12 +111,7 @@ class RatingList {
     if (reactionType != null) {
       return _ratingList[reactionType]?.length;
     }
-
-    int totalSize = 0;
-    for (final list in _ratingList.values) {
-      totalSize += list.length;
-    }
-    return totalSize;
+    return getTotalNumberOfReactions();
   }
 
   List<ReactionUserInfo>? getUsers([ReactionType? reactionType]) {
@@ -105,6 +133,16 @@ class RatingList {
     );
 
     return entry.value.isNotEmpty ? entry.key : null;
+  }
+
+  ReactionUserInfo? getReactionInfoByUser(int bitrixId) {
+    final entry = _ratingList.entries.firstWhere(
+      (entry) => entry.value.any((user) => user._bitrixId == bitrixId),
+      orElse: () => const MapEntry(ReactionType.like, []),
+    );
+    return entry.value.isNotEmpty
+        ? entry.value.firstWhere((element) => element._bitrixId == bitrixId)
+        : null;
   }
 
   factory RatingList.fromJson(Map<String, Object?> jsonMap) {

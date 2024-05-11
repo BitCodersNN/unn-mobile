@@ -2,7 +2,7 @@ name: unn_mobile
 description: A mobile application for UNN Portal website
 publish_to: 'none'
 
-version: 0.2.2+194
+version: 0.2.2+195
 
 environment:
   sdk: '>=3.1.2 <4.0.0'
@@ -55,21 +55,10 @@ flutter:
   uses-material-design: true
 
   assets:
-    - assets/images/chick_in_the_egg.png
-    - assets/images/logos/logo.png
-    - assets/images/logos/new_year_logo.png
-    - assets/images/logos/march_8th_logo.png
-    - assets/images/logos/april_1st_logo.png
-    - assets/images/auth-logo.svg
-    - assets/images/authors/dmitry.png
-    - assets/images/authors/vitaly.png
-    - assets/images/authors/michail.png
-    - assets/images/authors/darya.png
-    - assets/images/authors/andrew.png
-    - assets/images/quest/1.png
-    - assets/images/quest/2.png
-    - assets/images/quest/3.png
-    - assets/images/quest/4.png
+    - assets/images/
+    - assets/images/authors/
+    - assets/images/logos/
+    - assets/images/reactions/
 
 
   fonts:

@@ -6,11 +6,11 @@ import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/constants/api_url_strings.dart';
 import 'package:unn_mobile/core/constants/rating_list_strings.dart';
 import 'package:unn_mobile/core/constants/session_identifier_strings.dart';
+import 'package:unn_mobile/core/misc/current_user_sync_storage.dart';
 import 'package:unn_mobile/core/misc/http_helper.dart';
 import 'package:unn_mobile/core/models/rating_list.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
 import 'package:unn_mobile/core/services/interfaces/reaction_manager.dart';
-import 'package:unn_mobile/core/services/interfaces/user_data_provider.dart';
 
 class _KeysForReactionManagerJsonConverter {
   static const String data = 'data';
@@ -23,7 +23,7 @@ class _KeysForReactionManagerJsonConverter {
 class ReactionManagerImpl implements ReactionManager {
   final _authorisationService =
       Injector.appInstance.get<AuthorisationService>();
-  final _userDataProvider = Injector.appInstance.get<UserDataProvider>();
+  final _currentUserSync = Injector.appInstance.get<CurrentUserSyncStorage>();
 
   @override
   Future<ReactionUserInfo?> addReaction(
@@ -110,13 +110,13 @@ class ReactionManagerImpl implements ReactionManager {
       return null;
     }
 
-    final userData = await _userDataProvider.getData();
-
+    final userData = _currentUserSync.currentUserData;
+    final photoSrc = jsonMap[_KeysForReactionManagerJsonConverter.photo]
+        [_KeysForReactionManagerJsonConverter.src];
     return ReactionUserInfo(
       userData!.bitrixId,
       jsonMap[_KeysForReactionManagerJsonConverter.nameFromatted],
-      jsonMap[_KeysForReactionManagerJsonConverter.photo]
-          [_KeysForReactionManagerJsonConverter.src],
+      photoSrc != false ? photoSrc : null,
     );
   }
 }
