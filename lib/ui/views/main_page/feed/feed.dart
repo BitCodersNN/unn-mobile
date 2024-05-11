@@ -1,9 +1,8 @@
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bbcode/flutter_bbcode.dart';
 import 'package:html_unescape/html_unescape.dart';
 import 'package:intl/intl.dart';
-import 'package:unn_mobile/core/misc/custom_bb_tags.dart' as custom_tags;
+import 'package:unn_mobile/core/misc/custom_bb_tags.dart';
 import 'package:unn_mobile/core/misc/user_functions.dart';
 import 'package:unn_mobile/core/models/post_with_loaded_info.dart';
 import 'package:unn_mobile/core/models/rating_list.dart';
@@ -13,7 +12,6 @@ import 'package:unn_mobile/ui/unn_mobile_colors.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/widgets/attached_file.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/widgets/comments_page.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class FeedScreenView extends StatefulWidget {
   const FeedScreenView({Key? key}) : super(key: key);
@@ -438,44 +436,6 @@ class FeedScreenViewState extends State<FeedScreenView> {
         ),
       ),
     );
-  }
-
-  static BBStylesheet getBBStyleSheet() {
-    return defaultBBStylesheet()
-        .replaceTag(
-          UrlTag(
-            onTap: (url) async {
-              if (!await launchUrl(Uri.parse(url))) {
-                FirebaseCrashlytics.instance.log('Could not launch url $url');
-              }
-            },
-          ),
-        )
-        .addTag(custom_tags.PTag())
-        .addTag(custom_tags.SizeTag())
-        .addTag(
-          custom_tags.VideoTag(
-            onTap: (url) async {
-              if (!await launchUrl(
-                Uri.parse(url),
-                mode: LaunchMode.platformDefault,
-              )) {
-                FirebaseCrashlytics.instance.log('Could not launch url $url');
-              }
-            },
-          ),
-        )
-        .addTag(custom_tags.JustifyAlignTag())
-        .addTag(custom_tags.FontTag())
-        .addTag(custom_tags.CodeTag())
-        .addTag(custom_tags.DiskTag())
-        .addTag(custom_tags.TableTag())
-        .addTag(custom_tags.TRTag())
-        .addTag(custom_tags.TDTag())
-        .addTag(custom_tags.UserTag())
-        .replaceTag(custom_tags.ColorTag())
-        .replaceTag(custom_tags.ImgTag())
-        .replaceTag(custom_tags.SpoilerTag());
   }
 
   static CircleAvatar _circleAvatar(ThemeData theme, UserData? userData) {

@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bbcode/flutter_bbcode.dart';
 import 'package:html_unescape/html_unescape.dart';
+import 'package:unn_mobile/core/misc/custom_bb_tags.dart';
 import 'package:unn_mobile/core/misc/user_functions.dart';
 import 'package:unn_mobile/core/models/blog_post_comment_with_loaded_info.dart';
 import 'package:unn_mobile/core/models/post_with_loaded_info.dart';
@@ -160,7 +161,7 @@ class CommentsPage extends StatelessWidget {
               const EdgeInsets.only(left: 16, bottom: 10, right: 10, top: 16),
           child: BBCodeText(
             data: unescaper.convert(comment.comment.message),
-            stylesheet: FeedScreenViewState.getBBStyleSheet(),
+            stylesheet: getBBStyleSheet(),
           ),
         ),
         for (final file in comment.files)
