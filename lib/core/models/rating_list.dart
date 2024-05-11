@@ -4,6 +4,17 @@ class _KeysForUserInfoJsonConverter {
   static const String photoSrc = 'PHOTO_SRC';
 }
 
+const String _reactionAssetsDirectory = 'assets/images/reactions';
+const Map<ReactionType, String> _reactionAssets = {
+  ReactionType.like: '$_reactionAssetsDirectory/like.png',
+  ReactionType.angry: '$_reactionAssetsDirectory/angry.png',
+  ReactionType.cry: '$_reactionAssetsDirectory/sad.png',
+  ReactionType.laugh: '$_reactionAssetsDirectory/laugh.png',
+  ReactionType.facepalm: '$_reactionAssetsDirectory/facepalm.png',
+  ReactionType.kiss: '$_reactionAssetsDirectory/love.png',
+  ReactionType.wonder: '$_reactionAssetsDirectory/confused.png',
+};
+
 enum ReactionType {
   like,
   kiss,
@@ -11,7 +22,9 @@ enum ReactionType {
   wonder,
   cry,
   angry,
-  facepalm,
+  facepalm;
+
+  String get assetName => _reactionAssets[this]!;
 }
 
 class ReactionUserInfo {
@@ -65,6 +78,14 @@ class RatingList {
     }
   }
 
+  int getTotalNumberOfReactions() {
+    int total = 0;
+    for (final element in _ratingList.values) {
+      total += element.length;
+    }
+    return total;
+  }
+
   void removeReaction(
     int userId,
   ) {
@@ -78,12 +99,7 @@ class RatingList {
     if (reactionType != null) {
       return _ratingList[reactionType]?.length;
     }
-
-    int totalSize = 0;
-    for (final list in _ratingList.values) {
-      totalSize += list.length;
-    }
-    return totalSize;
+    return getTotalNumberOfReactions();
   }
 
   List<ReactionUserInfo>? getUsers([ReactionType? reactionType]) {

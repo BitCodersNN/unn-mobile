@@ -14,8 +14,12 @@ import 'package:unn_mobile/ui/views/main_page/feed/widgets/attached_file.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/widgets/comments_page.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+int currentReaction = 0;
+Map<int, int> reactionsMap = {};
+
 class FeedScreenView extends StatelessWidget {
-  const FeedScreenView({super.key});
+  const FeedScreenView({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return BaseView<FeedScreenViewModel>(
@@ -64,35 +68,230 @@ class FeedScreenView extends StatelessWidget {
     );
   }
 
-  static Widget feedPost(
+  Widget _circleAvatarWithCaption(
+    int id,
+    String imagePath,
+    String caption,
+    BuildContext context,
+    PostWithLoadedInfo post,
+    bool isLiked,
+  ) {
+    return GestureDetector(
+      onTap: () {
+        currentReaction = id;
+        reactionsMap[post.post.id] = currentReaction;
+        Navigator.of(context).pop();
+        isLiked = true;
+      },
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Row(
+              children: [
+                const SizedBox(width: 4),
+                CircleAvatar(
+                  radius: 21,
+                  backgroundImage: AssetImage(imagePath),
+                ),
+                const SizedBox(width: 5),
+              ],
+            ),
+            const SizedBox(height: 4),
+            Text(
+              caption,
+              style: const TextStyle(fontSize: 9, color: Colors.grey),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void chooseReaction(
+      BuildContext context, PostWithLoadedInfo post, bool isLiked) {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return Container(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                'Выбор реакции',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const Padding(
+                padding: EdgeInsets.only(top: 2),
+                child: Divider(
+                  indent: 8,
+                  endIndent: 8,
+                  thickness: 0.5,
+                  color: Color.fromARGB(229, 162, 162, 162),
+                ),
+              ),
+              const SizedBox(height: 10),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      _circleAvatarWithCaption(
+                        1,
+                        'assets/images/reactions/like.png',
+                        'Нравится',
+                        context,
+                        post,
+                        isLiked,
+                      ),
+                      _circleAvatarWithCaption(
+                        2,
+                        'assets/images/reactions/love.png',
+                        'Восторг',
+                        context,
+                        post,
+                        isLiked,
+                      ),
+                      _circleAvatarWithCaption(
+                        3,
+                        'assets/images/reactions/laugh.png',
+                        'Смешно',
+                        context,
+                        post,
+                        isLiked,
+                      ),
+                      _circleAvatarWithCaption(
+                        4,
+                        'assets/images/reactions/confused.png',
+                        'Ого!',
+                        context,
+                        post,
+                        isLiked,
+                      ),
+                      _circleAvatarWithCaption(
+                        5,
+                        'assets/images/reactions/facepalm.png',
+                        'Facepalm',
+                        context,
+                        post,
+                        isLiked,
+                      ),
+                      _circleAvatarWithCaption(
+                        6,
+                        'assets/images/reactions/sad.png',
+                        'Печаль',
+                        context,
+                        post,
+                        isLiked,
+                      ),
+                      _circleAvatarWithCaption(
+                        7,
+                        'assets/images/reactions/angry.png',
+                        'Ъуъ!',
+                        context,
+                        post,
+                        isLiked,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget feedPost(
     BuildContext context,
     PostWithLoadedInfo post, {
     bool isNewPost = false,
     bool showCommentsCount = false,
     bool processClicks = true,
   }) {
+    bool isLiked = false;
+    final model = FeedScreenViewModel();
     final theme = Theme.of(context);
     final unescaper = HtmlUnescape();
     final extraColors = theme.extension<UnnMobileColors>();
     const idkWhatColor = Color(0xFF989EA9);
+    final reactionsSize = MediaQuery.textScalerOf(context).scale(16.0);
+
+    Widget getReactionImage(int postId) {
+      final reactionNumber = reactionsMap[postId];
+
+      switch (reactionNumber) {
+        case 1:
+          return Image.asset(
+            'assets/images/reactions/like.png',
+            width: 23,
+            height: 23,
+          );
+        case 2:
+          return Image.asset(
+            'assets/images/reactions/love.png',
+            width: 23,
+            height: 23,
+          );
+        case 3:
+          return Image.asset(
+            'assets/images/reactions/laugh.png',
+            width: 23,
+            height: 23,
+          );
+        case 4:
+          return Image.asset(
+            'assets/images/reactions/confused.png',
+            width: 23,
+            height: 23,
+          );
+        case 5:
+          return Image.asset(
+            'assets/images/reactions/facepalm.png',
+            width: 23,
+            height: 23,
+          );
+        case 6:
+          return Image.asset(
+            'assets/images/reactions/sad.png',
+            width: 23,
+            height: 23,
+          );
+        case 7:
+          return Image.asset(
+            'assets/images/reactions/angry.png',
+            width: 23,
+            height: 23,
+          );
+        case 8:
+          return Image.asset(
+            'assets/images/reactions/active_like.png',
+            width: 23,
+            height: 23,
+          );
+        case 0:
+        default:
+          return Image.asset(
+            'assets/images/reactions/default_like.png',
+            width: 23,
+            height: 23,
+          );
+      }
+    }
+
     return GestureDetector(
-      onTap: () async {
-        if (!processClicks) {
-          return;
-        }
-        await Navigator.of(
-          context.findRootAncestorStateOfType<NavigatorState>()!.context,
-        ).push(
-          MaterialPageRoute(
-            builder: (context) {
-              return CommentsPage(post: post);
-            },
-          ),
-        );
-      },
+      onTap: () {},
       child: Container(
         margin: const EdgeInsets.only(top: 12),
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(18),
         decoration: BoxDecoration(
           color: isNewPost
               ? extraColors!.newPostHiglaght
@@ -163,7 +362,7 @@ class FeedScreenView extends StatelessWidget {
                 );
               },
             ),
-            const SizedBox(height: 15.0),
+            const SizedBox(height: 16.0),
             for (final file in post.files)
               AttachedFile(
                 fileData: file,
@@ -179,51 +378,149 @@ class FeedScreenView extends StatelessWidget {
                   color: idkWhatColor,
                 ),
               ),
-            if (showCommentsCount)
-              Row(
-                children: [
-                  const Padding(
-                    padding: EdgeInsets.only(top: 10),
-                    child: Icon(
-                      Icons.message,
-                      color: idkWhatColor,
-                      size: 30,
+            const SizedBox(height: 8),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                GestureDetector(
+                  onTap: () {
+                    if ((reactionsMap[post.post.id] == null) ||
+                        (reactionsMap[post.post.id] == 0)) {
+                      model.addLike(post);
+                      isLiked = true;
+                      reactionsMap[post.post.id] = 8;
+                    } else {
+                      isLiked = false;
+                      reactionsMap[post.post.id] = 0;
+                    }
+                  },
+                  onLongPress: () {
+                    chooseReaction(context, post, isLiked);
+                  },
+                  child: Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: idkWhatColor.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        getReactionImage(post.post.id),
+                        const SizedBox(width: 6),
+                        Text(
+                          '${post.ratingList.getTotalNumberOfReactions() > 0 ? post.ratingList.getTotalNumberOfReactions() : ""}',
+                          style: const TextStyle(
+                            fontSize: 14.0,
+                            fontWeight: FontWeight.w400,
+                            color: idkWhatColor,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  const SizedBox(width: 6),
-                  const Padding(
-                    padding: EdgeInsets.only(top: 6),
-                    child: Text(
-                      'Комментарии:',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: idkWhatColor,
-                        fontStyle: FontStyle.italic,
-                        fontWeight: FontWeight.w400,
+                ),
+                const SizedBox(width: 12),
+                GestureDetector(
+                  onTap: () async {
+                    if (!processClicks) {
+                      return;
+                    }
+                    await Navigator.of(
+                      context
+                          .findRootAncestorStateOfType<NavigatorState>()!
+                          .context,
+                    ).push(
+                      MaterialPageRoute(
+                        builder: (context) {
+                          return CommentsPage(post: post);
+                        },
                       ),
+                    );
+                  },
+                  child: Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 6)
+                            .copyWith(right: 8),
+                    decoration: BoxDecoration(
+                      color: idkWhatColor.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(
+                          Icons.chat_bubble_outline,
+                          color: idkWhatColor,
+                          size: 23,
+                        ),
+                        const SizedBox(width: 6),
+                        Text(
+                          '${post.post.numberOfComments}',
+                          style: const TextStyle(
+                            fontSize: 14,
+                            color: idkWhatColor,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  const SizedBox(width: 6),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 6),
-                    child: Text(
-                      '${post.post.numberOfComments}',
-                      style: const TextStyle(
-                        fontSize: 14,
-                        color: idkWhatColor,
-                        fontStyle: FontStyle.italic,
+                ),
+                Container(
+                  padding: const EdgeInsets.only(
+                    top: 6,
+                    bottom: 6,
+                    right: 8,
+                    left: 12,
+                  ),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      for (int i = 0;
+                          i < post.ratingList.ratingList.length;
+                          i++)
+                        Positioned(
+                          top: 0.0,
+                          left: reactionsSize / 2 * i,
+                          child: ClipOval(
+                            child: Container(
+                              width: 21,
+                              height: 21,
+                              color: const Color.fromARGB(105, 198, 217, 249),
+                              child: Image.asset(
+                                post.ratingList.ratingList.keys
+                                    .toList(growable: false)[i]
+                                    .assetName,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          ),
+                        ),
+                      const SizedBox(
+                        width: 6,
                       ),
-                    ),
+                      Text(
+                        '${post.ratingList.getTotalNumberOfReactions() > 0 ? post.ratingList.getTotalNumberOfReactions() : ""}',
+                        style: const TextStyle(
+                          fontSize: 13.0,
+                          fontStyle: FontStyle.italic,
+                          fontWeight: FontWeight.w400,
+                          color: idkWhatColor,
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
+                ),
+              ],
+            ),
           ],
         ),
       ),
     );
   }
 
-  static BBStylesheet getBBStyleSheet() {
+  BBStylesheet getBBStyleSheet() {
     return defaultBBStylesheet()
         .replaceTag(
           UrlTag(
@@ -261,7 +558,7 @@ class FeedScreenView extends StatelessWidget {
         .replaceTag(custom_tags.SpoilerTag());
   }
 
-  static CircleAvatar _circleAvatar(ThemeData theme, UserData? userData) {
+  CircleAvatar _circleAvatar(ThemeData theme, UserData? userData) {
     final userAvatar = getUserAvatar(userData);
     return CircleAvatar(
       backgroundImage: userAvatar,
