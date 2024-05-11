@@ -137,7 +137,7 @@ class FeedScreenViewState extends State<FeedScreenView> {
                   indent: 8,
                   endIndent: 8,
                   thickness: 0.5,
-                  color: Color.fromARGB(229, 162, 162, 162),
+                  color: Color(0xE5A2A2A2),
                 ),
               ),
               const SizedBox(height: 10),
