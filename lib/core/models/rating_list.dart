@@ -15,16 +15,28 @@ const Map<ReactionType, String> _reactionAssets = {
   ReactionType.wonder: '$_reactionAssetsDirectory/confused.png',
 };
 
+const Map<ReactionType, String> _reactionNames = {
+  ReactionType.like: 'Нравится',
+  ReactionType.angry: 'Ъуъ!',
+  ReactionType.cry: 'Печаль',
+  ReactionType.laugh: 'Смешно',
+  ReactionType.facepalm: 'Facepalm',
+  ReactionType.kiss: 'Восторг',
+  ReactionType.wonder: 'Ого!',
+};
+
 enum ReactionType {
   like,
   kiss,
   laugh,
   wonder,
   cry,
+  facepalm,
   angry,
-  facepalm;
+  ; // О_о
 
   String get assetName => _reactionAssets[this]!;
+  String get caption => _reactionNames[this]!;
 }
 
 class ReactionUserInfo {

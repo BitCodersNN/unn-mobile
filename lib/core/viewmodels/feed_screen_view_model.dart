@@ -107,10 +107,8 @@ class FeedScreenViewModel extends BaseViewModel {
     if (pendingReactionChanges.contains(post.post.id)) {
       return;
     }
-    if (getReactionToPost(post) == reaction) {
-      _setReactionToPost(post, null);
-    } else {
-      _setReactionToPost(post, null);
+    _setReactionToPost(post, null);
+    if (getReactionToPost(post) != reaction) {
       _setReactionToPost(post, reaction);
     }
     super.notifyListeners();

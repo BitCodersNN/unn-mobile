@@ -75,8 +75,6 @@ class FeedScreenViewState extends State<FeedScreenView> {
   static Widget _circleAvatarWithCaption(
     FeedScreenViewModel model,
     ReactionType reaction,
-    String imagePath,
-    String caption,
     BuildContext context,
     PostWithLoadedInfo post,
   ) {
@@ -95,14 +93,14 @@ class FeedScreenViewState extends State<FeedScreenView> {
                 const SizedBox(width: 4),
                 CircleAvatar(
                   radius: 21,
-                  backgroundImage: AssetImage(imagePath),
+                  backgroundImage: AssetImage(reaction.assetName),
                 ),
                 const SizedBox(width: 5),
               ],
             ),
             const SizedBox(height: 4),
             Text(
-              caption,
+              reaction.caption,
               style: const TextStyle(fontSize: 9, color: Colors.grey),
             ),
           ],
@@ -147,62 +145,13 @@ class FeedScreenViewState extends State<FeedScreenView> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      _circleAvatarWithCaption(
-                        model,
-                        ReactionType.like,
-                        'assets/images/reactions/like.png',
-                        'Нравится',
-                        context,
-                        post,
-                      ),
-                      _circleAvatarWithCaption(
-                        model,
-                        ReactionType.kiss,
-                        'assets/images/reactions/love.png',
-                        'Восторг',
-                        context,
-                        post,
-                      ),
-                      _circleAvatarWithCaption(
-                        model,
-                        ReactionType.laugh,
-                        'assets/images/reactions/laugh.png',
-                        'Смешно',
-                        context,
-                        post,
-                      ),
-                      _circleAvatarWithCaption(
-                        model,
-                        ReactionType.wonder,
-                        'assets/images/reactions/confused.png',
-                        'Ого!',
-                        context,
-                        post,
-                      ),
-                      _circleAvatarWithCaption(
-                        model,
-                        ReactionType.facepalm,
-                        'assets/images/reactions/facepalm.png',
-                        'Facepalm',
-                        context,
-                        post,
-                      ),
-                      _circleAvatarWithCaption(
-                        model,
-                        ReactionType.cry,
-                        'assets/images/reactions/sad.png',
-                        'Печаль',
-                        context,
-                        post,
-                      ),
-                      _circleAvatarWithCaption(
-                        model,
-                        ReactionType.angry,
-                        'assets/images/reactions/angry.png',
-                        'Ъуъ!',
-                        context,
-                        post,
-                      ),
+                      for (final reaction in ReactionType.values)
+                        _circleAvatarWithCaption(
+                          model,
+                          reaction,
+                          context,
+                          post,
+                        ),
                     ],
                   ),
                 ],
@@ -230,54 +179,27 @@ class FeedScreenViewState extends State<FeedScreenView> {
     final reactionsSize = MediaQuery.textScalerOf(context).scale(16.0);
 
     Widget getReactionImage(PostWithLoadedInfo post) {
-      switch (model.getReactionToPost(post)) {
+      final currentReaction = model.getReactionToPost(post);
+      const width = 23.0;
+      const height = 23.0;
+      switch (currentReaction) {
         case ReactionType.like:
           return Image.asset(
             'assets/images/reactions/active_like.png',
-            width: 23,
-            height: 23,
-          );
-        case ReactionType.kiss:
-          return Image.asset(
-            'assets/images/reactions/love.png',
-            width: 23,
-            height: 23,
-          );
-        case ReactionType.laugh:
-          return Image.asset(
-            'assets/images/reactions/laugh.png',
-            width: 23,
-            height: 23,
-          );
-        case ReactionType.wonder:
-          return Image.asset(
-            'assets/images/reactions/confused.png',
-            width: 23,
-            height: 23,
-          );
-        case ReactionType.facepalm:
-          return Image.asset(
-            'assets/images/reactions/facepalm.png',
-            width: 23,
-            height: 23,
-          );
-        case ReactionType.cry:
-          return Image.asset(
-            'assets/images/reactions/sad.png',
-            width: 23,
-            height: 23,
-          );
-        case ReactionType.angry:
-          return Image.asset(
-            'assets/images/reactions/angry.png',
-            width: 23,
-            height: 23,
+            width: width,
+            height: height,
           );
         case null:
           return Image.asset(
             'assets/images/reactions/default_like.png',
-            width: 23,
-            height: 23,
+            width: width,
+            height: height,
+          );
+        default:
+          return Image.asset(
+            currentReaction.assetName,
+            width: width,
+            height: height,
           );
       }
     }
