@@ -48,8 +48,11 @@ class UserDataProviderImpl implements UserDataProvider {
         );
       }
     } catch (e, stackTrace) {
-      await FirebaseCrashlytics.instance
-          .recordError(e, stackTrace, information: [userInfo!]);
+      await FirebaseCrashlytics.instance.recordError(
+        e,
+        stackTrace,
+        information: [userInfo!],
+      );
     }
 
     return userData;
@@ -74,9 +77,11 @@ class UserDataProviderImpl implements UserDataProvider {
 
   @override
   Future<bool> isContained() async {
-    return (await _storage.containsKey(
+    return await _storage.containsKey(
           key: _UserDataProvideKeys._userTypeKey,
         ) &&
-        await _storage.containsKey(key: _UserDataProvideKeys._userDataKey));
+        await _storage.containsKey(
+          key: _UserDataProvideKeys._userDataKey,
+        );
   }
 }
