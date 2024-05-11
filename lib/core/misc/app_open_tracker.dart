@@ -18,9 +18,8 @@ class AppOpenTracker {
     _lastVisitedVersion ??= await _storage.read(
       key: _AppOpenTrackerProviderKeys._firstAppOpen,
     );
-    appVersion == _lastVisitedVersion;
     final isFirstAppOpenForVersion =
-        _lastVisitedVersion == null || appVersion == _lastVisitedVersion;
+        _lastVisitedVersion == null || appVersion != _lastVisitedVersion;
 
     if (isFirstAppOpenForVersion) {
       await _storage.write(

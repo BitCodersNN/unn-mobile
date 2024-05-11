@@ -1,8 +1,10 @@
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:unn_mobile/core/misc/hex_color.dart';
 import 'package:flutter_bbcode/flutter_bbcode.dart';
 import 'package:bbob_dart/bbob_dart.dart' as bbob;
 import 'package:unn_mobile/ui/widgets/spoiler_display.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class PTag extends StyleTag {
   PTag() : super('p');
@@ -338,4 +340,42 @@ class UserTag extends StyleTag {
   ) {
     return oldStyle;
   }
+}
+
+BBStylesheet getBBStyleSheet() {
+  return defaultBBStylesheet()
+      .replaceTag(
+        UrlTag(
+          onTap: (url) async {
+            if (!await launchUrl(Uri.parse(url))) {
+              FirebaseCrashlytics.instance.log('Could not launch url $url');
+            }
+          },
+        ),
+      )
+      .addTag(PTag())
+      .addTag(SizeTag())
+      .addTag(
+        VideoTag(
+          onTap: (url) async {
+            if (!await launchUrl(
+              Uri.parse(url),
+              mode: LaunchMode.platformDefault,
+            )) {
+              FirebaseCrashlytics.instance.log('Could not launch url $url');
+            }
+          },
+        ),
+      )
+      .addTag(JustifyAlignTag())
+      .addTag(FontTag())
+      .addTag(CodeTag())
+      .addTag(DiskTag())
+      .addTag(TableTag())
+      .addTag(TRTag())
+      .addTag(TDTag())
+      .addTag(UserTag())
+      .replaceTag(ColorTag())
+      .replaceTag(ImgTag())
+      .replaceTag(SpoilerTag());
 }
