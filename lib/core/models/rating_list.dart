@@ -6,7 +6,7 @@ class _KeysForUserInfoJsonConverter {
 
 const String _reactionAssetsDirectory = 'assets/images/reactions';
 const Map<ReactionType, String> _reactionAssets = {
-  ReactionType.like: '$_reactionAssetsDirectory/like.png',
+  ReactionType.like: '$_reactionAssetsDirectory/active_like.png',
   ReactionType.angry: '$_reactionAssetsDirectory/angry.png',
   ReactionType.cry: '$_reactionAssetsDirectory/sad.png',
   ReactionType.laugh: '$_reactionAssetsDirectory/laugh.png',

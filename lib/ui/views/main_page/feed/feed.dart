@@ -49,7 +49,7 @@ class FeedScreenViewState extends State<FeedScreenView> {
                   isNewPost: model.isNewPost(
                     model.posts[index].post.datePublish,
                   ),
-                  showCommentsCount: true,
+                  showingComments: false,
                 );
               },
             ),
@@ -167,43 +167,40 @@ class FeedScreenViewState extends State<FeedScreenView> {
     PostWithLoadedInfo post,
     FeedScreenViewModel model, {
     bool isNewPost = false,
-    bool showCommentsCount = false,
-    bool processClicks = true,
+    bool showingComments = false,
   }) {
     final theme = Theme.of(context);
     final unescaper = HtmlUnescape();
     final extraColors = theme.extension<UnnMobileColors>();
     const idkWhatColor = Color(0xFF989EA9);
-    final reactionsSize = MediaQuery.textScalerOf(context).scale(16.0);
+    final reactionsSize = MediaQuery.textScalerOf(context).scale(18.0);
 
     Widget getReactionImage(PostWithLoadedInfo post) {
       final currentReaction = model.getReactionToPost(post);
       const width = 23.0;
       const height = 23.0;
-      switch (currentReaction) {
-        case ReactionType.like:
-          return Image.asset(
-            'assets/images/reactions/active_like.png',
-            width: width,
-            height: height,
-          );
-        case null:
-          return Image.asset(
-            'assets/images/reactions/default_like.png',
-            width: width,
-            height: height,
-          );
-        default:
-          return Image.asset(
-            currentReaction.assetName,
-            width: width,
-            height: height,
-          );
+      if (currentReaction == null) {
+        return Image.asset(
+          'assets/images/reactions/default_like.png',
+          width: width,
+          height: height,
+        );
+      } else {
+        return Image.asset(
+          currentReaction.assetName,
+          width: width,
+          height: height,
+        );
       }
     }
 
     return GestureDetector(
-      onTap: () {},
+      onTap: () {
+        if (showingComments) {
+          return;
+        }
+        _openPostCommentsPage(context, post, model);
+      },
       child: Container(
         margin: const EdgeInsets.only(top: 12),
         padding: const EdgeInsets.all(18),
@@ -285,7 +282,7 @@ class FeedScreenViewState extends State<FeedScreenView> {
                     ? extraColors.newPostHiglaght
                     : extraColors.defaultPostHighlight,
               ),
-            if (showCommentsCount)
+            if (!showingComments)
               const Padding(
                 padding: EdgeInsets.only(left: 4, right: 4, top: 10),
                 child: Divider(
@@ -294,6 +291,12 @@ class FeedScreenViewState extends State<FeedScreenView> {
                 ),
               ),
             const SizedBox(height: 8),
+            if (showingComments)
+              Row(
+                children: [
+                  _reactionCounterWithIcons(post, reactionsSize, idkWhatColor),
+                ],
+              ),
             Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
@@ -321,7 +324,7 @@ class FeedScreenViewState extends State<FeedScreenView> {
                         getReactionImage(post),
                         const SizedBox(width: 6),
                         Text(
-                          '${post.ratingList.getTotalNumberOfReactions() > 0 ? post.ratingList.getTotalNumberOfReactions() : ""}',
+                          '${showingComments ? 'Нравится' : post.ratingList.getTotalNumberOfReactions() > 0 ? post.ratingList.getTotalNumberOfReactions() : ''}',
                           style: const TextStyle(
                             fontSize: 14.0,
                             fontWeight: FontWeight.w400,
@@ -335,23 +338,10 @@ class FeedScreenViewState extends State<FeedScreenView> {
                 const SizedBox(width: 12),
                 GestureDetector(
                   onTap: () async {
-                    if (!processClicks) {
+                    if (showingComments) {
                       return;
                     }
-                    await Navigator.of(
-                      context
-                          .findRootAncestorStateOfType<NavigatorState>()!
-                          .context,
-                    ).push(
-                      MaterialPageRoute(
-                        builder: (context) {
-                          return CommentsPage(
-                            post: post,
-                            feedViewModel: model,
-                          );
-                        },
-                      ),
-                    );
+                    _openPostCommentsPage(context, post, model);
                   },
                   child: Container(
                     padding:
@@ -381,58 +371,87 @@ class FeedScreenViewState extends State<FeedScreenView> {
                     ),
                   ),
                 ),
-                Container(
-                  padding: const EdgeInsets.only(
-                    top: 6,
-                    bottom: 6,
-                    right: 8,
-                    left: 12,
-                  ),
-                  child: Builder(
-                    builder: (context) {
-                      int i = 0;
-                      return Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          for (final smallReactionEntry in post
-                              .ratingList.ratingList.entries
-                              .where((entry) => entry.value.isNotEmpty))
-                            Positioned(
-                              top: 0.0,
-                              left: reactionsSize / 2 * i++,
-                              child: ClipOval(
-                                child: Container(
-                                  width: 21,
-                                  height: 21,
-                                  color:
-                                      const Color.fromARGB(105, 198, 217, 249),
-                                  child: Image.asset(
-                                    smallReactionEntry.key.assetName,
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          const SizedBox(
-                            width: 6,
-                          ),
-                          Text(
-                            '${post.ratingList.getTotalNumberOfReactions() > 0 ? post.ratingList.getTotalNumberOfReactions() : ""}',
-                            style: const TextStyle(
-                              fontSize: 13.0,
-                              fontStyle: FontStyle.italic,
-                              fontWeight: FontWeight.w400,
-                              color: idkWhatColor,
-                            ),
-                          ),
-                        ],
-                      );
-                    },
-                  ),
-                ),
               ],
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  static void _openPostCommentsPage(
+    BuildContext context,
+    PostWithLoadedInfo post,
+    FeedScreenViewModel model,
+  ) async {
+    await Navigator.of(
+      context.findRootAncestorStateOfType<NavigatorState>()!.context,
+    ).push(
+      MaterialPageRoute(
+        builder: (context) {
+          return CommentsPage(
+            post: post,
+            feedViewModel: model,
+          );
+        },
+      ),
+    );
+  }
+
+  static Expanded _reactionCounterWithIcons(
+    PostWithLoadedInfo post,
+    double reactionsSize,
+    Color background,
+  ) {
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.only(
+          top: 6,
+          bottom: 6,
+          right: 8,
+          left: 12,
+        ),
+        child: Builder(
+          builder: (context) {
+            int i = 0;
+            return SizedBox(
+              height: reactionsSize,
+              child: Stack(
+                alignment: Alignment.centerLeft,
+                children: [
+                  for (final smallReactionEntry in post
+                      .ratingList.ratingList.entries
+                      .where((entry) => entry.value.isNotEmpty))
+                    Positioned(
+                      left: reactionsSize / 2 * i++,
+                      child: ClipOval(
+                        child: Container(
+                          width: reactionsSize,
+                          height: reactionsSize,
+                          color: const Color(0x69c6d9f9),
+                          child: Image.asset(
+                            smallReactionEntry.key.assetName,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      ),
+                    ),
+                  Positioned(
+                    left: reactionsSize * (i - 1) / 2 + reactionsSize + 8,
+                    child: Text(
+                      '${post.ratingList.getTotalNumberOfReactions() > 0 ? post.ratingList.getTotalNumberOfReactions() : ""}',
+                      style: TextStyle(
+                        fontSize: 13.0,
+                        fontStyle: FontStyle.italic,
+                        fontWeight: FontWeight.w400,
+                        color: background,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
         ),
       ),
     );
