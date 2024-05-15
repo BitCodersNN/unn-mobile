@@ -46,7 +46,7 @@ class CommentsPage extends StatelessWidget {
                         context,
                         post,
                         feedViewModel,
-                        processClicks: false,
+                        showingComments: true,
                       ),
                     ),
                     const Padding(
