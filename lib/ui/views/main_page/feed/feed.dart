@@ -162,6 +162,31 @@ class FeedScreenViewState extends State<FeedScreenView> {
     );
   }
 
+  static String getReactionString(ReactionType? reaction) {
+    if (reaction == null) {
+      return ReactionType.like.caption;
+    }
+    return reaction.caption;
+  }
+
+  static Widget getReactionImage(ReactionType? reaction) {
+    const width = 23.0;
+    const height = 23.0;
+    if (reaction == null) {
+      return Image.asset(
+        'assets/images/reactions/default_like.png',
+        width: width,
+        height: height,
+      );
+    } else {
+      return Image.asset(
+        reaction.assetName,
+        width: width,
+        height: height,
+      );
+    }
+  }
+
   static Widget feedPost(
     BuildContext context,
     PostWithLoadedInfo post,
@@ -174,25 +199,6 @@ class FeedScreenViewState extends State<FeedScreenView> {
     final extraColors = theme.extension<UnnMobileColors>();
     const idkWhatColor = Color(0xFF989EA9);
     final reactionsSize = MediaQuery.textScalerOf(context).scale(18.0);
-
-    Widget getReactionImage(PostWithLoadedInfo post) {
-      final currentReaction = model.getReactionToPost(post);
-      const width = 23.0;
-      const height = 23.0;
-      if (currentReaction == null) {
-        return Image.asset(
-          'assets/images/reactions/default_like.png',
-          width: width,
-          height: height,
-        );
-      } else {
-        return Image.asset(
-          currentReaction.assetName,
-          width: width,
-          height: height,
-        );
-      }
-    }
 
     return GestureDetector(
       onTap: () {
@@ -307,32 +313,12 @@ class FeedScreenViewState extends State<FeedScreenView> {
                   onLongPress: () {
                     chooseReaction(context, model, post);
                   },
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 200),
-                    curve: Curves.bounceOut,
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                    decoration: BoxDecoration(
-                      color: model.getReactionToPost(post) == null
-                          ? idkWhatColor.withOpacity(0.1)
-                          : theme.colorScheme.inversePrimary.withOpacity(0.5),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        getReactionImage(post),
-                        const SizedBox(width: 6),
-                        Text(
-                          '${showingComments ? 'Нравится' : post.ratingList.getTotalNumberOfReactions() > 0 ? post.ratingList.getTotalNumberOfReactions() : ''}',
-                          style: const TextStyle(
-                            fontSize: 14.0,
-                            fontWeight: FontWeight.w400,
-                            color: idkWhatColor,
-                          ),
-                        ),
-                      ],
-                    ),
+                  child: _reactionButton(
+                    model,
+                    post,
+                    idkWhatColor,
+                    theme,
+                    !showingComments,
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -375,6 +361,42 @@ class FeedScreenViewState extends State<FeedScreenView> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  static AnimatedContainer _reactionButton(
+    FeedScreenViewModel model,
+    PostWithLoadedInfo post,
+    Color buttonColor,
+    ThemeData theme,
+    bool showCounter,
+  ) {
+    final reactionToPost = model.getReactionToPost(post);
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 200),
+      curve: Curves.bounceOut,
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        color: reactionToPost == null
+            ? buttonColor.withOpacity(0.1)
+            : theme.colorScheme.inversePrimary.withOpacity(0.5),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          getReactionImage(reactionToPost),
+          const SizedBox(width: 6),
+          Text(
+            '${showCounter ? (post.ratingList.getTotalNumberOfReactions() > 0 ? post.ratingList.getTotalNumberOfReactions() : '') : getReactionString(reactionToPost)}',
+            style: TextStyle(
+              fontSize: 14.0,
+              fontWeight: FontWeight.w400,
+              color: buttonColor,
+            ),
+          ),
+        ],
       ),
     );
   }
