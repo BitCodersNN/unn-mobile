@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/misc/app_open_tracker.dart';
+import 'package:unn_mobile/core/misc/app_settings.dart';
 import 'package:unn_mobile/core/misc/loading_pages.dart';
 import 'package:unn_mobile/core/misc/current_user_sync_storage.dart';
 import 'package:unn_mobile/core/models/loading_page_data.dart';
@@ -53,6 +54,7 @@ class LoadingPageViewModel extends BaseViewModel {
 
     if (typeScreen == _TypeScreen.mainScreen) {
       await _initUserData();
+      await _initAppSetings();
     }
 
     return typeScreen;
@@ -64,6 +66,10 @@ class LoadingPageViewModel extends BaseViewModel {
       _TypeScreen.mainScreen => Routes.mainPagePrefix,
     };
     Navigator.of(context!).pushNamedAndRemoveUntil(routes, (route) => false);
+  }
+
+  Future<void> _initAppSetings() async {
+    AppSettings.isFeedbackEnabled = true;
   }
 
   Future<void> _initUserData() async {
