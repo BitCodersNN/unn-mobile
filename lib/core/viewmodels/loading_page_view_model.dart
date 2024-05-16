@@ -40,6 +40,8 @@ class LoadingPageViewModel extends BaseViewModel {
     AuthRequestResult? authRequestResult;
     late _TypeScreen typeScreen;
 
+    await AppSettings.load();
+
     try {
       authRequestResult = await _initializingApplicationService.refreshLogin();
     } catch (error, stackTrace) {
@@ -54,7 +56,6 @@ class LoadingPageViewModel extends BaseViewModel {
 
     if (typeScreen == _TypeScreen.mainScreen) {
       await _initUserData();
-      await _initAppSetings();
     }
 
     return typeScreen;
@@ -66,10 +67,6 @@ class LoadingPageViewModel extends BaseViewModel {
       _TypeScreen.mainScreen => Routes.mainPagePrefix,
     };
     Navigator.of(context!).pushNamedAndRemoveUntil(routes, (route) => false);
-  }
-
-  Future<void> _initAppSetings() async {
-    AppSettings.isFeedbackEnabled = true;
   }
 
   Future<void> _initUserData() async {

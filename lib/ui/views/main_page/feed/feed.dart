@@ -80,7 +80,7 @@ class FeedScreenViewState extends State<FeedScreenView> {
   ) {
     return GestureDetector(
       onTap: () {
-        if (AppSettings.isFeedbackEnabled) {
+        if (AppSettings.vibrationEnabled) {
           HapticFeedback.selectionClick();
         }
         model.toggleReaction(post, reaction);
@@ -313,13 +313,13 @@ class FeedScreenViewState extends State<FeedScreenView> {
               children: [
                 GestureDetector(
                   onTap: () {
-                    if (AppSettings.isFeedbackEnabled) {
+                    if (AppSettings.vibrationEnabled) {
                       HapticFeedback.selectionClick();
                     }
                     model.toggleLike(post);
                   },
                   onLongPress: () {
-                    if (AppSettings.isFeedbackEnabled) {
+                    if (AppSettings.vibrationEnabled) {
                       HapticFeedback.mediumImpact();
                     }
                     chooseReaction(context, model, post);

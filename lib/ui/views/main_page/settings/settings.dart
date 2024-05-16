@@ -23,19 +23,28 @@ class SettingsScreenView extends StatelessWidget {
     return SingleChildScrollView(
       child: Column(
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              const Text('Вибрация'),
-              const SizedBox(width: 6),
-              AddaptiveSwtich(
-                startPosition: AppSettings.isFeedbackEnabled,
-                enabled: true,
-                onChanged: (bool value) {
-                  AppSettings.isFeedbackEnabled = value;
-                },
-              ),
-            ],
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                const Expanded(
+                  child: Text('Вибрация'),
+                ),
+                const SizedBox(width: 6),
+                AddaptiveSwtich(
+                  startPosition: AppSettings.vibrationEnabled,
+                  enabled: true,
+                  onChanged: (bool value) async {
+                    AppSettings.vibrationEnabled = value;
+                    await AppSettings.save();
+                  },
+                ),
+              ],
+            ),
+          ),
+          Divider(
+            color: theme.colorScheme.outlineVariant,
           ),
           TextButton(
             onPressed: () async {
