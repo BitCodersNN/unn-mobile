@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/misc/app_open_tracker.dart';
+import 'package:unn_mobile/core/misc/app_settings.dart';
 import 'package:unn_mobile/core/misc/loading_pages.dart';
 import 'package:unn_mobile/core/misc/current_user_sync_storage.dart';
 import 'package:unn_mobile/core/models/loading_page_data.dart';
@@ -38,6 +39,8 @@ class LoadingPageViewModel extends BaseViewModel {
   Future<_TypeScreen> _init() async {
     AuthRequestResult? authRequestResult;
     late _TypeScreen typeScreen;
+
+    await AppSettings.load();
 
     try {
       authRequestResult = await _initializingApplicationService.refreshLogin();

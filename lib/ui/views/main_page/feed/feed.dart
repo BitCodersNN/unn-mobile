@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bbcode/flutter_bbcode.dart';
 import 'package:html_unescape/html_unescape.dart';
 import 'package:intl/intl.dart';
+import 'package:unn_mobile/core/misc/app_settings.dart';
 import 'package:unn_mobile/core/misc/custom_bb_tags.dart';
 import 'package:unn_mobile/core/misc/user_functions.dart';
 import 'package:unn_mobile/core/models/post_with_loaded_info.dart';
@@ -78,6 +80,9 @@ class FeedScreenViewState extends State<FeedScreenView> {
   ) {
     return GestureDetector(
       onTap: () {
+        if (AppSettings.vibrationEnabled) {
+          HapticFeedback.selectionClick();
+        }
         model.toggleReaction(post, reaction);
         Navigator.of(context).pop();
       },
@@ -308,9 +313,15 @@ class FeedScreenViewState extends State<FeedScreenView> {
               children: [
                 GestureDetector(
                   onTap: () {
+                    if (AppSettings.vibrationEnabled) {
+                      HapticFeedback.selectionClick();
+                    }
                     model.toggleLike(post);
                   },
                   onLongPress: () {
+                    if (AppSettings.vibrationEnabled) {
+                      HapticFeedback.mediumImpact();
+                    }
                     chooseReaction(context, model, post);
                   },
                   child: _reactionButton(

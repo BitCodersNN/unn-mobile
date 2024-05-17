@@ -11,6 +11,7 @@ class FeedScreenViewModel extends BaseViewModel {
   final _currentUserSyncStorage =
       Injector.appInstance.get<CurrentUserSyncStorage>();
   final _reactionManager = Injector.appInstance.get<ReactionManager>();
+
   DateTime? _lastViewedPostDateTime;
   List<PostWithLoadedInfo> get posts => _feedStreamUpdater.feedPosts;
   bool get isLoadingPosts => _feedStreamUpdater.isBusy;

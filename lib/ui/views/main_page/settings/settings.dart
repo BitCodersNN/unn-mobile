@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:injector/injector.dart';
+import 'package:unn_mobile/core/misc/app_settings.dart';
 import 'package:unn_mobile/core/misc/file_functions.dart';
 import 'package:unn_mobile/core/services/interfaces/storage_service.dart';
 import 'package:unn_mobile/ui/router.dart';
 import 'package:unn_mobile/ui/widgets/adaptive_dialog_action.dart';
+import 'package:unn_mobile/ui/widgets/adaptive_switch.dart';
 
 class SettingsScreenView extends StatelessWidget {
   const SettingsScreenView({super.key});
@@ -21,6 +23,29 @@ class SettingsScreenView extends StatelessWidget {
     return SingleChildScrollView(
       child: Column(
         children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                const Expanded(
+                  child: Text('Вибрация'),
+                ),
+                const SizedBox(width: 6),
+                AddaptiveSwtich(
+                  startPosition: AppSettings.vibrationEnabled,
+                  enabled: true,
+                  onChanged: (bool value) async {
+                    AppSettings.vibrationEnabled = value;
+                    await AppSettings.save();
+                  },
+                ),
+              ],
+            ),
+          ),
+          Divider(
+            color: theme.colorScheme.outlineVariant,
+          ),
           TextButton(
             onPressed: () async {
               await clearCacheFolder();
