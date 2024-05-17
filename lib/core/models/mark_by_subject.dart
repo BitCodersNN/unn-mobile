@@ -9,6 +9,7 @@ class _KeysForMarkBySubjectJsonConverter {
 
 class _MarkTypeString {
   static const Map<MarkType, String> _map = {
+    MarkType.noShow: 'Неявка',
     MarkType.notCredited: 'Не зачтено',
     MarkType.credited: 'Зачтено',
     MarkType.notSatisfactory: 'Неудовлетворительно',
@@ -30,6 +31,7 @@ class _MarkTypeString {
 
 class _MarkTypeDouble {
   static const Map<MarkType, double> _map = {
+    MarkType.noShow: -1.0,
     MarkType.notCredited: 0.0,
     MarkType.credited: 1.0,
     MarkType.notSatisfactory: 2.0,
@@ -50,6 +52,7 @@ class _MarkTypeDouble {
 }
 
 enum MarkType {
+  noShow,
   notCredited,
   credited,
   notSatisfactory,
