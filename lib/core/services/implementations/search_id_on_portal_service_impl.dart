@@ -6,7 +6,7 @@ import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/constants/api_url_strings.dart';
 import 'package:unn_mobile/core/misc/http_helper.dart';
 import 'package:unn_mobile/core/models/employee_data.dart';
-import 'package:unn_mobile/core/models/schedule_search_result_item.dart';
+import 'package:unn_mobile/core/models/schedule_search_suggestion_item.dart';
 import 'package:unn_mobile/core/models/schedule_filter.dart';
 import 'package:unn_mobile/core/models/student_data.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_profile_of_current_user_service.dart';
@@ -72,7 +72,7 @@ class SearchIdOnPortalServiceImpl implements SearchIdOnPortalService {
   }
 
   @override
-  Future<List<ScheduleSearchResultItem>?> findIDOnPortal(
+  Future<List<ScheduleSearchSuggestionItem>?> findIDOnPortal(
     String value,
     IDType valueType,
   ) async {
@@ -100,10 +100,10 @@ class SearchIdOnPortalServiceImpl implements SearchIdOnPortalService {
     final List<dynamic> jsonList =
         jsonDecode(await HttpRequestSender.responseToStringBody(response));
 
-    final List<ScheduleSearchResultItem> result = [];
+    final List<ScheduleSearchSuggestionItem> result = [];
     for (final jsonMap in jsonList) {
       result.add(
-        ScheduleSearchResultItem(
+        ScheduleSearchSuggestionItem(
           jsonMap[_id],
           jsonMap[_label],
           jsonMap[_description],
