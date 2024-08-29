@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/constants/api_url_strings.dart';
 import 'package:unn_mobile/core/constants/session_identifier_strings.dart';
@@ -9,6 +8,7 @@ import 'package:unn_mobile/core/misc/http_helper.dart';
 import 'package:unn_mobile/core/models/mark_by_subject.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_grade_book.dart';
+import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 
 class _JsonKeys {
   static const String semesters = 'semesters';
@@ -17,6 +17,7 @@ class _JsonKeys {
 }
 
 class GettingGradeBookImpl implements GettingGradeBook {
+  final _loggerService = Injector.appInstance.get<LoggerService>();
   @override
   Future<Map<int, List<MarkBySubject>>?> getGradeBook() async {
     final authorisationService =
@@ -34,14 +35,14 @@ class GettingGradeBookImpl implements GettingGradeBook {
     try {
       response = await requestSender.get();
     } catch (error, stackTrace) {
-      await FirebaseCrashlytics.instance.recordError(error, stackTrace);
+      _loggerService.logError(error, stackTrace);
       return null;
     }
 
     final statusCode = response.statusCode;
 
     if (statusCode != 200) {
-      await FirebaseCrashlytics.instance.log(
+      _loggerService.log(
         '${runtimeType.toString()}: statusCode = $statusCode',
       );
       return null;
@@ -55,7 +56,7 @@ class GettingGradeBookImpl implements GettingGradeBook {
         ),
       );
     } catch (error, stackTrace) {
-      await FirebaseCrashlytics.instance.recordError(error, stackTrace);
+      _loggerService.logError(error, stackTrace);
       return null;
     }
 

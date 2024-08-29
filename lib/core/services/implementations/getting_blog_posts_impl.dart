@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/constants/api_url_strings.dart';
 import 'package:unn_mobile/core/constants/session_identifier_strings.dart';
@@ -9,8 +8,11 @@ import 'package:unn_mobile/core/misc/http_helper.dart';
 import 'package:unn_mobile/core/models/blog_data.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_blog_posts.dart';
+import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 
 class GettingBlogPostsImpl implements GettingBlogPosts {
+  final LoggerService _loggerService =
+      Injector.appInstance.get<LoggerService>();
   final int _numberOfPostsPerPage = 50;
   final String _start = 'start';
   final String _postId = 'POST_ID';
@@ -40,15 +42,14 @@ class GettingBlogPostsImpl implements GettingBlogPosts {
     try {
       response = await requestSender.get(timeoutSeconds: 60);
     } catch (error, stackTrace) {
-      await FirebaseCrashlytics.instance
-          .log('Exception: $error\nStackTrace: $stackTrace');
+      _loggerService.log('Exception: $error\nStackTrace: $stackTrace');
       return null;
     }
 
     final statusCode = response.statusCode;
 
     if (statusCode != 200) {
-      await FirebaseCrashlytics.instance.log(
+      _loggerService.log(
         '${runtimeType.toString()}: statusCode = $statusCode; pageNumber = $pageNumber; postId = $postId',
       );
       return null;
@@ -59,7 +60,7 @@ class GettingBlogPostsImpl implements GettingBlogPosts {
     try {
       jsonList = jsonDecode(str)['result'];
     } catch (erorr, stackTrace) {
-      await FirebaseCrashlytics.instance.recordError(erorr, stackTrace);
+      _loggerService.logError(erorr, stackTrace);
       return null;
     }
 
@@ -69,7 +70,7 @@ class GettingBlogPostsImpl implements GettingBlogPosts {
           .map<BlogData>((blogPostJson) => BlogData.fromJson(blogPostJson))
           .toList();
     } catch (error, stackTrace) {
-      await FirebaseCrashlytics.instance.recordError(error, stackTrace);
+      _loggerService.logError(error, stackTrace);
     }
 
     if (blogPosts != null) {

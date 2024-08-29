@@ -1,6 +1,5 @@
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -77,11 +76,15 @@ void main() async {
   registerDependencies();
   if (!kDebugMode) {
     FlutterError.onError = (errorDetails) {
-      Injector.appInstance.get<LoggerService>().handleFlutterFatalError(errorDetails);
+      Injector.appInstance
+          .get<LoggerService>()
+          .handleFlutterFatalError(errorDetails);
     };
     // Pass all uncaught asynchronous errors that aren't handled by the Flutter framework to Crashlytics
     PlatformDispatcher.instance.onError = (error, stack) {
-      Injector.appInstance.get<LoggerService>().logError(error, stack, fatal: true);
+      Injector.appInstance
+          .get<LoggerService>()
+          .logError(error, stack, fatal: true);
       return true;
     };
   }
@@ -154,7 +157,6 @@ void registerDependencies() {
   );
   injector.registerSingleton<AppOpenTracker>(() => AppOpenTracker());
   injector.registerSingleton<ReactionManager>(() => ReactionManagerImpl());
-  
 
   injector.registerDependency(() => LoadingPageViewModel());
   injector.registerDependency(() => AuthPageViewModel());

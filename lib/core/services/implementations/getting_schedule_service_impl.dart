@@ -1,16 +1,18 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
+import 'package:injector/injector.dart';
 import 'package:intl/intl.dart';
 import 'package:unn_mobile/core/constants/api_url_strings.dart';
 import 'package:unn_mobile/core/misc/http_helper.dart';
 import 'package:unn_mobile/core/models/schedule_filter.dart';
 import 'package:unn_mobile/core/models/subject.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_schedule_service.dart';
+import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 
 class GettingScheduleServiceImpl implements GettingScheduleService {
+  final _loggerService = Injector.appInstance.get<LoggerService>();
   final String _start = 'start';
   final String _finish = 'finish';
   final String _lng = 'lng';
@@ -41,15 +43,14 @@ class GettingScheduleServiceImpl implements GettingScheduleService {
     try {
       response = await requestSender.get();
     } catch (error, stackTrace) {
-      await FirebaseCrashlytics.instance
-          .log('Exception: $error\nStackTrace: $stackTrace');
+      _loggerService.log('Exception: $error\nStackTrace: $stackTrace');
       return null;
     }
 
     final statusCode = response.statusCode;
 
     if (statusCode != 200) {
-      await FirebaseCrashlytics.instance.log(
+      _loggerService.log(
         '${runtimeType.toString()}: statusCode = $statusCode; scheduleId = ${scheduleFilter.id}',
       );
       return null;
@@ -61,7 +62,7 @@ class GettingScheduleServiceImpl implements GettingScheduleService {
       jsonList =
           jsonDecode(await HttpRequestSender.responseToStringBody(response));
     } catch (error, stackTrace) {
-      await FirebaseCrashlytics.instance.recordError(error, stackTrace);
+      _loggerService.logError(error, stackTrace);
       return null;
     }
 
