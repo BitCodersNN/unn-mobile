@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
-import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/constants/regular_expressions.dart';
 import 'package:unn_mobile/core/constants/api_url_strings.dart';
 import 'package:unn_mobile/core/constants/session_identifier_strings.dart';
@@ -10,25 +9,26 @@ import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_vote_key_signed.dart';
 
 class GettingVoteKeySignedImpl implements GettingVoteKeySigned {
+  final AuthorizationService authorizationService;
   final String _blog = 'blog';
+
+  GettingVoteKeySignedImpl(this.authorizationService);
 
   @override
   Future<String?> getVoteKeySigned({
     required int authorId,
     required int postId,
   }) async {
-    final authorisationService =
-        Injector.appInstance.get<AuthorisationService>();
     final path = '${ApiPaths.companyPersonalUser}/$authorId/$_blog/$postId/';
 
     final requestSender = HttpRequestSender(
       path: path,
       headers: {
-        SessionIdentifierStrings.csrfToken: authorisationService.csrf ?? '',
+        SessionIdentifierStrings.csrfToken: authorizationService.csrf ?? '',
       },
       cookies: {
         SessionIdentifierStrings.sessionIdCookieKey:
-            authorisationService.sessionId ?? '',
+            authorizationService.sessionId ?? '',
       },
     );
 

@@ -1,7 +1,6 @@
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
-import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/misc/app_open_tracker.dart';
 import 'package:unn_mobile/core/misc/app_settings.dart';
 import 'package:unn_mobile/core/misc/loading_pages.dart';
@@ -20,13 +19,19 @@ enum _TypeScreen {
 }
 
 class LoadingPageViewModel extends BaseViewModel {
-  final _initializingApplicationService =
-      Injector.appInstance.get<AuthorisationRefreshService>();
-  final _typeOfCurrentUser = Injector.appInstance.get<CurrentUserSyncStorage>();
-  final _gettingProfileOfCurrentUser =
-      Injector.appInstance.get<GettingProfileOfCurrentUser>();
-  final _userDataProvider = Injector.appInstance.get<UserDataProvider>();
-  final _appOpenTracker = Injector.appInstance.get<AppOpenTracker>();
+  final AuthorizationRefreshService initializingApplicationService;
+  final CurrentUserSyncStorage typeOfCurrentUser;
+  final GettingProfileOfCurrentUser gettingProfileOfCurrentUser;
+  final UserDataProvider userDataProvider;
+  final AppOpenTracker appOpenTracker;
+
+  LoadingPageViewModel(
+    this.initializingApplicationService,
+    this.typeOfCurrentUser,
+    this.gettingProfileOfCurrentUser,
+    this.userDataProvider,
+    this.appOpenTracker,
+  );
 
   final actualLoadingPage = LoadingPages().actualLoadingPage;
 
@@ -43,7 +48,7 @@ class LoadingPageViewModel extends BaseViewModel {
     await AppSettings.load();
 
     try {
-      authRequestResult = await _initializingApplicationService.refreshLogin();
+      authRequestResult = await initializingApplicationService.refreshLogin();
     } catch (error, stackTrace) {
       await FirebaseCrashlytics.instance.recordError(error, stackTrace);
     }
@@ -70,17 +75,17 @@ class LoadingPageViewModel extends BaseViewModel {
   }
 
   Future<void> _initUserData() async {
-    if (await _appOpenTracker.isFirstTimeOpenOnVersion()) {
+    if (await appOpenTracker.isFirstTimeOpenOnVersion()) {
       final profile =
-          await _gettingProfileOfCurrentUser.getProfileOfCurrentUser();
-      _userDataProvider.saveData(profile);
+          await gettingProfileOfCurrentUser.getProfileOfCurrentUser();
+      userDataProvider.saveData(profile);
     }
 
-    await _typeOfCurrentUser.updateCurrentUserInfo();
-    if (_typeOfCurrentUser.currentUserData != null &&
-        _typeOfCurrentUser.currentUserData!.fullUrlPhoto != null) {
+    await typeOfCurrentUser.updateCurrentUserInfo();
+    if (typeOfCurrentUser.currentUserData != null &&
+        typeOfCurrentUser.currentUserData!.fullUrlPhoto != null) {
       DefaultCacheManager().downloadFile(
-        _typeOfCurrentUser.currentUserData!.fullUrlPhoto!,
+        typeOfCurrentUser.currentUserData!.fullUrlPhoto!,
       );
     }
   }

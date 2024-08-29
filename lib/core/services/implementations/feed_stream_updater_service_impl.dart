@@ -1,7 +1,6 @@
 import 'package:async/async.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
-import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/misc/type_defs.dart';
 import 'package:unn_mobile/core/models/blog_data.dart';
 import 'package:unn_mobile/core/models/file_data.dart';
@@ -19,15 +18,13 @@ import 'package:unn_mobile/core/services/interfaces/post_with_loaded_info_provid
 class FeedStreamUpdaterServiceImpl
     with ChangeNotifier
     implements FeedUpdaterService {
-  final _gettingBlogPostsService = Injector.appInstance.get<GettingBlogPosts>();
-  final _gettingProfileService = Injector.appInstance.get<GettingProfile>();
-  final _gettingFileData = Injector.appInstance.get<GettingFileData>();
-  final _gettingRatingList = Injector.appInstance.get<GettingRatingList>();
-  final _gettingVoteKeySigned =
-      Injector.appInstance.get<GettingVoteKeySigned>();
-  final _postWithLoadedInfoProvider =
-      Injector.appInstance.get<PostWithLoadedInfoProvider>();
-  final _lruCacheProfile = Injector.appInstance.get<LRUCacheUserData>();
+  final GettingBlogPosts gettingBlogPostsService;
+  final GettingProfile gettingProfileService;
+  final GettingFileData gettingFileData;
+  final GettingRatingList gettingRatingList;
+  final GettingVoteKeySigned gettingVoteKeySigned;
+  final PostWithLoadedInfoProvider postWithLoadedInfoProvider;
+  final LRUCacheUserData lruCacheProfile;
 
   bool _busy = false;
 
@@ -38,6 +35,16 @@ class FeedStreamUpdaterServiceImpl
   int _lastLoadedPage = 0;
 
   DateTime? _lastViewedPostDateTime;
+
+  FeedStreamUpdaterServiceImpl(
+    this.gettingBlogPostsService,
+    this.gettingProfileService,
+    this.gettingFileData,
+    this.gettingRatingList,
+    this.gettingVoteKeySigned,
+    this.postWithLoadedInfoProvider,
+    this.lruCacheProfile,
+  );
 
   @override
   DateTime? get lastViewedPostDateTime {
@@ -67,7 +74,7 @@ class FeedStreamUpdaterServiceImpl
     try {
       _busy = true;
       notifyListeners();
-      final posts = await _gettingBlogPostsService.getBlogPosts(
+      final posts = await gettingBlogPostsService.getBlogPosts(
         pageNumber: _lastLoadedPage + 1,
       );
       if (_currentOperation != null) {
@@ -93,15 +100,15 @@ class FeedStreamUpdaterServiceImpl
     try {
       _busy = true;
       _lastViewedPostDateTime =
-          await _postWithLoadedInfoProvider.getDateTimePublishedPost() ??
+          await postWithLoadedInfoProvider.getDateTimePublishedPost() ??
               DateTime.now();
 
-      final newPosts = await _gettingBlogPostsService.getBlogPosts();
+      final newPosts = await gettingBlogPostsService.getBlogPosts();
 
       if (newPosts != null) {
-        await _postWithLoadedInfoProvider
+        await postWithLoadedInfoProvider
             .saveDateTimePublishedPost(newPosts.first.datePublish);
-        await _postWithLoadedInfoProvider.saveData(_postsList);
+        await postWithLoadedInfoProvider.saveData(_postsList);
 
         await _currentOperation?.valueOrCancellation();
         _busy = true;
@@ -128,29 +135,29 @@ class FeedStreamUpdaterServiceImpl
       _busy = true;
       final futures = <Future>[];
 
-      UserData? postAuthor = _lruCacheProfile.get(post.bitrixID);
+      UserData? postAuthor = lruCacheProfile.get(post.bitrixID);
 
       if (postAuthor == null) {
         futures.add(
-          _gettingProfileService.getProfileByAuthorIdFromPost(
+          gettingProfileService.getProfileByAuthorIdFromPost(
             authorId: post.bitrixID,
           ),
         );
       }
 
       for (final fileId in post.files ?? []) {
-        futures.add(_gettingFileData.getFileData(id: int.parse(fileId)));
+        futures.add(gettingFileData.getFileData(id: int.parse(fileId)));
       }
 
       futures.add(
-        _gettingVoteKeySigned
+        gettingVoteKeySigned
             .getVoteKeySigned(
           authorId: post.bitrixID,
           postId: post.id,
         )
             .then((voteKeySigned) {
           post.keySigned = voteKeySigned;
-          return _gettingRatingList.getRatingList(
+          return gettingRatingList.getRatingList(
             voteKeySigned: voteKeySigned ?? '',
           );
         }),
@@ -167,7 +174,7 @@ class FeedStreamUpdaterServiceImpl
         return;
       }
 
-      _lruCacheProfile.save(post.bitrixID, postAuthor);
+      lruCacheProfile.save(post.bitrixID, postAuthor);
 
       final List<FileData?> files = List<FileData?>.from(
         data.getRange(

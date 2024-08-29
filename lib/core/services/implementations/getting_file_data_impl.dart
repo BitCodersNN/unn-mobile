@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
-import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/constants/api_url_strings.dart';
 import 'package:unn_mobile/core/constants/session_identifier_strings.dart';
 import 'package:unn_mobile/core/misc/http_helper.dart';
@@ -11,24 +10,24 @@ import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_file_data.dart';
 
 class GettingFileDataImpl implements GettingFileData {
+  final AuthorizationService authorizationService;
   final String _id = 'id';
+
+  GettingFileDataImpl(this.authorizationService);
 
   @override
   Future<FileData?> getFileData({
     required int id,
   }) async {
-    final authorisationService =
-        Injector.appInstance.get<AuthorisationService>();
-
     final requestSender = HttpRequestSender(
       path: ApiPaths.diskAttachedObjectGet,
       queryParams: {
-        SessionIdentifierStrings.sessid: authorisationService.csrf ?? '',
+        SessionIdentifierStrings.sessid: authorizationService.csrf ?? '',
         _id: id.toString(),
       },
       cookies: {
         SessionIdentifierStrings.sessionIdCookieKey:
-            authorisationService.sessionId ?? '',
+            authorizationService.sessionId ?? '',
       },
     );
 

@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
-import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/models/employee_data.dart';
 import 'package:unn_mobile/core/models/student_data.dart';
 import 'package:unn_mobile/core/models/user_data.dart';
@@ -16,7 +15,9 @@ class _UserDataProvideKeys {
 class UserDataProviderImpl implements UserDataProvider {
   static const _student = 'StudentData';
   static const _employee = 'EmployeeData';
-  final _storage = Injector.appInstance.get<StorageService>();
+  final StorageService storage;
+
+  UserDataProviderImpl(this.storage);
 
   @override
   Future<UserData?> getData() async {
@@ -25,11 +26,11 @@ class UserDataProviderImpl implements UserDataProvider {
     }
 
     UserData? userData;
-    final userType = await _storage.read(
+    final userType = await storage.read(
       key: _UserDataProvideKeys._userTypeKey,
     );
 
-    final String? userInfo = await _storage.read(
+    final String? userInfo = await storage.read(
       key: _UserDataProvideKeys._userDataKey,
     );
 
@@ -65,11 +66,11 @@ class UserDataProviderImpl implements UserDataProvider {
     }
 
     final userType = userData.runtimeType.toString();
-    await _storage.write(
+    await storage.write(
       key: _UserDataProvideKeys._userTypeKey,
       value: userType,
     );
-    await _storage.write(
+    await storage.write(
       key: _UserDataProvideKeys._userDataKey,
       value: jsonEncode(userData.toJson()),
     );
@@ -77,10 +78,10 @@ class UserDataProviderImpl implements UserDataProvider {
 
   @override
   Future<bool> isContained() async {
-    return await _storage.containsKey(
+    return await storage.containsKey(
           key: _UserDataProvideKeys._userTypeKey,
         ) &&
-        await _storage.containsKey(
+        await storage.containsKey(
           key: _UserDataProvideKeys._userDataKey,
         );
   }

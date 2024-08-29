@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/models/post_with_loaded_info.dart';
 import 'package:unn_mobile/core/services/interfaces/post_with_loaded_info_provider.dart';
 import 'package:unn_mobile/core/services/interfaces/storage_service.dart';
@@ -12,7 +11,9 @@ class _PostWithLoadedInfoProviderKeys {
 }
 
 class PostWithLoadedInfoProviderImpl implements PostWithLoadedInfoProvider {
-  final _storage = Injector.appInstance.get<StorageService>();
+  final StorageService storage;
+
+  PostWithLoadedInfoProviderImpl(this.storage);
 
   @override
   Future<List<PostWithLoadedInfo>?> getData() async {
@@ -21,7 +22,7 @@ class PostWithLoadedInfoProviderImpl implements PostWithLoadedInfoProvider {
     }
 
     final jsonList = jsonDecode(
-      (await _storage.read(
+      (await storage.read(
         key: _PostWithLoadedInfoProviderKeys.postWithLoadedInfoKey,
       ))!,
     );
@@ -41,7 +42,7 @@ class PostWithLoadedInfoProviderImpl implements PostWithLoadedInfoProvider {
       return null;
     }
 
-    final dateTimeString = await _storage.read(
+    final dateTimeString = await storage.read(
       key: _PostWithLoadedInfoProviderKeys.dateTimeWhenPostsWereLastSaved,
     );
 
@@ -54,7 +55,7 @@ class PostWithLoadedInfoProviderImpl implements PostWithLoadedInfoProvider {
 
   @override
   Future<bool> isContained() async {
-    return await _storage.containsKey(
+    return await storage.containsKey(
       key: _PostWithLoadedInfoProviderKeys.postWithLoadedInfoKey,
     );
   }
@@ -70,7 +71,7 @@ class PostWithLoadedInfoProviderImpl implements PostWithLoadedInfoProvider {
       jsonList.add(postWithLoadedInfo.toJson());
     }
 
-    await _storage.write(
+    await storage.write(
       key: _PostWithLoadedInfoProviderKeys.postWithLoadedInfoKey,
       value: jsonEncode(jsonList),
     );
@@ -78,7 +79,7 @@ class PostWithLoadedInfoProviderImpl implements PostWithLoadedInfoProvider {
 
   @override
   Future<void> saveDateTimePublishedPost(DateTime dateTime) async {
-    await _storage.write(
+    await storage.write(
       key: _PostWithLoadedInfoProviderKeys.dateTimeWhenPostsWereLastSaved,
       value: dateTime.toString(),
     );

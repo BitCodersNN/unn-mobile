@@ -1,8 +1,9 @@
+// ignore_for_file: prefer_typing_uninitialized_variables
+
 import 'dart:convert';
 import 'dart:io';
 
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
-import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/constants/api_url_strings.dart';
 import 'package:unn_mobile/core/constants/session_identifier_strings.dart';
 import 'package:unn_mobile/core/misc/http_helper.dart';
@@ -17,16 +18,16 @@ class _JsonKeys {
 }
 
 class GettingGradeBookImpl implements GettingGradeBook {
+  final AuthorizationService authorizationService;
+
+  GettingGradeBookImpl(this.authorizationService);
   @override
   Future<Map<int, List<MarkBySubject>>?> getGradeBook() async {
-    final authorisationService =
-        Injector.appInstance.get<AuthorisationService>();
-
     final requestSender = HttpRequestSender(
       path: ApiPaths.marks,
       cookies: {
         SessionIdentifierStrings.sessionIdCookieKey:
-            authorisationService.sessionId ?? '',
+            authorizationService.sessionId ?? '',
       },
     );
 

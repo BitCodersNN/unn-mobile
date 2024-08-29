@@ -8,10 +8,10 @@ import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
 ///
 /// Возвращает данные полученные от [online], если есть интернет и сервер работает, иначе возвращает [offline]
 Future<T?> tryLoginAndRetrieveData<T>(Function online, Function offline) async {
-  final AuthorisationService authorisationService =
-      Injector.appInstance.get<AuthorisationService>();
-  final AuthorisationRefreshService authorisationRefreshService =
-      Injector.appInstance.get<AuthorisationRefreshService>();
+  final AuthorizationService authorisationService =
+      Injector.appInstance.get<AuthorizationService>();
+  final AuthorizationRefreshService authorisationRefreshService =
+      Injector.appInstance.get<AuthorizationRefreshService>();
   final OnlineStatusData onlineStatus =
       Injector.appInstance.get<OnlineStatusData>();
 

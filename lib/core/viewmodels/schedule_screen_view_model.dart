@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:collection';
 import 'package:flutter/material.dart';
-import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/misc/date_time_ranges.dart';
 import 'package:unn_mobile/core/misc/try_login_and_retrieve_data.dart';
 import 'package:unn_mobile/core/models/online_status_data.dart';
@@ -22,20 +21,13 @@ class _ExclusionID {
 }
 
 class ScheduleScreenViewModel extends BaseViewModel {
-  final GettingScheduleService _getScheduleService =
-      Injector.appInstance.get<GettingScheduleService>();
-  final SearchIdOnPortalService _searchIdOnPortalService =
-      Injector.appInstance.get<SearchIdOnPortalService>();
-  final OfflineScheduleProvider _offlineScheduleProvider =
-      Injector.appInstance.get<OfflineScheduleProvider>();
-  final GettingProfileOfCurrentUser _gettingProfileOfCurrentUser =
-      Injector.appInstance.get<GettingProfileOfCurrentUser>();
-  final ScheduleSearchHistoryService _historyService =
-      Injector.appInstance.get<ScheduleSearchHistoryService>();
-  final OnlineStatusData _onlineStatusData =
-      Injector.appInstance.get<OnlineStatusData>();
-  final ExportScheduleService _exportScheduleService =
-      Injector.appInstance.get<ExportScheduleService>();
+  final GettingScheduleService getScheduleService;
+  final SearchIdOnPortalService searchIdOnPortalService;
+  final OfflineScheduleProvider offlineScheduleProvider;
+  final GettingProfileOfCurrentUser gettingProfileOfCurrentUser;
+  final ScheduleSearchHistoryService historyService;
+  final OnlineStatusData onlineStatusData;
+  final ExportScheduleService exportScheduleService;
   final String _studentNameText = 'Имя студента';
   final String _lecturerNameText = 'Имя преподавателя';
   final String _groupNameText = 'Название группы';
@@ -46,7 +38,17 @@ class ScheduleScreenViewModel extends BaseViewModel {
   String lastSearchQuery = '';
 
   IDType _idType = IDType.student;
-  bool get offline => !_onlineStatusData.isOnline;
+
+  ScheduleScreenViewModel(
+    this.getScheduleService,
+    this.searchIdOnPortalService,
+    this.offlineScheduleProvider,
+    this.gettingProfileOfCurrentUser,
+    this.historyService,
+    this.onlineStatusData,
+    this.exportScheduleService,
+  );
+  bool get offline => !onlineStatusData.isOnline;
   Future<Map<int, List<Subject>>>? _scheduleLoader;
   Future<Map<int, List<Subject>>>? get scheduleLoader => _scheduleLoader;
   int displayedWeekOffset = 0;
@@ -78,7 +80,7 @@ class ScheduleScreenViewModel extends BaseViewModel {
       decidePivotWeek(),
     );
     tryLoginAndRetrieveData(
-      _searchIdOnPortalService.getIdOfLoggedInUser,
+      searchIdOnPortalService.getIdOfLoggedInUser,
       () => null,
     ).then((value) async {
       if (value == null) {
@@ -97,7 +99,7 @@ class ScheduleScreenViewModel extends BaseViewModel {
   void _initGroup() {
     _searchPlaceholderText = _groupNameText;
     tryLoginAndRetrieveData(
-      _gettingProfileOfCurrentUser.getProfileOfCurrentUser,
+      gettingProfileOfCurrentUser.getProfileOfCurrentUser,
       () => null,
     ).then((value) async {
       if (value == null) {
@@ -106,7 +108,7 @@ class ScheduleScreenViewModel extends BaseViewModel {
       }
 
       if (value is StudentData) {
-        final groupID = await _searchIdOnPortalService.findIDOnPortal(
+        final groupID = await searchIdOnPortalService.findIDOnPortal(
           value.eduGroup,
           IDType.group,
         );
@@ -187,8 +189,8 @@ class ScheduleScreenViewModel extends BaseViewModel {
     }
 
     final schedule = await tryLoginAndRetrieveData(
-      () async => await _getScheduleService.getSchedule(filter),
-      _offlineScheduleProvider.getData,
+      () async => await getScheduleService.getSchedule(filter),
+      offlineScheduleProvider.getData,
     );
 
     if (schedule == null) {
@@ -209,7 +211,7 @@ class ScheduleScreenViewModel extends BaseViewModel {
     }
 
     if (!offline && displayedWeekOffset == 0 && filter.id == _currentId) {
-      _offlineScheduleProvider.saveData(schedule);
+      offlineScheduleProvider.saveData(schedule);
     }
 
     setState(ViewState.idle);
@@ -225,7 +227,7 @@ class ScheduleScreenViewModel extends BaseViewModel {
   Future<void> submitSearch(String query) async {
     if (query.isNotEmpty) {
       final searchResult =
-          await _searchIdOnPortalService.findIDOnPortal(query, _idType);
+          await searchIdOnPortalService.findIDOnPortal(query, _idType);
 
       if (searchResult == null) {
         throw Exception('Schedule search result was null');
@@ -246,13 +248,13 @@ class ScheduleScreenViewModel extends BaseViewModel {
   }
 
   FutureOr<void> addHistoryItem(String query) =>
-      _historyService.pushToHistory(type: _idType, value: query);
+      historyService.pushToHistory(type: _idType, value: query);
 
   Future<List<ScheduleSearchResultItem>> getSearchSuggestions(
     String value,
   ) async {
     final suggestions = await tryLoginAndRetrieveData(
-      () async => await _searchIdOnPortalService.findIDOnPortal(value, _idType),
+      () async => await searchIdOnPortalService.findIDOnPortal(value, _idType),
       () async => <ScheduleSearchResultItem>[],
     );
 
@@ -260,7 +262,7 @@ class ScheduleScreenViewModel extends BaseViewModel {
   }
 
   Future<List<String>> getHistorySuggestions() async {
-    return await _historyService.getHistory(_idType);
+    return await historyService.getHistory(_idType);
   }
 
   void init(
@@ -290,17 +292,17 @@ class ScheduleScreenViewModel extends BaseViewModel {
   }
 
   Future<RequestCalendarPermissionResult> askForExportPermission() async {
-    return await _exportScheduleService.requestCalendarPermission();
+    return await exportScheduleService.requestCalendarPermission();
   }
 
   Future openSettingsWindow() async {
-    await _exportScheduleService.openSettings();
+    await exportScheduleService.openSettings();
   }
 
   Future<bool> exportSchedule(DateTimeRange range) async {
     final exportScheduleFilter = ScheduleFilter(_idType, _currentId, range);
     final res =
-        await _exportScheduleService.exportSchedule(exportScheduleFilter);
+        await exportScheduleService.exportSchedule(exportScheduleFilter);
     return res == ExportScheduleResult.success;
   }
 }

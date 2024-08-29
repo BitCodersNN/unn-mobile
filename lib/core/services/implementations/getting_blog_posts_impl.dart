@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
-import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/constants/api_url_strings.dart';
 import 'package:unn_mobile/core/constants/session_identifier_strings.dart';
 import 'package:unn_mobile/core/misc/http_helper.dart';
@@ -11,18 +10,18 @@ import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_blog_posts.dart';
 
 class GettingBlogPostsImpl implements GettingBlogPosts {
+  final AuthorizationService authorisationService;
   final int _numberOfPostsPerPage = 50;
   final String _start = 'start';
   final String _postId = 'POST_ID';
+
+  GettingBlogPostsImpl(this.authorisationService);
 
   @override
   Future<List<BlogData>?> getBlogPosts({
     int pageNumber = 0,
     int? postId,
   }) async {
-    final authorisationService =
-        Injector.appInstance.get<AuthorisationService>();
-
     final requestSender = HttpRequestSender(
       path: ApiPaths.blogpostGet,
       queryParams: {

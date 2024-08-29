@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
-import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/constants/api_url_strings.dart';
 import 'package:unn_mobile/core/constants/rating_list_strings.dart';
 import 'package:unn_mobile/core/constants/session_identifier_strings.dart';
@@ -21,9 +20,10 @@ class _KeysForReactionManagerJsonConverter {
 }
 
 class ReactionManagerImpl implements ReactionManager {
-  final _authorisationService =
-      Injector.appInstance.get<AuthorisationService>();
-  final _currentUserSync = Injector.appInstance.get<CurrentUserSyncStorage>();
+  final AuthorizationService authorizationService;
+  final CurrentUserSyncStorage currentUserSync;
+
+  ReactionManagerImpl(this.authorizationService, this.currentUserSync);
 
   @override
   Future<ReactionUserInfo?> addReaction(
@@ -59,11 +59,11 @@ class ReactionManagerImpl implements ReactionManager {
         AjaxActionStrings.actionKey: AjaxActionStrings.ratingVote,
       },
       headers: {
-        SessionIdentifierStrings.csrfToken: _authorisationService.csrf ?? '',
+        SessionIdentifierStrings.csrfToken: authorizationService.csrf ?? '',
       },
       cookies: {
         SessionIdentifierStrings.sessionIdCookieKey:
-            _authorisationService.sessionId ?? '',
+            authorizationService.sessionId ?? '',
       },
     );
 
@@ -110,7 +110,7 @@ class ReactionManagerImpl implements ReactionManager {
       return null;
     }
 
-    final userData = _currentUserSync.currentUserData;
+    final userData = currentUserSync.currentUserData;
     final photoSrc = jsonMap[_KeysForReactionManagerJsonConverter.photo]
         [_KeysForReactionManagerJsonConverter.src];
     return ReactionUserInfo(

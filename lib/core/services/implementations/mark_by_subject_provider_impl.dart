@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/models/mark_by_subject.dart';
 import 'package:unn_mobile/core/services/interfaces/mark_by_subject_provider.dart';
 import 'package:unn_mobile/core/services/interfaces/storage_service.dart';
@@ -10,7 +9,9 @@ class _OfflineMarkBySubjectProviderKeys {
 }
 
 class MarkBySubjectProviderImpl implements MarkBySubjectProvider {
-  final _storage = Injector.appInstance.get<StorageService>();
+  final StorageService storage;
+
+  MarkBySubjectProviderImpl(this.storage);
 
   @override
   Future<Map<int, List<MarkBySubject>>?> getData() async {
@@ -18,7 +19,7 @@ class MarkBySubjectProviderImpl implements MarkBySubjectProvider {
       return null;
     }
     final jsonString = jsonDecode(
-      (await _storage.read(
+      (await storage.read(
         key: _OfflineMarkBySubjectProviderKeys.markBySubject,
       ))!,
     );
@@ -37,7 +38,7 @@ class MarkBySubjectProviderImpl implements MarkBySubjectProvider {
 
   @override
   Future<bool> isContained() async {
-    return await _storage.containsKey(
+    return await storage.containsKey(
       key: _OfflineMarkBySubjectProviderKeys.markBySubject,
     );
   }
@@ -56,7 +57,7 @@ class MarkBySubjectProviderImpl implements MarkBySubjectProvider {
 
     final String jsonString = json.encode(jsonMap);
 
-    await _storage.write(
+    await storage.write(
       key: _OfflineMarkBySubjectProviderKeys.markBySubject,
       value: jsonEncode(jsonString),
     );

@@ -1,4 +1,3 @@
-import 'package:injector/injector.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:unn_mobile/core/services/interfaces/storage_service.dart';
 
@@ -7,22 +6,24 @@ class _AppOpenTrackerProviderKeys {
 }
 
 class AppOpenTracker {
-  final _storage = Injector.appInstance.get<StorageService>();
+  final StorageService storage;
   String? _lastVisitedVersion;
+
+  AppOpenTracker(this.storage);
 
   String? get lastVisitedVersion => _lastVisitedVersion;
 
   Future<bool> isFirstTimeOpenOnVersion() async {
     final appVersion = await _getAppVersion();
 
-    _lastVisitedVersion ??= await _storage.read(
+    _lastVisitedVersion ??= await storage.read(
       key: _AppOpenTrackerProviderKeys._firstAppOpen,
     );
     final isFirstAppOpenForVersion =
         _lastVisitedVersion == null || appVersion != _lastVisitedVersion;
 
     if (isFirstAppOpenForVersion) {
-      await _storage.write(
+      await storage.write(
         key: _AppOpenTrackerProviderKeys._firstAppOpen,
         value: appVersion,
       );

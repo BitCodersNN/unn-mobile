@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
-import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/constants/api_url_strings.dart';
 import 'package:unn_mobile/core/constants/profiles_strings.dart';
 import 'package:unn_mobile/core/constants/session_identifier_strings.dart';
@@ -14,11 +13,11 @@ import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_profile_of_current_user_service.dart';
 
 class GettingProfileOfCurrentUserImpl implements GettingProfileOfCurrentUser {
+  final AuthorizationService authorisationService;
+
+  GettingProfileOfCurrentUserImpl(this.authorisationService);
   @override
   Future<UserData?> getProfileOfCurrentUser() async {
-    final authorisationService =
-        Injector.appInstance.get<AuthorisationService>();
-
     final requestSender = HttpRequestSender(
       path: ApiPaths.currentProfile,
       cookies: {

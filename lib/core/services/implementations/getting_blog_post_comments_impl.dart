@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
-import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/constants/regular_expressions.dart';
 import 'package:unn_mobile/core/constants/api_url_strings.dart';
 import 'package:unn_mobile/core/constants/session_identifier_strings.dart';
@@ -16,13 +15,14 @@ class _JsonKeys {
 }
 
 class GettingBlogPostCommentsImpl implements GettingBlogPostComments {
+  final AuthorizationService authService;
+
+  GettingBlogPostCommentsImpl(this.authService);
   @override
   Future<List<BlogPostComment>?> getBlogPostComments({
     required int postId,
     int pageNumber = 1,
   }) async {
-    final authService = Injector.appInstance.get<AuthorisationService>();
-
     final sessionId = authService.sessionId;
     final csrf = authService.csrf;
 

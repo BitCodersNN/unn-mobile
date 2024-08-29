@@ -1,0 +1,233 @@
+import 'package:injector/injector.dart';
+import 'package:unn_mobile/core/misc/app_open_tracker.dart';
+import 'package:unn_mobile/core/misc/current_user_sync_storage.dart';
+import 'package:unn_mobile/core/misc/type_defs.dart';
+import 'package:unn_mobile/core/models/online_status_data.dart';
+import 'package:unn_mobile/core/services/implementations/auth_data_provider_impl.dart';
+import 'package:unn_mobile/core/services/implementations/authorisation_refresh_service_impl.dart';
+import 'package:unn_mobile/core/services/implementations/authorisation_service_impl.dart';
+import 'package:unn_mobile/core/services/implementations/export_schedule_service_impl.dart';
+import 'package:unn_mobile/core/services/implementations/feed_stream_updater_service_impl.dart';
+import 'package:unn_mobile/core/services/implementations/getting_blog_post_comments_impl.dart';
+import 'package:unn_mobile/core/services/implementations/getting_blog_posts_impl.dart';
+import 'package:unn_mobile/core/services/implementations/getting_file_data_impl.dart';
+import 'package:unn_mobile/core/services/implementations/getting_grade_book_impl.dart';
+import 'package:unn_mobile/core/services/implementations/getting_profile_impl.dart';
+import 'package:unn_mobile/core/services/implementations/getting_profile_of_current_user_service_impl.dart';
+import 'package:unn_mobile/core/services/implementations/getting_rating_list_impl.dart';
+import 'package:unn_mobile/core/services/implementations/getting_schedule_service_impl.dart';
+import 'package:unn_mobile/core/services/implementations/getting_vote_key_signed_impl.dart';
+import 'package:unn_mobile/core/services/implementations/mark_by_subject_provider_impl.dart';
+import 'package:unn_mobile/core/services/implementations/offline_schedule_provider_impl.dart';
+import 'package:unn_mobile/core/services/implementations/post_with_loaded_info_provider_impl.dart';
+import 'package:unn_mobile/core/services/implementations/reaction_manager_impl.dart';
+import 'package:unn_mobile/core/services/implementations/schedule_search_history_service_impl.dart';
+import 'package:unn_mobile/core/services/implementations/search_id_on_portal_service_impl.dart';
+import 'package:unn_mobile/core/services/implementations/storage_service_impl.dart';
+import 'package:unn_mobile/core/services/implementations/user_data_provider_impl.dart';
+import 'package:unn_mobile/core/services/interfaces/auth_data_provider.dart';
+import 'package:unn_mobile/core/services/interfaces/authorisation_refresh_service.dart';
+import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
+import 'package:unn_mobile/core/services/interfaces/export_schedule_service.dart';
+import 'package:unn_mobile/core/services/interfaces/feed_stream_updater_service.dart';
+import 'package:unn_mobile/core/services/interfaces/getting_blog_post_comments.dart';
+import 'package:unn_mobile/core/services/interfaces/getting_blog_posts.dart';
+import 'package:unn_mobile/core/services/interfaces/getting_file_data.dart';
+import 'package:unn_mobile/core/services/interfaces/getting_grade_book.dart';
+import 'package:unn_mobile/core/services/interfaces/getting_profile.dart';
+import 'package:unn_mobile/core/services/interfaces/getting_profile_of_current_user_service.dart';
+import 'package:unn_mobile/core/services/interfaces/getting_rating_list.dart';
+import 'package:unn_mobile/core/services/interfaces/getting_schedule_service.dart';
+import 'package:unn_mobile/core/services/interfaces/getting_vote_key_signed.dart';
+import 'package:unn_mobile/core/services/interfaces/mark_by_subject_provider.dart';
+import 'package:unn_mobile/core/services/interfaces/offline_schedule_provider.dart';
+import 'package:unn_mobile/core/services/interfaces/post_with_loaded_info_provider.dart';
+import 'package:unn_mobile/core/services/interfaces/reaction_manager.dart';
+import 'package:unn_mobile/core/services/interfaces/schedule_search_history_service.dart';
+import 'package:unn_mobile/core/services/interfaces/search_id_on_portal_service.dart';
+import 'package:unn_mobile/core/services/interfaces/storage_service.dart';
+import 'package:unn_mobile/core/services/interfaces/user_data_provider.dart';
+import 'package:unn_mobile/core/viewmodels/auth_page_view_model.dart';
+import 'package:unn_mobile/core/viewmodels/comments_page_view_model.dart';
+import 'package:unn_mobile/core/viewmodels/feed_screen_view_model.dart';
+import 'package:unn_mobile/core/viewmodels/grades_screen_view_model.dart';
+import 'package:unn_mobile/core/viewmodels/loading_page_view_model.dart';
+import 'package:unn_mobile/core/viewmodels/main_page_view_model.dart';
+import 'package:unn_mobile/core/viewmodels/schedule_screen_view_model.dart';
+
+void registerDependencies() {
+  final injector = Injector.appInstance;
+
+  T get<T>() {
+    return injector.get<T>();
+  }
+
+  // register all the dependencies here:
+  injector.registerSingleton<OnlineStatusData>(() => OnlineStatusData());
+
+  injector.registerSingleton<StorageService>(() => StorageServiceImpl());
+  injector.registerSingleton<ExportScheduleService>(
+    () => ExportScheduleServiceImpl(),
+  );
+  injector.registerSingleton<AuthorizationService>(
+    () => AuthorizationServiceImpl(get<OnlineStatusData>()),
+  );
+  injector.registerSingleton<AuthDataProvider>(
+    () => AuthDataProviderImpl(
+      get<StorageService>(),
+    ),
+  );
+  injector.registerSingleton<AuthorizationRefreshService>(
+    () => AuthorizationRefreshServiceImpl(
+      get<AuthDataProvider>(),
+      get<AuthorizationService>(),
+      get<StorageService>(),
+    ),
+  );
+  injector.registerSingleton<GettingProfileOfCurrentUser>(
+    () => GettingProfileOfCurrentUserImpl(get<AuthorizationService>()),
+  );
+  injector.registerSingleton<SearchIdOnPortalService>(
+    () => SearchIdOnPortalServiceImpl(get<GettingProfileOfCurrentUser>()),
+  );
+  injector.registerSingleton<GettingScheduleService>(
+    () => GettingScheduleServiceImpl(),
+  );
+  injector.registerSingleton<OfflineScheduleProvider>(
+    () => OfflineScheduleProviderImpl(get<StorageService>()),
+  );
+  injector.registerSingleton<ScheduleSearchHistoryService>(
+    () => ScheduleSearchHistoryServiceImpl(get<StorageService>()),
+  );
+  injector.registerSingleton<UserDataProvider>(
+    () => UserDataProviderImpl(get<StorageService>()),
+  );
+  injector.registerSingleton<GettingBlogPosts>(
+    () => GettingBlogPostsImpl(get<AuthorizationService>()),
+  );
+  injector.registerSingleton<GettingBlogPostComments>(
+    () => GettingBlogPostCommentsImpl(get<AuthorizationService>()),
+  );
+  injector.registerSingleton<GettingProfile>(
+    () => GettingProfileImpl(
+      get<AuthorizationService>(),
+    ),
+  );
+
+  injector.registerSingleton<GettingFileData>(
+    () => GettingFileDataImpl(
+      get<AuthorizationService>(),
+    ),
+  );
+  injector.registerSingleton<PostWithLoadedInfoProvider>(
+    () => PostWithLoadedInfoProviderImpl(
+      get<StorageService>(),
+    ),
+  );
+  injector.registerSingleton<GettingRatingList>(
+    () => GettingRatingListImpl(
+      get<AuthorizationService>(),
+    ),
+  );
+  injector.registerSingleton<GettingVoteKeySigned>(
+    () => GettingVoteKeySignedImpl(get<AuthorizationService>()),
+  );
+  injector.registerSingleton<LRUCacheUserData>(
+    () => LRUCacheUserData(50),
+  );
+  injector.registerSingleton<LRUCacheBlogPostCommentWithLoadedInfo>(
+    () => LRUCacheBlogPostCommentWithLoadedInfo(50),
+  );
+
+  injector.registerSingleton<FeedUpdaterService>(
+    () => FeedStreamUpdaterServiceImpl(
+      get<GettingBlogPosts>(),
+      get<GettingProfile>(),
+      get<GettingFileData>(),
+      get<GettingRatingList>(),
+      get<GettingVoteKeySigned>(),
+      get<PostWithLoadedInfoProvider>(),
+      get<LRUCacheUserData>(),
+    ),
+  );
+  injector.registerSingleton<CurrentUserSyncStorage>(
+    () => CurrentUserSyncStorage(
+      get<UserDataProvider>(),
+      get<GettingProfileOfCurrentUser>(),
+    ),
+  );
+  injector.registerSingleton<GettingGradeBook>(
+    () => GettingGradeBookImpl(
+      get<AuthorizationService>(),
+    ),
+  );
+  injector.registerSingleton<MarkBySubjectProvider>(
+    () => MarkBySubjectProviderImpl(
+      get<StorageService>(),
+    ),
+  );
+  injector.registerSingleton<AppOpenTracker>(
+    () => AppOpenTracker(get<StorageService>()),
+  );
+  injector.registerSingleton<ReactionManager>(
+    () => ReactionManagerImpl(
+      get<AuthorizationService>(),
+      get<CurrentUserSyncStorage>(),
+    ),
+  );
+
+  injector.registerDependency(
+    () => LoadingPageViewModel(
+      get<AuthorizationRefreshService>(),
+      get<CurrentUserSyncStorage>(),
+      get<GettingProfileOfCurrentUser>(),
+      get<UserDataProvider>(),
+      get<AppOpenTracker>(),
+    ),
+  );
+  injector.registerDependency(
+    () =>
+        AuthPageViewModel(get<AuthDataProvider>(), get<AuthorizationService>()),
+  );
+  injector.registerDependency(
+    () => MainPageViewModel(
+      get<GettingProfileOfCurrentUser>(),
+      get<CurrentUserSyncStorage>(),
+      get<FeedUpdaterService>(),
+    ),
+  );
+  injector.registerDependency(
+    () => ScheduleScreenViewModel(
+      get<GettingScheduleService>(),
+      get<SearchIdOnPortalService>(),
+      get<OfflineScheduleProvider>(),
+      get<GettingProfileOfCurrentUser>(),
+      get<ScheduleSearchHistoryService>(),
+      get<OnlineStatusData>(),
+      get<ExportScheduleService>(),
+    ),
+  );
+  injector.registerDependency(
+    () => FeedScreenViewModel(
+      get<FeedUpdaterService>(),
+      get<CurrentUserSyncStorage>(),
+      get<ReactionManager>(),
+    ),
+  );
+  injector.registerDependency(
+    () => CommentsPageViewModel(
+      get<GettingBlogPostComments>(),
+      get<GettingProfile>(),
+      get<GettingFileData>(),
+      get<LRUCacheBlogPostCommentWithLoadedInfo>(),
+      get<LRUCacheUserData>(),
+      get<GettingRatingList>(),
+    ),
+  );
+  injector.registerDependency(
+    () => GradesScreenViewModel(
+      get<GettingGradeBook>(),
+      get<MarkBySubjectProvider>(),
+    ),
+  );
+}

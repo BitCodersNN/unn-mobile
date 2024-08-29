@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/models/subject.dart';
 import 'package:unn_mobile/core/services/interfaces/offline_schedule_provider.dart';
 import 'package:unn_mobile/core/services/interfaces/storage_service.dart';
@@ -10,7 +9,9 @@ class _OfflineScheduleProviderKeys {
 }
 
 class OfflineScheduleProviderImpl implements OfflineScheduleProvider {
-  final _storage = Injector.appInstance.get<StorageService>();
+  final StorageService storage;
+
+  OfflineScheduleProviderImpl(this.storage);
 
   @override
   Future<List<Subject>?> getData() async {
@@ -18,7 +19,7 @@ class OfflineScheduleProviderImpl implements OfflineScheduleProvider {
       return null;
     }
     final jsonList = jsonDecode(
-      (await _storage.read(
+      (await storage.read(
         key: _OfflineScheduleProviderKeys.scheduleKey,
       ))!,
     );
@@ -41,7 +42,7 @@ class OfflineScheduleProviderImpl implements OfflineScheduleProvider {
     for (final subject in schedule) {
       jsonList.add(subject.toJson());
     }
-    await _storage.write(
+    await storage.write(
       key: _OfflineScheduleProviderKeys.scheduleKey,
       value: jsonEncode(jsonList),
     );
@@ -49,7 +50,7 @@ class OfflineScheduleProviderImpl implements OfflineScheduleProvider {
 
   @override
   Future<bool> isContained() async {
-    return await _storage.containsKey(
+    return await storage.containsKey(
       key: _OfflineScheduleProviderKeys.scheduleKey,
     );
   }

@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
-import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/constants/api_url_strings.dart';
 import 'package:unn_mobile/core/constants/rating_list_strings.dart';
 import 'package:unn_mobile/core/constants/session_identifier_strings.dart';
@@ -12,10 +11,11 @@ import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_rating_list.dart';
 
 class GettingRatingListImpl implements GettingRatingList {
-  final _authorisationService =
-      Injector.appInstance.get<AuthorisationService>();
+  final AuthorizationService authorizationService;
   final String _data = 'data';
   final String _reactions = 'reactions';
+
+  GettingRatingListImpl(this.authorizationService);
 
   @override
   Future<RatingList?> getReactionListByReaction({
@@ -29,11 +29,11 @@ class GettingRatingListImpl implements GettingRatingList {
         AjaxActionStrings.actionKey: AjaxActionStrings.ratingList,
       },
       headers: {
-        SessionIdentifierStrings.csrfToken: _authorisationService.csrf ?? '',
+        SessionIdentifierStrings.csrfToken: authorizationService.csrf ?? '',
       },
       cookies: {
         SessionIdentifierStrings.sessionIdCookieKey:
-            _authorisationService.sessionId ?? '',
+            authorizationService.sessionId ?? '',
       },
     );
 
@@ -102,11 +102,11 @@ class GettingRatingListImpl implements GettingRatingList {
         AjaxActionStrings.actionKey: AjaxActionStrings.ratingList,
       },
       headers: {
-        SessionIdentifierStrings.csrfToken: _authorisationService.csrf ?? '',
+        SessionIdentifierStrings.csrfToken: authorizationService.csrf ?? '',
       },
       cookies: {
         SessionIdentifierStrings.sessionIdCookieKey:
-            _authorisationService.sessionId ?? '',
+            authorizationService.sessionId ?? '',
       },
     );
 
