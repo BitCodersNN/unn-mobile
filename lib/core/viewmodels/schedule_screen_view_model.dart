@@ -5,7 +5,7 @@ import 'package:unn_mobile/core/misc/date_time_ranges.dart';
 import 'package:unn_mobile/core/misc/try_login_and_retrieve_data.dart';
 import 'package:unn_mobile/core/models/online_status_data.dart';
 import 'package:unn_mobile/core/models/schedule_filter.dart';
-import 'package:unn_mobile/core/models/schedule_search_result_item.dart';
+import 'package:unn_mobile/core/models/schedule_search_suggestion_item.dart';
 import 'package:unn_mobile/core/models/student_data.dart';
 import 'package:unn_mobile/core/models/subject.dart';
 import 'package:unn_mobile/core/services/interfaces/export_schedule_service.dart';
@@ -232,8 +232,6 @@ class ScheduleScreenViewModel extends BaseViewModel {
       if (searchResult == null) {
         throw Exception('Schedule search result was null');
       }
-
-      addHistoryItem(query);
       _filter = ScheduleFilter(_idType, searchResult[0].id, displayedWeek);
     } else {
       _filter = ScheduleFilter(_idType, _currentId, displayedWeek);
@@ -247,21 +245,24 @@ class ScheduleScreenViewModel extends BaseViewModel {
     notifyListeners();
   }
 
-  FutureOr<void> addHistoryItem(String query) =>
-      historyService.pushToHistory(type: _idType, value: query);
+  FutureOr<void> addHistoryItem(ScheduleSearchSuggestionItem item) =>
+      historyService.pushToHistory(_idType, item);
 
-  Future<List<ScheduleSearchResultItem>> getSearchSuggestions(
+  Future<List<ScheduleSearchSuggestionItem>> getSearchSuggestions(
     String value,
   ) async {
+    if (value.isEmpty) {
+      return await _getHistorySuggestions();
+    }
     final suggestions = await tryLoginAndRetrieveData(
       () async => await searchIdOnPortalService.findIDOnPortal(value, _idType),
-      () async => <ScheduleSearchResultItem>[],
+      () async => <ScheduleSearchSuggestionItem>[],
     );
 
     return suggestions;
   }
-
-  Future<List<String>> getHistorySuggestions() async {
+  
+  Future<List<ScheduleSearchSuggestionItem>> _getHistorySuggestions() async {
     return await historyService.getHistory(_idType);
   }
 

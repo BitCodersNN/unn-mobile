@@ -1,4 +1,4 @@
-import 'package:unn_mobile/core/models/schedule_search_result_item.dart';
+import 'package:unn_mobile/core/models/schedule_search_suggestion_item.dart';
 import 'package:unn_mobile/core/models/schedule_filter.dart';
 
 abstract interface class SearchIdOnPortalService {
@@ -12,8 +12,8 @@ abstract interface class SearchIdOnPortalService {
   /// [value]: Значение, по которому ищется ID
   /// [valueType]: Тип значения: группа или ФИО студента, или ФИО преподователя, или аудитория
   ///
-  /// Возвращает [ScheduleSearchResultItem] или 'null', если не вышло получить ответ от портала или statusCode не равен 200
-  Future<List<ScheduleSearchResultItem>?> findIDOnPortal(
+  /// Возвращает [ScheduleSearchSuggestionItem] или 'null', если не вышло получить ответ от портала или statusCode не равен 200
+  Future<List<ScheduleSearchSuggestionItem>?> findIDOnPortal(
     String value,
     IDType valueType,
   );
