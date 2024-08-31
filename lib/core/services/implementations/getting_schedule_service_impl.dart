@@ -51,7 +51,7 @@ class GettingScheduleServiceImpl implements GettingScheduleService {
 
     if (statusCode != 200) {
       _loggerService.log(
-        '${runtimeType.toString()}: statusCode = $statusCode; scheduleId = ${scheduleFilter.id}',
+        'statusCode = $statusCode; scheduleId = ${scheduleFilter.id}',
       );
       return null;
     }

@@ -42,9 +42,7 @@ class GettingGradeBookImpl implements GettingGradeBook {
     final statusCode = response.statusCode;
 
     if (statusCode != 200) {
-      _loggerService.log(
-        '${runtimeType.toString()}: statusCode = $statusCode',
-      );
+      _loggerService.log('statusCode = $statusCode');
       return null;
     }
 

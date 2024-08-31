@@ -42,9 +42,7 @@ class GettingProfileImpl implements GettingProfile {
     final statusCode = response.statusCode;
 
     if (statusCode != 200) {
-      _loggerService.log(
-        '${runtimeType.toString()}: statusCode = $statusCode; authorId = $bitrixID',
-      );
+      _loggerService.log('statusCode = $statusCode; authorId = $bitrixID');
       return null;
     }
 
@@ -84,9 +82,7 @@ class GettingProfileImpl implements GettingProfile {
     final statusCode = response.statusCode;
 
     if (statusCode != 200) {
-      _loggerService.log(
-        '${runtimeType.toString()}: statusCode = $statusCode; userId = $userId',
-      );
+      _loggerService.log('statusCode = $statusCode; userId = $userId');
       return null;
     }
 

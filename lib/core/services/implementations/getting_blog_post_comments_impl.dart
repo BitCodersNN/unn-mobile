@@ -30,8 +30,7 @@ class GettingBlogPostCommentsImpl implements GettingBlogPostComments {
     final csrf = authService.csrf;
 
     if (sessionId == null || csrf == null) {
-      _loggerService
-          .log('GettingBlogPostCommentsService: Error, user not authorized');
+      _loggerService.log('Error, user not authorized');
       return null;
     }
 
@@ -100,7 +99,7 @@ class GettingBlogPostCommentsImpl implements GettingBlogPostComments {
 
     if (!parsedJson.containsKey(_JsonKeys._messageListKey)) {
       _loggerService.log(
-        '${runtimeType.toString()}: json doesn\'t contain the messageList key',
+        'json doesn\'t contain the messageList key',
       );
       return null;
     }
@@ -121,22 +120,19 @@ class GettingBlogPostCommentsImpl implements GettingBlogPostComments {
     for (final messageMatch
         in RegularExpressions.commentIdAndMessageRegExp.allMatches(htmlBody)) {
       if (!authorMatches.moveNext()) {
-        _loggerService
-            .log('GettingBlogPostCommentsService-parser: no author matches');
+        _loggerService.log('no author matches');
         break;
       }
 
       final authorMatch = authorMatches.current;
 
       if (!dateTimeMatches.moveNext()) {
-        _loggerService
-            .log('GettingBlogPostCommentsService-parser: no dateTime matches');
+        _loggerService.log('no dateTime matches');
         break;
       }
 
       if (!keySignedMatches.moveNext()) {
-        _loggerService
-            .log('GettingBlogPostCommentsService-parser: no keySigned matches');
+        _loggerService.log('no keySigned matches');
         break;
       }
 

@@ -89,9 +89,7 @@ class ReactionManagerImpl implements ReactionManager {
     }
 
     if (response.statusCode != 200) {
-      _loggerService.log(
-        '${runtimeType.toString()}: statusCode = ${response.statusCode}',
-      );
+      _loggerService.log('statusCode = ${response.statusCode}');
       return null;
     }
 

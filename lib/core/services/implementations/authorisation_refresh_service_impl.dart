@@ -23,7 +23,6 @@ class AuthorisationRefreshServiceImpl implements AuthorisationRefreshService {
       _loggerService.logError(
         error,
         stack,
-        fatal: false,
       );
       _storage.clear();
       return false;

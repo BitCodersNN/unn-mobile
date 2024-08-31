@@ -38,14 +38,13 @@ class SearchIdOnPortalServiceImpl implements SearchIdOnPortalService {
     final statusCode = response.statusCode;
 
     if (statusCode != 200) {
-      _loggerService.log(
-        '${runtimeType.toString()}: statusCode = $statusCode; userLogin = $uns',
-      );
+      _loggerService.log('statusCode = $statusCode; userLogin = $uns');
       return null;
     }
 
-    final Map<dynamic, dynamic> jsonMap =
-        jsonDecode(await HttpRequestSender.responseToStringBody(response));
+    final Map<dynamic, dynamic> jsonMap = jsonDecode(
+      await HttpRequestSender.responseToStringBody(response),
+    );
 
     return jsonMap[_id];
   }
@@ -93,7 +92,7 @@ class SearchIdOnPortalServiceImpl implements SearchIdOnPortalService {
 
     if (statusCode != 200) {
       _loggerService.log(
-        '${runtimeType.toString()}: statusCode = $statusCode; value = $value; valueType = $valueType',
+        'statusCode = $statusCode; value = $value; valueType = $valueType',
       );
       return null;
     }

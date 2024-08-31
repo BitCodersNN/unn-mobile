@@ -50,7 +50,7 @@ class GettingBlogPostsImpl implements GettingBlogPosts {
 
     if (statusCode != 200) {
       _loggerService.log(
-        '${runtimeType.toString()}: statusCode = $statusCode; pageNumber = $pageNumber; postId = $postId',
+        'statusCode = $statusCode; pageNumber = $pageNumber; postId = $postId;',
       );
       return null;
     }

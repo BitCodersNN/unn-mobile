@@ -44,9 +44,7 @@ class GettingFileDataImpl implements GettingFileData {
     final statusCode = response.statusCode;
 
     if (statusCode != 200) {
-      _loggerService.log(
-        '${runtimeType.toString()}: statusCode = $statusCode; fileId = $id',
-      );
+      _loggerService.log('statusCode = $statusCode; fileId = $id');
       return null;
     }
 
