@@ -1,6 +1,5 @@
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -16,6 +15,7 @@ import 'package:unn_mobile/core/services/implementations/authorisation_refresh_s
 import 'package:unn_mobile/core/services/implementations/authorisation_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/export_schedule_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/feed_stream_updater_service_impl.dart';
+import 'package:unn_mobile/core/services/implementations/firebase_logger.dart';
 import 'package:unn_mobile/core/services/implementations/getting_blog_post_comments_impl.dart';
 import 'package:unn_mobile/core/services/implementations/getting_blog_posts_impl.dart';
 import 'package:unn_mobile/core/services/implementations/getting_file_data_impl.dart';
@@ -47,6 +47,7 @@ import 'package:unn_mobile/core/services/interfaces/getting_rating_list.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_schedule_service.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_vote_key_signed.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_grade_book.dart';
+import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 import 'package:unn_mobile/core/services/interfaces/mark_by_subject_provider.dart';
 import 'package:unn_mobile/core/services/interfaces/offline_schedule_provider.dart';
 import 'package:unn_mobile/core/services/interfaces/post_with_loaded_info_provider.dart';
@@ -72,18 +73,22 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  registerDependencies();
   if (!kDebugMode) {
     FlutterError.onError = (errorDetails) {
-      FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
+      Injector.appInstance
+          .get<LoggerService>()
+          .handleFlutterFatalError(errorDetails);
     };
     // Pass all uncaught asynchronous errors that aren't handled by the Flutter framework to Crashlytics
     PlatformDispatcher.instance.onError = (error, stack) {
-      FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+      Injector.appInstance
+          .get<LoggerService>()
+          .logError(error, stack, fatal: true);
       return true;
     };
   }
   FirebaseAnalytics.instance.setAnalyticsCollectionEnabled(!kDebugMode);
-  registerDependencies();
   await initializeDateFormatting('ru_RU', null);
   runApp(const UnnMobile());
 }
@@ -91,6 +96,7 @@ void main() async {
 void registerDependencies() {
   final injector = Injector.appInstance;
   // register all the dependencies here:
+  injector.registerSingleton<LoggerService>(() => FirebaseLogger());
   injector.registerSingleton<OnlineStatusData>(() => OnlineStatusData());
 
   injector.registerSingleton<StorageService>(() => StorageServiceImpl());

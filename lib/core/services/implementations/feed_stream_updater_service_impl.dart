@@ -1,5 +1,4 @@
 import 'package:async/async.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/misc/type_defs.dart';
@@ -14,6 +13,7 @@ import 'package:unn_mobile/core/services/interfaces/getting_file_data.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_profile.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_rating_list.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_vote_key_signed.dart';
+import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 import 'package:unn_mobile/core/services/interfaces/post_with_loaded_info_provider.dart';
 
 class FeedStreamUpdaterServiceImpl
@@ -28,6 +28,7 @@ class FeedStreamUpdaterServiceImpl
   final _postWithLoadedInfoProvider =
       Injector.appInstance.get<PostWithLoadedInfoProvider>();
   final _lruCacheProfile = Injector.appInstance.get<LRUCacheUserData>();
+  final _loggerService = Injector.appInstance.get<LoggerService>();
 
   bool _busy = false;
 
@@ -79,7 +80,7 @@ class FeedStreamUpdaterServiceImpl
       await _currentOperation?.valueOrCancellation();
       _lastLoadedPage++;
     } on Exception catch (error, stackTrace) {
-      FirebaseCrashlytics.instance.recordError(error, stackTrace);
+      _loggerService.logError(error, stackTrace);
     } finally {
       _busy = false;
     }
@@ -113,7 +114,7 @@ class FeedStreamUpdaterServiceImpl
         await _currentOperation?.valueOrCancellation();
       }
     } on Exception catch (error, stackTrace) {
-      FirebaseCrashlytics.instance.recordError(error, stackTrace);
+      _loggerService.logError(error, stackTrace);
     } finally {
       _busy = false;
     }

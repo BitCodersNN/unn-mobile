@@ -1,10 +1,10 @@
 import 'dart:convert';
 
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/models/employee_data.dart';
 import 'package:unn_mobile/core/models/student_data.dart';
 import 'package:unn_mobile/core/models/user_data.dart';
+import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 import 'package:unn_mobile/core/services/interfaces/storage_service.dart';
 import 'package:unn_mobile/core/services/interfaces/user_data_provider.dart';
 
@@ -14,6 +14,7 @@ class _UserDataProvideKeys {
 }
 
 class UserDataProviderImpl implements UserDataProvider {
+  final _loggerService = Injector.appInstance.get<LoggerService>();
   static const _student = 'StudentData';
   static const _employee = 'EmployeeData';
   final _storage = Injector.appInstance.get<StorageService>();
@@ -48,7 +49,7 @@ class UserDataProviderImpl implements UserDataProvider {
         );
       }
     } catch (e, stackTrace) {
-      await FirebaseCrashlytics.instance.recordError(
+      _loggerService.logError(
         e,
         stackTrace,
         information: [userInfo!],

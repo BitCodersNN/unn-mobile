@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/constants/api_url_strings.dart';
 import 'package:unn_mobile/core/constants/rating_list_strings.dart';
@@ -10,6 +9,7 @@ import 'package:unn_mobile/core/misc/current_user_sync_storage.dart';
 import 'package:unn_mobile/core/misc/http_helper.dart';
 import 'package:unn_mobile/core/models/rating_list.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
+import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 import 'package:unn_mobile/core/services/interfaces/reaction_manager.dart';
 
 class _KeysForReactionManagerJsonConverter {
@@ -21,6 +21,7 @@ class _KeysForReactionManagerJsonConverter {
 }
 
 class ReactionManagerImpl implements ReactionManager {
+  final _loggerService = Injector.appInstance.get<LoggerService>();
   final _authorisationService =
       Injector.appInstance.get<AuthorisationService>();
   final _currentUserSync = Injector.appInstance.get<CurrentUserSyncStorage>();
@@ -83,15 +84,12 @@ class ReactionManagerImpl implements ReactionManager {
         timeoutSeconds: 60,
       );
     } catch (error, stackTrace) {
-      await FirebaseCrashlytics.instance
-          .log('Exception: $error\nStackTrace: $stackTrace');
+      _loggerService.log('Exception: $error\nStackTrace: $stackTrace');
       return null;
     }
 
     if (response.statusCode != 200) {
-      await FirebaseCrashlytics.instance.log(
-        '${runtimeType.toString()}: statusCode = ${response.statusCode}',
-      );
+      _loggerService.log('statusCode = ${response.statusCode}');
       return null;
     }
 
@@ -102,7 +100,7 @@ class ReactionManagerImpl implements ReactionManager {
       )[_KeysForReactionManagerJsonConverter.data]
           [_KeysForReactionManagerJsonConverter.userData];
     } catch (error, stackTrace) {
-      await FirebaseCrashlytics.instance.recordError(error, stackTrace);
+      _loggerService.logError(error, stackTrace);
       return null;
     }
 

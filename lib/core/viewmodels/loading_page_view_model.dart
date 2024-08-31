@@ -1,4 +1,3 @@
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:injector/injector.dart';
@@ -10,6 +9,7 @@ import 'package:unn_mobile/core/models/loading_page_data.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation_refresh_service.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_profile_of_current_user_service.dart';
+import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 import 'package:unn_mobile/core/services/interfaces/user_data_provider.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
 import 'package:unn_mobile/ui/router.dart';
@@ -20,6 +20,7 @@ enum _TypeScreen {
 }
 
 class LoadingPageViewModel extends BaseViewModel {
+  final _loggerService = Injector.appInstance.get<LoggerService>();
   final _initializingApplicationService =
       Injector.appInstance.get<AuthorisationRefreshService>();
   final _typeOfCurrentUser = Injector.appInstance.get<CurrentUserSyncStorage>();
@@ -45,7 +46,7 @@ class LoadingPageViewModel extends BaseViewModel {
     try {
       authRequestResult = await _initializingApplicationService.refreshLogin();
     } catch (error, stackTrace) {
-      await FirebaseCrashlytics.instance.recordError(error, stackTrace);
+      _loggerService.logError(error, stackTrace);
     }
     typeScreen = switch (authRequestResult) {
       null => _TypeScreen.authScreen,
