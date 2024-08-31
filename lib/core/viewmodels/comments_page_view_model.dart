@@ -1,4 +1,3 @@
-import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/misc/type_defs.dart';
 import 'package:unn_mobile/core/models/blog_data.dart';
 import 'package:unn_mobile/core/models/blog_post_comment.dart';
@@ -21,6 +20,7 @@ class CommentsPageViewModel extends BaseViewModel {
       lruCacheBlogPostCommentWithLoadedInfo;
   final LRUCacheUserData lruCacheProfile;
   final GettingRatingList gettingRatingList;
+  final GettingBlogPosts gettingBlogPosts;
 
   BlogData? post;
   List<Future<List<BlogPostCommentWithLoadedInfo?>>> commentLoaders = [];
@@ -35,6 +35,7 @@ class CommentsPageViewModel extends BaseViewModel {
     this.lruCacheBlogPostCommentWithLoadedInfo,
     this.lruCacheProfile,
     this.gettingRatingList,
+    this.gettingBlogPosts,
   );
 
   Future<BlogPostCommentWithLoadedInfo?> loadCommentInfo(
@@ -113,11 +114,10 @@ class CommentsPageViewModel extends BaseViewModel {
       return [];
     }
     if (page == 1) {
-      final comNumbers =
-          (await Injector.appInstance.get<GettingBlogPosts>().getBlogPosts(
-                    postId: post!.id,
-                  ))?[0]
-              .numberOfComments;
+      final comNumbers = (await gettingBlogPosts.getBlogPosts(
+        postId: post!.id,
+      ))?[0]
+          .numberOfComments;
       if (comNumbers != null) {
         const commentsPerPage = 20;
         totalPages = comNumbers ~/ commentsPerPage +

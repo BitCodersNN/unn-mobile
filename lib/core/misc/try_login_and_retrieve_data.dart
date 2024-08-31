@@ -1,13 +1,14 @@
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/models/online_status_data.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation_refresh_service.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
+import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 
 /// Получает данные или от функции, требующей доступ к серверу, или от функции, использующей локальное хранилище
 ///
 /// Возвращает данные полученные от [online], если есть интернет и сервер работает, иначе возвращает [offline]
 Future<T?> tryLoginAndRetrieveData<T>(Function online, Function offline) async {
+  final LoggerService loggerService = Injector.appInstance.get<LoggerService>();
   final AuthorizationService authorisationService =
       Injector.appInstance.get<AuthorizationService>();
   final AuthorizationRefreshService authorisationRefreshService =
@@ -20,7 +21,7 @@ Future<T?> tryLoginAndRetrieveData<T>(Function online, Function offline) async {
     try {
       authRequestResult = await authorisationRefreshService.refreshLogin();
     } catch (error, stackTrace) {
-      await FirebaseCrashlytics.instance.recordError(error, stackTrace);
+      loggerService.logError(error, stackTrace);
     }
 
     if (authRequestResult != AuthRequestResult.success) {

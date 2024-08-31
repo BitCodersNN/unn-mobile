@@ -8,6 +8,7 @@ import 'package:unn_mobile/core/services/implementations/authorisation_refresh_s
 import 'package:unn_mobile/core/services/implementations/authorisation_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/export_schedule_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/feed_stream_updater_service_impl.dart';
+import 'package:unn_mobile/core/services/implementations/firebase_logger.dart';
 import 'package:unn_mobile/core/services/implementations/getting_blog_post_comments_impl.dart';
 import 'package:unn_mobile/core/services/implementations/getting_blog_posts_impl.dart';
 import 'package:unn_mobile/core/services/implementations/getting_file_data_impl.dart';
@@ -39,6 +40,7 @@ import 'package:unn_mobile/core/services/interfaces/getting_profile_of_current_u
 import 'package:unn_mobile/core/services/interfaces/getting_rating_list.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_schedule_service.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_vote_key_signed.dart';
+import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 import 'package:unn_mobile/core/services/interfaces/mark_by_subject_provider.dart';
 import 'package:unn_mobile/core/services/interfaces/offline_schedule_provider.dart';
 import 'package:unn_mobile/core/services/interfaces/post_with_loaded_info_provider.dart';
@@ -63,6 +65,7 @@ void registerDependencies() {
   }
 
   // register all the dependencies here:
+  injector.registerSingleton<LoggerService>(() => FirebaseLogger());
   injector.registerSingleton<OnlineStatusData>(() => OnlineStatusData());
 
   injector.registerSingleton<StorageService>(() => StorageServiceImpl());
@@ -82,41 +85,64 @@ void registerDependencies() {
       get<AuthDataProvider>(),
       get<AuthorizationService>(),
       get<StorageService>(),
+      get<LoggerService>(),
     ),
   );
   injector.registerSingleton<GettingProfileOfCurrentUser>(
-    () => GettingProfileOfCurrentUserImpl(get<AuthorizationService>()),
+    () => GettingProfileOfCurrentUserImpl(
+      get<AuthorizationService>(),
+      get<LoggerService>(),
+    ),
   );
   injector.registerSingleton<SearchIdOnPortalService>(
-    () => SearchIdOnPortalServiceImpl(get<GettingProfileOfCurrentUser>()),
+    () => SearchIdOnPortalServiceImpl(
+      get<GettingProfileOfCurrentUser>(),
+      get<LoggerService>(),
+    ),
   );
   injector.registerSingleton<GettingScheduleService>(
-    () => GettingScheduleServiceImpl(),
+    () => GettingScheduleServiceImpl(
+      get<LoggerService>(),
+    ),
   );
   injector.registerSingleton<OfflineScheduleProvider>(
     () => OfflineScheduleProviderImpl(get<StorageService>()),
   );
   injector.registerSingleton<ScheduleSearchHistoryService>(
-    () => ScheduleSearchHistoryServiceImpl(get<StorageService>()),
+    () => ScheduleSearchHistoryServiceImpl(
+      get<StorageService>(),
+      get<LoggerService>(),
+    ),
   );
   injector.registerSingleton<UserDataProvider>(
-    () => UserDataProviderImpl(get<StorageService>()),
+    () => UserDataProviderImpl(
+      get<StorageService>(),
+      get<LoggerService>(),
+    ),
   );
   injector.registerSingleton<GettingBlogPosts>(
-    () => GettingBlogPostsImpl(get<AuthorizationService>()),
+    () => GettingBlogPostsImpl(
+      get<AuthorizationService>(),
+      get<LoggerService>(),
+    ),
   );
   injector.registerSingleton<GettingBlogPostComments>(
-    () => GettingBlogPostCommentsImpl(get<AuthorizationService>()),
+    () => GettingBlogPostCommentsImpl(
+      get<AuthorizationService>(),
+      get<LoggerService>(),
+    ),
   );
   injector.registerSingleton<GettingProfile>(
     () => GettingProfileImpl(
       get<AuthorizationService>(),
+      get<LoggerService>(),
     ),
   );
 
   injector.registerSingleton<GettingFileData>(
     () => GettingFileDataImpl(
       get<AuthorizationService>(),
+      get<LoggerService>(),
     ),
   );
   injector.registerSingleton<PostWithLoadedInfoProvider>(
@@ -127,10 +153,14 @@ void registerDependencies() {
   injector.registerSingleton<GettingRatingList>(
     () => GettingRatingListImpl(
       get<AuthorizationService>(),
+      get<LoggerService>(),
     ),
   );
   injector.registerSingleton<GettingVoteKeySigned>(
-    () => GettingVoteKeySignedImpl(get<AuthorizationService>()),
+    () => GettingVoteKeySignedImpl(
+      get<AuthorizationService>(),
+      get<LoggerService>(),
+    ),
   );
   injector.registerSingleton<LRUCacheUserData>(
     () => LRUCacheUserData(50),
@@ -148,6 +178,7 @@ void registerDependencies() {
       get<GettingVoteKeySigned>(),
       get<PostWithLoadedInfoProvider>(),
       get<LRUCacheUserData>(),
+      get<LoggerService>(),
     ),
   );
   injector.registerSingleton<CurrentUserSyncStorage>(
@@ -159,6 +190,7 @@ void registerDependencies() {
   injector.registerSingleton<GettingGradeBook>(
     () => GettingGradeBookImpl(
       get<AuthorizationService>(),
+      get<LoggerService>(),
     ),
   );
   injector.registerSingleton<MarkBySubjectProvider>(
@@ -173,6 +205,7 @@ void registerDependencies() {
     () => ReactionManagerImpl(
       get<AuthorizationService>(),
       get<CurrentUserSyncStorage>(),
+      get<LoggerService>(),
     ),
   );
 
@@ -183,11 +216,15 @@ void registerDependencies() {
       get<GettingProfileOfCurrentUser>(),
       get<UserDataProvider>(),
       get<AppOpenTracker>(),
+      get<LoggerService>(),
     ),
   );
   injector.registerDependency(
-    () =>
-        AuthPageViewModel(get<AuthDataProvider>(), get<AuthorizationService>()),
+    () => AuthPageViewModel(
+      get<AuthDataProvider>(),
+      get<AuthorizationService>(),
+      get<LoggerService>(),
+    ),
   );
   injector.registerDependency(
     () => MainPageViewModel(
@@ -222,6 +259,7 @@ void registerDependencies() {
       get<LRUCacheBlogPostCommentWithLoadedInfo>(),
       get<LRUCacheUserData>(),
       get<GettingRatingList>(),
+      get<GettingBlogPosts>(),
     ),
   );
   injector.registerDependency(

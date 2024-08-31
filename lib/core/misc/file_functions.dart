@@ -1,7 +1,8 @@
 import 'dart:io';
 
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:injector/injector.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 
 Future<String?> getDownloadPath() async {
   Directory? directory;
@@ -11,10 +12,10 @@ Future<String?> getDownloadPath() async {
       directory.createSync();
     }
   } catch (err, stack) {
-    FirebaseCrashlytics.instance.recordError(
-      'Cannot get download folder path: $err',
-      stack,
-    );
+    Injector.appInstance.get<LoggerService>().logError(
+          err,
+          stack,
+        );
   }
   return directory?.path;
 }
@@ -29,6 +30,6 @@ Future<void> clearCacheFolder() async {
       }
     }
   } catch (error, stack) {
-    FirebaseCrashlytics.instance.recordError(error, stack);
+    Injector.appInstance.get<LoggerService>().logError(error, stack);
   }
 }

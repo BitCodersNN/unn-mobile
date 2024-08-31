@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:unn_mobile/core/constants/api_url_strings.dart';
 import 'package:unn_mobile/core/constants/profiles_strings.dart';
 import 'package:unn_mobile/core/constants/session_identifier_strings.dart';
@@ -11,13 +10,18 @@ import 'package:unn_mobile/core/models/student_data.dart';
 import 'package:unn_mobile/core/models/user_data.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_profile.dart';
+import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 
 class GettingProfileImpl implements GettingProfile {
   final AuthorizationService authorizationService;
+  final LoggerService loggerService;
   final String _pathSecondPartForGettingId = 'bx/';
   final String _id = 'id';
 
-  GettingProfileImpl(this.authorizationService);
+  GettingProfileImpl(
+    this.authorizationService,
+    this.loggerService,
+  );
 
   @override
   Future<int?> getProfileIdByBitrixID({required int bitrixID}) async {
@@ -33,16 +37,14 @@ class GettingProfileImpl implements GettingProfile {
     try {
       response = await requestSender.get(timeoutSeconds: 5);
     } catch (error, stackTrace) {
-      await FirebaseCrashlytics.instance.recordError(error, stackTrace);
+      loggerService.logError(error, stackTrace);
       return null;
     }
 
     final statusCode = response.statusCode;
 
     if (statusCode != 200) {
-      await FirebaseCrashlytics.instance.log(
-        '${runtimeType.toString()}: statusCode = $statusCode; authorId = $bitrixID',
-      );
+      loggerService.log('statusCode = $statusCode; authorId = $bitrixID');
       return null;
     }
 
@@ -52,7 +54,7 @@ class GettingProfileImpl implements GettingProfile {
         await HttpRequestSender.responseToStringBody(response),
       )[_id];
     } catch (error, stackTrace) {
-      await FirebaseCrashlytics.instance.recordError(error, stackTrace);
+      loggerService.logError(error, stackTrace);
     }
 
     return id;
@@ -72,16 +74,14 @@ class GettingProfileImpl implements GettingProfile {
     try {
       response = await requestSender.get();
     } catch (error, stackTrace) {
-      await FirebaseCrashlytics.instance.recordError(error, stackTrace);
+      loggerService.logError(error, stackTrace);
       return null;
     }
 
     final statusCode = response.statusCode;
 
     if (statusCode != 200) {
-      await FirebaseCrashlytics.instance.log(
-        '${runtimeType.toString()}: statusCode = $statusCode; userId = $userId',
-      );
+      loggerService.log('statusCode = $statusCode; userId = $userId');
       return null;
     }
 
@@ -90,7 +90,7 @@ class GettingProfileImpl implements GettingProfile {
       jsonMap =
           jsonDecode(await HttpRequestSender.responseToStringBody(response));
     } catch (error, stackTrace) {
-      await FirebaseCrashlytics.instance.recordError(error, stackTrace);
+      loggerService.logError(error, stackTrace);
       return null;
     }
 
@@ -110,8 +110,8 @@ class GettingProfileImpl implements GettingProfile {
               ? EmployeeData.fromJson(profileJsonMap)
               : UserData.fromJson(profileJsonMap);
     } catch (error, stackTrace) {
-      await FirebaseCrashlytics.instance
-          .recordError(error, stackTrace, information: [jsonMap.toString()]);
+      loggerService
+          .logError(error, stackTrace, information: [jsonMap.toString()]);
     }
 
     return userData;

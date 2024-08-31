@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:unn_mobile/core/constants/api_url_strings.dart';
 import 'package:unn_mobile/core/constants/rating_list_strings.dart';
 import 'package:unn_mobile/core/constants/session_identifier_strings.dart';
@@ -9,6 +8,7 @@ import 'package:unn_mobile/core/misc/current_user_sync_storage.dart';
 import 'package:unn_mobile/core/misc/http_helper.dart';
 import 'package:unn_mobile/core/models/rating_list.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
+import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 import 'package:unn_mobile/core/services/interfaces/reaction_manager.dart';
 
 class _KeysForReactionManagerJsonConverter {
@@ -20,10 +20,15 @@ class _KeysForReactionManagerJsonConverter {
 }
 
 class ReactionManagerImpl implements ReactionManager {
+  final LoggerService loggerService;
   final AuthorizationService authorizationService;
   final CurrentUserSyncStorage currentUserSync;
 
-  ReactionManagerImpl(this.authorizationService, this.currentUserSync);
+  ReactionManagerImpl(
+    this.authorizationService,
+    this.currentUserSync,
+    this.loggerService,
+  );
 
   @override
   Future<ReactionUserInfo?> addReaction(
@@ -83,15 +88,12 @@ class ReactionManagerImpl implements ReactionManager {
         timeoutSeconds: 60,
       );
     } catch (error, stackTrace) {
-      await FirebaseCrashlytics.instance
-          .log('Exception: $error\nStackTrace: $stackTrace');
+      loggerService.log('Exception: $error\nStackTrace: $stackTrace');
       return null;
     }
 
     if (response.statusCode != 200) {
-      await FirebaseCrashlytics.instance.log(
-        '${runtimeType.toString()}: statusCode = ${response.statusCode}',
-      );
+      loggerService.log('statusCode = ${response.statusCode}');
       return null;
     }
 
@@ -102,7 +104,7 @@ class ReactionManagerImpl implements ReactionManager {
       )[_KeysForReactionManagerJsonConverter.data]
           [_KeysForReactionManagerJsonConverter.userData];
     } catch (error, stackTrace) {
-      await FirebaseCrashlytics.instance.recordError(error, stackTrace);
+      loggerService.logError(error, stackTrace);
       return null;
     }
 

@@ -1,19 +1,23 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:unn_mobile/core/constants/api_url_strings.dart';
 import 'package:unn_mobile/core/constants/session_identifier_strings.dart';
 import 'package:unn_mobile/core/misc/http_helper.dart';
 import 'package:unn_mobile/core/models/file_data.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_file_data.dart';
+import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 
 class GettingFileDataImpl implements GettingFileData {
   final AuthorizationService authorizationService;
+  final LoggerService loggerService;
   final String _id = 'id';
 
-  GettingFileDataImpl(this.authorizationService);
+  GettingFileDataImpl(
+    this.authorizationService,
+    this.loggerService,
+  );
 
   @override
   Future<FileData?> getFileData({
@@ -35,17 +39,14 @@ class GettingFileDataImpl implements GettingFileData {
     try {
       response = await requestSender.get(timeoutSeconds: 60);
     } catch (error, stackTrace) {
-      await FirebaseCrashlytics.instance
-          .log('Exception: $error\nStackTrace: $stackTrace');
+      loggerService.log('Exception: $error\nStackTrace: $stackTrace');
       return null;
     }
 
     final statusCode = response.statusCode;
 
     if (statusCode != 200) {
-      await FirebaseCrashlytics.instance.log(
-        '${runtimeType.toString()}: statusCode = $statusCode; fileId = $id',
-      );
+      loggerService.log('statusCode = $statusCode; fileId = $id');
       return null;
     }
 
@@ -55,7 +56,7 @@ class GettingFileDataImpl implements GettingFileData {
         await HttpRequestSender.responseToStringBody(response),
       )['result'];
     } catch (error, stackTrace) {
-      await FirebaseCrashlytics.instance.recordError(error, stackTrace);
+      loggerService.logError(error, stackTrace);
       return null;
     }
 
@@ -63,7 +64,7 @@ class GettingFileDataImpl implements GettingFileData {
     try {
       fileData = FileData.fromJson(jsonMap);
     } catch (error, stackTrace) {
-      await FirebaseCrashlytics.instance.recordError(error, stackTrace);
+      loggerService.logError(error, stackTrace);
     }
 
     return fileData;

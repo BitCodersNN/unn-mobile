@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:unn_mobile/core/constants/api_url_strings.dart';
 import 'package:unn_mobile/core/constants/profiles_strings.dart';
 import 'package:unn_mobile/core/constants/session_identifier_strings.dart';
@@ -11,11 +10,16 @@ import 'package:unn_mobile/core/models/student_data.dart';
 import 'package:unn_mobile/core/models/user_data.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_profile_of_current_user_service.dart';
+import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 
 class GettingProfileOfCurrentUserImpl implements GettingProfileOfCurrentUser {
   final AuthorizationService authorisationService;
+  final LoggerService loggerService;
 
-  GettingProfileOfCurrentUserImpl(this.authorisationService);
+  GettingProfileOfCurrentUserImpl(
+    this.authorisationService,
+    this.loggerService,
+  );
   @override
   Future<UserData?> getProfileOfCurrentUser() async {
     final requestSender = HttpRequestSender(
@@ -30,15 +34,14 @@ class GettingProfileOfCurrentUserImpl implements GettingProfileOfCurrentUser {
     try {
       response = await requestSender.get();
     } catch (error, stackTrace) {
-      await FirebaseCrashlytics.instance.recordError(error, stackTrace);
+      loggerService.logError(error, stackTrace);
       return null;
     }
 
     final statusCode = response.statusCode;
 
     if (statusCode != 200) {
-      await FirebaseCrashlytics.instance
-          .log('${runtimeType.toString()}: statusCode = $statusCode');
+      loggerService.log('statusCode = $statusCode');
       return null;
     }
 
@@ -47,7 +50,7 @@ class GettingProfileOfCurrentUserImpl implements GettingProfileOfCurrentUser {
       jsonMap =
           jsonDecode(await HttpRequestSender.responseToStringBody(response));
     } catch (error, stackTrace) {
-      await FirebaseCrashlytics.instance.recordError(error, stackTrace);
+      loggerService.logError(error, stackTrace);
       return null;
     }
 
@@ -59,8 +62,7 @@ class GettingProfileOfCurrentUserImpl implements GettingProfileOfCurrentUser {
               ? EmployeeData.fromJson(jsonMap)
               : null;
     } catch (e, stackTrace) {
-      await FirebaseCrashlytics.instance
-          .recordError(e, stackTrace, information: [jsonMap.toString()]);
+      loggerService.logError(e, stackTrace, information: [jsonMap.toString()]);
     }
 
     return userData;

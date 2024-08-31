@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:unn_mobile/core/constants/api_url_strings.dart';
 import 'package:unn_mobile/core/constants/rating_list_strings.dart';
 import 'package:unn_mobile/core/constants/session_identifier_strings.dart';
@@ -9,13 +8,18 @@ import 'package:unn_mobile/core/misc/http_helper.dart';
 import 'package:unn_mobile/core/models/rating_list.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_rating_list.dart';
+import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 
 class GettingRatingListImpl implements GettingRatingList {
   final AuthorizationService authorizationService;
+  final LoggerService loggerService;
   final String _data = 'data';
   final String _reactions = 'reactions';
 
-  GettingRatingListImpl(this.authorizationService);
+  GettingRatingListImpl(
+    this.authorizationService,
+    this.loggerService,
+  );
 
   @override
   Future<RatingList?> getReactionListByReaction({
@@ -55,15 +59,12 @@ class GettingRatingListImpl implements GettingRatingList {
         timeoutSeconds: 60,
       );
     } catch (error, stackTrace) {
-      await FirebaseCrashlytics.instance
-          .log('Exception: $error\nStackTrace: $stackTrace');
+      loggerService.log('Exception: $error\nStackTrace: $stackTrace');
       return null;
     }
 
     if (response.statusCode != 200) {
-      await FirebaseCrashlytics.instance.log(
-        '${runtimeType.toString()}: statusCode = ${response.statusCode}',
-      );
+      loggerService.log('statusCode = ${response.statusCode}');
       return null;
     }
 
@@ -73,7 +74,7 @@ class GettingRatingListImpl implements GettingRatingList {
         await HttpRequestSender.responseToStringBody(response),
       )[_data];
     } catch (error, stackTrace) {
-      await FirebaseCrashlytics.instance.recordError(error, stackTrace);
+      loggerService.logError(error, stackTrace);
       return null;
     }
 
@@ -86,7 +87,7 @@ class GettingRatingListImpl implements GettingRatingList {
     try {
       ratingList = RatingList.fromJson(json);
     } catch (e, stackTrace) {
-      await FirebaseCrashlytics.instance.recordError(e, stackTrace);
+      loggerService.logError(e, stackTrace);
     }
 
     return ratingList;
@@ -126,15 +127,12 @@ class GettingRatingListImpl implements GettingRatingList {
         timeoutSeconds: 60,
       );
     } catch (error, stackTrace) {
-      await FirebaseCrashlytics.instance
-          .log('Exception: $error\nStackTrace: $stackTrace');
+      loggerService.log('Exception: $error\nStackTrace: $stackTrace');
       return null;
     }
 
     if (response.statusCode != 200) {
-      await FirebaseCrashlytics.instance.log(
-        '${runtimeType.toString()}: statusCode = ${response.statusCode}',
-      );
+      loggerService.log('statusCode = ${response.statusCode}');
       return null;
     }
 
@@ -143,7 +141,7 @@ class GettingRatingListImpl implements GettingRatingList {
       responseJson =
           jsonDecode(await HttpRequestSender.responseToStringBody(response));
     } catch (error, stackTrace) {
-      await FirebaseCrashlytics.instance.recordError(error, stackTrace);
+      loggerService.logError(error, stackTrace);
       return null;
     }
 

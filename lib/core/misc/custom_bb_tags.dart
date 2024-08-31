@@ -1,8 +1,9 @@
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
+import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/misc/hex_color.dart';
 import 'package:flutter_bbcode/flutter_bbcode.dart';
 import 'package:bbob_dart/bbob_dart.dart' as bbob;
+import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 import 'package:unn_mobile/ui/widgets/spoiler_display.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -348,7 +349,9 @@ BBStylesheet getBBStyleSheet() {
         UrlTag(
           onTap: (url) async {
             if (!await launchUrl(Uri.parse(url))) {
-              FirebaseCrashlytics.instance.log('Could not launch url $url');
+              Injector.appInstance
+                  .get<LoggerService>()
+                  .log('Could not launch url $url');
             }
           },
         ),
@@ -362,7 +365,9 @@ BBStylesheet getBBStyleSheet() {
               Uri.parse(url),
               mode: LaunchMode.platformDefault,
             )) {
-              FirebaseCrashlytics.instance.log('Could not launch url $url');
+              Injector.appInstance
+                  .get<LoggerService>()
+                  .log('Could not launch url $url');
             }
           },
         ),

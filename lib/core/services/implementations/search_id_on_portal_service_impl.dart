@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:unn_mobile/core/constants/api_url_strings.dart';
 import 'package:unn_mobile/core/misc/http_helper.dart';
 import 'package:unn_mobile/core/models/employee_data.dart';
@@ -9,10 +8,12 @@ import 'package:unn_mobile/core/models/schedule_search_suggestion_item.dart';
 import 'package:unn_mobile/core/models/schedule_filter.dart';
 import 'package:unn_mobile/core/models/student_data.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_profile_of_current_user_service.dart';
+import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 import 'package:unn_mobile/core/services/interfaces/search_id_on_portal_service.dart';
 
 class SearchIdOnPortalServiceImpl implements SearchIdOnPortalService {
   final GettingProfileOfCurrentUser gettingProfileOfCurrentUser;
+  final LoggerService loggerService;
   final String _uns = 'uns';
   final String _term = 'term';
   final String _type = 'type';
@@ -20,7 +21,10 @@ class SearchIdOnPortalServiceImpl implements SearchIdOnPortalService {
   final String _id = 'id';
   final String _description = 'description';
 
-  SearchIdOnPortalServiceImpl(this.gettingProfileOfCurrentUser);
+  SearchIdOnPortalServiceImpl(
+    this.gettingProfileOfCurrentUser,
+    this.loggerService,
+  );
 
   Future<String?> _getIdOfLoggedInStudent(String uns) async {
     final requestSender = HttpRequestSender(
@@ -32,21 +36,20 @@ class SearchIdOnPortalServiceImpl implements SearchIdOnPortalService {
     try {
       response = await requestSender.get();
     } catch (error, stackTrace) {
-      await FirebaseCrashlytics.instance.recordError(error, stackTrace);
+      loggerService.logError(error, stackTrace);
       return null;
     }
 
     final statusCode = response.statusCode;
 
     if (statusCode != 200) {
-      await FirebaseCrashlytics.instance.log(
-        '${runtimeType.toString()}: statusCode = $statusCode; userLogin = $uns',
-      );
+      loggerService.log('statusCode = $statusCode; userLogin = $uns');
       return null;
     }
 
-    final Map<dynamic, dynamic> jsonMap =
-        jsonDecode(await HttpRequestSender.responseToStringBody(response));
+    final Map<dynamic, dynamic> jsonMap = jsonDecode(
+      await HttpRequestSender.responseToStringBody(response),
+    );
 
     return jsonMap[_id];
   }
@@ -84,15 +87,15 @@ class SearchIdOnPortalServiceImpl implements SearchIdOnPortalService {
     try {
       response = await requestSender.get();
     } catch (error, stackTrace) {
-      await FirebaseCrashlytics.instance.recordError(error, stackTrace);
+      loggerService.logError(error, stackTrace);
       return null;
     }
 
     final statusCode = response.statusCode;
 
     if (statusCode != 200) {
-      await FirebaseCrashlytics.instance.log(
-        '${runtimeType.toString()}: statusCode = $statusCode; value = $value; valueType = $valueType',
+      loggerService.log(
+        'statusCode = $statusCode; value = $value; valueType = $valueType',
       );
       return null;
     }

@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:extended_image/extended_image.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:injector/injector.dart';
@@ -11,6 +10,7 @@ import 'package:unn_mobile/core/misc/file_functions.dart';
 import 'package:unn_mobile/core/misc/size_converter.dart';
 import 'package:unn_mobile/core/models/file_data.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
+import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 import 'package:unn_mobile/ui/unn_mobile_colors.dart';
 
 class AttachedFile extends StatefulWidget {
@@ -28,6 +28,7 @@ class AttachedFile extends StatefulWidget {
 }
 
 class _AttachedFileState extends State<AttachedFile> {
+  final _loggerService = Injector.appInstance.get<LoggerService>();
   FileData get fileData => widget._fileData;
 
   static Map<String, Future<File?>> downloadingFiles = {};
@@ -42,7 +43,7 @@ class _AttachedFileState extends State<AttachedFile> {
     try {
       file = await downloadingFiles[fileData.downloadUrl];
     } catch (error, stack) {
-      FirebaseCrashlytics.instance.recordError(error, stack);
+      _loggerService.logError(error, stack);
     }
     downloadingFiles.remove(fileData.downloadUrl);
     return file;
@@ -71,7 +72,7 @@ class _AttachedFileState extends State<AttachedFile> {
           await storedFile.writeAsBytes(bytes);
         }
       } catch (error, stack) {
-        FirebaseCrashlytics.instance.recordError(error, stack);
+        _loggerService.logError(error, stack);
       }
     }
     return storedFile;

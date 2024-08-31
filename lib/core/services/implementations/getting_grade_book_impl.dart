@@ -1,15 +1,13 @@
-// ignore_for_file: prefer_typing_uninitialized_variables
-
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:unn_mobile/core/constants/api_url_strings.dart';
 import 'package:unn_mobile/core/constants/session_identifier_strings.dart';
 import 'package:unn_mobile/core/misc/http_helper.dart';
 import 'package:unn_mobile/core/models/mark_by_subject.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_grade_book.dart';
+import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 
 class _JsonKeys {
   static const String semesters = 'semesters';
@@ -19,8 +17,12 @@ class _JsonKeys {
 
 class GettingGradeBookImpl implements GettingGradeBook {
   final AuthorizationService authorizationService;
+  final LoggerService loggerService;
 
-  GettingGradeBookImpl(this.authorizationService);
+  GettingGradeBookImpl(
+    this.authorizationService,
+    this.loggerService,
+  );
   @override
   Future<Map<int, List<MarkBySubject>>?> getGradeBook() async {
     final requestSender = HttpRequestSender(
@@ -35,16 +37,14 @@ class GettingGradeBookImpl implements GettingGradeBook {
     try {
       response = await requestSender.get();
     } catch (error, stackTrace) {
-      await FirebaseCrashlytics.instance.recordError(error, stackTrace);
+      loggerService.logError(error, stackTrace);
       return null;
     }
 
     final statusCode = response.statusCode;
 
     if (statusCode != 200) {
-      await FirebaseCrashlytics.instance.log(
-        '${runtimeType.toString()}: statusCode = $statusCode',
-      );
+      loggerService.log('statusCode = $statusCode');
       return null;
     }
 
@@ -56,7 +56,7 @@ class GettingGradeBookImpl implements GettingGradeBook {
         ),
       );
     } catch (error, stackTrace) {
-      await FirebaseCrashlytics.instance.recordError(error, stackTrace);
+      loggerService.logError(error, stackTrace);
       return null;
     }
 

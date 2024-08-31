@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:unn_mobile/core/constants/regular_expressions.dart';
 import 'package:unn_mobile/core/constants/api_url_strings.dart';
 import 'package:unn_mobile/core/constants/session_identifier_strings.dart';
@@ -9,6 +8,7 @@ import 'package:unn_mobile/core/misc/http_helper.dart';
 import 'package:unn_mobile/core/models/blog_post_comment.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_blog_post_comments.dart';
+import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 
 class _JsonKeys {
   static const _messageListKey = 'messageList';
@@ -16,8 +16,12 @@ class _JsonKeys {
 
 class GettingBlogPostCommentsImpl implements GettingBlogPostComments {
   final AuthorizationService authService;
+  final LoggerService loggerService;
 
-  GettingBlogPostCommentsImpl(this.authService);
+  GettingBlogPostCommentsImpl(
+    this.authService,
+    this.loggerService,
+  );
   @override
   Future<List<BlogPostComment>?> getBlogPostComments({
     required int postId,
@@ -27,8 +31,7 @@ class GettingBlogPostCommentsImpl implements GettingBlogPostComments {
     final csrf = authService.csrf;
 
     if (sessionId == null || csrf == null) {
-      FirebaseCrashlytics.instance
-          .log('GettingBlogPostCommentsService: Error, user not authorized');
+      loggerService.log('Error, user not authorized');
       return null;
     }
 
@@ -76,13 +79,12 @@ class GettingBlogPostCommentsImpl implements GettingBlogPostComments {
         timeoutSeconds: 30,
       );
     } catch (error, stackTrace) {
-      await FirebaseCrashlytics.instance
-          .log('Exception: $error\nStackTrace: $stackTrace');
+      loggerService.log('Exception: $error\nStackTrace: $stackTrace');
       return null;
     }
 
     if (response.statusCode != 200) {
-      await FirebaseCrashlytics.instance.log(
+      loggerService.log(
         '${runtimeType.toString()}: statusCode = ${response.statusCode}',
       );
       return null;
@@ -97,8 +99,8 @@ class GettingBlogPostCommentsImpl implements GettingBlogPostComments {
     final Map<String, dynamic> parsedJson = json.decode(jsonStr);
 
     if (!parsedJson.containsKey(_JsonKeys._messageListKey)) {
-      FirebaseCrashlytics.instance.log(
-        '${runtimeType.toString()}: json doesn\'t contain the messageList key',
+      loggerService.log(
+        'json doesn\'t contain the messageList key',
       );
       return null;
     }
@@ -119,22 +121,19 @@ class GettingBlogPostCommentsImpl implements GettingBlogPostComments {
     for (final messageMatch
         in RegularExpressions.commentIdAndMessageRegExp.allMatches(htmlBody)) {
       if (!authorMatches.moveNext()) {
-        FirebaseCrashlytics.instance
-            .log('GettingBlogPostCommentsService-parser: no author matches');
+        loggerService.log('no author matches');
         break;
       }
 
       final authorMatch = authorMatches.current;
 
       if (!dateTimeMatches.moveNext()) {
-        FirebaseCrashlytics.instance
-            .log('GettingBlogPostCommentsService-parser: no dateTime matches');
+        loggerService.log('no dateTime matches');
         break;
       }
 
       if (!keySignedMatches.moveNext()) {
-        FirebaseCrashlytics.instance
-            .log('GettingBlogPostCommentsService-parser: no keySigned matches');
+        loggerService.log('no keySigned matches');
         break;
       }
 
