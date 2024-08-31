@@ -11,7 +11,7 @@ import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/schedule_screen_view_model.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
 import 'package:unn_mobile/ui/views/main_page/schedule/widgets/schedule_item_normal.dart';
-import 'package:unn_mobile/ui/views/main_page/schedule/widgets/schedule_search_suggestion_item.dart';
+import 'package:unn_mobile/ui/views/main_page/schedule/widgets/schedule_search_suggestion_item_view.dart';
 import 'package:flutter_changed/search_anchor.dart' as flutter_changed;
 import 'package:unn_mobile/ui/widgets/dialogs/message_dialog.dart';
 import 'package:unn_mobile/ui/widgets/dialogs/radio_group_dialog.dart';
@@ -248,42 +248,26 @@ class ScheduleTabState extends State<ScheduleTab>
           final rawSuggestions = await model.getSearchSuggestions(
             controller.text,
           ); // Неэффективно, но работает >:(
-          if (controller.text == '') {
-            final suggestions = await model.getHistorySuggestions();
-            return suggestions.map(
-              (e) => ScheduleSearchSuggestionItem(
-                itemName: e,
-                onSelected: () async {
-                  controller.closeView(e);
-                  if (model.lastSearchQuery != e) {
-                    model.lastSearchQuery = e;
-                    await model.addHistoryItem(e);
-                    await model.submitSearch(e);
-                  }
-                },
-              ),
-            );
-          } else {
-            return rawSuggestions.map<ScheduleSearchSuggestionItem>(
-              (e) => ScheduleSearchSuggestionItem(
-                itemName: e.label,
-                itemDescription: e.description,
-                onSelected: () {
-                  controller.closeView(e.label);
-                  Future.delayed(
-                    const Duration(milliseconds: 50),
-                    () {
-                      SystemChannels.textInput.invokeMethod('TextInput.hide');
-                    },
-                  );
-                  model.lastSearchQuery = controller.text;
-                  model.addHistoryItem(e.label);
-                  model.selectedId = e.id;
-                  model.updateFilter(e.id);
-                },
-              ),
-            );
-          }
+
+          return rawSuggestions.map<ScheduleSearchSuggestionItemView>(
+            (e) => ScheduleSearchSuggestionItemView(
+              model: e,
+              onSelected: () {
+                // controller.text = e.label;
+                controller.closeView(e.label);
+                Future.delayed(
+                  const Duration(milliseconds: 50),
+                  () {
+                    SystemChannels.textInput.invokeMethod('TextInput.hide');
+                  },
+                );
+                model.lastSearchQuery = controller.text;
+                model.addHistoryItem(e);
+                model.selectedId = e.id;
+                model.updateFilter(e.id);
+              },
+            ),
+          );
         },
       ),
     );
