@@ -13,14 +13,14 @@ import 'package:unn_mobile/core/services/interfaces/getting_profile.dart';
 import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 
 class GettingProfileImpl implements GettingProfile {
-  final AuthorizationService authorizationService;
-  final LoggerService loggerService;
+  final AuthorizationService _authorizationService;
+  final LoggerService _loggerService;
   final String _pathSecondPartForGettingId = 'bx/';
   final String _id = 'id';
 
   GettingProfileImpl(
-    this.authorizationService,
-    this.loggerService,
+    this._authorizationService,
+    this._loggerService,
   );
 
   @override
@@ -29,7 +29,7 @@ class GettingProfileImpl implements GettingProfile {
       path: ApiPaths.user + _pathSecondPartForGettingId + bitrixID.toString(),
       cookies: {
         SessionIdentifierStrings.sessionIdCookieKey:
-            authorizationService.sessionId ?? '',
+            _authorizationService.sessionId ?? '',
       },
     );
 
@@ -37,14 +37,14 @@ class GettingProfileImpl implements GettingProfile {
     try {
       response = await requestSender.get(timeoutSeconds: 5);
     } catch (error, stackTrace) {
-      loggerService.logError(error, stackTrace);
+      _loggerService.logError(error, stackTrace);
       return null;
     }
 
     final statusCode = response.statusCode;
 
     if (statusCode != 200) {
-      loggerService.log('statusCode = $statusCode; authorId = $bitrixID');
+      _loggerService.log('statusCode = $statusCode; authorId = $bitrixID');
       return null;
     }
 
@@ -54,7 +54,7 @@ class GettingProfileImpl implements GettingProfile {
         await HttpRequestSender.responseToStringBody(response),
       )[_id];
     } catch (error, stackTrace) {
-      loggerService.logError(error, stackTrace);
+      _loggerService.logError(error, stackTrace);
     }
 
     return id;
@@ -66,7 +66,7 @@ class GettingProfileImpl implements GettingProfile {
       path: ApiPaths.user + userId.toString(),
       cookies: {
         SessionIdentifierStrings.sessionIdCookieKey:
-            authorizationService.sessionId ?? '',
+            _authorizationService.sessionId ?? '',
       },
     );
 
@@ -74,14 +74,14 @@ class GettingProfileImpl implements GettingProfile {
     try {
       response = await requestSender.get();
     } catch (error, stackTrace) {
-      loggerService.logError(error, stackTrace);
+      _loggerService.logError(error, stackTrace);
       return null;
     }
 
     final statusCode = response.statusCode;
 
     if (statusCode != 200) {
-      loggerService.log('statusCode = $statusCode; userId = $userId');
+      _loggerService.log('statusCode = $statusCode; userId = $userId');
       return null;
     }
 
@@ -90,7 +90,7 @@ class GettingProfileImpl implements GettingProfile {
       jsonMap =
           jsonDecode(await HttpRequestSender.responseToStringBody(response));
     } catch (error, stackTrace) {
-      loggerService.logError(error, stackTrace);
+      _loggerService.logError(error, stackTrace);
       return null;
     }
 
@@ -110,7 +110,7 @@ class GettingProfileImpl implements GettingProfile {
               ? EmployeeData.fromJson(profileJsonMap)
               : UserData.fromJson(profileJsonMap);
     } catch (error, stackTrace) {
-      loggerService
+      _loggerService
           .logError(error, stackTrace, information: [jsonMap.toString()]);
     }
 

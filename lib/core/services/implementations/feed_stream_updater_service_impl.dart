@@ -18,14 +18,14 @@ import 'package:unn_mobile/core/services/interfaces/post_with_loaded_info_provid
 class FeedStreamUpdaterServiceImpl
     with ChangeNotifier
     implements FeedUpdaterService {
-  final GettingBlogPosts gettingBlogPostsService;
-  final GettingProfile gettingProfileService;
-  final GettingFileData gettingFileData;
-  final GettingRatingList gettingRatingList;
-  final GettingVoteKeySigned gettingVoteKeySigned;
-  final PostWithLoadedInfoProvider postWithLoadedInfoProvider;
-  final LRUCacheUserData lruCacheProfile;
-  final LoggerService loggerService;
+  final GettingBlogPosts _gettingBlogPostsService;
+  final GettingProfile _gettingProfileService;
+  final GettingFileData _gettingFileData;
+  final GettingRatingList _gettingRatingList;
+  final GettingVoteKeySigned _gettingVoteKeySigned;
+  final PostWithLoadedInfoProvider _postWithLoadedInfoProvider;
+  final LRUCacheUserData _lruCacheProfile;
+  final LoggerService _loggerService;
 
   bool _busy = false;
 
@@ -38,14 +38,14 @@ class FeedStreamUpdaterServiceImpl
   DateTime? _lastViewedPostDateTime;
 
   FeedStreamUpdaterServiceImpl(
-    this.gettingBlogPostsService,
-    this.gettingProfileService,
-    this.gettingFileData,
-    this.gettingRatingList,
-    this.gettingVoteKeySigned,
-    this.postWithLoadedInfoProvider,
-    this.lruCacheProfile,
-    this.loggerService,
+    this._gettingBlogPostsService,
+    this._gettingProfileService,
+    this._gettingFileData,
+    this._gettingRatingList,
+    this._gettingVoteKeySigned,
+    this._postWithLoadedInfoProvider,
+    this._lruCacheProfile,
+    this._loggerService,
   );
 
   @override
@@ -76,7 +76,7 @@ class FeedStreamUpdaterServiceImpl
     try {
       _busy = true;
       notifyListeners();
-      final posts = await gettingBlogPostsService.getBlogPosts(
+      final posts = await _gettingBlogPostsService.getBlogPosts(
         pageNumber: _lastLoadedPage + 1,
       );
       if (_currentOperation != null) {
@@ -88,7 +88,7 @@ class FeedStreamUpdaterServiceImpl
       await _currentOperation?.valueOrCancellation();
       _lastLoadedPage++;
     } on Exception catch (error, stackTrace) {
-      loggerService.logError(error, stackTrace);
+      _loggerService.logError(error, stackTrace);
     } finally {
       _busy = false;
     }
@@ -102,15 +102,15 @@ class FeedStreamUpdaterServiceImpl
     try {
       _busy = true;
       _lastViewedPostDateTime =
-          await postWithLoadedInfoProvider.getDateTimePublishedPost() ??
+          await _postWithLoadedInfoProvider.getDateTimePublishedPost() ??
               DateTime.now();
 
-      final newPosts = await gettingBlogPostsService.getBlogPosts();
+      final newPosts = await _gettingBlogPostsService.getBlogPosts();
 
       if (newPosts != null) {
-        await postWithLoadedInfoProvider
+        await _postWithLoadedInfoProvider
             .saveDateTimePublishedPost(newPosts.first.datePublish);
-        await postWithLoadedInfoProvider.saveData(_postsList);
+        await _postWithLoadedInfoProvider.saveData(_postsList);
 
         await _currentOperation?.valueOrCancellation();
         _busy = true;
@@ -122,7 +122,7 @@ class FeedStreamUpdaterServiceImpl
         await _currentOperation?.valueOrCancellation();
       }
     } on Exception catch (error, stackTrace) {
-      loggerService.logError(error, stackTrace);
+      _loggerService.logError(error, stackTrace);
     } finally {
       _busy = false;
     }
@@ -137,29 +137,29 @@ class FeedStreamUpdaterServiceImpl
       _busy = true;
       final futures = <Future>[];
 
-      UserData? postAuthor = lruCacheProfile.get(post.bitrixID);
+      UserData? postAuthor = _lruCacheProfile.get(post.bitrixID);
 
       if (postAuthor == null) {
         futures.add(
-          gettingProfileService.getProfileByAuthorIdFromPost(
+          _gettingProfileService.getProfileByAuthorIdFromPost(
             authorId: post.bitrixID,
           ),
         );
       }
 
       for (final fileId in post.files ?? []) {
-        futures.add(gettingFileData.getFileData(id: int.parse(fileId)));
+        futures.add(_gettingFileData.getFileData(id: int.parse(fileId)));
       }
 
       futures.add(
-        gettingVoteKeySigned
+        _gettingVoteKeySigned
             .getVoteKeySigned(
           authorId: post.bitrixID,
           postId: post.id,
         )
             .then((voteKeySigned) {
           post.keySigned = voteKeySigned;
-          return gettingRatingList.getRatingList(
+          return _gettingRatingList.getRatingList(
             voteKeySigned: voteKeySigned ?? '',
           );
         }),
@@ -176,7 +176,7 @@ class FeedStreamUpdaterServiceImpl
         return;
       }
 
-      lruCacheProfile.save(post.bitrixID, postAuthor);
+      _lruCacheProfile.save(post.bitrixID, postAuthor);
 
       final List<FileData?> files = List<FileData?>.from(
         data.getRange(

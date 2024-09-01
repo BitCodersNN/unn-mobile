@@ -5,21 +5,21 @@ import 'package:unn_mobile/core/services/interfaces/mark_by_subject_provider.dar
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
 
 class GradesScreenViewModel extends BaseViewModel {
-  final GettingGradeBook gradeBookService;
-  final MarkBySubjectProvider markBySubjectProvider;
+  final GettingGradeBook _gradeBookService;
+  final MarkBySubjectProvider _markBySubjectProvider;
 
-  GradesScreenViewModel(this.gradeBookService, this.markBySubjectProvider);
+  GradesScreenViewModel(this._gradeBookService, this._markBySubjectProvider);
 
   Future<Map<int, List<MarkBySubject>>?> getGradeBook() async {
     return await tryLoginAndRetrieveData(
       () async {
-        final gradeBook = await gradeBookService.getGradeBook();
+        final gradeBook = await _gradeBookService.getGradeBook();
         if (gradeBook != null) {
-          markBySubjectProvider.saveData(gradeBook);
+          _markBySubjectProvider.saveData(gradeBook);
         }
         return gradeBook;
       },
-      () async => markBySubjectProvider.getData(),
+      () async => _markBySubjectProvider.getData(),
     );
   }
 }

@@ -13,14 +13,14 @@ import 'package:unn_mobile/core/services/interfaces/getting_rating_list.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
 
 class CommentsPageViewModel extends BaseViewModel {
-  final GettingBlogPostComments gettingBlogPostCommentsService;
-  final GettingProfile gettingProfileService;
-  final GettingFileData gettingFileDataService;
+  final GettingBlogPostComments _gettingBlogPostCommentsService;
+  final GettingProfile _gettingProfileService;
+  final GettingFileData _gettingFileDataService;
   final LRUCacheBlogPostCommentWithLoadedInfo
-      lruCacheBlogPostCommentWithLoadedInfo;
-  final LRUCacheUserData lruCacheProfile;
-  final GettingRatingList gettingRatingList;
-  final GettingBlogPosts gettingBlogPosts;
+      _lruCacheBlogPostCommentWithLoadedInfo;
+  final LRUCacheUserData _lruCacheProfile;
+  final GettingRatingList _gettingRatingList;
+  final GettingBlogPosts _gettingBlogPosts;
 
   BlogData? post;
   List<Future<List<BlogPostCommentWithLoadedInfo?>>> commentLoaders = [];
@@ -29,13 +29,13 @@ class CommentsPageViewModel extends BaseViewModel {
   int totalPages = 1;
 
   CommentsPageViewModel(
-    this.gettingBlogPostCommentsService,
-    this.gettingProfileService,
-    this.gettingFileDataService,
-    this.lruCacheBlogPostCommentWithLoadedInfo,
-    this.lruCacheProfile,
-    this.gettingRatingList,
-    this.gettingBlogPosts,
+    this._gettingBlogPostCommentsService,
+    this._gettingProfileService,
+    this._gettingFileDataService,
+    this._lruCacheBlogPostCommentWithLoadedInfo,
+    this._lruCacheProfile,
+    this._gettingRatingList,
+    this._gettingBlogPosts,
   );
 
   Future<BlogPostCommentWithLoadedInfo?> loadCommentInfo(
@@ -44,28 +44,28 @@ class CommentsPageViewModel extends BaseViewModel {
     final futures = <Future>[];
 
     BlogPostCommentWithLoadedInfo? blogPostCommentWithLoadedInfo =
-        lruCacheBlogPostCommentWithLoadedInfo.get(comment.id);
+        _lruCacheBlogPostCommentWithLoadedInfo.get(comment.id);
 
     if (blogPostCommentWithLoadedInfo != null) {
       return blogPostCommentWithLoadedInfo;
     }
 
-    UserData? profile = lruCacheProfile.get(comment.bitrixID);
+    UserData? profile = _lruCacheProfile.get(comment.bitrixID);
 
     if (profile == null) {
       futures.add(
-        gettingProfileService.getProfileByAuthorIdFromPost(
+        _gettingProfileService.getProfileByAuthorIdFromPost(
           authorId: comment.bitrixID,
         ),
       );
     }
 
     for (final fileId in comment.attachedFiles) {
-      futures.add(gettingFileDataService.getFileData(id: fileId));
+      futures.add(_gettingFileDataService.getFileData(id: fileId));
     }
 
     futures.add(
-      gettingRatingList.getRatingList(
+      _gettingRatingList.getRatingList(
         voteKeySigned: comment.keySigned,
       ),
     );
@@ -96,12 +96,12 @@ class CommentsPageViewModel extends BaseViewModel {
       ratingList: data[posRatingListInData] ?? RatingList(),
     );
 
-    lruCacheProfile.save(
+    _lruCacheProfile.save(
       comment.bitrixID,
       profile,
     );
 
-    lruCacheBlogPostCommentWithLoadedInfo.save(
+    _lruCacheBlogPostCommentWithLoadedInfo.save(
       comment.id,
       blogPostCommentWithLoadedInfo,
     );
@@ -114,7 +114,7 @@ class CommentsPageViewModel extends BaseViewModel {
       return [];
     }
     if (page == 1) {
-      final comNumbers = (await gettingBlogPosts.getBlogPosts(
+      final comNumbers = (await _gettingBlogPosts.getBlogPosts(
         postId: post!.id,
       ))?[0]
           .numberOfComments;
@@ -124,7 +124,7 @@ class CommentsPageViewModel extends BaseViewModel {
             ((comNumbers % commentsPerPage == 0) ? 0 : 1);
       }
     }
-    final comments = await gettingBlogPostCommentsService.getBlogPostComments(
+    final comments = await _gettingBlogPostCommentsService.getBlogPostComments(
       postId: post!.id,
       pageNumber: page,
     );

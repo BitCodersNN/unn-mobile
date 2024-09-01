@@ -12,8 +12,8 @@ import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 import 'package:unn_mobile/core/services/interfaces/search_id_on_portal_service.dart';
 
 class SearchIdOnPortalServiceImpl implements SearchIdOnPortalService {
-  final GettingProfileOfCurrentUser gettingProfileOfCurrentUser;
-  final LoggerService loggerService;
+  final GettingProfileOfCurrentUser _gettingProfileOfCurrentUser;
+  final LoggerService _loggerService;
   final String _uns = 'uns';
   final String _term = 'term';
   final String _type = 'type';
@@ -22,8 +22,8 @@ class SearchIdOnPortalServiceImpl implements SearchIdOnPortalService {
   final String _description = 'description';
 
   SearchIdOnPortalServiceImpl(
-    this.gettingProfileOfCurrentUser,
-    this.loggerService,
+    this._gettingProfileOfCurrentUser,
+    this._loggerService,
   );
 
   Future<String?> _getIdOfLoggedInStudent(String uns) async {
@@ -36,14 +36,14 @@ class SearchIdOnPortalServiceImpl implements SearchIdOnPortalService {
     try {
       response = await requestSender.get();
     } catch (error, stackTrace) {
-      loggerService.logError(error, stackTrace);
+      _loggerService.logError(error, stackTrace);
       return null;
     }
 
     final statusCode = response.statusCode;
 
     if (statusCode != 200) {
-      loggerService.log('statusCode = $statusCode; userLogin = $uns');
+      _loggerService.log('statusCode = $statusCode; userLogin = $uns');
       return null;
     }
 
@@ -57,7 +57,7 @@ class SearchIdOnPortalServiceImpl implements SearchIdOnPortalService {
   @override
   Future<IDForSchedule?> getIdOfLoggedInUser() async {
     final userData =
-        await gettingProfileOfCurrentUser.getProfileOfCurrentUser();
+        await _gettingProfileOfCurrentUser.getProfileOfCurrentUser();
 
     if (userData is EmployeeData) {
       return IDForSchedule(IDType.person, userData.syncID);
@@ -87,14 +87,14 @@ class SearchIdOnPortalServiceImpl implements SearchIdOnPortalService {
     try {
       response = await requestSender.get();
     } catch (error, stackTrace) {
-      loggerService.logError(error, stackTrace);
+      _loggerService.logError(error, stackTrace);
       return null;
     }
 
     final statusCode = response.statusCode;
 
     if (statusCode != 200) {
-      loggerService.log(
+      _loggerService.log(
         'statusCode = $statusCode; value = $value; valueType = $valueType',
       );
       return null;

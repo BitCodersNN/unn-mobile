@@ -11,9 +11,9 @@ class _PostWithLoadedInfoProviderKeys {
 }
 
 class PostWithLoadedInfoProviderImpl implements PostWithLoadedInfoProvider {
-  final StorageService storage;
+  final StorageService _storage;
 
-  PostWithLoadedInfoProviderImpl(this.storage);
+  PostWithLoadedInfoProviderImpl(this._storage);
 
   @override
   Future<List<PostWithLoadedInfo>?> getData() async {
@@ -22,7 +22,7 @@ class PostWithLoadedInfoProviderImpl implements PostWithLoadedInfoProvider {
     }
 
     final jsonList = jsonDecode(
-      (await storage.read(
+      (await _storage.read(
         key: _PostWithLoadedInfoProviderKeys.postWithLoadedInfoKey,
       ))!,
     );
@@ -42,7 +42,7 @@ class PostWithLoadedInfoProviderImpl implements PostWithLoadedInfoProvider {
       return null;
     }
 
-    final dateTimeString = await storage.read(
+    final dateTimeString = await _storage.read(
       key: _PostWithLoadedInfoProviderKeys.dateTimeWhenPostsWereLastSaved,
     );
 
@@ -55,7 +55,7 @@ class PostWithLoadedInfoProviderImpl implements PostWithLoadedInfoProvider {
 
   @override
   Future<bool> isContained() async {
-    return await storage.containsKey(
+    return await _storage.containsKey(
       key: _PostWithLoadedInfoProviderKeys.postWithLoadedInfoKey,
     );
   }
@@ -71,7 +71,7 @@ class PostWithLoadedInfoProviderImpl implements PostWithLoadedInfoProvider {
       jsonList.add(postWithLoadedInfo.toJson());
     }
 
-    await storage.write(
+    await _storage.write(
       key: _PostWithLoadedInfoProviderKeys.postWithLoadedInfoKey,
       value: jsonEncode(jsonList),
     );
@@ -79,7 +79,7 @@ class PostWithLoadedInfoProviderImpl implements PostWithLoadedInfoProvider {
 
   @override
   Future<void> saveDateTimePublishedPost(DateTime dateTime) async {
-    await storage.write(
+    await _storage.write(
       key: _PostWithLoadedInfoProviderKeys.dateTimeWhenPostsWereLastSaved,
       value: dateTime.toString(),
     );

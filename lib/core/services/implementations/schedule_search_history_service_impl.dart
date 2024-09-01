@@ -9,8 +9,8 @@ import 'package:unn_mobile/core/services/interfaces/schedule_search_history_serv
 import 'package:unn_mobile/core/services/interfaces/storage_service.dart';
 
 class ScheduleSearchHistoryServiceImpl implements ScheduleSearchHistoryService {
-  final StorageService storage;
-  final LoggerService loggerService;
+  final StorageService _storage;
+  final LoggerService _loggerService;
   final Map<IDType, Queue<ScheduleSearchSuggestionItem>> _historyQueues = {};
 
   final _storageKeySuffix = 'ScheduleSearchHistory';
@@ -18,15 +18,16 @@ class ScheduleSearchHistoryServiceImpl implements ScheduleSearchHistoryService {
   bool _isInitialized = false;
 
   ScheduleSearchHistoryServiceImpl(
-    this.storage,
-    this.loggerService,
+    this._storage,
+    this._loggerService,
   );
 
   Future<void> _initFromStorage() async {
     for (final type in IDType.values) {
       final key = _getStorageKeyForType(type);
       try {
-        final Iterable rawHistory = jsonDecode((await storage.read(key: key))!);
+        final Iterable rawHistory =
+            jsonDecode((await _storage.read(key: key))!);
         _historyQueues.putIfAbsent(
           type,
           () => Queue.from(
@@ -36,7 +37,7 @@ class ScheduleSearchHistoryServiceImpl implements ScheduleSearchHistoryService {
           ),
         );
       } catch (e, stack) {
-        loggerService.logError(e, stack);
+        _loggerService.logError(e, stack);
       } finally {
         // Если что угодно пошло не так
         // (нет ключа в хранилище или там невалидные данные)
@@ -71,7 +72,7 @@ class ScheduleSearchHistoryServiceImpl implements ScheduleSearchHistoryService {
     if (_historyQueues[type]!.length > _maxHistoryItems) {
       _historyQueues[type]!.removeLast();
     }
-    await storage.write(
+    await _storage.write(
       key: _getStorageKeyForType(type),
       value: jsonEncode(await getHistory(type)),
     );

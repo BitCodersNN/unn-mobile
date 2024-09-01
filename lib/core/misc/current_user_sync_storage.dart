@@ -5,14 +5,14 @@ import 'package:unn_mobile/core/services/interfaces/getting_profile_of_current_u
 import 'package:unn_mobile/core/services/interfaces/user_data_provider.dart';
 
 class CurrentUserSyncStorage {
-  final UserDataProvider userDataProvider;
-  final GettingProfileOfCurrentUser gettingProfileOfCurrentUser;
+  final UserDataProvider _userDataProvider;
+  final GettingProfileOfCurrentUser _gettingProfileOfCurrentUser;
 
   UserData? _currentUserData;
 
   CurrentUserSyncStorage(
-    this.userDataProvider,
-    this.gettingProfileOfCurrentUser,
+    this._userDataProvider,
+    this._gettingProfileOfCurrentUser,
   );
 
   /// Хранит информацию о текущем пользователе
@@ -23,12 +23,12 @@ class CurrentUserSyncStorage {
 
   /// Обновляет хранимую информацию о текущем пользователе
   Future<void> updateCurrentUserInfo() async {
-    if (await userDataProvider.isContained()) {
-      _currentUserData = await userDataProvider.getData();
+    if (await _userDataProvider.isContained()) {
+      _currentUserData = await _userDataProvider.getData();
     } else {
       _currentUserData =
-          await gettingProfileOfCurrentUser.getProfileOfCurrentUser();
-      userDataProvider.saveData(_currentUserData);
+          await _gettingProfileOfCurrentUser.getProfileOfCurrentUser();
+      _userDataProvider.saveData(_currentUserData);
     }
   }
 }

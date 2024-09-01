@@ -16,12 +16,12 @@ class _JsonKeys {
 }
 
 class GettingGradeBookImpl implements GettingGradeBook {
-  final AuthorizationService authorizationService;
-  final LoggerService loggerService;
+  final AuthorizationService _authorizationService;
+  final LoggerService _loggerService;
 
   GettingGradeBookImpl(
-    this.authorizationService,
-    this.loggerService,
+    this._authorizationService,
+    this._loggerService,
   );
   @override
   Future<Map<int, List<MarkBySubject>>?> getGradeBook() async {
@@ -29,7 +29,7 @@ class GettingGradeBookImpl implements GettingGradeBook {
       path: ApiPaths.marks,
       cookies: {
         SessionIdentifierStrings.sessionIdCookieKey:
-            authorizationService.sessionId ?? '',
+            _authorizationService.sessionId ?? '',
       },
     );
 
@@ -37,14 +37,14 @@ class GettingGradeBookImpl implements GettingGradeBook {
     try {
       response = await requestSender.get();
     } catch (error, stackTrace) {
-      loggerService.logError(error, stackTrace);
+      _loggerService.logError(error, stackTrace);
       return null;
     }
 
     final statusCode = response.statusCode;
 
     if (statusCode != 200) {
-      loggerService.log('statusCode = $statusCode');
+      _loggerService.log('statusCode = $statusCode');
       return null;
     }
 
@@ -56,7 +56,7 @@ class GettingGradeBookImpl implements GettingGradeBook {
         ),
       );
     } catch (error, stackTrace) {
-      loggerService.logError(error, stackTrace);
+      _loggerService.logError(error, stackTrace);
       return null;
     }
 

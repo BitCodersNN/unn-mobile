@@ -7,29 +7,29 @@ import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 import 'package:unn_mobile/core/services/interfaces/storage_service.dart';
 
 class AuthorizationRefreshServiceImpl implements AuthorizationRefreshService {
-  final AuthDataProvider authDataProvider;
-  final AuthorizationService authorisationService;
-  final StorageService storage;
-  final LoggerService loggerService;
+  final AuthDataProvider _authDataProvider;
+  final AuthorizationService _authorisationService;
+  final StorageService _storage;
+  final LoggerService _loggerService;
 
   AuthorizationRefreshServiceImpl(
-    this.authDataProvider,
-    this.authorisationService,
-    this.storage,
-    this.loggerService,
+    this._authDataProvider,
+    this._authorisationService,
+    this._storage,
+    this._loggerService,
   );
 
   Future<bool> _userDataExistsInStorage() async {
     try {
-      final AuthData authData = await authDataProvider.getData();
+      final AuthData authData = await _authDataProvider.getData();
       return !(authData.login == AuthData.getDefaultParameter() ||
           authData.login == AuthData.getDefaultParameter());
     } on PlatformException catch (error, stack) {
-      loggerService.logError(
+      _loggerService.logError(
         error,
         stack,
       );
-      storage.clear();
+      _storage.clear();
       return false;
     }
   }
@@ -39,8 +39,8 @@ class AuthorizationRefreshServiceImpl implements AuthorizationRefreshService {
     if (!await _userDataExistsInStorage()) {
       return null;
     }
-    final AuthData authData = await authDataProvider.getData();
+    final AuthData authData = await _authDataProvider.getData();
 
-    return await authorisationService.auth(authData.login, authData.password);
+    return await _authorisationService.auth(authData.login, authData.password);
   }
 }

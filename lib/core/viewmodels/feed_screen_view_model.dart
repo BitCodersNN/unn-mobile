@@ -6,43 +6,43 @@ import 'package:unn_mobile/core/services/interfaces/reaction_manager.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
 
 class FeedScreenViewModel extends BaseViewModel {
-  final FeedUpdaterService feedStreamUpdater;
-  final CurrentUserSyncStorage currentUserSyncStorage;
-  final ReactionManager reactionManager;
+  final FeedUpdaterService _feedStreamUpdater;
+  final CurrentUserSyncStorage _currentUserSyncStorage;
+  final ReactionManager _reactionManager;
 
   FeedScreenViewModel(
-    this.feedStreamUpdater,
-    this.currentUserSyncStorage,
-    this.reactionManager,
+    this._feedStreamUpdater,
+    this._currentUserSyncStorage,
+    this._reactionManager,
   );
 
   DateTime? _lastViewedPostDateTime;
-  List<PostWithLoadedInfo> get posts => feedStreamUpdater.feedPosts;
-  bool get isLoadingPosts => feedStreamUpdater.isBusy;
+  List<PostWithLoadedInfo> get posts => _feedStreamUpdater.feedPosts;
+  bool get isLoadingPosts => _feedStreamUpdater.isBusy;
 
   final pendingReactionChanges = <int>{};
 
   void init() {
-    feedStreamUpdater.addListener(() {
+    _feedStreamUpdater.addListener(() {
       super.notifyListeners();
     });
   }
 
   Future<void> updateFeed() async {
-    await feedStreamUpdater.updateFeed();
+    await _feedStreamUpdater.updateFeed();
   }
 
   bool isNewPost(DateTime dateTimePublish) {
-    _lastViewedPostDateTime ??= feedStreamUpdater.lastViewedPostDateTime;
+    _lastViewedPostDateTime ??= _feedStreamUpdater.lastViewedPostDateTime;
     return _lastViewedPostDateTime!.isBefore(dateTimePublish);
   }
 
   void loadNextPage() {
-    feedStreamUpdater.loadNextPage();
+    _feedStreamUpdater.loadNextPage();
   }
 
   ReactionType? getReactionToPost(PostWithLoadedInfo post) {
-    final profileId = currentUserSyncStorage.currentUserData?.bitrixId;
+    final profileId = _currentUserSyncStorage.currentUserData?.bitrixId;
     return profileId != null
         ? post.ratingList.getReactionByUser(profileId)
         : null;
@@ -55,7 +55,7 @@ class FeedScreenViewModel extends BaseViewModel {
     if (post.post.keySigned == null) {
       return;
     }
-    final profileId = currentUserSyncStorage.currentUserData?.bitrixId;
+    final profileId = _currentUserSyncStorage.currentUserData?.bitrixId;
     if (profileId == null) {
       return;
     }
@@ -71,7 +71,7 @@ class FeedScreenViewModel extends BaseViewModel {
       // Временно удаляем реакцию, чтобы показать действие
       post.ratingList.removeReaction(profileId);
       super.notifyListeners();
-      if (!await reactionManager.removeReaction(post.post.keySigned!)) {
+      if (!await _reactionManager.removeReaction(post.post.keySigned!)) {
         // Если реакция не удалилась - восстанавливаем её
         post.ratingList.addReactions(currentReaction, [currentReactionInfo]);
         super.notifyListeners();
@@ -84,7 +84,7 @@ class FeedScreenViewModel extends BaseViewModel {
           .addReactions(reaction, [ReactionUserInfo(profileId, '', '')]);
       super.notifyListeners();
       final reactionUserInfo =
-          await reactionManager.addReaction(reaction, post.post.keySigned!);
+          await _reactionManager.addReaction(reaction, post.post.keySigned!);
       // Удаляем временную реакцию
       post.ratingList.removeReaction(profileId);
       if (reactionUserInfo != null) {

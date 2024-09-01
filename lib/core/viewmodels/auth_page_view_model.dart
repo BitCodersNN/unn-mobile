@@ -6,16 +6,16 @@ import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
 
 class AuthPageViewModel extends BaseViewModel {
-  final AuthDataProvider authDataProvider;
-  final AuthorizationService authorisationService;
-  final LoggerService loggerService;
+  final AuthDataProvider _authDataProvider;
+  final AuthorizationService _authorisationService;
+  final LoggerService _loggerService;
 
   bool _hasAuthError = false;
 
   AuthPageViewModel(
-    this.authDataProvider,
-    this.authorisationService,
-    this.loggerService,
+    this._authDataProvider,
+    this._authorisationService,
+    this._loggerService,
   );
 
   bool get hasAuthError => _hasAuthError;
@@ -30,13 +30,13 @@ class AuthPageViewModel extends BaseViewModel {
     AuthRequestResult? authResult;
 
     try {
-      authResult = await authorisationService.auth(user, password);
+      authResult = await _authorisationService.auth(user, password);
     } catch (error, stackTrace) {
-      loggerService.logError(error, stackTrace);
+      _loggerService.logError(error, stackTrace);
     }
 
     if (authResult == AuthRequestResult.success) {
-      await authDataProvider.saveData(AuthData(user, password));
+      await _authDataProvider.saveData(AuthData(user, password));
     } else {
       authResult != null
           ? _setAuthError(text: authResult.errorMessage)

@@ -8,18 +8,18 @@ class _AuthDataProviderKeys {
 }
 
 class AuthDataProviderImpl implements AuthDataProvider {
-  final StorageService storage;
+  final StorageService _storage;
 
-  AuthDataProviderImpl(this.storage);
+  AuthDataProviderImpl(this._storage);
 
   @override
   Future<AuthData> getData() async {
-    final login = await storage.read(
+    final login = await _storage.read(
           key: _AuthDataProviderKeys._loginKey,
           secure: true,
         ) ??
         AuthData.getDefaultParameter();
-    final password = await storage.read(
+    final password = await _storage.read(
           key: _AuthDataProviderKeys._passwotdKey,
           secure: true,
         ) ??
@@ -30,12 +30,12 @@ class AuthDataProviderImpl implements AuthDataProvider {
 
   @override
   Future<void> saveData(AuthData authData) async {
-    await storage.write(
+    await _storage.write(
       key: _AuthDataProviderKeys._loginKey,
       value: authData.login,
       secure: true,
     );
-    await storage.write(
+    await _storage.write(
       key: _AuthDataProviderKeys._passwotdKey,
       value: authData.password,
       secure: true,
@@ -44,10 +44,10 @@ class AuthDataProviderImpl implements AuthDataProvider {
 
   @override
   Future<bool> isContained() async {
-    return (await storage.containsKey(
+    return (await _storage.containsKey(
           key: _AuthDataProviderKeys._loginKey,
         ) &&
-        await storage.containsKey(
+        await _storage.containsKey(
           key: _AuthDataProviderKeys._passwotdKey,
         ));
   }

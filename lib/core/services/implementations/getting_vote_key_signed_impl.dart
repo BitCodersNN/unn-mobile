@@ -9,13 +9,13 @@ import 'package:unn_mobile/core/services/interfaces/getting_vote_key_signed.dart
 import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 
 class GettingVoteKeySignedImpl implements GettingVoteKeySigned {
-  final AuthorizationService authorizationService;
-  final LoggerService loggerService;
+  final AuthorizationService _authorizationService;
+  final LoggerService _loggerService;
   final String _blog = 'blog';
 
   GettingVoteKeySignedImpl(
-    this.authorizationService,
-    this.loggerService,
+    this._authorizationService,
+    this._loggerService,
   );
 
   @override
@@ -28,11 +28,11 @@ class GettingVoteKeySignedImpl implements GettingVoteKeySigned {
     final requestSender = HttpRequestSender(
       path: path,
       headers: {
-        SessionIdentifierStrings.csrfToken: authorizationService.csrf ?? '',
+        SessionIdentifierStrings.csrfToken: _authorizationService.csrf ?? '',
       },
       cookies: {
         SessionIdentifierStrings.sessionIdCookieKey:
-            authorizationService.sessionId ?? '',
+            _authorizationService.sessionId ?? '',
       },
     );
 
@@ -41,12 +41,12 @@ class GettingVoteKeySignedImpl implements GettingVoteKeySigned {
     try {
       response = await requestSender.get(timeoutSeconds: 60);
     } catch (error, stackTrace) {
-      loggerService.log('Exception: $error\nStackTrace: $stackTrace');
+      _loggerService.log('Exception: $error\nStackTrace: $stackTrace');
       return null;
     }
 
     if (response.statusCode != 200) {
-      loggerService.log('statusCode = ${response.statusCode}');
+      _loggerService.log('statusCode = ${response.statusCode}');
       return null;
     }
 
@@ -54,7 +54,7 @@ class GettingVoteKeySignedImpl implements GettingVoteKeySigned {
     try {
       responseStr = await HttpRequestSender.responseToStringBody(response);
     } catch (error, stackTrace) {
-      loggerService.logError(error, stackTrace);
+      _loggerService.logError(error, stackTrace);
       return null;
     }
 
@@ -64,7 +64,7 @@ class GettingVoteKeySignedImpl implements GettingVoteKeySigned {
           .firstMatch(responseStr)
           ?.group(0) as String);
     } catch (error, stackTrace) {
-      loggerService.logError(error, stackTrace);
+      _loggerService.logError(error, stackTrace);
       return null;
     }
 

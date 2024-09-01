@@ -21,13 +21,13 @@ class _ExclusionID {
 }
 
 class ScheduleScreenViewModel extends BaseViewModel {
-  final GettingScheduleService getScheduleService;
-  final SearchIdOnPortalService searchIdOnPortalService;
-  final OfflineScheduleProvider offlineScheduleProvider;
-  final GettingProfileOfCurrentUser gettingProfileOfCurrentUser;
-  final ScheduleSearchHistoryService historyService;
-  final OnlineStatusData onlineStatusData;
-  final ExportScheduleService exportScheduleService;
+  final GettingScheduleService _getScheduleService;
+  final SearchIdOnPortalService _searchIdOnPortalService;
+  final OfflineScheduleProvider _offlineScheduleProvider;
+  final GettingProfileOfCurrentUser _gettingProfileOfCurrentUser;
+  final ScheduleSearchHistoryService _historyService;
+  final OnlineStatusData _onlineStatusData;
+  final ExportScheduleService _exportScheduleService;
   final String _studentNameText = 'Имя студента';
   final String _lecturerNameText = 'Имя преподавателя';
   final String _groupNameText = 'Название группы';
@@ -40,15 +40,15 @@ class ScheduleScreenViewModel extends BaseViewModel {
   IDType _idType = IDType.student;
 
   ScheduleScreenViewModel(
-    this.getScheduleService,
-    this.searchIdOnPortalService,
-    this.offlineScheduleProvider,
-    this.gettingProfileOfCurrentUser,
-    this.historyService,
-    this.onlineStatusData,
-    this.exportScheduleService,
+    this._getScheduleService,
+    this._searchIdOnPortalService,
+    this._offlineScheduleProvider,
+    this._gettingProfileOfCurrentUser,
+    this._historyService,
+    this._onlineStatusData,
+    this._exportScheduleService,
   );
-  bool get offline => !onlineStatusData.isOnline;
+  bool get offline => !_onlineStatusData.isOnline;
   Future<Map<int, List<Subject>>>? _scheduleLoader;
   Future<Map<int, List<Subject>>>? get scheduleLoader => _scheduleLoader;
   int displayedWeekOffset = 0;
@@ -80,7 +80,7 @@ class ScheduleScreenViewModel extends BaseViewModel {
       decidePivotWeek(),
     );
     tryLoginAndRetrieveData(
-      searchIdOnPortalService.getIdOfLoggedInUser,
+      _searchIdOnPortalService.getIdOfLoggedInUser,
       () => null,
     ).then((value) async {
       if (value == null) {
@@ -99,7 +99,7 @@ class ScheduleScreenViewModel extends BaseViewModel {
   void _initGroup() {
     _searchPlaceholderText = _groupNameText;
     tryLoginAndRetrieveData(
-      gettingProfileOfCurrentUser.getProfileOfCurrentUser,
+      _gettingProfileOfCurrentUser.getProfileOfCurrentUser,
       () => null,
     ).then((value) async {
       if (value == null) {
@@ -108,7 +108,7 @@ class ScheduleScreenViewModel extends BaseViewModel {
       }
 
       if (value is StudentData) {
-        final groupID = await searchIdOnPortalService.findIDOnPortal(
+        final groupID = await _searchIdOnPortalService.findIDOnPortal(
           value.eduGroup,
           IDType.group,
         );
@@ -189,8 +189,8 @@ class ScheduleScreenViewModel extends BaseViewModel {
     }
 
     final schedule = await tryLoginAndRetrieveData(
-      () async => await getScheduleService.getSchedule(filter),
-      offlineScheduleProvider.getData,
+      () async => await _getScheduleService.getSchedule(filter),
+      _offlineScheduleProvider.getData,
     );
 
     if (schedule == null) {
@@ -211,7 +211,7 @@ class ScheduleScreenViewModel extends BaseViewModel {
     }
 
     if (!offline && displayedWeekOffset == 0 && filter.id == _currentId) {
-      offlineScheduleProvider.saveData(schedule);
+      _offlineScheduleProvider.saveData(schedule);
     }
 
     setState(ViewState.idle);
@@ -227,7 +227,7 @@ class ScheduleScreenViewModel extends BaseViewModel {
   Future<void> submitSearch(String query) async {
     if (query.isNotEmpty) {
       final searchResult =
-          await searchIdOnPortalService.findIDOnPortal(query, _idType);
+          await _searchIdOnPortalService.findIDOnPortal(query, _idType);
 
       if (searchResult == null) {
         throw Exception('Schedule search result was null');
@@ -246,7 +246,7 @@ class ScheduleScreenViewModel extends BaseViewModel {
   }
 
   FutureOr<void> addHistoryItem(ScheduleSearchSuggestionItem item) =>
-      historyService.pushToHistory(_idType, item);
+      _historyService.pushToHistory(_idType, item);
 
   Future<List<ScheduleSearchSuggestionItem>> getSearchSuggestions(
     String value,
@@ -255,7 +255,7 @@ class ScheduleScreenViewModel extends BaseViewModel {
       return await _getHistorySuggestions();
     }
     final suggestions = await tryLoginAndRetrieveData(
-      () async => await searchIdOnPortalService.findIDOnPortal(value, _idType),
+      () async => await _searchIdOnPortalService.findIDOnPortal(value, _idType),
       () async => <ScheduleSearchSuggestionItem>[],
     );
 
@@ -263,7 +263,7 @@ class ScheduleScreenViewModel extends BaseViewModel {
   }
 
   Future<List<ScheduleSearchSuggestionItem>> _getHistorySuggestions() async {
-    return await historyService.getHistory(_idType);
+    return await _historyService.getHistory(_idType);
   }
 
   void init(
@@ -293,17 +293,17 @@ class ScheduleScreenViewModel extends BaseViewModel {
   }
 
   Future<RequestCalendarPermissionResult> askForExportPermission() async {
-    return await exportScheduleService.requestCalendarPermission();
+    return await _exportScheduleService.requestCalendarPermission();
   }
 
   Future openSettingsWindow() async {
-    await exportScheduleService.openSettings();
+    await _exportScheduleService.openSettings();
   }
 
   Future<bool> exportSchedule(DateTimeRange range) async {
     final exportScheduleFilter = ScheduleFilter(_idType, _currentId, range);
     final res =
-        await exportScheduleService.exportSchedule(exportScheduleFilter);
+        await _exportScheduleService.exportSchedule(exportScheduleFilter);
     return res == ExportScheduleResult.success;
   }
 }

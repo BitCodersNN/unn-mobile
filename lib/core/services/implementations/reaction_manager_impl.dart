@@ -20,14 +20,14 @@ class _KeysForReactionManagerJsonConverter {
 }
 
 class ReactionManagerImpl implements ReactionManager {
-  final LoggerService loggerService;
-  final AuthorizationService authorizationService;
-  final CurrentUserSyncStorage currentUserSync;
+  final LoggerService _loggerService;
+  final AuthorizationService _authorizationService;
+  final CurrentUserSyncStorage _currentUserSync;
 
   ReactionManagerImpl(
-    this.authorizationService,
-    this.currentUserSync,
-    this.loggerService,
+    this._authorizationService,
+    this._currentUserSync,
+    this._loggerService,
   );
 
   @override
@@ -64,11 +64,11 @@ class ReactionManagerImpl implements ReactionManager {
         AjaxActionStrings.actionKey: AjaxActionStrings.ratingVote,
       },
       headers: {
-        SessionIdentifierStrings.csrfToken: authorizationService.csrf ?? '',
+        SessionIdentifierStrings.csrfToken: _authorizationService.csrf ?? '',
       },
       cookies: {
         SessionIdentifierStrings.sessionIdCookieKey:
-            authorizationService.sessionId ?? '',
+            _authorizationService.sessionId ?? '',
       },
     );
 
@@ -88,12 +88,12 @@ class ReactionManagerImpl implements ReactionManager {
         timeoutSeconds: 60,
       );
     } catch (error, stackTrace) {
-      loggerService.log('Exception: $error\nStackTrace: $stackTrace');
+      _loggerService.log('Exception: $error\nStackTrace: $stackTrace');
       return null;
     }
 
     if (response.statusCode != 200) {
-      loggerService.log('statusCode = ${response.statusCode}');
+      _loggerService.log('statusCode = ${response.statusCode}');
       return null;
     }
 
@@ -104,7 +104,7 @@ class ReactionManagerImpl implements ReactionManager {
       )[_KeysForReactionManagerJsonConverter.data]
           [_KeysForReactionManagerJsonConverter.userData];
     } catch (error, stackTrace) {
-      loggerService.logError(error, stackTrace);
+      _loggerService.logError(error, stackTrace);
       return null;
     }
 
@@ -112,7 +112,7 @@ class ReactionManagerImpl implements ReactionManager {
       return null;
     }
 
-    final userData = currentUserSync.currentUserData;
+    final userData = _currentUserSync.currentUserData;
     final photoSrc = jsonMap[_KeysForReactionManagerJsonConverter.photo]
         [_KeysForReactionManagerJsonConverter.src];
     return ReactionUserInfo(

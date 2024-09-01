@@ -9,9 +9,9 @@ class _OfflineScheduleProviderKeys {
 }
 
 class OfflineScheduleProviderImpl implements OfflineScheduleProvider {
-  final StorageService storage;
+  final StorageService _storage;
 
-  OfflineScheduleProviderImpl(this.storage);
+  OfflineScheduleProviderImpl(this._storage);
 
   @override
   Future<List<Subject>?> getData() async {
@@ -19,7 +19,7 @@ class OfflineScheduleProviderImpl implements OfflineScheduleProvider {
       return null;
     }
     final jsonList = jsonDecode(
-      (await storage.read(
+      (await _storage.read(
         key: _OfflineScheduleProviderKeys.scheduleKey,
       ))!,
     );
@@ -42,7 +42,7 @@ class OfflineScheduleProviderImpl implements OfflineScheduleProvider {
     for (final subject in schedule) {
       jsonList.add(subject.toJson());
     }
-    await storage.write(
+    await _storage.write(
       key: _OfflineScheduleProviderKeys.scheduleKey,
       value: jsonEncode(jsonList),
     );
@@ -50,7 +50,7 @@ class OfflineScheduleProviderImpl implements OfflineScheduleProvider {
 
   @override
   Future<bool> isContained() async {
-    return await storage.containsKey(
+    return await _storage.containsKey(
       key: _OfflineScheduleProviderKeys.scheduleKey,
     );
   }

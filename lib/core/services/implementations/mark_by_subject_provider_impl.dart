@@ -9,9 +9,9 @@ class _OfflineMarkBySubjectProviderKeys {
 }
 
 class MarkBySubjectProviderImpl implements MarkBySubjectProvider {
-  final StorageService storage;
+  final StorageService _storage;
 
-  MarkBySubjectProviderImpl(this.storage);
+  MarkBySubjectProviderImpl(this._storage);
 
   @override
   Future<Map<int, List<MarkBySubject>>?> getData() async {
@@ -19,7 +19,7 @@ class MarkBySubjectProviderImpl implements MarkBySubjectProvider {
       return null;
     }
     final jsonString = jsonDecode(
-      (await storage.read(
+      (await _storage.read(
         key: _OfflineMarkBySubjectProviderKeys.markBySubject,
       ))!,
     );
@@ -38,7 +38,7 @@ class MarkBySubjectProviderImpl implements MarkBySubjectProvider {
 
   @override
   Future<bool> isContained() async {
-    return await storage.containsKey(
+    return await _storage.containsKey(
       key: _OfflineMarkBySubjectProviderKeys.markBySubject,
     );
   }
@@ -57,7 +57,7 @@ class MarkBySubjectProviderImpl implements MarkBySubjectProvider {
 
     final String jsonString = json.encode(jsonMap);
 
-    await storage.write(
+    await _storage.write(
       key: _OfflineMarkBySubjectProviderKeys.markBySubject,
       value: jsonEncode(jsonString),
     );

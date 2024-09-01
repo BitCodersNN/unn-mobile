@@ -13,12 +13,12 @@ class _UserDataProvideKeys {
 }
 
 class UserDataProviderImpl implements UserDataProvider {
-  final LoggerService loggerService;
+  final LoggerService _loggerService;
+  final StorageService _storage;
   static const _student = 'StudentData';
   static const _employee = 'EmployeeData';
-  final StorageService storage;
 
-  UserDataProviderImpl(this.storage, this.loggerService);
+  UserDataProviderImpl(this._storage, this._loggerService);
 
   @override
   Future<UserData?> getData() async {
@@ -27,11 +27,11 @@ class UserDataProviderImpl implements UserDataProvider {
     }
 
     UserData? userData;
-    final userType = await storage.read(
+    final userType = await _storage.read(
       key: _UserDataProvideKeys._userTypeKey,
     );
 
-    final String? userInfo = await storage.read(
+    final String? userInfo = await _storage.read(
       key: _UserDataProvideKeys._userDataKey,
     );
 
@@ -50,7 +50,7 @@ class UserDataProviderImpl implements UserDataProvider {
         );
       }
     } catch (e, stackTrace) {
-      loggerService.logError(
+      _loggerService.logError(
         e,
         stackTrace,
         information: [userInfo!],
@@ -67,11 +67,11 @@ class UserDataProviderImpl implements UserDataProvider {
     }
 
     final userType = userData.runtimeType.toString();
-    await storage.write(
+    await _storage.write(
       key: _UserDataProvideKeys._userTypeKey,
       value: userType,
     );
-    await storage.write(
+    await _storage.write(
       key: _UserDataProvideKeys._userDataKey,
       value: jsonEncode(userData.toJson()),
     );
@@ -79,10 +79,10 @@ class UserDataProviderImpl implements UserDataProvider {
 
   @override
   Future<bool> isContained() async {
-    return await storage.containsKey(
+    return await _storage.containsKey(
           key: _UserDataProvideKeys._userTypeKey,
         ) &&
-        await storage.containsKey(
+        await _storage.containsKey(
           key: _UserDataProvideKeys._userDataKey,
         );
   }

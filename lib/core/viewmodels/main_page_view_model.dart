@@ -7,9 +7,9 @@ import 'package:unn_mobile/core/services/interfaces/getting_profile_of_current_u
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
 
 class MainPageViewModel extends BaseViewModel {
-  final GettingProfileOfCurrentUser currentUser;
-  final CurrentUserSyncStorage currentUserSyncStorage;
-  final FeedUpdaterService feedUpdaterService;
+  final GettingProfileOfCurrentUser _gettingCurrentUser;
+  final CurrentUserSyncStorage _currentUserSyncStorage;
+  final FeedUpdaterService _feedUpdaterService;
   int _selectedDrawerItem = 0;
   int _selectedBarItem = 1;
   bool _isDrawerItemSelected = false;
@@ -19,9 +19,9 @@ class MainPageViewModel extends BaseViewModel {
   ImageProvider<Object>? _userAvatar;
 
   MainPageViewModel(
-    this.currentUser,
-    this.currentUserSyncStorage,
-    this.feedUpdaterService,
+    this._gettingCurrentUser,
+    this._currentUserSyncStorage,
+    this._feedUpdaterService,
   );
 
   String? get avatarUrl => _avatarUrl;
@@ -71,10 +71,10 @@ class MainPageViewModel extends BaseViewModel {
 
   void init() {
     setState(ViewState.busy);
-    feedUpdaterService.updateFeed();
-    currentUser.getProfileOfCurrentUser().then(
+    _feedUpdaterService.updateFeed();
+    _gettingCurrentUser.getProfileOfCurrentUser().then(
       (value) {
-        value = value ?? currentUserSyncStorage.currentUserData;
+        value = value ?? _currentUserSyncStorage.currentUserData;
         if (value == null) {
           setState(ViewState.idle);
           return;

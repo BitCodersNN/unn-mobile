@@ -10,13 +10,13 @@ import 'package:unn_mobile/core/services/interfaces/getting_file_data.dart';
 import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 
 class GettingFileDataImpl implements GettingFileData {
-  final AuthorizationService authorizationService;
-  final LoggerService loggerService;
+  final AuthorizationService _authorizationService;
+  final LoggerService _loggerService;
   final String _id = 'id';
 
   GettingFileDataImpl(
-    this.authorizationService,
-    this.loggerService,
+    this._authorizationService,
+    this._loggerService,
   );
 
   @override
@@ -26,12 +26,12 @@ class GettingFileDataImpl implements GettingFileData {
     final requestSender = HttpRequestSender(
       path: ApiPaths.diskAttachedObjectGet,
       queryParams: {
-        SessionIdentifierStrings.sessid: authorizationService.csrf ?? '',
+        SessionIdentifierStrings.sessid: _authorizationService.csrf ?? '',
         _id: id.toString(),
       },
       cookies: {
         SessionIdentifierStrings.sessionIdCookieKey:
-            authorizationService.sessionId ?? '',
+            _authorizationService.sessionId ?? '',
       },
     );
 
@@ -39,14 +39,14 @@ class GettingFileDataImpl implements GettingFileData {
     try {
       response = await requestSender.get(timeoutSeconds: 60);
     } catch (error, stackTrace) {
-      loggerService.log('Exception: $error\nStackTrace: $stackTrace');
+      _loggerService.log('Exception: $error\nStackTrace: $stackTrace');
       return null;
     }
 
     final statusCode = response.statusCode;
 
     if (statusCode != 200) {
-      loggerService.log('statusCode = $statusCode; fileId = $id');
+      _loggerService.log('statusCode = $statusCode; fileId = $id');
       return null;
     }
 
@@ -56,7 +56,7 @@ class GettingFileDataImpl implements GettingFileData {
         await HttpRequestSender.responseToStringBody(response),
       )['result'];
     } catch (error, stackTrace) {
-      loggerService.logError(error, stackTrace);
+      _loggerService.logError(error, stackTrace);
       return null;
     }
 
@@ -64,7 +64,7 @@ class GettingFileDataImpl implements GettingFileData {
     try {
       fileData = FileData.fromJson(jsonMap);
     } catch (error, stackTrace) {
-      loggerService.logError(error, stackTrace);
+      _loggerService.logError(error, stackTrace);
     }
 
     return fileData;

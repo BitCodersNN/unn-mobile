@@ -10,15 +10,15 @@ import 'package:unn_mobile/core/services/interfaces/getting_blog_posts.dart';
 import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 
 class GettingBlogPostsImpl implements GettingBlogPosts {
-  final AuthorizationService authorisationService;
-  final LoggerService loggerService;
+  final AuthorizationService _authorisationService;
+  final LoggerService _loggerService;
   final int _numberOfPostsPerPage = 50;
   final String _start = 'start';
   final String _postId = 'POST_ID';
 
   GettingBlogPostsImpl(
-    this.authorisationService,
-    this.loggerService,
+    this._authorisationService,
+    this._loggerService,
   );
 
   @override
@@ -29,13 +29,13 @@ class GettingBlogPostsImpl implements GettingBlogPosts {
     final requestSender = HttpRequestSender(
       path: ApiPaths.blogpostGet,
       queryParams: {
-        SessionIdentifierStrings.sessid: authorisationService.csrf ?? '',
+        SessionIdentifierStrings.sessid: _authorisationService.csrf ?? '',
         _start: (_numberOfPostsPerPage * pageNumber).toString(),
         _postId: postId.toString(),
       },
       cookies: {
         SessionIdentifierStrings.sessionIdCookieKey:
-            authorisationService.sessionId ?? '',
+            _authorisationService.sessionId ?? '',
       },
     );
 
@@ -43,14 +43,14 @@ class GettingBlogPostsImpl implements GettingBlogPosts {
     try {
       response = await requestSender.get(timeoutSeconds: 60);
     } catch (error, stackTrace) {
-      loggerService.log('Exception: $error\nStackTrace: $stackTrace');
+      _loggerService.log('Exception: $error\nStackTrace: $stackTrace');
       return null;
     }
 
     final statusCode = response.statusCode;
 
     if (statusCode != 200) {
-      loggerService.log(
+      _loggerService.log(
         'statusCode = $statusCode; pageNumber = $pageNumber; postId = $postId;',
       );
       return null;
@@ -61,7 +61,7 @@ class GettingBlogPostsImpl implements GettingBlogPosts {
     try {
       jsonList = jsonDecode(str)['result'];
     } catch (erorr, stackTrace) {
-      loggerService.logError(erorr, stackTrace);
+      _loggerService.logError(erorr, stackTrace);
       return null;
     }
 
@@ -71,7 +71,7 @@ class GettingBlogPostsImpl implements GettingBlogPosts {
           .map<BlogData>((blogPostJson) => BlogData.fromJson(blogPostJson))
           .toList();
     } catch (error, stackTrace) {
-      loggerService.logError(error, stackTrace);
+      _loggerService.logError(error, stackTrace);
     }
 
     if (blogPosts != null) {

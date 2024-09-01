@@ -11,7 +11,7 @@ import 'package:unn_mobile/core/services/interfaces/getting_schedule_service.dar
 import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 
 class GettingScheduleServiceImpl implements GettingScheduleService {
-  final LoggerService loggerService;
+  final LoggerService _loggerService;
   final String _start = 'start';
   final String _finish = 'finish';
   final String _lng = 'lng';
@@ -19,7 +19,7 @@ class GettingScheduleServiceImpl implements GettingScheduleService {
   final String _dateFormat = 'y.MM.dd H:m';
   final String _splitPaternForStream = '|';
 
-  GettingScheduleServiceImpl(this.loggerService);
+  GettingScheduleServiceImpl(this._loggerService);
 
   @override
   Future<List<Subject>?> getSchedule(ScheduleFilter scheduleFilter) async {
@@ -44,14 +44,14 @@ class GettingScheduleServiceImpl implements GettingScheduleService {
     try {
       response = await requestSender.get();
     } catch (error, stackTrace) {
-      loggerService.log('Exception: $error\nStackTrace: $stackTrace');
+      _loggerService.log('Exception: $error\nStackTrace: $stackTrace');
       return null;
     }
 
     final statusCode = response.statusCode;
 
     if (statusCode != 200) {
-      loggerService.log(
+      _loggerService.log(
         'statusCode = $statusCode; scheduleId = ${scheduleFilter.id}',
       );
       return null;
@@ -63,7 +63,7 @@ class GettingScheduleServiceImpl implements GettingScheduleService {
       jsonList =
           jsonDecode(await HttpRequestSender.responseToStringBody(response));
     } catch (error, stackTrace) {
-      loggerService.logError(error, stackTrace);
+      _loggerService.logError(error, stackTrace);
       return null;
     }
 

@@ -15,23 +15,23 @@ class _JsonKeys {
 }
 
 class GettingBlogPostCommentsImpl implements GettingBlogPostComments {
-  final AuthorizationService authService;
-  final LoggerService loggerService;
+  final AuthorizationService _authService;
+  final LoggerService _loggerService;
 
   GettingBlogPostCommentsImpl(
-    this.authService,
-    this.loggerService,
+    this._authService,
+    this._loggerService,
   );
   @override
   Future<List<BlogPostComment>?> getBlogPostComments({
     required int postId,
     int pageNumber = 1,
   }) async {
-    final sessionId = authService.sessionId;
-    final csrf = authService.csrf;
+    final sessionId = _authService.sessionId;
+    final csrf = _authService.csrf;
 
     if (sessionId == null || csrf == null) {
-      loggerService.log('Error, user not authorized');
+      _loggerService.log('Error, user not authorized');
       return null;
     }
 
@@ -79,12 +79,12 @@ class GettingBlogPostCommentsImpl implements GettingBlogPostComments {
         timeoutSeconds: 30,
       );
     } catch (error, stackTrace) {
-      loggerService.log('Exception: $error\nStackTrace: $stackTrace');
+      _loggerService.log('Exception: $error\nStackTrace: $stackTrace');
       return null;
     }
 
     if (response.statusCode != 200) {
-      loggerService.log(
+      _loggerService.log(
         '${runtimeType.toString()}: statusCode = ${response.statusCode}',
       );
       return null;
@@ -99,7 +99,7 @@ class GettingBlogPostCommentsImpl implements GettingBlogPostComments {
     final Map<String, dynamic> parsedJson = json.decode(jsonStr);
 
     if (!parsedJson.containsKey(_JsonKeys._messageListKey)) {
-      loggerService.log(
+      _loggerService.log(
         'json doesn\'t contain the messageList key',
       );
       return null;
@@ -121,19 +121,19 @@ class GettingBlogPostCommentsImpl implements GettingBlogPostComments {
     for (final messageMatch
         in RegularExpressions.commentIdAndMessageRegExp.allMatches(htmlBody)) {
       if (!authorMatches.moveNext()) {
-        loggerService.log('no author matches');
+        _loggerService.log('no author matches');
         break;
       }
 
       final authorMatch = authorMatches.current;
 
       if (!dateTimeMatches.moveNext()) {
-        loggerService.log('no dateTime matches');
+        _loggerService.log('no dateTime matches');
         break;
       }
 
       if (!keySignedMatches.moveNext()) {
-        loggerService.log('no keySigned matches');
+        _loggerService.log('no keySigned matches');
         break;
       }
 

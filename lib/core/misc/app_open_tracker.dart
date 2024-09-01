@@ -6,24 +6,24 @@ class _AppOpenTrackerProviderKeys {
 }
 
 class AppOpenTracker {
-  final StorageService storage;
+  final StorageService _storage;
   String? _lastVisitedVersion;
 
-  AppOpenTracker(this.storage);
+  AppOpenTracker(this._storage);
 
   String? get lastVisitedVersion => _lastVisitedVersion;
 
   Future<bool> isFirstTimeOpenOnVersion() async {
     final appVersion = await _getAppVersion();
 
-    _lastVisitedVersion ??= await storage.read(
+    _lastVisitedVersion ??= await _storage.read(
       key: _AppOpenTrackerProviderKeys._firstAppOpen,
     );
     final isFirstAppOpenForVersion =
         _lastVisitedVersion == null || appVersion != _lastVisitedVersion;
 
     if (isFirstAppOpenForVersion) {
-      await storage.write(
+      await _storage.write(
         key: _AppOpenTrackerProviderKeys._firstAppOpen,
         value: appVersion,
       );

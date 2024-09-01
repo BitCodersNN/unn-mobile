@@ -9,12 +9,12 @@ import 'package:unn_mobile/core/models/online_status_data.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
 
 class AuthorizationServiceImpl implements AuthorizationService {
-  final OnlineStatusData onlineStatus;
+  final OnlineStatusData _onlineStatus;
   String? _sessionId;
   String? _csrf;
   bool _isAuthorised = false;
 
-  AuthorizationServiceImpl(this.onlineStatus);
+  AuthorizationServiceImpl(this._onlineStatus);
 
   @override
   Future<AuthRequestResult> auth(String login, String password) async {
@@ -76,8 +76,8 @@ class AuthorizationServiceImpl implements AuthorizationService {
     _isAuthorised = true;
 
     // success result
-    onlineStatus.isOnline = true;
-    onlineStatus.timeOfLastOnline = DateTime.now();
+    _onlineStatus.isOnline = true;
+    _onlineStatus.timeOfLastOnline = DateTime.now();
 
     return AuthRequestResult.success;
   }

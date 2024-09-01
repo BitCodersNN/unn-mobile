@@ -19,20 +19,20 @@ enum _TypeScreen {
 }
 
 class LoadingPageViewModel extends BaseViewModel {
-  final AuthorizationRefreshService initializingApplicationService;
-  final CurrentUserSyncStorage typeOfCurrentUser;
-  final GettingProfileOfCurrentUser gettingProfileOfCurrentUser;
-  final UserDataProvider userDataProvider;
-  final AppOpenTracker appOpenTracker;
-  final LoggerService loggerService;
+  final AuthorizationRefreshService _initializingApplicationService;
+  final CurrentUserSyncStorage _typeOfCurrentUser;
+  final GettingProfileOfCurrentUser _gettingProfileOfCurrentUser;
+  final UserDataProvider _userDataProvider;
+  final AppOpenTracker _appOpenTracker;
+  final LoggerService _loggerService;
 
   LoadingPageViewModel(
-    this.initializingApplicationService,
-    this.typeOfCurrentUser,
-    this.gettingProfileOfCurrentUser,
-    this.userDataProvider,
-    this.appOpenTracker,
-    this.loggerService,
+    this._initializingApplicationService,
+    this._typeOfCurrentUser,
+    this._gettingProfileOfCurrentUser,
+    this._userDataProvider,
+    this._appOpenTracker,
+    this._loggerService,
   );
 
   final actualLoadingPage = LoadingPages().actualLoadingPage;
@@ -50,9 +50,9 @@ class LoadingPageViewModel extends BaseViewModel {
     await AppSettings.load();
 
     try {
-      authRequestResult = await initializingApplicationService.refreshLogin();
+      authRequestResult = await _initializingApplicationService.refreshLogin();
     } catch (error, stackTrace) {
-      loggerService.logError(error, stackTrace);
+      _loggerService.logError(error, stackTrace);
     }
     typeScreen = switch (authRequestResult) {
       null => _TypeScreen.authScreen,
@@ -77,17 +77,17 @@ class LoadingPageViewModel extends BaseViewModel {
   }
 
   Future<void> _initUserData() async {
-    if (await appOpenTracker.isFirstTimeOpenOnVersion()) {
+    if (await _appOpenTracker.isFirstTimeOpenOnVersion()) {
       final profile =
-          await gettingProfileOfCurrentUser.getProfileOfCurrentUser();
-      userDataProvider.saveData(profile);
+          await _gettingProfileOfCurrentUser.getProfileOfCurrentUser();
+      _userDataProvider.saveData(profile);
     }
 
-    await typeOfCurrentUser.updateCurrentUserInfo();
-    if (typeOfCurrentUser.currentUserData != null &&
-        typeOfCurrentUser.currentUserData!.fullUrlPhoto != null) {
+    await _typeOfCurrentUser.updateCurrentUserInfo();
+    if (_typeOfCurrentUser.currentUserData != null &&
+        _typeOfCurrentUser.currentUserData!.fullUrlPhoto != null) {
       DefaultCacheManager().downloadFile(
-        typeOfCurrentUser.currentUserData!.fullUrlPhoto!,
+        _typeOfCurrentUser.currentUserData!.fullUrlPhoto!,
       );
     }
   }
