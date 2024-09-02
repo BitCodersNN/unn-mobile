@@ -43,6 +43,11 @@ jobs:
           echo -e "storePassword: $keystore_pass\nkeyPassword: $keystore_pass\nkeyAlias: upload-unn-mobile\nstoreFile=keystore.jks\n" >> ./android/key.properties
       - name: install firebase
         run: curl -sL https://firebase.tools | bash
+      - name: install java (?)
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'oracle'
+          java-version: '17'
       - name: get dependencies
         run: flutter pub get
       - name: configure flutterfire
