@@ -8,6 +8,7 @@ on:
     branches:
       - "develop"
     paths:
+      - ".github"
       - "android/**"
       - "lib/**"
       - "pubspec.yaml"
@@ -25,9 +26,9 @@ jobs:
         with:
           submodules: recursive
           ref: develop
-      - uses: subosito/flutter-action@v2
+      - uses: flutter-actions/setup-flutter@v3.6
         with:
-          flutter-version: '3.24.0'
+          version: '3.24.0'
           channel: 'stable'
       - name: load certificate
         uses: mobiledevops/secret-to-file-action@v1
