@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
@@ -13,6 +15,12 @@ import 'package:unn_mobile/load_services.dart';
 void main() async {
   registerDependencies();
   WidgetsFlutterBinding.ensureInitialized();
+
+  final certificate = await PlatformAssetBundle().load('assets/ca/unn-ru.pem');
+  SecurityContext.defaultContext.setTrustedCertificatesBytes(
+    certificate.buffer.asUint8List(),
+  );
+
   SystemChrome.setPreferredOrientations(
     [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown],
   );
