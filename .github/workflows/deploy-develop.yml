@@ -1,6 +1,9 @@
 name: deploy-develop-android
 run-name: Build and deploy develop build for Android
 on:
+  pull_request:
+    branches:
+      - 'ci/**'
   push:
     branches:
       - "develop"
@@ -45,7 +48,7 @@ jobs:
         env: 
           firebase_token: ${{ secrets.FIREBASE_TOKEN }}
         run: |
-          dart pub global activate flutterfire_cli
+          dart pub global activate flutterfire_cli 1.0.1-dev.4
           flutterfire configure -t $firebase_token -y -p unn-mobile-1 --platforms=android --android-package-name=ru.unn.unn_mobile
       - name: build
         run: flutter build appbundle
