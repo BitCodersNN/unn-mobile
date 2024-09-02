@@ -43,7 +43,7 @@ dependencies:
   open_filex: ^4.4.0
   path: 
   extended_image: ^8.2.0
-  package_info_plus: ^8.0.0
+  package_info_plus: ^8.0.2
 
 dev_dependencies:
   flutter_test:
