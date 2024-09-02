@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/constants/api_url_strings.dart';
 import 'package:unn_mobile/core/constants/session_identifier_strings.dart';
 import 'package:unn_mobile/core/misc/http_helper.dart';
@@ -11,30 +10,32 @@ import 'package:unn_mobile/core/services/interfaces/getting_blog_posts.dart';
 import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 
 class GettingBlogPostsImpl implements GettingBlogPosts {
-  final LoggerService _loggerService =
-      Injector.appInstance.get<LoggerService>();
+  final AuthorizationService _authorisationService;
+  final LoggerService _loggerService;
   final int _numberOfPostsPerPage = 50;
   final String _start = 'start';
   final String _postId = 'POST_ID';
+
+  GettingBlogPostsImpl(
+    this._authorisationService,
+    this._loggerService,
+  );
 
   @override
   Future<List<BlogData>?> getBlogPosts({
     int pageNumber = 0,
     int? postId,
   }) async {
-    final authorisationService =
-        Injector.appInstance.get<AuthorisationService>();
-
     final requestSender = HttpRequestSender(
       path: ApiPaths.blogpostGet,
       queryParams: {
-        SessionIdentifierStrings.sessid: authorisationService.csrf ?? '',
+        SessionIdentifierStrings.sessid: _authorisationService.csrf ?? '',
         _start: (_numberOfPostsPerPage * pageNumber).toString(),
         _postId: postId.toString(),
       },
       cookies: {
         SessionIdentifierStrings.sessionIdCookieKey:
-            authorisationService.sessionId ?? '',
+            _authorisationService.sessionId ?? '',
       },
     );
 

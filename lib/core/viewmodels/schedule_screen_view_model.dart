@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:collection';
 import 'package:flutter/material.dart';
-import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/misc/date_time_ranges.dart';
 import 'package:unn_mobile/core/misc/try_login_and_retrieve_data.dart';
 import 'package:unn_mobile/core/models/online_status_data.dart';
@@ -22,20 +21,13 @@ class _ExclusionID {
 }
 
 class ScheduleScreenViewModel extends BaseViewModel {
-  final GettingScheduleService _getScheduleService =
-      Injector.appInstance.get<GettingScheduleService>();
-  final SearchIdOnPortalService _searchIdOnPortalService =
-      Injector.appInstance.get<SearchIdOnPortalService>();
-  final OfflineScheduleProvider _offlineScheduleProvider =
-      Injector.appInstance.get<OfflineScheduleProvider>();
-  final GettingProfileOfCurrentUser _gettingProfileOfCurrentUser =
-      Injector.appInstance.get<GettingProfileOfCurrentUser>();
-  final ScheduleSearchHistoryService _historyService =
-      Injector.appInstance.get<ScheduleSearchHistoryService>();
-  final OnlineStatusData _onlineStatusData =
-      Injector.appInstance.get<OnlineStatusData>();
-  final ExportScheduleService _exportScheduleService =
-      Injector.appInstance.get<ExportScheduleService>();
+  final GettingScheduleService _getScheduleService;
+  final SearchIdOnPortalService _searchIdOnPortalService;
+  final OfflineScheduleProvider _offlineScheduleProvider;
+  final GettingProfileOfCurrentUser _gettingProfileOfCurrentUser;
+  final ScheduleSearchHistoryService _historyService;
+  final OnlineStatusData _onlineStatusData;
+  final ExportScheduleService _exportScheduleService;
   final String _studentNameText = 'Имя студента';
   final String _lecturerNameText = 'Имя преподавателя';
   final String _groupNameText = 'Название группы';
@@ -46,6 +38,16 @@ class ScheduleScreenViewModel extends BaseViewModel {
   String lastSearchQuery = '';
 
   IDType _idType = IDType.student;
+
+  ScheduleScreenViewModel(
+    this._getScheduleService,
+    this._searchIdOnPortalService,
+    this._offlineScheduleProvider,
+    this._gettingProfileOfCurrentUser,
+    this._historyService,
+    this._onlineStatusData,
+    this._exportScheduleService,
+  );
   bool get offline => !_onlineStatusData.isOnline;
   Future<Map<int, List<Subject>>>? _scheduleLoader;
   Future<Map<int, List<Subject>>>? get scheduleLoader => _scheduleLoader;

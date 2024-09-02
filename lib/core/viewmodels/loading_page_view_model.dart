@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
-import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/misc/app_open_tracker.dart';
 import 'package:unn_mobile/core/misc/app_settings.dart';
 import 'package:unn_mobile/core/misc/loading_pages.dart';
@@ -20,14 +19,21 @@ enum _TypeScreen {
 }
 
 class LoadingPageViewModel extends BaseViewModel {
-  final _loggerService = Injector.appInstance.get<LoggerService>();
-  final _initializingApplicationService =
-      Injector.appInstance.get<AuthorisationRefreshService>();
-  final _typeOfCurrentUser = Injector.appInstance.get<CurrentUserSyncStorage>();
-  final _gettingProfileOfCurrentUser =
-      Injector.appInstance.get<GettingProfileOfCurrentUser>();
-  final _userDataProvider = Injector.appInstance.get<UserDataProvider>();
-  final _appOpenTracker = Injector.appInstance.get<AppOpenTracker>();
+  final AuthorizationRefreshService _initializingApplicationService;
+  final CurrentUserSyncStorage _typeOfCurrentUser;
+  final GettingProfileOfCurrentUser _gettingProfileOfCurrentUser;
+  final UserDataProvider _userDataProvider;
+  final AppOpenTracker _appOpenTracker;
+  final LoggerService _loggerService;
+
+  LoadingPageViewModel(
+    this._initializingApplicationService,
+    this._typeOfCurrentUser,
+    this._gettingProfileOfCurrentUser,
+    this._userDataProvider,
+    this._appOpenTracker,
+    this._loggerService,
+  );
 
   final actualLoadingPage = LoadingPages().actualLoadingPage;
 

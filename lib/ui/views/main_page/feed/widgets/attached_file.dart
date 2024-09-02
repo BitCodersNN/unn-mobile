@@ -50,7 +50,7 @@ class _AttachedFileState extends State<AttachedFile> {
   }
 
   Future<File?> downloadFile() async {
-    final authService = Injector.appInstance.get<AuthorisationService>();
+    final authService = Injector.appInstance.get<AuthorizationService>();
     if (authService.sessionId == null) {
       return null;
     }

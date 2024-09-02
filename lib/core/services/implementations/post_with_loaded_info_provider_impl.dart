@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/models/post_with_loaded_info.dart';
 import 'package:unn_mobile/core/services/interfaces/post_with_loaded_info_provider.dart';
 import 'package:unn_mobile/core/services/interfaces/storage_service.dart';
@@ -12,7 +11,9 @@ class _PostWithLoadedInfoProviderKeys {
 }
 
 class PostWithLoadedInfoProviderImpl implements PostWithLoadedInfoProvider {
-  final _storage = Injector.appInstance.get<StorageService>();
+  final StorageService _storage;
+
+  PostWithLoadedInfoProviderImpl(this._storage);
 
   @override
   Future<List<PostWithLoadedInfo>?> getData() async {

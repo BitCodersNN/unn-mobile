@@ -2,21 +2,25 @@ import 'dart:async';
 import 'dart:collection';
 import 'dart:convert';
 
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
-import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/models/schedule_filter.dart';
 import 'package:unn_mobile/core/models/schedule_search_suggestion_item.dart';
+import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 import 'package:unn_mobile/core/services/interfaces/schedule_search_history_service.dart';
 import 'package:unn_mobile/core/services/interfaces/storage_service.dart';
 
 class ScheduleSearchHistoryServiceImpl implements ScheduleSearchHistoryService {
+  final StorageService _storage;
+  final LoggerService _loggerService;
   final Map<IDType, Queue<ScheduleSearchSuggestionItem>> _historyQueues = {};
-  final StorageService _storage = Injector.appInstance.get<StorageService>();
+
   final _storageKeySuffix = 'ScheduleSearchHistory';
   final _maxHistoryItems = 5;
   bool _isInitialized = false;
 
-  ScheduleSearchHistoryServiceImpl();
+  ScheduleSearchHistoryServiceImpl(
+    this._storage,
+    this._loggerService,
+  );
 
   Future<void> _initFromStorage() async {
     for (final type in IDType.values) {
@@ -33,7 +37,7 @@ class ScheduleSearchHistoryServiceImpl implements ScheduleSearchHistoryService {
           ),
         );
       } catch (e, stack) {
-        FirebaseCrashlytics.instance.recordError(e, stack);
+        _loggerService.logError(e, stack);
       } finally {
         // Если что угодно пошло не так
         // (нет ключа в хранилище или там невалидные данные)

@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/constants/api_url_strings.dart';
 import 'package:unn_mobile/core/constants/profiles_strings.dart';
 import 'package:unn_mobile/core/constants/session_identifier_strings.dart';
@@ -14,20 +13,23 @@ import 'package:unn_mobile/core/services/interfaces/getting_profile.dart';
 import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 
 class GettingProfileImpl implements GettingProfile {
-  final _loggerService = Injector.appInstance.get<LoggerService>();
+  final AuthorizationService _authorizationService;
+  final LoggerService _loggerService;
   final String _pathSecondPartForGettingId = 'bx/';
   final String _id = 'id';
 
+  GettingProfileImpl(
+    this._authorizationService,
+    this._loggerService,
+  );
+
   @override
   Future<int?> getProfileIdByBitrixID({required int bitrixID}) async {
-    final authorisationService =
-        Injector.appInstance.get<AuthorisationService>();
-
     final requestSender = HttpRequestSender(
       path: ApiPaths.user + _pathSecondPartForGettingId + bitrixID.toString(),
       cookies: {
         SessionIdentifierStrings.sessionIdCookieKey:
-            authorisationService.sessionId ?? '',
+            _authorizationService.sessionId ?? '',
       },
     );
 
@@ -60,14 +62,11 @@ class GettingProfileImpl implements GettingProfile {
 
   @override
   Future<UserData?> getProfile({required int userId}) async {
-    final authorisationService =
-        Injector.appInstance.get<AuthorisationService>();
-
     final requestSender = HttpRequestSender(
       path: ApiPaths.user + userId.toString(),
       cookies: {
         SessionIdentifierStrings.sessionIdCookieKey:
-            authorisationService.sessionId ?? '',
+            _authorizationService.sessionId ?? '',
       },
     );
 

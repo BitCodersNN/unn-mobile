@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/models/subject.dart';
 import 'package:unn_mobile/core/services/interfaces/offline_schedule_provider.dart';
 import 'package:unn_mobile/core/services/interfaces/storage_service.dart';
@@ -10,7 +9,9 @@ class _OfflineScheduleProviderKeys {
 }
 
 class OfflineScheduleProviderImpl implements OfflineScheduleProvider {
-  final _storage = Injector.appInstance.get<StorageService>();
+  final StorageService _storage;
+
+  OfflineScheduleProviderImpl(this._storage);
 
   @override
   Future<List<Subject>?> getData() async {

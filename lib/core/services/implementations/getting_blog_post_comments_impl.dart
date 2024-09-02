@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/constants/regular_expressions.dart';
 import 'package:unn_mobile/core/constants/api_url_strings.dart';
 import 'package:unn_mobile/core/constants/session_identifier_strings.dart';
@@ -16,18 +15,20 @@ class _JsonKeys {
 }
 
 class GettingBlogPostCommentsImpl implements GettingBlogPostComments {
-  final LoggerService _loggerService =
-      Injector.appInstance.get<LoggerService>();
+  final AuthorizationService _authService;
+  final LoggerService _loggerService;
 
+  GettingBlogPostCommentsImpl(
+    this._authService,
+    this._loggerService,
+  );
   @override
   Future<List<BlogPostComment>?> getBlogPostComments({
     required int postId,
     int pageNumber = 1,
   }) async {
-    final authService = Injector.appInstance.get<AuthorisationService>();
-
-    final sessionId = authService.sessionId;
-    final csrf = authService.csrf;
+    final sessionId = _authService.sessionId;
+    final csrf = _authService.csrf;
 
     if (sessionId == null || csrf == null) {
       _loggerService.log('Error, user not authorized');

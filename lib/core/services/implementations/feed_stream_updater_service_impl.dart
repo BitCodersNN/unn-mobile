@@ -1,6 +1,5 @@
 import 'package:async/async.dart';
 import 'package:flutter/material.dart';
-import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/misc/type_defs.dart';
 import 'package:unn_mobile/core/models/blog_data.dart';
 import 'package:unn_mobile/core/models/file_data.dart';
@@ -19,16 +18,14 @@ import 'package:unn_mobile/core/services/interfaces/post_with_loaded_info_provid
 class FeedStreamUpdaterServiceImpl
     with ChangeNotifier
     implements FeedUpdaterService {
-  final _gettingBlogPostsService = Injector.appInstance.get<GettingBlogPosts>();
-  final _gettingProfileService = Injector.appInstance.get<GettingProfile>();
-  final _gettingFileData = Injector.appInstance.get<GettingFileData>();
-  final _gettingRatingList = Injector.appInstance.get<GettingRatingList>();
-  final _gettingVoteKeySigned =
-      Injector.appInstance.get<GettingVoteKeySigned>();
-  final _postWithLoadedInfoProvider =
-      Injector.appInstance.get<PostWithLoadedInfoProvider>();
-  final _lruCacheProfile = Injector.appInstance.get<LRUCacheUserData>();
-  final _loggerService = Injector.appInstance.get<LoggerService>();
+  final GettingBlogPosts _gettingBlogPostsService;
+  final GettingProfile _gettingProfileService;
+  final GettingFileData _gettingFileData;
+  final GettingRatingList _gettingRatingList;
+  final GettingVoteKeySigned _gettingVoteKeySigned;
+  final PostWithLoadedInfoProvider _postWithLoadedInfoProvider;
+  final LRUCacheUserData _lruCacheProfile;
+  final LoggerService _loggerService;
 
   bool _busy = false;
 
@@ -39,6 +36,17 @@ class FeedStreamUpdaterServiceImpl
   int _lastLoadedPage = 0;
 
   DateTime? _lastViewedPostDateTime;
+
+  FeedStreamUpdaterServiceImpl(
+    this._gettingBlogPostsService,
+    this._gettingProfileService,
+    this._gettingFileData,
+    this._gettingRatingList,
+    this._gettingVoteKeySigned,
+    this._postWithLoadedInfoProvider,
+    this._lruCacheProfile,
+    this._loggerService,
+  );
 
   @override
   DateTime? get lastViewedPostDateTime {

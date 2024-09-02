@@ -1,4 +1,3 @@
-import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/misc/type_defs.dart';
 import 'package:unn_mobile/core/models/blog_data.dart';
 import 'package:unn_mobile/core/models/blog_post_comment.dart';
@@ -14,20 +13,30 @@ import 'package:unn_mobile/core/services/interfaces/getting_rating_list.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
 
 class CommentsPageViewModel extends BaseViewModel {
-  final _gettingBlogPostCommentsService =
-      Injector.appInstance.get<GettingBlogPostComments>();
-  final _gettingProfileService = Injector.appInstance.get<GettingProfile>();
-  final _gettingFileDataService = Injector.appInstance.get<GettingFileData>();
-  final _lruCacheBlogPostCommentWithLoadedInfo =
-      Injector.appInstance.get<LRUCacheBlogPostCommentWithLoadedInfo>();
-  final _lruCacheProfile = Injector.appInstance.get<LRUCacheUserData>();
-  final _gettingRatingList = Injector.appInstance.get<GettingRatingList>();
+  final GettingBlogPostComments _gettingBlogPostCommentsService;
+  final GettingProfile _gettingProfileService;
+  final GettingFileData _gettingFileDataService;
+  final LRUCacheBlogPostCommentWithLoadedInfo
+      _lruCacheBlogPostCommentWithLoadedInfo;
+  final LRUCacheUserData _lruCacheProfile;
+  final GettingRatingList _gettingRatingList;
+  final GettingBlogPosts _gettingBlogPosts;
 
   BlogData? post;
   List<Future<List<BlogPostCommentWithLoadedInfo?>>> commentLoaders = [];
 
   int lastPage = 1;
   int totalPages = 1;
+
+  CommentsPageViewModel(
+    this._gettingBlogPostCommentsService,
+    this._gettingProfileService,
+    this._gettingFileDataService,
+    this._lruCacheBlogPostCommentWithLoadedInfo,
+    this._lruCacheProfile,
+    this._gettingRatingList,
+    this._gettingBlogPosts,
+  );
 
   Future<BlogPostCommentWithLoadedInfo?> loadCommentInfo(
     BlogPostComment comment,
@@ -105,11 +114,10 @@ class CommentsPageViewModel extends BaseViewModel {
       return [];
     }
     if (page == 1) {
-      final comNumbers =
-          (await Injector.appInstance.get<GettingBlogPosts>().getBlogPosts(
-                    postId: post!.id,
-                  ))?[0]
-              .numberOfComments;
+      final comNumbers = (await _gettingBlogPosts.getBlogPosts(
+        postId: post!.id,
+      ))?[0]
+          .numberOfComments;
       if (comNumbers != null) {
         const commentsPerPage = 20;
         totalPages = comNumbers ~/ commentsPerPage +

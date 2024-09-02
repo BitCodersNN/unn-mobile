@@ -1,4 +1,3 @@
-import 'package:injector/injector.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:unn_mobile/core/services/interfaces/storage_service.dart';
 
@@ -7,8 +6,10 @@ class _AppOpenTrackerProviderKeys {
 }
 
 class AppOpenTracker {
-  final _storage = Injector.appInstance.get<StorageService>();
+  final StorageService _storage;
   String? _lastVisitedVersion;
+
+  AppOpenTracker(this._storage);
 
   String? get lastVisitedVersion => _lastVisitedVersion;
 

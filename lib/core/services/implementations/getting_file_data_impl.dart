@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/constants/api_url_strings.dart';
 import 'package:unn_mobile/core/constants/session_identifier_strings.dart';
 import 'package:unn_mobile/core/misc/http_helper.dart';
@@ -11,25 +10,28 @@ import 'package:unn_mobile/core/services/interfaces/getting_file_data.dart';
 import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 
 class GettingFileDataImpl implements GettingFileData {
-  final _loggerService = Injector.appInstance.get<LoggerService>();
+  final AuthorizationService _authorizationService;
+  final LoggerService _loggerService;
   final String _id = 'id';
+
+  GettingFileDataImpl(
+    this._authorizationService,
+    this._loggerService,
+  );
 
   @override
   Future<FileData?> getFileData({
     required int id,
   }) async {
-    final authorisationService =
-        Injector.appInstance.get<AuthorisationService>();
-
     final requestSender = HttpRequestSender(
       path: ApiPaths.diskAttachedObjectGet,
       queryParams: {
-        SessionIdentifierStrings.sessid: authorisationService.csrf ?? '',
+        SessionIdentifierStrings.sessid: _authorizationService.csrf ?? '',
         _id: id.toString(),
       },
       cookies: {
         SessionIdentifierStrings.sessionIdCookieKey:
-            authorisationService.sessionId ?? '',
+            _authorizationService.sessionId ?? '',
       },
     );
 

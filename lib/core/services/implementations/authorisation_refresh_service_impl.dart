@@ -1,5 +1,4 @@
 import 'package:flutter/services.dart';
-import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/services/interfaces/auth_data_provider.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
 import 'package:unn_mobile/core/models/auth_data.dart';
@@ -7,12 +6,18 @@ import 'package:unn_mobile/core/services/interfaces/authorisation_refresh_servic
 import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 import 'package:unn_mobile/core/services/interfaces/storage_service.dart';
 
-class AuthorisationRefreshServiceImpl implements AuthorisationRefreshService {
-  final _loggerService = Injector.appInstance.get<LoggerService>();
-  final _authDataProvider = Injector.appInstance.get<AuthDataProvider>();
-  final _authorisationService =
-      Injector.appInstance.get<AuthorisationService>();
-  final _storage = Injector.appInstance.get<StorageService>();
+class AuthorizationRefreshServiceImpl implements AuthorizationRefreshService {
+  final AuthDataProvider _authDataProvider;
+  final AuthorizationService _authorisationService;
+  final StorageService _storage;
+  final LoggerService _loggerService;
+
+  AuthorizationRefreshServiceImpl(
+    this._authDataProvider,
+    this._authorisationService,
+    this._storage,
+    this._loggerService,
+  );
 
   Future<bool> _userDataExistsInStorage() async {
     try {

@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/constants/api_url_strings.dart';
 import 'package:unn_mobile/core/misc/http_helper.dart';
 import 'package:unn_mobile/core/models/employee_data.dart';
@@ -13,13 +12,19 @@ import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 import 'package:unn_mobile/core/services/interfaces/search_id_on_portal_service.dart';
 
 class SearchIdOnPortalServiceImpl implements SearchIdOnPortalService {
-  final _loggerService = Injector.appInstance.get<LoggerService>();
+  final GettingProfileOfCurrentUser _gettingProfileOfCurrentUser;
+  final LoggerService _loggerService;
   final String _uns = 'uns';
   final String _term = 'term';
   final String _type = 'type';
   final String _label = 'label';
   final String _id = 'id';
   final String _description = 'description';
+
+  SearchIdOnPortalServiceImpl(
+    this._gettingProfileOfCurrentUser,
+    this._loggerService,
+  );
 
   Future<String?> _getIdOfLoggedInStudent(String uns) async {
     final requestSender = HttpRequestSender(
@@ -51,10 +56,8 @@ class SearchIdOnPortalServiceImpl implements SearchIdOnPortalService {
 
   @override
   Future<IDForSchedule?> getIdOfLoggedInUser() async {
-    final gettingProfileOfCurrentUser =
-        Injector.appInstance.get<GettingProfileOfCurrentUser>();
     final userData =
-        await gettingProfileOfCurrentUser.getProfileOfCurrentUser();
+        await _gettingProfileOfCurrentUser.getProfileOfCurrentUser();
 
     if (userData is EmployeeData) {
       return IDForSchedule(IDType.person, userData.syncID);

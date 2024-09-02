@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/models/employee_data.dart';
 import 'package:unn_mobile/core/models/student_data.dart';
 import 'package:unn_mobile/core/models/user_data.dart';
@@ -14,10 +13,12 @@ class _UserDataProvideKeys {
 }
 
 class UserDataProviderImpl implements UserDataProvider {
-  final _loggerService = Injector.appInstance.get<LoggerService>();
+  final LoggerService _loggerService;
+  final StorageService _storage;
   static const _student = 'StudentData';
   static const _employee = 'EmployeeData';
-  final _storage = Injector.appInstance.get<StorageService>();
+
+  UserDataProviderImpl(this._storage, this._loggerService);
 
   @override
   Future<UserData?> getData() async {

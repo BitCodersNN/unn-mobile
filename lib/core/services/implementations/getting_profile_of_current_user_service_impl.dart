@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/constants/api_url_strings.dart';
 import 'package:unn_mobile/core/constants/profiles_strings.dart';
 import 'package:unn_mobile/core/constants/session_identifier_strings.dart';
@@ -14,17 +13,20 @@ import 'package:unn_mobile/core/services/interfaces/getting_profile_of_current_u
 import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 
 class GettingProfileOfCurrentUserImpl implements GettingProfileOfCurrentUser {
-  final _loggerService = Injector.appInstance.get<LoggerService>();
+  final AuthorizationService _authorisationService;
+  final LoggerService _loggerService;
+
+  GettingProfileOfCurrentUserImpl(
+    this._authorisationService,
+    this._loggerService,
+  );
   @override
   Future<UserData?> getProfileOfCurrentUser() async {
-    final authorisationService =
-        Injector.appInstance.get<AuthorisationService>();
-
     final requestSender = HttpRequestSender(
       path: ApiPaths.currentProfile,
       cookies: {
         SessionIdentifierStrings.sessionIdCookieKey:
-            authorisationService.sessionId ?? '',
+            _authorisationService.sessionId ?? '',
       },
     );
 

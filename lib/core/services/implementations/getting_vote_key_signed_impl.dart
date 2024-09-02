@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/constants/regular_expressions.dart';
 import 'package:unn_mobile/core/constants/api_url_strings.dart';
 import 'package:unn_mobile/core/constants/session_identifier_strings.dart';
@@ -10,26 +9,30 @@ import 'package:unn_mobile/core/services/interfaces/getting_vote_key_signed.dart
 import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 
 class GettingVoteKeySignedImpl implements GettingVoteKeySigned {
-  final _loggerService = Injector.appInstance.get<LoggerService>();
+  final AuthorizationService _authorizationService;
+  final LoggerService _loggerService;
   final String _blog = 'blog';
+
+  GettingVoteKeySignedImpl(
+    this._authorizationService,
+    this._loggerService,
+  );
 
   @override
   Future<String?> getVoteKeySigned({
     required int authorId,
     required int postId,
   }) async {
-    final authorisationService =
-        Injector.appInstance.get<AuthorisationService>();
     final path = '${ApiPaths.companyPersonalUser}/$authorId/$_blog/$postId/';
 
     final requestSender = HttpRequestSender(
       path: path,
       headers: {
-        SessionIdentifierStrings.csrfToken: authorisationService.csrf ?? '',
+        SessionIdentifierStrings.csrfToken: _authorizationService.csrf ?? '',
       },
       cookies: {
         SessionIdentifierStrings.sessionIdCookieKey:
-            authorisationService.sessionId ?? '',
+            _authorizationService.sessionId ?? '',
       },
     );
 

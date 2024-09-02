@@ -6,7 +6,7 @@ enum AuthRequestResult {
   wrongCredentials,
 }
 
-abstract interface class AuthorisationService {
+abstract interface class AuthorizationService {
   /// Выполняет авторизацию на unn-portal и сохраняет данные авторизации
   ///
   /// [login]: логин на unn-portal, т.е. номер студенческого билета

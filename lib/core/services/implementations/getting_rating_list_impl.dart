@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/constants/api_url_strings.dart';
 import 'package:unn_mobile/core/constants/rating_list_strings.dart';
 import 'package:unn_mobile/core/constants/session_identifier_strings.dart';
@@ -12,11 +11,15 @@ import 'package:unn_mobile/core/services/interfaces/getting_rating_list.dart';
 import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 
 class GettingRatingListImpl implements GettingRatingList {
-  final _loggerService = Injector.appInstance.get<LoggerService>();
-  final _authorisationService =
-      Injector.appInstance.get<AuthorisationService>();
+  final AuthorizationService _authorizationService;
+  final LoggerService _loggerService;
   final String _data = 'data';
   final String _reactions = 'reactions';
+
+  GettingRatingListImpl(
+    this._authorizationService,
+    this._loggerService,
+  );
 
   @override
   Future<RatingList?> getReactionListByReaction({
@@ -30,11 +33,11 @@ class GettingRatingListImpl implements GettingRatingList {
         AjaxActionStrings.actionKey: AjaxActionStrings.ratingList,
       },
       headers: {
-        SessionIdentifierStrings.csrfToken: _authorisationService.csrf ?? '',
+        SessionIdentifierStrings.csrfToken: _authorizationService.csrf ?? '',
       },
       cookies: {
         SessionIdentifierStrings.sessionIdCookieKey:
-            _authorisationService.sessionId ?? '',
+            _authorizationService.sessionId ?? '',
       },
     );
 
@@ -100,11 +103,11 @@ class GettingRatingListImpl implements GettingRatingList {
         AjaxActionStrings.actionKey: AjaxActionStrings.ratingList,
       },
       headers: {
-        SessionIdentifierStrings.csrfToken: _authorisationService.csrf ?? '',
+        SessionIdentifierStrings.csrfToken: _authorizationService.csrf ?? '',
       },
       cookies: {
         SessionIdentifierStrings.sessionIdCookieKey:
-            _authorisationService.sessionId ?? '',
+            _authorizationService.sessionId ?? '',
       },
     );
 

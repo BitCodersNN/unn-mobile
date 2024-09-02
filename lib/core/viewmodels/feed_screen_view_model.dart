@@ -1,4 +1,3 @@
-import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/misc/current_user_sync_storage.dart';
 import 'package:unn_mobile/core/models/post_with_loaded_info.dart';
 import 'package:unn_mobile/core/models/rating_list.dart';
@@ -7,10 +6,15 @@ import 'package:unn_mobile/core/services/interfaces/reaction_manager.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
 
 class FeedScreenViewModel extends BaseViewModel {
-  final _feedStreamUpdater = Injector.appInstance.get<FeedUpdaterService>();
-  final _currentUserSyncStorage =
-      Injector.appInstance.get<CurrentUserSyncStorage>();
-  final _reactionManager = Injector.appInstance.get<ReactionManager>();
+  final FeedUpdaterService _feedStreamUpdater;
+  final CurrentUserSyncStorage _currentUserSyncStorage;
+  final ReactionManager _reactionManager;
+
+  FeedScreenViewModel(
+    this._feedStreamUpdater,
+    this._currentUserSyncStorage,
+    this._reactionManager,
+  );
 
   DateTime? _lastViewedPostDateTime;
   List<PostWithLoadedInfo> get posts => _feedStreamUpdater.feedPosts;

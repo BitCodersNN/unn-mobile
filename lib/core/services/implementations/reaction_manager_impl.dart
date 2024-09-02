@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/constants/api_url_strings.dart';
 import 'package:unn_mobile/core/constants/rating_list_strings.dart';
 import 'package:unn_mobile/core/constants/session_identifier_strings.dart';
@@ -21,10 +20,15 @@ class _KeysForReactionManagerJsonConverter {
 }
 
 class ReactionManagerImpl implements ReactionManager {
-  final _loggerService = Injector.appInstance.get<LoggerService>();
-  final _authorisationService =
-      Injector.appInstance.get<AuthorisationService>();
-  final _currentUserSync = Injector.appInstance.get<CurrentUserSyncStorage>();
+  final LoggerService _loggerService;
+  final AuthorizationService _authorizationService;
+  final CurrentUserSyncStorage _currentUserSync;
+
+  ReactionManagerImpl(
+    this._authorizationService,
+    this._currentUserSync,
+    this._loggerService,
+  );
 
   @override
   Future<ReactionUserInfo?> addReaction(
@@ -60,11 +64,11 @@ class ReactionManagerImpl implements ReactionManager {
         AjaxActionStrings.actionKey: AjaxActionStrings.ratingVote,
       },
       headers: {
-        SessionIdentifierStrings.csrfToken: _authorisationService.csrf ?? '',
+        SessionIdentifierStrings.csrfToken: _authorizationService.csrf ?? '',
       },
       cookies: {
         SessionIdentifierStrings.sessionIdCookieKey:
-            _authorisationService.sessionId ?? '',
+            _authorizationService.sessionId ?? '',
       },
     );
 

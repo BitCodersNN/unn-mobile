@@ -1,4 +1,3 @@
-import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/misc/custom_errors/auth_error_messages.dart';
 import 'package:unn_mobile/core/models/auth_data.dart';
 import 'package:unn_mobile/core/services/interfaces/auth_data_provider.dart';
@@ -7,13 +6,18 @@ import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
 
 class AuthPageViewModel extends BaseViewModel {
-  final _loggerService = Injector.appInstance.get<LoggerService>();
-  final AuthDataProvider _authDataProvider =
-      Injector.appInstance.get<AuthDataProvider>();
-  final AuthorisationService _authorisationService =
-      Injector.appInstance.get<AuthorisationService>();
+  final AuthDataProvider _authDataProvider;
+  final AuthorizationService _authorisationService;
+  final LoggerService _loggerService;
 
   bool _hasAuthError = false;
+
+  AuthPageViewModel(
+    this._authDataProvider,
+    this._authorisationService,
+    this._loggerService,
+  );
+
   bool get hasAuthError => _hasAuthError;
 
   String _authErrorText = '';

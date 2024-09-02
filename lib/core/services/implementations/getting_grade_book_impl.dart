@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/constants/api_url_strings.dart';
 import 'package:unn_mobile/core/constants/session_identifier_strings.dart';
 import 'package:unn_mobile/core/misc/http_helper.dart';
@@ -17,17 +16,20 @@ class _JsonKeys {
 }
 
 class GettingGradeBookImpl implements GettingGradeBook {
-  final _loggerService = Injector.appInstance.get<LoggerService>();
+  final AuthorizationService _authorizationService;
+  final LoggerService _loggerService;
+
+  GettingGradeBookImpl(
+    this._authorizationService,
+    this._loggerService,
+  );
   @override
   Future<Map<int, List<MarkBySubject>>?> getGradeBook() async {
-    final authorisationService =
-        Injector.appInstance.get<AuthorisationService>();
-
     final requestSender = HttpRequestSender(
       path: ApiPaths.marks,
       cookies: {
         SessionIdentifierStrings.sessionIdCookieKey:
-            authorisationService.sessionId ?? '',
+            _authorizationService.sessionId ?? '',
       },
     );
 
