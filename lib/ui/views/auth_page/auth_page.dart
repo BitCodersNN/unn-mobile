@@ -358,7 +358,9 @@ class AuthPageWithState extends State<AuthPage> {
     )
         .then((isLoginSuccess) {
       if (isLoginSuccess) {
-        Navigator.pushReplacementNamed(context, Routes.loadingPage);
+        if (context.mounted) {
+          Navigator.pushReplacementNamed(context, Routes.loadingPage);
+        }
       }
     });
   }

@@ -130,7 +130,7 @@ class CommentsPage extends StatelessWidget {
                 child: comment.author.fullUrlPhoto == null
                     ? Text(
                         style: theme.textTheme.headlineSmall!.copyWith(
-                          color: theme.colorScheme.onBackground,
+                          color: theme.colorScheme.onSurface,
                           fontSize: 20,
                         ),
                         getUserInitials(comment.author),
