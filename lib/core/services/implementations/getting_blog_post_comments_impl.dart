@@ -149,7 +149,8 @@ class GettingBlogPostCommentsImpl implements GettingBlogPostComments {
           keySignedMatche.group(0)?.split(' \'')[1].split('\'')[0];
 
       if (id != null && authorId != null) {
-        comments.add(
+        comments.insert(
+          0,
           BlogPostComment(
             id: id,
             bitrixID: authorId,

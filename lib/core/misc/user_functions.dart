@@ -5,21 +5,9 @@ import 'package:unn_mobile/core/models/student_data.dart';
 import 'package:unn_mobile/core/models/user_data.dart';
 
 String getUserInitials(UserData? userData) {
-  final String name = userData == null
-      ? ''
-      : userData.fullname.name == null
-          ? ''
-          : userData.fullname.name!;
-  final String surname = userData == null
-      ? ''
-      : userData.fullname.surname == null
-          ? ''
-          : userData.fullname.surname!;
-  final String lastname = userData == null
-      ? ''
-      : userData.fullname.lastname == null
-          ? ''
-          : userData.fullname.lastname!;
+  final String name = userData?.fullname.name ?? '';
+  final String surname = userData?.fullname.surname ?? '';
+  final String lastname = userData?.fullname.lastname ?? '';
   String initials = '';
   if (name != '') {
     initials += name[0];

@@ -26,6 +26,20 @@ class Fullname {
   String? get name => _name;
   String? get lastname => _lastname;
   String? get surname => _surname;
+
+  @override
+  String toString() {
+    String fullname = lastname ?? '';
+    if (fullname.isNotEmpty) {
+      fullname += ' ';
+    }
+    fullname += name ?? '';
+    if (fullname.isNotEmpty && !fullname.endsWith(' ')) {
+      fullname += ' ';
+    }
+    fullname += surname ?? '';
+    return fullname;
+  }
 }
 
 class UserData {
