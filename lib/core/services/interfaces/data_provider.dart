@@ -9,4 +9,7 @@ abstract interface class DataProvider<T> {
 
   /// Проверяет наличие данных в хранилище
   Future<bool> isContained();
+
+  /// Проверяет наличие данных в хранилище синхронно
+  bool isContainedSync();
 }

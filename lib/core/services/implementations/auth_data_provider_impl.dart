@@ -12,8 +12,11 @@ class AuthDataProviderImpl implements AuthDataProvider {
 
   AuthDataProviderImpl(this._storage);
 
+  bool _containedState = false;
+
   @override
   Future<AuthData> getData() async {
+    isContained(); // обновляем _containedState
     final login = await _storage.read(
           key: _AuthDataProviderKeys._loginKey,
           secure: true,
@@ -40,15 +43,23 @@ class AuthDataProviderImpl implements AuthDataProvider {
       value: authData.password,
       secure: true,
     );
+    _containedState = true;
   }
 
   @override
   Future<bool> isContained() async {
-    return (await _storage.containsKey(
+    _containedState = (await _storage.containsKey(
           key: _AuthDataProviderKeys._loginKey,
         ) &&
         await _storage.containsKey(
           key: _AuthDataProviderKeys._passwotdKey,
         ));
+    return _containedState;
+  }
+
+  @override
+  bool isContainedSync() {
+    isContained(); // обновляем _containedState
+    return _containedState;
   }
 }

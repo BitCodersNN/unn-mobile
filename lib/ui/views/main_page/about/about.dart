@@ -17,26 +17,29 @@ class AboutScreenView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.only(top: 15, bottom: 100),
-        child: Column(
-          children: [
-            Column(
-              children: _authors
-                  .map((authorProfile) => _AuthorProfileWidget(authorProfile))
-                  .toList(),
-            ),
-            const Text(
-              'По всем вопросам можно обращаться: unnmobile@mail.ru',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: Color(0xFF717A84),
-                fontFamily: 'Inter',
-                fontSize: 13,
+    return Scaffold(
+      appBar: AppBar(title: const Text('О нас')),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.only(top: 15, bottom: 100),
+          child: Column(
+            children: [
+              Column(
+                children: _authors
+                    .map((authorProfile) => _AuthorProfileWidget(authorProfile))
+                    .toList(),
               ),
-            ),
-          ],
+              const Text(
+                'По всем вопросам можно обращаться: unnmobile@mail.ru',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Color(0xFF717A84),
+                  fontFamily: 'Inter',
+                  fontSize: 13,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

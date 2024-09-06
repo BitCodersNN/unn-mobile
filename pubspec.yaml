@@ -44,6 +44,7 @@ dependencies:
   path: 
   extended_image: ^8.2.0
   package_info_plus: ^8.0.2
+  go_router: ^14.2.7
 
 dev_dependencies:
   flutter_test:
@@ -79,4 +80,3 @@ flutter_launcher_icons:
   image_path: "assets/images/icon.png"
   min_sdk_android: 19
   remove_alpha_ios: true
-

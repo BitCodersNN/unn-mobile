@@ -20,6 +20,8 @@ class UserDataProviderImpl implements UserDataProvider {
 
   UserDataProviderImpl(this._storage, this._loggerService);
 
+  bool _containedState = false;
+
   @override
   Future<UserData?> getData() async {
     if (!(await isContained())) {
@@ -75,15 +77,20 @@ class UserDataProviderImpl implements UserDataProvider {
       key: _UserDataProvideKeys._userDataKey,
       value: jsonEncode(userData.toJson()),
     );
+    _containedState = true;
   }
 
   @override
   Future<bool> isContained() async {
-    return await _storage.containsKey(
+    _containedState = await _storage.containsKey(
           key: _UserDataProvideKeys._userTypeKey,
         ) &&
         await _storage.containsKey(
           key: _UserDataProvideKeys._userDataKey,
         );
+    return _containedState;
   }
+
+  @override
+  bool isContainedSync() => _containedState;
 }

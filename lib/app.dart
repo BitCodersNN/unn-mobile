@@ -1,17 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:unn_mobile/core/models/subject.dart';
-import 'package:unn_mobile/ui/router.dart' as router;
+import 'package:unn_mobile/ui/router.dart';
 import 'package:unn_mobile/ui/unn_mobile_colors.dart';
-import 'package:unn_mobile/ui/views/loading_page/loading_page.dart';
 
 class UnnMobile extends StatelessWidget {
   const UnnMobile({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: const LoadingPage(),
-      onGenerateRoute: router.Router.generateRoute,
+    return MaterialApp.router(
+      routerConfig: mainRouter,
       theme: ThemeData(
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(

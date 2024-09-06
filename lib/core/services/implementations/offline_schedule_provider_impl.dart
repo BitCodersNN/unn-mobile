@@ -13,6 +13,8 @@ class OfflineScheduleProviderImpl implements OfflineScheduleProvider {
 
   OfflineScheduleProviderImpl(this._storage);
 
+  bool _containedState = false;
+
   @override
   Future<List<Subject>?> getData() async {
     if (!(await isContained())) {
@@ -46,12 +48,17 @@ class OfflineScheduleProviderImpl implements OfflineScheduleProvider {
       key: _OfflineScheduleProviderKeys.scheduleKey,
       value: jsonEncode(jsonList),
     );
+    _containedState = true;
   }
 
   @override
   Future<bool> isContained() async {
-    return await _storage.containsKey(
+    _containedState = await _storage.containsKey(
       key: _OfflineScheduleProviderKeys.scheduleKey,
     );
+    return _containedState;
   }
+
+  @override
+  bool isContainedSync() => _containedState;
 }

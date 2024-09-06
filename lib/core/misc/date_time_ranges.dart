@@ -63,7 +63,7 @@ class DateTimeRanges {
     final now = DateTime.now();
     DateTime endOfSemester;
     if (DateTime.february <= now.month && now.month < DateTime.september) {
-      endOfSemester = DateTime(now.year, DateTime.july, 15);
+      endOfSemester = DateTime(now.year, DateTime.september, 1);
     } else {
       endOfSemester = DateTime(now.year + 1, DateTime.february, 1);
     }

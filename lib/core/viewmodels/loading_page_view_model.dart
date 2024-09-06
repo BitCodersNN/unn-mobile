@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:unn_mobile/core/misc/app_open_tracker.dart';
 import 'package:unn_mobile/core/misc/app_settings.dart';
@@ -11,7 +10,6 @@ import 'package:unn_mobile/core/services/interfaces/getting_profile_of_current_u
 import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 import 'package:unn_mobile/core/services/interfaces/user_data_provider.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
-import 'package:unn_mobile/ui/router.dart';
 
 enum _TypeScreen {
   authScreen,
@@ -69,11 +67,12 @@ class LoadingPageViewModel extends BaseViewModel {
   }
 
   void _goToScreen(context, _TypeScreen typeScreen) {
-    final routes = switch (typeScreen) {
-      _TypeScreen.authScreen => Routes.authPage,
-      _TypeScreen.mainScreen => Routes.mainPagePrefix,
-    };
-    Navigator.of(context!).pushNamedAndRemoveUntil(routes, (route) => false);
+    // TODO:
+    // final routes = switch (typeScreen) {
+    //   _TypeScreen.authScreen => Routes.authPage,
+    //   _TypeScreen.mainScreen => Routes.mainPagePrefix,
+    // };
+    // Navigator.of(context!).pushNamedAndRemoveUntil(routes, (route) => false);
   }
 
   Future<void> _initUserData() async {

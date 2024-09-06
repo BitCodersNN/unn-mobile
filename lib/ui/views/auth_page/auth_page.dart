@@ -2,11 +2,11 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
 import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/misc/app_open_tracker.dart';
 import 'package:unn_mobile/core/viewmodels/auth_page_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
-import 'package:unn_mobile/ui/router.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
 import 'package:unn_mobile/ui/widgets/dialogs/changelog_dialog.dart';
 import 'package:unn_mobile/ui/widgets/text_field_with_shadow.dart';
@@ -358,7 +358,9 @@ class AuthPageWithState extends State<AuthPage> {
     )
         .then((isLoginSuccess) {
       if (isLoginSuccess) {
-        Navigator.pushReplacementNamed(context, Routes.loadingPage);
+        if (context.mounted) {
+          GoRouter.of(context).go('/');
+        }
       }
     });
   }

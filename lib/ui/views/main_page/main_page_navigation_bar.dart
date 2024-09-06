@@ -1,7 +1,9 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:unn_mobile/core/viewmodels/main_page_view_model.dart';
+import 'package:unn_mobile/ui/views/main_page/main_page_routing.dart';
 
 class MainPageNavigationBar extends StatelessWidget {
   final void Function(int)? onDestinationSelected;
@@ -50,7 +52,7 @@ class MainPageNavigationBar extends StatelessWidget {
               indicatorColor: Colors.transparent,
               indicatorShape: const Border(),
               animationDuration: const Duration(milliseconds: 0),
-              selectedIndex: model.selectedBarItem,
+              selectedIndex: getSelectedBarIndex(context),
               onDestinationSelected: onDestinationSelected,
             ),
           ],
@@ -59,27 +61,26 @@ class MainPageNavigationBar extends StatelessWidget {
     );
   }
 
+  static int getSelectedBarIndex(BuildContext context) {
+    final String location = GoRouterState.of(context).uri.path;
+    return MainPageRouting.navbarRoutes
+        .indexWhere((route) => location.startsWith(route.pageRoute));
+  }
+
   List<Widget> _getNavbarDestinations(
     MainPageViewModel model,
     BuildContext context,
   ) {
-    final List<Widget> destinations = [];
-    final theme = Theme.of(context);
-    for (int i = 0; i < model.barScreenNames.length; ++i) {
-      final isIconSelected =
-          !model.isDrawerItemSelected && model.selectedBarItem == i;
-      destinations.add(
+    final routes = MainPageRouting.navbarRoutes;
+    final destinations = [
+      for (final route in routes)
         NavigationDestination(
-          icon: Icon(
-            isIconSelected ? selectedBarIcons[i] : unselectedBarIcons[i],
-            color: isIconSelected
-                ? theme.primaryColor
-                : theme.colorScheme.onBackground,
-          ),
-          label: model.barScreenNames[i],
+          icon: Icon(route.unselectedIcon),
+          selectedIcon: Icon(route.selectedIcon),
+          label: route.pageTitle,
+          enabled: !route.isDisabled,
         ),
-      );
-    }
+    ];
     return destinations;
   }
 }

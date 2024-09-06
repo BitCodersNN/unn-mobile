@@ -1,7 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bbcode/flutter_bbcode.dart';
+import 'package:go_router/go_router.dart';
 import 'package:html_unescape/html_unescape.dart';
+import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/misc/custom_bb_tags.dart';
 import 'package:unn_mobile/core/misc/user_functions.dart';
 import 'package:unn_mobile/core/models/blog_post_comment_with_loaded_info.dart';
@@ -14,16 +16,12 @@ import 'package:unn_mobile/ui/views/main_page/feed/feed.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/widgets/attached_file.dart';
 
 class CommentsPage extends StatelessWidget {
-  final PostWithLoadedInfo post;
-  final FeedScreenViewModel feedViewModel;
-
   const CommentsPage({
     super.key,
-    required this.post,
-    required this.feedViewModel,
   });
   @override
   Widget build(BuildContext context) {
+    final post = GoRouterState.of(context).extra! as PostWithLoadedInfo;
     return Scaffold(
       appBar: AppBar(
         title: const Text('Запись'),
@@ -40,14 +38,11 @@ class CommentsPage extends StatelessWidget {
                 physics: const AlwaysScrollableScrollPhysics(),
                 child: Column(
                   children: [
-                    ListenableBuilder(
-                      listenable: feedViewModel,
-                      builder: (context, child) => FeedScreenViewState.feedPost(
-                        context,
-                        post,
-                        feedViewModel,
-                        showingComments: true,
-                      ),
+                    FeedScreenViewState.feedPost(
+                      context,
+                      post,
+                      Injector.appInstance.get<FeedScreenViewModel>(),
+                      showingComments: true,
                     ),
                     const Padding(
                       padding: EdgeInsets.only(top: 20, bottom: 0),
@@ -130,7 +125,7 @@ class CommentsPage extends StatelessWidget {
                 child: comment.author.fullUrlPhoto == null
                     ? Text(
                         style: theme.textTheme.headlineSmall!.copyWith(
-                          color: theme.colorScheme.onBackground,
+                          color: theme.colorScheme.onSurface,
                           fontSize: 20,
                         ),
                         getUserInitials(comment.author),

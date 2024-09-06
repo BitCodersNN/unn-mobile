@@ -41,31 +41,33 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView>
 
     final expanded = _createExpanded(idTypesForSchedulTab);
 
-    return OnlineStatusStreamBuilder(
-      onlineWidget: Column(
-        children: [
-          MediaQuery.withClampedTextScaling(
-            maxScaleFactor: 1.5,
-            child: TabBar(
-              indicatorSize: TabBarIndicatorSize.label,
-              tabAlignment: TabAlignment.center,
-              isScrollable: true,
-              tabs: [
-                for (var i = 0; i < tabKeys.length; i++)
-                  Tab(
-                    text: tabTexts[i],
-                  ),
-              ],
-              controller: _tabController,
+    return Scaffold(
+      body: OnlineStatusStreamBuilder(
+        onlineWidget: Column(
+          children: [
+            MediaQuery.withClampedTextScaling(
+              maxScaleFactor: 1.5,
+              child: TabBar(
+                indicatorSize: TabBarIndicatorSize.label,
+                tabAlignment: TabAlignment.center,
+                isScrollable: true,
+                tabs: [
+                  for (var i = 0; i < tabKeys.length; i++)
+                    Tab(
+                      text: tabTexts[i],
+                    ),
+                ],
+                controller: _tabController,
+              ),
             ),
-          ),
-          expanded,
-        ],
-      ),
-      offlineWidget: Column(
-        children: [
-          expanded,
-        ],
+            expanded,
+          ],
+        ),
+        offlineWidget: Column(
+          children: [
+            expanded,
+          ],
+        ),
       ),
     );
   }

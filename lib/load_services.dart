@@ -231,6 +231,7 @@ void registerDependencies() {
       get<GettingProfileOfCurrentUser>(),
       get<CurrentUserSyncStorage>(),
       get<FeedUpdaterService>(),
+      get<LoggerService>(),
     ),
   );
   injector.registerDependency(
