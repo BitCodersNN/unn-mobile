@@ -6,7 +6,7 @@ import 'package:unn_mobile/core/models/online_status_data.dart';
 import 'package:unn_mobile/core/services/implementations/auth_data_provider_impl.dart';
 import 'package:unn_mobile/core/services/implementations/authorisation_refresh_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/authorisation_service_impl.dart';
-import 'package:unn_mobile/core/services/implementations/legacy/authorisation_service_impl.dart';
+// import 'package:unn_mobile/core/services/implementations/legacy/authorisation_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/export_schedule_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/feed_stream_updater_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/firebase_logger.dart';
