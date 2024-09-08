@@ -8,7 +8,6 @@ import 'package:unn_mobile/core/viewmodels/main_page_view_model.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
 import 'package:unn_mobile/ui/views/main_page/main_page_drawer.dart';
 import 'package:unn_mobile/ui/views/main_page/main_page_navigation_bar.dart';
-import 'package:unn_mobile/ui/views/main_page/schedule/schedule.dart';
 
 class MainPage extends StatefulWidget {
   final Widget child;
@@ -21,9 +20,6 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
-  final Map<int, GlobalKey> tabKeys = {
-    1: GlobalKey<State<ScheduleScreenView>>(),
-  };
 
   final drawerIdOffset = 10;
 
