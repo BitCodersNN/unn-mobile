@@ -50,7 +50,6 @@ class MainPageNavigationBar extends StatelessWidget {
               height: 60,
               backgroundColor: Colors.transparent,
               indicatorColor: Colors.transparent,
-              indicatorShape: const Border(),
               animationDuration: const Duration(milliseconds: 0),
               selectedIndex: getSelectedBarIndex(context),
               onDestinationSelected: onDestinationSelected,
@@ -76,7 +75,10 @@ class MainPageNavigationBar extends StatelessWidget {
       for (final route in routes)
         NavigationDestination(
           icon: Icon(route.unselectedIcon),
-          selectedIcon: Icon(route.selectedIcon),
+          selectedIcon: Icon(
+            route.selectedIcon,
+            color: Theme.of(context).primaryColorDark,
+          ),
           label: route.pageTitle,
           enabled: !route.isDisabled,
         ),

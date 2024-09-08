@@ -44,6 +44,5 @@ void main() async {
   }
   FirebaseAnalytics.instance.setAnalyticsCollectionEnabled(!kDebugMode);
   await initializeDateFormatting('ru_RU', null);
-
   runApp(const UnnMobile());
 }
