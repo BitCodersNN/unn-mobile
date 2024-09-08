@@ -24,4 +24,5 @@ abstract interface class AuthorizationService {
   bool get isAuthorised;
   String? get csrf;
   String? get sessionId;
+  String? get guestId;
 }

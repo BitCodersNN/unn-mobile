@@ -27,6 +27,9 @@ class AuthorizationServiceImpl implements AuthorizationService {
 
   @override
   String? get sessionId => _sessionId;
+  
+  @override
+  String? get guestId => _guestId;
 
   AuthorizationServiceImpl(this._onlineStatus, this._loggerService);
 
@@ -71,8 +74,6 @@ class AuthorizationServiceImpl implements AuthorizationService {
       _loggerService.logError(error, stackTrace);
       return AuthRequestResult.unknown;
     }
-
-    final List<String> cookies = responseStr.trim().split(';');
 
     _sessionId = _extractValue(responseStr, SessionIdentifierStrings.sessionIdCookieKey);
     _guestId = _extractValue(responseStr, 'BX_PORTAL_UNN_GUEST_ID');
