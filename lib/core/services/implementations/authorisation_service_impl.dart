@@ -27,7 +27,7 @@ class AuthorizationServiceImpl implements AuthorizationService {
 
   @override
   String? get sessionId => _sessionId;
-  
+
   @override
   String? get guestId => _guestId;
 
@@ -58,12 +58,12 @@ class AuthorizationServiceImpl implements AuthorizationService {
     } on Exception catch (_) {
       rethrow;
     }
-    
+
     if (response.statusCode == 401) {
       return AuthRequestResult.wrongCredentials;
     }
 
-     if (response.statusCode != 200) {
+    if (response.statusCode != 200) {
       return AuthRequestResult.unknown;
     }
 
@@ -75,7 +75,8 @@ class AuthorizationServiceImpl implements AuthorizationService {
       return AuthRequestResult.unknown;
     }
 
-    _sessionId = _extractValue(responseStr, SessionIdentifierStrings.sessionIdCookieKey);
+    _sessionId =
+        _extractValue(responseStr, SessionIdentifierStrings.sessionIdCookieKey);
     _guestId = _extractValue(responseStr, 'BX_PORTAL_UNN_GUEST_ID');
     _csrf = _extractValue(responseStr, SessionIdentifierStrings.csrf);
     _isAuthorised = true;
