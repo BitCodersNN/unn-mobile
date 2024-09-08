@@ -17,7 +17,7 @@ class AuthorizationServiceImpl implements AuthorizationService {
   String? _sessionId;
   String? _csrf;
   String? _guestId;
-  bool _isAuthorised = false;
+  late bool _isAuthorised;
 
   @override
   String? get csrf => _csrf;
@@ -35,7 +35,10 @@ class AuthorizationServiceImpl implements AuthorizationService {
 
   @override
   Future<AuthRequestResult> auth(String login, String password) async {
+    _isAuthorised = false;
+
     if (await _isOffline()) {
+      _onlineStatus.isOnline = false;
       return AuthRequestResult.noInternet;
     }
 
@@ -67,18 +70,20 @@ class AuthorizationServiceImpl implements AuthorizationService {
       return AuthRequestResult.unknown;
     }
 
-    dynamic responseStr;
+    String responseString;
     try {
-      responseStr = await HttpRequestSender.responseToStringBody(response);
+      responseString = await HttpRequestSender.responseToStringBody(response);
     } catch (error, stackTrace) {
       _loggerService.logError(error, stackTrace);
       return AuthRequestResult.unknown;
     }
 
-    _sessionId =
-        _extractValue(responseStr, SessionIdentifierStrings.sessionIdCookieKey);
-    _guestId = _extractValue(responseStr, 'BX_PORTAL_UNN_GUEST_ID');
-    _csrf = _extractValue(responseStr, SessionIdentifierStrings.csrf);
+    _sessionId = _extractValue(
+      responseString,
+      SessionIdentifierStrings.sessionIdCookieKey,
+    );
+    _guestId = _extractValue(responseString, 'BX_PORTAL_UNN_GUEST_ID');
+    _csrf = _extractValue(responseString, SessionIdentifierStrings.csrf);
     _isAuthorised = true;
 
     _onlineStatus.isOnline = true;
