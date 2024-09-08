@@ -125,7 +125,7 @@ class LegacyAuthorizationServiceImpl implements AuthorizationService {
   Future<bool> _isOffline() async {
     return await Connectivity().checkConnectivity() == ConnectivityResult.none;
   }
-  
+
   @override
   String? get guestId => throw UnimplementedError();
 }
