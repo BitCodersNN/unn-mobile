@@ -64,6 +64,7 @@ class AuthorizationServiceImpl implements AuthorizationService {
     }
 
     if (response.statusCode != 200) {
+      _loggerService.logError(error, stackTrace);
       return AuthRequestResult.unknown;
     }
 
