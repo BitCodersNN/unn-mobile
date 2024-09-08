@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import 'package:go_router/go_router.dart';
 import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/misc/app_settings.dart';
 import 'package:unn_mobile/core/misc/file_functions.dart';
 import 'package:unn_mobile/core/services/interfaces/storage_service.dart';
+import 'package:unn_mobile/ui/router.dart';
 import 'package:unn_mobile/ui/widgets/adaptive_dialog_action.dart';
 import 'package:unn_mobile/ui/widgets/adaptive_switch.dart';
 
@@ -71,11 +73,7 @@ class SettingsScreenView extends StatelessWidget {
                         onPressed: () async {
                           await clearEverything();
                           if (context.mounted) {
-                            // TODO:
-                            // Navigator.of(context).pushNamedAndRemoveUntil(
-                            //   Routes.loadingPage,
-                            //   (route) => false,
-                            // );
+                            GoRouter.of(context).go(loadingPageRoute);
                           }
                         },
                         child: Text(

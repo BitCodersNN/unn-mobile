@@ -1,13 +1,15 @@
 import 'package:go_router/go_router.dart';
-import 'package:injector/injector.dart';
-import 'package:unn_mobile/core/services/interfaces/auth_data_provider.dart';
-import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
 import 'package:unn_mobile/ui/views/auth_page/auth_page.dart';
+import 'package:unn_mobile/ui/views/loading_page/loading_page.dart';
 import 'package:unn_mobile/ui/views/main_page/main_page.dart';
 import 'package:unn_mobile/ui/views/main_page/main_page_routing.dart';
 
+const loadingPageRoute = '/loading';
+const mainPageRoute = '/';
+const authPageRoute = '/auth';
+
 final mainRouter = GoRouter(
-  initialLocation: MainPageRouting.navbarRoutes[0].pageRoute,
+  initialLocation: loadingPageRoute,
   routes: [
     ShellRoute(
       builder: (context, state, child) => MainPage(
@@ -36,21 +38,20 @@ final mainRouter = GoRouter(
       ],
     ),
     GoRoute(
-      path: '/auth',
+      path: authPageRoute,
       name: 'auth',
       builder: (context, state) => const AuthPage(),
     ),
+    GoRoute(
+      path: loadingPageRoute,
+      pageBuilder: (context, state) => const NoTransitionPage(
+        child: LoadingPage(),
+      ),
+    ),
   ],
   redirect: (context, state) {
-    final authorizationService =
-        Injector.appInstance.get<AuthorizationService>();
-    final authDataProvider = Injector.appInstance.get<AuthDataProvider>();
-    if (!authorizationService.isAuthorised &&
-        !authDataProvider.isContainedSync()) {
-      return '/auth';
-    }
-    if (state.uri.path == '/') {
-      return '/feed';
+    if (state.uri.path == mainPageRoute) {
+      return MainPageRouting.navbarRoutes.first.pageRoute;
     }
     return null;
   },
