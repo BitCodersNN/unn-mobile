@@ -61,7 +61,7 @@ class CommentsPage extends StatelessWidget {
                             ),
                             child: Divider(
                               thickness: 0.3,
-                              color: Color.fromARGB(255, 152, 158, 169),
+                              color: Color(0xFF989EA9),
                             ),
                           ),
                           FeedCommentView(comment: comment),
