@@ -13,8 +13,6 @@ class MarkBySubjectProviderImpl implements MarkBySubjectProvider {
 
   MarkBySubjectProviderImpl(this._storage);
 
-  bool _containedState = false;
-
   @override
   Future<Map<int, List<MarkBySubject>>?> getData() async {
     if (!(await isContained())) {
@@ -40,10 +38,9 @@ class MarkBySubjectProviderImpl implements MarkBySubjectProvider {
 
   @override
   Future<bool> isContained() async {
-    _containedState = await _storage.containsKey(
+    return await _storage.containsKey(
       key: _OfflineMarkBySubjectProviderKeys.markBySubject,
     );
-    return _containedState;
   }
 
   @override
@@ -64,6 +61,5 @@ class MarkBySubjectProviderImpl implements MarkBySubjectProvider {
       key: _OfflineMarkBySubjectProviderKeys.markBySubject,
       value: jsonEncode(jsonString),
     );
-    _containedState = true;
   }
 }

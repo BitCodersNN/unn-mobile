@@ -15,8 +15,6 @@ class PostWithLoadedInfoProviderImpl implements PostWithLoadedInfoProvider {
 
   PostWithLoadedInfoProviderImpl(this._storage);
 
-  bool _containedState = false;
-
   @override
   Future<List<PostWithLoadedInfo>?> getData() async {
     if (!(await isContained())) {
@@ -57,10 +55,9 @@ class PostWithLoadedInfoProviderImpl implements PostWithLoadedInfoProvider {
 
   @override
   Future<bool> isContained() async {
-    _containedState = await _storage.containsKey(
+    return await _storage.containsKey(
       key: _PostWithLoadedInfoProviderKeys.postWithLoadedInfoKey,
     );
-    return _containedState;
   }
 
   @override
@@ -78,7 +75,6 @@ class PostWithLoadedInfoProviderImpl implements PostWithLoadedInfoProvider {
       key: _PostWithLoadedInfoProviderKeys.postWithLoadedInfoKey,
       value: jsonEncode(jsonList),
     );
-    _containedState = true;
   }
 
   @override
