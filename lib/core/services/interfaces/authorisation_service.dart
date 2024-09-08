@@ -4,6 +4,7 @@ enum AuthRequestResult {
   success,
   noInternet,
   wrongCredentials,
+  unknown,
 }
 
 abstract interface class AuthorizationService {

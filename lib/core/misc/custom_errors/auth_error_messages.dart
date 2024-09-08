@@ -5,5 +5,6 @@ extension AuthRequestResultErrorMessages on AuthRequestResult {
         AuthRequestResult.success => '',
         AuthRequestResult.wrongCredentials => 'Логин или пароль неверны',
         AuthRequestResult.noInternet => 'Не получилось подключиться к серверу',
+        AuthRequestResult.unknown => 'Не известная ошибка'
       };
 }
