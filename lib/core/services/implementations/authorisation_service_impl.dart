@@ -56,7 +56,8 @@ class AuthorizationServiceImpl implements AuthorizationService {
     } on TimeoutException {
       return AuthRequestResult.noInternet;
     } on Exception catch (_) {
-      rethrow;
+      _loggerService.logError(error, stackTrace);
+      return AuthRequestResult.unknown;
     }
 
     if (response.statusCode == 401) {
