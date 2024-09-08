@@ -38,7 +38,6 @@ class AuthorizationServiceImpl implements AuthorizationService {
     _isAuthorised = false;
 
     if (await _isOffline()) {
-      _onlineStatus.isOnline = false;
       return AuthRequestResult.noInternet;
     }
 
@@ -57,6 +56,7 @@ class AuthorizationServiceImpl implements AuthorizationService {
         timeoutSeconds: 15,
       );
     } on TimeoutException {
+      _onlineStatus.isOnline = false;
       return AuthRequestResult.noInternet;
     } on Exception catch (_) {
       rethrow;
