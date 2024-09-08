@@ -38,6 +38,7 @@ class AuthorizationServiceImpl implements AuthorizationService {
     _isAuthorised = false;
 
     if (await _isOffline()) {
+       _onlineStatus.isOnline = false;
       return AuthRequestResult.noInternet;
     }
 
