@@ -17,7 +17,7 @@ class AuthorizationServiceImpl implements AuthorizationService {
   String? _sessionId;
   String? _csrf;
   String? _guestId;
-  late bool _isAuthorised;
+  bool _isAuthorised = false;
 
   @override
   String? get csrf => _csrf;
