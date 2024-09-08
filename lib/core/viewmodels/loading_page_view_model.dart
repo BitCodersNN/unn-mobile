@@ -70,14 +70,11 @@ class LoadingPageViewModel extends BaseViewModel {
   }
 
   void _goToScreen(BuildContext context, _TypeScreen typeScreen) {
-    switch (typeScreen) {
-      case _TypeScreen.authScreen:
-        GoRouter.of(context).go(authPageRoute);
-        break;
-      case _TypeScreen.mainScreen:
-        GoRouter.of(context).go(mainPageRoute);
-        break;
-    }
+    final route = switch (typeScreen) {
+      _TypeScreen.authScreen => authPageRoute,
+      _TypeScreen.mainScreen => mainPageRoute,
+    };
+    GoRouter.of(context).go(route);
   }
 
   Future<void> _initUserData() async {

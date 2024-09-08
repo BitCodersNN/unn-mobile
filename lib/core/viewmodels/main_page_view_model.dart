@@ -30,8 +30,6 @@ class MainPageViewModel extends BaseViewModel {
   String get userNameAndSurname => _userNameAndSurname;
   String get userGroup => _userGroup;
 
-  int selectedBarIndex = 0;
-
   void init() {
     setState(ViewState.busy);
     _feedUpdaterService.updateFeed();
