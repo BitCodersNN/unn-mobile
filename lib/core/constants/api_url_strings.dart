@@ -9,7 +9,7 @@ class ApiPaths {
   static const String auth = 'auth/';
 
   /// Для авторизации с получением куки (через второе доменное имя)
-  static const String authWithCookie= 'api/getcookie.php';
+  static const String authWithCookie = 'api/getcookie.php';
 
   /// Для обработки AJAX-запросов
   static const String ajax = 'bitrix/services/main/ajax.php';
