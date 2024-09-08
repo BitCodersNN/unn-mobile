@@ -13,6 +13,7 @@ class AuthorizationServiceImpl implements AuthorizationService {
   final LoggerService _loggerService;
   final String _userLogin = 'USER_LOGIN';
   final String _userPasswortd = 'USER_PASSWORD';
+  final String _bxPortatlUnnGuestId = 'BX_PORTAL_UNN_GUEST_ID';
 
   String? _sessionId;
   String? _csrf;
@@ -83,7 +84,7 @@ class AuthorizationServiceImpl implements AuthorizationService {
       responseString,
       SessionIdentifierStrings.sessionIdCookieKey,
     );
-    _guestId = _extractValue(responseString, 'BX_PORTAL_UNN_GUEST_ID');
+    _guestId = _extractValue(responseString, _bxPortatlUnnGuestId);
     _csrf = _extractValue(responseString, SessionIdentifierStrings.csrf);
     _isAuthorised = true;
 
