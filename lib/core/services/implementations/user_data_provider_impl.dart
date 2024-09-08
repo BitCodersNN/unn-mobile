@@ -90,7 +90,4 @@ class UserDataProviderImpl implements UserDataProvider {
         );
     return _containedState;
   }
-
-  @override
-  bool isContainedSync() => _containedState;
 }

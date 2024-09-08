@@ -58,7 +58,4 @@ class OfflineScheduleProviderImpl implements OfflineScheduleProvider {
     );
     return _containedState;
   }
-
-  @override
-  bool isContainedSync() => _containedState;
 }

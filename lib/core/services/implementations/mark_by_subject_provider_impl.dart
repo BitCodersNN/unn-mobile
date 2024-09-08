@@ -66,7 +66,4 @@ class MarkBySubjectProviderImpl implements MarkBySubjectProvider {
     );
     _containedState = true;
   }
-
-  @override
-  bool isContainedSync() => _containedState;
 }

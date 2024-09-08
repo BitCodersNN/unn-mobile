@@ -88,7 +88,4 @@ class PostWithLoadedInfoProviderImpl implements PostWithLoadedInfoProvider {
       value: dateTime.toString(),
     );
   }
-
-  @override
-  bool isContainedSync() => _containedState;
 }

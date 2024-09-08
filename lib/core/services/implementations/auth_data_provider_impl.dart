@@ -56,10 +56,4 @@ class AuthDataProviderImpl implements AuthDataProvider {
         ));
     return _containedState;
   }
-
-  @override
-  bool isContainedSync() {
-    isContained(); // обновляем _containedState
-    return _containedState;
-  }
 }
