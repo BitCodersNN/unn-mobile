@@ -4,6 +4,7 @@ enum AuthRequestResult {
   success,
   noInternet,
   wrongCredentials,
+  unknown,
 }
 
 abstract interface class AuthorizationService {
@@ -23,4 +24,5 @@ abstract interface class AuthorizationService {
   bool get isAuthorised;
   String? get csrf;
   String? get sessionId;
+  String? get guestId;
 }

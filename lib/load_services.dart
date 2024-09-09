@@ -75,8 +75,16 @@ void registerDependencies() {
   injector.registerSingleton<ExportScheduleService>(
     () => ExportScheduleServiceImpl(),
   );
+  /* legacy
+    injector.registerSingleton<AuthorizationService>(
+      () => LegacyAuthorizationServiceImpl(get<OnlineStatusData>()),
+    );
+  */
   injector.registerSingleton<AuthorizationService>(
-    () => AuthorizationServiceImpl(get<OnlineStatusData>()),
+    () => AuthorizationServiceImpl(
+      get<OnlineStatusData>(),
+      get<LoggerService>(),
+    ),
   );
   injector.registerSingleton<AuthDataProvider>(
     () => AuthDataProviderImpl(

@@ -2,8 +2,14 @@ class ApiPaths {
   /// Доменное имя
   static const String host = 'portal.unn.ru';
 
+  /// Второе доменное имя
+  static const String mobileHost = 'portal-m.unn.ru';
+
   /// Для авторизация
   static const String auth = 'auth/';
+
+  /// Для авторизации с получением куки (через второе доменное имя)
+  static const String authWithCookie = 'api/getcookie.php';
 
   /// Для обработки AJAX-запросов
   static const String ajax = 'bitrix/services/main/ajax.php';
