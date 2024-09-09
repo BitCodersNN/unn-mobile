@@ -123,40 +123,40 @@ class FeedCommentView extends StatelessWidget {
                 ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children: [
-                      for (final reaction in ReactionType.values)
-                        if (model.getReactionCount(reaction) > 0)
-                          ReactionBubble(
-                            isSelected: model.selectedReaction == reaction,
-                            onPressed: () {
-                              model.toggleReaction(reaction);
-                            },
-                            icon: Image.asset(reaction.assetName),
-                            text: model.getReactionCount(reaction).toString(),
-                          ),
-                      if (!model.isBusy && model.canAddReaction)
-                        IconButton.filledTonal(
-                          padding: const EdgeInsets.all(0),
-                          constraints: BoxConstraints.tightFor(
-                            height: scaledAddButtonSize,
-                            width: scaledAddButtonSize,
-                          ),
+                child: Wrap(
+                  direction: Axis.horizontal,
+                  spacing: 8,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  children: [
+                    for (final reaction in ReactionType.values)
+                      if (model.getReactionCount(reaction) > 0)
+                        ReactionBubble(
+                          isSelected: model.selectedReaction == reaction,
                           onPressed: () {
-                            showReactionChoicePanel(context, model);
+                            model.toggleReaction(reaction);
                           },
-                          icon: Icon(
-                            Icons.add,
-                            size: MediaQuery.of(context)
-                                .textScaler
-                                .clamp(maxScaleFactor: 1.3)
-                                .scale(16),
-                          ),
+                          icon: Image.asset(reaction.assetName),
+                          text: model.getReactionCount(reaction).toString(),
                         ),
-                    ],
-                  ),
+                    if (!model.isBusy && model.canAddReaction)
+                      IconButton.filledTonal(
+                        padding: const EdgeInsets.all(0),
+                        constraints: BoxConstraints.tightFor(
+                          height: scaledAddButtonSize,
+                          width: scaledAddButtonSize,
+                        ),
+                        onPressed: () {
+                          showReactionChoicePanel(context, model);
+                        },
+                        icon: Icon(
+                          Icons.add,
+                          size: MediaQuery.of(context)
+                              .textScaler
+                              .clamp(maxScaleFactor: 1.3)
+                              .scale(16),
+                        ),
+                      ),
+                  ],
                 ),
               ),
             ],

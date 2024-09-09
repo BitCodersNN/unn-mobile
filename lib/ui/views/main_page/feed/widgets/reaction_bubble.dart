@@ -29,6 +29,7 @@ class ReactionBubble extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.fromLTRB(4.0, 4.0, 8.0, 4.0),
           child: Row(
+            mainAxisSize: MainAxisSize.min,
             children: [
               Padding(
                 padding: const EdgeInsets.all(4.0),
