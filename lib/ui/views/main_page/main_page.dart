@@ -46,7 +46,6 @@ class _MainPageState extends State<MainPage> {
     return BaseView<MainPageViewModel>(
       builder: (context, model, _) {
         return Scaffold(
-          // appBar: getCurrentAppBar(model, context),
           drawerEdgeDragWidth: MediaQuery.of(context).size.width,
           extendBody: false,
           drawer: MainPageDrawer(),
@@ -60,26 +59,6 @@ class _MainPageState extends State<MainPage> {
         );
       },
       onModelReady: (model) => model.init(),
-    );
-  }
-
-  bool isRootScreen(BuildContext context) {
-    final location = GoRouterState.of(context).uri.path;
-    return MainPageRouting.navbarRoutes.any((r) => r.pageRoute == location);
-  }
-
-  AppBar? getCurrentAppBar(MainPageViewModel model, BuildContext context) {
-    final theme = Theme.of(context);
-    if (!isRootScreen(context)) {
-      return null;
-    }
-    return AppBar(
-      title: Text(
-        MainPageRouting
-            .navbarRoutes[MainPageNavigationBar.getSelectedBarIndex(context)]
-            .pageTitle,
-      ),
-      backgroundColor: theme.appBarTheme.backgroundColor,
     );
   }
 }
