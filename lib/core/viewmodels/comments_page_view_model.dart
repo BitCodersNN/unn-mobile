@@ -47,10 +47,10 @@ class CommentsPageViewModel extends BaseViewModel {
   }
 
   Future loadMoreComments() async {
-    if (isLoadingComments || loadedPage == totalPages) {
+    if (isLoadingComments || loadedPage == 1) {
       return;
     }
-    loadedPage++;
+    loadedPage--;
     await _loadComments(loadedPage);
   }
 
@@ -58,14 +58,20 @@ class CommentsPageViewModel extends BaseViewModel {
     final posts = await _gettingBlogPosts.getBlogPosts(
       postId: post!.id,
     );
+    totalPages = 1;
     final commentNumbers = (posts)?[0].numberOfComments;
     if (commentNumbers != null) {
       totalPages = commentNumbers ~/ commentsPerPage +
           ((commentNumbers % commentsPerPage == 0) ? 0 : 1);
     }
-    loadedPage = 1;
+    loadedPage = totalPages;
     comments.clear();
-    _loadComments(loadedPage);
+
+    await _loadComments(loadedPage);
+    // Загружаем до конца, либо первые 3 страницы, если их больше
+    while (loadedPage > 1 && loadedPage > totalPages - 2) {
+      await loadMoreComments();
+    }
   }
 
   bool get commentsAvailable => loadedPage < totalPages;
