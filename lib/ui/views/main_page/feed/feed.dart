@@ -26,7 +26,19 @@ class FeedScreenView extends StatefulWidget {
 class FeedScreenViewState extends State<FeedScreenView> {
   @override
   Widget build(BuildContext context) {
+    final parentScaffold = Scaffold.maybeOf(context);
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('Лента'),
+        leading: parentScaffold?.hasDrawer ?? false
+            ? IconButton(
+                onPressed: () {
+                  parentScaffold?.openDrawer();
+                },
+                icon: const Icon(Icons.menu),
+              )
+            : null,
+      ),
       body: BaseView<FeedScreenViewModel>(
         builder: (context, model, child) {
           return NotificationListener<ScrollEndNotification>(

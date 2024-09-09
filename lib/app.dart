@@ -11,6 +11,9 @@ class UnnMobile extends StatelessWidget {
     return MaterialApp.router(
       routerConfig: mainRouter,
       theme: ThemeData(
+        appBarTheme: const AppBarTheme(
+          elevation: 0,
+        ),
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(
           seedColor: const Color(0xAA1A63B7),

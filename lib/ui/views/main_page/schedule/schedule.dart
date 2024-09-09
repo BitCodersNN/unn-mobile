@@ -41,7 +41,19 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView>
 
     final expanded = _createExpanded(idTypesForSchedulTab);
 
+    final parentScaffold = Scaffold.maybeOf(context);
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('Расписание'),
+        leading: parentScaffold?.hasDrawer ?? false
+            ? IconButton(
+                onPressed: () {
+                  parentScaffold?.openDrawer();
+                },
+                icon: const Icon(Icons.menu),
+              )
+            : null,
+      ),
       body: OnlineStatusStreamBuilder(
         onlineWidget: Column(
           children: [

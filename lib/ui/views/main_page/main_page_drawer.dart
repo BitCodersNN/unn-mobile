@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:injector/injector.dart';
 import 'package:provider/provider.dart';
 import 'package:unn_mobile/core/misc/current_user_sync_storage.dart';
 import 'package:unn_mobile/core/viewmodels/main_page_view_model.dart';
+import 'package:unn_mobile/ui/views/main_page/main_page_navigation_bar.dart';
 import 'package:unn_mobile/ui/views/main_page/main_page_routing.dart';
 
 class MainPageDrawer extends StatelessWidget {
@@ -22,7 +24,13 @@ class MainPageDrawer extends StatelessWidget {
           children.addAll(_generateChildren(model, context));
         }
         return NavigationDrawer(
-          onDestinationSelected: onDestinationSelected,
+          onDestinationSelected: (value) {
+            Scaffold.of(context).closeDrawer();
+            GoRouter.of(context).go(
+              '${MainPageRouting.navbarRoutes[MainPageNavigationBar.getSelectedBarIndex(context)].pageRoute}/'
+              '${MainPageRouting.drawerRoutes[value].pageRoute}',
+            );
+          },
           selectedIndex: -1,
           children: children,
         );

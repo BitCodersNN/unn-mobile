@@ -46,22 +46,11 @@ class _MainPageState extends State<MainPage> {
     return BaseView<MainPageViewModel>(
       builder: (context, model, _) {
         return Scaffold(
-          key: scaffoldKey,
-          appBar: getCurrentAppBar(model, context),
+          // appBar: getCurrentAppBar(model, context),
           drawerEdgeDragWidth: MediaQuery.of(context).size.width,
           extendBody: false,
+          drawer: MainPageDrawer(),
           body: widget.child,
-          drawer: isRootScreen(context)
-              ? MainPageDrawer(
-                  onDestinationSelected: (value) {
-                    scaffoldKey.currentState!.closeDrawer();
-                    GoRouter.of(context).go(
-                      '${MainPageRouting.navbarRoutes[MainPageNavigationBar.getSelectedBarIndex(context)].pageRoute}/'
-                      '${MainPageRouting.drawerRoutes[value].pageRoute}',
-                    );
-                  },
-                )
-              : null,
           bottomNavigationBar: MainPageNavigationBar(
             onDestinationSelected: (value) {
               GoRouter.of(context)
