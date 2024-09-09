@@ -60,6 +60,7 @@ class LoadingPageViewModel extends BaseViewModel {
       AuthRequestResult.success => _TypeScreen.mainScreen,
       AuthRequestResult.noInternet => _TypeScreen.mainScreen,
       AuthRequestResult.wrongCredentials => _TypeScreen.authScreen,
+      AuthRequestResult.unknown => _TypeScreen.authScreen,
     };
 
     if (typeScreen == _TypeScreen.mainScreen) {
