@@ -219,9 +219,9 @@ class AuthPageWithState extends State<AuthPage> {
         ),
         boxShadow: [
           BoxShadow(
-            offset: const Offset(0, -1),
+            offset: const Offset(0, 0),
             blurRadius: 10,
-            color: Colors.black.withOpacity(0.3),
+            color: const Color.fromARGB(255, 41, 41, 63).withOpacity(0.2),
           ),
         ],
       ),
@@ -295,24 +295,41 @@ class AuthPageWithState extends State<AuthPage> {
   ) {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.only(top: 50),
-        child: ElevatedButton(
-          onPressed: () => _loginButtonTapHandler(context, viewModel),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: _accentColor,
-            foregroundColor: _buttonTapColor,
-            minimumSize: const Size(300, 50),
+        padding: const EdgeInsets.only(top: 30),
+        child: Container(
+          width: double.infinity,
+          height: 56,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(50),
+            gradient: const LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                Color.fromARGB(255, 31, 112, 205),
+                Color.fromARGB(255, 24, 91, 167),
+              ],
+            ),
           ),
-          child: viewModel.state == ViewState.busy
-              ? const CircularProgressIndicator(color: Colors.white)
-              : Text(
-                  'Войти',
-                  style: _baseTextStyle(
-                    textColor: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 15,
+          child: ElevatedButton(
+            onPressed: () => _loginButtonTapHandler(context, viewModel),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.transparent,
+              shadowColor: Colors.transparent,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(50),
+              ),
+            ),
+            child: viewModel.state == ViewState.busy
+                ? const CircularProgressIndicator(color: Colors.white)
+                : Text(
+                    'Войти',
+                    style: _baseTextStyle(
+                      textColor: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 17,
+                    ),
                   ),
-                ),
+          ),
         ),
       ),
     );
