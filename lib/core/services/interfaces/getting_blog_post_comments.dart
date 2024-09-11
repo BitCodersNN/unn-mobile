@@ -1,6 +1,8 @@
 import 'package:unn_mobile/core/models/blog_post_comment.dart';
 
 abstract interface class GettingBlogPostComments {
+  static const commentsPerPage = 20;
+
   /// Получает список комментариев к блог-посту
   /// [postId] - ID поста
   /// Если [pageNumber] не указан, возвращается 20 последних (самых новых) комментариев

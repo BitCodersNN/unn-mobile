@@ -74,7 +74,7 @@ class MainPageNavigationBar extends StatelessWidget {
             isIconSelected ? selectedBarIcons[i] : unselectedBarIcons[i],
             color: isIconSelected
                 ? theme.primaryColor
-                : theme.colorScheme.onBackground,
+                : theme.colorScheme.onSurface,
           ),
           label: model.barScreenNames[i],
         ),

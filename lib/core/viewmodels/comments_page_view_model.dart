@@ -1,163 +1,81 @@
-import 'package:unn_mobile/core/misc/type_defs.dart';
 import 'package:unn_mobile/core/models/blog_data.dart';
 import 'package:unn_mobile/core/models/blog_post_comment.dart';
-import 'package:unn_mobile/core/models/blog_post_comment_with_loaded_info.dart';
-import 'package:unn_mobile/core/models/file_data.dart';
-import 'package:unn_mobile/core/models/rating_list.dart';
-import 'package:unn_mobile/core/models/user_data.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_blog_post_comments.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_blog_posts.dart';
-import 'package:unn_mobile/core/services/interfaces/getting_file_data.dart';
-import 'package:unn_mobile/core/services/interfaces/getting_profile.dart';
-import 'package:unn_mobile/core/services/interfaces/getting_rating_list.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
 
 class CommentsPageViewModel extends BaseViewModel {
   final GettingBlogPostComments _gettingBlogPostCommentsService;
-  final GettingProfile _gettingProfileService;
-  final GettingFileData _gettingFileDataService;
-  final LRUCacheBlogPostCommentWithLoadedInfo
-      _lruCacheBlogPostCommentWithLoadedInfo;
-  final LRUCacheUserData _lruCacheProfile;
-  final GettingRatingList _gettingRatingList;
   final GettingBlogPosts _gettingBlogPosts;
 
   BlogData? post;
-  List<Future<List<BlogPostCommentWithLoadedInfo?>>> commentLoaders = [];
 
-  int lastPage = 1;
+  int loadedPage = 1;
   int totalPages = 1;
 
   CommentsPageViewModel(
     this._gettingBlogPostCommentsService,
-    this._gettingProfileService,
-    this._gettingFileDataService,
-    this._lruCacheBlogPostCommentWithLoadedInfo,
-    this._lruCacheProfile,
-    this._gettingRatingList,
     this._gettingBlogPosts,
   );
 
-  Future<BlogPostCommentWithLoadedInfo?> loadCommentInfo(
-    BlogPostComment comment,
-  ) async {
-    final futures = <Future>[];
+  final List<BlogPostComment> comments = [];
+  bool get isLoadingComments => state == ViewState.busy;
 
-    BlogPostCommentWithLoadedInfo? blogPostCommentWithLoadedInfo =
-        _lruCacheBlogPostCommentWithLoadedInfo.get(comment.id);
-
-    if (blogPostCommentWithLoadedInfo != null) {
-      return blogPostCommentWithLoadedInfo;
-    }
-
-    UserData? profile = _lruCacheProfile.get(comment.bitrixID);
-
-    if (profile == null) {
-      futures.add(
-        _gettingProfileService.getProfileByAuthorIdFromPost(
-          authorId: comment.bitrixID,
-        ),
-      );
-    }
-
-    for (final fileId in comment.attachedFiles) {
-      futures.add(_gettingFileDataService.getFileData(id: fileId));
-    }
-
-    futures.add(
-      _gettingRatingList.getRatingList(
-        voteKeySigned: comment.keySigned,
-      ),
-    );
-
-    final data = await Future.wait(futures);
-
-    final startPosFilesInData = profile == null ? 1 : 0;
-    final posRatingListInData =
-        startPosFilesInData + (comment.attachedFiles).length;
-
-    profile ??= data.first;
-
-    final List<FileData?> files = List<FileData?>.from(
-      data.getRange(
-        startPosFilesInData,
-        posRatingListInData,
-      ),
-    );
-    final List<FileData> filteredFiles = files //
-        .where((element) => element != null)
-        .map((e) => e!)
-        .toList();
-
-    blogPostCommentWithLoadedInfo = BlogPostCommentWithLoadedInfo(
-      comment: comment,
-      author: profile!,
-      files: filteredFiles,
-      ratingList: data[posRatingListInData] ?? RatingList(),
-    );
-
-    _lruCacheProfile.save(
-      comment.bitrixID,
-      profile,
-    );
-
-    _lruCacheBlogPostCommentWithLoadedInfo.save(
-      comment.id,
-      blogPostCommentWithLoadedInfo,
-    );
-
-    return blogPostCommentWithLoadedInfo;
-  }
-
-  Future<List<BlogPostCommentWithLoadedInfo?>> loadComments(int page) async {
-    if (post == null) {
-      return [];
-    }
-    if (page == 1) {
-      final comNumbers = (await _gettingBlogPosts.getBlogPosts(
-        postId: post!.id,
-      ))?[0]
-          .numberOfComments;
-      if (comNumbers != null) {
-        const commentsPerPage = 20;
-        totalPages = comNumbers ~/ commentsPerPage +
-            ((comNumbers % commentsPerPage == 0) ? 0 : 1);
-      }
-    }
-    final comments = await _gettingBlogPostCommentsService.getBlogPostComments(
-      postId: post!.id,
-      pageNumber: page,
-    );
-    if (comments == null) {
-      return [];
-    }
-    return await Future.wait(
-      comments.map(
-        (e) => loadCommentInfo(e),
-      ),
-    );
-  }
-
-  void loadMoreComments() {
-    if (lastPage == totalPages) {
+  Future _loadComments(int page) async {
+    if (isLoadingComments) {
       return;
     }
-    lastPage++;
-    commentLoaders.add(loadComments(lastPage));
-    notifyListeners();
+    try {
+      setState(ViewState.busy);
+      if (post == null) {
+        return;
+      }
+      final comments =
+          await _gettingBlogPostCommentsService.getBlogPostComments(
+        postId: post!.id,
+        pageNumber: page,
+      );
+      if (comments == null) {
+        return;
+      }
+      this.comments.addAll(comments);
+    } finally {
+      // Не важно, как мы вышли - флаги убрать всё равно надо
+      setState(ViewState.idle);
+    }
   }
 
-  void refresh() {
-    commentLoaders.clear();
-    lastPage = 1;
-    commentLoaders.add(loadComments(1));
-    notifyListeners();
+  Future loadMoreComments() async {
+    if (isLoadingComments || loadedPage == 1) {
+      return;
+    }
+    loadedPage--;
+    await _loadComments(loadedPage);
   }
 
-  bool get commentsAvailable => lastPage < totalPages;
+  Future refresh() async {
+    final posts = await _gettingBlogPosts.getBlogPosts(
+      postId: post!.id,
+    );
+    totalPages = 1;
+    final commentNumbers = (posts)?[0].numberOfComments;
+    if (commentNumbers != null) {
+      totalPages =
+          (commentNumbers / GettingBlogPostComments.commentsPerPage).ceil();
+    }
+    loadedPage = totalPages;
+    comments.clear();
+
+    await _loadComments(loadedPage);
+    // Загружаем до конца, либо первые 3 страницы, если их больше
+    while (loadedPage > 1 && loadedPage > totalPages - 2) {
+      await loadMoreComments();
+    }
+  }
+
+  bool get commentsAvailable => loadedPage < totalPages;
   void init(BlogData post) {
     this.post = post;
-    commentLoaders.add(loadComments(1));
-    notifyListeners();
+    refresh();
   }
 }
