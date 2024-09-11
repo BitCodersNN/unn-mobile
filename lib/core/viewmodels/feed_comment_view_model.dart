@@ -83,23 +83,31 @@ class FeedCommentViewModel extends BaseViewModel {
         notifyListeners();
         if (!await _reactionManager.removeReaction(comment.keySigned)) {
           // Если реакция не удалилась - восстанавливаем её
-          _loadedComment!.ratingList!
-              .addReactions(currentReaction, [currentReactionInfo]);
+          _loadedComment!.ratingList!.addReactions(
+            currentReaction,
+            [currentReactionInfo],
+          );
           notifyListeners();
         }
       } else {
         // Добавляем временно, чтобы сразу показать действие
-        _loadedComment?.ratingList
-            ?.addReactions(reaction, [ReactionUserInfo(profileId, '', '')]);
+        _loadedComment?.ratingList?.addReactions(
+          reaction,
+          [ReactionUserInfo(profileId, '', '')],
+        );
         notifyListeners();
-        final reactionUserInfo =
-            await _reactionManager.addReaction(reaction, comment.keySigned);
+        final reactionUserInfo = await _reactionManager.addReaction(
+          reaction,
+          comment.keySigned,
+        );
         // Удаляем временную реакцию
         _loadedComment?.ratingList?.removeReaction(profileId);
         if (reactionUserInfo != null) {
           // Если реакция реально добавилась - фиксируем это
-          _loadedComment?.ratingList
-              ?.addReactions(reaction, [reactionUserInfo]);
+          _loadedComment?.ratingList?.addReactions(
+            reaction,
+            [reactionUserInfo],
+          );
         }
         notifyListeners();
       }

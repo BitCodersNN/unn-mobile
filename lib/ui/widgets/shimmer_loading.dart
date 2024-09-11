@@ -25,9 +25,7 @@ class _ShimmerLoadingState extends State<ShimmerLoading> {
       _shimmerChanges!.removeListener(_onShimmerChange);
     }
     _shimmerChanges = Shimmer.of(context)?.shimmerChanges;
-    if (_shimmerChanges != null) {
-      _shimmerChanges!.addListener(_onShimmerChange);
-    }
+    _shimmerChanges?.addListener(_onShimmerChange);
   }
 
   @override
