@@ -28,18 +28,9 @@ class Fullname {
   String? get surname => _surname;
 
   @override
-  String toString() {
-    String fullname = lastname ?? '';
-    if (fullname.isNotEmpty) {
-      fullname += ' ';
-    }
-    fullname += name ?? '';
-    if (fullname.isNotEmpty && !fullname.endsWith(' ')) {
-      fullname += ' ';
-    }
-    fullname += surname ?? '';
-    return fullname;
-  }
+  String toString() => [lastname, name, surname]
+      .where((part) => part != null && part.isNotEmpty)
+      .join(' ');
 }
 
 class UserData {

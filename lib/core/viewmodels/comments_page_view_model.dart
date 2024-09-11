@@ -5,7 +5,6 @@ import 'package:unn_mobile/core/services/interfaces/getting_blog_posts.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
 
 class CommentsPageViewModel extends BaseViewModel {
-  static const commentsPerPage = 20;
   final GettingBlogPostComments _gettingBlogPostCommentsService;
   final GettingBlogPosts _gettingBlogPosts;
 
@@ -61,8 +60,8 @@ class CommentsPageViewModel extends BaseViewModel {
     totalPages = 1;
     final commentNumbers = (posts)?[0].numberOfComments;
     if (commentNumbers != null) {
-      totalPages = commentNumbers ~/ commentsPerPage +
-          ((commentNumbers % commentsPerPage == 0) ? 0 : 1);
+      totalPages =
+          (commentNumbers / GettingBlogPostComments.commentsPerPage).ceil();
     }
     loadedPage = totalPages;
     comments.clear();
