@@ -16,7 +16,7 @@ final mainRouter = GoRouter(
         child: child,
       ),
       routes: [
-        for (var route in MainPageRouting.navbarRoutes)
+        for (final route in MainPageRouting.navbarRoutes)
           GoRoute(
             path: route.pageRoute,
             name: route.pageTitle,
