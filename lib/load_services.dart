@@ -6,7 +6,7 @@ import 'package:unn_mobile/core/models/online_status_data.dart';
 import 'package:unn_mobile/core/services/implementations/auth_data_provider_impl.dart';
 import 'package:unn_mobile/core/services/implementations/authorisation_refresh_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/authorisation_service_impl.dart';
-// import 'package:unn_mobile/core/services/implementations/legacy/authorisation_service_impl.dart';
+import 'package:unn_mobile/core/services/implementations/blog_comment_data_loader_impl.dart';
 import 'package:unn_mobile/core/services/implementations/export_schedule_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/feed_stream_updater_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/firebase_logger.dart';
@@ -30,6 +30,7 @@ import 'package:unn_mobile/core/services/implementations/user_data_provider_impl
 import 'package:unn_mobile/core/services/interfaces/auth_data_provider.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation_refresh_service.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
+import 'package:unn_mobile/core/services/interfaces/blog_comment_data_loader.dart';
 import 'package:unn_mobile/core/services/interfaces/export_schedule_service.dart';
 import 'package:unn_mobile/core/services/interfaces/feed_stream_updater_service.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_blog_post_comments.dart';
@@ -52,6 +53,7 @@ import 'package:unn_mobile/core/services/interfaces/storage_service.dart';
 import 'package:unn_mobile/core/services/interfaces/user_data_provider.dart';
 import 'package:unn_mobile/core/viewmodels/auth_page_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/comments_page_view_model.dart';
+import 'package:unn_mobile/core/viewmodels/feed_comment_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/feed_screen_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/grades_screen_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/loading_page_view_model.dart';
@@ -174,8 +176,8 @@ void registerDependencies() {
   injector.registerSingleton<LRUCacheUserData>(
     () => LRUCacheUserData(50),
   );
-  injector.registerSingleton<LRUCacheBlogPostCommentWithLoadedInfo>(
-    () => LRUCacheBlogPostCommentWithLoadedInfo(50),
+  injector.registerSingleton<LRUCacheLoadedBlogPostComment>(
+    () => LRUCacheLoadedBlogPostComment(50),
   );
 
   injector.registerSingleton<FeedUpdaterService>(
@@ -215,6 +217,15 @@ void registerDependencies() {
       get<AuthorizationService>(),
       get<CurrentUserSyncStorage>(),
       get<LoggerService>(),
+    ),
+  );
+  injector.registerSingleton<BlogCommentDataLoader>(
+    () => BlogCommentDataLoaderImpl(
+      get<LRUCacheLoadedBlogPostComment>(),
+      get<LRUCacheUserData>(),
+      get<GettingProfile>(),
+      get<GettingFileData>(),
+      get<GettingRatingList>(),
     ),
   );
 
@@ -264,11 +275,6 @@ void registerDependencies() {
   injector.registerDependency(
     () => CommentsPageViewModel(
       get<GettingBlogPostComments>(),
-      get<GettingProfile>(),
-      get<GettingFileData>(),
-      get<LRUCacheBlogPostCommentWithLoadedInfo>(),
-      get<LRUCacheUserData>(),
-      get<GettingRatingList>(),
       get<GettingBlogPosts>(),
     ),
   );
@@ -276,6 +282,14 @@ void registerDependencies() {
     () => GradesScreenViewModel(
       get<GettingGradeBook>(),
       get<MarkBySubjectProvider>(),
+    ),
+  );
+  injector.registerDependency(
+    () => FeedCommentViewModel(
+      get<BlogCommentDataLoader>(),
+      get<LoggerService>(),
+      get<CurrentUserSyncStorage>(),
+      get<ReactionManager>(),
     ),
   );
 }

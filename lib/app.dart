@@ -17,9 +17,8 @@ class UnnMobile extends StatelessWidget {
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(
           seedColor: const Color(0xAA1A63B7),
-          background: const Color(0xFFF9FAFF),
           surface: const Color(0xFFFFFFFF),
-          surfaceVariant: const Color(0xFFEFF1FB),
+          surfaceContainerHighest: const Color(0xFFEFF1FB),
         ),
         textTheme: Typography.blackRedwoodCity,
         extensions: const [
