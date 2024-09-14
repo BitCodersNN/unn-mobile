@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:injector/injector.dart';
-import 'package:unn_mobile/core/models/post_with_loaded_info.dart';
+import 'package:unn_mobile/core/models/blog_data.dart';
 import 'package:unn_mobile/core/viewmodels/comments_page_view_model.dart';
-import 'package:unn_mobile/core/viewmodels/feed_screen_view_model.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
-import 'package:unn_mobile/ui/views/main_page/feed/feed.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/widgets/feed_comment.dart';
+import 'package:unn_mobile/ui/views/main_page/feed/widgets/feed_post.dart';
 
 class CommentsPage extends StatelessWidget {
   const CommentsPage({
@@ -14,7 +12,7 @@ class CommentsPage extends StatelessWidget {
   });
   @override
   Widget build(BuildContext context) {
-    final post = GoRouterState.of(context).extra! as PostWithLoadedInfo;
+    final post = GoRouterState.of(context).extra! as BlogData;
     return Scaffold(
       appBar: AppBar(
         title: const Text('Запись'),
@@ -28,10 +26,8 @@ class CommentsPage extends StatelessWidget {
                 physics: const AlwaysScrollableScrollPhysics(),
                 child: Column(
                   children: [
-                    FeedScreenViewState.feedPost(
-                      context,
-                      post,
-                      Injector.appInstance.get<FeedScreenViewModel>(),
+                    FeedPost(
+                      post: post,
                       showingComments: true,
                     ),
                     const Padding(
@@ -83,7 +79,7 @@ class CommentsPage extends StatelessWidget {
             ),
           );
         },
-        onModelReady: (p0) => p0.init(post.post),
+        onModelReady: (p0) => p0.init(post),
       ),
     );
   }

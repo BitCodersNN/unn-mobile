@@ -60,6 +60,12 @@ class AuthorizationServiceImpl implements AuthorizationService {
     } on TimeoutException {
       _onlineStatus.isOnline = false;
       return AuthRequestResult.noInternet;
+    } on SocketException catch (e) {
+      if (e.osError?.errorCode == 104) {
+        _onlineStatus.isOnline = false;
+        return AuthRequestResult.noInternet;
+      }
+      rethrow;
     } on Exception catch (_) {
       rethrow;
     }

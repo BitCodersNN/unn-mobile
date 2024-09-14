@@ -1,121 +1,104 @@
-import 'package:unn_mobile/core/misc/current_user_sync_storage.dart';
-import 'package:unn_mobile/core/models/post_with_loaded_info.dart';
-import 'package:unn_mobile/core/models/rating_list.dart';
-import 'package:unn_mobile/core/services/interfaces/feed_stream_updater_service.dart';
-import 'package:unn_mobile/core/services/interfaces/reaction_manager.dart';
+import 'package:unn_mobile/core/models/blog_data.dart';
+import 'package:unn_mobile/core/services/interfaces/feed_updater_service.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
 
 class FeedScreenViewModel extends BaseViewModel {
   final FeedUpdaterService _feedStreamUpdater;
-  final CurrentUserSyncStorage _currentUserSyncStorage;
-  final ReactionManager _reactionManager;
+
+  bool _showUpdateButton = false;
+
+  void Function()? scrollToTop;
 
   FeedScreenViewModel(
     this._feedStreamUpdater,
-    this._currentUserSyncStorage,
-    this._reactionManager,
   );
 
-  DateTime? _lastViewedPostDateTime;
-  List<PostWithLoadedInfo> get posts => _feedStreamUpdater.feedPosts;
-  bool get isLoadingPosts => _feedStreamUpdater.isBusy;
+  final List<BlogData> _posts = [];
 
-  final pendingReactionChanges = <int>{};
+  List<BlogData> get posts => _posts;
 
-  void init() {
-    _feedStreamUpdater.addListener(() {
-      super.notifyListeners();
-    });
+  bool _loadingPosts = false;
+
+  bool get loadingPosts => _loadingPosts;
+
+  int _lastLoadedPost = 0;
+
+  bool get showSyncFeedButton => _showUpdateButton;
+  set showSyncFeedButton(bool value) {
+    _showUpdateButton = value;
+    notifyListeners();
   }
 
+  void init({void Function()? scrollToTop}) {
+    this.scrollToTop = scrollToTop;
+    syncFeed();
+    _feedStreamUpdater.addListener(onFeedUpdated);
+  }
+
+  void onFeedUpdated() {
+    if (_posts.isEmpty) {
+      syncFeed();
+      return;
+    }
+    if (_feedStreamUpdater.feedPosts.firstOrNull != posts.firstOrNull) {
+      showSyncFeedButton = true;
+    }
+    notifyListeners();
+  }
+
+  void getMorePosts() {
+    if (_loadingPosts) return;
+    _loadingPosts = true;
+    notifyListeners();
+    if (_lastLoadedPost + 5 > _feedStreamUpdater.feedPosts.length) {
+      _posts.addAll(
+        _feedStreamUpdater.feedPosts.getRange(
+          _lastLoadedPost,
+          _feedStreamUpdater.feedPosts.length,
+        ),
+      );
+      _lastLoadedPost = _feedStreamUpdater.feedPosts.length;
+      notifyListeners();
+      loadNextPage();
+      return;
+    }
+    _posts.addAll(
+      _feedStreamUpdater.feedPosts.getRange(
+        _lastLoadedPost,
+        _lastLoadedPost + 5,
+      ),
+    );
+    _lastLoadedPost += 5;
+    _loadingPosts = false;
+    notifyListeners();
+  }
+
+  /// Синхронизирует посты в вьюмодели с сервисом
+  void syncFeed() {
+    _lastLoadedPost = 0;
+    getMorePosts();
+    showSyncFeedButton = false;
+    scrollToTop?.call();
+  }
+
+  /// Отправляет сигнал сервису для обновления постов
   Future<void> updateFeed() async {
+    showSyncFeedButton = false;
     await _feedStreamUpdater.updateFeed();
-  }
-
-  bool isNewPost(DateTime dateTimePublish) {
-    _lastViewedPostDateTime ??= _feedStreamUpdater.lastViewedPostDateTime;
-    return _lastViewedPostDateTime?.isBefore(dateTimePublish) ?? true;
+    syncFeed();
   }
 
   void loadNextPage() {
-    _feedStreamUpdater.loadNextPage();
+    _loadingPosts = true;
+    _feedStreamUpdater.loadNextPage().whenComplete(() {
+      _loadingPosts = false;
+      notifyListeners();
+    });
   }
 
-  ReactionType? getReactionToPost(PostWithLoadedInfo post) {
-    final profileId = _currentUserSyncStorage.currentUserData?.bitrixId;
-    return profileId != null
-        ? post.ratingList.getReactionByUser(profileId)
-        : null;
-  }
-
-  void _setReactionToPost(
-    PostWithLoadedInfo post,
-    ReactionType? reaction,
-  ) async {
-    if (post.post.keySigned == null) {
-      return;
-    }
-    final profileId = _currentUserSyncStorage.currentUserData?.bitrixId;
-    if (profileId == null) {
-      return;
-    }
-    if (reaction == null) {
-      // Сохраняем то, что сейчас есть в списке
-      final currentReactionInfo =
-          post.ratingList.getReactionInfoByUser(profileId);
-      final currentReaction = post.ratingList.getReactionByUser(profileId);
-      if (currentReactionInfo == null || currentReaction == null) {
-        return;
-      }
-      pendingReactionChanges.add(post.post.id);
-      // Временно удаляем реакцию, чтобы показать действие
-      post.ratingList.removeReaction(profileId);
-      super.notifyListeners();
-      if (!await _reactionManager.removeReaction(post.post.keySigned!)) {
-        // Если реакция не удалилась - восстанавливаем её
-        post.ratingList.addReactions(currentReaction, [currentReactionInfo]);
-        super.notifyListeners();
-      }
-      pendingReactionChanges.remove(post.post.id);
-    } else {
-      pendingReactionChanges.add(post.post.id);
-      // Добавляем временно, чтобы сразу показать действие
-      post.ratingList
-          .addReactions(reaction, [ReactionUserInfo(profileId, '', '')]);
-      super.notifyListeners();
-      final reactionUserInfo =
-          await _reactionManager.addReaction(reaction, post.post.keySigned!);
-      // Удаляем временную реакцию
-      post.ratingList.removeReaction(profileId);
-      if (reactionUserInfo != null) {
-        // Если реакция реально добавилась - фиксируем это
-        post.ratingList.addReactions(reaction, [reactionUserInfo]);
-      }
-      pendingReactionChanges.remove(post.post.id);
-      super.notifyListeners();
-    }
-  }
-
-  void toggleLike(PostWithLoadedInfo post) {
-    if (pendingReactionChanges.contains(post.post.id)) {
-      return;
-    }
-    if (getReactionToPost(post) != null) {
-      _setReactionToPost(post, null);
-    } else {
-      _setReactionToPost(post, ReactionType.like);
-    }
-    super.notifyListeners();
-  }
-
-  void toggleReaction(PostWithLoadedInfo post, ReactionType reaction) async {
-    if (pendingReactionChanges.contains(post.post.id)) {
-      return;
-    }
-    _setReactionToPost(post, null);
-    if (getReactionToPost(post) != reaction) {
-      _setReactionToPost(post, reaction);
-    }
-    super.notifyListeners();
+  @override
+  void dispose() {
+    _feedStreamUpdater.removeListener(onFeedUpdated);
+    super.dispose();
   }
 }

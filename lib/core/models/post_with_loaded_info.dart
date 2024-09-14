@@ -11,13 +11,13 @@ class KeysForPostWithLoadedInfoJsonConverter {
 }
 
 class PostWithLoadedInfo {
-  final UserData _author;
+  final UserData? _author;
   final BlogData _post;
   final List<FileData> _files;
   final RatingList _ratingList;
 
   PostWithLoadedInfo({
-    required UserData author,
+    UserData? author,
     required BlogData post,
     required List<FileData> files,
     required RatingList ratingList,
@@ -26,17 +26,19 @@ class PostWithLoadedInfo {
         _files = files,
         _ratingList = ratingList;
 
-  UserData get author => _author;
+  UserData? get author => _author;
   BlogData get post => _post;
   List<FileData> get files => _files;
   RatingList get ratingList => _ratingList;
 
   factory PostWithLoadedInfo.fromJson(Map<String, Object?> jsonMap) {
     return PostWithLoadedInfo(
-      author: UserData.fromJson(
-        jsonMap[KeysForPostWithLoadedInfoJsonConverter.author]
-            as Map<String, Object?>,
-      ),
+      author: jsonMap[KeysForPostWithLoadedInfoJsonConverter.author] == null
+          ? null
+          : UserData.fromJson(
+              jsonMap[KeysForPostWithLoadedInfoJsonConverter.author]
+                  as Map<String, Object?>,
+            ),
       post: BlogData.fromJson(
         jsonMap[KeysForPostWithLoadedInfoJsonConverter.post]
             as Map<String, Object?>,
@@ -53,7 +55,7 @@ class PostWithLoadedInfo {
   }
 
   Map<String, dynamic> toJson() => {
-        KeysForPostWithLoadedInfoJsonConverter.author: _author.toJson(),
+        KeysForPostWithLoadedInfoJsonConverter.author: _author?.toJson(),
         KeysForPostWithLoadedInfoJsonConverter.post: _post.toJson(),
         KeysForPostWithLoadedInfoJsonConverter.files:
             files.map((file) => file.toJson()).toList(),

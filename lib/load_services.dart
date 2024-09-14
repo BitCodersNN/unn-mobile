@@ -8,7 +8,8 @@ import 'package:unn_mobile/core/services/implementations/authorisation_refresh_s
 import 'package:unn_mobile/core/services/implementations/authorisation_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/blog_comment_data_loader_impl.dart';
 import 'package:unn_mobile/core/services/implementations/export_schedule_service_impl.dart';
-import 'package:unn_mobile/core/services/implementations/feed_stream_updater_service_impl.dart';
+import 'package:unn_mobile/core/services/implementations/feed_post_data_loader_impl.dart';
+import 'package:unn_mobile/core/services/implementations/feed_updater_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/firebase_logger.dart';
 import 'package:unn_mobile/core/services/implementations/getting_blog_post_comments_impl.dart';
 import 'package:unn_mobile/core/services/implementations/getting_blog_posts_impl.dart';
@@ -32,7 +33,8 @@ import 'package:unn_mobile/core/services/interfaces/authorisation_refresh_servic
 import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
 import 'package:unn_mobile/core/services/interfaces/blog_comment_data_loader.dart';
 import 'package:unn_mobile/core/services/interfaces/export_schedule_service.dart';
-import 'package:unn_mobile/core/services/interfaces/feed_stream_updater_service.dart';
+import 'package:unn_mobile/core/services/interfaces/feed_post_data_loader.dart';
+import 'package:unn_mobile/core/services/interfaces/feed_updater_service.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_blog_post_comments.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_blog_posts.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_file_data.dart';
@@ -54,6 +56,7 @@ import 'package:unn_mobile/core/services/interfaces/user_data_provider.dart';
 import 'package:unn_mobile/core/viewmodels/auth_page_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/comments_page_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/feed_comment_view_model.dart';
+import 'package:unn_mobile/core/viewmodels/feed_post_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/feed_screen_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/grades_screen_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/loading_page_view_model.dart';
@@ -173,23 +176,33 @@ void registerDependencies() {
       get<LoggerService>(),
     ),
   );
+  injector.registerSingleton<FeedPostDataLoader>(
+    () => FeedPostDataLoaderImpl(
+      get<LRUCacheLoadedBlogPost>(),
+      get<LRUCacheUserData>(),
+      get<GettingProfile>(),
+      get<GettingFileData>(),
+      get<GettingRatingList>(),
+      get<GettingVoteKeySigned>(),
+    ),
+  );
   injector.registerSingleton<LRUCacheUserData>(
     () => LRUCacheUserData(50),
   );
   injector.registerSingleton<LRUCacheLoadedBlogPostComment>(
     () => LRUCacheLoadedBlogPostComment(50),
   );
+  injector.registerSingleton<LRUCacheLoadedBlogPost>(
+    () => LRUCacheLoadedBlogPost(100),
+  );
 
   injector.registerSingleton<FeedUpdaterService>(
-    () => FeedStreamUpdaterServiceImpl(
+    () => FeedUpdaterServiceImpl(
       get<GettingBlogPosts>(),
-      get<GettingProfile>(),
-      get<GettingFileData>(),
-      get<GettingRatingList>(),
-      get<GettingVoteKeySigned>(),
-      get<PostWithLoadedInfoProvider>(),
-      get<LRUCacheUserData>(),
       get<LoggerService>(),
+      get<PostWithLoadedInfoProvider>(),
+      get<LRUCacheLoadedBlogPost>(),
+      get<OnlineStatusData>(),
     ),
   );
   injector.registerSingleton<CurrentUserSyncStorage>(
@@ -250,7 +263,6 @@ void registerDependencies() {
     () => MainPageViewModel(
       get<GettingProfileOfCurrentUser>(),
       get<CurrentUserSyncStorage>(),
-      get<FeedUpdaterService>(),
       get<LoggerService>(),
     ),
   );
@@ -266,10 +278,15 @@ void registerDependencies() {
     ),
   );
   injector.registerDependency(
+    () => FeedPostViewModel(
+      get<CurrentUserSyncStorage>(),
+      get<FeedPostDataLoader>(),
+      get<ReactionManager>(),
+    ),
+  );
+  injector.registerDependency(
     () => FeedScreenViewModel(
       get<FeedUpdaterService>(),
-      get<CurrentUserSyncStorage>(),
-      get<ReactionManager>(),
     ),
   );
   injector.registerDependency(

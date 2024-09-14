@@ -12,14 +12,15 @@ import 'package:unn_mobile/core/models/file_data.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
 import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 import 'package:unn_mobile/ui/unn_mobile_colors.dart';
+import 'package:unn_mobile/ui/widgets/shimmer_loading.dart';
 
 class AttachedFile extends StatefulWidget {
   final FileData _fileData;
   final Color _backgroundColor;
   const AttachedFile({
     super.key,
-    required fileData,
-    required backgroundColor,
+    required FileData fileData,
+    required Color backgroundColor,
   })  : _fileData = fileData,
         _backgroundColor = backgroundColor;
 
@@ -268,6 +269,59 @@ class _AttachedFileState extends State<AttachedFile> {
                 ),
               );
             },
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class AttachedFilePlaceholder extends StatelessWidget {
+  const AttachedFilePlaceholder({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    theme.extension<UnnMobileColors>();
+    return ShimmerLoading(
+      isLoading: true,
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: 8.0, top: 8.0),
+        child: SizedBox(
+          width: double.infinity,
+          child: Padding(
+            padding: const EdgeInsets.only(left: 0),
+            child: Row(
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.black,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  width: 30,
+                  height: 30,
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        child: Container(
+                          width: double.infinity,
+                          height: 30,
+                          decoration: BoxDecoration(
+                            color: Colors.black,
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

@@ -117,8 +117,9 @@ class FeedCommentView extends StatelessWidget {
                   child: AttachedFile(
                     fileData: file,
                     backgroundColor: theme
-                        .extension<UnnMobileColors>()!
-                        .defaultPostHighlight,
+                            .extension<UnnMobileColors>()
+                            ?.defaultPostHighlight ??
+                        Colors.transparent,
                   ),
                 ),
               Padding(
