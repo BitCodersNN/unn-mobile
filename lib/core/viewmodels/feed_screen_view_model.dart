@@ -34,7 +34,7 @@ class FeedScreenViewModel extends BaseViewModel {
 
   bool isNewPost(DateTime dateTimePublish) {
     _lastViewedPostDateTime ??= _feedStreamUpdater.lastViewedPostDateTime;
-    return _lastViewedPostDateTime!.isBefore(dateTimePublish);
+    return _lastViewedPostDateTime?.isBefore(dateTimePublish) ?? true;
   }
 
   void loadNextPage() {

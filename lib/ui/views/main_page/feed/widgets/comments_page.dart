@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/models/post_with_loaded_info.dart';
 import 'package:unn_mobile/core/viewmodels/comments_page_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/feed_screen_view_model.dart';
@@ -7,16 +9,12 @@ import 'package:unn_mobile/ui/views/main_page/feed/feed.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/widgets/feed_comment.dart';
 
 class CommentsPage extends StatelessWidget {
-  final PostWithLoadedInfo post;
-  final FeedScreenViewModel feedViewModel;
-
   const CommentsPage({
     super.key,
-    required this.post,
-    required this.feedViewModel,
   });
   @override
   Widget build(BuildContext context) {
+    final post = GoRouterState.of(context).extra! as PostWithLoadedInfo;
     return Scaffold(
       appBar: AppBar(
         title: const Text('Запись'),
@@ -30,14 +28,11 @@ class CommentsPage extends StatelessWidget {
                 physics: const AlwaysScrollableScrollPhysics(),
                 child: Column(
                   children: [
-                    ListenableBuilder(
-                      listenable: feedViewModel,
-                      builder: (context, child) => FeedScreenViewState.feedPost(
-                        context,
-                        post,
-                        feedViewModel,
-                        showingComments: true,
-                      ),
+                    FeedScreenViewState.feedPost(
+                      context,
+                      post,
+                      Injector.appInstance.get<FeedScreenViewModel>(),
+                      showingComments: true,
                     ),
                     const Padding(
                       padding: EdgeInsets.only(top: 16, bottom: 0),

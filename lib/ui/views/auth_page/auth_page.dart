@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
 import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/misc/app_open_tracker.dart';
 import 'package:unn_mobile/core/viewmodels/auth_page_view_model.dart';
@@ -359,7 +360,7 @@ class AuthPageWithState extends State<AuthPage> {
         .then((isLoginSuccess) {
       if (isLoginSuccess) {
         if (context.mounted) {
-          Navigator.pushReplacementNamed(context, Routes.loadingPage);
+          GoRouter.of(context).go(loadingPageRoute);
         }
       }
     });

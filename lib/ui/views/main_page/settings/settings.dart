@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import 'package:go_router/go_router.dart';
 import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/misc/app_settings.dart';
 import 'package:unn_mobile/core/misc/file_functions.dart';
@@ -20,83 +21,83 @@ class SettingsScreenView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return SingleChildScrollView(
-      child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                const Expanded(
-                  child: Text('Вибрация'),
-                ),
-                const SizedBox(width: 6),
-                AddaptiveSwtich(
-                  startPosition: AppSettings.vibrationEnabled,
-                  enabled: true,
-                  onChanged: (bool value) async {
-                    AppSettings.vibrationEnabled = value;
-                    await AppSettings.save();
-                  },
-                ),
-              ],
+    return Scaffold(
+      appBar: AppBar(title: const Text('Настройки')),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  const Expanded(
+                    child: Text('Вибрация'),
+                  ),
+                  const SizedBox(width: 6),
+                  AddaptiveSwtich(
+                    startPosition: AppSettings.vibrationEnabled,
+                    enabled: true,
+                    onChanged: (bool value) async {
+                      AppSettings.vibrationEnabled = value;
+                      await AppSettings.save();
+                    },
+                  ),
+                ],
+              ),
             ),
-          ),
-          Divider(
-            color: theme.colorScheme.outlineVariant,
-          ),
-          TextButton(
-            onPressed: () async {
-              await clearCacheFolder();
-              if (context.mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Кэш очищен'),
+            Divider(
+              color: theme.colorScheme.outlineVariant,
+            ),
+            TextButton(
+              onPressed: () async {
+                await clearCacheFolder();
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Кэш очищен'),
+                    ),
+                  );
+                }
+              },
+              child: const Text('Очистить кэш'),
+            ),
+            TextButton(
+              onPressed: () async {
+                await showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog.adaptive(
+                    title: const Text('Выйти из аккаунта?'),
+                    actions: [
+                      AdaptiveDialogAction(
+                        onPressed: () async {
+                          await clearEverything();
+                          if (context.mounted) {
+                            GoRouter.of(context).go(loadingPageRoute);
+                          }
+                        },
+                        child: Text(
+                          'Выйти',
+                          style: TextStyle(color: theme.colorScheme.error),
+                        ),
+                      ),
+                      AdaptiveDialogAction(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        child: const Text('Отмена'),
+                      ),
+                    ],
                   ),
                 );
-              }
-            },
-            child: const Text('Очистить кэш'),
-          ),
-          TextButton(
-            onPressed: () async {
-              await showDialog(
-                context: context,
-                builder: (context) => AlertDialog.adaptive(
-                  title: const Text('Выйти из аккаунта?'),
-                  actions: [
-                    AdaptiveDialogAction(
-                      onPressed: () async {
-                        await clearEverything();
-                        if (context.mounted) {
-                          Navigator.of(context).pushNamedAndRemoveUntil(
-                            Routes.loadingPage,
-                            (route) => false,
-                          );
-                        }
-                      },
-                      child: Text(
-                        'Выйти',
-                        style: TextStyle(color: theme.colorScheme.error),
-                      ),
-                    ),
-                    AdaptiveDialogAction(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      child: const Text('Отмена'),
-                    ),
-                  ],
-                ),
-              );
-            },
-            child: Text(
-              'Выйти из аккаунта',
-              style: TextStyle(color: theme.colorScheme.error),
+              },
+              child: Text(
+                'Выйти из аккаунта',
+                style: TextStyle(color: theme.colorScheme.error),
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

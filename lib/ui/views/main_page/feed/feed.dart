@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bbcode/flutter_bbcode.dart';
+import 'package:go_router/go_router.dart';
 import 'package:html_unescape/html_unescape.dart';
 import 'package:intl/intl.dart';
 import 'package:unn_mobile/core/misc/app_settings.dart';
@@ -13,7 +14,7 @@ import 'package:unn_mobile/core/viewmodels/feed_screen_view_model.dart';
 import 'package:unn_mobile/ui/unn_mobile_colors.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/widgets/attached_file.dart';
-import 'package:unn_mobile/ui/views/main_page/feed/widgets/comments_page.dart';
+import 'package:unn_mobile/ui/views/main_page/main_page_routing.dart';
 
 class FeedScreenView extends StatefulWidget {
   const FeedScreenView({Key? key}) : super(key: key);
@@ -25,50 +26,64 @@ class FeedScreenView extends StatefulWidget {
 class FeedScreenViewState extends State<FeedScreenView> {
   @override
   Widget build(BuildContext context) {
-    return BaseView<FeedScreenViewModel>(
-      builder: (context, model, child) {
-        return NotificationListener<ScrollEndNotification>(
-          child: RefreshIndicator(
-            onRefresh: model.updateFeed,
-            child: ListView.builder(
-              itemCount: model.posts.length + (model.isLoadingPosts ? 1 : 0),
-              itemBuilder: (context, index) {
-                if (index > model.posts.length) {
-                  return null;
-                }
-                if (index == model.posts.length) {
-                  return const SizedBox(
-                    height: 64,
-                    child: Center(
-                      child: CircularProgressIndicator(),
+    final parentScaffold = Scaffold.maybeOf(context);
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Лента'),
+        leading: parentScaffold?.hasDrawer ?? false
+            ? IconButton(
+                onPressed: () {
+                  parentScaffold?.openDrawer();
+                },
+                icon: const Icon(Icons.menu),
+              )
+            : null,
+      ),
+      body: BaseView<FeedScreenViewModel>(
+        builder: (context, model, child) {
+          return NotificationListener<ScrollEndNotification>(
+            child: RefreshIndicator(
+              onRefresh: model.updateFeed,
+              child: ListView.builder(
+                itemCount: model.posts.length + (model.isLoadingPosts ? 1 : 0),
+                itemBuilder: (context, index) {
+                  if (index > model.posts.length) {
+                    return null;
+                  }
+                  if (index == model.posts.length) {
+                    return const SizedBox(
+                      height: 64,
+                      child: Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                    );
+                  }
+                  return feedPost(
+                    context,
+                    model.posts[index],
+                    model,
+                    isNewPost: model.isNewPost(
+                      model.posts[index].post.datePublish,
                     ),
+                    showingComments: false,
                   );
-                }
-                return feedPost(
-                  context,
-                  model.posts[index],
-                  model,
-                  isNewPost: model.isNewPost(
-                    model.posts[index].post.datePublish,
-                  ),
-                  showingComments: false,
-                );
-              },
+                },
+              ),
             ),
-          ),
-          onNotification: (scrollEnd) {
-            final metrics = scrollEnd.metrics;
-            if (metrics.atEdge) {
-              final bool isTop = metrics.pixels == 0;
-              if (!isTop) {
-                model.loadNextPage();
+            onNotification: (scrollEnd) {
+              final metrics = scrollEnd.metrics;
+              if (metrics.atEdge) {
+                final bool isTop = metrics.pixels == 0;
+                if (!isTop) {
+                  model.loadNextPage();
+                }
               }
-            }
-            return true;
-          },
-        );
-      },
-      onModelReady: (model) => model.init(),
+              return true;
+            },
+          );
+        },
+        onModelReady: (model) => model.init(),
+      ),
     );
   }
 
@@ -417,17 +432,10 @@ class FeedScreenViewState extends State<FeedScreenView> {
     PostWithLoadedInfo post,
     FeedScreenViewModel model,
   ) async {
-    await Navigator.of(
-      context.findRootAncestorStateOfType<NavigatorState>()!.context,
-    ).push(
-      MaterialPageRoute(
-        builder: (context) {
-          return CommentsPage(
-            post: post,
-            feedViewModel: model,
-          );
-        },
-      ),
+    GoRouter.of(context).go(
+      '${MainPageRouting.navbarRoutes[0].pageRoute}/'
+      '${MainPageRouting.navbarRoutes[0].subroutes[0].pageRoute}',
+      extra: post,
     );
   }
 
