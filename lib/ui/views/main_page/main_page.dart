@@ -41,6 +41,11 @@ class _MainPageState extends State<MainPage> {
     });
   }
 
+  bool isRootScreen(BuildContext context) {
+    final location = GoRouterState.of(context).uri.path;
+    return MainPageRouting.navbarRoutes.any((r) => r.pageRoute == location);
+  }
+
   @override
   Widget build(BuildContext context) {
     return BaseView<MainPageViewModel>(
@@ -48,7 +53,7 @@ class _MainPageState extends State<MainPage> {
         return Scaffold(
           drawerEdgeDragWidth: MediaQuery.of(context).size.width,
           extendBody: false,
-          drawer: MainPageDrawer(),
+          drawer: isRootScreen(context) ? MainPageDrawer() : null,
           body: widget.child,
           bottomNavigationBar: MainPageNavigationBar(
             onDestinationSelected: (value) {
