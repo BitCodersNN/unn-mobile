@@ -11,6 +11,7 @@ import 'package:unn_mobile/core/models/rating_list.dart';
 import 'package:unn_mobile/core/viewmodels/feed_post_view_model.dart';
 import 'package:unn_mobile/ui/unn_mobile_colors.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
+import 'package:unn_mobile/ui/views/main_page/feed/functions/reactions_window.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/widgets/attached_file.dart';
 import 'package:unn_mobile/ui/views/main_page/main_page_routing.dart';
 import 'package:unn_mobile/ui/widgets/shimmer.dart';
@@ -188,7 +189,7 @@ class FeedPost extends StatelessWidget {
                           if (AppSettings.vibrationEnabled) {
                             HapticFeedback.mediumImpact();
                           }
-                          chooseReaction(context, model);
+                          showReactionChoicePanel(context, model);
                         },
                         child: _reactionButton(
                           context,
@@ -354,98 +355,6 @@ class FeedPost extends StatelessWidget {
               ),
             );
           },
-        ),
-      ),
-    );
-  }
-
-  static void chooseReaction(
-    BuildContext context,
-    FeedPostViewModel model,
-  ) {
-    showModalBottomSheet(
-      context: context,
-      builder: (context) {
-        return Container(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Text(
-                'Выбор реакции',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const Padding(
-                padding: EdgeInsets.only(top: 2),
-                child: Divider(
-                  indent: 8,
-                  endIndent: 8,
-                  thickness: 0.5,
-                  color: Color(0xE5A2A2A2),
-                ),
-              ),
-              const SizedBox(height: 10),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      for (final reaction in ReactionType.values)
-                        _circleAvatarWithCaption(
-                          reaction,
-                          context,
-                          model,
-                        ),
-                    ],
-                  ),
-                ],
-              ),
-              const SizedBox(height: 10),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  static Widget _circleAvatarWithCaption(
-    ReactionType reaction,
-    BuildContext context,
-    FeedPostViewModel model,
-  ) {
-    return GestureDetector(
-      onTap: () {
-        if (AppSettings.vibrationEnabled) {
-          HapticFeedback.selectionClick();
-        }
-        model.toggleReaction(reaction);
-        Navigator.of(context).pop();
-      },
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Row(
-              children: [
-                const SizedBox(width: 4),
-                CircleAvatar(
-                  radius: 21,
-                  backgroundImage: AssetImage(reaction.assetName),
-                ),
-                const SizedBox(width: 5),
-              ],
-            ),
-            const SizedBox(height: 4),
-            Text(
-              reaction.caption,
-              style: const TextStyle(fontSize: 9, color: Colors.grey),
-            ),
-          ],
         ),
       ),
     );

@@ -10,8 +10,10 @@ import 'package:unn_mobile/core/models/user_data.dart';
 import 'package:unn_mobile/core/services/interfaces/feed_post_data_loader.dart';
 import 'package:unn_mobile/core/services/interfaces/reaction_manager.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
+import 'package:unn_mobile/core/viewmodels/interfaces/reaction_capable_view_madel.dart';
 
-class FeedPostViewModel extends BaseViewModel {
+class FeedPostViewModel extends BaseViewModel
+    implements ReactionCapableViewMadel {
   final CurrentUserSyncStorage _currentUserSyncStorage;
   final FeedPostDataLoader _postLoader;
   final ReactionManager _reactionManager;
@@ -55,7 +57,8 @@ class FeedPostViewModel extends BaseViewModel {
 
   UserData? get author => loadedPost?.author;
 
-  ReactionType? get currentReaction => null;
+  @override
+  ReactionType? get currentReaction => _getReaction();
 
   int get reactionCount =>
       loadedPost?.ratingList.getTotalNumberOfReactions() ?? 0;
@@ -75,7 +78,7 @@ class FeedPostViewModel extends BaseViewModel {
     );
   }
 
-  ReactionType? getReaction() {
+  ReactionType? _getReaction() {
     final profileId = _currentUserSyncStorage.currentUserData?.bitrixId;
     return profileId != null
         ? loadedPost?.ratingList.getReactionByUser(profileId)
@@ -141,7 +144,7 @@ class FeedPostViewModel extends BaseViewModel {
   }
 
   void toggleLike() {
-    if (getReaction() != null) {
+    if (_getReaction() != null) {
       _setReaction(null);
     } else {
       _setReaction(ReactionType.like);
@@ -149,12 +152,13 @@ class FeedPostViewModel extends BaseViewModel {
     notifyListeners();
   }
 
+  @override
   void toggleReaction(ReactionType reaction) async {
     if (state == ViewState.busy) {
       return;
     }
     _setReaction(null);
-    if (getReaction() != reaction) {
+    if (_getReaction() != reaction) {
       _setReaction(reaction);
     }
     notifyListeners();

@@ -11,20 +11,22 @@ import 'package:unn_mobile/core/services/interfaces/blog_comment_data_loader.dar
 import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 import 'package:unn_mobile/core/services/interfaces/reaction_manager.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
+import 'package:unn_mobile/core/viewmodels/interfaces/reaction_capable_view_madel.dart';
 
-class FeedCommentViewModel extends BaseViewModel {
+class FeedCommentViewModel extends BaseViewModel
+    implements ReactionCapableViewMadel {
   final _bbTagRegex = RegExp(r'\[[^\[\]]+\]');
   final BlogCommentDataLoader _loader;
   final LoggerService _loggerService;
   final CurrentUserSyncStorage _currentUserSyncStorage;
   final ReactionManager _reactionManager;
 
-  final HtmlUnescape unescaper = HtmlUnescape();
+  final HtmlUnescape _unescaper = HtmlUnescape();
   late BlogPostComment comment;
 
   List<FileData> get files => _loadedComment?.files ?? [];
 
-  String get message => unescaper.convert(comment.message);
+  String get message => _unescaper.convert(comment.message);
   String get authorName =>
       _loadedComment?.author?.fullname.toString() ?? //
       'Неизвестный пользователь';
@@ -51,7 +53,8 @@ class FeedCommentViewModel extends BaseViewModel {
 
   LoadedBlogPostComment? _loadedComment;
 
-  ReactionType? get selectedReaction =>
+  @override
+  ReactionType? get currentReaction =>
       _loadedComment?.ratingList?.getReactionByUser(
         _currentUserSyncStorage.currentUserData?.bitrixId ?? -1,
       );
@@ -73,9 +76,9 @@ class FeedCommentViewModel extends BaseViewModel {
       if (reaction == null) {
         final currentReactionInfo =
             _loadedComment?.ratingList?.getReactionInfoByUser(profileId);
-        final currentReaction =
+        final currentReactionType =
             _loadedComment?.ratingList?.getReactionByUser(profileId);
-        if (currentReactionInfo == null || currentReaction == null) {
+        if (currentReactionInfo == null || currentReactionType == null) {
           return;
         }
         // Временно удаляем реакцию, чтобы показать действие
@@ -84,7 +87,7 @@ class FeedCommentViewModel extends BaseViewModel {
         if (!await _reactionManager.removeReaction(comment.keySigned)) {
           // Если реакция не удалилась - восстанавливаем её
           _loadedComment!.ratingList!.addReactions(
-            currentReaction,
+            currentReactionType,
             [currentReactionInfo],
           );
           notifyListeners();
@@ -116,11 +119,14 @@ class FeedCommentViewModel extends BaseViewModel {
     }
   }
 
+  @override
   void toggleReaction(ReactionType reaction) async {
     if (_isChangingReaction) {
       return;
     }
-    final currentReaction = selectedReaction;
+    final currentReaction = this.currentReaction;
+
+    // Убираем реакцию и ставим новую, если она не та же, что была
     await _setReaction(null);
     if (currentReaction != reaction) {
       await _setReaction(reaction);
