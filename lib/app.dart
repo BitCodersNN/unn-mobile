@@ -12,7 +12,10 @@ class UnnMobile extends StatelessWidget {
       routerConfig: mainRouter,
       theme: ThemeData(
         appBarTheme: const AppBarTheme(
-          elevation: 0,
+          scrolledUnderElevation: 3,
+          backgroundColor: Colors.white,
+          surfaceTintColor: Colors.transparent,
+          shadowColor: Colors.black,
         ),
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(
