@@ -21,6 +21,8 @@ class CommentsPageViewModel extends BaseViewModel {
   final List<BlogPostComment> comments = [];
   bool get isLoadingComments => state == ViewState.busy;
 
+  int get commentsCount => post?.numberOfComments ?? 0;
+
   Future _loadComments(int page) async {
     if (isLoadingComments) {
       return;
@@ -58,11 +60,9 @@ class CommentsPageViewModel extends BaseViewModel {
       postId: post!.id,
     );
     totalPages = 1;
-    final commentNumbers = (posts)?[0].numberOfComments;
-    if (commentNumbers != null) {
-      totalPages =
-          (commentNumbers / GettingBlogPostComments.commentsPerPage).ceil();
-    }
+    post = (posts)?[0] ?? post; // Если получили null - оставляем старый пост
+    totalPages =
+        (commentsCount / GettingBlogPostComments.commentsPerPage).ceil();
     loadedPage = totalPages;
     comments.clear();
 

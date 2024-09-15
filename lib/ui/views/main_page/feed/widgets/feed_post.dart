@@ -49,6 +49,7 @@ class FeedPost extends StatelessWidget {
               padding: const EdgeInsets.all(18),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(0.0),
+                color: theme.colorScheme.surface,
                 boxShadow: const [
                   BoxShadow(
                     offset: Offset(0, 0),

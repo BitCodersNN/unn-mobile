@@ -30,11 +30,13 @@ class CommentsPage extends StatelessWidget {
                       post: post,
                       showingComments: true,
                     ),
-                    const Padding(
-                      padding: EdgeInsets.only(top: 16, bottom: 0),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 16, bottom: 0),
                       child: Text(
-                        'КОММЕНТАРИИ',
-                        style: TextStyle(
+                        model.commentsCount > 0
+                            ? 'КОММЕНТАРИИ'
+                            : 'НЕТ КОММЕНТАРИЕВ',
+                        style: const TextStyle(
                           fontSize: 14,
                           color: Color.fromARGB(255, 152, 158, 169),
                           fontWeight: FontWeight.w600,
@@ -58,7 +60,7 @@ class CommentsPage extends StatelessWidget {
                           FeedCommentView(comment: comment),
                         ],
                       ),
-                    if (model.isLoadingComments)
+                    if (model.isLoadingComments && model.commentsCount > 0)
                       const SizedBox(
                         height: 36.0,
                         child: CircularProgressIndicator.adaptive(),
@@ -70,7 +72,7 @@ class CommentsPage extends StatelessWidget {
                 final metrics = scrollEnd.metrics;
                 if (metrics.atEdge) {
                   final bool isTop = metrics.pixels == 0;
-                  if (!isTop) {
+                  if (!isTop && model.commentsCount > 0) {
                     model.loadMoreComments();
                   }
                 }
