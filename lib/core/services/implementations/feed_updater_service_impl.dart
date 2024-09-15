@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:unn_mobile/core/misc/type_defs.dart';
 import 'package:unn_mobile/core/models/blog_data.dart';
 import 'package:unn_mobile/core/models/online_status_data.dart';
 import 'package:unn_mobile/core/services/interfaces/feed_updater_service.dart';
@@ -10,7 +9,6 @@ import 'package:unn_mobile/core/services/interfaces/post_with_loaded_info_provid
 class FeedUpdaterServiceImpl with ChangeNotifier implements FeedUpdaterService {
   final LoggerService _loggerService;
   final PostWithLoadedInfoProvider _offlineFeedProvider;
-  final LRUCacheLoadedBlogPost _lruCacheLoadedBlogPost;
   final OnlineStatusData _onlineStatusData;
 
   bool _busy = false;
@@ -25,7 +23,6 @@ class FeedUpdaterServiceImpl with ChangeNotifier implements FeedUpdaterService {
     this._gettingBlogPostsService,
     this._loggerService,
     this._offlineFeedProvider,
-    this._lruCacheLoadedBlogPost,
     this._onlineStatusData,
   ) {
     _onlineStatusData.notifier.addListener(onOnlineChanged);
@@ -53,13 +50,7 @@ class FeedUpdaterServiceImpl with ChangeNotifier implements FeedUpdaterService {
       if (contained) {
         _postsList.clear();
         _postsList.addAll(
-          (await _offlineFeedProvider.getData())?.map(
-                (e) {
-                  _lruCacheLoadedBlogPost.save(e.post.id, e);
-                  return e.post;
-                },
-              ) ??
-              [],
+          (await _offlineFeedProvider.getData())?.map((e) => e.post) ?? [],
         );
         notifyListeners();
       }

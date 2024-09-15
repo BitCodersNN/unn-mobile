@@ -178,7 +178,6 @@ void registerDependencies() {
   );
   injector.registerSingleton<FeedPostDataLoader>(
     () => FeedPostDataLoaderImpl(
-      get<LRUCacheLoadedBlogPost>(),
       get<LRUCacheUserData>(),
       get<GettingProfile>(),
       get<GettingFileData>(),
@@ -189,19 +188,12 @@ void registerDependencies() {
   injector.registerSingleton<LRUCacheUserData>(
     () => LRUCacheUserData(50),
   );
-  injector.registerSingleton<LRUCacheLoadedBlogPostComment>(
-    () => LRUCacheLoadedBlogPostComment(50),
-  );
-  injector.registerSingleton<LRUCacheLoadedBlogPost>(
-    () => LRUCacheLoadedBlogPost(100),
-  );
 
   injector.registerSingleton<FeedUpdaterService>(
     () => FeedUpdaterServiceImpl(
       get<GettingBlogPosts>(),
       get<LoggerService>(),
       get<PostWithLoadedInfoProvider>(),
-      get<LRUCacheLoadedBlogPost>(),
       get<OnlineStatusData>(),
     ),
   );
@@ -234,7 +226,6 @@ void registerDependencies() {
   );
   injector.registerSingleton<BlogCommentDataLoader>(
     () => BlogCommentDataLoaderImpl(
-      get<LRUCacheLoadedBlogPostComment>(),
       get<LRUCacheUserData>(),
       get<GettingProfile>(),
       get<GettingFileData>(),

@@ -11,7 +11,6 @@ import 'package:unn_mobile/core/services/interfaces/getting_rating_list.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_vote_key_signed.dart';
 
 class FeedPostDataLoaderImpl implements FeedPostDataLoader {
-  final LRUCacheLoadedBlogPost _postCache;
   final LRUCacheUserData _lruCacheProfile;
   final GettingProfile _gettingProfileService;
   final GettingVoteKeySigned _gettingVoteKeySigned;
@@ -19,7 +18,6 @@ class FeedPostDataLoaderImpl implements FeedPostDataLoader {
   final GettingRatingList _gettingRatingList;
 
   FeedPostDataLoaderImpl(
-    this._postCache,
     this._lruCacheProfile,
     this._gettingProfileService,
     this._gettingFileData,
@@ -28,18 +26,6 @@ class FeedPostDataLoaderImpl implements FeedPostDataLoader {
   );
   @override
   Future<PostWithLoadedInfo> load(BlogData data) async {
-    final cachedPost = _postCache.get(data.id);
-    if (cachedPost != null) {
-      final post = PostWithLoadedInfo(
-        author: cachedPost.author,
-        post: data,
-        files: cachedPost.files,
-        ratingList: cachedPost.ratingList,
-      );
-      _postCache.save(data.id, post);
-      return post;
-    }
-
     final futures = <Future>[];
 
     UserData? postAuthor = _lruCacheProfile.get(data.bitrixID);
@@ -58,10 +44,7 @@ class FeedPostDataLoaderImpl implements FeedPostDataLoader {
 
     futures.add(
       _gettingVoteKeySigned
-          .getVoteKeySigned(
-        authorId: data.bitrixID,
-        postId: data.id,
-      )
+          .getVoteKeySigned(authorId: data.bitrixID, postId: data.id)
           .then((voteKeySigned) {
         data.keySigned = voteKeySigned;
         return _gettingRatingList.getRatingList(
@@ -89,13 +72,11 @@ class FeedPostDataLoaderImpl implements FeedPostDataLoader {
         .where((element) => element != null)
         .map((e) => e!)
         .toList();
-    final result = PostWithLoadedInfo(
+    return PostWithLoadedInfo(
       author: postAuthor,
       post: data,
       files: filteredFiles,
       ratingList: loadedData[posRatingListInData] ?? RatingList(),
     );
-    _postCache.save(data.id, result);
-    return result;
   }
 }

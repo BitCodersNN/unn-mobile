@@ -76,9 +76,12 @@ class FeedScreenViewModel extends BaseViewModel {
   /// Синхронизирует посты в вьюмодели с сервисом
   void syncFeed() {
     _lastLoadedPost = 0;
-    getMorePosts();
+    _posts.clear();
     showSyncFeedButton = false;
-    scrollToTop?.call();
+    Future.delayed(const Duration(milliseconds: 300), () {
+      getMorePosts();
+      scrollToTop?.call();
+    });
   }
 
   /// Отправляет сигнал сервису для обновления постов

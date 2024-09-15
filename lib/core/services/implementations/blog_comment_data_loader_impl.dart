@@ -10,14 +10,12 @@ import 'package:unn_mobile/core/services/interfaces/getting_profile.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_rating_list.dart';
 
 class BlogCommentDataLoaderImpl implements BlogCommentDataLoader {
-  final LRUCacheLoadedBlogPostComment _commentsCache;
   final LRUCacheUserData _usersCache;
   final GettingProfile _gettingProfileService;
   final GettingFileData _gettingFileDataService;
   final GettingRatingList _gettingRatingList;
 
   BlogCommentDataLoaderImpl(
-    this._commentsCache,
     this._usersCache,
     this._gettingProfileService,
     this._gettingFileDataService,
@@ -27,13 +25,6 @@ class BlogCommentDataLoaderImpl implements BlogCommentDataLoader {
   @override
   Future<LoadedBlogPostComment> load(BlogPostComment comment) async {
     final futures = <Future>[];
-
-    LoadedBlogPostComment? blogPostCommentWithLoadedInfo =
-        _commentsCache.get(comment.id);
-
-    if (blogPostCommentWithLoadedInfo != null) {
-      return blogPostCommentWithLoadedInfo;
-    }
 
     UserData? profile = _usersCache.get(comment.bitrixID);
 
@@ -74,7 +65,7 @@ class BlogCommentDataLoaderImpl implements BlogCommentDataLoader {
         .map((e) => e!)
         .toList();
 
-    blogPostCommentWithLoadedInfo = LoadedBlogPostComment(
+    final blogPostCommentWithLoadedInfo = LoadedBlogPostComment(
       comment: comment,
       author: profile!,
       files: filteredFiles,
@@ -84,11 +75,6 @@ class BlogCommentDataLoaderImpl implements BlogCommentDataLoader {
     _usersCache.save(
       comment.bitrixID,
       profile,
-    );
-
-    _commentsCache.save(
-      comment.id,
-      blogPostCommentWithLoadedInfo,
     );
 
     return blogPostCommentWithLoadedInfo;
