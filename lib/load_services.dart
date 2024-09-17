@@ -188,6 +188,12 @@ void registerDependencies() {
   injector.registerSingleton<LRUCacheUserData>(
     () => LRUCacheUserData(50),
   );
+  injector.registerSingleton<LRUCacheLoadedFile>(
+    () => LRUCacheLoadedFile(50),
+  );
+  injector.registerSingleton<LRUCacheRatingList>(
+    () => LRUCacheRatingList(50),
+  );
 
   injector.registerSingleton<FeedUpdaterService>(
     () => FeedUpdaterServiceImpl(
