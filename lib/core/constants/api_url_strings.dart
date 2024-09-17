@@ -1,9 +1,12 @@
 class ApiPaths {
-  /// Доменное имя
-  static const String host = 'portal.unn.ru';
+  /// Доменное имя gitHub
+  static const String gitHubHost = 'raw.githubusercontent.com';
 
-  /// Второе доменное имя
-  static const String mobileHost = 'portal-m.unn.ru';
+  /// Доменное имя unn портала
+  static const String unnHost = 'portal.unn.ru';
+
+  /// Второе доменное имя unn портала
+  static const String unnMobileHost = 'portal-m.unn.ru';
 
   /// Для авторизация
   static const String auth = 'auth/';

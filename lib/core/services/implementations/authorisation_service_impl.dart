@@ -44,7 +44,7 @@ class AuthorizationServiceImpl implements AuthorizationService {
     }
 
     final requestSender = HttpRequestSender(
-      host: ApiPaths.mobileHost,
+      host: ApiPaths.unnMobileHost,
       path: ApiPaths.authWithCookie,
     );
 
