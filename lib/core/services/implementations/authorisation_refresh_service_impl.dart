@@ -1,5 +1,4 @@
 import 'package:flutter/services.dart';
-import 'package:unn_mobile/core/services/implementations/loading_page/last_commit_sha_impl.dart';
 import 'package:unn_mobile/core/services/implementations/loading_page/loading_page_config.dart';
 import 'package:unn_mobile/core/services/interfaces/auth_data_provider.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
