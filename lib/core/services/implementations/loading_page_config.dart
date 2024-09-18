@@ -14,7 +14,8 @@ class LoadingPageConfigImpl implements LoadingPageConfig {
 
   @override
   Future<List<LoadingPageModel>?> getLoadingPages() async {
-    const path = 'BitCodersNN/unn-mobile.loading-screen/main/loading_page_config.json';
+    const path =
+        'BitCodersNN/unn-mobile.loading-screen/main/loading_page_config.json';
 
     final requestSender = HttpRequestSender(
       host: ApiPaths.gitHubHost,
@@ -51,7 +52,7 @@ class LoadingPageConfigImpl implements LoadingPageConfig {
     final List<LoadingPageModel> loadingPages = [];
 
     for (final loadingPagesJsonList in jsonMap.values) {
-      for (final laodingPageJson in  loadingPagesJsonList) {
+      for (final laodingPageJson in loadingPagesJsonList) {
         loadingPages.add(LoadingPageModel.fromJson(laodingPageJson));
       }
     }

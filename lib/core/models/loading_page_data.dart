@@ -1,10 +1,25 @@
 import 'package:flutter/material.dart';
 
 class _KeysForLoadingPageModelJsonConverter {
-
+  static const String logoPath = 'logo_path';
+  static const String startDate = 'start_date';
+  static const String endDate = 'end_date';
+  static const String title = 'title';
+  static const String description = 'description';
+  static const String text = 'text';
+  static const String color = 'color';
+  static const String fontSize = 'fontSize';
 }
 
 class LoadingPageModel {
+  static const defaultTextStyle = TextStyle(
+    color: Color(0xFF0F68AA),
+    fontSize: 34.09,
+    fontFamily: 'LetoSans',
+  );
+
+  static const defaultTitle = 'УНИВЕРСИТЕТ \n ЛОБАЧЕВСКОГО';
+
   final String _imagePath;
   final DateTimeRange? _showDateTimeRange;
   final String _title;
@@ -15,21 +30,16 @@ class LoadingPageModel {
   LoadingPageModel({
     required String imagePath,
     DateTimeRange? showDateTimeRange,
-    String title = 'УНИВЕРСИТЕТ \n ЛОБАЧЕВСКОГО',
-    TextStyle titleStyle = const TextStyle(
-      color: Color(0xFF0F68AA),
-      fontSize: 34.09,
-      fontFamily: 'LetoSans',
-    ),
+    String title = defaultTitle,
+    TextStyle titleStyle = defaultTextStyle,
     String? description,
     TextStyle? descriptionStyle,
-  }):
-  _imagePath = imagePath,
-  _showDateTimeRange = showDateTimeRange,
-  _title = title,
-  _titleStyle = titleStyle,
-  _description = description,
-  _descriptionStyle = descriptionStyle;
+  })  : _imagePath = imagePath,
+        _showDateTimeRange = showDateTimeRange,
+        _title = title,
+        _titleStyle = titleStyle,
+        _description = description,
+        _descriptionStyle = descriptionStyle;
 
   String get title => _title;
   String get imagePath => _imagePath;
@@ -38,43 +48,22 @@ class LoadingPageModel {
   TextStyle? get descriptionStyle => _descriptionStyle;
 
   factory LoadingPageModel.fromJson(Map<String, dynamic> json) {
-    final String imagePath = json['logo_path'];
-    final String? startDateStr = json['start_date'];
-    final String? endDateStr = json['end_date'];
+    final String imagePath =
+        json[_KeysForLoadingPageModelJsonConverter.logoPath];
 
-    DateTimeRange? dateTimeRange;
-    if (startDateStr != null && endDateStr != null) {
-      final now = DateTime.now();
-      final yearString = now.year.toString();
+    final DateTimeRange? dateTimeRange = _getDateTimeRaneFromJson(json);
 
-      final startDate = DateTime.parse('$yearString-$startDateStr');
-      final endDate = DateTime.parse('$yearString-$endDateStr');
-      dateTimeRange = DateTimeRange(start: startDate, end: endDate);
-    }
+    final titleJson = json[_KeysForLoadingPageModelJsonConverter.title];
+    final String title =
+        titleJson?[_KeysForLoadingPageModelJsonConverter.text] ?? defaultTitle;
+    final titleStyle = _getTextStyleFromJson(titleJson) ?? defaultTextStyle;
 
-    final String title = json['title']?['text'] ?? 'УНИВЕРСИТЕТ \n ЛОБАЧЕВСКОГО';
-    final Color titleColor = Color(int.parse(json['title']?['color'] ?? '0xFF0F68AA'));
-    final double titleFontSize = double.parse(json['title']?['fontSize'] ?? '34.09');
-    final TextStyle titleStyle = TextStyle(
-      color: titleColor,
-      fontSize: titleFontSize,
-      fontFamily: 'LetoSans',
-    );
+    final descriptionJson =
+        json[_KeysForLoadingPageModelJsonConverter.description];
+    final String? description =
+        descriptionJson?[_KeysForLoadingPageModelJsonConverter.text];
 
-    final String? description = json['description']?['text'];
-    final Color? descriptionColor = json['description']?['color'] != null
-        ? Color(int.parse(json['description']['color']))
-        : null;
-    final double? descriptionFontSize = json['description']?['fontSize'] != null
-        ? double.parse(json['description']['fontSize'])
-        : null;
-    final TextStyle? descriptionStyle = description != null
-        ? TextStyle(
-            color: descriptionColor ?? const Color(0xFF0F68AA),
-            fontSize: descriptionFontSize ?? 25.0,
-            fontFamily: 'LetoSans',
-          )
-        : null;
+    final descriptionStyle = _getTextStyleFromJson(descriptionJson);
 
     return LoadingPageModel(
       imagePath: imagePath,
@@ -86,21 +75,76 @@ class LoadingPageModel {
     );
   }
 
+  static DateTimeRange? _getDateTimeRaneFromJson(Map<String, dynamic> json) {
+    final String? startDateStr =
+        json[_KeysForLoadingPageModelJsonConverter.startDate];
+    final String? endDateStr =
+        json[_KeysForLoadingPageModelJsonConverter.endDate];
+
+    DateTimeRange? dateTimeRange;
+    if (startDateStr != null && endDateStr != null) {
+      final now = DateTime.now();
+      final yearString = now.year.toString();
+
+      final startDate = DateTime.parse('$yearString-$startDateStr');
+      final endDate = DateTime.parse('$yearString-$endDateStr');
+      dateTimeRange = DateTimeRange(start: startDate, end: endDate);
+    }
+
+    return dateTimeRange;
+  }
+
+  static TextStyle? _getTextStyleFromJson(
+    Map<String, dynamic>? json, {
+    TextStyle defaultTextStyle = defaultTextStyle,
+  }) {
+    if (json == null) {
+      return null;
+    }
+
+    final colorFromJson = json[_KeysForLoadingPageModelJsonConverter.color];
+    final colorInt = int.tryParse(
+      colorFromJson ?? defaultTextStyle.color.toString(),
+    );
+    final Color titleColor = Color(colorInt!);
+
+    final fontSizeFromJson =
+        json[_KeysForLoadingPageModelJsonConverter.fontSize];
+
+    final fontSize = double.tryParse(
+      fontSizeFromJson ?? defaultTextStyle.fontSize.toString(),
+    );
+
+    final TextStyle titleStyle = TextStyle(
+      color: titleColor,
+      fontSize: fontSize,
+      fontFamily: defaultTextStyle.fontFamily,
+    );
+
+    return titleStyle;
+  }
+
   Map<String, dynamic> toJson() {
     return {
-      'logo_path': _imagePath,
-      'start_date': _showDateTimeRange?.start.toString().substring(5, 10),
-      'end_date': _showDateTimeRange?.end.toString().substring(5, 10),
-      'title': {
-        'text': _title,
-        'color': _titleStyle.color!.value.toRadixString(16),
-        'fontSize': _titleStyle.fontSize.toString(),
+      _KeysForLoadingPageModelJsonConverter.logoPath: _imagePath,
+      _KeysForLoadingPageModelJsonConverter.startDate:
+          _showDateTimeRange?.start.toString().substring(5, 10),
+      _KeysForLoadingPageModelJsonConverter.endDate:
+          _showDateTimeRange?.end.toString().substring(5, 10),
+      _KeysForLoadingPageModelJsonConverter.title: {
+        _KeysForLoadingPageModelJsonConverter.text: _title,
+        _KeysForLoadingPageModelJsonConverter.color:
+            _titleStyle.color!.value.toRadixString(16),
+        _KeysForLoadingPageModelJsonConverter.fontSize:
+            _titleStyle.fontSize.toString(),
       },
       if (_description != null)
-        'description': {
-          'text': _description,
-          'color': _descriptionStyle?.color!.value.toRadixString(16),
-          'fontSize': _descriptionStyle?.fontSize.toString(),
+        _KeysForLoadingPageModelJsonConverter.description: {
+          _KeysForLoadingPageModelJsonConverter.text: _description,
+          _KeysForLoadingPageModelJsonConverter.color:
+              _descriptionStyle?.color!.value.toRadixString(16),
+          _KeysForLoadingPageModelJsonConverter.fontSize:
+              _descriptionStyle?.fontSize.toString(),
         },
     };
   }
