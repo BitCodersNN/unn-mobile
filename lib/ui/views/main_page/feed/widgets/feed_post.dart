@@ -32,7 +32,7 @@ class FeedPost extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final extraColors = theme.extension<UnnMobileColors>();
+    theme.extension<UnnMobileColors>();
     final reactionsSize = MediaQuery.textScalerOf(context).scale(18.0);
     return BaseView<FeedPostViewModel>(
       builder: (context, model, _) {
@@ -147,16 +147,10 @@ class FeedPost extends StatelessWidget {
                     },
                   ),
                   const SizedBox(height: 16.0),
-                  if (model.isBusy)
-                    for (var i = 0; i < model.filesCount; i++)
-                      const AttachedFilePlaceholder()
-                  else
-                    for (final file in model.files)
-                      AttachedFile(
-                        fileData: file,
-                        backgroundColor: extraColors?.defaultPostHighlight ??
-                            Colors.transparent,
-                      ),
+                  for (final file in model.files)
+                    AttachedFile(
+                      fileId: file,
+                    ),
                   if (!showingComments)
                     const Padding(
                       padding: EdgeInsets.only(left: 4, right: 4, top: 10),

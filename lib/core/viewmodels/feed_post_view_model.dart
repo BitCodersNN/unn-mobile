@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:html_unescape/html_unescape.dart';
 import 'package:unn_mobile/core/misc/current_user_sync_storage.dart';
 import 'package:unn_mobile/core/models/blog_data.dart';
-import 'package:unn_mobile/core/models/file_data.dart';
 import 'package:unn_mobile/core/models/post_with_loaded_info.dart';
 import 'package:unn_mobile/core/models/rating_list.dart';
 import 'package:unn_mobile/core/models/user_data.dart';
@@ -42,6 +41,11 @@ class FeedPostViewModel extends BaseViewModel
         )
       : null;
 
+  Iterable<int> get files =>
+      blogData.files?.map(
+        (e) => int.parse(e),
+      ) ??
+      [];
   @override
   bool get isBusy => state == ViewState.busy;
 
@@ -50,8 +54,6 @@ class FeedPostViewModel extends BaseViewModel
     this._postLoader,
     this._reactionManager,
   );
-
-  List<FileData> get files => loadedPost?.files ?? [];
 
   DateTime get postTime => blogData.datePublish;
 

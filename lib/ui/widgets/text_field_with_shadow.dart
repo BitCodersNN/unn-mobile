@@ -10,14 +10,14 @@ class TextFieldWithBoxShadow extends StatelessWidget {
   final bool enableSuggestions;
 
   const TextFieldWithBoxShadow({
-    Key? key,
+    super.key,
     this.errorText,
     this.labelText,
     this.controller,
     this.height = 40,
     this.obscuredText = false,
     this.enableSuggestions = false,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

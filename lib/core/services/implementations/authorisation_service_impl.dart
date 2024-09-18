@@ -107,6 +107,7 @@ class AuthorizationServiceImpl implements AuthorizationService {
   }
 
   Future<bool> _isOffline() async {
-    return await Connectivity().checkConnectivity() == ConnectivityResult.none;
+    return (await Connectivity().checkConnectivity())
+        .contains(ConnectivityResult.none);
   }
 }

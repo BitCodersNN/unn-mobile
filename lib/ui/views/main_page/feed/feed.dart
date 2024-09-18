@@ -4,7 +4,7 @@ import 'package:unn_mobile/ui/views/base_view.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/widgets/feed_post.dart';
 
 class FeedScreenView extends StatefulWidget {
-  const FeedScreenView({Key? key}) : super(key: key);
+  const FeedScreenView({super.key});
 
   @override
   State<FeedScreenView> createState() => FeedScreenViewState();

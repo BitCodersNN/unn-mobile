@@ -4,7 +4,6 @@ import 'package:unn_mobile/core/misc/custom_bb_tags.dart';
 import 'package:unn_mobile/core/models/blog_post_comment.dart';
 import 'package:unn_mobile/core/models/rating_list.dart';
 import 'package:unn_mobile/core/viewmodels/feed_comment_view_model.dart';
-import 'package:unn_mobile/ui/unn_mobile_colors.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/functions/reactions_window.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/widgets/attached_file.dart';
@@ -114,11 +113,7 @@ class FeedCommentView extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.only(left: 16),
                   child: AttachedFile(
-                    fileData: file,
-                    backgroundColor: theme
-                            .extension<UnnMobileColors>()
-                            ?.defaultPostHighlight ??
-                        Colors.transparent,
+                    fileId: file,
                   ),
                 ),
               Padding(

@@ -4,7 +4,6 @@ import 'package:html_unescape/html_unescape.dart';
 import 'package:unn_mobile/core/misc/current_user_sync_storage.dart';
 import 'package:unn_mobile/core/misc/user_functions.dart';
 import 'package:unn_mobile/core/models/blog_post_comment.dart';
-import 'package:unn_mobile/core/models/file_data.dart';
 import 'package:unn_mobile/core/models/loaded_blog_post_comment.dart';
 import 'package:unn_mobile/core/models/rating_list.dart';
 import 'package:unn_mobile/core/services/interfaces/blog_comment_data_loader.dart';
@@ -24,7 +23,7 @@ class FeedCommentViewModel extends BaseViewModel
   final HtmlUnescape _unescaper = HtmlUnescape();
   late BlogPostComment comment;
 
-  List<FileData> get files => _loadedComment?.files ?? [];
+  List<int> get files => comment.attachedFiles;
 
   String get message => _unescaper.convert(comment.message);
   String get authorName =>
