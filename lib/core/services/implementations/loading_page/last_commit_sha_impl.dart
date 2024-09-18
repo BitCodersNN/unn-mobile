@@ -3,21 +3,20 @@ import 'dart:io';
 
 import 'package:unn_mobile/core/constants/api_url_strings.dart';
 import 'package:unn_mobile/core/misc/http_helper.dart';
-import 'package:unn_mobile/core/models/loading_page_data.dart';
-import 'package:unn_mobile/core/services/interfaces/loading_page/loading_page_config.dart';
+import 'package:unn_mobile/core/services/interfaces/loading_page/last_commit_sha.dart';
 import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 
-class LoadingPageConfigImpl implements LoadingPageConfig {
+class LastCommitShaImpl implements LastCommitSha {
   final LoggerService _loggerService;
 
-  LoadingPageConfigImpl(this._loggerService);
+  LastCommitShaImpl(this._loggerService);
 
   @override
-  Future<List<LoadingPageModel>?> getLoadingPages() async {
-    const path = '${ApiPaths.gitRepository}/main/loading_page_config.json';
+  Future<String?> getSha() async {
+    const path = 'repos/${ApiPaths.gitRepository}/commits/main?per_page=1';
 
     final requestSender = HttpRequestSender(
-      host: ApiPaths.gitHubHost,
+      host: ApiPaths.apiGitHub,
       path: path,
     );
 
@@ -48,14 +47,6 @@ class LoadingPageConfigImpl implements LoadingPageConfig {
       return null;
     }
 
-    final List<LoadingPageModel> loadingPages = [];
-
-    for (final loadingPagesJsonList in jsonMap.values) {
-      for (final laodingPageJson in loadingPagesJsonList) {
-        loadingPages.add(LoadingPageModel.fromJson(laodingPageJson));
-      }
-    }
-
-    return loadingPages;
+    return jsonMap['sha'];
   }
 }

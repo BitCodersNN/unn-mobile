@@ -2,6 +2,9 @@ class ApiPaths {
   /// Доменное имя gitHub
   static const String gitHubHost = 'raw.githubusercontent.com';
 
+  /// Доменное имя api gitHub
+  static const String apiGitHub = 'api.github.com';
+
   /// Доменное имя unn портала
   static const String unnHost = 'portal.unn.ru';
 
@@ -9,7 +12,7 @@ class ApiPaths {
   static const String unnMobileHost = 'portal-m.unn.ru';
 
   /// Для доступа к репозиторию с загрузочными экранами
-  static const String gitRepository = 'BitCodersNN/unn-mobile.loading-screen/main';
+  static const String gitRepository = 'BitCodersNN/unn-mobile.loading-screen';
 
   /// Для авторизация
   static const String auth = 'auth/';
