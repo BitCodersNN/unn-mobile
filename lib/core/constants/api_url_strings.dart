@@ -8,6 +8,9 @@ class ApiPaths {
   /// Второе доменное имя unn портала
   static const String unnMobileHost = 'portal-m.unn.ru';
 
+  /// Для доступа к репозиторию с загрузочными экранами
+  static const String gitRepository = 'BitCodersNN/unn-mobile.loading-screen/main';
+
   /// Для авторизация
   static const String auth = 'auth/';
 

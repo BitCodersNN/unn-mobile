@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:unn_mobile/core/constants/api_url_strings.dart';
 import 'package:unn_mobile/core/misc/http_helper.dart';
 import 'package:unn_mobile/core/models/loading_page_data.dart';
-import 'package:unn_mobile/core/services/interfaces/loading_page_config.dart';
+import 'package:unn_mobile/core/services/interfaces/loading_page/loading_page_config.dart';
 import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 
 class LoadingPageConfigImpl implements LoadingPageConfig {
@@ -14,8 +14,7 @@ class LoadingPageConfigImpl implements LoadingPageConfig {
 
   @override
   Future<List<LoadingPageModel>?> getLoadingPages() async {
-    const path =
-        'BitCodersNN/unn-mobile.loading-screen/main/loading_page_config.json';
+    const path = '${ApiPaths.gitRepository}/loading_page_config.json';
 
     final requestSender = HttpRequestSender(
       host: ApiPaths.gitHubHost,

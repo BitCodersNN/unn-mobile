@@ -1,5 +1,5 @@
 import 'package:flutter/services.dart';
-import 'package:unn_mobile/core/services/implementations/loading_page_config.dart';
+import 'package:unn_mobile/core/services/implementations/loading_page/loading_page_config.dart';
 import 'package:unn_mobile/core/services/interfaces/auth_data_provider.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
 import 'package:unn_mobile/core/models/auth_data.dart';
@@ -37,7 +37,7 @@ class AuthorizationRefreshServiceImpl implements AuthorizationRefreshService {
 
   @override
   Future<AuthRequestResult?> refreshLogin() async {
-    await LoadingPageConfigImpl(_loggerService).getLoadingPages();
+    final x = await LoadingPageConfigImpl(_loggerService).getLoadingPages();
     if (!await _userDataExistsInStorage()) {
       return null;
     }
