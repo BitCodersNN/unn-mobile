@@ -112,73 +112,76 @@ class _AttachedFileState extends State<AttachedFile> {
                       break;
                   }
                 },
-                child: Shimmer(
-                  child: Row(
-                    children: [
-                      ShimmerLoading(
-                        isLoading: model.isLoadingData,
-                        child: Icon(
-                          iconData,
-                          size: 30,
-                          color: const Color(
-                            0xE9A9C6EF,
-                          ), // Здесь можно задать любой цвет
+                child: Container(
+                  color: Colors.transparent,
+                  child: Shimmer(
+                    child: Row(
+                      children: [
+                        ShimmerLoading(
+                          isLoading: model.isLoadingData,
+                          child: Icon(
+                            iconData,
+                            size: 30,
+                            color: const Color(
+                              0xE9A9C6EF,
+                            ), // Здесь можно задать любой цвет
+                          ),
                         ),
-                      ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: ShimmerLoading(
-                                    isLoading: model.isLoadingData,
-                                    child: model.isLoadingData
-                                        ? Container(
-                                            width: double.infinity,
-                                            height: scaler.scale(16),
-                                            decoration: BoxDecoration(
-                                              color: Colors.black87,
-                                              borderRadius:
-                                                  BorderRadius.circular(16),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: ShimmerLoading(
+                                      isLoading: model.isLoadingData,
+                                      child: model.isLoadingData
+                                          ? Container(
+                                              width: double.infinity,
+                                              height: scaler.scale(20),
+                                              decoration: BoxDecoration(
+                                                color: Colors.black,
+                                                borderRadius:
+                                                    BorderRadius.circular(16),
+                                              ),
+                                            )
+                                          : Text(
+                                              path.withoutExtension(
+                                                model.fileName,
+                                              ),
+                                              overflow: TextOverflow.ellipsis,
+                                              textScaler: scaler,
+                                              style:
+                                                  const TextStyle(fontSize: 16),
                                             ),
-                                          )
-                                        : Text(
-                                            path.withoutExtension(
-                                              model.fileName,
-                                            ),
-                                            overflow: TextOverflow.ellipsis,
-                                            textScaler: scaler,
-                                            style:
-                                                const TextStyle(fontSize: 16),
-                                          ),
-                                  ),
-                                ),
-                                if (!model.isLoadingData &&
-                                    model.isDownloadingFile)
-                                  const Padding(
-                                    padding:
-                                        EdgeInsets.symmetric(horizontal: 8.0),
-                                    child: SizedBox(
-                                      height: 16,
-                                      width: 16,
-                                      child: CircularProgressIndicator(),
                                     ),
                                   ),
-                              ],
-                            ),
-                            Text(
-                              '${model.fileExtension} | ${model.fileSizeText}',
-                              style: TextStyle(
-                                color: extraColors?.ligtherTextColor,
+                                  if (!model.isLoadingData &&
+                                      model.isDownloadingFile)
+                                    const Padding(
+                                      padding:
+                                          EdgeInsets.symmetric(horizontal: 8.0),
+                                      child: SizedBox(
+                                        height: 16,
+                                        width: 16,
+                                        child: CircularProgressIndicator(),
+                                      ),
+                                    ),
+                                ],
                               ),
-                            ),
-                          ],
+                              Text(
+                                '${model.fileExtension} | ${model.fileSizeText}',
+                                style: TextStyle(
+                                  color: extraColors?.ligtherTextColor,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),

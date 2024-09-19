@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:unn_mobile/core/misc/file_functions.dart';
 import 'package:unn_mobile/core/misc/size_converter.dart';
+import 'package:unn_mobile/core/misc/type_defs.dart';
 import 'package:unn_mobile/core/models/file_data.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_file_data.dart';
@@ -21,6 +22,7 @@ class AttachedFileViewModel extends BaseViewModel {
   final GettingFileData _fileDataService;
   final LoggerService _loggerService;
   final AuthorizationService _authService;
+  final LRUCacheLoadedFile _lruCacheLoadedFile;
   final SizeConverter sizeConverter = SizeConverter();
 
   static const Map<String, AttachedFileType> _fileTypes = {
@@ -40,6 +42,7 @@ class AttachedFileViewModel extends BaseViewModel {
     this._fileDataService,
     this._loggerService,
     this._authService,
+    this._lruCacheLoadedFile,
   );
 
   late int _fileId;
@@ -73,10 +76,21 @@ class AttachedFileViewModel extends BaseViewModel {
   String? _error;
   String get error => _error ?? '';
 
+  Future<FileData?> _loadData(int fileId) async {
+    var data = _lruCacheLoadedFile.get(fileId);
+    if (data == null) {
+      data = await _fileDataService.getFileData(id: fileId);
+      if (data != null) {
+        _lruCacheLoadedFile.save(fileId, data);
+      }
+    }
+    return data;
+  }
+
   void init(int fileId) {
     _fileId = fileId;
     _isLoadingData = true;
-    _fileDataService.getFileData(id: fileId).then((file) {
+    _loadData(fileId).then((file) {
       _loadedData = file;
     }).catchError((error, stack) {
       _loggerService.logError(error, stack);

@@ -312,6 +312,7 @@ void registerDependencies() {
       get<GettingFileData>(),
       get<LoggerService>(),
       get<AuthorizationService>(),
+      get<LRUCacheLoadedFile>(),
     ),
   );
 }
