@@ -181,7 +181,6 @@ void registerDependencies() {
     () => FeedPostDataLoaderImpl(
       get<LRUCacheUserData>(),
       get<GettingProfile>(),
-      get<GettingFileData>(),
       get<GettingRatingList>(),
       get<GettingVoteKeySigned>(),
     ),
@@ -235,7 +234,6 @@ void registerDependencies() {
     () => BlogCommentDataLoaderImpl(
       get<LRUCacheUserData>(),
       get<GettingProfile>(),
-      get<GettingFileData>(),
       get<GettingRatingList>(),
     ),
   );
