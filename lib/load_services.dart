@@ -53,9 +53,9 @@ import 'package:unn_mobile/core/services/interfaces/schedule_search_history_serv
 import 'package:unn_mobile/core/services/interfaces/search_id_on_portal_service.dart';
 import 'package:unn_mobile/core/services/interfaces/storage_service.dart';
 import 'package:unn_mobile/core/services/interfaces/user_data_provider.dart';
-import 'package:unn_mobile/core/viewmodels/attached_file_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/auth_page_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/comments_page_view_model.dart';
+import 'package:unn_mobile/core/viewmodels/factories/attached_file_view_model_factory.dart';
 import 'package:unn_mobile/core/viewmodels/feed_comment_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/feed_post_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/feed_screen_view_model.dart';
@@ -72,6 +72,11 @@ void registerDependencies() {
   }
 
   // register all the dependencies here:
+
+  //
+  // Services
+  //
+
   injector.registerSingleton<LoggerService>(() => FirebaseLogger());
   injector.registerSingleton<OnlineStatusData>(() => OnlineStatusData());
 
@@ -188,9 +193,6 @@ void registerDependencies() {
   injector.registerSingleton<LRUCacheUserData>(
     () => LRUCacheUserData(50),
   );
-  injector.registerSingleton<LRUCacheLoadedFile>(
-    () => LRUCacheLoadedFile(50),
-  );
   injector.registerSingleton<LRUCacheRatingList>(
     () => LRUCacheRatingList(50),
   );
@@ -237,6 +239,18 @@ void registerDependencies() {
       get<GettingRatingList>(),
     ),
   );
+
+  //
+  // Factories
+  //
+
+  injector.registerSingleton<AttachedFileViewModelFactory>(
+    () => AttachedFileViewModelFactory(),
+  );
+
+  //
+  // ViewModels
+  //
 
   injector.registerDependency(
     () => LoadingPageViewModel(
@@ -303,14 +317,6 @@ void registerDependencies() {
       get<LoggerService>(),
       get<CurrentUserSyncStorage>(),
       get<ReactionManager>(),
-    ),
-  );
-  injector.registerDependency(
-    () => AttachedFileViewModel(
-      get<GettingFileData>(),
-      get<LoggerService>(),
-      get<AuthorizationService>(),
-      get<LRUCacheLoadedFile>(),
     ),
   );
 }

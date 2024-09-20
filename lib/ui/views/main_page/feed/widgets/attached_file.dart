@@ -1,8 +1,10 @@
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
+import 'package:injector/injector.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:path/path.dart' as path;
 import 'package:unn_mobile/core/viewmodels/attached_file_view_model.dart';
+import 'package:unn_mobile/core/viewmodels/factories/attached_file_view_model_factory.dart';
 import 'package:unn_mobile/ui/unn_mobile_colors.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
 import 'package:unn_mobile/ui/widgets/shimmer.dart';
@@ -26,6 +28,9 @@ class _AttachedFileState extends State<AttachedFile> {
     final extraColors = theme.extension<UnnMobileColors>();
     final scaler = MediaQuery.of(context).textScaler.clamp(maxScaleFactor: 1.3);
     return BaseView<AttachedFileViewModel>(
+      model: Injector.appInstance
+          .get<AttachedFileViewModelFactory>()
+          .getViewModel(widget.fileId),
       builder: (context, model, _) {
         final iconData = _iconDataByFileType(model);
         return Padding(
@@ -189,7 +194,6 @@ class _AttachedFileState extends State<AttachedFile> {
           ),
         );
       },
-      onModelReady: (p0) => p0.init(widget.fileId),
     );
   }
 
