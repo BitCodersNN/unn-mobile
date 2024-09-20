@@ -1,25 +1,28 @@
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
-import 'package:unn_mobile/core/constants/api_url_strings.dart';
 import 'package:unn_mobile/core/misc/file_functions.dart';
 import 'package:unn_mobile/core/misc/http_helper.dart';
-import 'package:unn_mobile/core/services/interfaces/file_uploader.dart';
+import 'package:unn_mobile/core/services/interfaces/file_downloader.dart';
 import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 
-abstract class BaseFileUploader implements FileUploader {
+abstract class BaseFileDownloader implements FileDownloader {
   final LoggerService _loggerService;
   final String _host;
   final String _path;
-  final Map<String, String> _cookies;
+  Map<String, String> _cookies;
 
-  BaseFileUploader(
+  BaseFileDownloader(
     this._loggerService,
     this._host, {
     String path = '',
     Map<String, String> cookies = const {},
   })  : _path = path,
         _cookies = cookies;
+
+  void updateCookies(Map<String, String> newCookies) {
+    _cookies = newCookies;
+  }
 
   @override
   Future<File?> downloadFile(String filePath) async {

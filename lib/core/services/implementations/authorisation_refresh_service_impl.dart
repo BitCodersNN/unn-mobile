@@ -1,6 +1,6 @@
 import 'package:flutter/services.dart';
 import 'package:unn_mobile/core/services/implementations/loading_page/loading_page_config.dart';
-import 'package:unn_mobile/core/services/implementations/loading_page/logo_uploader_impl.dart';
+import 'package:unn_mobile/core/services/implementations/loading_page/logo_downloader_impl.dart';
 import 'package:unn_mobile/core/services/interfaces/auth_data_provider.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
 import 'package:unn_mobile/core/models/auth_data.dart';
@@ -40,7 +40,7 @@ class AuthorizationRefreshServiceImpl implements AuthorizationRefreshService {
   Future<AuthRequestResult?> refreshLogin() async {
     final x = await LoadingPageConfigImpl(_loggerService).getLoadingPages();
     final imagePaths = x!.map((model) => model.imagePath).toList();
-    final y = await LogoUploaderImpl(_loggerService).downloadFiles(imagePaths);
+    final y = await LogoDownloaderImpl(_loggerService).downloadFiles(imagePaths);
 
     if (!await _userDataExistsInStorage()) {
       return null;
