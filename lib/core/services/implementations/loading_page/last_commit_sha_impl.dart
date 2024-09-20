@@ -7,17 +7,16 @@ import 'package:unn_mobile/core/services/interfaces/loading_page/last_commit_sha
 import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 
 class LastCommitShaImpl implements LastCommitSha {
+  final _path = 'repos/${ApiPaths.gitRepository}/commits/main?per_page=1';
   final LoggerService _loggerService;
 
   LastCommitShaImpl(this._loggerService);
 
   @override
   Future<String?> getSha() async {
-    const path = 'repos/${ApiPaths.gitRepository}/commits/main?per_page=1';
-
     final requestSender = HttpRequestSender(
       host: ApiPaths.apiGitHub,
-      path: path,
+      path: _path,
     );
 
     HttpClientResponse response;

@@ -8,17 +8,17 @@ import 'package:unn_mobile/core/services/interfaces/loading_page/loading_page_co
 import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 
 class LoadingPageConfigImpl implements LoadingPageConfig {
+  final _path = '${ApiPaths.gitRepository}/main/loading_page_config.json';
   final LoggerService _loggerService;
+
 
   LoadingPageConfigImpl(this._loggerService);
 
   @override
   Future<List<LoadingPageModel>?> getLoadingPages() async {
-    const path = '${ApiPaths.gitRepository}/main/loading_page_config.json';
-
     final requestSender = HttpRequestSender(
       host: ApiPaths.gitHubHost,
-      path: path,
+      path: _path,
     );
 
     HttpClientResponse response;
