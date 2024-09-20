@@ -20,6 +20,7 @@ abstract class BaseFileDownloader implements FileDownloader {
   })  : _path = path,
         _cookies = cookies;
 
+  @protected
   void updateCookies(Map<String, String> newCookies) {
     _cookies = newCookies;
   }
