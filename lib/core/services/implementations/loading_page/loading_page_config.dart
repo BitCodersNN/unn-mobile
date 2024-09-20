@@ -11,7 +11,6 @@ class LoadingPageConfigImpl implements LoadingPageConfig {
   final _path = '${ApiPaths.gitRepository}/main/loading_page_config.json';
   final LoggerService _loggerService;
 
-
   LoadingPageConfigImpl(this._loggerService);
 
   @override

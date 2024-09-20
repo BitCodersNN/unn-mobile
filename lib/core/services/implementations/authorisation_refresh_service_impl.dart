@@ -38,10 +38,6 @@ class AuthorizationRefreshServiceImpl implements AuthorizationRefreshService {
 
   @override
   Future<AuthRequestResult?> refreshLogin() async {
-    final x = await LoadingPageConfigImpl(_loggerService).getLoadingPages();
-    final imagePaths = x!.map((model) => model.imagePath).toList();
-    final y = await LogoDownloaderImpl(_loggerService).downloadFiles(imagePaths);
-
     if (!await _userDataExistsInStorage()) {
       return null;
     }
