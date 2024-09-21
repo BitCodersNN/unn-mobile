@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_file_data.dart';
 import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
@@ -9,6 +10,7 @@ class AttachedFileViewModelFactory
   AttachedFileViewModelFactory() : super(100);
 
   @override
+  @protected
   AttachedFileViewModel createViewModel(int key) {
     return AttachedFileViewModel(
       getService<GettingFileData>(),

@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
 
 class BaseView<T extends BaseViewModel> extends StatefulWidget {
-  final Widget Function(BuildContext context, T value, Widget? child) builder;
+  final Widget Function(BuildContext context, T model, Widget? child) builder;
   final void Function(T)? onModelReady;
   final T? model;
 
@@ -34,8 +34,9 @@ class BaseViewState<T extends BaseViewModel> extends State<BaseView<T>> {
   Widget build(BuildContext context) {
     return ChangeNotifierProvider.value(
       value: model,
-      child: Consumer<T>(
-        builder: widget.builder,
+      child: ListenableBuilder(
+        builder: (context, child) => widget.builder(context, model, child),
+        listenable: model,
       ),
     );
   }

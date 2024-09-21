@@ -56,6 +56,7 @@ import 'package:unn_mobile/core/services/interfaces/user_data_provider.dart';
 import 'package:unn_mobile/core/viewmodels/auth_page_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/comments_page_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/factories/attached_file_view_model_factory.dart';
+import 'package:unn_mobile/core/viewmodels/factories/profile_view_model_factory.dart';
 import 'package:unn_mobile/core/viewmodels/feed_comment_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/feed_post_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/feed_screen_view_model.dart';
@@ -184,19 +185,10 @@ void registerDependencies() {
   );
   injector.registerSingleton<FeedPostDataLoader>(
     () => FeedPostDataLoaderImpl(
-      get<LRUCacheUserData>(),
-      get<GettingProfile>(),
       get<GettingRatingList>(),
       get<GettingVoteKeySigned>(),
     ),
   );
-  injector.registerSingleton<LRUCacheUserData>(
-    () => LRUCacheUserData(50),
-  );
-  injector.registerSingleton<LRUCacheRatingList>(
-    () => LRUCacheRatingList(50),
-  );
-
   injector.registerSingleton<FeedUpdaterService>(
     () => FeedUpdaterServiceImpl(
       get<GettingBlogPosts>(),
@@ -234,10 +226,19 @@ void registerDependencies() {
   );
   injector.registerSingleton<BlogCommentDataLoader>(
     () => BlogCommentDataLoaderImpl(
-      get<LRUCacheUserData>(),
-      get<GettingProfile>(),
       get<GettingRatingList>(),
     ),
+  );
+
+  //
+  // caches
+  //
+
+  injector.registerSingleton<LRUCacheUserData>(
+    () => LRUCacheUserData(50),
+  );
+  injector.registerSingleton<LRUCacheRatingList>(
+    () => LRUCacheRatingList(50),
   );
 
   //
@@ -246,6 +247,10 @@ void registerDependencies() {
 
   injector.registerSingleton<AttachedFileViewModelFactory>(
     () => AttachedFileViewModelFactory(),
+  );
+
+  injector.registerSingleton<ProfileViewModelFactory>(
+    () => ProfileViewModelFactory(),
   );
 
   //

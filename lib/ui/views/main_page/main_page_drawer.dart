@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:injector/injector.dart';
-import 'package:provider/provider.dart';
 import 'package:unn_mobile/core/misc/current_user_sync_storage.dart';
 import 'package:unn_mobile/core/viewmodels/main_page_view_model.dart';
 import 'package:unn_mobile/ui/views/main_page/main_page_navigation_bar.dart';
 import 'package:unn_mobile/ui/views/main_page/main_page_routing.dart';
 
 class MainPageDrawer extends StatelessWidget {
+  final MainPageViewModel model;
   MainPageDrawer({
     super.key,
     this.onDestinationSelected,
+    required this.model,
   });
 
   final void Function(int)? onDestinationSelected;
@@ -18,23 +19,20 @@ class MainPageDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Theme.of(context);
-    return Consumer<MainPageViewModel>(
-      builder: (context, model, child) {
-        if (children.isEmpty) {
-          children.addAll(_generateChildren(model, context));
-        }
-        return NavigationDrawer(
-          onDestinationSelected: (value) {
-            Scaffold.of(context).closeDrawer();
-            GoRouter.of(context).go(
-              '${MainPageRouting.navbarRoutes[MainPageNavigationBar.getSelectedBarIndex(context)].pageRoute}/'
-              '${MainPageRouting.drawerRoutes[value].pageRoute}',
-            );
-          },
-          selectedIndex: -1,
-          children: children,
+
+    if (children.isEmpty) {
+      children.addAll(_generateChildren(model, context));
+    }
+    return NavigationDrawer(
+      onDestinationSelected: (value) {
+        Scaffold.of(context).closeDrawer();
+        GoRouter.of(context).go(
+          '${MainPageRouting.navbarRoutes[MainPageNavigationBar.getSelectedBarIndex(context)].pageRoute}/'
+          '${MainPageRouting.drawerRoutes[value].pageRoute}',
         );
       },
+      selectedIndex: -1,
+      children: children,
     );
   }
 

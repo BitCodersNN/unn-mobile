@@ -1,11 +1,8 @@
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/material.dart';
 import 'package:html_unescape/html_unescape.dart';
 import 'package:unn_mobile/core/misc/current_user_sync_storage.dart';
 import 'package:unn_mobile/core/models/blog_data.dart';
 import 'package:unn_mobile/core/models/post_with_loaded_info.dart';
 import 'package:unn_mobile/core/models/rating_list.dart';
-import 'package:unn_mobile/core/models/user_data.dart';
 import 'package:unn_mobile/core/services/interfaces/feed_post_data_loader.dart';
 import 'package:unn_mobile/core/services/interfaces/reaction_manager.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
@@ -20,6 +17,8 @@ class FeedPostViewModel extends BaseViewModel
 
   late final BlogData blogData;
 
+  int get authorId => blogData.bitrixID;
+
   bool _isChangingReaction = false;
 
   PostWithLoadedInfo? _loadedPost;
@@ -28,26 +27,13 @@ class FeedPostViewModel extends BaseViewModel
 
   String get postText => _unescaper.convert(blogData.detailText.trim());
 
-  String get authorName =>
-      author?.fullname.toString() ?? 'Неизвестный пользователь';
-
-  bool get hasAvatar => _loadedPost?.author?.fullUrlPhoto != null;
-
   int get filesCount => blogData.files?.length ?? 0;
-
-  ImageProvider? get authorAvatar => hasAvatar
-      ? CachedNetworkImageProvider(
-          _loadedPost!.author!.fullUrlPhoto!,
-        )
-      : null;
 
   Iterable<int> get files =>
       blogData.files?.map(
         (e) => int.parse(e),
       ) ??
       [];
-  @override
-  bool get isBusy => state == ViewState.busy;
 
   FeedPostViewModel(
     this._currentUserSyncStorage,
@@ -56,8 +42,6 @@ class FeedPostViewModel extends BaseViewModel
   );
 
   DateTime get postTime => blogData.datePublish;
-
-  UserData? get author => loadedPost?.author;
 
   @override
   ReactionType? get currentReaction => _getReaction();

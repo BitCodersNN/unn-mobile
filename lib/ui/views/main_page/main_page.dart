@@ -53,9 +53,10 @@ class _MainPageState extends State<MainPage> {
         return Scaffold(
           drawerEdgeDragWidth: MediaQuery.of(context).size.width,
           extendBody: false,
-          drawer: isRootScreen(context) ? MainPageDrawer() : null,
+          drawer: isRootScreen(context) ? MainPageDrawer(model: model) : null,
           body: widget.child,
           bottomNavigationBar: MainPageNavigationBar(
+            model: model,
             onDestinationSelected: (value) {
               GoRouter.of(context)
                   .go(MainPageRouting.navbarRoutes[value].pageRoute);

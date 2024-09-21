@@ -1,14 +1,17 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bbcode/flutter_bbcode.dart';
 import 'package:go_router/go_router.dart';
+import 'package:injector/injector.dart';
 import 'package:intl/intl.dart';
 import 'package:unn_mobile/core/misc/app_settings.dart';
 import 'package:unn_mobile/core/misc/custom_bb_tags.dart';
-import 'package:unn_mobile/core/misc/user_functions.dart';
 import 'package:unn_mobile/core/models/blog_data.dart';
 import 'package:unn_mobile/core/models/rating_list.dart';
+import 'package:unn_mobile/core/viewmodels/factories/profile_view_model_factory.dart';
 import 'package:unn_mobile/core/viewmodels/feed_post_view_model.dart';
+import 'package:unn_mobile/core/viewmodels/profile_view_model.dart';
 import 'package:unn_mobile/ui/unn_mobile_colors.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/functions/reactions_window.dart';
@@ -61,68 +64,9 @@ class FeedPost extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    children: [
-                      SizedBox(
-                        width: 45,
-                        height: 45,
-                        child: ShimmerLoading(
-                          isLoading: model.isBusy,
-                          child: CircleAvatar(
-                            backgroundImage: model.authorAvatar,
-                            child: model.hasAvatar
-                                ? null
-                                : Text(
-                                    style:
-                                        theme.textTheme.headlineSmall!.copyWith(
-                                      color: theme.colorScheme.onSurface,
-                                    ),
-                                    getUserInitials(model.author),
-                                  ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            ShimmerLoading(
-                              isLoading: model.isBusy,
-                              child: model.isBusy
-                                  ? Container(
-                                      width: double.infinity,
-                                      height: MediaQuery.of(context)
-                                          .textScaler
-                                          .clamp(maxScaleFactor: 1.5)
-                                          .scale(16),
-                                      decoration: BoxDecoration(
-                                        color: Colors.black,
-                                        borderRadius: BorderRadius.circular(16),
-                                      ),
-                                    )
-                                  : Text(
-                                      model.authorName,
-                                      style: const TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        color: Color(0xFF1A63B7),
-                                      ),
-                                    ),
-                            ),
-                            Text(
-                              DateFormat('d MMMM yyyy, HH:mm', 'ru_RU').format(
-                                model.postTime,
-                              ),
-                              style: const TextStyle(
-                                fontSize: 13,
-                                fontWeight: FontWeight.normal,
-                                color: Color(0xFF6A6F7A),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
+                  _PostHeader(
+                    postTime: model.postTime,
+                    authorId: model.authorId,
                   ),
                   const SizedBox(height: 16.0),
                   BBCodeText(
@@ -363,6 +307,91 @@ class FeedPost extends StatelessWidget {
       '${MainPageRouting.navbarRoutes[0].pageRoute}/'
       '${MainPageRouting.navbarRoutes[0].subroutes[0].pageRoute}',
       extra: post,
+    );
+  }
+}
+
+class _PostHeader extends StatelessWidget {
+  final DateTime postTime;
+  final int authorId;
+  const _PostHeader({
+    required this.postTime,
+    required this.authorId,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return BaseView<ProfileViewModel>(
+      model: Injector.appInstance
+          .get<ProfileViewModelFactory>()
+          .getViewModel(authorId),
+      builder: (context, model, _) {
+        return Row(
+          children: [
+            SizedBox(
+              width: 45,
+              height: 45,
+              child: ShimmerLoading(
+                isLoading: model.isLoading,
+                child: CircleAvatar(
+                  backgroundImage: model.hasAvatar
+                      ? CachedNetworkImageProvider(model.avatarUrl!)
+                      : null,
+                  child: model.hasAvatar
+                      ? null
+                      : Text(
+                          style: theme.textTheme.headlineSmall!.copyWith(
+                            color: theme.colorScheme.onSurface,
+                          ),
+                          model.initials,
+                        ),
+                ),
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  ShimmerLoading(
+                    isLoading: model.isLoading,
+                    child: model.isLoading
+                        ? Container(
+                            width: double.infinity,
+                            height: MediaQuery.of(context)
+                                .textScaler
+                                .clamp(maxScaleFactor: 1.5)
+                                .scale(16),
+                            decoration: BoxDecoration(
+                              color: Colors.black,
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                          )
+                        : Text(
+                            model.fullname,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFF1A63B7),
+                            ),
+                          ),
+                  ),
+                  Text(
+                    DateFormat('d MMMM yyyy, HH:mm', 'ru_RU').format(postTime),
+                    style: const TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.normal,
+                      color: Color(0xFF6A6F7A),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        );
+      },
+      onModelReady: (model) => model.init(loadFromPost: true, userId: authorId),
     );
   }
 }

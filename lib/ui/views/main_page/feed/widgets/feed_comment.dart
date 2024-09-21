@@ -1,9 +1,13 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bbcode/flutter_bbcode.dart';
+import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/misc/custom_bb_tags.dart';
 import 'package:unn_mobile/core/models/blog_post_comment.dart';
 import 'package:unn_mobile/core/models/rating_list.dart';
+import 'package:unn_mobile/core/viewmodels/factories/profile_view_model_factory.dart';
 import 'package:unn_mobile/core/viewmodels/feed_comment_view_model.dart';
+import 'package:unn_mobile/core/viewmodels/profile_view_model.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/functions/reactions_window.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/widgets/attached_file.dart';
@@ -21,7 +25,6 @@ class FeedCommentView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final scaledAddButtonSize = MediaQuery.of(context).textScaler.scale(20) + 8;
     return BaseView<FeedCommentViewModel>(
       builder: (context, model, child) {
@@ -29,71 +32,10 @@ class FeedCommentView extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(left: 16),
-                    child: ShimmerLoading(
-                      isLoading: model.isBusy,
-                      child: CircleAvatar(
-                        backgroundImage: model.authorAvatar,
-                        radius: MediaQuery.of(context).textScaler.scale(20),
-                        child: model.hasAvatar
-                            ? null
-                            : Text(
-                                style: theme.textTheme.headlineSmall!.copyWith(
-                                  color: theme.colorScheme.onSurface,
-                                  fontSize: MediaQuery.of(context)
-                                      .textScaler
-                                      .scale(20),
-                                ),
-                                model.authorInitials,
-                              ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: ShimmerLoading(
-                      isLoading: model.isBusy,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          if (!model.isBusy)
-                            Text(
-                              model.authorName,
-                              style: const TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            )
-                          else
-                            Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 8.0),
-                              child: Container(
-                                width: double.infinity,
-                                height: MediaQuery.of(context)
-                                    .textScaler
-                                    .clamp(maxScaleFactor: 1.5)
-                                    .scale(16),
-                                decoration: BoxDecoration(
-                                  color: Colors.black,
-                                  borderRadius: BorderRadius.circular(16),
-                                ),
-                              ),
-                            ),
-                          if (!model.isBusy)
-                            Text(
-                              model.comment.dateTime,
-                              style: theme.textTheme.bodySmall,
-                            ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
+              _CommentHeader(
+                dateTime: model.comment.dateTime,
+                authorId: model.comment.bitrixID,
+                hide: model.isBusy,
               ),
               Padding(
                 padding: const EdgeInsets.only(
@@ -159,6 +101,98 @@ class FeedCommentView extends StatelessWidget {
         );
       },
       onModelReady: (model) => model.init(comment),
+    );
+  }
+}
+
+class _CommentHeader extends StatelessWidget {
+  final String dateTime;
+  final int authorId;
+  final bool hide;
+
+  const _CommentHeader({
+    required this.dateTime,
+    required this.authorId,
+    this.hide = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return BaseView<ProfileViewModel>(
+      model: Injector.appInstance
+          .get<ProfileViewModelFactory>()
+          .getViewModel(authorId),
+      builder: (context, model, _) {
+        return Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(left: 16),
+              child: ShimmerLoading(
+                isLoading: model.isLoading || hide,
+                child: CircleAvatar(
+                  backgroundImage: model.hasAvatar
+                      ? CachedNetworkImageProvider(model.avatarUrl!)
+                      : null,
+                  radius: MediaQuery.of(context).textScaler.scale(20),
+                  child: model.hasAvatar
+                      ? null
+                      : Text(
+                          style: theme.textTheme.headlineSmall!.copyWith(
+                            color: theme.colorScheme.onSurface,
+                            fontSize:
+                                MediaQuery.of(context).textScaler.scale(20),
+                          ),
+                          model.initials,
+                        ),
+                  //
+                ),
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: ShimmerLoading(
+                isLoading: model.isLoading || hide,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (!model.isLoading && !hide)
+                      Text(
+                        model.fullname,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      )
+                    else
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        child: Container(
+                          width: double.infinity,
+                          height: MediaQuery.of(context)
+                              .textScaler
+                              .clamp(maxScaleFactor: 1.5)
+                              .scale(16),
+                          decoration: BoxDecoration(
+                            color: Colors.black,
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                        ),
+                      ),
+                    if (!model.isLoading && !hide)
+                      Text(
+                        dateTime,
+                        style: theme.textTheme.bodySmall,
+                      ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+      onModelReady: (p0) => p0.init(loadFromPost: true, userId: authorId),
     );
   }
 }

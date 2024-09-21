@@ -1,8 +1,5 @@
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/material.dart';
 import 'package:html_unescape/html_unescape.dart';
 import 'package:unn_mobile/core/misc/current_user_sync_storage.dart';
-import 'package:unn_mobile/core/misc/user_functions.dart';
 import 'package:unn_mobile/core/models/blog_post_comment.dart';
 import 'package:unn_mobile/core/models/loaded_blog_post_comment.dart';
 import 'package:unn_mobile/core/models/rating_list.dart';
@@ -26,22 +23,10 @@ class FeedCommentViewModel extends BaseViewModel
   List<int> get files => comment.attachedFiles;
 
   String get message => _unescaper.convert(comment.message);
-  String get authorName =>
-      _loadedComment?.author?.fullname.toString() ?? //
-      'Неизвестный пользователь';
-  String get authorInitials => getUserInitials(_loadedComment?.author);
   bool _renderMessage = false;
   bool get renderMessage => _renderMessage && !isBusy;
 
-  bool get hasAvatar => _loadedComment?.author?.fullUrlPhoto != null;
-
   bool _isChangingReaction = false;
-
-  ImageProvider? get authorAvatar => hasAvatar
-      ? CachedNetworkImageProvider(
-          _loadedComment!.author!.fullUrlPhoto!,
-        )
-      : null;
 
   FeedCommentViewModel(
     this._loader,
