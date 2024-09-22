@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:unn_mobile/core/models/blog_data.dart';
 import 'package:unn_mobile/core/viewmodels/comments_page_view_model.dart';
+import 'package:unn_mobile/core/viewmodels/feed_post_view_model.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/widgets/feed_comment.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/widgets/feed_post.dart';
@@ -12,7 +12,7 @@ class CommentsPage extends StatelessWidget {
   });
   @override
   Widget build(BuildContext context) {
-    final post = GoRouterState.of(context).extra! as BlogData;
+    final post = GoRouterState.of(context).extra! as FeedPostViewModel;
     return Scaffold(
       appBar: AppBar(
         title: const Text('Запись'),
@@ -43,7 +43,7 @@ class CommentsPage extends StatelessWidget {
                         ),
                       ),
                     ),
-                    for (final comment in model.comments)
+                    for (final comment in model.commentViewmodels)
                       Column(
                         children: [
                           const Padding(
@@ -57,7 +57,9 @@ class CommentsPage extends StatelessWidget {
                               color: Color(0xFF989EA9),
                             ),
                           ),
-                          FeedCommentView(comment: comment),
+                          FeedCommentView(
+                            viewModel: comment,
+                          ),
                         ],
                       ),
                     if (model.isLoadingComments && model.commentsCount > 0)

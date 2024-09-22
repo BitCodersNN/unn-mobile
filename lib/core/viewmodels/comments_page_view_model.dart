@@ -1,29 +1,26 @@
-import 'package:unn_mobile/core/models/blog_data.dart';
-import 'package:unn_mobile/core/models/blog_post_comment.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_blog_post_comments.dart';
-import 'package:unn_mobile/core/services/interfaces/getting_blog_posts.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
+import 'package:unn_mobile/core/viewmodels/feed_comment_view_model.dart';
+import 'package:unn_mobile/core/viewmodels/feed_post_view_model.dart';
 
 class CommentsPageViewModel extends BaseViewModel {
   final GettingBlogPostComments _gettingBlogPostCommentsService;
-  final GettingBlogPosts _gettingBlogPosts;
 
-  BlogData? post;
+  FeedPostViewModel? post;
 
   int loadedPage = 1;
   int totalPages = 1;
 
   CommentsPageViewModel(
     this._gettingBlogPostCommentsService,
-    this._gettingBlogPosts,
   );
 
-  final List<BlogPostComment> comments = [];
+  final List<FeedCommentViewModel> commentViewmodels = [];
   bool get isLoadingComments => state == ViewState.busy;
 
-  int get commentsCount => post?.numberOfComments ?? 0;
+  int get commentsCount => post?.blogData.numberOfComments ?? 0;
 
-  Future _loadComments(int page) async {
+  Future<void> _loadComments(int page) async {
     if (isLoadingComments) {
       return;
     }
@@ -34,20 +31,22 @@ class CommentsPageViewModel extends BaseViewModel {
       }
       final comments =
           await _gettingBlogPostCommentsService.getBlogPostComments(
-        postId: post!.id,
+        postId: post!.blogData.id,
         pageNumber: page,
       );
       if (comments == null) {
         return;
       }
-      this.comments.addAll(comments);
+      commentViewmodels.addAll(
+        comments.map((c) => FeedCommentViewModel.cached(c.id)..init(c)),
+      );
     } finally {
       // Не важно, как мы вышли - флаги убрать всё равно надо
       setState(ViewState.idle);
     }
   }
 
-  Future loadMoreComments() async {
+  Future<void> loadMoreComments() async {
     if (isLoadingComments || loadedPage == 1) {
       return;
     }
@@ -55,16 +54,13 @@ class CommentsPageViewModel extends BaseViewModel {
     await _loadComments(loadedPage);
   }
 
-  Future refresh() async {
-    final posts = await _gettingBlogPosts.getBlogPosts(
-      postId: post!.id,
-    );
+  Future<void> refresh() async {
     totalPages = 1;
-    post = (posts)?[0] ?? post; // Если получили null - оставляем старый пост
+    await post?.refresh();
     totalPages =
         (commentsCount / GettingBlogPostComments.commentsPerPage).ceil();
     loadedPage = totalPages;
-    comments.clear();
+    commentViewmodels.clear();
 
     await _loadComments(loadedPage);
     // Загружаем до конца, либо первые 3 страницы, если их больше
@@ -74,7 +70,7 @@ class CommentsPageViewModel extends BaseViewModel {
   }
 
   bool get commentsAvailable => loadedPage < totalPages;
-  void init(BlogData post) {
+  void init(FeedPostViewModel post) {
     this.post = post;
     refresh();
   }

@@ -5,13 +5,15 @@ import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 import 'package:unn_mobile/core/viewmodels/attached_file_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/factories/cached_view_model_factory_base.dart';
 
-class AttachedFileViewModelFactory
-    extends CachedViewModelFactoryBase<int, AttachedFileViewModel> {
+typedef AttachedFileCacheKey = int;
+
+class AttachedFileViewModelFactory extends CachedViewModelFactoryBase<
+    AttachedFileCacheKey, AttachedFileViewModel> {
   AttachedFileViewModelFactory() : super(100);
 
   @override
   @protected
-  AttachedFileViewModel createViewModel(int key) {
+  AttachedFileViewModel createViewModel(key) {
     return AttachedFileViewModel(
       getService<GettingFileData>(),
       getService<LoggerService>(),

@@ -6,6 +6,9 @@ import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
 class BaseView<T extends BaseViewModel> extends StatefulWidget {
   final Widget Function(BuildContext context, T model, Widget? child) builder;
   final void Function(T)? onModelReady;
+
+  final void Function(T)? onDispose;
+
   final T? model;
 
   const BaseView({
@@ -13,6 +16,7 @@ class BaseView<T extends BaseViewModel> extends StatefulWidget {
     this.model,
     required this.builder,
     this.onModelReady,
+    this.onDispose,
   });
 
   @override
@@ -39,5 +43,11 @@ class BaseViewState<T extends BaseViewModel> extends State<BaseView<T>> {
         listenable: model,
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    widget.onDispose?.call(model);
+    super.dispose();
   }
 }

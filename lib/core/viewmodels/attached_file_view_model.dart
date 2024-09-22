@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
+import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/misc/file_functions.dart';
 import 'package:unn_mobile/core/misc/size_converter.dart';
 import 'package:unn_mobile/core/models/file_data.dart';
@@ -9,6 +10,7 @@ import 'package:unn_mobile/core/services/interfaces/getting_file_data.dart';
 import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
 import 'package:path/path.dart' as path;
+import 'package:unn_mobile/core/viewmodels/factories/attached_file_view_model_factory.dart';
 
 enum AttachedFileType {
   image,
@@ -32,6 +34,12 @@ class AttachedFileViewModel extends BaseViewModel {
     '.wav': AttachedFileType.audio,
     '.ogg': AttachedFileType.audio,
   };
+
+  factory AttachedFileViewModel.cached(AttachedFileCacheKey key) {
+    return Injector.appInstance
+        .get<AttachedFileViewModelFactory>()
+        .getViewModel(key);
+  }
 
   /// Глобальный список файлов, которые сейчас грузятся
   static final Map<int, Future<File?>> _pendingFileDownloads = {};

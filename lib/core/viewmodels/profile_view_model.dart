@@ -1,14 +1,22 @@
+import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/misc/user_functions.dart';
 import 'package:unn_mobile/core/models/user_data.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_profile.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_profile_of_current_user_service.dart';
 import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
+import 'package:unn_mobile/core/viewmodels/factories/profile_view_model_factory.dart';
 
 class ProfileViewModel extends BaseViewModel {
   final GettingProfileOfCurrentUser _getCurrentUserService;
   final GettingProfile _getProfileService;
   final LoggerService _loggerService;
+
+  factory ProfileViewModel.cached(ProfileCacheKey key) {
+    return Injector.appInstance
+        .get<ProfileViewModelFactory>()
+        .getViewModel(key);
+  }
 
   bool _isLoading = false;
   bool _hasError = false;

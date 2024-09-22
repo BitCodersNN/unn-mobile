@@ -1,17 +1,16 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:event/event.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bbcode/flutter_bbcode.dart';
 import 'package:go_router/go_router.dart';
-import 'package:injector/injector.dart';
 import 'package:intl/intl.dart';
 import 'package:unn_mobile/core/misc/app_settings.dart';
 import 'package:unn_mobile/core/misc/custom_bb_tags.dart';
-import 'package:unn_mobile/core/models/blog_data.dart';
 import 'package:unn_mobile/core/models/rating_list.dart';
-import 'package:unn_mobile/core/viewmodels/factories/profile_view_model_factory.dart';
 import 'package:unn_mobile/core/viewmodels/feed_post_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/profile_view_model.dart';
+import 'package:unn_mobile/core/viewmodels/reaction_view_model.dart';
 import 'package:unn_mobile/ui/unn_mobile_colors.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/functions/reactions_window.dart';
@@ -20,9 +19,10 @@ import 'package:unn_mobile/ui/views/main_page/main_page_routing.dart';
 import 'package:unn_mobile/ui/widgets/shimmer.dart';
 import 'package:unn_mobile/ui/widgets/shimmer_loading.dart';
 
-class FeedPost extends StatelessWidget {
-  final BlogData post;
+const idkWhatColor = Color(0xFF989EA9);
 
+class FeedPost extends StatefulWidget {
+  final FeedPostViewModel post;
   final bool showingComments;
 
   const FeedPost({
@@ -31,20 +31,105 @@ class FeedPost extends StatelessWidget {
     required this.showingComments,
   });
 
-  static const idkWhatColor = Color(0xFF989EA9);
+  @override
+  State<FeedPost> createState() => _FeedPostState();
+
+  static Widget _reactionCounterWithIcons(
+    ReactionViewModel model,
+    double reactionsSize,
+    Color background,
+  ) {
+    return BaseView<ReactionViewModel>(
+      model: model,
+      builder: (context, model, _) {
+        return Expanded(
+          child: Container(
+            padding: const EdgeInsets.only(
+              top: 6,
+              bottom: 6,
+              right: 8,
+              left: 12,
+            ),
+            child: Builder(
+              builder: (context) {
+                int i = 0;
+                return SizedBox(
+                  height: reactionsSize,
+                  child: Stack(
+                    alignment: Alignment.centerLeft,
+                    children: [
+                      for (final smallReactionEntry in model.reactionList)
+                        Positioned(
+                          left: reactionsSize / 2 * i++,
+                          child: ClipOval(
+                            child: Container(
+                              width: reactionsSize,
+                              height: reactionsSize,
+                              color: const Color(0x69c6d9f9),
+                              child: Image.asset(
+                                smallReactionEntry.assetName,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          ),
+                        ),
+                      Positioned(
+                        left: reactionsSize * (i - 1) / 2 + reactionsSize + 8,
+                        child: Text(
+                          '${model.reactionCount > 0 ? model.reactionCount : ''}',
+                          style: TextStyle(
+                            fontSize: 13.0,
+                            fontStyle: FontStyle.italic,
+                            fontWeight: FontWeight.w400,
+                            color: background,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  static void _openPostCommentsPage(
+    BuildContext context,
+    FeedPostViewModel post,
+  ) async {
+    GoRouter.of(context).go(
+      '${MainPageRouting.navbarRoutes[0].pageRoute}/'
+      '${MainPageRouting.navbarRoutes[0].subroutes[0].pageRoute}',
+      extra: post,
+    );
+  }
+}
+
+class _FeedPostState extends State<FeedPost> {
+  void onPostRefreshError(EventArgs e) {
+    const snackBar = SnackBar(
+      content: Text('Не удалось обновить пост'),
+    );
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     theme.extension<UnnMobileColors>();
     final reactionsSize = MediaQuery.textScalerOf(context).scale(18.0);
     return BaseView<FeedPostViewModel>(
+      model: widget.post,
       builder: (context, model, _) {
         return GestureDetector(
           onTap: () {
-            if (showingComments) {
+            if (widget.showingComments) {
               return;
             }
-            _openPostCommentsPage(context, post);
+            FeedPost._openPostCommentsPage(context, model);
           },
           child: Shimmer(
             child: Container(
@@ -66,7 +151,7 @@ class FeedPost extends StatelessWidget {
                 children: [
                   _PostHeader(
                     postTime: model.postTime,
-                    authorId: model.authorId,
+                    viewModel: model.profileViewModel,
                   ),
                   const SizedBox(height: 16.0),
                   BBCodeText(
@@ -91,11 +176,11 @@ class FeedPost extends StatelessWidget {
                     },
                   ),
                   const SizedBox(height: 16.0),
-                  for (final file in model.files)
+                  for (final file in model.attachedFileViewModels)
                     AttachedFile(
-                      fileId: file,
+                      viewModel: file,
                     ),
-                  if (!showingComments)
+                  if (!widget.showingComments)
                     const Padding(
                       padding: EdgeInsets.only(left: 4, right: 4, top: 10),
                       child: Divider(
@@ -104,11 +189,11 @@ class FeedPost extends StatelessWidget {
                       ),
                     ),
                   const SizedBox(height: 8),
-                  if (showingComments)
+                  if (widget.showingComments)
                     Row(
                       children: [
-                        _reactionCounterWithIcons(
-                          model,
+                        FeedPost._reactionCounterWithIcons(
+                          model.reactionViewModel,
                           reactionsSize,
                           idkWhatColor,
                         ),
@@ -117,32 +202,17 @@ class FeedPost extends StatelessWidget {
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      GestureDetector(
-                        onTap: () {
-                          if (AppSettings.vibrationEnabled) {
-                            HapticFeedback.selectionClick();
-                          }
-                          model.toggleLike();
-                        },
-                        onLongPress: () {
-                          if (AppSettings.vibrationEnabled) {
-                            HapticFeedback.mediumImpact();
-                          }
-                          showReactionChoicePanel(context, model);
-                        },
-                        child: _reactionButton(
-                          context,
-                          model,
-                          !showingComments,
-                        ),
+                      _ReactionButton(
+                        model.reactionViewModel,
+                        !widget.showingComments,
                       ),
                       const SizedBox(width: 12),
                       GestureDetector(
                         onTap: () async {
-                          if (showingComments) {
+                          if (widget.showingComments) {
                             return;
                           }
-                          _openPostCommentsPage(context, post);
+                          FeedPost._openPostCommentsPage(context, widget.post);
                         },
                         child: Container(
                           padding: const EdgeInsets.symmetric(
@@ -181,151 +251,27 @@ class FeedPost extends StatelessWidget {
           ),
         );
       },
-      onModelReady: (model) => model.init(post),
-    );
-  }
-
-  static Widget _reactionButton(
-    BuildContext context,
-    FeedPostViewModel model,
-    bool showCounter,
-  ) {
-    final theme = Theme.of(context);
-    const buttonColor = idkWhatColor;
-    final reactionToPost = model.currentReaction;
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 200),
-      curve: Curves.bounceOut,
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(
-        color: reactionToPost == null
-            ? buttonColor.withOpacity(0.1)
-            : theme.colorScheme.inversePrimary.withOpacity(0.5),
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          getReactionImage(reactionToPost),
-          const SizedBox(width: 6),
-          Text(
-            '${showCounter ? (model.reactionCount > 0 ? model.reactionCount : '') : reactionToPost?.caption ?? ReactionType.like.caption}',
-            style: const TextStyle(
-              fontSize: 14.0,
-              fontWeight: FontWeight.w400,
-              color: buttonColor,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  static Widget getReactionImage(ReactionType? reaction) {
-    const width = 23.0;
-    const height = 23.0;
-    if (reaction == null) {
-      return Image.asset(
-        'assets/images/reactions/default_like.png',
-        width: width,
-        height: height,
-      );
-    } else {
-      return Image.asset(
-        reaction.assetName,
-        width: width,
-        height: height,
-      );
-    }
-  }
-
-  static Expanded _reactionCounterWithIcons(
-    FeedPostViewModel model,
-    double reactionsSize,
-    Color background,
-  ) {
-    final reactionList = model.loadedPost?.ratingList.ratingList.entries
-            .where((entry) => entry.value.isNotEmpty) ??
-        [];
-    return Expanded(
-      child: Container(
-        padding: const EdgeInsets.only(
-          top: 6,
-          bottom: 6,
-          right: 8,
-          left: 12,
-        ),
-        child: Builder(
-          builder: (context) {
-            int i = 0;
-            return SizedBox(
-              height: reactionsSize,
-              child: Stack(
-                alignment: Alignment.centerLeft,
-                children: [
-                  for (final smallReactionEntry in reactionList)
-                    Positioned(
-                      left: reactionsSize / 2 * i++,
-                      child: ClipOval(
-                        child: Container(
-                          width: reactionsSize,
-                          height: reactionsSize,
-                          color: const Color(0x69c6d9f9),
-                          child: Image.asset(
-                            smallReactionEntry.key.assetName,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                      ),
-                    ),
-                  Positioned(
-                    left: reactionsSize * (i - 1) / 2 + reactionsSize + 8,
-                    child: Text(
-                      '${model.reactionCount > 0 ? model.reactionCount : ''}',
-                      style: TextStyle(
-                        fontSize: 13.0,
-                        fontStyle: FontStyle.italic,
-                        fontWeight: FontWeight.w400,
-                        color: background,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            );
-          },
-        ),
-      ),
-    );
-  }
-
-  static void _openPostCommentsPage(
-    BuildContext context,
-    BlogData post,
-  ) async {
-    GoRouter.of(context).go(
-      '${MainPageRouting.navbarRoutes[0].pageRoute}/'
-      '${MainPageRouting.navbarRoutes[0].subroutes[0].pageRoute}',
-      extra: post,
+      onModelReady: (p0) => p0.onError.subscribe(onPostRefreshError),
+      onDispose: (p0) => p0.onError.unsubscribe(onPostRefreshError),
     );
   }
 }
 
 class _PostHeader extends StatelessWidget {
   final DateTime postTime;
-  final int authorId;
+
+  final ProfileViewModel viewModel;
+
   const _PostHeader({
     required this.postTime,
-    required this.authorId,
+    required this.viewModel,
   });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return BaseView<ProfileViewModel>(
-      model: Injector.appInstance
-          .get<ProfileViewModelFactory>()
-          .getViewModel(authorId),
+      model: viewModel,
       builder: (context, model, _) {
         return Row(
           children: [
@@ -391,7 +337,95 @@ class _PostHeader extends StatelessWidget {
           ],
         );
       },
-      onModelReady: (model) => model.init(loadFromPost: true, userId: authorId),
     );
+  }
+}
+
+class _ReactionButton extends StatelessWidget {
+  final ReactionViewModel viewModel;
+  final bool showCounter;
+
+  const _ReactionButton(this.viewModel, this.showCounter);
+
+  @override
+  Widget build(BuildContext context) {
+    return BaseView<ReactionViewModel>(
+      model: viewModel,
+      builder: (context, viewModel, _) {
+        return GestureDetector(
+          onTap: () {
+            if (AppSettings.vibrationEnabled) {
+              HapticFeedback.selectionClick();
+            }
+            viewModel.toggleLike();
+          },
+          onLongPress: () {
+            if (AppSettings.vibrationEnabled) {
+              HapticFeedback.mediumImpact();
+            }
+            showReactionChoicePanel(context, viewModel);
+          },
+          child: _reactionButton(
+            context,
+            viewModel,
+            showCounter,
+          ),
+        );
+      },
+    );
+  }
+
+  static Widget _reactionButton(
+    BuildContext context,
+    ReactionViewModel model,
+    bool showCounter,
+  ) {
+    final theme = Theme.of(context);
+    const buttonColor = idkWhatColor;
+    final reactionToPost = model.currentReaction;
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 200),
+      curve: Curves.bounceOut,
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        color: reactionToPost == null
+            ? buttonColor.withOpacity(0.1)
+            : theme.colorScheme.inversePrimary.withOpacity(0.5),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          getReactionImage(reactionToPost),
+          const SizedBox(width: 6),
+          Text(
+            '${showCounter ? (model.reactionCount > 0 ? model.reactionCount : '') : reactionToPost?.caption ?? ReactionType.like.caption}',
+            style: const TextStyle(
+              fontSize: 14.0,
+              fontWeight: FontWeight.w400,
+              color: buttonColor,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  static Widget getReactionImage(ReactionType? reaction) {
+    const width = 23.0;
+    const height = 23.0;
+    if (reaction == null) {
+      return Image.asset(
+        'assets/images/reactions/default_like.png',
+        width: width,
+        height: height,
+      );
+    } else {
+      return Image.asset(
+        reaction.assetName,
+        width: width,
+        height: height,
+      );
+    }
   }
 }

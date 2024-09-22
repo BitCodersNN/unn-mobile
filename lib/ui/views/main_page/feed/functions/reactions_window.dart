@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:unn_mobile/core/misc/app_settings.dart';
 import 'package:unn_mobile/core/models/rating_list.dart';
-import 'package:unn_mobile/core/viewmodels/interfaces/reaction_capable_view_madel.dart';
+import 'package:unn_mobile/core/viewmodels/reaction_view_model.dart';
 
 void showReactionChoicePanel(
   BuildContext context,
-  ReactionCapableViewMadel model,
+  ReactionViewModel model,
 ) {
   showModalBottomSheet(
     context: context,
@@ -62,7 +62,7 @@ void showReactionChoicePanel(
 Widget _circleAvatarWithCaption(
   ReactionType reaction,
   BuildContext context,
-  ReactionCapableViewMadel model,
+  ReactionViewModel model,
 ) {
   return Padding(
     padding: const EdgeInsets.all(4.0),

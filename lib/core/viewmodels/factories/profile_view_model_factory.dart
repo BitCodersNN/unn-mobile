@@ -5,8 +5,10 @@ import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 import 'package:unn_mobile/core/viewmodels/factories/cached_view_model_factory_base.dart';
 import 'package:unn_mobile/core/viewmodels/profile_view_model.dart';
 
+typedef ProfileCacheKey = int;
+
 class ProfileViewModelFactory
-    extends CachedViewModelFactoryBase<int, ProfileViewModel> {
+    extends CachedViewModelFactoryBase<ProfileCacheKey, ProfileViewModel> {
   ProfileViewModelFactory() : super(50);
 
   @override

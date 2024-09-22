@@ -1,6 +1,6 @@
-import 'package:unn_mobile/core/models/blog_data.dart';
 import 'package:unn_mobile/core/services/interfaces/feed_updater_service.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
+import 'package:unn_mobile/core/viewmodels/feed_post_view_model.dart';
 
 class FeedScreenViewModel extends BaseViewModel {
   final FeedUpdaterService _feedStreamUpdater;
@@ -13,9 +13,7 @@ class FeedScreenViewModel extends BaseViewModel {
     this._feedStreamUpdater,
   );
 
-  final List<BlogData> _posts = [];
-
-  List<BlogData> get posts => _posts;
+  final List<FeedPostViewModel> posts = [];
 
   bool _loadingPosts = false;
 
@@ -36,11 +34,12 @@ class FeedScreenViewModel extends BaseViewModel {
   }
 
   void onFeedUpdated() {
-    if (_posts.isEmpty) {
+    if (posts.isEmpty) {
       syncFeed();
       return;
     }
-    if (_feedStreamUpdater.feedPosts.firstOrNull != posts.firstOrNull) {
+    if (_feedStreamUpdater.feedPosts.firstOrNull !=
+        posts.firstOrNull?.blogData) {
       showSyncFeedButton = true;
     }
     notifyListeners();
@@ -51,22 +50,32 @@ class FeedScreenViewModel extends BaseViewModel {
     _loadingPosts = true;
     notifyListeners();
     if (_lastLoadedPost + 5 > _feedStreamUpdater.feedPosts.length) {
-      _posts.addAll(
-        _feedStreamUpdater.feedPosts.getRange(
-          _lastLoadedPost,
-          _feedStreamUpdater.feedPosts.length,
-        ),
+      posts.addAll(
+        _feedStreamUpdater.feedPosts
+            .getRange(
+              _lastLoadedPost,
+              _feedStreamUpdater.feedPosts.length,
+            )
+            .map(
+              (p) => FeedPostViewModel.cached(p.id)..init(p),
+            ),
+        //
       );
       _lastLoadedPost = _feedStreamUpdater.feedPosts.length;
       notifyListeners();
       loadNextPage();
       return;
     }
-    _posts.addAll(
-      _feedStreamUpdater.feedPosts.getRange(
-        _lastLoadedPost,
-        _lastLoadedPost + 5,
-      ),
+    posts.addAll(
+      _feedStreamUpdater.feedPosts
+          .getRange(
+            _lastLoadedPost,
+            _lastLoadedPost + 5,
+          )
+          .map(
+            (p) => FeedPostViewModel.cached(p.id)..init(p),
+          ),
+      //
     );
     _lastLoadedPost += 5;
     _loadingPosts = false;
@@ -76,7 +85,7 @@ class FeedScreenViewModel extends BaseViewModel {
   /// Синхронизирует посты в вьюмодели с сервисом
   void syncFeed() {
     _lastLoadedPost = 0;
-    _posts.clear();
+    posts.clear();
     showSyncFeedButton = false;
     Future.delayed(const Duration(milliseconds: 300), () {
       getMorePosts();

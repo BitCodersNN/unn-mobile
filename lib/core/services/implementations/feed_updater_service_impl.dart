@@ -4,11 +4,9 @@ import 'package:unn_mobile/core/models/online_status_data.dart';
 import 'package:unn_mobile/core/services/interfaces/feed_updater_service.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_blog_posts.dart';
 import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
-import 'package:unn_mobile/core/services/interfaces/post_with_loaded_info_provider.dart';
 
 class FeedUpdaterServiceImpl with ChangeNotifier implements FeedUpdaterService {
   final LoggerService _loggerService;
-  final PostWithLoadedInfoProvider _offlineFeedProvider;
   final OnlineStatusData _onlineStatusData;
 
   bool _busy = false;
@@ -22,7 +20,6 @@ class FeedUpdaterServiceImpl with ChangeNotifier implements FeedUpdaterService {
   FeedUpdaterServiceImpl(
     this._gettingBlogPostsService,
     this._loggerService,
-    this._offlineFeedProvider,
     this._onlineStatusData,
   ) {
     _onlineStatusData.notifier.addListener(onOnlineChanged);
@@ -41,24 +38,7 @@ class FeedUpdaterServiceImpl with ChangeNotifier implements FeedUpdaterService {
   int get lastLoadedPage => _lastLoadedPage;
 
   Future<void> _loadOfflinePosts() async {
-    if (_busy) {
-      return;
-    }
-    _busy = true;
-    try {
-      final contained = await _offlineFeedProvider.isContained();
-      if (contained) {
-        _postsList.clear();
-        _postsList.addAll(
-          (await _offlineFeedProvider.getData())?.map((e) => e.post) ?? [],
-        );
-        notifyListeners();
-      }
-    } on Exception catch (error, stackTrace) {
-      _loggerService.logError(error, stackTrace);
-    } finally {
-      _busy = false;
-    }
+    // TODO: сделать офлайн загрузку постов
   }
 
   @override

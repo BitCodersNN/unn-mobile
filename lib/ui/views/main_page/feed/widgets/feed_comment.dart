@@ -1,13 +1,11 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bbcode/flutter_bbcode.dart';
-import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/misc/custom_bb_tags.dart';
-import 'package:unn_mobile/core/models/blog_post_comment.dart';
 import 'package:unn_mobile/core/models/rating_list.dart';
-import 'package:unn_mobile/core/viewmodels/factories/profile_view_model_factory.dart';
 import 'package:unn_mobile/core/viewmodels/feed_comment_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/profile_view_model.dart';
+import 'package:unn_mobile/core/viewmodels/reaction_view_model.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/functions/reactions_window.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/widgets/attached_file.dart';
@@ -16,17 +14,16 @@ import 'package:unn_mobile/ui/widgets/shimmer.dart';
 import 'package:unn_mobile/ui/widgets/shimmer_loading.dart';
 
 class FeedCommentView extends StatelessWidget {
+  final FeedCommentViewModel viewModel;
   const FeedCommentView({
     super.key,
-    required this.comment,
+    required this.viewModel,
   });
-
-  final BlogPostComment comment;
 
   @override
   Widget build(BuildContext context) {
-    final scaledAddButtonSize = MediaQuery.of(context).textScaler.scale(20) + 8;
     return BaseView<FeedCommentViewModel>(
+      model: viewModel,
       builder: (context, model, child) {
         return Shimmer(
           child: Column(
@@ -34,7 +31,7 @@ class FeedCommentView extends StatelessWidget {
             children: [
               _CommentHeader(
                 dateTime: model.comment.dateTime,
-                authorId: model.comment.bitrixID,
+                viewModel: model.profileViewModel,
                 hide: model.isBusy,
               ),
               Padding(
@@ -51,78 +48,95 @@ class FeedCommentView extends StatelessWidget {
                       )
                     : const SizedBox(),
               ),
-              for (final file in model.files)
+              for (final file in model.attachedFileViewModels)
                 Padding(
                   padding: const EdgeInsets.only(left: 16),
-                  child: AttachedFile(
-                    fileId: file,
-                  ),
+                  child: AttachedFile(viewModel: file),
                 ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: Wrap(
-                  direction: Axis.horizontal,
-                  spacing: 8,
-                  crossAxisAlignment: WrapCrossAlignment.center,
-                  children: [
-                    for (final reaction in ReactionType.values)
-                      if (model.getReactionCount(reaction) > 0)
-                        ReactionBubble(
-                          isSelected: model.currentReaction == reaction,
-                          onPressed: () {
-                            model.toggleReaction(reaction);
-                          },
-                          icon: Image.asset(reaction.assetName),
-                          text: model.getReactionCount(reaction).toString(),
-                        ),
-                    if (!model.isBusy && model.canAddReaction)
-                      IconButton.filledTonal(
-                        padding: const EdgeInsets.all(0),
-                        constraints: BoxConstraints.tightFor(
-                          height: scaledAddButtonSize,
-                          width: scaledAddButtonSize,
-                        ),
-                        onPressed: () {
-                          showReactionChoicePanel(context, model);
-                        },
-                        icon: Icon(
-                          Icons.add,
-                          size: MediaQuery.of(context)
-                              .textScaler
-                              .clamp(maxScaleFactor: 1.3)
-                              .scale(16),
-                        ),
-                      ),
-                  ],
-                ),
-              ),
+              _ReactionView(model: model.reactionViewModel, context: context),
             ],
           ),
         );
       },
-      onModelReady: (model) => model.init(comment),
+    );
+  }
+}
+
+class _ReactionView extends StatelessWidget {
+  const _ReactionView({
+    required this.model,
+    required this.context,
+  });
+
+  final ReactionViewModel model;
+  final BuildContext context;
+
+  @override
+  Widget build(BuildContext context) {
+    final scaledAddButtonSize = MediaQuery.of(context).textScaler.scale(20) + 8;
+    return BaseView<ReactionViewModel>(
+      model: model,
+      builder: (context, model, _) {
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          child: Wrap(
+            direction: Axis.horizontal,
+            spacing: 8,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            children: [
+              for (final reaction in ReactionType.values)
+                if (model.getReactionCount(reaction) > 0)
+                  ReactionBubble(
+                    isSelected: model.currentReaction == reaction,
+                    onPressed: () {
+                      model.toggleReaction(reaction);
+                    },
+                    icon: Image.asset(reaction.assetName),
+                    text: model.getReactionCount(reaction).toString(),
+                  ),
+              if (!model.isLoading && model.canAddReaction)
+                IconButton.filledTonal(
+                  padding: const EdgeInsets.all(0),
+                  constraints: BoxConstraints.tightFor(
+                    height: scaledAddButtonSize,
+                    width: scaledAddButtonSize,
+                  ),
+                  onPressed: () {
+                    showReactionChoicePanel(context, model);
+                  },
+                  icon: Icon(
+                    Icons.add,
+                    size: MediaQuery.of(context)
+                        .textScaler
+                        .clamp(maxScaleFactor: 1.3)
+                        .scale(16),
+                  ),
+                ),
+              //
+            ],
+          ),
+        );
+      },
     );
   }
 }
 
 class _CommentHeader extends StatelessWidget {
   final String dateTime;
-  final int authorId;
+  final ProfileViewModel viewModel;
   final bool hide;
 
   const _CommentHeader({
     required this.dateTime,
-    required this.authorId,
     this.hide = false,
+    required this.viewModel,
   });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return BaseView<ProfileViewModel>(
-      model: Injector.appInstance
-          .get<ProfileViewModelFactory>()
-          .getViewModel(authorId),
+      model: viewModel,
       builder: (context, model, _) {
         return Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -192,7 +206,6 @@ class _CommentHeader extends StatelessWidget {
           ],
         );
       },
-      onModelReady: (p0) => p0.init(loadFromPost: true, userId: authorId),
     );
   }
 }
