@@ -15,7 +15,7 @@ class HttpRequestSender {
 
   HttpRequestSender({
     bool useSSL = true,
-    String host = ApiPaths.host,
+    String host = ApiPaths.unnHost,
     required String path,
     Map<String, dynamic> queryParams = const {},
     Map<String, String> headers = const {},
@@ -88,7 +88,6 @@ class HttpRequestSender {
     int timeoutSeconds,
   ) async {
     final httpClient = HttpClient();
-
     final request = await httpClient.openUrl(method.name, _createURI()).timeout(
           Duration(seconds: timeoutSeconds),
           onTimeout: () => throw TimeoutException('Open url timed out'),
