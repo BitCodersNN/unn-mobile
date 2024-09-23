@@ -93,6 +93,14 @@ class MainPageRouting {
       userTypes: [StudentData],
     ),
     MainPageRouteData(
+      Icons.description,
+      Icons.description_outlined,
+      'Справки онлайн',
+      'online_certificates',
+      builder: (p0) => const OnlineCertificatesScreenView(),
+      userTypes: [StudentData],
+    ),
+    MainPageRouteData(
       Icons.settings,
       Icons.settings_outlined,
       'Настройки',
@@ -107,14 +115,6 @@ class MainPageRouting {
       'about',
       builder: (p0) => AboutScreenView(),
       userTypes: [StudentData, EmployeeData],
-    ),
-    MainPageRouteData(
-      Icons.description,
-      Icons.description_outlined,
-      'Справки онлайн',
-      'online_certificates',
-      builder: (p0) => const OnlineCertificatesScreenView(),
-      userTypes: [StudentData],
     ),
   ];
 }

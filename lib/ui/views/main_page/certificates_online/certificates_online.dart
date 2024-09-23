@@ -116,8 +116,8 @@ class _OnlineCertificatesScreenViewState
                           begin: Alignment.topCenter,
                           end: Alignment.bottomCenter,
                           colors: [
-                            Color.fromARGB(255, 31, 112, 205),
-                            Color.fromARGB(255, 24, 91, 167),
+                            Color(0xFF1F70CD),
+                            Color(0xFF185BA7),
                           ],
                         ),
                         borderRadius: BorderRadius.circular(50.0),
@@ -153,8 +153,8 @@ class _OnlineCertificatesScreenViewState
                             begin: Alignment.topCenter,
                             end: Alignment.bottomCenter,
                             colors: [
-                              Color.fromARGB(255, 31, 112, 205),
-                              Color.fromARGB(255, 24, 91, 167),
+                              Color(0xFF1F70CD),
+                              Color(0xFF185BA7),
                             ],
                           ),
                           borderRadius: BorderRadius.circular(50.0),
