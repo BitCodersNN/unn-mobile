@@ -15,7 +15,7 @@ class LastCommitShaImpl implements LastCommitSha {
   @override
   Future<String?> getSha() async {
     final requestSender = HttpRequestSender(
-      host: ApiPaths.apiGitHub,
+      host: ApiPaths.gitHubApiHost,
       path: _path,
     );
 

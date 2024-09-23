@@ -21,7 +21,7 @@ class LoadingPageModel {
   static const defaultTitle = 'УНИВЕРСИТЕТ \n ЛОБАЧЕВСКОГО';
 
   final String _imagePath;
-  final DateTimeRange? _showDateTimeRange;
+  final DateTimeRange? _dateTimeRangeToUseOn;
   final String _title;
   final TextStyle _titleStyle;
   final String? _description;
@@ -29,13 +29,13 @@ class LoadingPageModel {
 
   LoadingPageModel({
     required String imagePath,
-    DateTimeRange? showDateTimeRange,
+    DateTimeRange? dateTimeRangeToUseOn,
     String title = defaultTitle,
     TextStyle titleStyle = defaultTextStyle,
     String? description,
     TextStyle? descriptionStyle,
   })  : _imagePath = imagePath,
-        _showDateTimeRange = showDateTimeRange,
+        _dateTimeRangeToUseOn = dateTimeRangeToUseOn,
         _title = title,
         _titleStyle = titleStyle,
         _description = description,
@@ -51,7 +51,7 @@ class LoadingPageModel {
     final String imagePath =
         json[_KeysForLoadingPageModelJsonConverter.logoPath];
 
-    final DateTimeRange? dateTimeRange = _getDateTimeRaneFromJson(json);
+    final DateTimeRange? dateTimeRange = _getDateTimeRangeFromJson(json);
 
     final titleJson = json[_KeysForLoadingPageModelJsonConverter.title];
     final String title =
@@ -67,7 +67,7 @@ class LoadingPageModel {
 
     return LoadingPageModel(
       imagePath: imagePath,
-      showDateTimeRange: dateTimeRange,
+      dateTimeRangeToUseOn: dateTimeRange,
       title: title,
       titleStyle: titleStyle,
       description: description,
@@ -75,7 +75,7 @@ class LoadingPageModel {
     );
   }
 
-  static DateTimeRange? _getDateTimeRaneFromJson(Map<String, dynamic> json) {
+  static DateTimeRange? _getDateTimeRangeFromJson(Map<String, dynamic> json) {
     final String? startDateStr =
         json[_KeysForLoadingPageModelJsonConverter.startDate];
     final String? endDateStr =
@@ -128,9 +128,9 @@ class LoadingPageModel {
     return {
       _KeysForLoadingPageModelJsonConverter.logoPath: _imagePath,
       _KeysForLoadingPageModelJsonConverter.startDate:
-          _showDateTimeRange?.start.toString().substring(5, 10),
+          _dateTimeRangeToUseOn?.start.toString().substring(5, 10),
       _KeysForLoadingPageModelJsonConverter.endDate:
-          _showDateTimeRange?.end.toString().substring(5, 10),
+          _dateTimeRangeToUseOn?.end.toString().substring(5, 10),
       _KeysForLoadingPageModelJsonConverter.title: {
         _KeysForLoadingPageModelJsonConverter.text: _title,
         _KeysForLoadingPageModelJsonConverter.color:

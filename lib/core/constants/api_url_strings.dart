@@ -3,7 +3,7 @@ class ApiPaths {
   static const String gitHubHost = 'raw.githubusercontent.com';
 
   /// Доменное имя api gitHub
-  static const String apiGitHub = 'api.github.com';
+  static const String gitHubApiHost = 'api.github.com';
 
   /// Доменное имя unn портала
   static const String unnHost = 'portal.unn.ru';
