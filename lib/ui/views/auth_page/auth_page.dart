@@ -13,7 +13,6 @@ import 'package:unn_mobile/ui/widgets/dialogs/changelog_dialog.dart';
 import 'package:unn_mobile/ui/widgets/text_field_with_shadow.dart';
 
 const _accentColor = Color(0xFF1A63B7);
-const _buttonTapColor = Colors.lightBlueAccent;
 
 class AuthPage extends StatefulWidget {
   const AuthPage({super.key});
