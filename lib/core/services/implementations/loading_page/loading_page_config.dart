@@ -7,7 +7,7 @@ import 'package:unn_mobile/core/models/loading_page_data.dart';
 import 'package:unn_mobile/core/services/interfaces/loading_page/loading_page_config.dart';
 import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 
-class LoadingPageConfigImpl implements LoadingPageConfig {
+class LoadingPageConfigImpl implements LoadingPageConfigService {
   final _path = '${ApiPaths.gitRepository}/main/loading_page_config.json';
   final LoggerService _loggerService;
 
@@ -50,8 +50,8 @@ class LoadingPageConfigImpl implements LoadingPageConfig {
     final List<LoadingPageModel> loadingPages = [];
 
     for (final loadingPagesJsonList in jsonMap.values) {
-      for (final laodingPageJson in loadingPagesJsonList) {
-        loadingPages.add(LoadingPageModel.fromJson(laodingPageJson));
+      for (final loadingPageJson in loadingPagesJsonList) {
+        loadingPages.add(LoadingPageModel.fromJson(loadingPageJson));
       }
     }
 

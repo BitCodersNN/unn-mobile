@@ -4,7 +4,7 @@ import 'package:unn_mobile/core/services/implementations/authorisation_service_i
 import 'package:unn_mobile/core/services/interfaces/base_file_downloader.dart';
 import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 
-class FeedFileDownloaderImpl extends BaseFileDownloader {
+class FeedFileDownloaderImpl extends BaseFileDownloaderService {
   final AuthorizationServiceImpl _authorisationService;
   FeedFileDownloaderImpl(
     LoggerService loggerService,

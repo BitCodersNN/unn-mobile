@@ -6,13 +6,13 @@ import 'package:unn_mobile/core/misc/http_helper.dart';
 import 'package:unn_mobile/core/services/interfaces/file_downloader.dart';
 import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 
-abstract class BaseFileDownloader implements FileDownloader {
+abstract class BaseFileDownloaderService implements FileDownloaderService {
   final LoggerService _loggerService;
   final String _host;
   final String _path;
   Map<String, String> _cookies;
 
-  BaseFileDownloader(
+  BaseFileDownloaderService(
     this._loggerService,
     this._host, {
     String path = '',

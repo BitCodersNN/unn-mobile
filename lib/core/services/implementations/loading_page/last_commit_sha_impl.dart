@@ -6,7 +6,7 @@ import 'package:unn_mobile/core/misc/http_helper.dart';
 import 'package:unn_mobile/core/services/interfaces/loading_page/last_commit_sha.dart';
 import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 
-class LastCommitShaImpl implements LastCommitSha {
+class LastCommitShaImpl implements LastCommitShaService {
   final _path = 'repos/${ApiPaths.gitRepository}/commits/main?per_page=1';
   final LoggerService _loggerService;
 

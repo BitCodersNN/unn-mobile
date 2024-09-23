@@ -1,3 +1,3 @@
-abstract interface class LastCommitSha {
+abstract interface class LastCommitShaService {
   Future<String?> getSha();
 }
