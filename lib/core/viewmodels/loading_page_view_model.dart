@@ -70,13 +70,17 @@ class LoadingPageViewModel extends BaseViewModel {
     final loadingPages = await _loadingPageProvider.getData();
     _downloadsPath = await getDownloadPath();
     if (loadingPages == null) {
-      throw Exception();
+      throw Exception('Failed to fetch loading pages data');
     }
     _actualLoadingPage = _getCurrentLoadingPageModel(loadingPages);
     _logoImage = File('$_downloadsPath/${_actualLoadingPage?.imagePath}');
 
     if (_logoImage == null) {
-      throw Exception();
+      throw Exception('Invalid loading page data');
+    }
+
+    if (!await _logoImage!.exists()) {
+      await _logoDownloaderService.downloadFile(_actualLoadingPage!.imagePath);
     }
   }
 
