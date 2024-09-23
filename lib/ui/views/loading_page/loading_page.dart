@@ -33,7 +33,7 @@ class LoadingPage extends StatelessWidget {
           ),
         ),
       ),
-      onModelReady: (model) => model.disateRoute(context),
+      onModelReady: (model) => model.decideRoute(context),
     );
   }
 

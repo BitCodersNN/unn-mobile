@@ -6,18 +6,24 @@ import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
 class BaseView<T extends BaseViewModel> extends StatefulWidget {
   final Widget Function(BuildContext context, T value, Widget? child) builder;
   final void Function(T)? onModelReady;
+  final T? model;
 
-  const BaseView({super.key, required this.builder, this.onModelReady});
+  const BaseView({
+    super.key,
+    this.model,
+    required this.builder,
+    this.onModelReady,
+  });
 
   @override
   State<BaseView<T>> createState() => BaseViewState<T>();
 }
 
 class BaseViewState<T extends BaseViewModel> extends State<BaseView<T>> {
-  T model = Injector.appInstance.get<T>();
-
+  late T model;
   @override
   void initState() {
+    model = widget.model ?? Injector.appInstance.get<T>();
     if (widget.onModelReady != null) {
       widget.onModelReady!(model);
     }

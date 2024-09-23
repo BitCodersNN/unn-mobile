@@ -26,6 +26,11 @@ class Fullname {
   String? get name => _name;
   String? get lastname => _lastname;
   String? get surname => _surname;
+
+  @override
+  String toString() => [lastname, name, surname]
+      .where((part) => part != null && part.isNotEmpty)
+      .join(' ');
 }
 
 class UserData {

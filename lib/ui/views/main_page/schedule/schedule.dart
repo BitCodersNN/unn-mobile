@@ -41,31 +41,45 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView>
 
     final expanded = _createExpanded(idTypesForSchedulTab);
 
-    return OnlineStatusStreamBuilder(
-      onlineWidget: Column(
-        children: [
-          MediaQuery.withClampedTextScaling(
-            maxScaleFactor: 1.5,
-            child: TabBar(
-              indicatorSize: TabBarIndicatorSize.label,
-              tabAlignment: TabAlignment.center,
-              isScrollable: true,
-              tabs: [
-                for (var i = 0; i < tabKeys.length; i++)
-                  Tab(
-                    text: tabTexts[i],
-                  ),
-              ],
-              controller: _tabController,
-            ),
-          ),
-          expanded,
-        ],
+    final parentScaffold = Scaffold.maybeOf(context);
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Расписание'),
+        leading: parentScaffold?.hasDrawer ?? false
+            ? IconButton(
+                onPressed: () {
+                  parentScaffold?.openDrawer();
+                },
+                icon: const Icon(Icons.menu),
+              )
+            : null,
       ),
-      offlineWidget: Column(
-        children: [
-          expanded,
-        ],
+      body: OnlineStatusStreamBuilder(
+        onlineWidget: Column(
+          children: [
+            MediaQuery.withClampedTextScaling(
+              maxScaleFactor: 1.5,
+              child: TabBar(
+                indicatorSize: TabBarIndicatorSize.label,
+                tabAlignment: TabAlignment.center,
+                isScrollable: true,
+                tabs: [
+                  for (var i = 0; i < tabKeys.length; i++)
+                    Tab(
+                      text: tabTexts[i],
+                    ),
+                ],
+                controller: _tabController,
+              ),
+            ),
+            expanded,
+          ],
+        ),
+        offlineWidget: Column(
+          children: [
+            expanded,
+          ],
+        ),
       ),
     );
   }

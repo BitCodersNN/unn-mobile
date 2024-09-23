@@ -14,10 +14,13 @@ class GradesScreenView extends StatefulWidget {
 class _GradesScreenViewState extends State<GradesScreenView> {
   @override
   Widget build(BuildContext context) {
-    return BaseView<GradesScreenViewModel>(
-      builder: (context, value, child) {
-        return _getGradesBook(context: context, model: value);
-      },
+    return Scaffold(
+      appBar: AppBar(title: const Text('Зачётная книжка')),
+      body: BaseView<GradesScreenViewModel>(
+        builder: (context, value, child) {
+          return _getGradesBook(context: context, model: value);
+        },
+      ),
     );
   }
 
@@ -47,7 +50,7 @@ class _GradesScreenViewState extends State<GradesScreenView> {
               child: Column(
                 children: [
                   Container(
-                    color: theme.colorScheme.background,
+                    color: theme.colorScheme.surface,
                     child: TabBar.secondary(
                       tabAlignment: TabAlignment.start,
                       enableFeedback: false,

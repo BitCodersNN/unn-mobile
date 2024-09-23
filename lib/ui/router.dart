@@ -1,46 +1,58 @@
-import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:unn_mobile/ui/views/auth_page/auth_page.dart';
 import 'package:unn_mobile/ui/views/loading_page/loading_page.dart';
 import 'package:unn_mobile/ui/views/main_page/main_page.dart';
+import 'package:unn_mobile/ui/views/main_page/main_page_routing.dart';
 
-class Routes {
-  static const String mainPagePrefix = 'main/';
-  static const String authPage = 'auth';
-  static const String loadingPage = 'loading';
-}
+const loadingPageRoute = '/loading';
+const mainPageRoute = '/';
+const authPageRoute = '/auth';
 
-class Router {
-  static Route<dynamic> generateRoute(RouteSettings settings) {
-    if (settings.name == Routes.authPage) {
-      return createCustomRoute(const AuthPage());
-    } else if (settings.name == Routes.loadingPage) {
-      return createCustomRoute(const LoadingPage());
-    } else if (settings.name!.startsWith(Routes.mainPagePrefix)) {
-      return createCustomRoute(
-        MainPage(
-          subroute: settings.name!.substring(Routes.mainPagePrefix.length),
-        ),
-      );
-    } else {
-      return createCustomRoute(
-        Scaffold(
-          body: Center(
-            child: Text('No route defined for ${settings.name}'),
+final mainRouter = GoRouter(
+  initialLocation: loadingPageRoute,
+  routes: [
+    ShellRoute(
+      builder: (context, state, child) => MainPage(
+        child: child,
+      ),
+      routes: [
+        for (final route in MainPageRouting.navbarRoutes)
+          GoRoute(
+            path: route.pageRoute,
+            name: route.pageTitle,
+            pageBuilder: (context, state) =>
+                NoTransitionPage(child: route.builder(context)),
+            routes: [
+              for (final subroute in MainPageRouting.drawerRoutes)
+                GoRoute(
+                  path: subroute.pageRoute,
+                  builder: (context, state) => subroute.builder(context),
+                ),
+              for (final subroute in route.subroutes)
+                GoRoute(
+                  path: subroute.pageRoute,
+                  builder: (context, state) => subroute.builder(context),
+                ),
+            ],
           ),
-        ),
-      );
+      ],
+    ),
+    GoRoute(
+      path: authPageRoute,
+      name: 'auth',
+      builder: (context, state) => const AuthPage(),
+    ),
+    GoRoute(
+      path: loadingPageRoute,
+      pageBuilder: (context, state) => const NoTransitionPage(
+        child: LoadingPage(),
+      ),
+    ),
+  ],
+  redirect: (context, state) {
+    if (state.uri.path == mainPageRoute) {
+      return MainPageRouting.navbarRoutes.first.pageRoute;
     }
-  }
-
-  static Route<dynamic> createCustomRoute(
-    page, {
-    duration = const Duration(milliseconds: 0),
-  }) {
-    return PageRouteBuilder(
-      transitionDuration: duration,
-      pageBuilder: (context, animation, secondaryAnimation) => page,
-      transitionsBuilder: (context, animation, secondaryAnimation, child) =>
-          child,
-    );
-  }
-}
+    return null;
+  },
+);

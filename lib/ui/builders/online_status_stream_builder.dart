@@ -23,19 +23,21 @@ class OnlineStatusStreamBuilder extends StatelessWidget {
         if (snapshot.connectionState == ConnectionState.active &&
             snapshot.hasData) {
           Future.delayed(Duration.zero, () {
-            showDialog(
-              context: context,
-              builder: (BuildContext context) {
-                return MessageDialog(
-                  message: Text(
-                    onlineStatusData.isOnline
-                        ? 'Соединение с Порталом восстановлено'
-                        : 'Не удалось соединиться с Порталом. Используется офлайн-режим',
-                    textAlign: TextAlign.center,
-                  ),
-                );
-              },
-            );
+            if (context.mounted) {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return MessageDialog(
+                    message: Text(
+                      onlineStatusData.isOnline
+                          ? 'Соединение с Порталом восстановлено'
+                          : 'Не удалось соединиться с Порталом. Используется офлайн-режим',
+                      textAlign: TextAlign.center,
+                    ),
+                  );
+                },
+              );
+            }
           });
         }
         return onlineStatusData.isOnline ? onlineWidget : offlineWidget;

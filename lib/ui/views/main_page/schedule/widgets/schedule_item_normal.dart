@@ -192,7 +192,7 @@ class _ScheduleItemNormalState extends State<ScheduleItemNormal>
     }
 
     if (widget.even) {
-      return theme.colorScheme.surfaceVariant;
+      return theme.colorScheme.surfaceContainerHighest;
     } else {
       return theme.colorScheme.surface;
     }
