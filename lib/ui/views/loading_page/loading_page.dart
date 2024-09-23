@@ -9,6 +9,7 @@ class LoadingPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BaseView<LoadingPageViewModel>(
       builder: (context, model, child) => Scaffold(
+        backgroundColor: Colors.white,
         body: Center(
           child: MediaQuery.withNoTextScaling(
             child: Column(
