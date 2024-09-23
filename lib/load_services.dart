@@ -19,6 +19,11 @@ import 'package:unn_mobile/core/services/implementations/getting_profile_of_curr
 import 'package:unn_mobile/core/services/implementations/getting_rating_list_impl.dart';
 import 'package:unn_mobile/core/services/implementations/getting_schedule_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/getting_vote_key_signed_impl.dart';
+import 'package:unn_mobile/core/services/implementations/loading_page/last_commit_sha_impl.dart';
+import 'package:unn_mobile/core/services/implementations/loading_page/last_commit_sha_provider_impl.dart';
+import 'package:unn_mobile/core/services/implementations/loading_page/loading_page_config.dart';
+import 'package:unn_mobile/core/services/implementations/loading_page/loading_page_provider_impl.dart';
+import 'package:unn_mobile/core/services/implementations/loading_page/logo_downloader_impl.dart';
 import 'package:unn_mobile/core/services/implementations/mark_by_subject_provider_impl.dart';
 import 'package:unn_mobile/core/services/implementations/offline_schedule_provider_impl.dart';
 import 'package:unn_mobile/core/services/implementations/post_with_loaded_info_provider_impl.dart';
@@ -30,6 +35,7 @@ import 'package:unn_mobile/core/services/implementations/user_data_provider_impl
 import 'package:unn_mobile/core/services/interfaces/auth_data_provider.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation_refresh_service.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
+import 'package:unn_mobile/core/services/interfaces/base_file_downloader.dart';
 import 'package:unn_mobile/core/services/interfaces/blog_comment_data_loader.dart';
 import 'package:unn_mobile/core/services/interfaces/export_schedule_service.dart';
 import 'package:unn_mobile/core/services/interfaces/feed_stream_updater_service.dart';
@@ -42,6 +48,10 @@ import 'package:unn_mobile/core/services/interfaces/getting_profile_of_current_u
 import 'package:unn_mobile/core/services/interfaces/getting_rating_list.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_schedule_service.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_vote_key_signed.dart';
+import 'package:unn_mobile/core/services/interfaces/loading_page/last_commit_sha.dart';
+import 'package:unn_mobile/core/services/interfaces/loading_page/last_commit_sha_provider.dart';
+import 'package:unn_mobile/core/services/interfaces/loading_page/loading_page_config.dart';
+import 'package:unn_mobile/core/services/interfaces/loading_page/loading_page_provider.dart';
 import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 import 'package:unn_mobile/core/services/interfaces/mark_by_subject_provider.dart';
 import 'package:unn_mobile/core/services/interfaces/offline_schedule_provider.dart';
@@ -63,8 +73,8 @@ import 'package:unn_mobile/core/viewmodels/schedule_screen_view_model.dart';
 void registerDependencies() {
   final injector = Injector.appInstance;
 
-  T get<T>() {
-    return injector.get<T>();
+  T get<T>({String dependencyName = ''}) {
+    return injector.get<T>(dependencyName: dependencyName);
   }
 
   // register all the dependencies here:
@@ -80,6 +90,39 @@ void registerDependencies() {
       () => LegacyAuthorizationServiceImpl(get<OnlineStatusData>()),
     );
   */
+
+  //   get<LastCommitShaService>(),
+  // get<LoadingPageConfigService>(),
+  // get<LastCommitShaProvider>(),
+  // get<LoadingPageProvider>(),
+  injector.registerSingleton<LastCommitShaService>(
+    () => LastCommitShaServiceImpl(
+      get<LoggerService>(),
+    ),
+  );
+  injector.registerSingleton<LoadingPageConfigService>(
+    () => LoadingPageConfigServiceImpl(
+      get<LoggerService>(),
+    ),
+  );
+
+  injector.registerSingleton<BaseFileDownloaderService>(
+    () => LogoDownloaderServiceImpl(
+      injector.get<LoggerService>(),
+    ),
+    dependencyName: 'LogoDownloaderService',
+  );
+
+  injector.registerSingleton<LastCommitShaProvider>(
+    () => LastCommitShaProviderImpl(
+      get<StorageService>(),
+    ),
+  );
+  injector.registerSingleton<LoadingPageProvider>(
+    () => LoadingPageProviderImpl(
+      get<StorageService>(),
+    ),
+  );
   injector.registerSingleton<AuthorizationService>(
     () => AuthorizationServiceImpl(
       get<OnlineStatusData>(),
@@ -231,12 +274,17 @@ void registerDependencies() {
 
   injector.registerDependency(
     () => LoadingPageViewModel(
+      get<LoggerService>(),
       get<AuthorizationRefreshService>(),
+      get<LastCommitShaService>(),
+      get<LoadingPageConfigService>(),
+      get<BaseFileDownloaderService>(dependencyName: 'LogoDownloaderService'),
+      get<LastCommitShaProvider>(),
+      get<LoadingPageProvider>(),
       get<CurrentUserSyncStorage>(),
       get<GettingProfileOfCurrentUser>(),
       get<UserDataProvider>(),
       get<AppOpenTracker>(),
-      get<LoggerService>(),
     ),
   );
   injector.registerDependency(
