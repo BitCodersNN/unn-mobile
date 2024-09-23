@@ -10,7 +10,7 @@ class OnlineCertificatesScreenView extends StatefulWidget {
 
 class _OnlineCertificatesScreenViewState
     extends State<OnlineCertificatesScreenView> {
-  List<bool> _isExpanded = [false, false, false];
+  final List<bool> _isExpanded = [false, false, false];
 
   @override
   Widget build(BuildContext context) {
