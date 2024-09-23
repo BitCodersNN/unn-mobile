@@ -132,12 +132,15 @@ class _FeedPostState extends State<FeedPost> {
             FeedPost._openPostCommentsPage(context, model);
           },
           child: Shimmer(
-            child: Container(
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 100),
               margin: const EdgeInsets.only(top: 12),
               padding: const EdgeInsets.all(18),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(0.0),
-                color: theme.colorScheme.surface,
+                color: model.isNewPost
+                    ? theme.extension<UnnMobileColors>()!.newPostHighlight
+                    : theme.colorScheme.surface,
                 boxShadow: const [
                   BoxShadow(
                     offset: Offset(0, 0),

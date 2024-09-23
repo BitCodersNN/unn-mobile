@@ -17,6 +17,7 @@ import 'package:unn_mobile/core/services/implementations/getting_profile_of_curr
 import 'package:unn_mobile/core/services/implementations/getting_rating_list_impl.dart';
 import 'package:unn_mobile/core/services/implementations/getting_schedule_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/getting_vote_key_signed_impl.dart';
+import 'package:unn_mobile/core/services/implementations/last_feed_load_date_time_provider_impl.dart';
 import 'package:unn_mobile/core/services/implementations/mark_by_subject_provider_impl.dart';
 import 'package:unn_mobile/core/services/implementations/offline_schedule_provider_impl.dart';
 import 'package:unn_mobile/core/services/implementations/reaction_manager_impl.dart';
@@ -38,6 +39,7 @@ import 'package:unn_mobile/core/services/interfaces/getting_profile_of_current_u
 import 'package:unn_mobile/core/services/interfaces/getting_rating_list.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_schedule_service.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_vote_key_signed.dart';
+import 'package:unn_mobile/core/services/interfaces/last_feed_load_date_time_provider.dart';
 import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 import 'package:unn_mobile/core/services/interfaces/mark_by_subject_provider.dart';
 import 'package:unn_mobile/core/services/interfaces/offline_schedule_provider.dart';
@@ -172,11 +174,17 @@ void registerDependencies() {
       get<LoggerService>(),
     ),
   );
+  injector.registerSingleton<LastFeedLoadDateTimeProvider>(
+    () => LastFeedLoadDateTimeProviderImpl(
+      get<StorageService>(),
+    ),
+  );
   injector.registerSingleton<FeedUpdaterService>(
     () => FeedUpdaterServiceImpl(
       get<GettingBlogPosts>(),
       get<LoggerService>(),
       get<OnlineStatusData>(),
+      get<LastFeedLoadDateTimeProvider>(),
     ),
   );
   injector.registerSingleton<CurrentUserSyncStorage>(
@@ -273,6 +281,7 @@ void registerDependencies() {
   injector.registerDependency(
     () => FeedScreenViewModel(
       get<FeedUpdaterService>(),
+      get<LastFeedLoadDateTimeProvider>(),
     ),
   );
   injector.registerDependency(

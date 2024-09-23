@@ -3,6 +3,7 @@ import 'package:html_unescape/html_unescape.dart';
 import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/models/blog_data.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_blog_posts.dart';
+import 'package:unn_mobile/core/services/interfaces/last_feed_load_date_time_provider.dart';
 import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 import 'package:unn_mobile/core/viewmodels/attached_file_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
@@ -19,6 +20,7 @@ class FeedPostViewModel extends BaseViewModel {
 
   final GettingBlogPosts _gettingBlogPosts;
   final LoggerService _loggerService;
+  final LastFeedLoadDateTimeProvider _lastFeedLoadDateTimeProvider;
 
   final HtmlUnescape _unescaper = HtmlUnescape();
 
@@ -35,6 +37,7 @@ class FeedPostViewModel extends BaseViewModel {
   FeedPostViewModel(
     this._gettingBlogPosts,
     this._loggerService,
+    this._lastFeedLoadDateTimeProvider,
   );
 
   DateTime get postTime => blogData.datePublish;
@@ -48,6 +51,10 @@ class FeedPostViewModel extends BaseViewModel {
   final List<AttachedFileViewModel> attachedFileViewModels = [];
 
   int get commentsCount => blogData.numberOfComments;
+
+  bool get isNewPost =>
+      _lastFeedLoadDateTimeProvider.lastFeedLoadDateTime?.isBefore(postTime) ??
+      false;
 
   Future<void> refresh() async {
     await _gettingBlogPosts.getBlogPosts(postId: blogData.id).then(

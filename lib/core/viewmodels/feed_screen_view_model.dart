@@ -1,9 +1,11 @@
 import 'package:unn_mobile/core/services/interfaces/feed_updater_service.dart';
+import 'package:unn_mobile/core/services/interfaces/last_feed_load_date_time_provider.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/feed_post_view_model.dart';
 
 class FeedScreenViewModel extends BaseViewModel {
   final FeedUpdaterService _feedStreamUpdater;
+  final LastFeedLoadDateTimeProvider _lastFeedLoadDateTimeProvider;
 
   bool _showUpdateButton = false;
 
@@ -11,6 +13,7 @@ class FeedScreenViewModel extends BaseViewModel {
 
   FeedScreenViewModel(
     this._feedStreamUpdater,
+    this._lastFeedLoadDateTimeProvider,
   );
 
   final List<FeedPostViewModel> posts = [];
@@ -87,15 +90,22 @@ class FeedScreenViewModel extends BaseViewModel {
     _lastLoadedPost = 0;
     posts.clear();
     showSyncFeedButton = false;
-    Future.delayed(const Duration(milliseconds: 300), () {
+    Future.delayed(const Duration(milliseconds: 300), () async {
       getMorePosts();
       scrollToTop?.call();
+      // await _lastFeedLoadDateTimeProvider.saveData(DateTime.now());
+      Future.delayed(const Duration(seconds: 2), () async {
+        if (posts.isNotEmpty) {
+          _lastFeedLoadDateTimeProvider.saveData(posts.first.postTime);
+        }
+      });
     });
   }
 
   /// Отправляет сигнал сервису для обновления постов
   Future<void> updateFeed() async {
     showSyncFeedButton = false;
+
     await _feedStreamUpdater.updateFeed();
     syncFeed();
   }
