@@ -134,7 +134,7 @@ class LoadingPageModel {
           _dateTimeRangeToUseOn?.end.toString().substring(5, 10),
       _KeysForLoadingPageModelJsonConverter.title: {
         _KeysForLoadingPageModelJsonConverter.text: _title,
-        _KeysForLoadingPageModelJsonConverter.color
+        _KeysForLoadingPageModelJsonConverter.color:
             _titleStyle.color!.value.toString(),
         _KeysForLoadingPageModelJsonConverter.fontSize:
             _titleStyle.fontSize.toString(),

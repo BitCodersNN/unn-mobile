@@ -13,9 +13,11 @@ class SettingsScreenView extends StatelessWidget {
   const SettingsScreenView({super.key});
 
   Future<void> clearEverything() async {
-    await Injector.appInstance.get<StorageService>().clear();
-    await DefaultCacheManager().emptyCache();
-    clearCacheFolder();
+    await Future.wait([
+      Injector.appInstance.get<StorageService>().clear(),
+      DefaultCacheManager().emptyCache(),
+      clearCacheFolder(),
+    ]);
   }
 
   @override

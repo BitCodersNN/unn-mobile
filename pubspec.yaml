@@ -58,7 +58,6 @@ flutter:
   assets:
     - assets/images/
     - assets/images/authors/
-    - assets/images/logos/
     - assets/images/reactions/
     - assets/ca/
 
