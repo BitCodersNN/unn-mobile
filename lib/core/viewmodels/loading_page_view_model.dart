@@ -43,10 +43,10 @@ class LoadingPageViewModel extends BaseViewModel {
 
   LoadingPageModel? _actualLoadingPage;
   File? _logoImage;
-  String? _downloadsPath;
 
   LoadingPageModel? get loadingPageData => _actualLoadingPage;
-  File get logoImage => _logoImage!;
+  LoadingPageModel? get defaultPageData => LoadingPageModel(imagePath: '');
+  File? get logoImage => _logoImage;
 
   LoadingPageViewModel(
     this._loggerService,
@@ -67,20 +67,33 @@ class LoadingPageViewModel extends BaseViewModel {
   }
 
   Future<void> initLoadingPages() async {
-    final loadingPages = await _loadingPageProvider.getData();
-    _downloadsPath = await getDownloadPath();
-    if (loadingPages == null) {
-      throw Exception('Failed to fetch loading pages data');
-    }
-    _actualLoadingPage = _getCurrentLoadingPageModel(loadingPages);
-    _logoImage = File('$_downloadsPath/${_actualLoadingPage?.imagePath}');
+    final [
+      loadingPages as List<LoadingPageModel>?,
+      downloadsPath as String?,
+    ] = await Future.wait([
+      _loadingPageProvider.getData(),
+      getDownloadPath(),
+    ]);
 
-    if (_logoImage == null) {
+    if (loadingPages == null || downloadsPath == null) {
+      throw Exception('Failed to fetch loading pages data or download path');
+    }
+
+    _actualLoadingPage = _getCurrentLoadingPageModel(loadingPages);
+
+    if (_actualLoadingPage == null) {
       throw Exception('Invalid loading page data');
     }
 
+    _logoImage = File('$downloadsPath/${_actualLoadingPage!.imagePath}');
+
     if (!await _logoImage!.exists()) {
-      await _logoDownloaderService.downloadFile(_actualLoadingPage!.imagePath);
+      _logoImage = await _logoDownloaderService
+          .downloadFile(_actualLoadingPage!.imagePath);
+    }
+
+    if (_logoImage == null) {
+      throw Exception('Failed to download logo image');
     }
   }
 
@@ -90,14 +103,16 @@ class LoadingPageViewModel extends BaseViewModel {
 
     await AppSettings.load();
 
-    final data = await Future.wait([
+    final [shaFromService, shaFromProvider] = await Future.wait([
       _lastCommitShaService.getSha(),
       _lastCommitShaProvider.getData(),
     ]);
 
-    if (data.last == null || data.first != data.last) {
-      await _getAndSaveLoadingPagesFromGit();
-      await _lastCommitShaProvider.saveData(data.first);
+    if (shaFromProvider == null || shaFromService != shaFromProvider) {
+      Future.wait([
+        _saveLoadingPagesFromGit(),
+        _lastCommitShaProvider.saveData(shaFromService),
+      ]);
     }
 
     try {
@@ -144,11 +159,11 @@ class LoadingPageViewModel extends BaseViewModel {
     }
   }
 
-  Future<List<LoadingPageModel>?> _getAndSaveLoadingPagesFromGit() async {
+  Future<void> _saveLoadingPagesFromGit() async {
     final loadingPages = await _loadingPageConfigService.getLoadingPages();
 
     if (loadingPages == null) {
-      return null;
+      return;
     }
 
     await Future.wait([
@@ -156,8 +171,6 @@ class LoadingPageViewModel extends BaseViewModel {
       _logoDownloaderService
           .downloadFiles(loadingPages.map((model) => model.imagePath).toList()),
     ]);
-
-    return loadingPages;
   }
 
   LoadingPageModel _getCurrentLoadingPageModel(
