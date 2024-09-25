@@ -30,6 +30,8 @@ class FeedScreenViewModel extends BaseViewModel {
     notifyListeners();
   }
 
+  bool _isUpdatingFeed = false;
+
   void init({void Function()? scrollToTop}) {
     this.scrollToTop = scrollToTop;
     syncFeed();
@@ -49,7 +51,12 @@ class FeedScreenViewModel extends BaseViewModel {
   }
 
   void getMorePosts() {
-    if (_loadingPosts) return;
+    if (_isUpdatingFeed) {
+      return;
+    }
+    if (_loadingPosts) {
+      return;
+    }
     _loadingPosts = true;
     notifyListeners();
     if (_lastLoadedPost + 5 > _feedStreamUpdater.feedPosts.length) {
@@ -66,7 +73,7 @@ class FeedScreenViewModel extends BaseViewModel {
       );
       _lastLoadedPost = _feedStreamUpdater.feedPosts.length;
       notifyListeners();
-      loadNextPage();
+      _loadNextPage();
       return;
     }
     posts.addAll(
@@ -105,12 +112,13 @@ class FeedScreenViewModel extends BaseViewModel {
   /// Отправляет сигнал сервису для обновления постов
   Future<void> updateFeed() async {
     showSyncFeedButton = false;
-
+    _isUpdatingFeed = true;
     await _feedStreamUpdater.updateFeed();
+    _isUpdatingFeed = false;
     syncFeed();
   }
 
-  void loadNextPage() {
+  void _loadNextPage() {
     _loadingPosts = true;
     _feedStreamUpdater.loadNextPage().whenComplete(() {
       _loadingPosts = false;
