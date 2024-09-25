@@ -1,3 +1,5 @@
+import 'package:intl/intl.dart';
+
 class _KeysForBlogDataJsonConverter {
   static const String id = 'ID';
   static const String blogId = 'BLOG_ID';
@@ -20,7 +22,7 @@ class BlogData {
   final DateTime _datePublish;
   final int _numberOfComments;
   final List<String>? _files;
-
+  final int? _pinnedid;
   BlogData(
     this._id,
     this._blogId,
@@ -29,8 +31,10 @@ class BlogData {
     this._detailText,
     this._datePublish,
     this._numberOfComments,
-    this._files,
-  );
+    this._files, [
+    this._pinnedid,
+    this.keySigned,
+  ]);
 
   int get id => _id;
   int get blogId => _blogId;
@@ -40,6 +44,7 @@ class BlogData {
   DateTime get datePublish => _datePublish;
   int get numberOfComments => _numberOfComments;
   List<String>? get files => _files;
+  int? get pinnedid => _pinnedid;
 
   factory BlogData.fromJson(Map<String, Object?> jsonMap) => BlogData(
         int.parse(jsonMap[_KeysForBlogDataJsonConverter.id] as String),
@@ -56,6 +61,25 @@ class BlogData {
             .toList(),
       );
 
+  factory BlogData.fromJsonAlt(Map<String, Object?> jsonMap) => BlogData(
+        int.parse(
+          jsonMap[_KeysForBlogDataJsonConverter.id.toLowerCase()] as String,
+        ),
+        int.parse(jsonMap['id'] as String),
+        int.parse((jsonMap['author'] as Map<String, Object?>)['id'] as String),
+        jsonMap[_KeysForBlogDataJsonConverter.title.toLowerCase()] as String,
+        jsonMap['fulltext'] as String,
+        _parseCustomDateTime(
+          jsonMap['time'] as String,
+        ),
+        int.parse(jsonMap['commentsnum'] as String),
+        (jsonMap['attach'] as List<dynamic>?)
+            ?.map((element) => element.toString())
+            .toList(),
+        jsonMap['pinnedid'] as int,
+        jsonMap['keysigned'] as String,
+      );
+
   Map<String, dynamic> toJson() => {
         _KeysForBlogDataJsonConverter.id: _id,
         _KeysForBlogDataJsonConverter.blogId: _blogId,
@@ -66,4 +90,9 @@ class BlogData {
         _KeysForBlogDataJsonConverter.numComments: _numberOfComments,
         _KeysForBlogDataJsonConverter.files: files,
       };
+
+  static DateTime _parseCustomDateTime(String input) {
+    final formatter = DateFormat('dd.MM.yyyy HH:mm:ss');
+    return formatter.parse(input);
+  }
 }
