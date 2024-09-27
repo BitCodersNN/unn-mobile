@@ -31,7 +31,7 @@ class MainPageDrawer extends StatelessWidget {
           '${MainPageRouting.drawerRoutes[value].pageRoute}',
         );
       },
-      selectedIndex: -1,
+      selectedIndex: null,
       children: children,
     );
   }
