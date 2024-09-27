@@ -26,9 +26,14 @@ class MainPageDrawer extends StatelessWidget {
     return NavigationDrawer(
       onDestinationSelected: (value) {
         Scaffold.of(context).closeDrawer();
+        final selectedBarIndex =
+            MainPageNavigationBar.getSelectedBarIndex(context);
+        final currentPageRoute =
+            MainPageRouting.navbarRoutes[selectedBarIndex].pageRoute;
+        final destinationSubroute =
+            MainPageRouting.drawerRoutes[value].pageRoute;
         GoRouter.of(context).go(
-          '${MainPageRouting.navbarRoutes[MainPageNavigationBar.getSelectedBarIndex(context)].pageRoute}/'
-          '${MainPageRouting.drawerRoutes[value].pageRoute}',
+          '$currentPageRoute/$destinationSubroute',
         );
       },
       selectedIndex: null,
