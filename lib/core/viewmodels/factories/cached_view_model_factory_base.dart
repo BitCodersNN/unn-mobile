@@ -10,7 +10,8 @@ abstract class CachedViewModelFactoryBase<TKey,
       : _cache = LRUCache<TKey, TViewModel>(cacheSize);
 
   @protected
-  T getService<T>() => Injector.appInstance.get<T>();
+  T getService<T>({String dependencyName = ''}) =>
+      Injector.appInstance.get<T>(dependencyName: dependencyName);
 
   TViewModel getViewModel(TKey key) {
     var viewmodel = _cache.get(key);

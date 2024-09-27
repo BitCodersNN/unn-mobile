@@ -27,7 +27,11 @@ abstract class BaseFileDownloaderService implements FileDownloaderService {
   }
 
   @override
-  Future<File?> downloadFile(String filePath, {String? downloadUrl}) async {
+  Future<File?> downloadFile(
+    String filePath, {
+    String? downloadUrl,
+    bool force = false,
+  }) async {
     assert(_host != null && _path != null || downloadUrl != null);
 
     final String? downloadsPath = await getDownloadPath();
@@ -38,17 +42,24 @@ abstract class BaseFileDownloaderService implements FileDownloaderService {
 
     final storedFile = File('$downloadsPath/$filePath');
 
+    if (!force && await storedFile.exists()) {
+      return storedFile;
+    }
+
     await storedFile.parent.create(recursive: true);
     String host = _host ?? '';
     String path = '$_path/$filePath';
+    Map<String, dynamic> queryParams = {};
     if (downloadUrl != null) {
       final uri = Uri.parse(downloadUrl);
       host = uri.host;
       path = uri.path;
+      queryParams = uri.queryParameters;
     }
     final requestSender = HttpRequestSender(
       host: host,
       path: path,
+      queryParams: queryParams,
       cookies: _cookies,
     );
 

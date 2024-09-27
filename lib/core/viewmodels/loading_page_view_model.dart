@@ -7,7 +7,6 @@ import 'package:go_router/go_router.dart';
 import 'package:unn_mobile/core/misc/app_open_tracker.dart';
 import 'package:unn_mobile/core/misc/app_settings.dart';
 import 'package:unn_mobile/core/misc/date_time_extensions.dart';
-import 'package:unn_mobile/core/misc/file_functions.dart';
 import 'package:unn_mobile/core/misc/current_user_sync_storage.dart';
 import 'package:unn_mobile/core/models/loading_page_data.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
@@ -68,16 +67,10 @@ class LoadingPageViewModel extends BaseViewModel {
   }
 
   Future<void> initLoadingPages() async {
-    final [
-      loadingPages as List<LoadingPageModel>?,
-      downloadsPath as String?,
-    ] = await Future.wait([
-      _loadingPageProvider.getData(),
-      getDownloadPath(),
-    ]);
+    final loadingPages = await _loadingPageProvider.getData();
 
-    if (loadingPages == null || downloadsPath == null) {
-      throw Exception('Failed to fetch loading pages data or download path');
+    if (loadingPages == null) {
+      throw Exception('Failed to fetch loading pages data');
     }
 
     _actualLoadingPage = _getCurrentLoadingPageModel(loadingPages);
@@ -86,12 +79,8 @@ class LoadingPageViewModel extends BaseViewModel {
       throw Exception('Invalid loading page data');
     }
 
-    _logoImage = File('$downloadsPath/${_actualLoadingPage!.imagePath}');
-
-    if (!await _logoImage!.exists()) {
-      _logoImage = await _logoDownloaderService
-          .downloadFile(_actualLoadingPage!.imagePath);
-    }
+    _logoImage = await _logoDownloaderService
+        .downloadFile(_actualLoadingPage!.imagePath);
 
     if (_logoImage == null) {
       throw Exception('Failed to download logo image');
