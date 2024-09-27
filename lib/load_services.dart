@@ -35,7 +35,6 @@ import 'package:unn_mobile/core/services/interfaces/authorisation_refresh_servic
 import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
 import 'package:unn_mobile/core/services/interfaces/export_schedule_service.dart';
 import 'package:unn_mobile/core/services/interfaces/feed_updater_service.dart';
-import 'package:unn_mobile/core/services/interfaces/feed_stream_updater_service.dart';
 import 'package:unn_mobile/core/services/interfaces/file_downloader.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_blog_post_comments.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_blog_posts.dart';
