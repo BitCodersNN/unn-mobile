@@ -8,16 +8,17 @@ import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 
 abstract class BaseFileDownloaderService implements FileDownloaderService {
   final LoggerService _loggerService;
-  final String _host;
-  final String _path;
+  final String? _host;
+  final String? _path;
   Map<String, String> _cookies;
 
   BaseFileDownloaderService(
-    this._loggerService,
-    this._host, {
-    String path = '',
+    this._loggerService, {
+    String? host,
+    String? path,
     Map<String, String> cookies = const {},
-  })  : _path = path,
+  })  : _host = host,
+        _path = path,
         _cookies = cookies;
 
   @protected
@@ -26,7 +27,9 @@ abstract class BaseFileDownloaderService implements FileDownloaderService {
   }
 
   @override
-  Future<File?> downloadFile(String filePath) async {
+  Future<File?> downloadFile(String filePath, {String? downloadUrl}) async {
+    assert(_host != null && _path != null || downloadUrl != null);
+
     final String? downloadsPath = await getDownloadPath();
     if (downloadsPath == null) {
       _loggerService.log('Download path is null');
@@ -36,10 +39,16 @@ abstract class BaseFileDownloaderService implements FileDownloaderService {
     final storedFile = File('$downloadsPath/$filePath');
 
     await storedFile.parent.create(recursive: true);
-
+    String host = _host ?? '';
+    String path = '$_path/$filePath';
+    if (downloadUrl != null) {
+      final uri = Uri.parse(downloadUrl);
+      host = uri.host;
+      path = uri.path;
+    }
     final requestSender = HttpRequestSender(
-      host: _host,
-      path: '$_path/$filePath',
+      host: host,
+      path: path,
       cookies: _cookies,
     );
 

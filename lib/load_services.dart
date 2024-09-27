@@ -6,6 +6,7 @@ import 'package:unn_mobile/core/services/implementations/auth_data_provider_impl
 import 'package:unn_mobile/core/services/implementations/authorisation_refresh_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/authorisation_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/export_schedule_service_impl.dart';
+import 'package:unn_mobile/core/services/implementations/feed_file_downloader_impl.dart';
 import 'package:unn_mobile/core/services/implementations/feed_updater_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/firebase_logger.dart';
 import 'package:unn_mobile/core/services/implementations/getting_blog_post_comments_impl.dart';
@@ -117,6 +118,13 @@ void registerDependencies() {
       injector.get<LoggerService>(),
     ),
     dependencyName: 'LogoDownloaderService',
+  );
+  injector.registerSingleton<FileDownloaderService>(
+    () => FeedFileDownloaderImpl(
+      get<LoggerService>(),
+      get<AuthorizationService>(),
+    ),
+    dependencyName: 'FeedFileDownloaderService',
   );
 
   injector.registerSingleton<LastCommitShaProvider>(
