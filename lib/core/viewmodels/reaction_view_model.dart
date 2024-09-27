@@ -8,6 +8,8 @@ import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/factories/reaction_view_model_factory.dart';
 
 class ReactionViewModel extends BaseViewModel {
+  static const noID = -1;
+
   final GettingVoteKeySigned _gettingVoteKeySigned;
   final GettingRatingList _gettingRatingList;
   final ReactionManager _reactionManager;
@@ -55,9 +57,11 @@ class ReactionViewModel extends BaseViewModel {
     );
   }
 
-  ReactionType? get currentReaction => _ratingList?.getReactionByUser(
-        _currentUserSyncStorage.currentUserData?.bitrixId ?? -1,
-      );
+  ReactionType? get currentReaction {
+    return _ratingList?.getReactionByUser(
+      _currentUserSyncStorage.currentUserData?.bitrixId ?? noID,
+    );
+  }
 
   int getReactionCount(ReactionType reaction) {
     return _ratingList?.getNumberOfReactions(reaction) ?? 0;
