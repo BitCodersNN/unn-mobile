@@ -43,6 +43,7 @@ class LoadingPageModel {
 
   String get title => _title;
   String get imagePath => _imagePath;
+  DateTimeRange? get dateTimeRangeToUseOn => _dateTimeRangeToUseOn;
   String? get description => _description;
   TextStyle get titleStyle => _titleStyle;
   TextStyle? get descriptionStyle => _descriptionStyle;
@@ -134,7 +135,7 @@ class LoadingPageModel {
       _KeysForLoadingPageModelJsonConverter.title: {
         _KeysForLoadingPageModelJsonConverter.text: _title,
         _KeysForLoadingPageModelJsonConverter.color:
-            _titleStyle.color!.value.toRadixString(16),
+            _titleStyle.color!.value.toString(),
         _KeysForLoadingPageModelJsonConverter.fontSize:
             _titleStyle.fontSize.toString(),
       },
@@ -142,7 +143,7 @@ class LoadingPageModel {
         _KeysForLoadingPageModelJsonConverter.description: {
           _KeysForLoadingPageModelJsonConverter.text: _description,
           _KeysForLoadingPageModelJsonConverter.color:
-              _descriptionStyle?.color!.value.toRadixString(16),
+              _descriptionStyle?.color!.value.toString(),
           _KeysForLoadingPageModelJsonConverter.fontSize:
               _descriptionStyle?.fontSize.toString(),
         },
