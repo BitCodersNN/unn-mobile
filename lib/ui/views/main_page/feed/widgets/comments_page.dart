@@ -38,7 +38,7 @@ class CommentsPage extends StatelessWidget {
                             : 'НЕТ КОММЕНТАРИЕВ',
                         style: const TextStyle(
                           fontSize: 14,
-                          color: Color.fromARGB(255, 152, 158, 169),
+                          color: Color(0xFF989EA9),
                           fontWeight: FontWeight.w600,
                         ),
                       ),
