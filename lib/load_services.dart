@@ -35,10 +35,10 @@ import 'package:unn_mobile/core/services/implementations/user_data_provider_impl
 import 'package:unn_mobile/core/services/interfaces/auth_data_provider.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation_refresh_service.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
-import 'package:unn_mobile/core/services/interfaces/base_file_downloader.dart';
 import 'package:unn_mobile/core/services/interfaces/blog_comment_data_loader.dart';
 import 'package:unn_mobile/core/services/interfaces/export_schedule_service.dart';
 import 'package:unn_mobile/core/services/interfaces/feed_stream_updater_service.dart';
+import 'package:unn_mobile/core/services/interfaces/file_downloader.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_blog_post_comments.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_blog_posts.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_file_data.dart';
@@ -106,7 +106,7 @@ void registerDependencies() {
     ),
   );
 
-  injector.registerSingleton<BaseFileDownloaderService>(
+  injector.registerSingleton<FileDownloaderService>(
     () => LogoDownloaderServiceImpl(
       injector.get<LoggerService>(),
     ),
@@ -278,7 +278,7 @@ void registerDependencies() {
       get<AuthorizationRefreshService>(),
       get<LastCommitShaService>(),
       get<LoadingPageConfigService>(),
-      get<BaseFileDownloaderService>(dependencyName: 'LogoDownloaderService'),
+      get<FileDownloaderService>(dependencyName: 'LogoDownloaderService'),
       get<LastCommitShaProvider>(),
       get<LoadingPageProvider>(),
       get<CurrentUserSyncStorage>(),

@@ -6,12 +6,13 @@ import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:go_router/go_router.dart';
 import 'package:unn_mobile/core/misc/app_open_tracker.dart';
 import 'package:unn_mobile/core/misc/app_settings.dart';
+import 'package:unn_mobile/core/misc/date_time_extensions.dart';
 import 'package:unn_mobile/core/misc/file_functions.dart';
 import 'package:unn_mobile/core/misc/current_user_sync_storage.dart';
 import 'package:unn_mobile/core/models/loading_page_data.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation_refresh_service.dart';
-import 'package:unn_mobile/core/services/interfaces/base_file_downloader.dart';
+import 'package:unn_mobile/core/services/interfaces/file_downloader.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_profile_of_current_user_service.dart';
 import 'package:unn_mobile/core/services/interfaces/loading_page/last_commit_sha.dart';
 import 'package:unn_mobile/core/services/interfaces/loading_page/last_commit_sha_provider.dart';
@@ -32,7 +33,7 @@ class LoadingPageViewModel extends BaseViewModel {
   final AuthorizationRefreshService _initializingApplicationService;
   final LastCommitShaService _lastCommitShaService;
   final LoadingPageConfigService _loadingPageConfigService;
-  final BaseFileDownloaderService _logoDownloaderService;
+  final FileDownloaderService _logoDownloaderService;
   final LastCommitShaProvider _lastCommitShaProvider;
   final LoadingPageProvider _loadingPageProvider;
 
@@ -110,7 +111,7 @@ class LoadingPageViewModel extends BaseViewModel {
 
     if (shaFromProvider == null || shaFromService != shaFromProvider) {
       Future.wait([
-        _saveLoadingPagesFromGit(),
+        _saveLoadingPagesConfigFromGit(),
         _lastCommitShaProvider.saveData(shaFromService),
       ]);
     }
@@ -159,17 +160,19 @@ class LoadingPageViewModel extends BaseViewModel {
     }
   }
 
-  Future<void> _saveLoadingPagesFromGit() async {
-    final loadingPages = await _loadingPageConfigService.getLoadingPages();
+  Future<void> _saveLoadingPagesConfigFromGit() async {
+    final loadingPagesConfig =
+        await _loadingPageConfigService.getLoadingPages();
 
-    if (loadingPages == null) {
+    if (loadingPagesConfig == null) {
       return;
     }
 
     await Future.wait([
-      _loadingPageProvider.saveData(loadingPages),
-      _logoDownloaderService
-          .downloadFiles(loadingPages.map((model) => model.imagePath).toList()),
+      _loadingPageProvider.saveData(loadingPagesConfig),
+      _logoDownloaderService.downloadFiles(
+        loadingPagesConfig.map((model) => model.imagePath).toList(),
+      ),
     ]);
   }
 
@@ -181,22 +184,10 @@ class LoadingPageViewModel extends BaseViewModel {
     return loadingPages.firstWhere(
       (model) =>
           model.dateTimeRangeToUseOn != null &&
-          _isDateInRange(today, model.dateTimeRangeToUseOn!),
+          today.isDateInRangeIgnoringYear(model.dateTimeRangeToUseOn!),
       orElse: () => loadingPages.firstWhere(
         (model) => model.dateTimeRangeToUseOn == null,
       ),
     );
-  }
-
-  bool _isDateInRange(DateTime date, DateTimeRange range) {
-    final start = range.start;
-    final end = range.end;
-
-    final isStartBeforeOrEqual = start.month < date.month ||
-        (start.month == date.month && start.day <= date.day);
-    final isEndAfterOrEqual = end.month > date.month ||
-        (end.month == date.month && end.day >= date.day);
-
-    return isStartBeforeOrEqual && isEndAfterOrEqual;
   }
 }
