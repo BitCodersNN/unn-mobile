@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:injector/injector.dart';
+import 'package:path/path.dart' as path;
 import 'package:unn_mobile/core/misc/file_functions.dart';
 import 'package:unn_mobile/core/misc/size_converter.dart';
 import 'package:unn_mobile/core/models/file_data.dart';
@@ -9,7 +10,6 @@ import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_file_data.dart';
 import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
-import 'package:path/path.dart' as path;
 import 'package:unn_mobile/core/viewmodels/factories/attached_file_view_model_factory.dart';
 
 enum AttachedFileType {
@@ -20,11 +20,6 @@ enum AttachedFileType {
 }
 
 class AttachedFileViewModel extends BaseViewModel {
-  final GettingFileData _fileDataService;
-  final LoggerService _loggerService;
-  final AuthorizationService _authService;
-  final SizeConverter sizeConverter = SizeConverter();
-
   static const Map<String, AttachedFileType> _fileTypes = {
     '.png': AttachedFileType.image,
     '.jpg': AttachedFileType.image,
@@ -35,69 +30,63 @@ class AttachedFileViewModel extends BaseViewModel {
     '.ogg': AttachedFileType.audio,
   };
 
-  factory AttachedFileViewModel.cached(AttachedFileCacheKey key) {
-    return Injector.appInstance
-        .get<AttachedFileViewModelFactory>()
-        .getViewModel(key);
-  }
-
-  /// Глобальный список файлов, которые сейчас грузятся
+  /// Глобальный набор файлов, которые сейчас грузятся
   static final Map<int, Future<File?>> _pendingFileDownloads = {};
+  final GettingFileData _fileDataService;
+  final LoggerService _loggerService;
+  final AuthorizationService _authService;
+
+  final SizeConverter sizeConverter = SizeConverter();
+
+  late int _fileId;
+
+  FileData? _loadedData;
+
+  bool _isLoadingData = false;
+  bool _hasError = false;
+
+  String? _error;
 
   AttachedFileViewModel(
     this._fileDataService,
     this._loggerService,
     this._authService,
   );
+  factory AttachedFileViewModel.cached(AttachedFileCacheKey key) {
+    return Injector.appInstance
+        .get<AttachedFileViewModelFactory>()
+        .getViewModel(key);
+  }
 
-  late int _fileId;
-  FileData? _loadedData;
+  String get error => _error ?? '';
 
-  AttachedFileType get fileType =>
-      _fileTypes[path.extension(_loadedData?.name ?? '')] ??
-      AttachedFileType.unknown;
-
-  String get fileName => _loadedData?.name ?? '';
   // '_.' - чтобы substring не падал с ошибкой, если данных еще нет
   String get fileExtension =>
       path.extension(_loadedData?.name ?? '_.').substring(1);
 
-  String get fileSizeText => _loadedData == null
-      ? ''
-      : '${sizeConverter.convertBytesToSize(_loadedData!.sizeInBytes).toStringAsFixed(2)} '
-          '${sizeConverter.lastUsedUnit!.getUnitString()}';
+  String get fileName => _loadedData?.name ?? '';
 
-  bool _isLoadingData = false;
+  String get fileSizeText {
+    if (_loadedData == null) {
+      return '';
+    }
+    final sizeNoUnits = sizeConverter
+        .convertBytesToSize(_loadedData!.sizeInBytes)
+        .toStringAsFixed(2);
+    final unitString = sizeConverter.lastUsedUnit!.getUnitString();
+    return '$sizeNoUnits $unitString';
+  }
 
-  /// Статус получения информации о файле
-  bool get isLoadingData => _isLoadingData;
+  AttachedFileType get fileType =>
+      _fileTypes[path.extension(_loadedData?.name ?? '')] ??
+      AttachedFileType.unknown;
+  bool get hasError => _hasError;
 
   /// Статус скачивания файла
   bool get isDownloadingFile => _pendingFileDownloads.containsKey(_fileId);
 
-  bool _hasError = false;
-  bool get hasError => _hasError;
-
-  String? _error;
-  String get error => _error ?? '';
-
-  Future<FileData?> _loadData(int fileId) async {
-    return await _fileDataService.getFileData(id: fileId);
-  }
-
-  void init(int fileId) {
-    _fileId = fileId;
-    _isLoadingData = true;
-    _loadData(fileId).then((file) {
-      _loadedData = file;
-    }).catchError((error, stack) {
-      _loggerService.logError(error, stack);
-      _hasError = true;
-    }).whenComplete(() {
-      _isLoadingData = false;
-      notifyListeners(); // Я надеюсь, это выполнится после строчек выше
-    });
-  }
+  /// Статус получения информации о файле
+  bool get isLoadingData => _isLoadingData;
 
   Future<File?> getFile() async {
     if (_authService.sessionId == null) {
@@ -134,6 +123,20 @@ class AttachedFileViewModel extends BaseViewModel {
     return storedFile;
   }
 
+  void init(int fileId) {
+    _fileId = fileId;
+    _isLoadingData = true;
+    _loadData(fileId).then((file) {
+      _loadedData = file;
+    }).catchError((error, stack) {
+      _loggerService.logError(error, stack);
+      _hasError = true;
+    }).whenComplete(() {
+      _isLoadingData = false;
+      notifyListeners(); // Я надеюсь, это выполнится после строчек выше
+    });
+  }
+
   Future<File?> _downloadFile(
     String downloadUrl,
     String? sessionId,
@@ -148,5 +151,9 @@ class AttachedFileViewModel extends BaseViewModel {
       await storedFile.writeAsBytes(bytes);
     }
     return storedFile;
+  }
+
+  Future<FileData?> _loadData(int fileId) async {
+    return await _fileDataService.getFileData(id: fileId);
   }
 }
