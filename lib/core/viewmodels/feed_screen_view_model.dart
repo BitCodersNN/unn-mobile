@@ -4,6 +4,8 @@ import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/feed_post_view_model.dart';
 
 class FeedScreenViewModel extends BaseViewModel {
+  static const postsPerPage = 5;
+
   final FeedUpdaterService _feedStreamUpdater;
   final LastFeedLoadDateTimeProvider _lastFeedLoadDateTimeProvider;
 
@@ -59,7 +61,7 @@ class FeedScreenViewModel extends BaseViewModel {
     }
     _loadingPosts = true;
     notifyListeners();
-    if (_lastLoadedPost + 5 > _feedStreamUpdater.feedPosts.length) {
+    if (_lastLoadedPost + postsPerPage > _feedStreamUpdater.feedPosts.length) {
       posts.addAll(
         _feedStreamUpdater.feedPosts
             .getRange(
@@ -80,14 +82,14 @@ class FeedScreenViewModel extends BaseViewModel {
       _feedStreamUpdater.feedPosts
           .getRange(
             _lastLoadedPost,
-            _lastLoadedPost + 5,
+            _lastLoadedPost + postsPerPage,
           )
           .map(
             (p) => FeedPostViewModel.cached(p.id)..init(p),
           ),
       //
     );
-    _lastLoadedPost += 5;
+    _lastLoadedPost += postsPerPage;
     _loadingPosts = false;
     notifyListeners();
   }
