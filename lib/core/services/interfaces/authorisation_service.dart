@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:unn_mobile/core/misc/custom_errors/auth_errors.dart';
 
 enum AuthRequestResult {
@@ -7,7 +8,7 @@ enum AuthRequestResult {
   unknown,
 }
 
-abstract interface class AuthorizationService {
+abstract interface class AuthorizationService extends Listenable {
   /// Выполняет авторизацию на unn-portal и сохраняет данные авторизации
   ///
   /// [login]: логин на unn-portal, т.е. номер студенческого билета

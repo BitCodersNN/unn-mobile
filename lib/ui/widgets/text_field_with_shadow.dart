@@ -11,7 +11,7 @@ class TextFieldWithBoxShadow extends StatelessWidget {
   final Iterable<String>? autofillHints;
 
   const TextFieldWithBoxShadow({
-    Key? key,
+    super.key,
     this.errorText,
     this.labelText,
     this.controller,

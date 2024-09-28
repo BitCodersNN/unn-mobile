@@ -6,12 +6,11 @@ import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:go_router/go_router.dart';
 import 'package:unn_mobile/core/misc/app_open_tracker.dart';
 import 'package:unn_mobile/core/misc/app_settings.dart';
-import 'package:unn_mobile/core/misc/date_time_extensions.dart';
-import 'package:unn_mobile/core/misc/file_functions.dart';
 import 'package:unn_mobile/core/misc/current_user_sync_storage.dart';
+import 'package:unn_mobile/core/misc/date_time_extensions.dart';
 import 'package:unn_mobile/core/models/loading_page_data.dart';
-import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation_refresh_service.dart';
+import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
 import 'package:unn_mobile/core/services/interfaces/file_downloader.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_profile_of_current_user_service.dart';
 import 'package:unn_mobile/core/services/interfaces/loading_page/last_commit_sha.dart';
@@ -23,11 +22,6 @@ import 'package:unn_mobile/core/services/interfaces/user_data_provider.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
 import 'package:unn_mobile/ui/router.dart';
 
-enum _TypeScreen {
-  authScreen,
-  mainScreen,
-}
-
 class LoadingPageViewModel extends BaseViewModel {
   final LoggerService _loggerService;
   final AuthorizationRefreshService _initializingApplicationService;
@@ -36,7 +30,6 @@ class LoadingPageViewModel extends BaseViewModel {
   final FileDownloaderService _logoDownloaderService;
   final LastCommitShaProvider _lastCommitShaProvider;
   final LoadingPageProvider _loadingPageProvider;
-
   final CurrentUserSyncStorage _typeOfCurrentUser;
   final GettingProfileOfCurrentUser _gettingProfileOfCurrentUser;
   final UserDataProvider _userDataProvider;
@@ -44,10 +37,6 @@ class LoadingPageViewModel extends BaseViewModel {
 
   LoadingPageModel? _actualLoadingPage;
   File? _logoImage;
-
-  LoadingPageModel? get loadingPageData => _actualLoadingPage;
-  LoadingPageModel? get defaultPageData => LoadingPageModel(imagePath: '');
-  File? get logoImage => _logoImage;
 
   LoadingPageViewModel(
     this._loggerService,
@@ -63,21 +52,20 @@ class LoadingPageViewModel extends BaseViewModel {
     this._appOpenTracker,
   );
 
+  LoadingPageModel? get defaultPageData => LoadingPageModel(imagePath: '');
+  LoadingPageModel? get loadingPageData => _actualLoadingPage;
+
+  File? get logoImage => _logoImage;
+
   void decideRoute(context) {
     _init().then((value) => _goToScreen(context, value));
   }
 
   Future<void> initLoadingPages() async {
-    final [
-      loadingPages as List<LoadingPageModel>?,
-      downloadsPath as String?,
-    ] = await Future.wait([
-      _loadingPageProvider.getData(),
-      getDownloadPath(),
-    ]);
+    final loadingPages = await _loadingPageProvider.getData();
 
-    if (loadingPages == null || downloadsPath == null) {
-      throw Exception('Failed to fetch loading pages data or download path');
+    if (loadingPages == null) {
+      throw Exception('Failed to fetch loading pages data');
     }
 
     _actualLoadingPage = _getCurrentLoadingPageModel(loadingPages);
@@ -86,16 +74,35 @@ class LoadingPageViewModel extends BaseViewModel {
       throw Exception('Invalid loading page data');
     }
 
-    _logoImage = File('$downloadsPath/${_actualLoadingPage!.imagePath}');
-
-    if (!await _logoImage!.exists()) {
-      _logoImage = await _logoDownloaderService
-          .downloadFile(_actualLoadingPage!.imagePath);
-    }
+    _logoImage = await _logoDownloaderService
+        .downloadFile(_actualLoadingPage!.imagePath);
 
     if (_logoImage == null) {
       throw Exception('Failed to download logo image');
     }
+  }
+
+  LoadingPageModel _getCurrentLoadingPageModel(
+    List<LoadingPageModel> loadingPages,
+  ) {
+    final today = DateTime.now();
+
+    return loadingPages.firstWhere(
+      (model) =>
+          model.dateTimeRangeToUseOn != null &&
+          today.isDateInRangeIgnoringYear(model.dateTimeRangeToUseOn!),
+      orElse: () => loadingPages.firstWhere(
+        (model) => model.dateTimeRangeToUseOn == null,
+      ),
+    );
+  }
+
+  void _goToScreen(BuildContext context, _TypeScreen typeScreen) {
+    final route = switch (typeScreen) {
+      _TypeScreen.authScreen => authPageRoute,
+      _TypeScreen.mainScreen => mainPageRoute,
+    };
+    GoRouter.of(context).go(route);
   }
 
   Future<_TypeScreen> _init() async {
@@ -136,14 +143,6 @@ class LoadingPageViewModel extends BaseViewModel {
     return typeScreen;
   }
 
-  void _goToScreen(BuildContext context, _TypeScreen typeScreen) {
-    final route = switch (typeScreen) {
-      _TypeScreen.authScreen => authPageRoute,
-      _TypeScreen.mainScreen => mainPageRoute,
-    };
-    GoRouter.of(context).go(route);
-  }
-
   Future<void> _initUserData() async {
     if (await _appOpenTracker.isFirstTimeOpenOnVersion()) {
       final profile =
@@ -175,19 +174,9 @@ class LoadingPageViewModel extends BaseViewModel {
       ),
     ]);
   }
+}
 
-  LoadingPageModel _getCurrentLoadingPageModel(
-    List<LoadingPageModel> loadingPages,
-  ) {
-    final today = DateTime.now();
-
-    return loadingPages.firstWhere(
-      (model) =>
-          model.dateTimeRangeToUseOn != null &&
-          today.isDateInRangeIgnoringYear(model.dateTimeRangeToUseOn!),
-      orElse: () => loadingPages.firstWhere(
-        (model) => model.dateTimeRangeToUseOn == null,
-      ),
-    );
-  }
+enum _TypeScreen {
+  authScreen,
+  mainScreen,
 }
