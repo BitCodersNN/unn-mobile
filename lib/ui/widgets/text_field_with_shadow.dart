@@ -19,7 +19,7 @@ class TextFieldWithBoxShadow extends StatelessWidget {
     this.obscuredText = false,
     this.enableSuggestions = false,
     this.autofillHints,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
