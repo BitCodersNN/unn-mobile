@@ -12,7 +12,10 @@ class UnnMobile extends StatelessWidget {
       routerConfig: mainRouter,
       theme: ThemeData(
         appBarTheme: const AppBarTheme(
-          elevation: 0,
+          scrolledUnderElevation: 3,
+          backgroundColor: Colors.white,
+          surfaceTintColor: Colors.transparent,
+          shadowColor: Colors.black,
         ),
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(
@@ -26,7 +29,7 @@ class UnnMobile extends StatelessWidget {
             scheduleDayHighlight: Color(0xFFEEEEEE),
             scheduleSubjectHighlight: Color(0xFFFFF6E8),
             defaultPostHighlight: Color(0xFFFFFFFF),
-            newPostHiglaght: Color(0xFFFFF6E8),
+            newPostHighlight: Color(0xFFFFF6E8),
             subjectTypeHighlight: {
               SubjectType.lecture: Color(0xFF1CA49C),
               SubjectType.practice: Color(0xFFCD7255),
