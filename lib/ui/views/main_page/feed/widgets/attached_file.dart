@@ -47,11 +47,11 @@ class _AttachedFileState extends State<AttachedFile> {
                   if (AppSettings.vibrationEnabled) {
                     HapticFeedback.mediumImpact();
                   }
-                  await _downloadAndOpenFile(model, true, context)
-                      .whenComplete(() async {
-                    await FirebaseAnalytics.instance
-                        .logEvent(name: 'feed_attached_file_long_press');
-                  });
+                  await Future.wait([
+                    _downloadAndOpenFile(model, true, context),
+                    FirebaseAnalytics.instance
+                        .logEvent(name: 'feed_attached_file_long_press'),
+                  ]);
                 },
                 child: Container(
                   color: Colors.transparent,
