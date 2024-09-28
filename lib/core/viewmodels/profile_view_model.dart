@@ -12,47 +12,34 @@ class ProfileViewModel extends BaseViewModel {
   final GettingProfile _getProfileService;
   final LoggerService _loggerService;
 
-  factory ProfileViewModel.cached(ProfileCacheKey key) {
-    return Injector.appInstance
-        .get<ProfileViewModelFactory>()
-        .getViewModel(key);
-  }
-
   bool _isLoading = false;
+
   bool _hasError = false;
-  bool get isLoading => _isLoading;
-  bool get hasError => _hasError;
-
   UserData? _loadedData;
-
-  String get fullname =>
-      _loadedData?.fullname.toString() ?? //
-      'Неизвестный пользователь';
-  String get initials => getUserInitials(_loadedData);
-
-  bool get hasAvatar => _loadedData?.fullUrlPhoto != null;
-
-  String? get avatarUrl => _loadedData?.fullUrlPhoto;
 
   ProfileViewModel(
     this._getCurrentUserService,
     this._getProfileService,
     this._loggerService,
   );
-
-  Future<UserData?> _getCurrentUser() async {
-    return await _getCurrentUserService.getProfileOfCurrentUser();
+  factory ProfileViewModel.cached(ProfileCacheKey key) {
+    return Injector.appInstance
+        .get<ProfileViewModelFactory>()
+        .getViewModel(key);
   }
 
-  Future<UserData?> _getProfile(int userId, bool loadFromPost) async {
-    return loadFromPost
-        ? await _getProfileService.getProfileByAuthorIdFromPost(
-            authorId: userId,
-          )
-        : await _getProfileService.getProfile(
-            userId: userId,
-          );
-  }
+  String? get avatarUrl => _loadedData?.fullUrlPhoto;
+
+  String get fullname =>
+      _loadedData?.fullname.toString() ?? //
+      'Неизвестный пользователь';
+  bool get hasAvatar => _loadedData?.fullUrlPhoto != null;
+
+  bool get hasError => _hasError;
+
+  String get initials => getUserInitials(_loadedData);
+
+  bool get isLoading => _isLoading;
 
   void init({
     bool force = false,
@@ -76,5 +63,19 @@ class ProfileViewModel extends BaseViewModel {
         notifyListeners();
       });
     }
+  }
+
+  Future<UserData?> _getCurrentUser() async {
+    return await _getCurrentUserService.getProfileOfCurrentUser();
+  }
+
+  Future<UserData?> _getProfile(int userId, bool loadFromPost) async {
+    return loadFromPost
+        ? await _getProfileService.getProfileByAuthorIdFromPost(
+            authorId: userId,
+          )
+        : await _getProfileService.getProfile(
+            userId: userId,
+          );
   }
 }

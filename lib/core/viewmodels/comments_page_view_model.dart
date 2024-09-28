@@ -11,39 +11,21 @@ class CommentsPageViewModel extends BaseViewModel {
   int loadedPage = 1;
   int totalPages = 1;
 
+  final List<FeedCommentViewModel> commentViewmodels = [];
+
   CommentsPageViewModel(
     this._gettingBlogPostCommentsService,
   );
 
-  final List<FeedCommentViewModel> commentViewmodels = [];
-  bool get isLoadingComments => state == ViewState.busy;
+  bool get commentsAvailable => loadedPage < totalPages;
 
   int get commentsCount => post?.blogData.numberOfComments ?? 0;
 
-  Future<void> _loadComments(int page) async {
-    if (isLoadingComments) {
-      return;
-    }
-    try {
-      setState(ViewState.busy);
-      if (post == null) {
-        return;
-      }
-      final comments =
-          await _gettingBlogPostCommentsService.getBlogPostComments(
-        postId: post!.blogData.id,
-        pageNumber: page,
-      );
-      if (comments == null) {
-        return;
-      }
-      commentViewmodels.addAll(
-        comments.map((c) => FeedCommentViewModel.cached(c.id)..init(c)),
-      );
-    } finally {
-      // Не важно, как мы вышли - флаги убрать всё равно надо
-      setState(ViewState.idle);
-    }
+  bool get isLoadingComments => state == ViewState.busy;
+
+  void init(FeedPostViewModel post) {
+    this.post = post;
+    refresh();
   }
 
   Future<void> loadMoreComments() async {
@@ -69,9 +51,29 @@ class CommentsPageViewModel extends BaseViewModel {
     }
   }
 
-  bool get commentsAvailable => loadedPage < totalPages;
-  void init(FeedPostViewModel post) {
-    this.post = post;
-    refresh();
+  Future<void> _loadComments(int page) async {
+    if (isLoadingComments) {
+      return;
+    }
+    try {
+      setState(ViewState.busy);
+      if (post == null) {
+        return;
+      }
+      final comments =
+          await _gettingBlogPostCommentsService.getBlogPostComments(
+        postId: post!.blogData.id,
+        pageNumber: page,
+      );
+      if (comments == null) {
+        return;
+      }
+      commentViewmodels.addAll(
+        comments.map((c) => FeedCommentViewModel.cached(c.id)..init(c)),
+      );
+    } finally {
+      // Не важно, как мы вышли - флаги убрать всё равно надо
+      setState(ViewState.idle);
+    }
   }
 }

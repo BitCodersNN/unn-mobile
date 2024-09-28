@@ -15,20 +15,12 @@ class ReactionViewModel extends BaseViewModel {
   final ReactionManager _reactionManager;
   final CurrentUserSyncStorage _currentUserSyncStorage;
 
-  factory ReactionViewModel.cached(ReactionCacheKey key) {
-    return Injector.appInstance
-        .get<ReactionViewModelFactory>()
-        .getViewModel(key);
-  }
   RatingList? _ratingList;
-
   String? _voteKeySigned;
 
   bool _isLoading = true;
-  bool get isLoading => _isLoading;
 
   bool _isChangingReaction = false;
-  bool get isChangingReaction => _isChangingReaction;
 
   ReactionViewModel(
     this._gettingVoteKeySigned,
@@ -36,6 +28,72 @@ class ReactionViewModel extends BaseViewModel {
     this._reactionManager,
     this._currentUserSyncStorage,
   );
+
+  factory ReactionViewModel.cached(ReactionCacheKey key) {
+    return Injector.appInstance
+        .get<ReactionViewModelFactory>()
+        .getViewModel(key);
+  }
+  bool get canAddReaction =>
+      ReactionType.values
+          .map((e) => getReactionCount(e))
+          .where((e) => e > 0)
+          .length <
+      ReactionType.values.length;
+
+  ReactionType? get currentReaction {
+    return _ratingList?.getReactionByUser(
+      _currentUserSyncStorage.currentUserData?.bitrixId ?? noID,
+    );
+  }
+
+  bool get isChangingReaction => _isChangingReaction;
+
+  bool get isLoading => _isLoading;
+
+  int get reactionCount => _ratingList?.getTotalNumberOfReactions() ?? 0;
+
+  Iterable<ReactionType> get reactionList =>
+      _ratingList?.ratingList.entries
+          .where((entry) => entry.value.isNotEmpty)
+          .map((e) => e.key) ??
+      [];
+
+  int getReactionCount(ReactionType reaction) {
+    return _ratingList?.getNumberOfReactions(reaction) ?? 0;
+  }
+
+  void init({String? voteKeySigned, int? postId, int? authorId}) {
+    _isLoading = true;
+    notifyListeners();
+    _loadData(voteKeySigned: voteKeySigned, postId: postId, authorId: authorId)
+        .whenComplete(() {
+      _isLoading = false;
+      notifyListeners();
+    });
+  }
+
+  void toggleLike() {
+    if (currentReaction != null) {
+      _setReaction(null);
+    } else {
+      _setReaction(ReactionType.like);
+    }
+    notifyListeners();
+  }
+
+  void toggleReaction(ReactionType reaction) async {
+    if (_isChangingReaction) {
+      return;
+    }
+    final currentReaction = this.currentReaction;
+
+    // Убираем реакцию и ставим новую, если она не та же, что была
+    await _setReaction(null);
+    if (currentReaction != reaction) {
+      await _setReaction(reaction);
+    }
+  }
 
   Future<void> _loadData({
     String? voteKeySigned,
@@ -55,16 +113,6 @@ class ReactionViewModel extends BaseViewModel {
     _ratingList = await _gettingRatingList.getRatingList(
       voteKeySigned: _voteKeySigned!,
     );
-  }
-
-  ReactionType? get currentReaction {
-    return _ratingList?.getReactionByUser(
-      _currentUserSyncStorage.currentUserData?.bitrixId ?? noID,
-    );
-  }
-
-  int getReactionCount(ReactionType reaction) {
-    return _ratingList?.getNumberOfReactions(reaction) ?? 0;
   }
 
   Future<void> _setReaction(ReactionType? reaction) async {
@@ -124,52 +172,5 @@ class ReactionViewModel extends BaseViewModel {
       _isChangingReaction = false;
       notifyListeners();
     }
-  }
-
-  void toggleReaction(ReactionType reaction) async {
-    if (_isChangingReaction) {
-      return;
-    }
-    final currentReaction = this.currentReaction;
-
-    // Убираем реакцию и ставим новую, если она не та же, что была
-    await _setReaction(null);
-    if (currentReaction != reaction) {
-      await _setReaction(reaction);
-    }
-  }
-
-  void toggleLike() {
-    if (currentReaction != null) {
-      _setReaction(null);
-    } else {
-      _setReaction(ReactionType.like);
-    }
-    notifyListeners();
-  }
-
-  int get reactionCount => _ratingList?.getTotalNumberOfReactions() ?? 0;
-
-  bool get canAddReaction =>
-      ReactionType.values
-          .map((e) => getReactionCount(e))
-          .where((e) => e > 0)
-          .length <
-      ReactionType.values.length;
-
-  Iterable<ReactionType> get reactionList =>
-      _ratingList?.ratingList.entries
-          .where((entry) => entry.value.isNotEmpty)
-          .map((e) => e.key) ??
-      [];
-
-  void init({String? voteKeySigned, int? postId, int? authorId}) {
-    _isLoading = true;
-    notifyListeners();
-    _loadData(voteKeySigned: voteKeySigned, postId: postId, authorId: authorId)
-        .whenComplete(() {
-      _isLoading = false;
-      notifyListeners();
-    });
   }
 }

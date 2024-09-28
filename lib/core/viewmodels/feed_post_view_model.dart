@@ -12,64 +12,48 @@ import 'package:unn_mobile/core/viewmodels/profile_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/reaction_view_model.dart';
 
 class FeedPostViewModel extends BaseViewModel {
-  factory FeedPostViewModel.cached(FeedPostCacheKey key) {
-    return Injector.appInstance
-        .get<FeedPostViewModelFactory>()
-        .getViewModel(key);
-  }
-
   final GettingBlogPosts _gettingBlogPosts;
+
   final LoggerService _loggerService;
   final LastFeedLoadDateTimeProvider _lastFeedLoadDateTimeProvider;
-
   final HtmlUnescape _unescaper = HtmlUnescape();
 
   final onError = Event();
 
   late BlogData blogData;
 
-  int get authorId => blogData.bitrixID;
+  late ProfileViewModel _profileViewModel;
 
-  String get postText => _unescaper.convert(blogData.detailText.trim());
+  late ReactionViewModel _reactionViewModel;
 
-  int get filesCount => blogData.files?.length ?? 0;
+  final List<AttachedFileViewModel> attachedFileViewModels = [];
 
   FeedPostViewModel(
     this._gettingBlogPosts,
     this._loggerService,
     this._lastFeedLoadDateTimeProvider,
   );
+  factory FeedPostViewModel.cached(FeedPostCacheKey key) {
+    return Injector.appInstance
+        .get<FeedPostViewModelFactory>()
+        .getViewModel(key);
+  }
 
-  DateTime get postTime => blogData.datePublish;
-
-  late ProfileViewModel _profileViewModel;
-  ProfileViewModel get profileViewModel => _profileViewModel;
-
-  late ReactionViewModel _reactionViewModel;
-  ReactionViewModel get reactionViewModel => _reactionViewModel;
-
-  final List<AttachedFileViewModel> attachedFileViewModels = [];
+  int get authorId => blogData.bitrixID;
 
   int get commentsCount => blogData.numberOfComments;
+  int get filesCount => blogData.files?.length ?? 0;
 
   bool get isNewPost =>
       _lastFeedLoadDateTimeProvider.lastFeedLoadDateTime?.isBefore(postTime) ??
       false;
+  String get postText => _unescaper.convert(blogData.detailText.trim());
 
-  Future<void> refresh() async {
-    await _gettingBlogPosts.getBlogPosts(postId: blogData.id).then(
-      (value) {
-        if (value == null || value.isEmpty) {
-          onError.broadcast();
-          return;
-        }
-        init(value.first);
-      },
-    ).catchError((error, stack) {
-      _loggerService.logError(error, stack);
-      onError.broadcast();
-    });
-  }
+  DateTime get postTime => blogData.datePublish;
+
+  ProfileViewModel get profileViewModel => _profileViewModel;
+
+  ReactionViewModel get reactionViewModel => _reactionViewModel;
 
   void init(BlogData blogData) {
     this.blogData = blogData;
@@ -84,5 +68,20 @@ class FeedPostViewModel extends BaseViewModel {
           [],
     );
     notifyListeners();
+  }
+
+  Future<void> refresh() async {
+    await _gettingBlogPosts.getBlogPosts(postId: blogData.id).then(
+      (value) {
+        if (value == null || value.isEmpty) {
+          onError.broadcast();
+          return;
+        }
+        init(value.first);
+      },
+    ).catchError((error, stack) {
+      _loggerService.logError(error, stack);
+      onError.broadcast();
+    });
   }
 }

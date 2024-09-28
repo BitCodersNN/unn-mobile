@@ -13,43 +13,31 @@ class FeedScreenViewModel extends BaseViewModel {
 
   void Function()? scrollToTop;
 
+  final List<FeedPostViewModel> posts = [];
+
+  bool _loadingPosts = false;
+
+  int _lastLoadedPost = 0;
+
+  bool _isUpdatingFeed = false;
+
   FeedScreenViewModel(
     this._feedStreamUpdater,
     this._lastFeedLoadDateTimeProvider,
   );
 
-  final List<FeedPostViewModel> posts = [];
-
-  bool _loadingPosts = false;
-
   bool get loadingPosts => _loadingPosts;
-
-  int _lastLoadedPost = 0;
-
   bool get showSyncFeedButton => _showUpdateButton;
+
   set showSyncFeedButton(bool value) {
     _showUpdateButton = value;
     notifyListeners();
   }
 
-  bool _isUpdatingFeed = false;
-
-  void init({void Function()? scrollToTop}) {
-    this.scrollToTop = scrollToTop;
-    syncFeed();
-    _feedStreamUpdater.addListener(onFeedUpdated);
-  }
-
-  void onFeedUpdated() {
-    if (posts.isEmpty) {
-      syncFeed();
-      return;
-    }
-    if (_feedStreamUpdater.feedPosts.firstOrNull !=
-        posts.firstOrNull?.blogData) {
-      showSyncFeedButton = true;
-    }
-    notifyListeners();
+  @override
+  void dispose() {
+    _feedStreamUpdater.removeListener(onFeedUpdated);
+    super.dispose();
   }
 
   void getMorePosts() {
@@ -94,6 +82,24 @@ class FeedScreenViewModel extends BaseViewModel {
     notifyListeners();
   }
 
+  void init({void Function()? scrollToTop}) {
+    this.scrollToTop = scrollToTop;
+    syncFeed();
+    _feedStreamUpdater.addListener(onFeedUpdated);
+  }
+
+  void onFeedUpdated() {
+    if (posts.isEmpty) {
+      syncFeed();
+      return;
+    }
+    if (_feedStreamUpdater.feedPosts.firstOrNull !=
+        posts.firstOrNull?.blogData) {
+      showSyncFeedButton = true;
+    }
+    notifyListeners();
+  }
+
   /// Синхронизирует посты в вьюмодели с сервисом
   void syncFeed() {
     _lastLoadedPost = 0;
@@ -126,11 +132,5 @@ class FeedScreenViewModel extends BaseViewModel {
       _loadingPosts = false;
       notifyListeners();
     });
-  }
-
-  @override
-  void dispose() {
-    _feedStreamUpdater.removeListener(onFeedUpdated);
-    super.dispose();
   }
 }
