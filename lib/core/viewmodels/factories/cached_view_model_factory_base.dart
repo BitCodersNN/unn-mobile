@@ -14,7 +14,7 @@ abstract class CachedViewModelFactoryBase<TKey,
       Injector.appInstance.get<T>(dependencyName: dependencyName);
 
   TViewModel getViewModel(TKey key) {
-    var viewmodel = _cache.get(key);
+    TViewModel? viewmodel = _cache.get(key);
     viewmodel ??= createViewModel(key);
     _cache.save(key, viewmodel);
     return viewmodel;
