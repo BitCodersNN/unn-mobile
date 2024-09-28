@@ -13,10 +13,12 @@ import 'package:unn_mobile/core/viewmodels/reaction_view_model.dart';
 
 class FeedPostViewModel extends BaseViewModel {
   final GettingBlogPosts _gettingBlogPosts;
-
   final LoggerService _loggerService;
   final LastFeedLoadDateTimeProvider _lastFeedLoadDateTimeProvider;
+
   final HtmlUnescape _unescaper = HtmlUnescape();
+
+  final List<AttachedFileViewModel> attachedFileViewModels = [];
 
   final onError = Event();
 
@@ -25,8 +27,6 @@ class FeedPostViewModel extends BaseViewModel {
   late ProfileViewModel _profileViewModel;
 
   late ReactionViewModel _reactionViewModel;
-
-  final List<AttachedFileViewModel> attachedFileViewModels = [];
 
   FeedPostViewModel(
     this._gettingBlogPosts,
@@ -42,11 +42,13 @@ class FeedPostViewModel extends BaseViewModel {
   int get authorId => blogData.bitrixID;
 
   int get commentsCount => blogData.numberOfComments;
+
   int get filesCount => blogData.files?.length ?? 0;
 
   bool get isNewPost =>
       _lastFeedLoadDateTimeProvider.lastFeedLoadDateTime?.isBefore(postTime) ??
       false;
+
   String get postText => _unescaper.convert(blogData.detailText.trim());
 
   DateTime get postTime => blogData.datePublish;

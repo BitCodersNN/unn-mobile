@@ -15,6 +15,7 @@ class ProfileViewModel extends BaseViewModel {
   bool _isLoading = false;
 
   bool _hasError = false;
+
   UserData? _loadedData;
 
   ProfileViewModel(

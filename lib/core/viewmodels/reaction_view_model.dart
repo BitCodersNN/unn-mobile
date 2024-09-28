@@ -34,6 +34,7 @@ class ReactionViewModel extends BaseViewModel {
         .get<ReactionViewModelFactory>()
         .getViewModel(key);
   }
+
   bool get canAddReaction =>
       ReactionType.values
           .map((e) => getReactionCount(e))

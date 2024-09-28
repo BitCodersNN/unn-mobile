@@ -9,11 +9,11 @@ class FeedScreenViewModel extends BaseViewModel {
   final FeedUpdaterService _feedStreamUpdater;
   final LastFeedLoadDateTimeProvider _lastFeedLoadDateTimeProvider;
 
+  final List<FeedPostViewModel> posts = [];
+
   bool _showUpdateButton = false;
 
   void Function()? scrollToTop;
-
-  final List<FeedPostViewModel> posts = [];
 
   bool _loadingPosts = false;
 
@@ -27,6 +27,7 @@ class FeedScreenViewModel extends BaseViewModel {
   );
 
   bool get loadingPosts => _loadingPosts;
+
   bool get showSyncFeedButton => _showUpdateButton;
 
   set showSyncFeedButton(bool value) {

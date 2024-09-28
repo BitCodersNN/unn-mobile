@@ -12,12 +12,14 @@ class FeedCommentViewModel extends BaseViewModel {
 
   final HtmlUnescape _unescaper = HtmlUnescape();
 
+  final List<AttachedFileViewModel> attachedFileViewModels = [];
+
   late BlogPostComment comment;
-  bool _renderMessage = false;
 
   late ReactionViewModel _reactionViewModel;
   late ProfileViewModel _profileViewModel;
-  final List<AttachedFileViewModel> attachedFileViewModels = [];
+
+  bool _renderMessage = false;
 
   FeedCommentViewModel();
   factory FeedCommentViewModel.cached(FeedCommentCacheKey key) {

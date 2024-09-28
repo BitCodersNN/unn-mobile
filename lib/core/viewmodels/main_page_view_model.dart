@@ -10,10 +10,13 @@ class MainPageViewModel extends BaseViewModel {
   final LoggerService _loggerService;
   final GettingProfileOfCurrentUser _gettingCurrentUser;
   final CurrentUserSyncStorage _currentUserSyncStorage;
+
   String _userNameAndSurname = '';
   String _userGroup = '';
 
   ImageProvider<Object>? _userAvatar;
+
+  String? _avatarUrl;
 
   MainPageViewModel(
     this._gettingCurrentUser,
@@ -22,10 +25,9 @@ class MainPageViewModel extends BaseViewModel {
   );
 
   String? get avatarUrl => _avatarUrl;
-  String? _avatarUrl;
   ImageProvider<Object>? get userAvatar => _userAvatar;
-  String get userNameAndSurname => _userNameAndSurname;
   String get userGroup => _userGroup;
+  String get userNameAndSurname => _userNameAndSurname;
 
   void init() {
     setState(ViewState.busy);

@@ -6,12 +6,12 @@ import 'package:unn_mobile/core/viewmodels/feed_post_view_model.dart';
 class CommentsPageViewModel extends BaseViewModel {
   final GettingBlogPostComments _gettingBlogPostCommentsService;
 
+  final List<FeedCommentViewModel> commentViewmodels = [];
+
   FeedPostViewModel? post;
 
   int loadedPage = 1;
   int totalPages = 1;
-
-  final List<FeedCommentViewModel> commentViewmodels = [];
 
   CommentsPageViewModel(
     this._gettingBlogPostCommentsService,

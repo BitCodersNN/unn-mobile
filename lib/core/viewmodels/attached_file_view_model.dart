@@ -30,6 +30,7 @@ class AttachedFileViewModel extends BaseViewModel {
 
   /// Глобальный набор файлов, которые сейчас грузятся
   static final Map<int, Future<File?>> _pendingFileDownloads = {};
+
   final GettingFileData _fileDataService;
   final LoggerService _loggerService;
   final FileDownloaderService _fileDownloaderService;
@@ -42,7 +43,6 @@ class AttachedFileViewModel extends BaseViewModel {
 
   bool _isLoadingData = false;
   bool _hasError = false;
-
   String? _error;
 
   AttachedFileViewModel(
@@ -78,6 +78,7 @@ class AttachedFileViewModel extends BaseViewModel {
   AttachedFileType get fileType =>
       _fileTypes[path.extension(_loadedData?.name ?? '')] ??
       AttachedFileType.unknown;
+
   bool get hasError => _hasError;
 
   /// Статус скачивания файла
