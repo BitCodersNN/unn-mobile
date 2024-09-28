@@ -8,7 +8,7 @@ import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/factories/reaction_view_model_factory.dart';
 
 class ReactionViewModel extends BaseViewModel {
-  static const noID = -1;
+  static const noId = -1;
 
   final GettingVoteKeySigned _gettingVoteKeySigned;
   final GettingRatingList _gettingRatingList;
@@ -43,7 +43,7 @@ class ReactionViewModel extends BaseViewModel {
 
   ReactionType? get currentReaction {
     return _ratingList?.getReactionByUser(
-      _currentUserSyncStorage.currentUserData?.bitrixId ?? noID,
+      _currentUserSyncStorage.currentUserData?.bitrixId ?? noId,
     );
   }
 
