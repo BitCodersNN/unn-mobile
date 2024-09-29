@@ -180,7 +180,7 @@ class GettingRatingListImpl implements GettingRatingList {
       return null;
     }
 
-    final futures = <Future>[];
+    final futures = <Future<RatingList?>>[];
 
     numbersOfReactions.forEach((key, value) {
       for (var pageNumber = 1;
@@ -200,7 +200,7 @@ class GettingRatingListImpl implements GettingRatingList {
 
     final combinedList = RatingList();
     for (final ratingList in ratingLists) {
-      ratingList.ratingList.forEach(
+      ratingList?.ratingList.forEach(
         (key, value) => combinedList.addReactions(key, value),
       );
     }

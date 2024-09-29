@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/foundation.dart';
 import 'package:unn_mobile/core/constants/api_url_strings.dart';
@@ -60,6 +62,12 @@ class AuthorizationServiceImpl extends ChangeNotifier
     } on TimeoutException {
       _onlineStatus.isOnline = false;
       return AuthRequestResult.noInternet;
+    } on SocketException catch (e) {
+      if (e.osError?.errorCode == 104) {
+        _onlineStatus.isOnline = false;
+        return AuthRequestResult.noInternet;
+      }
+      rethrow;
     } on Exception catch (_) {
       rethrow;
     }
@@ -109,6 +117,7 @@ class AuthorizationServiceImpl extends ChangeNotifier
   }
 
   Future<bool> _isOffline() async {
-    return await Connectivity().checkConnectivity() == ConnectivityResult.none;
+    return (await Connectivity().checkConnectivity())
+        .contains(ConnectivityResult.none);
   }
 }

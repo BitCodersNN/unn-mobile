@@ -3,7 +3,7 @@ import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/misc/current_user_sync_storage.dart';
 import 'package:unn_mobile/core/models/employee_data.dart';
 import 'package:unn_mobile/core/models/schedule_filter.dart';
-import 'package:unn_mobile/ui/builders/online_status_stream_builder.dart';
+import 'package:unn_mobile/ui/builders/online_status_builder.dart';
 import 'package:unn_mobile/ui/views/main_page/main_page_tab_state.dart';
 import 'package:unn_mobile/ui/views/main_page/schedule/widgets/schedule_tab.dart';
 
@@ -54,7 +54,7 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView>
               )
             : null,
       ),
-      body: OnlineStatusStreamBuilder(
+      body: OnlineStatusBuilder(
         onlineWidget: Column(
           children: [
             MediaQuery.withClampedTextScaling(
