@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:injector/injector.dart';
@@ -382,6 +383,7 @@ class AuthPageWithState extends State<AuthPage> {
         .then((isLoginSuccess) {
       if (isLoginSuccess) {
         if (context.mounted) {
+          TextInput.finishAutofillContext(shouldSave: true);
           GoRouter.of(context).go(loadingPageRoute);
         }
       }

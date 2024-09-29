@@ -10,7 +10,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  flutter_secure_storage: ^9.0.0
+  flutter_secure_storage: ^9.2.2
   http: ^1.1.0
   injector: ^4.0.0
   provider: ^6.0.5
