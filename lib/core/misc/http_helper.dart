@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:unn_mobile/core/constants/api_url_strings.dart';
 
 class HttpRequestSender {
-  static const maxTimeout = 4;
+  static const maxTimeout = 10;
   final String _path;
   final String _host;
   final Map<String, dynamic> _queryParams;

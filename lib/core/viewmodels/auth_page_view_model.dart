@@ -12,16 +12,16 @@ class AuthPageViewModel extends BaseViewModel {
 
   bool _hasAuthError = false;
 
+  String _authErrorText = '';
+
   AuthPageViewModel(
     this._authDataProvider,
     this._authorisationService,
     this._loggerService,
   );
 
-  bool get hasAuthError => _hasAuthError;
-
-  String _authErrorText = '';
   String get authErrorText => _authErrorText;
+  bool get hasAuthError => _hasAuthError;
 
   Future<bool> login(String user, String password) async {
     setState(ViewState.busy);
@@ -47,13 +47,13 @@ class AuthPageViewModel extends BaseViewModel {
     return authResult == AuthRequestResult.success;
   }
 
-  void _setAuthError({String text = 'Неизвестная ошибка'}) {
-    _hasAuthError = true;
-    _authErrorText = text;
-  }
-
   void _resetAuthError() {
     _hasAuthError = false;
     _authErrorText = '';
+  }
+
+  void _setAuthError({String text = 'Неизвестная ошибка'}) {
+    _hasAuthError = true;
+    _authErrorText = text;
   }
 }

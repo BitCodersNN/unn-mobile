@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:flutter/material.dart';
 import 'package:unn_mobile/core/constants/api_url_strings.dart';
 import 'package:unn_mobile/core/constants/session_identifier_strings.dart';
 import 'package:unn_mobile/core/misc/custom_errors/auth_errors.dart';
@@ -8,7 +9,8 @@ import 'package:unn_mobile/core/misc/http_helper.dart';
 import 'package:unn_mobile/core/models/online_status_data.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
 
-class LegacyAuthorizationServiceImpl implements AuthorizationService {
+class LegacyAuthorizationServiceImpl extends ChangeNotifier
+    implements AuthorizationService {
   final OnlineStatusData _onlineStatus;
   String? _sessionId;
   String? _csrf;
@@ -123,7 +125,8 @@ class LegacyAuthorizationServiceImpl implements AuthorizationService {
   }
 
   Future<bool> _isOffline() async {
-    return await Connectivity().checkConnectivity() == ConnectivityResult.none;
+    return (await Connectivity().checkConnectivity())
+        .contains(ConnectivityResult.none);
   }
 
   @override

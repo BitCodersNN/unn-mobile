@@ -7,12 +7,12 @@ class SpoilerDisplay extends StatefulWidget {
   final bool selectable;
 
   const SpoilerDisplay({
-    Key? key,
+    super.key,
     required this.spoilerText,
     required this.content,
     this.elevation = 2,
     this.selectable = true,
-  }) : super(key: key);
+  });
 
   @override
   State<SpoilerDisplay> createState() => _SpoilerDisplayState();

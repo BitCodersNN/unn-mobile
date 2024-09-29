@@ -410,7 +410,7 @@ class ScheduleTabState extends State<ScheduleTab>
                           )
                         : null,
                     child: Text(
-                      formatedDate!,
+                      formatedDate,
                       textAlign: TextAlign.left,
                       style: theme.textTheme.titleLarge!.copyWith(),
                     ),
