@@ -10,6 +10,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  webview_flutter: ^4.9.0
   flutter_secure_storage: ^9.0.0
   http: ^1.1.0
   injector: ^3.0.0
@@ -60,6 +61,8 @@ flutter:
     - assets/images/authors/
     - assets/images/reactions/
     - assets/ca/
+    - assets/html/donation.html
+    
 
 
   fonts:
