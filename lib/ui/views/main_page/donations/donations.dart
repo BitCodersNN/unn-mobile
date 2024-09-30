@@ -37,7 +37,8 @@ class _DonationsScreenViewState extends State<DonationsScreenView> {
           : WebViewWidget(
               controller: controller
                 ..loadHtmlString(htmlContent)
-                ..setBackgroundColor(const Color(0xFFF9FAFF))),
+                ..setBackgroundColor(const Color(0xFFF9FAFF)),
+            ),
     );
   }
 }
