@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:unn_mobile/core/models/employee_data.dart';
 import 'package:unn_mobile/core/models/student_data.dart';
+import 'package:unn_mobile/core/models/user_data.dart';
 import 'package:unn_mobile/ui/views/main_page/about/about.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/feed.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/widgets/comments_page.dart';
@@ -42,6 +43,7 @@ class MainPageRouting {
       userTypes: [
         StudentData,
         EmployeeData,
+        UserData,
       ],
       subroutes: [
         MainPageRouteData(
@@ -51,7 +53,7 @@ class MainPageRouting {
           'comments',
           builder: (p0) => const CommentsPage(),
           isDisabled: false,
-          userTypes: [StudentData, EmployeeData],
+          userTypes: [StudentData, EmployeeData, UserData],
         ),
       ],
     ),
@@ -61,7 +63,7 @@ class MainPageRouting {
       'Расписание',
       '/schedule',
       builder: (p0) => const ScheduleScreenView(),
-      userTypes: [StudentData, EmployeeData],
+      userTypes: [StudentData, EmployeeData, UserData],
     ),
     MainPageRouteData(
       Icons.map,
@@ -70,7 +72,7 @@ class MainPageRouting {
       '/map',
       builder: (p0) => const Placeholder(),
       isDisabled: true,
-      userTypes: [StudentData, EmployeeData],
+      userTypes: [StudentData, EmployeeData, UserData],
     ),
     MainPageRouteData(
       Icons.menu_book,
@@ -79,7 +81,7 @@ class MainPageRouting {
       '/source',
       builder: (p0) => const Placeholder(),
       isDisabled: true,
-      userTypes: [StudentData, EmployeeData],
+      userTypes: [StudentData, EmployeeData, UserData],
     ),
   ];
 
@@ -98,7 +100,7 @@ class MainPageRouting {
       'Справки онлайн',
       'online_certificates',
       builder: (p0) => const OnlineCertificatesScreenView(),
-      userTypes: [StudentData],
+      userTypes: [],
     ),
     MainPageRouteData(
       Icons.settings,
@@ -117,4 +119,8 @@ class MainPageRouting {
       userTypes: [StudentData, EmployeeData],
     ),
   ];
+  static final List<MainPageRouteData> _activeNavbarRoutes =
+      navbarRoutes.where((e) => e.isDisabled == false).toList();
+
+  static List<MainPageRouteData> get activeNavbarRoutes => _activeNavbarRoutes;
 }

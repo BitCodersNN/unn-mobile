@@ -8,12 +8,16 @@ import 'package:flutter/services.dart';
 import 'package:injector/injector.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:unn_mobile/app.dart';
+import 'package:unn_mobile/core/misc/app_settings.dart';
 import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 import 'package:unn_mobile/firebase_options.dart';
 import 'package:unn_mobile/load_services.dart';
 
 void main() async {
   registerDependencies();
+
+  await AppSettings.load();
+
   WidgetsFlutterBinding.ensureInitialized();
 
   final certificate = await PlatformAssetBundle().load('assets/ca/unn-ru.pem');
