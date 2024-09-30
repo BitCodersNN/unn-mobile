@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:unn_mobile/core/models/employee_data.dart';
 import 'package:unn_mobile/core/models/student_data.dart';
+import 'package:unn_mobile/core/models/user_data.dart';
 import 'package:unn_mobile/ui/views/main_page/about/about.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/feed.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/widgets/comments_page.dart';
@@ -115,7 +116,7 @@ class MainPageRouting {
       'Поддержать',
       'donations',
       builder: (p0) => const DonationsScreenView(),
-      userTypes: [StudentData, EmployeeData],
+      userTypes: [StudentData, EmployeeData, UserData],
     ),
     MainPageRouteData(
       Icons.info,
