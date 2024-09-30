@@ -147,7 +147,7 @@ class FeedStreamUpdaterServiceImpl
         );
       }
 
-      for (final fileId in post.files ?? []) {
+      for (final fileId in post.filesIds ?? []) {
         futures.add(_gettingFileData.getFileData(id: int.parse(fileId)));
       }
 
@@ -169,7 +169,7 @@ class FeedStreamUpdaterServiceImpl
 
       final startPosFilesInData = postAuthor == null ? 1 : 0;
       final posRatingListInData =
-          startPosFilesInData + (post.files ?? []).length;
+          startPosFilesInData + (post.filesIds ?? []).length;
       postAuthor ??= data.first;
 
       if (postAuthor == null) {

@@ -5,6 +5,9 @@ import 'package:unn_mobile/core/constants/api_url_strings.dart';
 import 'package:unn_mobile/core/constants/session_identifier_strings.dart';
 import 'package:unn_mobile/core/misc/http_helper.dart';
 import 'package:unn_mobile/core/models/blog_data.dart';
+import 'package:unn_mobile/core/models/file_data.dart';
+import 'package:unn_mobile/core/models/rating_list.dart';
+import 'package:unn_mobile/core/models/user_data.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/blog_posts.dart';
 import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
@@ -19,7 +22,10 @@ class BlogPostsServiceImpl implements BlogPostsService {
   );
 
   @override
-  Future<List<BlogData>?> getBlogPosts({int? pageNumber, int perpage = 50}) async {
+  Future<List<BlogData>?> getBlogPosts({
+    int? pageNumber,
+    int perpage = 50,
+  }) async {
     final requestSender = HttpRequestSender(
       path: ApiPaths.blogPostWithLoadedInfo,
       queryParams: {
@@ -48,11 +54,12 @@ class BlogPostsServiceImpl implements BlogPostsService {
       );
       return null;
     }
-    
+
     List<dynamic> jsonList;
-    
+
     try {
-      jsonList = jsonDecode(await HttpRequestSender.responseToStringBody(response));
+      jsonList =
+          jsonDecode(await HttpRequestSender.responseToStringBody(response));
     } catch (error, stackTrace) {
       _loggerService.logError(error, stackTrace);
       return null;
@@ -60,16 +67,18 @@ class BlogPostsServiceImpl implements BlogPostsService {
 
     final blogPosts = _parseBlogPostsFromJsonList(jsonList);
 
-
     return blogPosts;
   }
 
   List<BlogData>? _parseBlogPostsFromJsonList(List<dynamic> jsonList) {
     List<BlogData>? blogPosts;
     try {
-      blogPosts = jsonList
-          .map<BlogData>((blogPostJson) => BlogData.fromJsonAlt(blogPostJson))
-          .toList();
+      blogPosts = jsonList.map<BlogData>((jsonMap) {
+        Map<String, dynamic> blogPost;
+        final blogData = BlogData.fromJsonPortal2(jsonMap);
+        final blogRatingList = RatingList.fromJsonPortal2(jsonMap['reaction']);        
+        return blogData;
+      }).toList();
     } catch (error, stackTrace) {
       _loggerService.logError(error, stackTrace);
     }

@@ -15,13 +15,13 @@ class BlogData {
   String? keySigned;
 
   final int _id;
-  final int _blogId;
+  final int? _blogId;
   final int _bitrixID;
   final String _title;
   final String _detailText;
   final DateTime _datePublish;
   final int _numberOfComments;
-  final List<String>? _files;
+  final List<String>? _fileIds;
   final int? _pinnedid;
   BlogData(
     this._id,
@@ -31,19 +31,19 @@ class BlogData {
     this._detailText,
     this._datePublish,
     this._numberOfComments,
-    this._files, [
+    this._fileIds, [
     this._pinnedid,
     this.keySigned,
   ]);
 
   int get id => _id;
-  int get blogId => _blogId;
+  int? get blogId => _blogId;
   int get bitrixID => _bitrixID;
   String get title => _title;
   String get detailText => _detailText;
   DateTime get datePublish => _datePublish;
   int get numberOfComments => _numberOfComments;
-  List<String>? get files => _files;
+  List<String>? get filesIds => _fileIds;
   int? get pinnedid => _pinnedid;
 
   factory BlogData.fromJson(Map<String, Object?> jsonMap) => BlogData(
@@ -61,11 +61,11 @@ class BlogData {
             .toList(),
       );
 
-  factory BlogData.fromJsonAlt(Map<String, Object?> jsonMap) => BlogData(
+  factory BlogData.fromJsonPortal2(Map<String, Object?> jsonMap) => BlogData(
         int.parse(
           jsonMap[_KeysForBlogDataJsonConverter.id.toLowerCase()] as String,
         ),
-        int.parse(jsonMap['id'] as String),
+        null,
         int.parse((jsonMap['author'] as Map<String, Object?>)['id'] as String),
         jsonMap[_KeysForBlogDataJsonConverter.title.toLowerCase()] as String,
         jsonMap['fulltext'] as String,
@@ -88,7 +88,7 @@ class BlogData {
         _KeysForBlogDataJsonConverter.detailText: detailText,
         _KeysForBlogDataJsonConverter.datePublish: _datePublish.toString(),
         _KeysForBlogDataJsonConverter.numComments: _numberOfComments,
-        _KeysForBlogDataJsonConverter.files: files,
+        _KeysForBlogDataJsonConverter.files: filesIds,
       };
 
   static DateTime _parseCustomDateTime(String input) {
