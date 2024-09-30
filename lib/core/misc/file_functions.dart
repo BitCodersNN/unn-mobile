@@ -29,7 +29,7 @@ Future<void> clearCacheFolder() async {
   }
   final directory = Directory(cachePath);
   final entities = directory.listSync();
-  
+
   await Future.forEach(entities, (entity) async {
     if (entity.path.endsWith(projectName)) {
       return;
