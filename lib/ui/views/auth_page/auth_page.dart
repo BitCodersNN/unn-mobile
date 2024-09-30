@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:injector/injector.dart';
@@ -13,7 +14,6 @@ import 'package:unn_mobile/ui/widgets/dialogs/changelog_dialog.dart';
 import 'package:unn_mobile/ui/widgets/text_field_with_shadow.dart';
 
 const _accentColor = Color(0xFF1A63B7);
-const _buttonTapColor = Colors.lightBlueAccent;
 
 class AuthPage extends StatefulWidget {
   const AuthPage({super.key});
@@ -198,10 +198,12 @@ class AuthPageWithState extends State<AuthPage> {
     BuildContext context, {
     List<Widget> elements = const [],
   }) {
-    final columnForm = Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: elements,
+    final columnForm = AutofillGroup(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: elements,
+      ),
     );
 
     return Container(
@@ -220,9 +222,9 @@ class AuthPageWithState extends State<AuthPage> {
         ),
         boxShadow: [
           BoxShadow(
-            offset: const Offset(0, -1),
+            offset: const Offset(0, 0),
             blurRadius: 10,
-            color: Colors.black.withOpacity(0.3),
+            color: const Color(0xFF29293F).withOpacity(0.2),
           ),
         ],
       ),
@@ -235,6 +237,7 @@ class AuthPageWithState extends State<AuthPage> {
       labelText: 'Логин',
       errorText: _validateInputOrElseReturnError(_InputType.login),
       textEditingController: _loginTextController,
+      autofillHints: [AutofillHints.username],
     );
   }
 
@@ -244,6 +247,7 @@ class AuthPageWithState extends State<AuthPage> {
       labelText: 'Пароль',
       errorText: _validateInputOrElseReturnError(_InputType.password),
       textEditingController: _passwordTextController,
+      autofillHints: [AutofillHints.password],
     );
   }
 
@@ -252,6 +256,7 @@ class AuthPageWithState extends State<AuthPage> {
     required TextEditingController textEditingController,
     bool obscuredText = false,
     String? errorText,
+    Iterable<String>? autofillHints,
   }) {
     return Container(
       padding: const EdgeInsets.only(top: 30),
@@ -261,6 +266,7 @@ class AuthPageWithState extends State<AuthPage> {
         errorText: errorText,
         labelText: labelText,
         controller: textEditingController,
+        autofillHints: autofillHints,
       ),
     );
   }
@@ -296,24 +302,41 @@ class AuthPageWithState extends State<AuthPage> {
   ) {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.only(top: 50),
-        child: ElevatedButton(
-          onPressed: () => _loginButtonTapHandler(context, viewModel),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: _accentColor,
-            foregroundColor: _buttonTapColor,
-            minimumSize: const Size(300, 50),
+        padding: const EdgeInsets.only(top: 30),
+        child: Container(
+          width: double.infinity,
+          height: 56,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(50),
+            gradient: const LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                Color(0xFF1F70CD),
+                Color(0xFF185BA7),
+              ],
+            ),
           ),
-          child: viewModel.state == ViewState.busy
-              ? const CircularProgressIndicator(color: Colors.white)
-              : Text(
-                  'Войти',
-                  style: _baseTextStyle(
-                    textColor: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 15,
+          child: ElevatedButton(
+            onPressed: () => _loginButtonTapHandler(context, viewModel),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.transparent,
+              shadowColor: Colors.transparent,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(50),
+              ),
+            ),
+            child: viewModel.state == ViewState.busy
+                ? const CircularProgressIndicator(color: Colors.white)
+                : Text(
+                    'Войти',
+                    style: _baseTextStyle(
+                      textColor: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 17,
+                    ),
                   ),
-                ),
+          ),
         ),
       ),
     );
@@ -360,6 +383,7 @@ class AuthPageWithState extends State<AuthPage> {
         .then((isLoginSuccess) {
       if (isLoginSuccess) {
         if (context.mounted) {
+          TextInput.finishAutofillContext(shouldSave: true);
           GoRouter.of(context).go(loadingPageRoute);
         }
       }

@@ -8,16 +8,18 @@ class TextFieldWithBoxShadow extends StatelessWidget {
 
   final bool obscuredText;
   final bool enableSuggestions;
+  final Iterable<String>? autofillHints;
 
   const TextFieldWithBoxShadow({
-    Key? key,
+    super.key,
     this.errorText,
     this.labelText,
     this.controller,
     this.height = 40,
     this.obscuredText = false,
     this.enableSuggestions = false,
-  }) : super(key: key);
+    this.autofillHints,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -43,14 +45,14 @@ class TextFieldWithBoxShadow extends StatelessWidget {
               decoration: BoxDecoration(
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.12),
+                    color: Colors.black.withOpacity(0.07),
                     blurRadius: 8.35,
                     offset: const Offset(0, 3.13),
                   ),
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.04),
-                    blurRadius: 1.04,
-                    offset: const Offset(0, 3.13),
+                    color: Colors.black.withOpacity(0.03),
+                    blurRadius: 1,
+                    offset: const Offset(0, 2),
                   ),
                 ],
                 borderRadius: BorderRadius.circular(
@@ -62,6 +64,7 @@ class TextFieldWithBoxShadow extends StatelessWidget {
               // Add height of error message if it is displayed
               height: errorText != null ? height + heightErrorMessage : height,
               child: TextField(
+                autofillHints: autofillHints,
                 enableSuggestions: enableSuggestions,
                 obscureText: obscuredText,
                 decoration: InputDecoration(

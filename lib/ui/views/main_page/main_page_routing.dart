@@ -7,6 +7,7 @@ import 'package:unn_mobile/ui/views/main_page/feed/widgets/comments_page.dart';
 import 'package:unn_mobile/ui/views/main_page/grades/grades.dart';
 import 'package:unn_mobile/ui/views/main_page/schedule/schedule.dart';
 import 'package:unn_mobile/ui/views/main_page/settings/settings.dart';
+import 'package:unn_mobile/ui/views/main_page/certificates_online/certificates_online.dart';
 
 class MainPageRouteData {
   final IconData selectedIcon;
@@ -89,6 +90,14 @@ class MainPageRouting {
       'Зачётная книжка',
       'grades',
       builder: (p0) => const GradesScreenView(),
+      userTypes: [StudentData],
+    ),
+    MainPageRouteData(
+      Icons.description,
+      Icons.description_outlined,
+      'Справки онлайн',
+      'online_certificates',
+      builder: (p0) => const OnlineCertificatesScreenView(),
       userTypes: [StudentData],
     ),
     MainPageRouteData(
