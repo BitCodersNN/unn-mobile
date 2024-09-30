@@ -43,7 +43,7 @@ class FeedPostViewModel extends BaseViewModel {
 
   int get commentsCount => blogData.numberOfComments;
 
-  int get filesCount => blogData.files?.length ?? 0;
+  int get filesCount => blogData.filesIds?.length ?? 0;
 
   bool get isNewPost =>
       _lastFeedLoadDateTimeProvider.lastFeedLoadDateTime?.isBefore(postTime) ??
