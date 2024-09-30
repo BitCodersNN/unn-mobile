@@ -115,7 +115,7 @@ class MainPageRouting {
       'Поддержать',
       'donations',
       builder: (p0) => const DonationsScreenView(),
-      userTypes: [StudentData, EmployeeData],
+      userTypes: [StudentData, EmployeeData, UserData],
     ),
     MainPageRouteData(
       Icons.info,
