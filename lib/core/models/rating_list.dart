@@ -1,18 +1,12 @@
-class _KeysForUserInfoJsonConverter {
-  static const String id = 'USER_ID';
-  static const String fullname = 'FULL_NAME';
-  static const String photoSrc = 'PHOTO_SRC';
-}
+import 'package:unn_mobile/core/models/user_short_info.dart';
 
 class _KeysForUserInfoJsonConverterPortal2 {
   static const String users = 'users';
   static const String reaction = 'reaction';
-  static const String id = 'id';
-  static const String fullname = 'fio';
-  static const String photoSrc = 'avatar';
 }
 
 const String _reactionAssetsDirectory = 'assets/images/reactions';
+
 const Map<ReactionType, String> _reactionAssets = {
   ReactionType.like: '$_reactionAssetsDirectory/active_like.png',
   ReactionType.angry: '$_reactionAssetsDirectory/angry.png',
@@ -47,55 +41,19 @@ enum ReactionType {
   String get caption => _reactionNames[this]!;
 }
 
-class ReactionUserInfo {
-  final int _bitrixId;
-  final String _fullname;
-  final String? _photoSrc;
-
-  int get bitrixId => _bitrixId;
-  String get fullname => _fullname;
-  String? get photoSrc => _photoSrc;
-
-  ReactionUserInfo(
-    this._bitrixId,
-    this._fullname,
-    this._photoSrc,
-  );
-
-  factory ReactionUserInfo.fromJson(Map<String, Object?> jsonMap) =>
-      ReactionUserInfo(
-        int.parse(jsonMap[_KeysForUserInfoJsonConverter.id] as String),
-        jsonMap[_KeysForUserInfoJsonConverter.fullname] as String,
-        jsonMap[_KeysForUserInfoJsonConverter.photoSrc] as String?,
-      );
-
-  factory ReactionUserInfo.fromJsonPortal2(Map<String, Object?> jsonMap) =>
-      ReactionUserInfo(
-        jsonMap[_KeysForUserInfoJsonConverterPortal2.id] as int,
-        jsonMap[_KeysForUserInfoJsonConverterPortal2.fullname] as String,
-        jsonMap[_KeysForUserInfoJsonConverterPortal2.photoSrc] as String?,
-      );
-
-  Map<String, dynamic> toJson() => {
-        _KeysForUserInfoJsonConverter.id: _bitrixId,
-        _KeysForUserInfoJsonConverter.fullname: _fullname,
-        _KeysForUserInfoJsonConverter.photoSrc: _photoSrc,
-      };
-}
-
 class RatingList {
-  late Map<ReactionType, List<ReactionUserInfo>> _ratingList;
+  late Map<ReactionType, List<UserShortInfo>> _ratingList;
 
-  Map<ReactionType, List<ReactionUserInfo>> get ratingList => _ratingList;
+  Map<ReactionType, List<UserShortInfo>> get ratingList => _ratingList;
 
-  RatingList([Map<ReactionType, List<ReactionUserInfo>>? ratingList]) {
+  RatingList([Map<ReactionType, List<UserShortInfo>>? ratingList]) {
     ratingList ??= {};
     _ratingList = ratingList;
   }
 
   void addReactions(
     ReactionType reactionType,
-    List<ReactionUserInfo> userInfo,
+    List<UserShortInfo> userInfo,
   ) {
     final int initialSize = _ratingList.length;
     _ratingList.putIfAbsent(reactionType, () => userInfo);
@@ -129,12 +87,12 @@ class RatingList {
     return getTotalNumberOfReactions();
   }
 
-  List<ReactionUserInfo>? getUsers([ReactionType? reactionType]) {
+  List<UserShortInfo>? getUsers([ReactionType? reactionType]) {
     if (reactionType != null) {
       return _ratingList[reactionType];
     }
 
-    final List<ReactionUserInfo> users = [];
+    final List<UserShortInfo> users = [];
     for (final list in _ratingList.values) {
       users.addAll(list);
     }
@@ -143,32 +101,32 @@ class RatingList {
 
   ReactionType? getReactionByUser(int bitrixId) {
     final entry = _ratingList.entries.firstWhere(
-      (entry) => entry.value.any((user) => user._bitrixId == bitrixId),
+      (entry) => entry.value.any((user) => user.bitrixId == bitrixId),
       orElse: () => const MapEntry(ReactionType.like, []),
     );
 
     return entry.value.isNotEmpty ? entry.key : null;
   }
 
-  ReactionUserInfo? getReactionInfoByUser(int bitrixId) {
+  UserShortInfo? getReactionInfoByUser(int bitrixId) {
     final entry = _ratingList.entries.firstWhere(
-      (entry) => entry.value.any((user) => user._bitrixId == bitrixId),
+      (entry) => entry.value.any((user) => user.bitrixId == bitrixId),
       orElse: () => const MapEntry(ReactionType.like, []),
     );
     return entry.value.isNotEmpty
-        ? entry.value.firstWhere((element) => element._bitrixId == bitrixId)
+        ? entry.value.firstWhere((element) => element.bitrixId == bitrixId)
         : null;
   }
 
   factory RatingList.fromJson(Map<String, Object?> jsonMap) {
-    final Map<ReactionType, List<ReactionUserInfo>> ratingList = {};
+    final Map<ReactionType, List<UserShortInfo>> ratingList = {};
 
     jsonMap.forEach((key, value) {
       if (value is List) {
-        final List<ReactionUserInfo> userList = [];
+        final List<UserShortInfo> userList = [];
         for (final userJson in value) {
           if (userJson is Map<String, dynamic>) {
-            userList.add(ReactionUserInfo.fromJson(userJson));
+            userList.add(UserShortInfo.fromJson(userJson));
           }
         }
         ratingList[ReactionType.values.firstWhere((e) => e.toString() == key)] =
@@ -180,11 +138,11 @@ class RatingList {
   }
 
   factory RatingList.fromJsonPortal2(Map<String, Object?> jsonMap) {
-    final Map<ReactionType, List<ReactionUserInfo>> ratingList = {};
+    final Map<ReactionType, List<UserShortInfo>> ratingList = {};
     final usersList =
         jsonMap[_KeysForUserInfoJsonConverterPortal2.users] as List;
     for (final userMap in usersList) {
-      final userInfo = ReactionUserInfo.fromJsonPortal2(userMap);
+      final userInfo = UserShortInfo.fromJsonPortal2(userMap);
       final userReaction = ReactionType.values.firstWhere(
         (reaction) => reaction
             .toString()

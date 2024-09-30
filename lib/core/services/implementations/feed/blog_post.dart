@@ -5,9 +5,8 @@ import 'package:unn_mobile/core/constants/api_url_strings.dart';
 import 'package:unn_mobile/core/constants/session_identifier_strings.dart';
 import 'package:unn_mobile/core/misc/http_helper.dart';
 import 'package:unn_mobile/core/models/blog_data.dart';
-import 'package:unn_mobile/core/models/file_data.dart';
 import 'package:unn_mobile/core/models/rating_list.dart';
-import 'package:unn_mobile/core/models/user_data.dart';
+import 'package:unn_mobile/core/models/user_short_info.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/blog_posts.dart';
 import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
@@ -76,7 +75,8 @@ class BlogPostsServiceImpl implements BlogPostsService {
       blogPosts = jsonList.map<BlogData>((jsonMap) {
         Map<String, dynamic> blogPost;
         final blogData = BlogData.fromJsonPortal2(jsonMap);
-        final blogRatingList = RatingList.fromJsonPortal2(jsonMap['reaction']);        
+        final blogRatingList = RatingList.fromJsonPortal2(jsonMap['reaction']);
+        final blogUserShortInfo = UserShortInfo.fromJsonPortal2(jsonMap['author']);
         return blogData;
       }).toList();
     } catch (error, stackTrace) {

@@ -27,7 +27,8 @@ class GettingBlogPostsImpl implements GettingBlogPosts {
     int pageNumber = 0,
     int? postId,
   }) async {
-    await BlogPostsServiceImpl(_authorisationService, _loggerService).getBlogPosts();
+    await BlogPostsServiceImpl(_authorisationService, _loggerService)
+        .getBlogPosts();
 
     final requestSender = HttpRequestSender(
       path: ApiPaths.blogPostGet,

@@ -7,6 +7,7 @@ import 'package:unn_mobile/core/models/blog_post_comment.dart';
 import 'package:unn_mobile/core/models/file_data.dart';
 import 'package:unn_mobile/core/models/loaded_blog_post_comment.dart';
 import 'package:unn_mobile/core/models/rating_list.dart';
+import 'package:unn_mobile/core/models/user_short_info.dart';
 import 'package:unn_mobile/core/services/interfaces/blog_comment_data_loader.dart';
 import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 import 'package:unn_mobile/core/services/interfaces/reaction_manager.dart';
@@ -93,7 +94,7 @@ class FeedCommentViewModel extends BaseViewModel {
         // Добавляем временно, чтобы сразу показать действие
         _loadedComment?.ratingList?.addReactions(
           reaction,
-          [ReactionUserInfo(profileId, '', '')],
+          [UserShortInfo(profileId, '', '')],
         );
         notifyListeners();
         final reactionUserInfo = await _reactionManager.addReaction(

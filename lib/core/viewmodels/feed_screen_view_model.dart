@@ -1,6 +1,7 @@
 import 'package:unn_mobile/core/misc/current_user_sync_storage.dart';
 import 'package:unn_mobile/core/models/post_with_loaded_info.dart';
 import 'package:unn_mobile/core/models/rating_list.dart';
+import 'package:unn_mobile/core/models/user_short_info.dart';
 import 'package:unn_mobile/core/services/interfaces/feed_stream_updater_service.dart';
 import 'package:unn_mobile/core/services/interfaces/reaction_manager.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
@@ -81,7 +82,7 @@ class FeedScreenViewModel extends BaseViewModel {
       pendingReactionChanges.add(post.post.id);
       // Добавляем временно, чтобы сразу показать действие
       post.ratingList
-          .addReactions(reaction, [ReactionUserInfo(profileId, '', '')]);
+          .addReactions(reaction, [UserShortInfo(profileId, '', '')]);
       super.notifyListeners();
       final reactionUserInfo =
           await _reactionManager.addReaction(reaction, post.post.keySigned!);
