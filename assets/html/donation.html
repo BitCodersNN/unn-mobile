@@ -17,24 +17,16 @@
             margin-right: 3vw;
         }
 
-        .d_button {
-            width: 100%;
-            padding: 0 3vw;
-            box-sizing: border-box;
-        }
-
-        .d_button iframe {
-            width: 100%;
-            height: 60px;
-            max-width: 100%;
-        }
-
         .custom-button {
-            margin-left: 2.5vw;
-            margin-right: 2.5vw;
-            max-width: 95vw;
-            zoom: 135%;
-            margin-top: 2vw;
+            margin: 0 auto;
+            padding: 1vw;
+            box-sizing: border-box;
+            width: 98%;
+            margin-bottom: 3vw;
+            display: flex;
+
+            margin-right: 3vw;
+            overflow-x: hidden;
         }
 
         h2 {
@@ -62,11 +54,16 @@
 <body>
     <div>
         <h2> Подними нашу мотивацию: </h2>
-        <div class="custom-button ">
-            <iframe src="https://yoomoney.ru/quickpay/fundraise/button?billNumber=15H9ASLS28U.240927&" width="330"
-                height="50" frameborder="0" allowtransparency="true"
-                scrolling="no"></iframe>
+
+        <div style="width: 500px; display: table-cell; zoom: 135%;  height: 50px;vertical-align: middle;">
+            <div style="margin: 0 auto;width: 262px;height: 38px;">
+                <iframe src="https://yoomoney.ru/quickpay/fundraise/button?billNumber=15H9ASLS28U.240927&" width="265"
+                    height="38" frameborder="0" allowtransparency="true" scrolling="no">
+                </iframe>
+                ​
+            </div>
         </div>
+
         <div class="widget-wrapper">
             <iframe src="https://yoomoney.ru/quickpay/fundraise/widget?billNumber=15H9APJUGQP.240927&" width="500"
                 height="500" frameborder="0" allowtransparency="true" scrolling="no">
