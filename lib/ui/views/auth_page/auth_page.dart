@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:injector/injector.dart';
@@ -197,10 +198,12 @@ class AuthPageWithState extends State<AuthPage> {
     BuildContext context, {
     List<Widget> elements = const [],
   }) {
-    final columnForm = Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: elements,
+    final columnForm = AutofillGroup(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: elements,
+      ),
     );
 
     return Container(
@@ -234,6 +237,7 @@ class AuthPageWithState extends State<AuthPage> {
       labelText: 'Логин',
       errorText: _validateInputOrElseReturnError(_InputType.login),
       textEditingController: _loginTextController,
+      autofillHints: [AutofillHints.username],
     );
   }
 
@@ -243,6 +247,7 @@ class AuthPageWithState extends State<AuthPage> {
       labelText: 'Пароль',
       errorText: _validateInputOrElseReturnError(_InputType.password),
       textEditingController: _passwordTextController,
+      autofillHints: [AutofillHints.password],
     );
   }
 
@@ -251,6 +256,7 @@ class AuthPageWithState extends State<AuthPage> {
     required TextEditingController textEditingController,
     bool obscuredText = false,
     String? errorText,
+    Iterable<String>? autofillHints,
   }) {
     return Container(
       padding: const EdgeInsets.only(top: 30),
@@ -260,6 +266,7 @@ class AuthPageWithState extends State<AuthPage> {
         errorText: errorText,
         labelText: labelText,
         controller: textEditingController,
+        autofillHints: autofillHints,
       ),
     );
   }
@@ -376,6 +383,7 @@ class AuthPageWithState extends State<AuthPage> {
         .then((isLoginSuccess) {
       if (isLoginSuccess) {
         if (context.mounted) {
+          TextInput.finishAutofillContext(shouldSave: true);
           GoRouter.of(context).go(loadingPageRoute);
         }
       }
