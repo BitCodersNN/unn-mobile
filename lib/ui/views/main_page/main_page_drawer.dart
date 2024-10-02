@@ -22,14 +22,15 @@ class MainPageDrawer extends StatefulWidget {
 
 class _MainPageDrawerState extends State<MainPageDrawer> {
   final List<Widget> children = [];
-  late final List<MainPageRouteData> _routes;
+  late final List<MainPageRouteData> routes;
 
   @override
   void initState() {
     super.initState();
     final CurrentUserSyncStorage storage =
         Injector.appInstance.get<CurrentUserSyncStorage>();
-    _routes = MainPageRouting.drawerRoutes
+
+    routes = MainPageRouting.drawerRoutes
         .where(
           (route) => route.userTypes.contains(storage.typeOfUser),
         )
@@ -50,7 +51,7 @@ class _MainPageDrawerState extends State<MainPageDrawer> {
             MainPageNavigationBar.getSelectedBarIndex(context);
         final currentPageRoute =
             MainPageRouting.navbarRoutes[selectedBarIndex].pageRoute;
-        final destinationSubroute = _routes[value].pageRoute;
+        final destinationSubroute = routes[value].pageRoute;
         GoRouter.of(context).go('$currentPageRoute/$destinationSubroute');
       },
       selectedIndex: null,
@@ -66,7 +67,7 @@ class _MainPageDrawerState extends State<MainPageDrawer> {
 
     final List<Widget> drawerChildren = [
       _getDrawerHeader(theme, vm),
-      for (final route in _routes)
+      for (final route in routes)
         NavigationDrawerDestination(
           icon: Icon(route.selectedIcon),
           label: Text(route.pageTitle),
