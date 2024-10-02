@@ -109,7 +109,7 @@ class MainPageRouting {
       'Настройки',
       'settings',
       builder: (p0) => const SettingsScreenView(),
-      userTypes: [StudentData, EmployeeData],
+      userTypes: [StudentData, EmployeeData, UserData],
     ),
     MainPageRouteData(
       Icons.credit_card,
@@ -125,7 +125,7 @@ class MainPageRouting {
       'О нас',
       'about',
       builder: (p0) => AboutScreenView(),
-      userTypes: [StudentData, EmployeeData],
+      userTypes: [StudentData, EmployeeData, UserData],
     ),
   ];
   static final List<MainPageRouteData> _activeNavbarRoutes =
