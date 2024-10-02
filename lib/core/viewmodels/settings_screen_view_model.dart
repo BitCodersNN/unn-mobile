@@ -10,19 +10,33 @@ class SettingsScreenViewModel extends BaseViewModel {
 
   SettingsScreenViewModel(this._storageService);
 
+  int get activeNavbarRouteIndex => AppSettings.initialPage;
+
+  set activeNavbarRouteIndex(int index) {
+    AppSettings.initialPage = index;
+    AppSettings.save();
+    notifyListeners();
+  }
+
+  List<String> get activeNavbarRouteNames {
+    return MainPageRouting.activeNavbarRoutes
+        .map(
+          (e) => e.pageTitle,
+        )
+        .toList(growable: false);
+  }
+
+  String get initialScreenName =>
+      MainPageRouting.activeNavbarRoutes[AppSettings.initialPage].pageTitle;
+
+  int get navbarRouteCount => activeNavbarRouteNames.length;
+
   bool get vibrationEnabled => AppSettings.vibrationEnabled;
 
   set vibrationEnabled(bool value) {
     AppSettings.vibrationEnabled = value;
     AppSettings.save();
     notifyListeners();
-  }
-
-  Future<void> clearEverything() async {
-    await Future.wait([
-      _storageService.clear(),
-      clearCache(),
-    ]);
   }
 
   Future<void> clearCache() async {
@@ -32,26 +46,14 @@ class SettingsScreenViewModel extends BaseViewModel {
     ]);
   }
 
-  Future<void> logout() async {
-    clearEverything();
+  Future<void> clearEverything() async {
+    await Future.wait([
+      _storageService.clear(),
+      clearCache(),
+    ]);
   }
 
-  String get initialScreenName =>
-      MainPageRouting.activeNavbarRoutes[AppSettings.initialPage].pageTitle;
-
-  List<String> get activeNavbarRouteNames => MainPageRouting.activeNavbarRoutes
-      .map(
-        (e) => e.pageTitle,
-      )
-      .toList(growable: false);
-
-  int get navbarRouteCount => activeNavbarRouteNames.length;
-
-  int get activeNavbarRouteIndex => AppSettings.initialPage;
-
-  set activeNavbarRouteIndex(int index) {
-    AppSettings.initialPage = index;
-    AppSettings.save();
-    notifyListeners();
+  Future<void> logout() async {
+    clearEverything();
   }
 }
