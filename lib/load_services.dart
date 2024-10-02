@@ -352,5 +352,9 @@ void registerDependencies() {
       get<MarkBySubjectProvider>(),
     ),
   );
-  injector.registerDependency(() => SettingsScreenViewModel());
+  injector.registerDependency(
+    () => SettingsScreenViewModel(
+      get<StorageService>(),
+    ),
+  );
 }
