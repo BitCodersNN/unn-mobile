@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:unn_mobile/core/models/employee_data.dart';
 import 'package:unn_mobile/core/models/student_data.dart';
+import 'package:unn_mobile/core/models/user_data.dart';
 import 'package:unn_mobile/ui/views/main_page/about/about.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/feed.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/widgets/comments_page.dart';
@@ -8,6 +9,7 @@ import 'package:unn_mobile/ui/views/main_page/grades/grades.dart';
 import 'package:unn_mobile/ui/views/main_page/schedule/schedule.dart';
 import 'package:unn_mobile/ui/views/main_page/settings/settings.dart';
 import 'package:unn_mobile/ui/views/main_page/certificates_online/certificates_online.dart';
+import 'package:unn_mobile/ui/views/main_page/donations/donations.dart';
 
 class MainPageRouteData {
   final IconData selectedIcon;
@@ -107,6 +109,14 @@ class MainPageRouting {
       'settings',
       builder: (p0) => const SettingsScreenView(),
       userTypes: [StudentData, EmployeeData],
+    ),
+    MainPageRouteData(
+      Icons.credit_card,
+      Icons.credit_card_outlined,
+      'Поддержать',
+      'donations',
+      builder: (p0) => const DonationsScreenView(),
+      userTypes: [StudentData, EmployeeData, UserData],
     ),
     MainPageRouteData(
       Icons.info,
