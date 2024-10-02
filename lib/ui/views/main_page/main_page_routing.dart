@@ -44,6 +44,7 @@ class MainPageRouting {
       userTypes: [
         StudentData,
         EmployeeData,
+        UserData,
       ],
       subroutes: [
         MainPageRouteData(
@@ -53,7 +54,7 @@ class MainPageRouting {
           'comments',
           builder: (p0) => const CommentsPage(),
           isDisabled: false,
-          userTypes: [StudentData, EmployeeData],
+          userTypes: [StudentData, EmployeeData, UserData],
         ),
       ],
     ),
@@ -63,7 +64,7 @@ class MainPageRouting {
       'Расписание',
       '/schedule',
       builder: (p0) => const ScheduleScreenView(),
-      userTypes: [StudentData, EmployeeData],
+      userTypes: [StudentData, EmployeeData, UserData],
     ),
     MainPageRouteData(
       Icons.map,
@@ -72,7 +73,7 @@ class MainPageRouting {
       '/map',
       builder: (p0) => const Placeholder(),
       isDisabled: true,
-      userTypes: [StudentData, EmployeeData],
+      userTypes: [StudentData, EmployeeData, UserData],
     ),
     MainPageRouteData(
       Icons.menu_book,
@@ -81,7 +82,7 @@ class MainPageRouting {
       '/source',
       builder: (p0) => const Placeholder(),
       isDisabled: true,
-      userTypes: [StudentData, EmployeeData],
+      userTypes: [StudentData, EmployeeData, UserData],
     ),
   ];
 
@@ -100,7 +101,7 @@ class MainPageRouting {
       'Справки онлайн',
       'online_certificates',
       builder: (p0) => const OnlineCertificatesScreenView(),
-      userTypes: [StudentData],
+      userTypes: [],
     ),
     MainPageRouteData(
       Icons.settings,
@@ -108,7 +109,7 @@ class MainPageRouting {
       'Настройки',
       'settings',
       builder: (p0) => const SettingsScreenView(),
-      userTypes: [StudentData, EmployeeData],
+      userTypes: [StudentData, EmployeeData, UserData],
     ),
     MainPageRouteData(
       Icons.credit_card,
@@ -124,7 +125,11 @@ class MainPageRouting {
       'О нас',
       'about',
       builder: (p0) => AboutScreenView(),
-      userTypes: [StudentData, EmployeeData],
+      userTypes: [StudentData, EmployeeData, UserData],
     ),
   ];
+  static final List<MainPageRouteData> _activeNavbarRoutes =
+      navbarRoutes.where((e) => e.isDisabled == false).toList();
+
+  static List<MainPageRouteData> get activeNavbarRoutes => _activeNavbarRoutes;
 }

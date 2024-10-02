@@ -1,4 +1,5 @@
 import 'package:go_router/go_router.dart';
+import 'package:unn_mobile/core/misc/app_settings.dart';
 import 'package:unn_mobile/ui/views/auth_page/auth_page.dart';
 import 'package:unn_mobile/ui/views/loading_page/loading_page.dart';
 import 'package:unn_mobile/ui/views/main_page/main_page.dart';
@@ -51,7 +52,11 @@ final mainRouter = GoRouter(
   ],
   redirect: (context, state) {
     if (state.uri.path == mainPageRoute) {
-      return MainPageRouting.navbarRoutes.first.pageRoute;
+      final pageIndex =
+          AppSettings.initialPage < MainPageRouting.activeNavbarRoutes.length
+              ? AppSettings.initialPage
+              : 0;
+      return MainPageRouting.navbarRoutes[pageIndex].pageRoute;
     }
     return null;
   },
