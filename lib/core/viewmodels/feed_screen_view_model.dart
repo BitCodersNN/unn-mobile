@@ -50,6 +50,7 @@ class FeedScreenViewModel extends BaseViewModel {
     }
     _loadingPosts = true;
     notifyListeners();
+
     if (_lastLoadedPost + postsPerPage > _feedStreamUpdater.feedPosts.length) {
       posts.addAll(
         _feedStreamUpdater.feedPosts

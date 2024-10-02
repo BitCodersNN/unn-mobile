@@ -237,6 +237,7 @@ void registerDependencies() {
       get<LoggerService>(),
       get<OnlineStatusData>(),
       get<LastFeedLoadDateTimeProvider>(),
+      get<AuthorizationService>(),
     ),
   );
   injector.registerSingleton<CurrentUserSyncStorage>(
