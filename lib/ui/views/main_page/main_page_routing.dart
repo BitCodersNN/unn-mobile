@@ -9,6 +9,7 @@ import 'package:unn_mobile/ui/views/main_page/grades/grades.dart';
 import 'package:unn_mobile/ui/views/main_page/schedule/schedule.dart';
 import 'package:unn_mobile/ui/views/main_page/settings/settings.dart';
 import 'package:unn_mobile/ui/views/main_page/certificates_online/certificates_online.dart';
+import 'package:unn_mobile/ui/views/main_page/donations/donations.dart';
 
 class MainPageRouteData {
   final IconData selectedIcon;
@@ -109,6 +110,14 @@ class MainPageRouting {
       'settings',
       builder: (p0) => const SettingsScreenView(),
       userTypes: [StudentData, EmployeeData],
+    ),
+    MainPageRouteData(
+      Icons.credit_card,
+      Icons.credit_card_outlined,
+      'Поддержать',
+      'donations',
+      builder: (p0) => const DonationsScreenView(),
+      userTypes: [StudentData, EmployeeData, UserData],
     ),
     MainPageRouteData(
       Icons.info,
