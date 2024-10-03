@@ -51,7 +51,7 @@ class FeedPostViewModel extends BaseViewModel {
 
   String get postText => _unescaper.convert(blogData.detailText.trim());
 
-  DateTime get postTime => blogData.datePublish;
+  DateTime get postTime => blogData.datePublish.toLocal();
 
   ProfileViewModel get profileViewModel => _profileViewModel;
 
