@@ -37,6 +37,7 @@ class AuthorizationRefreshServiceImpl implements AuthorizationRefreshService {
   @override
   Future<AuthRequestResult?> refreshLogin() async {
     if (!await _userDataExistsInStorage()) {
+      _authorisationService.logout();
       return null;
     }
     final AuthData authData = await _authDataProvider.getData();
