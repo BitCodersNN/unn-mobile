@@ -63,6 +63,7 @@ flutter:
     - assets/images/authors/
     - assets/images/reactions/
     - assets/ca/
+    - assets/html/
 
 
   fonts:
