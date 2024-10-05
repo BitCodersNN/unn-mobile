@@ -131,4 +131,7 @@ class LegacyAuthorizationServiceImpl extends ChangeNotifier
 
   @override
   String? get guestId => throw UnimplementedError();
+
+  @override
+  void logout() {}
 }
