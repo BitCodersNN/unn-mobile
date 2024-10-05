@@ -120,15 +120,6 @@ class MainPageRouting {
       userTypes: [StudentData, EmployeeData, UserData],
     ),
     MainPageRouteData(
-      Icons.credit_card,
-      Icons.credit_card_outlined,
-      'Поддержать',
-      'donations',
-      builder: (p0) => const DonationsScreenView(),
-      userTypes: [StudentData, EmployeeData, UserData],
-    ),
-    
-    MainPageRouteData(
       Icons.info,
       Icons.info_outline,
       'О нас',
