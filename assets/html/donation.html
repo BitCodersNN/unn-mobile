@@ -29,12 +29,17 @@
             overflow-x: hidden;
         }
 
-        h2 {
-            font-size: 5vw;
-            color: #1B232C;
-            text-align: left;
-            padding: 2.5vw 2.8vw 0vw;
-            margin: 0;
+        .custom-button-wrapper {
+            margin: 0 auto;
+            padding: 1vw;
+            box-sizing: border-box;
+            width: 100%;
+            margin-bottom: 3vw;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            overflow-x: hidden;
         }
 
         iframe {
@@ -42,27 +47,42 @@
         }
 
         .footnote {
-            font-size: 0.77em;
+            font-size: 3vw;
+            text-align: justify;
             color: #777;
-            text-align: left;
+            margin-left: 2.5vw;
+            margin-right: 2.5vw;
             margin-top: 2vw;
-            padding: 0 2.8vw;
+
+        }
+
+        .description {
+            margin-left: 2.5vw;
+            margin-right: 2.5vw;
+            text-align: justify;
+            font-size: 5vw;
+            color: #1B232C;
+            margin-bottom: 1vw;
         }
     </style>
 </head>
 
 <body>
     <div>
-        <h2> Подними нашу мотивацию: </h2>
-
-        <div style="width: 500px; display: table-cell; zoom: 135%;  height: 50px;vertical-align: middle;">
-            <div style="margin: 0 auto;width: 262px;height: 38px;">
-                <iframe src="https://yoomoney.ru/quickpay/fundraise/button?billNumber=15H9ASLS28U.240927&" width="265"
-                    height="38" frameborder="0" allowtransparency="true" scrolling="no">
-                </iframe>
-                ​
+        <p class="description">Подними нашу мотивацию:</p>
+        <div class="custom-button-wrapper">
+            <div style="width: 500px; display: table-cell; zoom: 135%;  height: 50px;vertical-align: middle;">
+                <div style="margin: 0 auto;width: 262px;height: 38px;">
+                    <iframe src="https://yoomoney.ru/quickpay/fundraise/button?billNumber=15H9ASLS28U.240927&"
+                        width="265" height="38" frameborder="0" allowtransparency="true" scrolling="no">
+                    </iframe>
+                    ​
+                </div>
             </div>
         </div>
+
+        <p class="description">Cбор на покупку аккаунта разработчика в AppStore:</p>
+
 
         <div class="widget-wrapper">
             <iframe src="https://yoomoney.ru/quickpay/fundraise/widget?billNumber=15H9APJUGQP.240927&" width="500"
