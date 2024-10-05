@@ -22,6 +22,8 @@ abstract interface class AuthorizationService extends Listenable {
   /// Возвращает результат авторизаци
   Future<AuthRequestResult> auth(String login, String password);
 
+  void logout();
+
   bool get isAuthorised;
   String? get csrf;
   String? get sessionId;

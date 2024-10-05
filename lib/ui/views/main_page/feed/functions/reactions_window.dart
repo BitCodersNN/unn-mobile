@@ -8,6 +8,7 @@ void showReactionChoicePanel(
   BuildContext context,
   ReactionViewModel model,
 ) {
+  final theme = Theme.of(context);
   showModalBottomSheet(
     context: context,
     isScrollControlled: true,
@@ -18,12 +19,9 @@ void showReactionChoicePanel(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text(
+            Text(
               'Выбор реакции',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
+              style: theme.textTheme.headlineSmall,
             ),
             const Padding(
               padding: EdgeInsets.only(top: 2),

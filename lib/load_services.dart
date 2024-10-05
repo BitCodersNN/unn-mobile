@@ -71,6 +71,7 @@ import 'package:unn_mobile/core/viewmodels/grades_screen_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/loading_page_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/schedule_screen_view_model.dart';
+import 'package:unn_mobile/core/viewmodels/settings_screen_view_model.dart';
 
 void registerDependencies() {
   final injector = Injector.appInstance;
@@ -236,6 +237,7 @@ void registerDependencies() {
       get<LoggerService>(),
       get<OnlineStatusData>(),
       get<LastFeedLoadDateTimeProvider>(),
+      get<AuthorizationService>(),
     ),
   );
   injector.registerSingleton<CurrentUserSyncStorage>(
@@ -349,6 +351,11 @@ void registerDependencies() {
     () => GradesScreenViewModel(
       get<GettingGradeBook>(),
       get<MarkBySubjectProvider>(),
+    ),
+  );
+  injector.registerDependency(
+    () => SettingsScreenViewModel(
+      get<StorageService>(),
     ),
   );
 }

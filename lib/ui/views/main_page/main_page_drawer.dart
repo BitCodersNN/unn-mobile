@@ -6,22 +6,43 @@ import 'package:unn_mobile/core/viewmodels/main_page_view_model.dart';
 import 'package:unn_mobile/ui/views/main_page/main_page_navigation_bar.dart';
 import 'package:unn_mobile/ui/views/main_page/main_page_routing.dart';
 
-class MainPageDrawer extends StatelessWidget {
+class MainPageDrawer extends StatefulWidget {
   final MainPageViewModel model;
-  MainPageDrawer({
+  const MainPageDrawer({
     super.key,
     this.onDestinationSelected,
     required this.model,
   });
 
   final void Function(int)? onDestinationSelected;
+
+  @override
+  State<MainPageDrawer> createState() => _MainPageDrawerState();
+}
+
+class _MainPageDrawerState extends State<MainPageDrawer> {
   final List<Widget> children = [];
+  late final List<MainPageRouteData> routes;
+
+  @override
+  void initState() {
+    super.initState();
+    final CurrentUserSyncStorage storage =
+        Injector.appInstance.get<CurrentUserSyncStorage>();
+
+    routes = MainPageRouting.drawerRoutes
+        .where(
+          (route) => route.userTypes.contains(storage.typeOfUser),
+        )
+        .toList(growable: false);
+  }
+
   @override
   Widget build(BuildContext context) {
     Theme.of(context);
 
     if (children.isEmpty) {
-      children.addAll(_generateChildren(model, context));
+      children.addAll(_generateChildren(widget.model, context));
     }
     return NavigationDrawer(
       onDestinationSelected: (value) {
@@ -30,11 +51,8 @@ class MainPageDrawer extends StatelessWidget {
             MainPageNavigationBar.getSelectedBarIndex(context);
         final currentPageRoute =
             MainPageRouting.navbarRoutes[selectedBarIndex].pageRoute;
-        final destinationSubroute =
-            MainPageRouting.drawerRoutes[value].pageRoute;
-        GoRouter.of(context).go(
-          '$currentPageRoute/$destinationSubroute',
-        );
+        final destinationSubroute = routes[value].pageRoute;
+        GoRouter.of(context).go('$currentPageRoute/$destinationSubroute');
       },
       selectedIndex: null,
       children: children,
@@ -46,18 +64,15 @@ class MainPageDrawer extends StatelessWidget {
     BuildContext context,
   ) {
     final theme = Theme.of(context);
-    final routes = MainPageRouting.drawerRoutes;
-    final CurrentUserSyncStorage storage =
-        Injector.appInstance.get<CurrentUserSyncStorage>();
+
     final List<Widget> drawerChildren = [
       _getDrawerHeader(theme, vm),
       for (final route in routes)
-        if (route.userTypes.contains(storage.typeOfUser))
-          NavigationDrawerDestination(
-            icon: Icon(route.selectedIcon),
-            label: Text(route.pageTitle),
-            enabled: !route.isDisabled,
-          ),
+        NavigationDrawerDestination(
+          icon: Icon(route.selectedIcon),
+          label: Text(route.pageTitle),
+          enabled: !route.isDisabled,
+        ),
     ];
     return drawerChildren;
   }

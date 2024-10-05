@@ -38,76 +38,82 @@ class AuthorizationServiceImpl extends ChangeNotifier
 
   @override
   Future<AuthRequestResult> auth(String login, String password) async {
-    _isAuthorised = false;
-
-    if (await _isOffline()) {
-      _onlineStatus.isOnline = false;
-      return AuthRequestResult.noInternet;
-    }
-
-    final requestSender = HttpRequestSender(
-      host: ApiPaths.unnMobileHost,
-      path: ApiPaths.authWithCookie,
-    );
-
-    HttpClientResponse response;
     try {
-      response = await requestSender.postForm(
-        {
-          _userLogin: login,
-          _userPasswortd: password,
-        },
-        timeoutSeconds: 15,
-      );
-    } on TimeoutException {
-      _onlineStatus.isOnline = false;
-      return AuthRequestResult.noInternet;
-    } on SocketException catch (e) {
-      if (e.osError?.errorCode == 104) {
+      _isAuthorised = false;
+      if (await _isOffline()) {
         _onlineStatus.isOnline = false;
         return AuthRequestResult.noInternet;
       }
-      rethrow;
-    } on Exception catch (_) {
-      rethrow;
+
+      final requestSender = HttpRequestSender(
+        host: ApiPaths.unnMobileHost,
+        path: ApiPaths.authWithCookie,
+      );
+
+      HttpClientResponse response;
+      try {
+        response = await requestSender.postForm(
+          {
+            _userLogin: login,
+            _userPasswortd: password,
+          },
+          timeoutSeconds: 15,
+        );
+      } on TimeoutException {
+        _onlineStatus.isOnline = false;
+        return AuthRequestResult.noInternet;
+      } on SocketException catch (e) {
+        if (e.osError?.errorCode == 104) {
+          _onlineStatus.isOnline = false;
+          return AuthRequestResult.noInternet;
+        }
+        rethrow;
+      } on Exception catch (_) {
+        rethrow;
+      }
+
+      if (response.statusCode == 401) {
+        return AuthRequestResult.wrongCredentials;
+      }
+
+      if (response.statusCode != 200) {
+        return AuthRequestResult.unknown;
+      }
+
+      String responseString;
+      try {
+        responseString = await HttpRequestSender.responseToStringBody(response);
+      } catch (error, stackTrace) {
+        _loggerService.logError(error, stackTrace);
+        return AuthRequestResult.unknown;
+      }
+
+      _setSessionId(
+        _extractValue(
+          responseString,
+          SessionIdentifierStrings.sessionIdCookieKey,
+        ),
+      );
+
+      _guestId = _extractValue(responseString, _bxPortatlUnnGuestId);
+      _csrf = _extractValue(responseString, SessionIdentifierStrings.csrf);
+      _isAuthorised = true;
+
+      _onlineStatus.isOnline = true;
+      _onlineStatus.timeOfLastOnline = DateTime.now();
+
+      return AuthRequestResult.success;
+    } finally {
+      // Сообщаем, что авторизация могла измениться
+      // Это надо делать независимо от того, как мы выйдем отсюда
+      // и ТОЛЬКО в конце, когда состояние isAuth уже не изменится
+      // до следующего вызова этого метода
+      notifyListeners();
     }
-
-    if (response.statusCode == 401) {
-      return AuthRequestResult.wrongCredentials;
-    }
-
-    if (response.statusCode != 200) {
-      return AuthRequestResult.unknown;
-    }
-
-    String responseString;
-    try {
-      responseString = await HttpRequestSender.responseToStringBody(response);
-    } catch (error, stackTrace) {
-      _loggerService.logError(error, stackTrace);
-      return AuthRequestResult.unknown;
-    }
-
-    _setSessionId(
-      _extractValue(
-        responseString,
-        SessionIdentifierStrings.sessionIdCookieKey,
-      ),
-    );
-
-    _guestId = _extractValue(responseString, _bxPortatlUnnGuestId);
-    _csrf = _extractValue(responseString, SessionIdentifierStrings.csrf);
-    _isAuthorised = true;
-
-    _onlineStatus.isOnline = true;
-    _onlineStatus.timeOfLastOnline = DateTime.now();
-
-    return AuthRequestResult.success;
   }
 
   void _setSessionId(String newSessionId) {
     _sessionId = newSessionId;
-    notifyListeners();
   }
 
   String _extractValue(String input, String key) {
@@ -119,5 +125,14 @@ class AuthorizationServiceImpl extends ChangeNotifier
   Future<bool> _isOffline() async {
     return (await Connectivity().checkConnectivity())
         .contains(ConnectivityResult.none);
+  }
+
+  @override
+  void logout() {
+    _sessionId = null;
+    _guestId = null;
+    _csrf = null;
+    _isAuthorised = false;
+    notifyListeners();
   }
 }

@@ -21,15 +21,26 @@ Future<String?> getDownloadPath() async {
 }
 
 Future<void> clearCacheFolder() async {
-  try {
-    final cachePath = await getDownloadPath();
-    if (cachePath != null) {
-      final directory = Directory(cachePath);
-      if (directory.existsSync()) {
-        await directory.delete(recursive: true);
-      }
-    }
-  } catch (error, stack) {
-    Injector.appInstance.get<LoggerService>().logError(error, stack);
+  const String projectName = 'ru.unn.unnMobile';
+  final loggerService = Injector.appInstance.get<LoggerService>();
+  final cachePath = await getDownloadPath();
+  if (cachePath == null) {
+    return;
   }
+  final directory = Directory(cachePath);
+  final entities = directory.listSync();
+
+  await Future.forEach(entities, (entity) async {
+    if (entity.path.endsWith(projectName)) {
+      return;
+    }
+    if (!await entity.exists()) {
+      return;
+    }
+    try {
+      await entity.delete(recursive: entity is Directory);
+    } catch (err, stack) {
+      loggerService.logError(err, stack);
+    }
+  });
 }
