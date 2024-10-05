@@ -118,6 +118,7 @@ class MainPageRouting {
       builder: (p0) => const DonationsScreenView(),
       userTypes: [StudentData, EmployeeData, UserData],
     ),
+    
     MainPageRouteData(
       Icons.info,
       Icons.info_outline,
