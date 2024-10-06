@@ -74,4 +74,5 @@ lib/firebase_options.dart
 devtools_options.yaml
 
 firebase.json
+GoogleService-Info.plist
 .vscode
