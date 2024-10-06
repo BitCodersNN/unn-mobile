@@ -245,7 +245,7 @@ class _FeedPostState extends State<FeedPost> {
                                   fontSize: 14,
                                   color: idkWhatColor,
                                 ),
-                              )
+                              ),
                             ],
                           ),
                         ),
@@ -297,8 +297,13 @@ class _FeedPostState extends State<FeedPost> {
   }
 }
 
-void sharePressed(BuildContext context, String postText, String authorName,
-    DateTime postTime, List<AttachedFileViewModel> attachedFiles) async {
+void sharePressed(
+  BuildContext context,
+  String postText,
+  String authorName,
+  DateTime postTime,
+  List<AttachedFileViewModel> attachedFiles,
+) async {
   final String text =
       '$authorName\n${DateFormat('d MMMM yyyy, HH:mm', 'ru_RU').format(postTime)}\n\n$postText';
 
@@ -311,6 +316,7 @@ void sharePressed(BuildContext context, String postText, String authorName,
     }
   }
 
+  // ignore: use_build_context_synchronously
   final RenderBox box = context.findRenderObject() as RenderBox;
 
   if (xFiles.isNotEmpty) {
