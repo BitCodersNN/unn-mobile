@@ -39,14 +39,14 @@ class MainPageViewModel extends BaseViewModel {
           setState(ViewState.idle);
           return;
         }
+        _userNameAndSurname = '${value.name} ${value.lastname}';
+        _userAvatar = value.fullUrlPhoto == null
+            ? null
+            : CachedNetworkImageProvider(value.fullUrlPhoto!);
         if (value is StudentData) {
           final StudentData studentProfile = value;
-          _userNameAndSurname =
-              '${studentProfile.name} ${studentProfile.lastname}';
+
           _userGroup = studentProfile.eduGroup;
-          _userAvatar = studentProfile.fullUrlPhoto == null
-              ? null
-              : CachedNetworkImageProvider(studentProfile.fullUrlPhoto!);
         }
         setState(ViewState.idle);
       },
