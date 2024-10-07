@@ -20,4 +20,8 @@ class ProfileViewModelFactory
       getService<LoggerService>(),
     );
   }
+
+  ProfileViewModel getCurrentUserViewModel() {
+    return createViewModel(0)..init(loadCurrentUser: true);
+  }
 }
