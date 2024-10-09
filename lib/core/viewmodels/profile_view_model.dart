@@ -21,13 +21,12 @@ class ProfileViewModel extends BaseViewModel {
 
   String? _description;
 
-  String get description => _description ?? '';
-
   ProfileViewModel(
     this._getCurrentUserService,
     this._getProfileService,
     this._loggerService,
   );
+
   factory ProfileViewModel.cached(ProfileCacheKey key) {
     return Injector.appInstance
         .get<ProfileViewModelFactory>()
@@ -38,20 +37,19 @@ class ProfileViewModel extends BaseViewModel {
         .get<ProfileViewModelFactory>()
         .getCurrentUserViewModel();
   }
-
   String? get avatarUrl => _loadedData?.fullUrlPhoto;
+
+  String get description => _description ?? '';
 
   String get fullname =>
       _loadedData?.fullname.toString() ?? //
       'Не удалось загрузить';
+
   bool get hasAvatar => _loadedData?.fullUrlPhoto != null;
 
   bool get hasError => _hasError;
 
   String get initials => getUserInitials(_loadedData);
-
-  String get nameWithInitials =>
-      '${_loadedData?.fullname.lastname ?? ''} ${initials.replaceAllMapped(RegExp('.'), (match) => '${match.group(0)}. ')}';
 
   bool get isLoading => _isLoading;
 

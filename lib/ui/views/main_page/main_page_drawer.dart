@@ -110,39 +110,44 @@ class _MainPageDrawerState extends State<MainPageDrawer> {
                   ),
                 ),
               ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(4.0),
-                    child: Text(
-                      value.nameWithInitials,
-                      overflow: TextOverflow.fade,
-                      textAlign: TextAlign.left,
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: theme.colorScheme.onPrimary,
-                        fontFamily: 'Inter',
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(4.0),
+                      child: Text(
+                        value.fullname,
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 2,
+                        softWrap: true,
+                        textWidthBasis: TextWidthBasis.parent,
+                        textAlign: TextAlign.left,
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: theme.colorScheme.onPrimary,
+                          fontFamily: 'Inter',
+                        ),
                       ),
                     ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(4.0),
-                    child: Text(
-                      value.description,
-                      overflow: TextOverflow.fade,
-                      textAlign: TextAlign.left,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                        color: Color(0xFFFFFFFF),
-                        fontFamily: 'Inter',
+                    Padding(
+                      padding: const EdgeInsets.all(4.0),
+                      child: Text(
+                        value.description,
+                        overflow: TextOverflow.fade,
+                        textAlign: TextAlign.left,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          color: Color(0xFFFFFFFF),
+                          fontFamily: 'Inter',
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ],
           ),
