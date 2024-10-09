@@ -70,7 +70,7 @@ class ProfileViewModel extends BaseViewModel {
           .then((data) {
         _loadedData = data;
         _description = switch (data.runtimeType) {
-          StudentData _ => (data as StudentData).eduGroup,
+          const (StudentData) => (data as StudentData).eduGroup,
           _ => '',
         };
       }).catchError((error, stack) {
