@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:injector/injector.dart';
-import 'package:unn_mobile/core/misc/current_user_sync_storage.dart';
-import 'package:unn_mobile/core/models/employee_data.dart';
 import 'package:unn_mobile/core/models/schedule_filter.dart';
+import 'package:unn_mobile/core/viewmodels/factories/main_page_routes_view_models_factory.dart';
+import 'package:unn_mobile/core/viewmodels/schedule_screen_view_model.dart';
 import 'package:unn_mobile/ui/builders/online_status_builder.dart';
+import 'package:unn_mobile/ui/views/base_view.dart';
+import 'package:unn_mobile/ui/views/main_page/main_page_navigation_bar.dart';
 import 'package:unn_mobile/ui/views/main_page/main_page_tab_state.dart';
 import 'package:unn_mobile/ui/views/main_page/schedule/widgets/schedule_tab.dart';
 
@@ -17,94 +19,93 @@ class ScheduleScreenView extends StatefulWidget {
 class _ScheduleScreenViewState extends State<ScheduleScreenView>
     with SingleTickerProviderStateMixin
     implements MainPageTabState {
-  final String _studentText = 'Студент';
-  final String _lecturerText = 'Преподаватель';
-  final String _groupText = 'Группа';
+  Map<IDType, String> tabTexts = {
+    IDType.student: 'Студент',
+    IDType.lecturer: 'Преподаватель',
+    IDType.group: 'Группа',
+  };
 
   late TabController _tabController;
-
-  final tabKeys = [GlobalKey(), GlobalKey(), GlobalKey()];
+  late ScheduleScreenViewModel _viewModel;
 
   @override
   void initState() {
-    _tabController = TabController(length: 3, vsync: this);
+    final currentRouteIndex =
+        MainPageNavigationBar.getSelectedBarIndex(context);
+    _viewModel = Injector.appInstance
+        .get<MainPageRoutesViewModelsFactory>()
+        .getViewModelByRouteIndex(currentRouteIndex);
+
+    _tabController = TabController(
+      initialIndex: _viewModel.selectedTab,
+      length: 3,
+      vsync: this,
+    );
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    final CurrentUserSyncStorage typeOfCurrnetUser =
-        Injector.appInstance.get<CurrentUserSyncStorage>();
-    final tabTexts = _getTabTexts(typeOfCurrnetUser.typeOfUser);
-    final idTypesForSchedulTab =
-        _getIDTypesForSchedulTab(typeOfCurrnetUser.typeOfUser);
-
-    final expanded = _createExpanded(idTypesForSchedulTab);
-
     final parentScaffold = Scaffold.maybeOf(context);
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Расписание'),
-        leading: parentScaffold?.hasDrawer ?? false
-            ? IconButton(
-                onPressed: () {
-                  parentScaffold?.openDrawer();
-                },
-                icon: const Icon(Icons.menu),
-              )
-            : null,
-      ),
-      body: OnlineStatusBuilder(
-        onlineWidget: Column(
-          children: [
-            MediaQuery.withClampedTextScaling(
-              maxScaleFactor: 1.5,
-              child: TabBar(
-                indicatorSize: TabBarIndicatorSize.label,
-                tabAlignment: TabAlignment.center,
-                isScrollable: true,
-                tabs: [
-                  for (var i = 0; i < tabKeys.length; i++)
-                    Tab(
-                      text: tabTexts[i],
-                    ),
-                ],
-                controller: _tabController,
-              ),
+    return BaseView<ScheduleScreenViewModel>(
+      model: _viewModel,
+      builder: (context, model, _) {
+        final expanded = _createExpanded(model);
+        return Scaffold(
+          appBar: AppBar(
+            title: const Text('Расписание'),
+            leading: parentScaffold?.hasDrawer ?? false
+                ? IconButton(
+                    onPressed: () {
+                      parentScaffold?.openDrawer();
+                    },
+                    icon: const Icon(Icons.menu),
+                  )
+                : null,
+          ),
+          body: OnlineStatusBuilder(
+            onlineWidget: Column(
+              children: [
+                MediaQuery.withClampedTextScaling(
+                  maxScaleFactor: 1.5,
+                  child: TabBar(
+                    indicatorSize: TabBarIndicatorSize.label,
+                    tabAlignment: TabAlignment.center,
+                    isScrollable: true,
+                    tabs: [
+                      for (final idType in model.tabIDTypes)
+                        Tab(
+                          text: tabTexts[idType],
+                        ),
+                    ],
+                    controller: _tabController,
+                    onTap: (value) {
+                      model.selectedTab = value;
+                    },
+                  ),
+                ),
+                expanded,
+              ],
             ),
-            expanded,
-          ],
-        ),
-        offlineWidget: Column(
-          children: [
-            expanded,
-          ],
-        ),
-      ),
+            offlineWidget: Column(
+              children: [
+                expanded,
+              ],
+            ),
+          ),
+        );
+      },
+      onModelReady: (p0) => p0.init(),
     );
   }
 
-  List<String> _getTabTexts(Type userType) {
-    if (userType == EmployeeData) {
-      return [_lecturerText, _studentText, _groupText];
-    }
-    return [_studentText, _groupText, _lecturerText];
-  }
-
-  List<IDType> _getIDTypesForSchedulTab(Type userType) {
-    if (userType == EmployeeData) {
-      return [IDType.person, IDType.student, IDType.group];
-    }
-    return [IDType.student, IDType.group, IDType.person];
-  }
-
-  Expanded _createExpanded(idTypesForSchedulTab) {
+  Expanded _createExpanded(ScheduleScreenViewModel model) {
     return Expanded(
       child: TabBarView(
         controller: _tabController,
         children: [
-          for (int i = 0; i < idTypesForSchedulTab.length; i++)
-            ScheduleTab(idTypesForSchedulTab[i], key: tabKeys[i]),
+          for (int i = 0; i < model.tabIDTypes.length; i++)
+            ScheduleTab(model.tabIDTypes[i], model.tabViewModels[i]),
         ],
       ),
     );
@@ -117,9 +118,5 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView>
   }
 
   @override
-  void refreshTab() {
-    final tabState =
-        tabKeys[_tabController.index].currentState as ScheduleTabState;
-    tabState.refreshTab();
-  }
+  void refreshTab() {}
 }

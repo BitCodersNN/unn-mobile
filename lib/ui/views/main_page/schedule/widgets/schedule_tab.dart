@@ -8,7 +8,7 @@ import 'package:unn_mobile/core/models/schedule_filter.dart';
 import 'package:unn_mobile/core/models/subject.dart';
 import 'package:unn_mobile/core/services/interfaces/export_schedule_service.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
-import 'package:unn_mobile/core/viewmodels/schedule_screen_view_model.dart';
+import 'package:unn_mobile/core/viewmodels/schedule_tab_view_model.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
 import 'package:unn_mobile/ui/views/main_page/schedule/widgets/schedule_item_normal.dart';
 import 'package:unn_mobile/ui/views/main_page/schedule/widgets/schedule_search_suggestion_item_view.dart';
@@ -19,8 +19,9 @@ import 'package:unn_mobile/ui/widgets/persistent_header.dart';
 
 class ScheduleTab extends StatefulWidget {
   final IDType type;
+  final ScheduleTabViewModel viewModel;
 
-  const ScheduleTab(this.type, {super.key});
+  const ScheduleTab(this.type, this.viewModel, {super.key});
 
   @override
   State<ScheduleTab> createState() => ScheduleTabState();
@@ -55,8 +56,8 @@ class ScheduleTabState extends State<ScheduleTab>
     super.build(context);
     final theme = Theme.of(context);
 
-    return BaseView<ScheduleScreenViewModel>(
-      key: _viewKey,
+    return BaseView<ScheduleTabViewModel>(
+      model: widget.viewModel,
       builder: (context, model, child) {
         return Column(
           children: [_customScrollView(theme, model)],
@@ -94,7 +95,7 @@ class ScheduleTabState extends State<ScheduleTab>
     );
   }
 
-  Widget _searchBar(ScheduleScreenViewModel model, BuildContext context) {
+  Widget _searchBar(ScheduleTabViewModel model, BuildContext context) {
     return Container(
       color: Theme.of(context).colorScheme.surface,
       child: flutter_changed.SearchAnchor(
@@ -276,7 +277,7 @@ class ScheduleTabState extends State<ScheduleTab>
   @override
   bool get wantKeepAlive => true;
 
-  Widget _customScrollView(ThemeData theme, ScheduleScreenViewModel model) {
+  Widget _customScrollView(ThemeData theme, ScheduleTabViewModel model) {
     final headerFormatter = DateFormat.yMd('ru_RU');
 
     return Expanded(
@@ -372,7 +373,7 @@ class ScheduleTabState extends State<ScheduleTab>
   }
 
   SliverList _scheduleSliverList(
-    ScheduleScreenViewModel model,
+    ScheduleTabViewModel model,
     AsyncSnapshot<Map<int, List<Subject>>> snapshot,
     ThemeData theme,
   ) {
@@ -434,7 +435,7 @@ class ScheduleTabState extends State<ScheduleTab>
 
   void refreshTab() {
     final model =
-        (_viewKey.currentState as BaseViewState<ScheduleScreenViewModel>).model;
+        (_viewKey.currentState as BaseViewState<ScheduleTabViewModel>).model;
     if (model.displayedWeekOffset != 0) {
       model.resetWeek();
     }

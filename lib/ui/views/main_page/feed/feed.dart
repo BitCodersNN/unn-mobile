@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:injector/injector.dart';
+import 'package:unn_mobile/core/viewmodels/factories/main_page_routes_view_models_factory.dart';
 import 'package:unn_mobile/core/viewmodels/feed_screen_view_model.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/widgets/feed_post.dart';
+import 'package:unn_mobile/ui/views/main_page/main_page_navigation_bar.dart';
+import 'package:unn_mobile/ui/views/main_page/main_page_tab_state.dart';
 
 class FeedScreenView extends StatefulWidget {
   const FeedScreenView({super.key});
@@ -10,15 +14,37 @@ class FeedScreenView extends StatefulWidget {
   State<FeedScreenView> createState() => FeedScreenViewState();
 }
 
-class FeedScreenViewState extends State<FeedScreenView> {
+class FeedScreenViewState extends State<FeedScreenView>
+    implements MainPageTabState {
   late ScrollController _scrollController;
+
+  late FeedScreenViewModel _viewModel;
 
   @override
   void initState() {
     super.initState();
+    final currentRouteIndex =
+        MainPageNavigationBar.getSelectedBarIndex(context);
+    _viewModel = Injector.appInstance
+        .get<MainPageRoutesViewModelsFactory>()
+        .getViewModelByRouteIndex(currentRouteIndex);
+
     _scrollController = ScrollController(
+      initialScrollOffset: _viewModel.scrollPosition,
       keepScrollOffset: true,
     );
+
+    _viewModel.scrollToTop = () {
+      if (_scrollController.hasClients) {
+        _scrollController.jumpTo(0);
+      }
+    };
+    _viewModel.onRefresh = () => refreshTab();
+    _scrollController.addListener(scrollUpdate);
+  }
+
+  void scrollUpdate() {
+    _viewModel.scrollPosition = _scrollController.offset;
   }
 
   @override
@@ -38,6 +64,7 @@ class FeedScreenViewState extends State<FeedScreenView> {
             : null,
       ),
       body: BaseView<FeedScreenViewModel>(
+        model: _viewModel,
         builder: (context, model, child) {
           return Column(
             children: [
@@ -83,14 +110,26 @@ class FeedScreenViewState extends State<FeedScreenView> {
             ],
           );
         },
-        onModelReady: (model) => model.init(
-          scrollToTop: () {
-            if (_scrollController.hasClients) {
-              _scrollController.jumpTo(0);
-            }
-          },
-        ),
+        onModelReady: (model) => model.init(),
       ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _viewModel.scrollToTop = null;
+    _viewModel.onRefresh = null;
+    _scrollController.removeListener(scrollUpdate);
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  @override
+  void refreshTab() {
+    _scrollController.animateTo(
+      0,
+      duration: const Duration(milliseconds: 400),
+      curve: Curves.decelerate,
     );
   }
 }

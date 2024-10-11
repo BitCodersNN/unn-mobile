@@ -64,6 +64,7 @@ import 'package:unn_mobile/core/viewmodels/comments_page_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/factories/attached_file_view_model_factory.dart';
 import 'package:unn_mobile/core/viewmodels/factories/feed_comment_view_model_factory.dart';
 import 'package:unn_mobile/core/viewmodels/factories/feed_post_view_model_factory.dart';
+import 'package:unn_mobile/core/viewmodels/factories/main_page_routes_view_models_factory.dart';
 import 'package:unn_mobile/core/viewmodels/factories/profile_view_model_factory.dart';
 import 'package:unn_mobile/core/viewmodels/factories/reaction_view_model_factory.dart';
 import 'package:unn_mobile/core/viewmodels/feed_screen_view_model.dart';
@@ -71,6 +72,7 @@ import 'package:unn_mobile/core/viewmodels/grades_screen_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/loading_page_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/schedule_screen_view_model.dart';
+import 'package:unn_mobile/core/viewmodels/schedule_tab_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/settings_screen_view_model.dart';
 
 void registerDependencies() {
@@ -292,6 +294,12 @@ void registerDependencies() {
     () => FeedCommentViewModelFactory(),
   );
 
+  injector.registerSingleton<MainPageRoutesViewModelsFactory>(
+    () => MainPageRoutesViewModelsFactory(
+      get<AuthorizationService>(),
+    ),
+  );
+
   //
   // ViewModels
   //
@@ -322,7 +330,7 @@ void registerDependencies() {
     () => MainPageViewModel(),
   );
   injector.registerDependency(
-    () => ScheduleScreenViewModel(
+    () => ScheduleTabViewModel(
       get<GettingScheduleService>(),
       get<SearchIdOnPortalService>(),
       get<OfflineScheduleProvider>(),
@@ -352,6 +360,11 @@ void registerDependencies() {
   injector.registerDependency(
     () => SettingsScreenViewModel(
       get<StorageService>(),
+    ),
+  );
+  injector.registerDependency(
+    () => ScheduleScreenViewModel(
+      get<CurrentUserSyncStorage>(),
     ),
   );
 }

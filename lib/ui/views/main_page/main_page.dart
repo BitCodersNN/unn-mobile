@@ -58,8 +58,14 @@ class _MainPageState extends State<MainPage> {
           bottomNavigationBar: MainPageNavigationBar(
             model: model,
             onDestinationSelected: (value) {
-              GoRouter.of(context)
-                  .go(MainPageRouting.navbarRoutes[value].pageRoute);
+              final currentRouteIndex =
+                  MainPageNavigationBar.getSelectedBarIndex(context);
+              if (isRootScreen(context) && value == currentRouteIndex) {
+                model.refreshTab(value);
+              } else {
+                GoRouter.of(context)
+                    .go(MainPageRouting.navbarRoutes[value].pageRoute);
+              }
             },
           ),
         );

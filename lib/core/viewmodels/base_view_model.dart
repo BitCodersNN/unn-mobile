@@ -8,6 +8,11 @@ class BaseViewModel extends ChangeNotifier {
 
   bool disposed = false;
 
+  bool get initialized => isInitialized;
+
+  @protected
+  bool isInitialized = false;
+
   void setState(ViewState viewState) {
     _state = viewState;
     notifyListeners();
