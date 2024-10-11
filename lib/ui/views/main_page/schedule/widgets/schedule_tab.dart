@@ -31,8 +31,8 @@ class ScheduleTabState extends State<ScheduleTab>
     with AutomaticKeepAliveClientMixin {
   final _searchController = flutter_changed.SearchController();
   final _searchFocusNode = FocusNode();
-  final _scrollController = AutoScrollController();
-  final _viewKey = GlobalKey();
+  late final AutoScrollController _scrollController;
+
   final Map<DateTimeRange, Widget> _exportRanges = {
     DateTimeRanges.untilEndOfWeek(): const Text('До конца этой недели'),
     DateTimeRanges.untilEndOfMonth(): const Text('До конца этого месяца'),
@@ -43,12 +43,16 @@ class ScheduleTabState extends State<ScheduleTab>
   @override
   void initState() {
     super.initState();
-    _searchController.addListener(() {
-      if (!_searchViewOpen && _searchController.isOpen) {
-        searchQueryForRestore = _searchController.text;
-      }
-      _searchViewOpen = _searchController.isOpen;
-    });
+    _searchController.addListener(searchListener);
+    _scrollController = AutoScrollController();
+    widget.viewModel.onRefresh = refreshTab;
+  }
+
+  void searchListener() {
+    if (!_searchViewOpen && _searchController.isOpen) {
+      searchQueryForRestore = _searchController.text;
+    }
+    _searchViewOpen = _searchController.isOpen;
   }
 
   @override
@@ -433,11 +437,18 @@ class ScheduleTabState extends State<ScheduleTab>
     );
   }
 
+  @override
+  void dispose() {
+    widget.viewModel.onRefresh = null;
+    _scrollController.dispose();
+    _searchController.removeListener(searchListener);
+    _searchController.dispose();
+    super.dispose();
+  }
+
   void refreshTab() {
-    final model =
-        (_viewKey.currentState as BaseViewState<ScheduleTabViewModel>).model;
-    if (model.displayedWeekOffset != 0) {
-      model.resetWeek();
+    if (widget.viewModel.displayedWeekOffset != 0) {
+      widget.viewModel.resetWeek();
     }
   }
 }

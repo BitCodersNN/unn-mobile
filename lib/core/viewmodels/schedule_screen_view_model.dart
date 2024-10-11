@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/misc/current_user_sync_storage.dart';
 import 'package:unn_mobile/core/models/employee_data.dart';
@@ -45,7 +44,6 @@ class ScheduleScreenViewModel extends BaseViewModel
 
   @override
   void refresh() {
-    // TODO: implement refresh
-    debugPrint('schedule refresh');
+    _tabViewModels[selectedTab].refresh();
   }
 }

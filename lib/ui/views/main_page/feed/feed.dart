@@ -4,11 +4,11 @@ import 'package:unn_mobile/core/viewmodels/factories/main_page_routes_view_model
 import 'package:unn_mobile/core/viewmodels/feed_screen_view_model.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/widgets/feed_post.dart';
-import 'package:unn_mobile/ui/views/main_page/main_page_navigation_bar.dart';
 import 'package:unn_mobile/ui/views/main_page/main_page_tab_state.dart';
 
 class FeedScreenView extends StatefulWidget {
-  const FeedScreenView({super.key});
+  final int routeIndex;
+  const FeedScreenView({super.key, required this.routeIndex});
 
   @override
   State<FeedScreenView> createState() => FeedScreenViewState();
@@ -23,11 +23,10 @@ class FeedScreenViewState extends State<FeedScreenView>
   @override
   void initState() {
     super.initState();
-    final currentRouteIndex =
-        MainPageNavigationBar.getSelectedBarIndex(context);
+
     _viewModel = Injector.appInstance
         .get<MainPageRoutesViewModelsFactory>()
-        .getViewModelByRouteIndex(currentRouteIndex);
+        .getViewModelByRouteIndex(widget.routeIndex);
 
     _scrollController = ScrollController(
       initialScrollOffset: _viewModel.scrollPosition,

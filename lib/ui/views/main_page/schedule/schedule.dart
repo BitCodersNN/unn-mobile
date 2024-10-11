@@ -5,20 +5,18 @@ import 'package:unn_mobile/core/viewmodels/factories/main_page_routes_view_model
 import 'package:unn_mobile/core/viewmodels/schedule_screen_view_model.dart';
 import 'package:unn_mobile/ui/builders/online_status_builder.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
-import 'package:unn_mobile/ui/views/main_page/main_page_navigation_bar.dart';
-import 'package:unn_mobile/ui/views/main_page/main_page_tab_state.dart';
 import 'package:unn_mobile/ui/views/main_page/schedule/widgets/schedule_tab.dart';
 
 class ScheduleScreenView extends StatefulWidget {
-  const ScheduleScreenView({super.key});
+  final int routeIndex;
+  const ScheduleScreenView({super.key, required this.routeIndex});
 
   @override
   State<ScheduleScreenView> createState() => _ScheduleScreenViewState();
 }
 
 class _ScheduleScreenViewState extends State<ScheduleScreenView>
-    with SingleTickerProviderStateMixin
-    implements MainPageTabState {
+    with SingleTickerProviderStateMixin {
   Map<IDType, String> tabTexts = {
     IDType.student: 'Студент',
     IDType.lecturer: 'Преподаватель',
@@ -30,11 +28,9 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView>
 
   @override
   void initState() {
-    final currentRouteIndex =
-        MainPageNavigationBar.getSelectedBarIndex(context);
     _viewModel = Injector.appInstance
         .get<MainPageRoutesViewModelsFactory>()
-        .getViewModelByRouteIndex(currentRouteIndex);
+        .getViewModelByRouteIndex(widget.routeIndex);
 
     _tabController = TabController(
       initialIndex: _viewModel.selectedTab,
@@ -116,7 +112,4 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView>
     _tabController.dispose();
     super.dispose();
   }
-
-  @override
-  void refreshTab() {}
 }

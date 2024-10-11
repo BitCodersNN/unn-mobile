@@ -31,6 +31,7 @@ class ScheduleTabViewModel extends BaseViewModel {
   final String _studentNameText = 'Имя студента';
   final String _lecturerNameText = 'Имя преподавателя';
   final String _groupNameText = 'Название группы';
+  void Function()? onRefresh;
 
   String _currentId = '';
 
@@ -310,5 +311,9 @@ class ScheduleTabViewModel extends BaseViewModel {
     final res =
         await _exportScheduleService.exportSchedule(exportScheduleFilter);
     return res == ExportScheduleResult.success;
+  }
+
+  void refresh() {
+    onRefresh?.call();
   }
 }
