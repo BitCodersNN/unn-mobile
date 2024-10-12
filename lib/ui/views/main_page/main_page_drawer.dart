@@ -2,9 +2,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:injector/injector.dart';
-import 'package:unn_mobile/core/misc/current_user_sync_storage.dart';
-import 'package:unn_mobile/core/viewmodels/main_page_view_model.dart';
-import 'package:unn_mobile/core/viewmodels/profile_view_model.dart';
+import 'package:unn_mobile/core/misc/library.dart';
+import 'package:unn_mobile/core/viewmodels/library.dart';
 import 'package:unn_mobile/ui/views/main_page/main_page_navigation_bar.dart';
 import 'package:unn_mobile/ui/views/main_page/main_page_routing.dart';
 

@@ -1,3 +1,5 @@
+part of 'library.dart';
+
 class _KeysForFileDataJsonConverter {
   static const String id = 'ID';
   static const String name = 'NAME';

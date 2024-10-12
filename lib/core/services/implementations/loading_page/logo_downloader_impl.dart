@@ -1,5 +1,4 @@
-import 'package:unn_mobile/core/constants/api_url_strings.dart';
-import 'package:unn_mobile/core/services/interfaces/base_file_downloader.dart';
+part of '../library.dart';
 
 class LogoDownloaderServiceImpl extends BaseFileDownloaderService {
   LogoDownloaderServiceImpl(super.loggerService)

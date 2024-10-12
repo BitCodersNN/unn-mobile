@@ -1,9 +1,4 @@
-import 'package:flutter_cache_manager/flutter_cache_manager.dart';
-import 'package:unn_mobile/core/misc/app_settings.dart';
-import 'package:unn_mobile/core/misc/file_functions.dart';
-import 'package:unn_mobile/core/services/interfaces/storage_service.dart';
-import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
-import 'package:unn_mobile/ui/views/main_page/main_page_routing.dart';
+part of 'package:unn_mobile/core/viewmodels/library.dart';
 
 class SettingsScreenViewModel extends BaseViewModel {
   final StorageService _storageService;

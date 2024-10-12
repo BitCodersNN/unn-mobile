@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+part of 'library.dart';
 
 class DateTimeRanges {
   static DateTimeRange currentWeek() {

@@ -1,6 +1,4 @@
-import 'package:unn_mobile/core/services/interfaces/auth_data_provider.dart';
-import 'package:unn_mobile/core/services/interfaces/storage_service.dart';
-import 'package:unn_mobile/core/models/auth_data.dart';
+part of 'library.dart';
 
 class _AuthDataProviderKeys {
   static const _loginKey = 'login_key';

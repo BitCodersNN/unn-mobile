@@ -1,7 +1,4 @@
-import 'package:flutter/foundation.dart';
-import 'package:injector/injector.dart';
-import 'package:unn_mobile/core/misc/lru_cache.dart';
-import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
+part of 'library.dart';
 
 abstract class CachedViewModelFactoryBase<TKey,
     TViewModel extends BaseViewModel> {

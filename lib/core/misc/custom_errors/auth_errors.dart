@@ -1,3 +1,5 @@
+part of 'library.dart';
+
 class SessionCookieException implements Exception {
   final String message;
   final Map<String, String>? privateInformation;

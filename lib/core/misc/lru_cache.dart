@@ -1,4 +1,4 @@
-import 'dart:collection';
+part of 'library.dart';
 
 class LRUCache<Key, Value> {
   int maxSize;

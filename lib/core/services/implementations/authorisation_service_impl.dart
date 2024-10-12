@@ -1,13 +1,4 @@
-import 'dart:io';
-
-import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:flutter/foundation.dart';
-import 'package:unn_mobile/core/constants/api_url_strings.dart';
-import 'package:unn_mobile/core/constants/session_identifier_strings.dart';
-import 'package:unn_mobile/core/misc/http_helper.dart';
-import 'package:unn_mobile/core/models/online_status_data.dart';
-import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
-import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
+part of 'library.dart';
 
 class AuthorizationServiceImpl extends ChangeNotifier
     implements AuthorizationService {

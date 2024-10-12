@@ -1,4 +1,4 @@
-import 'package:unn_mobile/core/models/blog_data.dart';
+part of '../library.dart';
 
 abstract interface class GettingBlogPosts {
   /// Получает 50 записей из живой ленты или 1 запись по конкретному postId

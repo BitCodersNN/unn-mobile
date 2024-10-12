@@ -1,15 +1,4 @@
-import 'package:event/event.dart';
-import 'package:html_unescape/html_unescape.dart';
-import 'package:injector/injector.dart';
-import 'package:unn_mobile/core/models/blog_data.dart';
-import 'package:unn_mobile/core/services/interfaces/getting_blog_posts.dart';
-import 'package:unn_mobile/core/services/interfaces/last_feed_load_date_time_provider.dart';
-import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
-import 'package:unn_mobile/core/viewmodels/attached_file_view_model.dart';
-import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
-import 'package:unn_mobile/core/viewmodels/factories/feed_post_view_model_factory.dart';
-import 'package:unn_mobile/core/viewmodels/profile_view_model.dart';
-import 'package:unn_mobile/core/viewmodels/reaction_view_model.dart';
+part of 'package:unn_mobile/core/viewmodels/library.dart';
 
 class FeedPostViewModel extends BaseViewModel {
   final GettingBlogPosts _gettingBlogPosts;

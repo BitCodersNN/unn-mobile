@@ -1,3 +1,5 @@
+part of 'library.dart';
+
 const String changelogString = //
     '''Версия 0.2.3:
 - Переделана система навигации приложения

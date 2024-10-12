@@ -1,4 +1,4 @@
-import 'dart:io';
+part of '../library.dart';
 
 abstract interface class FileDownloaderService {
   Future<File?> downloadFile(

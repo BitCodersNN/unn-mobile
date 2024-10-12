@@ -1,3 +1,5 @@
+part of 'library.dart';
+
 class _ScheduleSearchSuggestionItemKeys {
   static const String id = 'id';
   static const String label = 'label';

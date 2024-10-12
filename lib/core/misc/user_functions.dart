@@ -1,8 +1,4 @@
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/material.dart';
-import 'package:unn_mobile/core/models/employee_data.dart';
-import 'package:unn_mobile/core/models/student_data.dart';
-import 'package:unn_mobile/core/models/user_data.dart';
+part of 'library.dart';
 
 String getUserInitials(UserData? userData) {
   final String name = userData?.fullname.name ?? '';

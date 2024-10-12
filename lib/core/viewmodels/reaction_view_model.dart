@@ -1,11 +1,4 @@
-import 'package:injector/injector.dart';
-import 'package:unn_mobile/core/misc/current_user_sync_storage.dart';
-import 'package:unn_mobile/core/models/rating_list.dart';
-import 'package:unn_mobile/core/services/interfaces/getting_rating_list.dart';
-import 'package:unn_mobile/core/services/interfaces/getting_vote_key_signed.dart';
-import 'package:unn_mobile/core/services/interfaces/reaction_manager.dart';
-import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
-import 'package:unn_mobile/core/viewmodels/factories/reaction_view_model_factory.dart';
+part of 'package:unn_mobile/core/viewmodels/library.dart';
 
 class ReactionViewModel extends BaseViewModel {
   static const noId = -1;

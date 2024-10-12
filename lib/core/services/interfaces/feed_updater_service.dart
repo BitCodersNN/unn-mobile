@@ -1,7 +1,4 @@
-import 'dart:async';
-
-import 'package:flutter/material.dart';
-import 'package:unn_mobile/core/models/blog_data.dart';
+part of '../library.dart';
 
 abstract interface class FeedUpdaterService with ChangeNotifier {
   List<BlogData> get feedPosts;

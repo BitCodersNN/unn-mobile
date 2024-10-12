@@ -1,5 +1,4 @@
-import 'package:unn_mobile/core/models/schedule_filter.dart';
-import 'package:unn_mobile/core/models/subject.dart';
+part of '../library.dart';
 
 abstract interface class GettingScheduleService {
   /// Получение расписания

@@ -1,4 +1,4 @@
-import 'package:unn_mobile/core/models/mark_by_subject.dart';
+part of '../library.dart';
 
 abstract interface class GettingGradeBook {
   /// Получает зачетную книжку пользователя

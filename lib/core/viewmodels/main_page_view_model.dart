@@ -1,5 +1,4 @@
-import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
-import 'package:unn_mobile/core/viewmodels/profile_view_model.dart';
+part of 'package:unn_mobile/core/viewmodels/library.dart';
 
 class MainPageViewModel extends BaseViewModel {
   late ProfileViewModel _profileViewModel;

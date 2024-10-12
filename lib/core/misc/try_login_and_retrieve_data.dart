@@ -1,8 +1,4 @@
-import 'package:injector/injector.dart';
-import 'package:unn_mobile/core/models/online_status_data.dart';
-import 'package:unn_mobile/core/services/interfaces/authorisation_refresh_service.dart';
-import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
-import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
+part of 'library.dart';
 
 /// Получает данные или от функции, требующей доступ к серверу, или от функции, использующей локальное хранилище
 ///

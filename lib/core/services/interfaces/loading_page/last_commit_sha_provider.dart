@@ -1,4 +1,4 @@
-import 'package:unn_mobile/core/services/interfaces/data_provider.dart';
+part of '../../library.dart';
 
 abstract interface class LastCommitShaProvider
     implements DataProvider<String?> {

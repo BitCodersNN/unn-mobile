@@ -2,12 +2,11 @@ import 'dart:io';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
-import 'package:unn_mobile/core/constants/api_url_strings.dart';
-import 'package:unn_mobile/core/constants/session_identifier_strings.dart';
-import 'package:unn_mobile/core/misc/custom_errors/auth_errors.dart';
-import 'package:unn_mobile/core/misc/http_helper.dart';
-import 'package:unn_mobile/core/models/online_status_data.dart';
-import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
+import 'package:unn_mobile/core/constants/library.dart';
+import 'package:unn_mobile/core/misc/custom_errors/library.dart';
+import 'package:unn_mobile/core/misc/library.dart';
+import 'package:unn_mobile/core/models/library.dart';
+import 'package:unn_mobile/core/services/library.dart';
 
 class LegacyAuthorizationServiceImpl extends ChangeNotifier
     implements AuthorizationService {

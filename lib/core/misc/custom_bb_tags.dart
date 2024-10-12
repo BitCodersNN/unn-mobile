@@ -1,11 +1,4 @@
-import 'package:flutter/material.dart';
-import 'package:injector/injector.dart';
-import 'package:unn_mobile/core/misc/hex_color.dart';
-import 'package:flutter_bbcode/flutter_bbcode.dart';
-import 'package:bbob_dart/bbob_dart.dart' as bbob;
-import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
-import 'package:unn_mobile/ui/widgets/spoiler_display.dart';
-import 'package:url_launcher/url_launcher.dart';
+part of 'library.dart';
 
 class PTag extends StyleTag {
   PTag() : super('p');

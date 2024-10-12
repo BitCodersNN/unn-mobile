@@ -1,4 +1,4 @@
-import 'package:unn_mobile/core/models/blog_post_comment.dart';
+part of '../library.dart';
 
 abstract interface class GettingBlogPostComments {
   static const commentsPerPage = 20;

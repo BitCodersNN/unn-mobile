@@ -1,5 +1,4 @@
-import 'package:flutter/material.dart';
-import 'package:unn_mobile/core/misc/custom_errors/auth_errors.dart';
+part of '../library.dart';
 
 enum AuthRequestResult {
   success,

@@ -1,5 +1,4 @@
-import 'package:unn_mobile/core/models/subject.dart';
-import 'package:unn_mobile/core/services/interfaces/data_provider.dart';
+part of '../library.dart';
 
 abstract interface class OfflineScheduleProvider
     implements DataProvider<List<Subject>?> {

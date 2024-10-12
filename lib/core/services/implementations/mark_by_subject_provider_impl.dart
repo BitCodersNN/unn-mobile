@@ -1,8 +1,4 @@
-import 'dart:convert';
-
-import 'package:unn_mobile/core/models/mark_by_subject.dart';
-import 'package:unn_mobile/core/services/interfaces/mark_by_subject_provider.dart';
-import 'package:unn_mobile/core/services/interfaces/storage_service.dart';
+part of 'library.dart';
 
 class _OfflineMarkBySubjectProviderKeys {
   static const markBySubject = 'markBySubject';

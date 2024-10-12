@@ -1,3 +1,5 @@
+part of 'library.dart';
+
 class RatingListStrings {
   static const String voteTypeId = 'params[RATING_VOTE_TYPE_ID]';
   static const String voteKeySigned = 'params[RATING_VOTE_KEY_SIGNED]';

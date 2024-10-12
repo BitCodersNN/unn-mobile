@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+part of 'library.dart';
 
 extension ExtraDateComparisons on DateTime {
   bool isSameDate(DateTime other) {

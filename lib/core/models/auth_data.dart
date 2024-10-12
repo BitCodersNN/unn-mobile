@@ -1,3 +1,5 @@
+part of 'library.dart';
+
 class AuthData {
   final String login;
   final String password;

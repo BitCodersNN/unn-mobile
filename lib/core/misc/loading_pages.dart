@@ -1,6 +1,4 @@
-import 'package:flutter/material.dart';
-import 'package:unn_mobile/core/misc/date_time_extensions.dart';
-import 'package:unn_mobile/core/models/loading_page_data.dart';
+part of 'library.dart';
 
 enum LoadingPageType {
   main,

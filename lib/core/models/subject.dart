@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+part of 'library.dart';
 
 class _AbbreviatedNamesOfSubjectTypes {
   static const String lecture = 'лекци';

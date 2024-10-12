@@ -1,3 +1,5 @@
+part of 'library.dart';
+
 class ProfilesStrings {
   static const String profilesKey = 'profiles';
   static const String type = 'type';

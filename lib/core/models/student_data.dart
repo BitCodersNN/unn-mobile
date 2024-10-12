@@ -1,4 +1,4 @@
-import 'package:unn_mobile/core/models/user_data.dart';
+part of 'library.dart';
 
 class _KeysForStudentDataJsonConverter {
   static const String eduForm = 'edu_form';

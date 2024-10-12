@@ -1,14 +1,4 @@
-import 'dart:convert';
-import 'dart:io';
-
-import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'package:unn_mobile/core/constants/api_url_strings.dart';
-import 'package:unn_mobile/core/misc/http_helper.dart';
-import 'package:unn_mobile/core/models/schedule_filter.dart';
-import 'package:unn_mobile/core/models/subject.dart';
-import 'package:unn_mobile/core/services/interfaces/getting_schedule_service.dart';
-import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
+part of 'library.dart';
 
 class GettingScheduleServiceImpl implements GettingScheduleService {
   final LoggerService _loggerService;

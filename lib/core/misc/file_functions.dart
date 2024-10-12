@@ -1,8 +1,4 @@
-import 'dart:io';
-
-import 'package:injector/injector.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
+part of 'library.dart';
 
 Future<String?> getDownloadPath() async {
   Directory? directory;

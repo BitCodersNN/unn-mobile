@@ -1,3 +1,5 @@
+part of 'library.dart';
+
 class _RegularExpressionSource {
   static const keySigned = r"keySigned: '.*',";
   static const commentIdAndMessage = r"top\.text\d+ = text(\d+) = '([^']*)'";

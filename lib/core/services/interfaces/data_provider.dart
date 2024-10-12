@@ -1,3 +1,5 @@
+part of '../library.dart';
+
 abstract interface class DataProvider<T> {
   /// Получает данные из хранилища
   ///

@@ -1,7 +1,4 @@
-import 'package:unn_mobile/core/services/interfaces/feed_updater_service.dart';
-import 'package:unn_mobile/core/services/interfaces/last_feed_load_date_time_provider.dart';
-import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
-import 'package:unn_mobile/core/viewmodels/feed_post_view_model.dart';
+part of 'package:unn_mobile/core/viewmodels/library.dart';
 
 class FeedScreenViewModel extends BaseViewModel {
   static const postsPerPage = 5;
