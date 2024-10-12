@@ -43,6 +43,14 @@ class _GradesScreenViewState extends State<GradesScreenView> {
         if (snapshot.connectionState == ConnectionState.done) {
           if (snapshot.hasData) {
             final tabs = snapshot.data!.keys.toList();
+            if (tabs.isEmpty) {
+              return const Center(
+                child: Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Text('Нет данных'),
+                ),
+              );
+            }
             tabs.sort();
             return DefaultTabController(
               initialIndex: tabs.length - 1,

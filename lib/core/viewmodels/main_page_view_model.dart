@@ -1,60 +1,15 @@
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/material.dart';
-import 'package:unn_mobile/core/misc/current_user_sync_storage.dart';
-import 'package:unn_mobile/core/models/student_data.dart';
-import 'package:unn_mobile/core/services/interfaces/getting_profile_of_current_user_service.dart';
-import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
+import 'package:unn_mobile/core/viewmodels/profile_view_model.dart';
 
 class MainPageViewModel extends BaseViewModel {
-  final LoggerService _loggerService;
-  final GettingProfileOfCurrentUser _gettingCurrentUser;
-  final CurrentUserSyncStorage _currentUserSyncStorage;
+  late ProfileViewModel _profileViewModel;
 
-  String _userNameAndSurname = '';
-  String _userGroup = '';
+  MainPageViewModel();
 
-  ImageProvider<Object>? _userAvatar;
-
-  String? _avatarUrl;
-
-  MainPageViewModel(
-    this._gettingCurrentUser,
-    this._currentUserSyncStorage,
-    this._loggerService,
-  );
-
-  String? get avatarUrl => _avatarUrl;
-  ImageProvider<Object>? get userAvatar => _userAvatar;
-  String get userGroup => _userGroup;
-  String get userNameAndSurname => _userNameAndSurname;
+  ProfileViewModel get profileViewModel => _profileViewModel;
 
   void init() {
     setState(ViewState.busy);
-    // _feedUpdaterService.updateFeed();
-    _gettingCurrentUser.getProfileOfCurrentUser().then(
-      (value) {
-        value = value ?? _currentUserSyncStorage.currentUserData;
-        if (value == null) {
-          setState(ViewState.idle);
-          return;
-        }
-        if (value is StudentData) {
-          final StudentData studentProfile = value;
-          _userNameAndSurname =
-              '${studentProfile.name} ${studentProfile.lastname}';
-          _userGroup = studentProfile.eduGroup;
-          _userAvatar = studentProfile.fullUrlPhoto == null
-              ? null
-              : CachedNetworkImageProvider(studentProfile.fullUrlPhoto!);
-        }
-        setState(ViewState.idle);
-      },
-    ).onError(
-      (error, stackTrace) {
-        _loggerService.logError(error, stackTrace);
-        setState(ViewState.idle);
-      },
-    );
+    _profileViewModel = ProfileViewModel.currentUser();
   }
 }
