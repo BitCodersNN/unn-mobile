@@ -3,7 +3,7 @@ description: A mobile application for UNN Portal website
 publish_to: 'none'
 
 
-version: 0.2.3+226
+version: 0.2.3+228
 
 
 environment:

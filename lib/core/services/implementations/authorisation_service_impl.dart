@@ -63,11 +63,13 @@ class AuthorizationServiceImpl extends ChangeNotifier
         _onlineStatus.isOnline = false;
         return AuthRequestResult.noInternet;
       } on SocketException catch (e) {
-        if (e.osError?.errorCode == 104) {
+        if ({100, 101, 102, 103, 104, 110, 111, 112, 113}
+            .contains(e.osError?.errorCode)) {
           _onlineStatus.isOnline = false;
           return AuthRequestResult.noInternet;
+        } else {
+          rethrow;
         }
-        rethrow;
       } on Exception catch (_) {
         rethrow;
       }

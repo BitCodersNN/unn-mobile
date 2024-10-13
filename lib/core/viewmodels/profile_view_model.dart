@@ -1,5 +1,6 @@
 import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/misc/user_functions.dart';
+import 'package:unn_mobile/core/models/student_data.dart';
 import 'package:unn_mobile/core/models/user_data.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_profile.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_profile_of_current_user_service.dart';
@@ -18,22 +19,32 @@ class ProfileViewModel extends BaseViewModel {
 
   UserData? _loadedData;
 
+  String? _description;
+
   ProfileViewModel(
     this._getCurrentUserService,
     this._getProfileService,
     this._loggerService,
   );
+
   factory ProfileViewModel.cached(ProfileCacheKey key) {
     return Injector.appInstance
         .get<ProfileViewModelFactory>()
         .getViewModel(key);
   }
-
+  factory ProfileViewModel.currentUser() {
+    return Injector.appInstance
+        .get<ProfileViewModelFactory>()
+        .getCurrentUserViewModel();
+  }
   String? get avatarUrl => _loadedData?.fullUrlPhoto;
+
+  String get description => _description ?? '';
 
   String get fullname =>
       _loadedData?.fullname.toString() ?? //
-      'Неизвестный пользователь';
+      'Не удалось загрузить';
+
   bool get hasAvatar => _loadedData?.fullUrlPhoto != null;
 
   bool get hasError => _hasError;
@@ -56,6 +67,10 @@ class ProfileViewModel extends BaseViewModel {
       (loadCurrentUser ? _getCurrentUser() : _getProfile(userId!, loadFromPost))
           .then((data) {
         _loadedData = data;
+        _description = switch (data.runtimeType) {
+          const (StudentData) => (data as StudentData).eduGroup,
+          _ => '',
+        };
       }).catchError((error, stack) {
         _loggerService.logError(error, stack);
         _hasError = true;

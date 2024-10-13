@@ -1,8 +1,10 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/misc/current_user_sync_storage.dart';
 import 'package:unn_mobile/core/viewmodels/main_page_view_model.dart';
+import 'package:unn_mobile/core/viewmodels/profile_view_model.dart';
 import 'package:unn_mobile/ui/views/main_page/main_page_navigation_bar.dart';
 import 'package:unn_mobile/ui/views/main_page/main_page_routing.dart';
 
@@ -66,7 +68,7 @@ class _MainPageDrawerState extends State<MainPageDrawer> {
     final theme = Theme.of(context);
 
     final List<Widget> drawerChildren = [
-      _getDrawerHeader(theme, vm),
+      _getDrawerHeader(theme, vm.profileViewModel),
       for (final route in routes)
         NavigationDrawerDestination(
           icon: Icon(route.selectedIcon),
@@ -77,7 +79,7 @@ class _MainPageDrawerState extends State<MainPageDrawer> {
     return drawerChildren;
   }
 
-  Widget _getDrawerHeader(ThemeData theme, MainPageViewModel value) {
+  Widget _getDrawerHeader(ThemeData theme, ProfileViewModel value) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(0, 0, 0, 10),
       child: SizedBox(
@@ -94,52 +96,58 @@ class _MainPageDrawerState extends State<MainPageDrawer> {
                   width: 72,
                   height: 72,
                   child: CircleAvatar(
-                    backgroundImage: value.userAvatar,
-                    child: value.userAvatar == null
+                    backgroundImage: value.hasAvatar
+                        ? CachedNetworkImageProvider(value.avatarUrl!)
+                        : null,
+                    child: !value.hasAvatar
                         ? Text(
                             style: theme.textTheme.headlineLarge!.copyWith(
                               color: theme.colorScheme.onSurface,
                             ),
-                            value.userNameAndSurname
-                                .replaceAll(RegExp('[а-яё ]'), ''),
+                            value.initials,
                           )
                         : null,
                   ),
                 ),
               ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(4.0),
-                    child: Text(
-                      value.userNameAndSurname,
-                      overflow: TextOverflow.fade,
-                      textAlign: TextAlign.left,
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: theme.colorScheme.onPrimary,
-                        fontFamily: 'Inter',
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(4.0),
+                      child: Text(
+                        value.fullname,
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 2,
+                        softWrap: true,
+                        textWidthBasis: TextWidthBasis.parent,
+                        textAlign: TextAlign.left,
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: theme.colorScheme.onPrimary,
+                          fontFamily: 'Inter',
+                        ),
                       ),
                     ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(4.0),
-                    child: Text(
-                      value.userGroup,
-                      overflow: TextOverflow.fade,
-                      textAlign: TextAlign.left,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                        color: Color(0xFFFFFFFF),
-                        fontFamily: 'Inter',
+                    Padding(
+                      padding: const EdgeInsets.all(4.0),
+                      child: Text(
+                        value.description,
+                        overflow: TextOverflow.fade,
+                        textAlign: TextAlign.left,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          color: Color(0xFFFFFFFF),
+                          fontFamily: 'Inter',
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ],
           ),

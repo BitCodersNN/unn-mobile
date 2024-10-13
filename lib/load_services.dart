@@ -319,11 +319,7 @@ void registerDependencies() {
     ),
   );
   injector.registerDependency(
-    () => MainPageViewModel(
-      get<GettingProfileOfCurrentUser>(),
-      get<CurrentUserSyncStorage>(),
-      get<LoggerService>(),
-    ),
+    () => MainPageViewModel(),
   );
   injector.registerDependency(
     () => ScheduleScreenViewModel(
