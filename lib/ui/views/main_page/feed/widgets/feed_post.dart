@@ -312,7 +312,8 @@ Future<ShareResult> sharePressed(
   final logger = Injector.appInstance.get<LoggerService>();
 
   try {
-    final String formattedDate = DateFormat('d MMMM yyyy, HH:mm', 'ru_RU').format(postTime);
+    final String formattedDate =
+        DateFormat('d MMMM yyyy, HH:mm', 'ru_RU').format(postTime);
     final String text = '$authorName\n$formattedDate\n\n$postText';
 
     final List<XFile> xFiles = [];
@@ -325,7 +326,7 @@ Future<ShareResult> sharePressed(
     }
 
     if (!context.mounted) {
-      return ShareResult.unavailable; 
+      return ShareResult.unavailable;
     }
     final RenderBox box = context.findRenderObject() as RenderBox;
     if (xFiles.isNotEmpty) {
@@ -345,8 +346,6 @@ Future<ShareResult> sharePressed(
     rethrow;
   }
 }
-
-
 
 class _PostHeader extends StatelessWidget {
   final DateTime postTime;
