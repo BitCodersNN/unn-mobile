@@ -1,15 +1,4 @@
-import 'dart:convert';
-import 'dart:io';
-
-import 'package:unn_mobile/core/constants/api_url_strings.dart';
-import 'package:unn_mobile/core/misc/http_helper.dart';
-import 'package:unn_mobile/core/models/employee_data.dart';
-import 'package:unn_mobile/core/models/schedule_search_suggestion_item.dart';
-import 'package:unn_mobile/core/models/schedule_filter.dart';
-import 'package:unn_mobile/core/models/student_data.dart';
-import 'package:unn_mobile/core/services/interfaces/getting_profile_of_current_user_service.dart';
-import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
-import 'package:unn_mobile/core/services/interfaces/search_id_on_portal_service.dart';
+part of 'library.dart';
 
 class SearchIdOnPortalServiceImpl implements SearchIdOnPortalService {
   final GettingProfileOfCurrentUser _gettingProfileOfCurrentUser;

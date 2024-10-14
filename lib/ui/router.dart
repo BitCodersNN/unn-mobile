@@ -1,5 +1,5 @@
 import 'package:go_router/go_router.dart';
-import 'package:unn_mobile/core/misc/app_settings.dart';
+import 'package:unn_mobile/core/misc/library.dart';
 import 'package:unn_mobile/ui/views/auth_page/auth_page.dart';
 import 'package:unn_mobile/ui/views/loading_page/loading_page.dart';
 import 'package:unn_mobile/ui/views/main_page/main_page.dart';

@@ -1,11 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bbcode/flutter_bbcode.dart';
-import 'package:unn_mobile/core/misc/custom_bb_tags.dart';
-import 'package:unn_mobile/core/models/rating_list.dart';
-import 'package:unn_mobile/core/viewmodels/feed_comment_view_model.dart';
-import 'package:unn_mobile/core/viewmodels/profile_view_model.dart';
-import 'package:unn_mobile/core/viewmodels/reaction_view_model.dart';
+import 'package:unn_mobile/core/misc/library.dart';
+import 'package:unn_mobile/core/models/library.dart';
+import 'package:unn_mobile/core/viewmodels/library.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/functions/reactions_window.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/widgets/attached_file.dart';

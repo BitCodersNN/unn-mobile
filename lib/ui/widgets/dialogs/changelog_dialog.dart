@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bbcode/flutter_bbcode.dart';
-import 'package:unn_mobile/core/constants/changelog.dart';
-import 'package:unn_mobile/core/misc/custom_bb_tags.dart';
+import 'package:unn_mobile/core/constants/library.dart';
+import 'package:unn_mobile/core/misc/library.dart';
 import 'package:unn_mobile/ui/widgets/adaptive_dialog_action.dart';
 
 class ChangelogDialog extends StatelessWidget {

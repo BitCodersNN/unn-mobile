@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+part of '../library.dart';
 
 abstract interface class LoggerService {
   /// Записывает сообщение в лог

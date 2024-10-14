@@ -1,3 +1,5 @@
+part of 'library.dart';
+
 class _KeysForBlogPostCommentJsonConverter {
   static const String id = 'id';
   static const String dateTime = 'dateTime';

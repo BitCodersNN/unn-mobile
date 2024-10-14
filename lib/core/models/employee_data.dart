@@ -1,4 +1,4 @@
-import 'package:unn_mobile/core/models/user_data.dart';
+part of 'library.dart';
 
 class _KeysForEmployeeDataJsonConverter {
   static const String user = 'user';

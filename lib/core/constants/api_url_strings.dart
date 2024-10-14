@@ -1,3 +1,5 @@
+part of 'library.dart';
+
 class ApiPaths {
   /// Доменное имя gitHub
   static const String gitHubHost = 'raw.githubusercontent.com';

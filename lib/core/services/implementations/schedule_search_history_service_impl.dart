@@ -1,12 +1,4 @@
-import 'dart:async';
-import 'dart:collection';
-import 'dart:convert';
-
-import 'package:unn_mobile/core/models/schedule_filter.dart';
-import 'package:unn_mobile/core/models/schedule_search_suggestion_item.dart';
-import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
-import 'package:unn_mobile/core/services/interfaces/schedule_search_history_service.dart';
-import 'package:unn_mobile/core/services/interfaces/storage_service.dart';
+part of 'library.dart';
 
 class ScheduleSearchHistoryServiceImpl implements ScheduleSearchHistoryService {
   final StorageService _storage;

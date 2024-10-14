@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:unn_mobile/core/models/subject.dart';
+import 'package:unn_mobile/core/models/library.dart';
 import 'package:unn_mobile/ui/unn_mobile_colors.dart';
 import 'package:url_launcher/url_launcher.dart';
 

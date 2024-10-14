@@ -1,3 +1,5 @@
+part of 'library.dart';
+
 class SessionIdentifierStrings {
   static const String sessionIdCookieKey = 'PHPSESSID';
   static const String sessid = 'sessid';

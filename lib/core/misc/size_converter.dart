@@ -1,4 +1,4 @@
-import 'dart:math';
+part of 'library.dart';
 
 enum SizeUnit {
   byte,

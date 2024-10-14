@@ -1,3 +1,5 @@
+part of 'library.dart';
+
 class _KeysForMarkBySubjectJsonConverter {
   static const String controlType = 'control_type';
   static const String date = 'date';

@@ -1,6 +1,4 @@
-import 'package:unn_mobile/core/models/user_data.dart';
-import 'package:unn_mobile/core/models/student_data.dart';
-import 'package:unn_mobile/core/models/employee_data.dart';
+part of '../library.dart';
 
 abstract interface class GettingProfile {
   /// Получает id профиля по id автора поста

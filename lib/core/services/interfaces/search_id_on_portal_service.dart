@@ -1,5 +1,4 @@
-import 'package:unn_mobile/core/models/schedule_search_suggestion_item.dart';
-import 'package:unn_mobile/core/models/schedule_filter.dart';
+part of '../library.dart';
 
 abstract interface class SearchIdOnPortalService {
   /// Получение ID текущего пользователя, которое используется на unn-portal

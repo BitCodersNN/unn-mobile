@@ -1,0 +1,52 @@
+library services.implementations;
+
+import 'dart:async';
+import 'dart:collection';
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:device_calendar/device_calendar.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:icalendar_parser/icalendar_parser.dart';
+import 'package:intl/intl.dart';
+import 'package:permission_handler_platform_interface/permission_handler_platform_interface.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:unn_mobile/core/constants/library.dart';
+import 'package:unn_mobile/core/misc/library.dart';
+import 'package:unn_mobile/core/models/library.dart';
+import 'package:unn_mobile/core/services/library.dart';
+
+part 'auth_data_provider_impl.dart';
+part 'authorisation_refresh_service_impl.dart';
+part 'authorisation_service_impl.dart';
+part 'export_schedule_service_impl.dart';
+part 'feed_file_downloader_impl.dart';
+part 'feed_updater_service_impl.dart';
+part 'firebase_logger.dart';
+part 'getting_blog_post_comments_impl.dart';
+part 'getting_blog_posts_impl.dart';
+part 'getting_file_data_impl.dart';
+part 'getting_grade_book_impl.dart';
+part 'getting_profile_impl.dart';
+part 'getting_profile_of_current_user_service_impl.dart';
+part 'getting_rating_list_impl.dart';
+part 'getting_schedule_service_impl.dart';
+part 'getting_vote_key_signed_impl.dart';
+part 'last_feed_load_date_time_provider_impl.dart';
+part 'mark_by_subject_provider_impl.dart';
+part 'offline_schedule_provider_impl.dart';
+part 'reaction_manager_impl.dart';
+part 'schedule_search_history_service_impl.dart';
+part 'search_id_on_portal_service_impl.dart';
+part 'storage_service_impl.dart';
+part 'user_data_provider_impl.dart';
+
+part 'loading_page/last_commit_sha_impl.dart';
+part 'loading_page/last_commit_sha_provider_impl.dart';
+part 'loading_page/loading_page_config.dart';
+part 'loading_page/loading_page_provider_impl.dart';
+part 'loading_page/logo_downloader_impl.dart';

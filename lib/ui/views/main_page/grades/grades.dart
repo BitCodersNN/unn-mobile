@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:unn_mobile/core/models/mark_by_subject.dart';
-import 'package:unn_mobile/core/viewmodels/grades_screen_view_model.dart';
+import 'package:unn_mobile/core/models/library.dart';
+import 'package:unn_mobile/core/viewmodels/library.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
 
 class GradesScreenView extends StatefulWidget {

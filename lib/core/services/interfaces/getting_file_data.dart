@@ -1,4 +1,4 @@
-import 'package:unn_mobile/core/models/file_data.dart';
+part of '../library.dart';
 
 abstract interface class GettingFileData {
   /// Получает информацию о файле по id

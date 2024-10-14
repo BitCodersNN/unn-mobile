@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:unn_mobile/core/models/subject.dart';
+import 'package:unn_mobile/core/models/library.dart';
 
 class UnnMobileColors extends ThemeExtension<UnnMobileColors> {
   final Color? scheduleDayHighlight;

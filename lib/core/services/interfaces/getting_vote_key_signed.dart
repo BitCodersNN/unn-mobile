@@ -1,3 +1,5 @@
+part of '../library.dart';
+
 abstract interface class GettingVoteKeySigned {
   /// Получает voteKeySigned для поста
   ///

@@ -1,4 +1,4 @@
-import 'package:unn_mobile/core/models/schedule_filter.dart';
+part of '../library.dart';
 
 enum ExportScheduleResult {
   success,

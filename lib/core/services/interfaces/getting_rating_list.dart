@@ -1,4 +1,4 @@
-import 'package:unn_mobile/core/models/rating_list.dart';
+part of '../library.dart';
 
 abstract interface class GettingRatingList {
   /// Получает [RatingList], содержащий одну реакцию и до 20 пользователей, поставившие эту реакцию

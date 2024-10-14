@@ -1,13 +1,4 @@
-import 'dart:convert';
-import 'dart:io';
-
-import 'package:unn_mobile/core/constants/api_url_strings.dart';
-import 'package:unn_mobile/core/constants/session_identifier_strings.dart';
-import 'package:unn_mobile/core/misc/http_helper.dart';
-import 'package:unn_mobile/core/models/file_data.dart';
-import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
-import 'package:unn_mobile/core/services/interfaces/getting_file_data.dart';
-import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
+part of 'library.dart';
 
 class GettingFileDataImpl implements GettingFileData {
   final AuthorizationService _authorizationService;

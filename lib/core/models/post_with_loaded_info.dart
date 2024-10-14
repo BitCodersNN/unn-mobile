@@ -1,5 +1,4 @@
-import 'package:unn_mobile/core/models/blog_data.dart';
-import 'package:unn_mobile/core/models/rating_list.dart';
+part of 'library.dart';
 
 class KeysForPostWithLoadedInfoJsonConverter {
   static const String author = 'author';

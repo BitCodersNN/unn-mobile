@@ -1,8 +1,4 @@
-import 'dart:convert';
-
-import 'package:unn_mobile/core/models/subject.dart';
-import 'package:unn_mobile/core/services/interfaces/offline_schedule_provider.dart';
-import 'package:unn_mobile/core/services/interfaces/storage_service.dart';
+part of 'library.dart';
 
 class _OfflineScheduleProviderKeys {
   static const scheduleKey = 'schedule_key';

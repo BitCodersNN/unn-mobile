@@ -1,3 +1,5 @@
+part of 'library.dart';
+
 class _KeysForUserDataJsonConverter {
   static const String bitrixId = 'bitrix_id';
   static const String user = 'user';

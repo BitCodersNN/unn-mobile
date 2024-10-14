@@ -1,10 +1,4 @@
-import 'dart:io';
-
-import 'package:flutter/foundation.dart';
-import 'package:unn_mobile/core/misc/file_functions.dart';
-import 'package:unn_mobile/core/misc/http_helper.dart';
-import 'package:unn_mobile/core/services/interfaces/file_downloader.dart';
-import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
+part of '../library.dart';
 
 abstract class BaseFileDownloaderService implements FileDownloaderService {
   final LoggerService _loggerService;

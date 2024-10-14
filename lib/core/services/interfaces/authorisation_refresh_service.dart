@@ -1,4 +1,4 @@
-import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
+part of '../library.dart';
 
 abstract interface class AuthorizationRefreshService {
   /// Если логин и пароль есть в хранилище, то авторизует пользователя

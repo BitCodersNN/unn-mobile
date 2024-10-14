@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+part of 'library.dart';
 
 class _KeysForLoadingPageModelJsonConverter {
   static const String logoPath = 'logo_path';

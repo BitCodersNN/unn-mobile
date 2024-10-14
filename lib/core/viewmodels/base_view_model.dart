@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+part of 'package:unn_mobile/core/viewmodels/library.dart';
 
 class BaseViewModel extends ChangeNotifier {
   ViewState _state = ViewState.idle;

@@ -1,4 +1,4 @@
-import 'package:unn_mobile/core/models/rating_list.dart';
+part of '../library.dart';
 
 abstract interface class ReactionManager {
   /// Добавление реакции

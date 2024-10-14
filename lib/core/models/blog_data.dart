@@ -1,3 +1,5 @@
+part of 'library.dart';
+
 class _KeysForBlogDataJsonConverter {
   static const String id = 'ID';
   static const String blogId = 'BLOG_ID';

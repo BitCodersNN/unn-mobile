@@ -1,5 +1,4 @@
-import 'package:unn_mobile/core/models/user_data.dart';
-import 'package:unn_mobile/core/services/interfaces/data_provider.dart';
+part of '../library.dart';
 
 abstract interface class UserDataProvider implements DataProvider<UserData?> {
   /// Получает данные профиля пользователя из хранилища

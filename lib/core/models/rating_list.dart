@@ -1,3 +1,5 @@
+part of 'library.dart';
+
 class _KeysForUserInfoJsonConverter {
   static const String id = 'USER_ID';
   static const String fullname = 'FULL_NAME';

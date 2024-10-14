@@ -1,6 +1,4 @@
-import 'package:unn_mobile/core/constants/session_identifier_strings.dart';
-import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
-import 'package:unn_mobile/core/services/interfaces/base_file_downloader.dart';
+part of 'library.dart';
 
 class FeedFileDownloaderImpl extends BaseFileDownloaderService {
   final AuthorizationService _authorisationService;

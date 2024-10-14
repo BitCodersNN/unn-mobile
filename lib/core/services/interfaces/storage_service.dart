@@ -1,3 +1,5 @@
+part of '../library.dart';
+
 abstract interface class StorageService {
   Future<bool> containsKey({required String key, bool secure = false});
   Future<String?> read({required String key, bool secure = false});
