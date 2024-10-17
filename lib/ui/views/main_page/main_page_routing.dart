@@ -40,7 +40,9 @@ class MainPageRouting {
       Icons.star_border,
       'Лента',
       '/feed',
-      builder: (p0) => const FeedScreenView(),
+      builder: (p0) => const FeedScreenView(
+        routeIndex: 0,
+      ),
       userTypes: [
         StudentData,
         EmployeeData,
@@ -63,7 +65,9 @@ class MainPageRouting {
       Icons.calendar_month_outlined,
       'Расписание',
       '/schedule',
-      builder: (p0) => const ScheduleScreenView(),
+      builder: (p0) => const ScheduleScreenView(
+        routeIndex: 1,
+      ),
       userTypes: [StudentData, EmployeeData, UserData],
     ),
     MainPageRouteData(

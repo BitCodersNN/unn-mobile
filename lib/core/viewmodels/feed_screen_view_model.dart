@@ -2,8 +2,10 @@ import 'package:unn_mobile/core/services/interfaces/feed_updater_service.dart';
 import 'package:unn_mobile/core/services/interfaces/last_feed_load_date_time_provider.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/feed_post_view_model.dart';
+import 'package:unn_mobile/core/viewmodels/main_page_route_view_model.dart';
 
-class FeedScreenViewModel extends BaseViewModel {
+class FeedScreenViewModel extends BaseViewModel
+    implements MainPageRouteViewModel {
   static const postsPerPage = 5;
 
   final FeedUpdaterService _feedStreamUpdater;
@@ -11,9 +13,13 @@ class FeedScreenViewModel extends BaseViewModel {
 
   final List<FeedPostViewModel> posts = [];
 
+  double scrollPosition = 0.0;
+
   bool _showUpdateButton = false;
 
   void Function()? scrollToTop;
+
+  void Function()? onRefresh;
 
   bool _loadingPosts = false;
 
@@ -84,8 +90,12 @@ class FeedScreenViewModel extends BaseViewModel {
     notifyListeners();
   }
 
-  void init({void Function()? scrollToTop}) {
-    this.scrollToTop = scrollToTop;
+  void init() {
+    if (isInitialized) {
+      return;
+    }
+    isInitialized = true;
+
     syncFeed();
     _feedStreamUpdater.addListener(onFeedUpdated);
   }
@@ -134,5 +144,10 @@ class FeedScreenViewModel extends BaseViewModel {
       _loadingPosts = false;
       notifyListeners();
     });
+  }
+
+  @override
+  void refresh() {
+    onRefresh?.call();
   }
 }
