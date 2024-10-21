@@ -4,9 +4,7 @@ import 'dart:io';
 import 'package:unn_mobile/core/constants/api_url_strings.dart';
 import 'package:unn_mobile/core/constants/session_identifier_strings.dart';
 import 'package:unn_mobile/core/misc/http_helper.dart';
-import 'package:unn_mobile/core/models/blog_data.dart';
-import 'package:unn_mobile/core/models/rating_list.dart';
-import 'package:unn_mobile/core/models/user_short_info.dart';
+import 'package:unn_mobile/core/models/blog_post.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/blog_posts.dart';
 import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
@@ -21,7 +19,7 @@ class BlogPostsServiceImpl implements BlogPostsService {
   );
 
   @override
-  Future<List<BlogData>?> getBlogPosts({
+  Future<List<BlogPost>?> getBlogPosts({
     int? pageNumber,
     int perpage = 50,
   }) async {
@@ -69,15 +67,11 @@ class BlogPostsServiceImpl implements BlogPostsService {
     return blogPosts;
   }
 
-  List<BlogData>? _parseBlogPostsFromJsonList(List<dynamic> jsonList) {
-    List<BlogData>? blogPosts;
+  List<BlogPost>? _parseBlogPostsFromJsonList(List<dynamic> jsonList) {
+    List<BlogPost>? blogPosts;
     try {
-      blogPosts = jsonList.map<BlogData>((jsonMap) {
-        Map<String, dynamic> blogPost;
-        final blogData = BlogData.fromJsonPortal2(jsonMap);
-        final blogRatingList = RatingList.fromJsonPortal2(jsonMap['reaction']);
-        final blogUserShortInfo = UserShortInfo.fromJsonPortal2(jsonMap['author']);
-        return blogData;
+      blogPosts = jsonList.map<BlogPost>((jsonMap) {
+        return BlogPost.fromJsonPortal2(jsonMap);
       }).toList();
     } catch (error, stackTrace) {
       _loggerService.logError(error, stackTrace);

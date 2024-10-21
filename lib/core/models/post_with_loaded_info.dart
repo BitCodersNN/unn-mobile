@@ -8,21 +8,21 @@ class KeysForPostWithLoadedInfoJsonConverter {
   static const String ratingList = 'ratingList';
 }
 
+class KeysForPostWithLoadedInfoJsonConverterPortal2 {
+  static const String reaction = 'reaction';
+}
+
 class PostWithLoadedInfo {
-  final BlogData _post;
-  final RatingList _ratingList;
+  final BlogData post;
+  final RatingList ratingList;
 
-  PostWithLoadedInfo({
-    required BlogData post,
-    required RatingList ratingList,
-  })  : _post = post,
-        _ratingList = ratingList;
+  PostWithLoadedInfo._({
+    required this.post,
+    required this.ratingList,
+  });
 
-  BlogData get post => _post;
-  RatingList get ratingList => _ratingList;
-
-  factory PostWithLoadedInfo.fromJson(Map<String, Object?> jsonMap) {
-    return PostWithLoadedInfo(
+  factory PostWithLoadedInfo.fromJson(Map<String, dynamic> jsonMap) {
+    return PostWithLoadedInfo._(
       post: BlogData.fromJson(
         jsonMap[KeysForPostWithLoadedInfoJsonConverter.post]
             as Map<String, Object?>,
@@ -34,8 +34,17 @@ class PostWithLoadedInfo {
     );
   }
 
+  factory PostWithLoadedInfo.fromJsonPortal2(Map<String, dynamic> jsonMap) {
+    return PostWithLoadedInfo._(
+      post: BlogData.fromJsonPortal2(jsonMap),
+      ratingList: RatingList.fromJsonPortal2(
+        jsonMap[KeysForPostWithLoadedInfoJsonConverterPortal2.reaction],
+      ),
+    );
+  }
+
   Map<String, dynamic> toJson() => {
-        KeysForPostWithLoadedInfoJsonConverter.post: _post.toJson(),
-        KeysForPostWithLoadedInfoJsonConverter.ratingList: _ratingList.toJson(),
+        KeysForPostWithLoadedInfoJsonConverter.post: post.toJson(),
+        KeysForPostWithLoadedInfoJsonConverter.ratingList: ratingList.toJson(),
       };
 }

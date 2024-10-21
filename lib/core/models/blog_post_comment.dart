@@ -8,6 +8,16 @@ class _KeysForBlogPostCommentJsonConverter {
   static const String attachedFiles = 'attachedFiles';
 }
 
+class _KeysForBlogPostCommentJsonConverterPortal2 {
+  static const String id = 'id';
+  static const String author = 'author';
+  static const String fio = 'fio';
+  static const String time = 'time';
+  static const String text = 'text';
+  static const String keysigned = 'keysigned';
+  static const String attach = 'attach';
+}
+
 class BlogPostComment {
   final int id;
   final int bitrixID;
@@ -45,6 +55,31 @@ class BlogPostComment {
             jsonMap[_KeysForBlogPostCommentJsonConverter.keySigned] as String,
         attachedFiles:
             (jsonMap[_KeysForBlogPostCommentJsonConverter.attachedFiles]
+                    as List<dynamic>)
+                .map((element) => int.parse(element.toString()))
+                .toList(),
+      );
+
+  factory BlogPostComment.fromJsonPortal2(Map<String, Object?> jsonMap) =>
+      BlogPostComment(
+        id: int.parse(
+          jsonMap[_KeysForBlogPostCommentJsonConverterPortal2.id] as String,
+        ),
+        bitrixID: int.parse(
+          (jsonMap[_KeysForBlogPostCommentJsonConverterPortal2.author]
+              as Map)[_KeysForBlogPostCommentJsonConverter.id] as String,
+        ),
+        authorName: (jsonMap[_KeysForBlogPostCommentJsonConverterPortal2.author]
+            as Map)[_KeysForBlogPostCommentJsonConverterPortal2.fio] as String,
+        dateTime:
+            jsonMap[_KeysForBlogPostCommentJsonConverterPortal2.time] as String,
+        message:
+            jsonMap[_KeysForBlogPostCommentJsonConverterPortal2.text] as String,
+        keySigned:
+            jsonMap[_KeysForBlogPostCommentJsonConverterPortal2.keysigned]
+                as String,
+        attachedFiles:
+            (jsonMap[_KeysForBlogPostCommentJsonConverterPortal2.attach]
                     as List<dynamic>)
                 .map((element) => int.parse(element.toString()))
                 .toList(),

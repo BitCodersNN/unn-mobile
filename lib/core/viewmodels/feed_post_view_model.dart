@@ -43,7 +43,7 @@ class FeedPostViewModel extends BaseViewModel {
 
   int get commentsCount => blogData.numberOfComments;
 
-  int get filesCount => blogData.filesIds?.length ?? 0;
+  int get filesCount => blogData.files?.length ?? 0;
 
   bool get isNewPost =>
       _lastFeedLoadDateTimeProvider.lastFeedLoadDateTime?.isBefore(postTime) ??
@@ -66,7 +66,7 @@ class FeedPostViewModel extends BaseViewModel {
       ..init(postId: blogData.id, authorId: blogData.bitrixID);
     attachedFileViewModels.clear();
     attachedFileViewModels.addAll(
-      blogData.files?.map((f) => AttachedFileViewModel.cached(int.parse(f))) ??
+      blogData.files?.map((fileId) => AttachedFileViewModel.cached(fileId)) ??
           [],
     );
     notifyListeners();

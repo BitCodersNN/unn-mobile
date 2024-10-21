@@ -11,84 +11,100 @@ class _KeysForBlogDataJsonConverter {
   static const String files = 'FILES';
 }
 
+class _KeysForBlogDataJsonConverterPortal2 {
+  static const String id = 'id';
+  static const String author = 'author';
+  static const String title = 'title';
+  static const String fulltext = 'fulltext';
+  static const String time = 'time';
+  static const String commentsnum = 'commentsnum';
+  static const String attach = 'attach';
+  static const String pinnedId = 'pinnedid';
+  static const String keySigned = 'keysigned';
+}
+
 class BlogData {
-  String? keySigned;
+  final int id;
+  final int? blogId;
+  final int bitrixID;
+  final String title;
+  final String detailText;
+  final DateTime datePublish;
+  final int numberOfComments;
+  final List<int>? files;
+  final int? pinnedid;
+  final String? keySigned;
 
-  final int _id;
-  final int? _blogId;
-  final int _bitrixID;
-  final String _title;
-  final String _detailText;
-  final DateTime _datePublish;
-  final int _numberOfComments;
-  final List<String>? _fileIds;
-  final int? _pinnedid;
-  BlogData(
-    this._id,
-    this._blogId,
-    this._bitrixID,
-    this._title,
-    this._detailText,
-    this._datePublish,
-    this._numberOfComments,
-    this._fileIds, [
-    this._pinnedid,
+  BlogData._({
+    required this.id,
+    this.blogId,
+    required this.bitrixID,
+    required this.title,
+    required this.detailText,
+    required this.datePublish,
+    required this.numberOfComments,
+    this.files,
+    this.pinnedid,
     this.keySigned,
-  ]);
+  });
 
-  int get id => _id;
-  int? get blogId => _blogId;
-  int get bitrixID => _bitrixID;
-  String get title => _title;
-  String get detailText => _detailText;
-  DateTime get datePublish => _datePublish;
-  int get numberOfComments => _numberOfComments;
-  List<String>? get filesIds => _fileIds;
-  int? get pinnedid => _pinnedid;
+  factory BlogData.fromJson(Map<String, Object?> jsonMap) {
+    return BlogData._(
+      id: int.parse(jsonMap[_KeysForBlogDataJsonConverter.id] as String),
+      blogId:
+          int.tryParse(jsonMap[_KeysForBlogDataJsonConverter.blogId] as String),
+      bitrixID:
+          int.parse(jsonMap[_KeysForBlogDataJsonConverter.authorID] as String),
+      title: jsonMap[_KeysForBlogDataJsonConverter.title] as String,
+      detailText: jsonMap[_KeysForBlogDataJsonConverter.detailText] as String,
+      datePublish: DateTime.parse(
+        jsonMap[_KeysForBlogDataJsonConverter.datePublish] as String,
+      ),
+      numberOfComments: int.parse(
+        jsonMap[_KeysForBlogDataJsonConverter.numComments] as String,
+      ),
+      files: (jsonMap[_KeysForBlogDataJsonConverter.files] as List<dynamic>?)
+          ?.map((element) => element as int)
+          .toList(),
+    );
+  }
 
-  factory BlogData.fromJson(Map<String, Object?> jsonMap) => BlogData(
-        int.parse(jsonMap[_KeysForBlogDataJsonConverter.id] as String),
-        int.parse(jsonMap[_KeysForBlogDataJsonConverter.blogId] as String),
-        int.parse(jsonMap[_KeysForBlogDataJsonConverter.authorID] as String),
-        jsonMap[_KeysForBlogDataJsonConverter.title] as String,
-        jsonMap[_KeysForBlogDataJsonConverter.detailText] as String,
-        DateTime.parse(
-          jsonMap[_KeysForBlogDataJsonConverter.datePublish] as String,
-        ),
-        int.parse(jsonMap[_KeysForBlogDataJsonConverter.numComments] as String),
-        (jsonMap[_KeysForBlogDataJsonConverter.files] as List<dynamic>?)
-            ?.map((element) => element.toString())
-            .toList(),
-      );
-
-  factory BlogData.fromJsonPortal2(Map<String, Object?> jsonMap) => BlogData(
-        int.parse(
-          jsonMap[_KeysForBlogDataJsonConverter.id.toLowerCase()] as String,
-        ),
-        null,
-        int.parse((jsonMap['author'] as Map<String, Object?>)['id'] as String),
-        jsonMap[_KeysForBlogDataJsonConverter.title.toLowerCase()] as String,
-        jsonMap['fulltext'] as String,
-        _parseCustomDateTime(
-          jsonMap['time'] as String,
-        ),
-        int.parse(jsonMap['commentsnum'] as String),
-        (jsonMap['attach'] as List<dynamic>?)
-            ?.map((element) => element.toString())
-            .toList(),
-        jsonMap['pinnedid'] as int,
-        jsonMap['keysigned'] as String,
-      );
+  factory BlogData.fromJsonPortal2(Map<String, Object?> jsonMap) {
+    return BlogData._(
+      id: int.parse(jsonMap[_KeysForBlogDataJsonConverterPortal2.id] as String),
+      blogId: null,
+      bitrixID: int.parse(
+        (jsonMap[_KeysForBlogDataJsonConverterPortal2.author] as Map<String,
+            Object?>)[_KeysForBlogDataJsonConverterPortal2.id] as String,
+      ),
+      title: jsonMap[_KeysForBlogDataJsonConverterPortal2.title] as String,
+      detailText:
+          jsonMap[_KeysForBlogDataJsonConverterPortal2.fulltext] as String,
+      datePublish: _parseCustomDateTime(
+        jsonMap[_KeysForBlogDataJsonConverterPortal2.time] as String,
+      ),
+      numberOfComments: int.parse(
+        jsonMap[_KeysForBlogDataJsonConverterPortal2.commentsnum] as String,
+      ),
+      files: (jsonMap[_KeysForBlogDataJsonConverterPortal2.attach]
+              as List<dynamic>?)
+          ?.map((element) => element.toString().hashCode)
+          .toList(),
+      pinnedid: jsonMap[_KeysForBlogDataJsonConverterPortal2.pinnedId] as int?,
+      keySigned:
+          jsonMap[_KeysForBlogDataJsonConverterPortal2.keySigned] as String?,
+    );
+  }
 
   Map<String, dynamic> toJson() => {
-        _KeysForBlogDataJsonConverter.id: _id,
-        _KeysForBlogDataJsonConverter.blogId: _blogId,
+        _KeysForBlogDataJsonConverter.id: id,
+        _KeysForBlogDataJsonConverter.blogId: blogId,
         _KeysForBlogDataJsonConverter.authorID: bitrixID,
-        _KeysForBlogDataJsonConverter.title: _title,
+        _KeysForBlogDataJsonConverter.title: title,
         _KeysForBlogDataJsonConverter.detailText: detailText,
-        _KeysForBlogDataJsonConverter.datePublish: _datePublish.toString(),
-        _KeysForBlogDataJsonConverter.numComments: _numberOfComments,
-        _KeysForBlogDataJsonConverter.files: filesIds,
+        _KeysForBlogDataJsonConverter.datePublish: datePublish.toString(),
+        _KeysForBlogDataJsonConverter.numComments: numberOfComments,
+        _KeysForBlogDataJsonConverter.files: files,
       };
 
   static DateTime _parseCustomDateTime(String input) {
