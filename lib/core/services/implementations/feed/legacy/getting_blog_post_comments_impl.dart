@@ -7,7 +7,7 @@ import 'package:unn_mobile/core/constants/session_identifier_strings.dart';
 import 'package:unn_mobile/core/misc/http_helper.dart';
 import 'package:unn_mobile/core/models/blog_post_comment.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
-import 'package:unn_mobile/core/services/interfaces/getting_blog_post_comments.dart';
+import 'package:unn_mobile/core/services/interfaces/feed/getting_blog_post_comments.dart';
 import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 
 class _JsonKeys {

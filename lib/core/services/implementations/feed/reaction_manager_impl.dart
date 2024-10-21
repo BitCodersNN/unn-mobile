@@ -10,7 +10,7 @@ import 'package:unn_mobile/core/models/rating_list.dart';
 import 'package:unn_mobile/core/models/user_short_info.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
 import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
-import 'package:unn_mobile/core/services/interfaces/reaction_manager.dart';
+import 'package:unn_mobile/core/services/interfaces/feed/reaction_manager.dart';
 
 class _KeysForReactionManagerJsonConverter {
   static const String data = 'data';
