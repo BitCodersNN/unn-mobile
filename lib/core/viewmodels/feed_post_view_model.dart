@@ -1,7 +1,7 @@
 import 'package:event/event.dart';
 import 'package:html_unescape/html_unescape.dart';
 import 'package:injector/injector.dart';
-import 'package:unn_mobile/core/models/blog_data.dart';
+import 'package:unn_mobile/core/models/feed/blog_post_data.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/getting_blog_posts.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/last_feed_load_date_time_provider.dart';
 import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
@@ -22,7 +22,7 @@ class FeedPostViewModel extends BaseViewModel {
 
   final onError = Event();
 
-  late BlogData blogData;
+  late BlogPostData blogData;
 
   late ProfileViewModel _profileViewModel;
 
@@ -57,7 +57,7 @@ class FeedPostViewModel extends BaseViewModel {
 
   ReactionViewModel get reactionViewModel => _reactionViewModel;
 
-  void init(BlogData blogData) {
+  void init(BlogPostData blogData) {
     this.blogData = blogData;
 
     _profileViewModel = ProfileViewModel.cached(blogData.bitrixID)

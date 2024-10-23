@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:unn_mobile/core/constants/api_url_strings.dart';
 import 'package:unn_mobile/core/constants/session_identifier_strings.dart';
 import 'package:unn_mobile/core/misc/http_helper.dart';
-import 'package:unn_mobile/core/models/blog_post.dart';
+import 'package:unn_mobile/core/models/feed/blog_post.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/blog_posts.dart';
 import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
@@ -69,6 +69,7 @@ class BlogPostsServiceImpl implements BlogPostsService {
 
   List<BlogPost>? _parseBlogPostsFromJsonList(List<dynamic> jsonList) {
     List<BlogPost>? blogPosts;
+
     try {
       blogPosts = jsonList.map<BlogPost>((jsonMap) {
         return BlogPost.fromJsonPortal2(jsonMap);

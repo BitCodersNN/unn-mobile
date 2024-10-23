@@ -5,7 +5,7 @@ import 'package:unn_mobile/core/constants/regular_expressions.dart';
 import 'package:unn_mobile/core/constants/api_url_strings.dart';
 import 'package:unn_mobile/core/constants/session_identifier_strings.dart';
 import 'package:unn_mobile/core/misc/http_helper.dart';
-import 'package:unn_mobile/core/models/blog_post_comment.dart';
+import 'package:unn_mobile/core/models/feed/blog_post_comment_data.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/getting_blog_post_comments.dart';
 import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
@@ -23,7 +23,7 @@ class GettingBlogPostCommentsImpl implements GettingBlogPostComments {
     this._loggerService,
   );
   @override
-  Future<List<BlogPostComment>?> getBlogPostComments({
+  Future<List<BlogPostCommentData>?> getBlogPostComments({
     required int postId,
     int pageNumber = 1,
   }) async {
@@ -93,7 +93,7 @@ class GettingBlogPostCommentsImpl implements GettingBlogPostComments {
     return await HttpRequestSender.responseToStringBody(response);
   }
 
-  List<BlogPostComment>? parseComments(String jsonStr) {
+  List<BlogPostCommentData>? parseComments(String jsonStr) {
     const unknownString = 'unknown';
 
     final Map<String, dynamic> parsedJson = json.decode(jsonStr);
@@ -107,7 +107,7 @@ class GettingBlogPostCommentsImpl implements GettingBlogPostComments {
 
     final htmlBody = parsedJson[_JsonKeys._messageListKey] as String;
 
-    final comments = <BlogPostComment>[];
+    final comments = <BlogPostCommentData>[];
 
     final commentsAttachedFilesId = parseCommentsFilesId(htmlBody);
 
@@ -143,17 +143,15 @@ class GettingBlogPostCommentsImpl implements GettingBlogPostComments {
       final id = messageMatch.group(1).toInt();
       final message = messageMatch.group(2)?.replaceAll('\\n', '\n');
       final authorId = authorMatch.group(1).toInt();
-      final authorName = authorMatch.group(2);
       final dateTime = dateTimeMatch.group(1);
       final keySigned =
           keySignedMatche.group(0)?.split(' \'')[1].split('\'')[0];
 
       if (id != null && authorId != null) {
         comments.add(
-          BlogPostComment(
+          BlogPostCommentData(
             id: id,
             bitrixID: authorId,
-            authorName: authorName ?? unknownString,
             dateTime: dateTime ?? unknownString,
             message: message ?? unknownString,
             keySigned: keySigned ?? unknownString,
