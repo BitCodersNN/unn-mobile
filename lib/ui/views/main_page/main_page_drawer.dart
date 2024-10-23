@@ -1,22 +1,17 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-import 'package:injector/injector.dart';
-import 'package:unn_mobile/core/misc/current_user_sync_storage.dart';
 import 'package:unn_mobile/core/viewmodels/main_page_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/profile_view_model.dart';
-import 'package:unn_mobile/ui/views/main_page/main_page_navigation_bar.dart';
-import 'package:unn_mobile/ui/views/main_page/main_page_routing.dart';
 
 class MainPageDrawer extends StatefulWidget {
   final MainPageViewModel model;
+  final void Function(int)? onDestinationSelected;
+
   const MainPageDrawer({
     super.key,
     this.onDestinationSelected,
     required this.model,
   });
-
-  final void Function(int)? onDestinationSelected;
 
   @override
   State<MainPageDrawer> createState() => _MainPageDrawerState();
@@ -24,20 +19,6 @@ class MainPageDrawer extends StatefulWidget {
 
 class _MainPageDrawerState extends State<MainPageDrawer> {
   final List<Widget> children = [];
-  late final List<MainPageRouteData> routes;
-
-  @override
-  void initState() {
-    super.initState();
-    final CurrentUserSyncStorage storage =
-        Injector.appInstance.get<CurrentUserSyncStorage>();
-
-    routes = MainPageRouting.drawerRoutes
-        .where(
-          (route) => route.userTypes.contains(storage.typeOfUser),
-        )
-        .toList(growable: false);
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -47,29 +28,21 @@ class _MainPageDrawerState extends State<MainPageDrawer> {
       children.addAll(_generateChildren(widget.model, context));
     }
     return NavigationDrawer(
-      onDestinationSelected: (value) {
-        Scaffold.of(context).closeDrawer();
-        final selectedBarIndex =
-            MainPageNavigationBar.getSelectedBarIndex(context);
-        final currentPageRoute =
-            MainPageRouting.navbarRoutes[selectedBarIndex].pageRoute;
-        final destinationSubroute = routes[value].pageRoute;
-        GoRouter.of(context).go('$currentPageRoute/$destinationSubroute');
-      },
+      onDestinationSelected: widget.onDestinationSelected,
       selectedIndex: null,
       children: children,
     );
   }
 
   List<Widget> _generateChildren(
-    MainPageViewModel vm,
+    MainPageViewModel viewModel,
     BuildContext context,
   ) {
     final theme = Theme.of(context);
 
     final List<Widget> drawerChildren = [
-      _getDrawerHeader(theme, vm.profileViewModel),
-      for (final route in routes)
+      _getDrawerHeader(theme, viewModel.profileViewModel),
+      for (final route in viewModel.routes)
         NavigationDrawerDestination(
           icon: Icon(route.selectedIcon),
           label: Text(route.pageTitle),

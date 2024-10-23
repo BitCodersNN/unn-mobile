@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:unn_mobile/core/misc/app_settings.dart';
 import 'package:unn_mobile/ui/views/auth_page/auth_page.dart';
@@ -8,32 +9,43 @@ import 'package:unn_mobile/ui/views/main_page/main_page_routing.dart';
 const loadingPageRoute = '/loading';
 const mainPageRoute = '/';
 const authPageRoute = '/auth';
+const drawerRoutePrefix = 'drawer';
+
+final shellBranchKeys = [
+  for (final route in MainPageRouting.navbarRoutes)
+    (key: GlobalKey<NavigatorState>(), route: route),
+];
 
 final mainRouter = GoRouter(
   initialLocation: loadingPageRoute,
   routes: [
-    ShellRoute(
-      builder: (context, state, child) => MainPage(
-        child: child,
+    StatefulShellRoute.indexedStack(
+      builder: (context, state, shell) => MainPage(
+        shell: shell,
       ),
-      routes: [
-        for (final route in MainPageRouting.navbarRoutes)
-          GoRoute(
-            path: route.pageRoute,
-            name: route.pageTitle,
-            pageBuilder: (context, state) =>
-                NoTransitionPage(child: route.builder(context)),
+      branches: [
+        for (final route in shellBranchKeys)
+          StatefulShellBranch(
+            navigatorKey: route.key,
             routes: [
-              for (final subroute in MainPageRouting.drawerRoutes)
-                GoRoute(
-                  path: subroute.pageRoute,
-                  builder: (context, state) => subroute.builder(context),
-                ),
-              for (final subroute in route.subroutes)
-                GoRoute(
-                  path: subroute.pageRoute,
-                  builder: (context, state) => subroute.builder(context),
-                ),
+              GoRoute(
+                path: route.route.pageRoute,
+                name: route.route.pageTitle,
+                pageBuilder: (context, state) =>
+                    NoTransitionPage(child: route.route.builder(context)),
+                routes: [
+                  for (final subroute in MainPageRouting.drawerRoutes)
+                    GoRoute(
+                      path: '$drawerRoutePrefix/${subroute.pageRoute}',
+                      builder: (context, state) => subroute.builder(context),
+                    ),
+                  for (final subroute in route.route.subroutes)
+                    GoRoute(
+                      path: subroute.pageRoute,
+                      builder: (context, state) => subroute.builder(context),
+                    ),
+                ],
+              ),
             ],
           ),
       ],
