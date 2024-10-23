@@ -327,7 +327,9 @@ void registerDependencies() {
     ),
   );
   injector.registerDependency(
-    () => MainPageViewModel(),
+    () => MainPageViewModel(
+      get<CurrentUserSyncStorage>(),
+    ),
   );
   injector.registerDependency(
     () => ScheduleTabViewModel(

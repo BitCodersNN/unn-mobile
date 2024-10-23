@@ -30,7 +30,7 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView>
   void initState() {
     _viewModel = Injector.appInstance
         .get<MainPageRoutesViewModelsFactory>()
-        .getViewModelByRouteIndex(widget.routeIndex);
+        .getViewModelByRouteIndex<ScheduleScreenViewModel>(widget.routeIndex);
 
     _tabController = TabController(
       initialIndex: _viewModel.selectedTab,
