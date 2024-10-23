@@ -41,12 +41,12 @@ class BlogPostCommentData {
         bitrixID: int.parse(
           jsonMap[_KeysForBlogPostCommentDataJsonConverter.authorId] as String,
         ),
-        dateTime:
-            jsonMap[_KeysForBlogPostCommentDataJsonConverter.dateTime] as String,
+        dateTime: jsonMap[_KeysForBlogPostCommentDataJsonConverter.dateTime]
+            as String,
         message:
             jsonMap[_KeysForBlogPostCommentDataJsonConverter.message] as String,
-        keySigned:
-            jsonMap[_KeysForBlogPostCommentDataJsonConverter.keySigned] as String,
+        keySigned: jsonMap[_KeysForBlogPostCommentDataJsonConverter.keySigned]
+            as String,
         attachedFiles:
             (jsonMap[_KeysForBlogPostCommentDataJsonConverter.attachedFiles]
                     as List<dynamic>)
@@ -61,12 +61,13 @@ class BlogPostCommentData {
         ),
         bitrixID: int.parse(
           (jsonMap[_KeysForBlogPostCommentDataJsonConverterPortal2.author]
-              as Map)[_KeysForBlogPostCommentDataJsonConverterPortal2.id] as String,
+                  as Map)[_KeysForBlogPostCommentDataJsonConverterPortal2.id]
+              as String,
         ),
-        dateTime:
-            jsonMap[_KeysForBlogPostCommentDataJsonConverterPortal2.time] as String,
-        message:
-            jsonMap[_KeysForBlogPostCommentDataJsonConverterPortal2.text] as String,
+        dateTime: jsonMap[_KeysForBlogPostCommentDataJsonConverterPortal2.time]
+            as String,
+        message: jsonMap[_KeysForBlogPostCommentDataJsonConverterPortal2.text]
+            as String,
         keySigned:
             jsonMap[_KeysForBlogPostCommentDataJsonConverterPortal2.keysigned]
                 as String,

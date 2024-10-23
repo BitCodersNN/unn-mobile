@@ -51,27 +51,30 @@ class BlogPostData {
   factory BlogPostData.fromJson(Map<String, Object?> jsonMap) {
     return BlogPostData._(
       id: int.parse(jsonMap[_KeysForBlogPostDataJsonConverter.id] as String),
-      blogId:
-          int.tryParse(jsonMap[_KeysForBlogPostDataJsonConverter.blogId] as String),
-      bitrixID:
-          int.parse(jsonMap[_KeysForBlogPostDataJsonConverter.authorID] as String),
+      blogId: int.tryParse(
+          jsonMap[_KeysForBlogPostDataJsonConverter.blogId] as String),
+      bitrixID: int.parse(
+          jsonMap[_KeysForBlogPostDataJsonConverter.authorID] as String),
       title: jsonMap[_KeysForBlogPostDataJsonConverter.title] as String,
-      detailText: jsonMap[_KeysForBlogPostDataJsonConverter.detailText] as String,
+      detailText:
+          jsonMap[_KeysForBlogPostDataJsonConverter.detailText] as String,
       datePublish: DateTime.parse(
         jsonMap[_KeysForBlogPostDataJsonConverter.datePublish] as String,
       ),
       numberOfComments: int.parse(
         jsonMap[_KeysForBlogPostDataJsonConverter.numComments] as String,
       ),
-      files: (jsonMap[_KeysForBlogPostDataJsonConverter.files] as List<dynamic>?)
-          ?.map((element) => element as int)
-          .toList(),
+      files:
+          (jsonMap[_KeysForBlogPostDataJsonConverter.files] as List<dynamic>?)
+              ?.map((element) => element as int)
+              .toList(),
     );
   }
 
   factory BlogPostData.fromJsonPortal2(Map<String, Object?> jsonMap) {
     return BlogPostData._(
-      id: int.parse(jsonMap[_KeysForBlogPostDataJsonConverterPortal2.id] as String),
+      id: int.parse(
+          jsonMap[_KeysForBlogPostDataJsonConverterPortal2.id] as String),
       blogId: null,
       bitrixID: int.parse(
         (jsonMap[_KeysForBlogPostDataJsonConverterPortal2.author] as Map<String,
@@ -90,9 +93,10 @@ class BlogPostData {
               as List<dynamic>?)
           ?.map((element) => element.toString().hashCode)
           .toList(),
-      pinnedid: jsonMap[_KeysForBlogPostDataJsonConverterPortal2.pinnedId] as int?,
-      keySigned:
-          jsonMap[_KeysForBlogPostDataJsonConverterPortal2.keySigned] as String?,
+      pinnedid:
+          jsonMap[_KeysForBlogPostDataJsonConverterPortal2.pinnedId] as int?,
+      keySigned: jsonMap[_KeysForBlogPostDataJsonConverterPortal2.keySigned]
+          as String?,
     );
   }
 

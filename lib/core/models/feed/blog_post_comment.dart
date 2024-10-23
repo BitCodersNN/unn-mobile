@@ -25,11 +25,12 @@ class BlogPostComment {
   factory BlogPostComment.fromJson(Map<String, dynamic> jsonMap) {
     return BlogPostComment._(
       commentData: BlogPostCommentData.fromJson(jsonMap),
-      commentRatingList: jsonMap[_KeysForBlogPostCommentDataWithRatings.reaction] != null
-          ? RatingList.fromJson(
-              jsonMap[_KeysForBlogPostCommentDataWithRatings.reaction],
-            )
-          : null,
+      commentRatingList:
+          jsonMap[_KeysForBlogPostCommentDataWithRatings.reaction] != null
+              ? RatingList.fromJson(
+                  jsonMap[_KeysForBlogPostCommentDataWithRatings.reaction],
+                )
+              : null,
       commentUserShortInfo: UserShortInfo.fromJson(
         jsonMap[_KeysForBlogPostCommentDataWithRatings.author],
       ),
@@ -43,11 +44,12 @@ class BlogPostComment {
   factory BlogPostComment.fromJsonPortal2(Map<String, dynamic> jsonMap) {
     return BlogPostComment._(
       commentData: BlogPostCommentData.fromJsonPortal2(jsonMap),
-      commentRatingList: jsonMap[_KeysForBlogPostCommentDataWithRatings.reaction] != null
-          ? RatingList.fromJsonPortal2(
-              jsonMap[_KeysForBlogPostCommentDataWithRatings.reaction],
-            )
-          : null,
+      commentRatingList:
+          jsonMap[_KeysForBlogPostCommentDataWithRatings.reaction] != null
+              ? RatingList.fromJsonPortal2(
+                  jsonMap[_KeysForBlogPostCommentDataWithRatings.reaction],
+                )
+              : null,
       commentUserShortInfo: UserShortInfo.fromJsonPortal2(
         jsonMap[_KeysForBlogPostCommentDataWithRatings.author],
       ),
@@ -61,8 +63,10 @@ class BlogPostComment {
   Map<String, dynamic> toJson() {
     return {
       ...commentData.toJson(),
-      _KeysForBlogPostCommentDataWithRatings.reaction: commentRatingList?.toJson(),
-      _KeysForBlogPostCommentDataWithRatings.author: commentUserShortInfo.toJson(),
+      _KeysForBlogPostCommentDataWithRatings.reaction:
+          commentRatingList?.toJson(),
+      _KeysForBlogPostCommentDataWithRatings.author:
+          commentUserShortInfo.toJson(),
       _KeysForBlogPostCommentDataWithRatings.attach:
           commentAttachFiles.map((file) => file.toJson()).toList(),
     };
