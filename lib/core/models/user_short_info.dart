@@ -26,7 +26,7 @@ class UserShortInfo {
   );
 
   factory UserShortInfo.fromJson(Map<String, Object?> jsonMap) => UserShortInfo(
-        int.parse(jsonMap[_KeysForUserInfoJsonConverter.id] as String),
+        int.tryParse(jsonMap[_KeysForUserInfoJsonConverter.id] as String),
         jsonMap[_KeysForUserInfoJsonConverter.fullname] as String,
         jsonMap[_KeysForUserInfoJsonConverter.photoSrc] as String?,
       );
