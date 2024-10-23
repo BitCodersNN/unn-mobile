@@ -52,9 +52,11 @@ class BlogPostData {
     return BlogPostData._(
       id: int.parse(jsonMap[_KeysForBlogPostDataJsonConverter.id] as String),
       blogId: int.tryParse(
-          jsonMap[_KeysForBlogPostDataJsonConverter.blogId] as String),
+        jsonMap[_KeysForBlogPostDataJsonConverter.blogId] as String,
+      ),
       bitrixID: int.parse(
-          jsonMap[_KeysForBlogPostDataJsonConverter.authorID] as String),
+        jsonMap[_KeysForBlogPostDataJsonConverter.authorID] as String,
+      ),
       title: jsonMap[_KeysForBlogPostDataJsonConverter.title] as String,
       detailText:
           jsonMap[_KeysForBlogPostDataJsonConverter.detailText] as String,
@@ -74,7 +76,8 @@ class BlogPostData {
   factory BlogPostData.fromJsonPortal2(Map<String, Object?> jsonMap) {
     return BlogPostData._(
       id: int.parse(
-          jsonMap[_KeysForBlogPostDataJsonConverterPortal2.id] as String),
+        jsonMap[_KeysForBlogPostDataJsonConverterPortal2.id] as String,
+      ),
       blogId: null,
       bitrixID: int.parse(
         (jsonMap[_KeysForBlogPostDataJsonConverterPortal2.author] as Map<String,
