@@ -12,6 +12,8 @@ import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 class BlogPostsServiceImpl implements BlogPostsService {
   final AuthorizationService _authorisationService;
   final LoggerService _loggerService;
+  final String _numpage = 'numpage';
+  final String _perpage = 'perpage';
 
   BlogPostsServiceImpl(
     this._authorisationService,
@@ -20,14 +22,14 @@ class BlogPostsServiceImpl implements BlogPostsService {
 
   @override
   Future<List<BlogPost>?> getBlogPosts({
-    int? pageNumber,
+    int pageNumber = 1,
     int perpage = 50,
   }) async {
     final requestSender = HttpRequestSender(
       path: ApiPaths.blogPostWithLoadedInfo,
       queryParams: {
-        'perpage': perpage.toString(),
-        'pageNumber': pageNumber.toString(),
+        _numpage: pageNumber.toString(),
+        _perpage: perpage.toString(),
       },
       cookies: {
         SessionIdentifierStrings.sessionIdCookieKey:
@@ -47,7 +49,7 @@ class BlogPostsServiceImpl implements BlogPostsService {
 
     if (statusCode != 200) {
       _loggerService.log(
-        'statusCode = $statusCode; perpage = $perpage; pageNumber = $pageNumber;',
+        'statusCode = $statusCode; $_perpage = $perpage; $_numpage = $pageNumber;',
       );
       return null;
     }

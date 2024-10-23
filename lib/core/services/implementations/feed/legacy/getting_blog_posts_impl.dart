@@ -5,7 +5,6 @@ import 'package:unn_mobile/core/constants/api_url_strings.dart';
 import 'package:unn_mobile/core/constants/session_identifier_strings.dart';
 import 'package:unn_mobile/core/misc/http_helper.dart';
 import 'package:unn_mobile/core/models/feed/blog_post_data.dart';
-import 'package:unn_mobile/core/services/implementations/feed/blog_post.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/getting_blog_posts.dart';
 import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
@@ -27,9 +26,6 @@ class GettingBlogPostsImpl implements GettingBlogPosts {
     int pageNumber = 0,
     int? postId,
   }) async {
-    await BlogPostsServiceImpl(_authorisationService, _loggerService)
-        .getBlogPosts();
-
     final requestSender = HttpRequestSender(
       path: ApiPaths.blogPostGet,
       queryParams: {
