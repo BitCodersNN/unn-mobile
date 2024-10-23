@@ -1,9 +1,10 @@
 import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/misc/current_user_sync_storage.dart';
 import 'package:unn_mobile/core/models/rating_list.dart';
-import 'package:unn_mobile/core/services/interfaces/getting_rating_list.dart';
-import 'package:unn_mobile/core/services/interfaces/getting_vote_key_signed.dart';
-import 'package:unn_mobile/core/services/interfaces/reaction_manager.dart';
+import 'package:unn_mobile/core/models/user_short_info.dart';
+import 'package:unn_mobile/core/services/interfaces/feed/getting_rating_list.dart';
+import 'package:unn_mobile/core/services/interfaces/feed/getting_vote_key_signed.dart';
+import 'package:unn_mobile/core/services/interfaces/feed/reaction_manager.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/factories/reaction_view_model_factory.dart';
 
@@ -151,7 +152,7 @@ class ReactionViewModel extends BaseViewModel {
         // Добавляем временно, чтобы сразу показать действие
         _ratingList?.addReactions(
           reaction,
-          [ReactionUserInfo(profileId, '', '')],
+          [UserShortInfo(profileId, '', '')],
         );
         notifyListeners();
         final reactionUserInfo = await _reactionManager.addReaction(

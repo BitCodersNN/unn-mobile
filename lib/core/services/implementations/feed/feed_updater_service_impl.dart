@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:unn_mobile/core/models/blog_data.dart';
+import 'package:unn_mobile/core/models/feed/blog_post_data.dart';
 import 'package:unn_mobile/core/models/online_status_data.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
-import 'package:unn_mobile/core/services/interfaces/feed_updater_service.dart';
-import 'package:unn_mobile/core/services/interfaces/getting_blog_posts.dart';
-import 'package:unn_mobile/core/services/interfaces/last_feed_load_date_time_provider.dart';
+import 'package:unn_mobile/core/services/interfaces/feed/feed_updater_service.dart';
+import 'package:unn_mobile/core/services/interfaces/feed/getting_blog_posts.dart';
+import 'package:unn_mobile/core/services/interfaces/feed/last_feed_load_date_time_provider.dart';
 import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 
 class FeedUpdaterServiceImpl with ChangeNotifier implements FeedUpdaterService {
@@ -16,7 +16,7 @@ class FeedUpdaterServiceImpl with ChangeNotifier implements FeedUpdaterService {
 
   bool _busy = false;
 
-  final List<BlogData> _postsList = [];
+  final List<BlogPostData> _postsList = [];
 
   int _lastLoadedPage = 0;
 
@@ -73,7 +73,7 @@ class FeedUpdaterServiceImpl with ChangeNotifier implements FeedUpdaterService {
   }
 
   @override
-  List<BlogData> get feedPosts => _postsList;
+  List<BlogPostData> get feedPosts => _postsList;
 
   @override
   Future<void> updateFeed() async {

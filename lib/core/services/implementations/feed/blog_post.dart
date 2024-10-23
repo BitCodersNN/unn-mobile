@@ -4,34 +4,32 @@ import 'dart:io';
 import 'package:unn_mobile/core/constants/api_url_strings.dart';
 import 'package:unn_mobile/core/constants/session_identifier_strings.dart';
 import 'package:unn_mobile/core/misc/http_helper.dart';
-import 'package:unn_mobile/core/models/blog_data.dart';
+import 'package:unn_mobile/core/models/feed/blog_post.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
-import 'package:unn_mobile/core/services/interfaces/getting_blog_posts.dart';
+import 'package:unn_mobile/core/services/interfaces/feed/blog_posts.dart';
 import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 
-class GettingBlogPostsImpl implements GettingBlogPosts {
+class BlogPostsServiceImpl implements BlogPostsService {
   final AuthorizationService _authorisationService;
   final LoggerService _loggerService;
-  final int _numberOfPostsPerPage = 50;
-  final String _start = 'start';
-  final String _postId = 'POST_ID';
+  final String _numpage = 'numpage';
+  final String _perpage = 'perpage';
 
-  GettingBlogPostsImpl(
+  BlogPostsServiceImpl(
     this._authorisationService,
     this._loggerService,
   );
 
   @override
-  Future<List<BlogData>?> getBlogPosts({
-    int pageNumber = 0,
-    int? postId,
+  Future<List<BlogPost>?> getBlogPosts({
+    int pageNumber = 1,
+    int perpage = 50,
   }) async {
     final requestSender = HttpRequestSender(
-      path: ApiPaths.blogpostGet,
+      path: ApiPaths.blogPostWithLoadedInfo,
       queryParams: {
-        SessionIdentifierStrings.sessid: _authorisationService.csrf ?? '',
-        _start: (_numberOfPostsPerPage * pageNumber).toString(),
-        _postId: postId.toString(),
+        _numpage: pageNumber.toString(),
+        _perpage: perpage.toString(),
       },
       cookies: {
         SessionIdentifierStrings.sessionIdCookieKey:
@@ -51,31 +49,35 @@ class GettingBlogPostsImpl implements GettingBlogPosts {
 
     if (statusCode != 200) {
       _loggerService.log(
-        'statusCode = $statusCode; pageNumber = $pageNumber; postId = $postId;',
+        'statusCode = $statusCode; $_perpage = $perpage; $_numpage = $pageNumber;',
       );
       return null;
     }
 
-    final str = await HttpRequestSender.responseToStringBody(response);
-    dynamic jsonList;
+    List<dynamic> jsonList;
+
     try {
-      jsonList = jsonDecode(str)['result'];
-    } catch (erorr, stackTrace) {
-      _loggerService.logError(erorr, stackTrace);
+      jsonList =
+          jsonDecode(await HttpRequestSender.responseToStringBody(response));
+    } catch (error, stackTrace) {
+      _loggerService.logError(error, stackTrace);
       return null;
     }
 
-    List<BlogData>? blogPosts;
+    final blogPosts = _parseBlogPostsFromJsonList(jsonList);
+
+    return blogPosts;
+  }
+
+  List<BlogPost>? _parseBlogPostsFromJsonList(List<dynamic> jsonList) {
+    List<BlogPost>? blogPosts;
+
     try {
-      blogPosts = jsonList
-          .map<BlogData>((blogPostJson) => BlogData.fromJson(blogPostJson))
-          .toList();
+      blogPosts = jsonList.map<BlogPost>((jsonMap) {
+        return BlogPost.fromJsonPortal2(jsonMap);
+      }).toList();
     } catch (error, stackTrace) {
       _loggerService.logError(error, stackTrace);
-    }
-
-    if (blogPosts != null) {
-      blogPosts.sort((a, b) => b.datePublish.compareTo(a.datePublish));
     }
 
     return blogPosts;

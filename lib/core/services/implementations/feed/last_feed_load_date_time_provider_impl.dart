@@ -1,4 +1,4 @@
-import 'package:unn_mobile/core/services/interfaces/last_feed_load_date_time_provider.dart';
+import 'package:unn_mobile/core/services/interfaces/feed/last_feed_load_date_time_provider.dart';
 import 'package:unn_mobile/core/services/interfaces/storage_service.dart';
 
 class LastFeedLoadDateTimeProviderImpl implements LastFeedLoadDateTimeProvider {

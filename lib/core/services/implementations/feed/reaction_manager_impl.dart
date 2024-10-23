@@ -7,9 +7,10 @@ import 'package:unn_mobile/core/constants/session_identifier_strings.dart';
 import 'package:unn_mobile/core/misc/current_user_sync_storage.dart';
 import 'package:unn_mobile/core/misc/http_helper.dart';
 import 'package:unn_mobile/core/models/rating_list.dart';
+import 'package:unn_mobile/core/models/user_short_info.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
 import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
-import 'package:unn_mobile/core/services/interfaces/reaction_manager.dart';
+import 'package:unn_mobile/core/services/interfaces/feed/reaction_manager.dart';
 
 class _KeysForReactionManagerJsonConverter {
   static const String data = 'data';
@@ -31,7 +32,7 @@ class ReactionManagerImpl implements ReactionManager {
   );
 
   @override
-  Future<ReactionUserInfo?> addReaction(
+  Future<UserShortInfo?> addReaction(
     ReactionType reactionType,
     String voteKeySigned,
   ) async =>
@@ -52,7 +53,7 @@ class ReactionManagerImpl implements ReactionManager {
       ) !=
       null;
 
-  Future<ReactionUserInfo?> _manageReaction(
+  Future<UserShortInfo?> _manageReaction(
     ReactionType reactionType,
     String voteKeySigned,
     String action,
@@ -115,7 +116,7 @@ class ReactionManagerImpl implements ReactionManager {
     final userData = _currentUserSync.currentUserData;
     final photoSrc = jsonMap[_KeysForReactionManagerJsonConverter.photo]
         [_KeysForReactionManagerJsonConverter.src];
-    return ReactionUserInfo(
+    return UserShortInfo(
       userData!.bitrixId,
       jsonMap[_KeysForReactionManagerJsonConverter.nameFromatted],
       photoSrc != false ? photoSrc : null,

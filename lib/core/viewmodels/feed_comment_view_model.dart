@@ -1,6 +1,6 @@
 import 'package:html_unescape/html_unescape.dart';
 import 'package:injector/injector.dart';
-import 'package:unn_mobile/core/models/blog_post_comment.dart';
+import 'package:unn_mobile/core/models/feed/blog_post_comment_data.dart';
 import 'package:unn_mobile/core/viewmodels/attached_file_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/factories/feed_comment_view_model_factory.dart';
@@ -14,7 +14,7 @@ class FeedCommentViewModel extends BaseViewModel {
 
   final List<AttachedFileViewModel> attachedFileViewModels = [];
 
-  late BlogPostComment comment;
+  late BlogPostCommentData comment;
 
   late ReactionViewModel _reactionViewModel;
   late ProfileViewModel _profileViewModel;
@@ -35,7 +35,7 @@ class FeedCommentViewModel extends BaseViewModel {
 
   bool get renderMessage => _renderMessage && !isBusy;
 
-  void init(BlogPostComment comment) {
+  void init(BlogPostCommentData comment) {
     this.comment = comment;
     _renderMessage =
         comment.message.replaceAll(_bbTagRegex, '').trim().isNotEmpty;

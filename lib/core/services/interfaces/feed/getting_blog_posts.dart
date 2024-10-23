@@ -1,4 +1,4 @@
-import 'package:unn_mobile/core/models/blog_data.dart';
+import 'package:unn_mobile/core/models/feed/blog_post_data.dart';
 
 abstract interface class GettingBlogPosts {
   /// Получает 50 записей из живой ленты или 1 запись по конкретному postId
@@ -9,11 +9,11 @@ abstract interface class GettingBlogPosts {
   /// P.s. postId приоритетнее pageNumber
   ///
   /// Возвращает:
-  ///   - список [BlogData]
+  ///   - список [BlogPostData]
   ///   - пустой список, если конкретный postId не вышло получить
   ///   - null, если:
   ///     1. Не вышло получить ответ от портала
   ///     2. statusCode не равен 200
   ///     3. Не вышло декодировать ответ
-  Future<List<BlogData>?> getBlogPosts({int pageNumber = 0, int? postId});
+  Future<List<BlogPostData>?> getBlogPosts({int pageNumber = 0, int? postId});
 }
