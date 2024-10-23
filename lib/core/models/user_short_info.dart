@@ -11,14 +11,11 @@ class _KeysForUserInfoJsonConverterPortal2 {
 }
 
 class UserShortInfo {
-  static const int _invalidId = -1;
-
-  final int _bitrixId;
+  final int? _bitrixId;
   final String _fullname;
   final String? _photoSrc;
 
-  int get invalidId => _invalidId;
-  int get bitrixId => _bitrixId;
+  int? get bitrixId => _bitrixId;
   String get fullname => _fullname;
   String? get photoSrc => _photoSrc;
 
@@ -36,10 +33,7 @@ class UserShortInfo {
 
   factory UserShortInfo.fromJsonPortal2(Map<String, Object?> jsonMap) {
     final id = jsonMap[_KeysForUserInfoJsonConverterPortal2.id];
-    final userId = id is int
-        ? id
-        : (id is String ? int.tryParse(id) ?? _invalidId : _invalidId);
-
+    final userId = id is int ? id : (id is String ? int.tryParse(id) : null);
     return UserShortInfo(
       userId,
       jsonMap[_KeysForUserInfoJsonConverterPortal2.fullname] as String,
