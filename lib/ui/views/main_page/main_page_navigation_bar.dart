@@ -7,6 +7,7 @@ class MainPageNavigationBar extends StatelessWidget {
   final void Function(int)? onDestinationSelected;
   final MainPageViewModel model;
 
+  static const navbarHeight = 60.0;
   const MainPageNavigationBar({
     super.key,
     this.onDestinationSelected,
@@ -23,8 +24,11 @@ class MainPageNavigationBar extends StatelessWidget {
           color: Colors.grey.withOpacity(0.5),
         ),
         NavigationBar(
-          destinations: _getNavbarDestinations(model, context),
-          height: 60,
+          destinations: _getNavbarDestinations(
+            model,
+            context,
+          ),
+          height: navbarHeight,
           backgroundColor: Colors.transparent,
           indicatorColor: Colors.transparent,
           animationDuration: const Duration(milliseconds: 0),
