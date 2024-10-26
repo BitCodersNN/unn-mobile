@@ -1,4 +1,5 @@
 import 'package:unn_mobile/core/models/rating_list.dart';
+import 'package:unn_mobile/core/models/user_short_info.dart';
 
 abstract interface class ReactionManager {
   /// Добавление реакции
@@ -10,7 +11,7 @@ abstract interface class ReactionManager {
   ///   1. Не вышло получить ответ от портала
   ///   2. statusCode не равен 200
   ///   3. Не вышло декодировать ответ
-  Future<ReactionUserInfo?> addReaction(
+  Future<UserShortInfo?> addReaction(
     ReactionType reactionType,
     String voteKeySigned,
   );

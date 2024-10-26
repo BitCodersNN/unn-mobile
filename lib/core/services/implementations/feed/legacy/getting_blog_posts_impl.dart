@@ -4,17 +4,20 @@ import 'dart:io';
 import 'package:unn_mobile/core/constants/api_url_strings.dart';
 import 'package:unn_mobile/core/constants/session_identifier_strings.dart';
 import 'package:unn_mobile/core/misc/http_helper.dart';
-import 'package:unn_mobile/core/models/blog_data.dart';
+import 'package:unn_mobile/core/models/feed/blog_post_data.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
-import 'package:unn_mobile/core/services/interfaces/getting_blog_posts.dart';
+import 'package:unn_mobile/core/services/interfaces/feed/getting_blog_posts.dart';
 import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
+
+class _QueryParamNames {
+  static const start = 'start';
+  static const _postId = 'POST_ID';
+}
 
 class GettingBlogPostsImpl implements GettingBlogPosts {
   final AuthorizationService _authorisationService;
   final LoggerService _loggerService;
   final int _numberOfPostsPerPage = 50;
-  final String _start = 'start';
-  final String _postId = 'POST_ID';
 
   GettingBlogPostsImpl(
     this._authorisationService,
@@ -22,16 +25,16 @@ class GettingBlogPostsImpl implements GettingBlogPosts {
   );
 
   @override
-  Future<List<BlogData>?> getBlogPosts({
+  Future<List<BlogPostData>?> getBlogPosts({
     int pageNumber = 0,
     int? postId,
   }) async {
     final requestSender = HttpRequestSender(
-      path: ApiPaths.blogpostGet,
+      path: ApiPaths.blogPostGet,
       queryParams: {
         SessionIdentifierStrings.sessid: _authorisationService.csrf ?? '',
-        _start: (_numberOfPostsPerPage * pageNumber).toString(),
-        _postId: postId.toString(),
+        _QueryParamNames.start: (_numberOfPostsPerPage * pageNumber).toString(),
+        _QueryParamNames._postId: postId.toString(),
       },
       cookies: {
         SessionIdentifierStrings.sessionIdCookieKey:
@@ -65,10 +68,12 @@ class GettingBlogPostsImpl implements GettingBlogPosts {
       return null;
     }
 
-    List<BlogData>? blogPosts;
+    List<BlogPostData>? blogPosts;
     try {
       blogPosts = jsonList
-          .map<BlogData>((blogPostJson) => BlogData.fromJson(blogPostJson))
+          .map<BlogPostData>(
+            (blogPostJson) => BlogPostData.fromJson(blogPostJson),
+          )
           .toList();
     } catch (error, stackTrace) {
       _loggerService.logError(error, stackTrace);
