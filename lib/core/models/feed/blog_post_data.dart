@@ -17,7 +17,7 @@ class _KeysForBlogPostDataJsonConverterPortal2 {
   static const String title = 'title';
   static const String fulltext = 'fulltext';
   static const String time = 'time';
-  static const String commentsnum = 'commentsnum';
+  static const String commentsNum = 'commentsnum';
   static const String attach = 'attach';
   static const String pinnedId = 'pinnedid';
   static const String keySigned = 'keysigned';
@@ -26,7 +26,7 @@ class _KeysForBlogPostDataJsonConverterPortal2 {
 class BlogPostData {
   final int id;
   final int? blogId;
-  final int bitrixId;
+  final int authorBitrixId;
   final String title;
   final String detailText;
   final DateTime datePublish;
@@ -38,7 +38,7 @@ class BlogPostData {
   BlogPostData._({
     required this.id,
     this.blogId,
-    required this.bitrixId,
+    required this.authorBitrixId,
     required this.title,
     required this.detailText,
     required this.datePublish,
@@ -54,7 +54,7 @@ class BlogPostData {
       blogId: int.tryParse(
         jsonMap[_KeysForBlogPostDataJsonConverter.blogId] as String,
       ),
-      bitrixId: int.parse(
+      authorBitrixId: int.parse(
         jsonMap[_KeysForBlogPostDataJsonConverter.authorId] as String,
       ),
       title: jsonMap[_KeysForBlogPostDataJsonConverter.title] as String,
@@ -79,7 +79,7 @@ class BlogPostData {
         jsonMap[_KeysForBlogPostDataJsonConverterPortal2.id] as String,
       ),
       blogId: null,
-      bitrixId: int.parse(
+      authorBitrixId: int.parse(
         (jsonMap[_KeysForBlogPostDataJsonConverterPortal2.author] as Map<String,
             Object?>)[_KeysForBlogPostDataJsonConverterPortal2.id] as String,
       ),
@@ -90,7 +90,7 @@ class BlogPostData {
         jsonMap[_KeysForBlogPostDataJsonConverterPortal2.time] as String,
       ),
       numberOfComments: int.parse(
-        jsonMap[_KeysForBlogPostDataJsonConverterPortal2.commentsnum] as String,
+        jsonMap[_KeysForBlogPostDataJsonConverterPortal2.commentsNum] as String,
       ),
       files: (jsonMap[_KeysForBlogPostDataJsonConverterPortal2.attach]
               as List<dynamic>?)
@@ -106,7 +106,7 @@ class BlogPostData {
   Map<String, dynamic> toJson() => {
         _KeysForBlogPostDataJsonConverter.id: id,
         _KeysForBlogPostDataJsonConverter.blogId: blogId,
-        _KeysForBlogPostDataJsonConverter.authorId: bitrixId,
+        _KeysForBlogPostDataJsonConverter.authorId: authorBitrixId,
         _KeysForBlogPostDataJsonConverter.title: title,
         _KeysForBlogPostDataJsonConverter.detailText: detailText,
         _KeysForBlogPostDataJsonConverter.datePublish: datePublish.toString(),

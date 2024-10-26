@@ -40,10 +40,10 @@ class FeedCommentViewModel extends BaseViewModel {
     _renderMessage =
         comment.message.replaceAll(_bbTagRegex, '').trim().isNotEmpty;
 
-    _reactionViewModel = ReactionViewModel.cached(comment.bitrixId)
+    _reactionViewModel = ReactionViewModel.cached(comment.authorBitrixId)
       ..init(voteKeySigned: comment.keySigned);
-    _profileViewModel = ProfileViewModel.cached(comment.bitrixId)
-      ..init(loadFromPost: true, userId: comment.bitrixId);
+    _profileViewModel = ProfileViewModel.cached(comment.authorBitrixId)
+      ..init(loadFromPost: true, userId: comment.authorBitrixId);
     attachedFileViewModels.clear();
     attachedFileViewModels.addAll(
       comment.attachedFiles.map((f) => AttachedFileViewModel.cached(f)),
