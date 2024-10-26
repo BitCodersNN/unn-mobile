@@ -26,7 +26,7 @@ class BlogPostsServiceImpl implements BlogPostsService {
   @override
   Future<List<BlogPost>?> getBlogPosts({
     int pageNumber = 1,
-    int postsPerPage = 50,
+    int postsPerPage = 20,
   }) async {
     final requestSender = HttpRequestSender(
       path: ApiPaths.blogPostWithLoadedInfo,

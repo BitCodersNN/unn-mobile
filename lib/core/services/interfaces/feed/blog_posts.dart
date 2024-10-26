@@ -1,11 +1,10 @@
 import 'package:unn_mobile/core/models/feed/blog_post.dart';
 
 abstract interface class BlogPostsService {
-  /// Получает 50 записей блоговых постов на конкретной странице
+  /// Получает [postsPerPage] постов на странице [pageNumber]
   ///
-  /// [pageNumber]: номер страницы, с которой возьмутся записи (по умолчанию 1)
-  /// (т.е. на 1-ой странице первые 50 записей, на 2-ой - с 50 по 99 запись и т.д.)
-  /// [perpage]: количество записей на странице (по умолчанию 50)
+  /// [pageNumber]: номер страницы, с которой возьмутся посты
+  /// [postsPerPage]: количество постов на странице
   ///
   /// Возвращает:
   ///   - список [BlogPost]
@@ -16,6 +15,6 @@ abstract interface class BlogPostsService {
   ///     4. Не вышло распарсить JSON в объекты [BlogPost]
   Future<List<BlogPost>?> getBlogPosts({
     int pageNumber = 1,
-    int postsPerPage = 50,
+    int postsPerPage = 20,
   });
 }
