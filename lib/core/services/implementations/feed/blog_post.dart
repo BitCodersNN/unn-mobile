@@ -26,13 +26,13 @@ class BlogPostsServiceImpl implements BlogPostsService {
   @override
   Future<List<BlogPost>?> getBlogPosts({
     int pageNumber = 1,
-    int perpage = 50,
+    int postPerPage = 50,
   }) async {
     final requestSender = HttpRequestSender(
       path: ApiPaths.blogPostWithLoadedInfo,
       queryParams: {
         _QueryParamNames.numpage: pageNumber.toString(),
-        _QueryParamNames.perpage: perpage.toString(),
+        _QueryParamNames.perpage: postPerPage.toString(),
       },
       cookies: {
         SessionIdentifierStrings.sessionIdCookieKey:
@@ -52,7 +52,7 @@ class BlogPostsServiceImpl implements BlogPostsService {
 
     if (statusCode != 200) {
       _loggerService.log(
-        'statusCode = $statusCode; ${_QueryParamNames.perpage} = $perpage; ${_QueryParamNames.numpage} = $pageNumber;',
+        'statusCode = $statusCode; ${_QueryParamNames.perpage} = $postPerPage; ${_QueryParamNames.numpage} = $pageNumber;',
       );
       return null;
     }
