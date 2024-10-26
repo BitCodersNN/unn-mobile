@@ -85,8 +85,8 @@ class ProfileViewModel extends BaseViewModel {
   }
 
   Future<UserData?> _getCurrentUser() async {
-    final currentUserProfile = await _getCurrentUserService.getProfileOfCurrentUser();
-    return currentUserProfile ?? _currentUserSyncStorage.currentUserData;
+    final currentUser = await _getCurrentUserService.getProfileOfCurrentUser();
+    return currentUser ?? _currentUserSyncStorage.currentUserData;
   }
 
   Future<UserData?> _getProfile(int userId, bool loadFromPost) async {
