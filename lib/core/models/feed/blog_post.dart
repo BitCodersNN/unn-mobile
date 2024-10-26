@@ -20,35 +20,35 @@ class _KeysForBlogPostJsonConverterPortal2 {
 }
 
 class BlogPost {
-  final BlogPostData blogPostData;
-  final RatingList blogPostRatingList;
-  final UserShortInfo blogUserShortInfo;
-  final List<FileData> blogAttachFiles;
-  final List<BlogPostComment> blogComments;
+  final BlogPostData data;
+  final RatingList ratingList;
+  final UserShortInfo userShortInfo;
+  final List<FileData> attachFiles;
+  final List<BlogPostComment> comments;
 
   BlogPost._({
-    required this.blogPostData,
-    required this.blogPostRatingList,
-    required this.blogUserShortInfo,
-    required this.blogAttachFiles,
-    required this.blogComments,
+    required this.data,
+    required this.ratingList,
+    required this.userShortInfo,
+    required this.attachFiles,
+    required this.comments,
   });
 
   factory BlogPost.fromJson(Map<String, dynamic> jsonMap) {
     return BlogPost._(
-      blogPostData: BlogPostData.fromJson(
+      data: BlogPostData.fromJson(
         jsonMap[_KeysForBlogPostJsonConverter.post] as Map<String, Object?>,
       ),
-      blogPostRatingList: RatingList.fromJson(
+      ratingList: RatingList.fromJson(
         jsonMap[_KeysForBlogPostJsonConverter.ratingList]
             as Map<String, Object?>,
       ),
-      blogUserShortInfo:
+      userShortInfo:
           UserShortInfo.fromJson(jsonMap[_KeysForBlogPostJsonConverter.author]),
-      blogAttachFiles: (jsonMap[_KeysForBlogPostJsonConverter.attach] as List)
+      attachFiles: (jsonMap[_KeysForBlogPostJsonConverter.attach] as List)
           .map((item) => FileData.fromJson(item))
           .toList(),
-      blogComments: (jsonMap[_KeysForBlogPostJsonConverter.comments] as List)
+      comments: (jsonMap[_KeysForBlogPostJsonConverter.comments] as List)
           .map((comment) => BlogPostComment.fromJson(comment))
           .toList(),
     );
@@ -56,33 +56,32 @@ class BlogPost {
 
   factory BlogPost.fromJsonPortal2(Map<String, dynamic> jsonMap) {
     return BlogPost._(
-      blogPostData: BlogPostData.fromJsonPortal2(jsonMap),
-      blogPostRatingList: RatingList.fromJsonPortal2(
+      data: BlogPostData.fromJsonPortal2(jsonMap),
+      ratingList: RatingList.fromJsonPortal2(
         jsonMap[_KeysForBlogPostJsonConverterPortal2.reaction],
       ),
-      blogUserShortInfo: UserShortInfo.fromJsonPortal2(
+      userShortInfo: UserShortInfo.fromJsonPortal2(
         jsonMap[_KeysForBlogPostJsonConverterPortal2.author],
       ),
-      blogAttachFiles:
+      attachFiles:
           (jsonMap[_KeysForBlogPostJsonConverterPortal2.attach] as List)
               .map((item) => FileData.fromJsonPortal2(item))
               .toList(),
-      blogComments:
-          (jsonMap[_KeysForBlogPostJsonConverterPortal2.comments] as List)
-              .map((comment) => BlogPostComment.fromJsonPortal2(comment))
-              .toList(),
+      comments: (jsonMap[_KeysForBlogPostJsonConverterPortal2.comments] as List)
+          .map((comment) => BlogPostComment.fromJsonPortal2(comment))
+          .toList(),
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      _KeysForBlogPostJsonConverter.post: blogPostData.toJson(),
-      _KeysForBlogPostJsonConverter.ratingList: blogPostRatingList.toJson(),
-      _KeysForBlogPostJsonConverter.author: blogUserShortInfo.toJson(),
+      _KeysForBlogPostJsonConverter.post: data.toJson(),
+      _KeysForBlogPostJsonConverter.ratingList: ratingList.toJson(),
+      _KeysForBlogPostJsonConverter.author: userShortInfo.toJson(),
       _KeysForBlogPostJsonConverter.attach:
-          blogAttachFiles.map((file) => file.toJson()).toList(),
+          attachFiles.map((file) => file.toJson()).toList(),
       _KeysForBlogPostJsonConverter.comments:
-          blogComments.map((comment) => comment.toJson()).toList(),
+          comments.map((comment) => comment.toJson()).toList(),
     };
   }
 }

@@ -10,31 +10,31 @@ class _KeysForBlogPostCommentDataWithRatings {
 }
 
 class BlogPostComment {
-  final BlogPostCommentData commentData;
-  final RatingList? commentRatingList;
-  final UserShortInfo commentUserShortInfo;
-  final List<FileData> commentAttachFiles;
+  final BlogPostCommentData data;
+  final RatingList? ratingList;
+  final UserShortInfo userShortInfo;
+  final List<FileData> attachFiles;
 
   BlogPostComment._({
-    required this.commentData,
-    required this.commentRatingList,
-    required this.commentUserShortInfo,
-    required this.commentAttachFiles,
+    required this.data,
+    required this.ratingList,
+    required this.userShortInfo,
+    required this.attachFiles,
   });
 
   factory BlogPostComment.fromJson(Map<String, dynamic> jsonMap) {
     return BlogPostComment._(
-      commentData: BlogPostCommentData.fromJson(jsonMap),
-      commentRatingList:
+      data: BlogPostCommentData.fromJson(jsonMap),
+      ratingList:
           jsonMap[_KeysForBlogPostCommentDataWithRatings.reaction] != null
               ? RatingList.fromJson(
                   jsonMap[_KeysForBlogPostCommentDataWithRatings.reaction],
                 )
               : null,
-      commentUserShortInfo: UserShortInfo.fromJson(
+      userShortInfo: UserShortInfo.fromJson(
         jsonMap[_KeysForBlogPostCommentDataWithRatings.author],
       ),
-      commentAttachFiles:
+      attachFiles:
           (jsonMap[_KeysForBlogPostCommentDataWithRatings.attach] as List)
               .map((item) => FileData.fromJson(item))
               .toList(),
@@ -43,17 +43,17 @@ class BlogPostComment {
 
   factory BlogPostComment.fromJsonPortal2(Map<String, dynamic> jsonMap) {
     return BlogPostComment._(
-      commentData: BlogPostCommentData.fromJsonPortal2(jsonMap),
-      commentRatingList:
+      data: BlogPostCommentData.fromJsonPortal2(jsonMap),
+      ratingList:
           jsonMap[_KeysForBlogPostCommentDataWithRatings.reaction] != null
               ? RatingList.fromJsonPortal2(
                   jsonMap[_KeysForBlogPostCommentDataWithRatings.reaction],
                 )
               : null,
-      commentUserShortInfo: UserShortInfo.fromJsonPortal2(
+      userShortInfo: UserShortInfo.fromJsonPortal2(
         jsonMap[_KeysForBlogPostCommentDataWithRatings.author],
       ),
-      commentAttachFiles:
+      attachFiles:
           (jsonMap[_KeysForBlogPostCommentDataWithRatings.attach] as List)
               .map((item) => FileData.fromJsonPortal2(item))
               .toList(),
@@ -62,13 +62,11 @@ class BlogPostComment {
 
   Map<String, dynamic> toJson() {
     return {
-      ...commentData.toJson(),
-      _KeysForBlogPostCommentDataWithRatings.reaction:
-          commentRatingList?.toJson(),
-      _KeysForBlogPostCommentDataWithRatings.author:
-          commentUserShortInfo.toJson(),
+      ...data.toJson(),
+      _KeysForBlogPostCommentDataWithRatings.reaction: ratingList?.toJson(),
+      _KeysForBlogPostCommentDataWithRatings.author: userShortInfo.toJson(),
       _KeysForBlogPostCommentDataWithRatings.attach:
-          commentAttachFiles.map((file) => file.toJson()).toList(),
+          attachFiles.map((file) => file.toJson()).toList(),
     };
   }
 }
