@@ -151,7 +151,7 @@ class GettingBlogPostCommentsImpl implements GettingBlogPostComments {
         comments.add(
           BlogPostCommentData(
             id: id,
-            bitrixID: authorId,
+            bitrixId: authorId,
             dateTime: dateTime ?? unknownString,
             message: message ?? unknownString,
             keySigned: keySigned ?? unknownString,

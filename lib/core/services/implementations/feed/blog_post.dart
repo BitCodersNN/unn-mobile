@@ -9,11 +9,14 @@ import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/blog_posts.dart';
 import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 
+class _QueryParamNames {
+  static const numpage = 'numpage';
+  static const perpage = 'perpage';
+}
+
 class BlogPostsServiceImpl implements BlogPostsService {
   final AuthorizationService _authorisationService;
   final LoggerService _loggerService;
-  final String _numpage = 'numpage';
-  final String _perpage = 'perpage';
 
   BlogPostsServiceImpl(
     this._authorisationService,
@@ -28,8 +31,8 @@ class BlogPostsServiceImpl implements BlogPostsService {
     final requestSender = HttpRequestSender(
       path: ApiPaths.blogPostWithLoadedInfo,
       queryParams: {
-        _numpage: pageNumber.toString(),
-        _perpage: perpage.toString(),
+        _QueryParamNames.numpage: pageNumber.toString(),
+        _QueryParamNames.perpage: perpage.toString(),
       },
       cookies: {
         SessionIdentifierStrings.sessionIdCookieKey:
@@ -49,7 +52,7 @@ class BlogPostsServiceImpl implements BlogPostsService {
 
     if (statusCode != 200) {
       _loggerService.log(
-        'statusCode = $statusCode; $_perpage = $perpage; $_numpage = $pageNumber;',
+        'statusCode = $statusCode; ${_QueryParamNames.perpage} = $perpage; ${_QueryParamNames.numpage} = $pageNumber;',
       );
       return null;
     }

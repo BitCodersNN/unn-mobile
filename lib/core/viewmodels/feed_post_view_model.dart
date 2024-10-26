@@ -39,7 +39,7 @@ class FeedPostViewModel extends BaseViewModel {
         .getViewModel(key);
   }
 
-  int get authorId => blogData.bitrixID;
+  int get authorId => blogData.bitrixId;
 
   int get commentsCount => blogData.numberOfComments;
 
@@ -60,10 +60,10 @@ class FeedPostViewModel extends BaseViewModel {
   void init(BlogPostData blogData) {
     this.blogData = blogData;
 
-    _profileViewModel = ProfileViewModel.cached(blogData.bitrixID)
-      ..init(loadFromPost: true, userId: blogData.bitrixID);
-    _reactionViewModel = ReactionViewModel.cached(blogData.bitrixID)
-      ..init(postId: blogData.id, authorId: blogData.bitrixID);
+    _profileViewModel = ProfileViewModel.cached(blogData.bitrixId)
+      ..init(loadFromPost: true, userId: blogData.bitrixId);
+    _reactionViewModel = ReactionViewModel.cached(blogData.bitrixId)
+      ..init(postId: blogData.id, authorId: blogData.bitrixId);
     attachedFileViewModels.clear();
     attachedFileViewModels.addAll(
       blogData.files?.map((fileId) => AttachedFileViewModel.cached(fileId)) ??

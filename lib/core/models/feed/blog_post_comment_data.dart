@@ -18,7 +18,7 @@ class _KeysForBlogPostCommentDataJsonConverterPortal2 {
 
 class BlogPostCommentData {
   final int id;
-  final int bitrixID;
+  final int bitrixId;
   final String dateTime;
   final String message;
   final List<int> attachedFiles;
@@ -26,7 +26,7 @@ class BlogPostCommentData {
 
   BlogPostCommentData({
     required this.id,
-    required this.bitrixID,
+    required this.bitrixId,
     required this.dateTime,
     required this.message,
     required this.keySigned,
@@ -38,7 +38,7 @@ class BlogPostCommentData {
         id: int.parse(
           jsonMap[_KeysForBlogPostCommentDataJsonConverter.id] as String,
         ),
-        bitrixID: int.parse(
+        bitrixId: int.parse(
           jsonMap[_KeysForBlogPostCommentDataJsonConverter.authorId] as String,
         ),
         dateTime: jsonMap[_KeysForBlogPostCommentDataJsonConverter.dateTime]
@@ -59,7 +59,7 @@ class BlogPostCommentData {
         id: int.parse(
           jsonMap[_KeysForBlogPostCommentDataJsonConverterPortal2.id] as String,
         ),
-        bitrixID: int.parse(
+        bitrixId: int.parse(
           (jsonMap[_KeysForBlogPostCommentDataJsonConverterPortal2.author]
                   as Map)[_KeysForBlogPostCommentDataJsonConverterPortal2.id]
               as String,
@@ -82,7 +82,7 @@ class BlogPostCommentData {
     return {
       _KeysForBlogPostCommentDataJsonConverter.id: id,
       _KeysForBlogPostCommentDataJsonConverter.dateTime: dateTime,
-      _KeysForBlogPostCommentDataJsonConverter.authorId: bitrixID,
+      _KeysForBlogPostCommentDataJsonConverter.authorId: bitrixId,
       _KeysForBlogPostCommentDataJsonConverter.message: message,
       _KeysForBlogPostCommentDataJsonConverter.keySigned: keySigned,
       _KeysForBlogPostCommentDataJsonConverter.attachedFiles: attachedFiles,

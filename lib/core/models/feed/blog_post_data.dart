@@ -3,7 +3,7 @@ import 'package:intl/intl.dart';
 class _KeysForBlogPostDataJsonConverter {
   static const String id = 'ID';
   static const String blogId = 'BLOG_ID';
-  static const String authorID = 'AUTHOR_ID';
+  static const String authorId = 'AUTHOR_ID';
   static const String title = 'TITLE';
   static const String detailText = 'DETAIL_TEXT';
   static const String datePublish = 'DATE_PUBLISH';
@@ -26,25 +26,25 @@ class _KeysForBlogPostDataJsonConverterPortal2 {
 class BlogPostData {
   final int id;
   final int? blogId;
-  final int bitrixID;
+  final int bitrixId;
   final String title;
   final String detailText;
   final DateTime datePublish;
   final int numberOfComments;
   final List<int>? files;
-  final int? pinnedid;
+  final int? pinnedId;
   final String? keySigned;
 
   BlogPostData._({
     required this.id,
     this.blogId,
-    required this.bitrixID,
+    required this.bitrixId,
     required this.title,
     required this.detailText,
     required this.datePublish,
     required this.numberOfComments,
     this.files,
-    this.pinnedid,
+    this.pinnedId,
     this.keySigned,
   });
 
@@ -54,8 +54,8 @@ class BlogPostData {
       blogId: int.tryParse(
         jsonMap[_KeysForBlogPostDataJsonConverter.blogId] as String,
       ),
-      bitrixID: int.parse(
-        jsonMap[_KeysForBlogPostDataJsonConverter.authorID] as String,
+      bitrixId: int.parse(
+        jsonMap[_KeysForBlogPostDataJsonConverter.authorId] as String,
       ),
       title: jsonMap[_KeysForBlogPostDataJsonConverter.title] as String,
       detailText:
@@ -79,7 +79,7 @@ class BlogPostData {
         jsonMap[_KeysForBlogPostDataJsonConverterPortal2.id] as String,
       ),
       blogId: null,
-      bitrixID: int.parse(
+      bitrixId: int.parse(
         (jsonMap[_KeysForBlogPostDataJsonConverterPortal2.author] as Map<String,
             Object?>)[_KeysForBlogPostDataJsonConverterPortal2.id] as String,
       ),
@@ -96,7 +96,7 @@ class BlogPostData {
               as List<dynamic>?)
           ?.map((element) => element.toString().hashCode)
           .toList(),
-      pinnedid:
+      pinnedId:
           jsonMap[_KeysForBlogPostDataJsonConverterPortal2.pinnedId] as int?,
       keySigned: jsonMap[_KeysForBlogPostDataJsonConverterPortal2.keySigned]
           as String?,
@@ -106,7 +106,7 @@ class BlogPostData {
   Map<String, dynamic> toJson() => {
         _KeysForBlogPostDataJsonConverter.id: id,
         _KeysForBlogPostDataJsonConverter.blogId: blogId,
-        _KeysForBlogPostDataJsonConverter.authorID: bitrixID,
+        _KeysForBlogPostDataJsonConverter.authorId: bitrixId,
         _KeysForBlogPostDataJsonConverter.title: title,
         _KeysForBlogPostDataJsonConverter.detailText: detailText,
         _KeysForBlogPostDataJsonConverter.datePublish: datePublish.toString(),

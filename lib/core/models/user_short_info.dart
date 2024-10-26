@@ -11,18 +11,14 @@ class _KeysForUserInfoJsonConverterPortal2 {
 }
 
 class UserShortInfo {
-  final int? _bitrixId;
-  final String _fullname;
-  final String? _photoSrc;
-
-  int? get bitrixId => _bitrixId;
-  String get fullname => _fullname;
-  String? get photoSrc => _photoSrc;
+  final int? bitrixId;
+  final String fullname;
+  final String? photoSrc;
 
   UserShortInfo(
-    this._bitrixId,
-    this._fullname,
-    this._photoSrc,
+    this.bitrixId,
+    this.fullname,
+    this.photoSrc,
   );
 
   factory UserShortInfo.fromJson(Map<String, Object?> jsonMap) => UserShortInfo(
@@ -42,8 +38,8 @@ class UserShortInfo {
   }
 
   Map<String, dynamic> toJson() => {
-        _KeysForUserInfoJsonConverter.id: _bitrixId,
-        _KeysForUserInfoJsonConverter.fullname: _fullname,
-        _KeysForUserInfoJsonConverter.photoSrc: _photoSrc,
+        _KeysForUserInfoJsonConverter.id: bitrixId,
+        _KeysForUserInfoJsonConverter.fullname: fullname,
+        _KeysForUserInfoJsonConverter.photoSrc: photoSrc,
       };
 }

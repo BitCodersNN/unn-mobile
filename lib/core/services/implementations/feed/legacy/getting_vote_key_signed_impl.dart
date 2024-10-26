@@ -8,10 +8,13 @@ import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/getting_vote_key_signed.dart';
 import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 
+class _PathParts {
+  static const blog = 'blog';
+}
+
 class GettingVoteKeySignedImpl implements GettingVoteKeySigned {
   final AuthorizationService _authorizationService;
   final LoggerService _loggerService;
-  final String _blog = 'blog';
 
   GettingVoteKeySignedImpl(
     this._authorizationService,
@@ -23,7 +26,8 @@ class GettingVoteKeySignedImpl implements GettingVoteKeySigned {
     required int authorId,
     required int postId,
   }) async {
-    final path = '${ApiPaths.companyPersonalUser}/$authorId/$_blog/$postId/';
+    final path =
+        '${ApiPaths.companyPersonalUser}/$authorId/${_PathParts.blog}/$postId/';
 
     final requestSender = HttpRequestSender(
       path: path,
