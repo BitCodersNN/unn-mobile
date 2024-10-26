@@ -1,4 +1,5 @@
 import 'package:injector/injector.dart';
+import 'package:unn_mobile/core/misc/current_user_sync_storage.dart';
 import 'package:unn_mobile/core/misc/user_functions.dart';
 import 'package:unn_mobile/core/models/student_data.dart';
 import 'package:unn_mobile/core/models/user_data.dart';
@@ -10,6 +11,7 @@ import 'package:unn_mobile/core/viewmodels/factories/profile_view_model_factory.
 
 class ProfileViewModel extends BaseViewModel {
   final GettingProfileOfCurrentUser _getCurrentUserService;
+  final CurrentUserSyncStorage _currentUserSyncStorage;
   final GettingProfile _getProfileService;
   final LoggerService _loggerService;
 
@@ -25,6 +27,7 @@ class ProfileViewModel extends BaseViewModel {
     this._getCurrentUserService,
     this._getProfileService,
     this._loggerService,
+    this._currentUserSyncStorage,
   );
 
   factory ProfileViewModel.cached(ProfileCacheKey key) {
@@ -82,7 +85,8 @@ class ProfileViewModel extends BaseViewModel {
   }
 
   Future<UserData?> _getCurrentUser() async {
-    return await _getCurrentUserService.getProfileOfCurrentUser();
+    return (await _getCurrentUserService.getProfileOfCurrentUser()) ??
+        _currentUserSyncStorage.currentUserData;
   }
 
   Future<UserData?> _getProfile(int userId, bool loadFromPost) async {
