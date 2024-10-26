@@ -10,8 +10,8 @@ import 'package:unn_mobile/core/services/interfaces/feed/blog_posts.dart';
 import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 
 class _QueryParamNames {
-  static const numpage = 'numpage';
-  static const perpage = 'perpage';
+  static const numPage = 'numpage';
+  static const perPage = 'perpage';
 }
 
 class BlogPostsServiceImpl implements BlogPostsService {
@@ -26,13 +26,13 @@ class BlogPostsServiceImpl implements BlogPostsService {
   @override
   Future<List<BlogPost>?> getBlogPosts({
     int pageNumber = 1,
-    int postPerPage = 50,
+    int postsPerPage = 50,
   }) async {
     final requestSender = HttpRequestSender(
       path: ApiPaths.blogPostWithLoadedInfo,
       queryParams: {
-        _QueryParamNames.numpage: pageNumber.toString(),
-        _QueryParamNames.perpage: postPerPage.toString(),
+        _QueryParamNames.numPage: pageNumber.toString(),
+        _QueryParamNames.perPage: postsPerPage.toString(),
       },
       cookies: {
         SessionIdentifierStrings.sessionIdCookieKey:
@@ -52,7 +52,7 @@ class BlogPostsServiceImpl implements BlogPostsService {
 
     if (statusCode != 200) {
       _loggerService.log(
-        'statusCode = $statusCode; ${_QueryParamNames.perpage} = $postPerPage; ${_QueryParamNames.numpage} = $pageNumber;',
+        'statusCode = $statusCode; ${_QueryParamNames.perPage} = $postsPerPage; ${_QueryParamNames.numPage} = $pageNumber;',
       );
       return null;
     }

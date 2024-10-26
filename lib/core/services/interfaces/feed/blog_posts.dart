@@ -14,5 +14,5 @@ abstract interface class BlogPostsService {
   ///     2. statusCode не равен 200
   ///     3. Не вышло декодировать ответ
   ///     4. Не вышло распарсить JSON в объекты [BlogPost]
-  Future<List<BlogPost>?> getBlogPosts({int pageNumber = 1, int postPerPage = 50});
+  Future<List<BlogPost>?> getBlogPosts({int pageNumber = 1, int postsPerPage = 50});
 }
