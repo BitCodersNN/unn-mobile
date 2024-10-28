@@ -10,25 +10,25 @@ class ScheduleScreenViewModel extends BaseViewModel
     implements MainPageRouteViewModel {
   final CurrentUserSyncStorage _currentUserSyncStorage;
 
-  ScheduleScreenViewModel(this._currentUserSyncStorage);
-
   int selectedTab = 0;
 
-  List<IDType> get tabIDTypes => switch (_currentUserSyncStorage.typeOfUser) {
+  late final List<ScheduleTabViewModel> _tabViewModels;
+
+  ScheduleScreenViewModel(this._currentUserSyncStorage);
+
+  List<IdType> get tabIDTypes => switch (_currentUserSyncStorage.typeOfUser) {
         const (EmployeeData) => [
-            IDType.lecturer,
-            IDType.group,
-            IDType.student,
+            IdType.lecturer,
+            IdType.group,
+            IdType.student,
           ],
         _ => [
-            IDType.student,
-            IDType.group,
-            IDType.lecturer,
+            IdType.student,
+            IdType.group,
+            IdType.lecturer,
           ] // Объединяем результат для StudentData и всего остального
       };
-
   List<ScheduleTabViewModel> get tabViewModels => _tabViewModels;
-  late final List<ScheduleTabViewModel> _tabViewModels;
 
   void init() {
     if (isInitialized) {

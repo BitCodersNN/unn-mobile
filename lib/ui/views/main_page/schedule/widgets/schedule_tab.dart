@@ -18,7 +18,7 @@ import 'package:unn_mobile/ui/widgets/dialogs/radio_group_dialog.dart';
 import 'package:unn_mobile/ui/widgets/persistent_header.dart';
 
 class ScheduleTab extends StatefulWidget {
-  final IDType type;
+  final IdType type;
   final ScheduleTabViewModel viewModel;
 
   const ScheduleTab(this.type, this.viewModel, {super.key});

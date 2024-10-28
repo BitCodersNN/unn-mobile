@@ -33,6 +33,9 @@ class MainPageRouteData {
   });
 }
 
+
+int _navbarIndex = 0; // I hate myself
+
 class MainPageRouting {
   static final List<MainPageRouteData> navbarRoutes = [
     MainPageRouteData(
@@ -40,8 +43,8 @@ class MainPageRouting {
       Icons.star_border,
       'Лента',
       '/feed',
-      builder: (p0) => const FeedScreenView(
-        routeIndex: 0,
+      builder: (p0) => FeedScreenView(
+        routeIndex: _navbarIndex++,
       ),
       userTypes: [
         StudentData,
@@ -65,8 +68,8 @@ class MainPageRouting {
       Icons.calendar_month_outlined,
       'Расписание',
       '/schedule',
-      builder: (p0) => const ScheduleScreenView(
-        routeIndex: 1,
+      builder: (p0) => ScheduleScreenView(
+        routeIndex: _navbarIndex++,
       ),
       userTypes: [StudentData, EmployeeData, UserData],
     ),

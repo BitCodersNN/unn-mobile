@@ -17,10 +17,10 @@ class ScheduleScreenView extends StatefulWidget {
 
 class _ScheduleScreenViewState extends State<ScheduleScreenView>
     with SingleTickerProviderStateMixin {
-  Map<IDType, String> tabTexts = {
-    IDType.student: 'Студент',
-    IDType.lecturer: 'Преподаватель',
-    IDType.group: 'Группа',
+  Map<IdType, String> tabTexts = {
+    IdType.student: 'Студент',
+    IdType.lecturer: 'Преподаватель',
+    IdType.group: 'Группа',
   };
 
   late TabController _tabController;

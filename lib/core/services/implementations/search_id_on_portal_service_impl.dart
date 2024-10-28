@@ -55,12 +55,12 @@ class SearchIdOnPortalServiceImpl implements SearchIdOnPortalService {
   }
 
   @override
-  Future<IDForSchedule?> getIdOfLoggedInUser() async {
+  Future<IdForSchedule?> getIdOfLoggedInUser() async {
     final userData =
         await _gettingProfileOfCurrentUser.getProfileOfCurrentUser();
 
     if (userData is EmployeeData) {
-      return IDForSchedule(IDType.person, userData.syncID);
+      return IdForSchedule(IdType.person, userData.syncID);
     }
 
     if (userData is StudentData) {
@@ -68,7 +68,7 @@ class SearchIdOnPortalServiceImpl implements SearchIdOnPortalService {
       if (id == null) {
         return null;
       }
-      return IDForSchedule(IDType.student, id);
+      return IdForSchedule(IdType.student, id);
     }
 
     return null;
@@ -77,7 +77,7 @@ class SearchIdOnPortalServiceImpl implements SearchIdOnPortalService {
   @override
   Future<List<ScheduleSearchSuggestionItem>?> findIDOnPortal(
     String value,
-    IDType valueType,
+    IdType valueType,
   ) async {
     final requestSender = HttpRequestSender(
       path: ApiPaths.search,

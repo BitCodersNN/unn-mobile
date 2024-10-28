@@ -10,11 +10,11 @@ class MainPageViewModel extends BaseViewModel {
   final CurrentUserSyncStorage _currentUserSyncStorage;
   late ProfileViewModel _profileViewModel;
 
+  List<MainPageRouteData> _routes = [];
+
   MainPageViewModel(this._currentUserSyncStorage);
 
   ProfileViewModel get profileViewModel => _profileViewModel;
-
-  List<MainPageRouteData> _routes = [];
   List<MainPageRouteData> get routes => _routes;
 
   void init() {

@@ -112,6 +112,11 @@ class FeedScreenViewModel extends BaseViewModel
     notifyListeners();
   }
 
+  @override
+  void refresh() {
+    onRefresh?.call();
+  }
+
   /// Синхронизирует посты в вьюмодели с сервисом
   void syncFeed() {
     _lastLoadedPost = 0;
@@ -144,10 +149,5 @@ class FeedScreenViewModel extends BaseViewModel
       _loadingPosts = false;
       notifyListeners();
     });
-  }
-
-  @override
-  void refresh() {
-    onRefresh?.call();
   }
 }

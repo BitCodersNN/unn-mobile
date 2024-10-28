@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:collection';
+
 import 'package:flutter/material.dart';
 import 'package:unn_mobile/core/misc/date_time_ranges.dart';
 import 'package:unn_mobile/core/misc/try_login_and_retrieve_data.dart';
@@ -16,10 +17,6 @@ import 'package:unn_mobile/core/services/interfaces/schedule_search_history_serv
 import 'package:unn_mobile/core/services/interfaces/search_id_on_portal_service.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
 
-class _ExclusionID {
-  static const _vacancy = IDForSchedule(IDType.lecturer, '26579');
-}
-
 class ScheduleTabViewModel extends BaseViewModel {
   final GettingScheduleService _getScheduleService;
   final SearchIdOnPortalService _searchIdOnPortalService;
@@ -28,18 +25,30 @@ class ScheduleTabViewModel extends BaseViewModel {
   final ScheduleSearchHistoryService _historyService;
   final OnlineStatusData _onlineStatusData;
   final ExportScheduleService _exportScheduleService;
-  final String _studentNameText = 'Имя студента';
-  final String _lecturerNameText = 'Имя преподавателя';
-  final String _groupNameText = 'Название группы';
+
   void Function()? onRefresh;
 
   String _currentId = '';
-
   String selectedId = '';
+
   String lastSearchQuery = '';
 
-  IDType _idType = IDType.student;
+  IdType _idType = IdType.student;
 
+  Future<Map<int, List<Subject>>>? _scheduleLoader;
+
+  int displayedWeekOffset = 0;
+  // По идее - надо использовать decidePivotWeek,
+  // но его нельзя в инициализации использовать.
+  // Поэтому используем как есть, потом в init создаём как надо
+  ScheduleFilter _filter = ScheduleFilter(
+    IdType.student,
+    '',
+    DateTimeRanges.currentWeek(),
+  );
+  String _searchPlaceholderText = '';
+  void Function(Map<int, List<Subject>>)? _onScheduleLoaded;
+  
   ScheduleTabViewModel(
     this._getScheduleService,
     this._searchIdOnPortalService,
@@ -49,82 +58,62 @@ class ScheduleTabViewModel extends BaseViewModel {
     this._onlineStatusData,
     this._exportScheduleService,
   );
-
-  bool get offline => !_onlineStatusData.isOnline;
-  Future<Map<int, List<Subject>>>? _scheduleLoader;
-  Future<Map<int, List<Subject>>>? get scheduleLoader => _scheduleLoader;
-  int displayedWeekOffset = 0;
   DateTimeRange get displayedWeek =>
       offline ? decidePivotWeek() : _filter.dateTimeRange;
-  // По идее - надо использовать decidePivotWeek,
-  // но его нельзя в инициализации использовать.
-  // Поэтому используем как есть, потом в init создаём как надо
-  ScheduleFilter _filter = ScheduleFilter(
-    IDType.student,
-    '',
-    DateTimeRanges.currentWeek(),
-  );
-  String _searchPlaceholderText = '';
-  String get searchPlaceholderText => _searchPlaceholderText;
   ScheduleFilter get filter => _filter;
+  bool get offline => !_onlineStatusData.isOnline;
+  Future<Map<int, List<Subject>>>? get scheduleLoader => _scheduleLoader;
 
-  void Function(Map<int, List<Subject>>)? _onScheduleLoaded;
+  String get searchPlaceholderText => _searchPlaceholderText;
+
+  FutureOr<void> addHistoryItem(ScheduleSearchSuggestionItem item) =>
+      _historyService.pushToHistory(_idType, item);
+
+  Future<RequestCalendarPermissionResult> askForExportPermission() async {
+    return await _exportScheduleService.requestCalendarPermission();
+  }
 
   DateTimeRange decidePivotWeek() => DateTime.now().weekday == DateTime.sunday
       ? DateTimeRanges.nextWeek()
       : DateTimeRanges.currentWeek();
 
-  void _initHuman(String placeholderText, IDType idType) {
-    _searchPlaceholderText = placeholderText;
+  Future<void> decrementWeek() async {
+    displayedWeekOffset--;
     _filter = ScheduleFilter(
       _filter.idType,
       _filter.id,
-      decidePivotWeek(),
+      DateTimeRange(
+        start: _filter.dateTimeRange.start.subtract(
+          const Duration(days: DateTime.daysPerWeek),
+        ),
+        end: _filter.dateTimeRange.end.subtract(
+          const Duration(days: DateTime.daysPerWeek),
+        ),
+      ),
     );
-    tryLoginAndRetrieveData(
-      _searchIdOnPortalService.getIdOfLoggedInUser,
-      () => null,
-    ).then((value) async {
-      if (value == null) {
-        _updateScheduleLoader();
-        return;
-      }
-      if (value.idType == idType) {
-        _filter = ScheduleFilter(value.idType, value.id, decidePivotWeek());
-        _currentId = value.id;
-        _updateScheduleLoader();
-      }
-      notifyListeners();
-    });
+    _updateScheduleLoader();
+    notifyListeners();
   }
 
-  void _initGroup() {
-    _searchPlaceholderText = _groupNameText;
-    tryLoginAndRetrieveData(
-      _gettingProfileOfCurrentUser.getProfileOfCurrentUser,
-      () => null,
-    ).then((value) async {
-      if (value == null) {
-        _updateScheduleLoader();
-        return;
-      }
+  Future<bool> exportSchedule(DateTimeRange range) async {
+    final exportScheduleFilter = ScheduleFilter(_idType, _currentId, range);
+    final res =
+        await _exportScheduleService.exportSchedule(exportScheduleFilter);
+    return res == ExportScheduleResult.success;
+  }
 
-      if (value is StudentData) {
-        final groupID = await _searchIdOnPortalService.findIDOnPortal(
-          value.eduGroup,
-          IDType.group,
-        );
-        _filter = ScheduleFilter(
-          IDType.group,
-          groupID!.first.id,
-          decidePivotWeek(),
-        );
-        _currentId = groupID.first.id;
-        _updateScheduleLoader();
-      }
+  Future<List<ScheduleSearchSuggestionItem>> getSearchSuggestions(
+    String value,
+  ) async {
+    if (value.isEmpty) {
+      return await _getHistorySuggestions();
+    }
+    final suggestions = await tryLoginAndRetrieveData(
+      () async => await _searchIdOnPortalService.findIDOnPortal(value, _idType),
+      () async => <ScheduleSearchSuggestionItem>[],
+    );
 
-      notifyListeners();
-    });
+    return suggestions;
   }
 
   Future<void> incrementWeek() async {
@@ -145,22 +134,37 @@ class ScheduleTabViewModel extends BaseViewModel {
     notifyListeners();
   }
 
-  Future<void> decrementWeek() async {
-    displayedWeekOffset--;
-    _filter = ScheduleFilter(
-      _filter.idType,
-      _filter.id,
-      DateTimeRange(
-        start: _filter.dateTimeRange.start.subtract(
-          const Duration(days: DateTime.daysPerWeek),
-        ),
-        end: _filter.dateTimeRange.end.subtract(
-          const Duration(days: DateTime.daysPerWeek),
-        ),
-      ),
-    );
-    _updateScheduleLoader();
-    notifyListeners();
+  void init(
+    IdType type, {
+    void Function(Map<int, List<Subject>> schedule)? onScheduleLoaded,
+  }) {
+    if (isInitialized) {
+      return;
+    }
+    isInitialized = true;
+    _onScheduleLoaded = onScheduleLoaded;
+    _idType = type;
+    switch (type) {
+      case IdType.student:
+        _initHuman(_SearchBarPlaceholders.student, IdType.student);
+        break;
+      case IdType.group:
+        _initGroup();
+        break;
+      case IdType.person:
+        _initHuman(_SearchBarPlaceholders.lecturer, IdType.person);
+        break;
+      default:
+        break;
+    }
+  }
+
+  Future openSettingsWindow() async {
+    await _exportScheduleService.openSettings();
+  }
+
+  void refresh() {
+    onRefresh?.call();
   }
 
   Future<void> resetWeek() async {
@@ -174,18 +178,43 @@ class ScheduleTabViewModel extends BaseViewModel {
     notifyListeners();
   }
 
-  FutureOr<void> _invokeOnScheduleLoaded(value) {
-    if (_onScheduleLoaded != null) {
-      _onScheduleLoaded!(value);
+  Future<void> submitSearch(String query) async {
+    if (query.isNotEmpty) {
+      final searchResult =
+          await _searchIdOnPortalService.findIDOnPortal(query, _idType);
+
+      if (searchResult == null) {
+        throw Exception('Schedule search result was null');
+      }
+      _filter = ScheduleFilter(_idType, searchResult[0].id, displayedWeek);
+    } else {
+      _filter = ScheduleFilter(_idType, _currentId, displayedWeek);
     }
+
+    final loader = _getScheduleLoader();
+    _scheduleLoader = loader;
+    _scheduleLoader!.then(
+      _invokeOnScheduleLoaded,
+    );
+    notifyListeners();
+  }
+
+  void updateFilter(String id) {
+    _filter = ScheduleFilter(_idType, id, displayedWeek);
+    _updateScheduleLoader();
+    notifyListeners();
+  }
+
+  Future<List<ScheduleSearchSuggestionItem>> _getHistorySuggestions() async {
+    return await _historyService.getHistory(_idType);
   }
 
   Future<Map<int, List<Subject>>> _getScheduleLoader() async {
     setState(ViewState.busy);
     if (_filter.id == '-1') {
       _filter = ScheduleFilter(
-        _ExclusionID._vacancy.idType,
-        _ExclusionID._vacancy.id,
+        _ExclusionId._vacancy.idType,
+        _ExclusionId._vacancy.id,
         displayedWeek,
       );
     }
@@ -220,76 +249,62 @@ class ScheduleTabViewModel extends BaseViewModel {
     return result;
   }
 
-  void updateFilter(String id) {
-    _filter = ScheduleFilter(_idType, id, displayedWeek);
-    _updateScheduleLoader();
-    notifyListeners();
-  }
-
-  Future<void> submitSearch(String query) async {
-    if (query.isNotEmpty) {
-      final searchResult =
-          await _searchIdOnPortalService.findIDOnPortal(query, _idType);
-
-      if (searchResult == null) {
-        throw Exception('Schedule search result was null');
+  void _initGroup() {
+    _searchPlaceholderText = _SearchBarPlaceholders.group;
+    tryLoginAndRetrieveData(
+      _gettingProfileOfCurrentUser.getProfileOfCurrentUser,
+      () => null,
+    ).then((value) async {
+      if (value == null) {
+        _updateScheduleLoader();
+        return;
       }
-      _filter = ScheduleFilter(_idType, searchResult[0].id, displayedWeek);
-    } else {
-      _filter = ScheduleFilter(_idType, _currentId, displayedWeek);
-    }
 
-    final loader = _getScheduleLoader();
-    _scheduleLoader = loader;
-    _scheduleLoader!.then(
-      _invokeOnScheduleLoaded,
+      if (value is StudentData) {
+        final groupID = await _searchIdOnPortalService.findIDOnPortal(
+          value.eduGroup,
+          IdType.group,
+        );
+        _filter = ScheduleFilter(
+          IdType.group,
+          groupID!.first.id,
+          decidePivotWeek(),
+        );
+        _currentId = groupID.first.id;
+        _updateScheduleLoader();
+      }
+
+      notifyListeners();
+    });
+  }
+
+  void _initHuman(String placeholderText, IdType idType) {
+    _searchPlaceholderText = placeholderText;
+    _filter = ScheduleFilter(
+      _filter.idType,
+      _filter.id,
+      decidePivotWeek(),
     );
-    notifyListeners();
+    tryLoginAndRetrieveData(
+      _searchIdOnPortalService.getIdOfLoggedInUser,
+      () => null,
+    ).then((value) async {
+      if (value == null) {
+        _updateScheduleLoader();
+        return;
+      }
+      if (value.idType == idType) {
+        _filter = ScheduleFilter(value.idType, value.id, decidePivotWeek());
+        _currentId = value.id;
+        _updateScheduleLoader();
+      }
+      notifyListeners();
+    });
   }
 
-  FutureOr<void> addHistoryItem(ScheduleSearchSuggestionItem item) =>
-      _historyService.pushToHistory(_idType, item);
-
-  Future<List<ScheduleSearchSuggestionItem>> getSearchSuggestions(
-    String value,
-  ) async {
-    if (value.isEmpty) {
-      return await _getHistorySuggestions();
-    }
-    final suggestions = await tryLoginAndRetrieveData(
-      () async => await _searchIdOnPortalService.findIDOnPortal(value, _idType),
-      () async => <ScheduleSearchSuggestionItem>[],
-    );
-
-    return suggestions;
-  }
-
-  Future<List<ScheduleSearchSuggestionItem>> _getHistorySuggestions() async {
-    return await _historyService.getHistory(_idType);
-  }
-
-  void init(
-    IDType type, {
-    void Function(Map<int, List<Subject>> schedule)? onScheduleLoaded,
-  }) {
-    if (isInitialized) {
-      return;
-    }
-    isInitialized = true;
-    _onScheduleLoaded = onScheduleLoaded;
-    _idType = type;
-    switch (type) {
-      case IDType.student:
-        _initHuman(_studentNameText, IDType.student);
-        break;
-      case IDType.group:
-        _initGroup();
-        break;
-      case IDType.person:
-        _initHuman(_lecturerNameText, IDType.person);
-        break;
-      default:
-        break;
+  FutureOr<void> _invokeOnScheduleLoaded(value) {
+    if (_onScheduleLoaded != null) {
+      _onScheduleLoaded!(value);
     }
   }
 
@@ -297,23 +312,14 @@ class ScheduleTabViewModel extends BaseViewModel {
     _scheduleLoader = _getScheduleLoader();
     _scheduleLoader!.then(_invokeOnScheduleLoaded);
   }
+}
 
-  Future<RequestCalendarPermissionResult> askForExportPermission() async {
-    return await _exportScheduleService.requestCalendarPermission();
-  }
+class _ExclusionId {
+  static const _vacancy = IdForSchedule(IdType.lecturer, '26579');
+}
 
-  Future openSettingsWindow() async {
-    await _exportScheduleService.openSettings();
-  }
-
-  Future<bool> exportSchedule(DateTimeRange range) async {
-    final exportScheduleFilter = ScheduleFilter(_idType, _currentId, range);
-    final res =
-        await _exportScheduleService.exportSchedule(exportScheduleFilter);
-    return res == ExportScheduleResult.success;
-  }
-
-  void refresh() {
-    onRefresh?.call();
-  }
+class _SearchBarPlaceholders {
+  static const String student = 'Имя студента';
+  static const String group = 'Название группы';
+  static const String lecturer = 'Имя преподавателя';
 }
