@@ -33,7 +33,6 @@ class MainPageRouteData {
   });
 }
 
-
 int _navbarIndex = 0; // I hate myself
 
 class MainPageRouting {

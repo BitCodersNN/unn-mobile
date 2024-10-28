@@ -48,7 +48,7 @@ class ScheduleTabViewModel extends BaseViewModel {
   );
   String _searchPlaceholderText = '';
   void Function(Map<int, List<Subject>>)? _onScheduleLoaded;
-  
+
   ScheduleTabViewModel(
     this._getScheduleService,
     this._searchIdOnPortalService,
