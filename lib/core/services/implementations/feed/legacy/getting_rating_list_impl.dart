@@ -7,14 +7,17 @@ import 'package:unn_mobile/core/constants/session_identifier_strings.dart';
 import 'package:unn_mobile/core/misc/http_helper.dart';
 import 'package:unn_mobile/core/models/rating_list.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
-import 'package:unn_mobile/core/services/interfaces/getting_rating_list.dart';
+import 'package:unn_mobile/core/services/interfaces/feed/getting_rating_list.dart';
 import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
+
+class _JsonKeys {
+  static const data = 'data';
+  static const reactions = 'reactions';
+}
 
 class GettingRatingListImpl implements GettingRatingList {
   final AuthorizationService _authorizationService;
   final LoggerService _loggerService;
-  final String _data = 'data';
-  final String _reactions = 'reactions';
 
   GettingRatingListImpl(
     this._authorizationService,
@@ -72,7 +75,7 @@ class GettingRatingListImpl implements GettingRatingList {
     try {
       jsonMap = jsonDecode(
         await HttpRequestSender.responseToStringBody(response),
-      )[_data];
+      )[_JsonKeys.data];
     } catch (error, stackTrace) {
       _loggerService.logError(error, stackTrace);
       return null;
@@ -145,7 +148,7 @@ class GettingRatingListImpl implements GettingRatingList {
       return null;
     }
 
-    final jsonMap = responseJson[_data][_reactions];
+    final jsonMap = responseJson[_JsonKeys.data][_JsonKeys.reactions];
 
     if (jsonMap is List) {
       return null;
