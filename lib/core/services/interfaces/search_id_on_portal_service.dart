@@ -13,7 +13,7 @@ abstract interface class SearchIdOnPortalService {
   /// [valueType]: Тип значения: группа или ФИО студента, или ФИО преподователя, или аудитория
   ///
   /// Возвращает [ScheduleSearchSuggestionItem] или 'null', если не вышло получить ответ от портала или statusCode не равен 200
-  Future<List<ScheduleSearchSuggestionItem>?> findIDOnPortal(
+  Future<List<ScheduleSearchSuggestionItem>?> findIdOnPortal(
     String value,
     IdType valueType,
   );

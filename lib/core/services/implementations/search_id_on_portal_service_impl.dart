@@ -75,7 +75,7 @@ class SearchIdOnPortalServiceImpl implements SearchIdOnPortalService {
   }
 
   @override
-  Future<List<ScheduleSearchSuggestionItem>?> findIDOnPortal(
+  Future<List<ScheduleSearchSuggestionItem>?> findIdOnPortal(
     String value,
     IdType valueType,
   ) async {

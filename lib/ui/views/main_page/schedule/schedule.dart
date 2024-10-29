@@ -17,7 +17,7 @@ class ScheduleScreenView extends StatefulWidget {
 
 class _ScheduleScreenViewState extends State<ScheduleScreenView>
     with SingleTickerProviderStateMixin {
-  Map<IdType, String> tabTexts = {
+  static const Map<IdType, String> _tabTexts = {
     IdType.student: 'Студент',
     IdType.lecturer: 'Преподаватель',
     IdType.group: 'Группа',
@@ -69,9 +69,9 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView>
                     tabAlignment: TabAlignment.center,
                     isScrollable: true,
                     tabs: [
-                      for (final idType in model.tabIDTypes)
+                      for (final idType in model.tabIdTypes)
                         Tab(
-                          text: tabTexts[idType],
+                          text: _tabTexts[idType],
                         ),
                     ],
                     controller: _tabController,
@@ -100,8 +100,8 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView>
       child: TabBarView(
         controller: _tabController,
         children: [
-          for (int i = 0; i < model.tabIDTypes.length; i++)
-            ScheduleTab(model.tabIDTypes[i], model.tabViewModels[i]),
+          for (int i = 0; i < model.tabIdTypes.length; i++)
+            ScheduleTab(model.tabIdTypes[i], model.tabViewModels[i]),
         ],
       ),
     );

@@ -16,7 +16,7 @@ class ScheduleScreenViewModel extends BaseViewModel
 
   ScheduleScreenViewModel(this._currentUserSyncStorage);
 
-  List<IdType> get tabIDTypes => switch (_currentUserSyncStorage.typeOfUser) {
+  List<IdType> get tabIdTypes => switch (_currentUserSyncStorage.typeOfUser) {
         const (EmployeeData) => [
             IdType.lecturer,
             IdType.group,
@@ -35,7 +35,7 @@ class ScheduleScreenViewModel extends BaseViewModel
       return;
     }
     isInitialized = true;
-    _tabViewModels = tabIDTypes.map(
+    _tabViewModels = tabIdTypes.map(
       (idType) {
         return Injector.appInstance.get<ScheduleTabViewModel>();
       },

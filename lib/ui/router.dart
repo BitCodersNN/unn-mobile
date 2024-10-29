@@ -11,10 +11,10 @@ const mainPageRoute = '/';
 const authPageRoute = '/auth';
 const drawerRoutePrefix = 'drawer';
 
-final shellBranchKeys = [
-  for (final route in MainPageRouting.navbarRoutes)
-    (key: GlobalKey<NavigatorState>(), route: route),
-];
+final shellBranchKeys = //
+    MainPageRouting.navbarRoutes
+        .map((route) => (key: GlobalKey<NavigatorState>(), route: route))
+        .toList();
 
 final mainRouter = GoRouter(
   initialLocation: loadingPageRoute,

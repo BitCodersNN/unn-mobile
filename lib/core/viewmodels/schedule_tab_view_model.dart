@@ -109,7 +109,7 @@ class ScheduleTabViewModel extends BaseViewModel {
       return await _getHistorySuggestions();
     }
     final suggestions = await tryLoginAndRetrieveData(
-      () async => await _searchIdOnPortalService.findIDOnPortal(value, _idType),
+      () async => await _searchIdOnPortalService.findIdOnPortal(value, _idType),
       () async => <ScheduleSearchSuggestionItem>[],
     );
 
@@ -152,6 +152,7 @@ class ScheduleTabViewModel extends BaseViewModel {
         _initGroup();
         break;
       case IdType.person:
+      case IdType.lecturer:
         _initHuman(_SearchBarPlaceholders.lecturer, IdType.person);
         break;
       default:
@@ -179,16 +180,21 @@ class ScheduleTabViewModel extends BaseViewModel {
   }
 
   Future<void> submitSearch(String query) async {
-    if (query.isNotEmpty) {
+    if (query.isEmpty) {
+      _filter = ScheduleFilter(_idType, _currentId, displayedWeek);
+      if (_currentId.isEmpty) {
+        _scheduleLoader = null;
+        notifyListeners();
+        return;
+      }
+    } else {
       final searchResult =
-          await _searchIdOnPortalService.findIDOnPortal(query, _idType);
+          await _searchIdOnPortalService.findIdOnPortal(query, _idType);
 
       if (searchResult == null) {
         throw Exception('Schedule search result was null');
       }
       _filter = ScheduleFilter(_idType, searchResult[0].id, displayedWeek);
-    } else {
-      _filter = ScheduleFilter(_idType, _currentId, displayedWeek);
     }
 
     final loader = _getScheduleLoader();
@@ -211,42 +217,38 @@ class ScheduleTabViewModel extends BaseViewModel {
 
   Future<Map<int, List<Subject>>> _getScheduleLoader() async {
     setState(ViewState.busy);
-    if (_filter.id == '-1') {
-      _filter = ScheduleFilter(
-        _ExclusionId._vacancy.idType,
-        _ExclusionId._vacancy.id,
-        displayedWeek,
-      );
-    }
-
-    final schedule = await tryLoginAndRetrieveData(
-      () async => await _getScheduleService.getSchedule(filter),
-      _offlineScheduleProvider.getData,
-    );
-
-    if (schedule == null) {
-      throw Exception('Schedule was null');
-    }
-
-    final result = SplayTreeMap<int, List<Subject>>();
-    for (final Subject subject in schedule) {
-      if (!result.keys.contains(subject.dateTimeRange.start.weekday)) {
-        result.addEntries([
-          MapEntry<int, List<Subject>>(
-            subject.dateTimeRange.start.weekday,
-            [],
-          ),
-        ]);
+    try {
+      if (_filter.id == '-1') {
+        _filter = ScheduleFilter(
+          _ExclusionId._vacancy.idType,
+          _ExclusionId._vacancy.id,
+          displayedWeek,
+        );
       }
-      result[subject.dateTimeRange.start.weekday]!.add(subject);
-    }
 
-    if (!offline && displayedWeekOffset == 0 && filter.id == _currentId) {
-      _offlineScheduleProvider.saveData(schedule);
-    }
+      final schedule = await tryLoginAndRetrieveData(
+        () async => await _getScheduleService.getSchedule(filter),
+        _offlineScheduleProvider.getData,
+      );
 
-    setState(ViewState.idle);
-    return result;
+      if (schedule == null) {
+        throw Exception('Schedule was null');
+      }
+
+      final result = SplayTreeMap<int, List<Subject>>();
+      for (final Subject subject in schedule) {
+        final weekday = subject.dateTimeRange.start.weekday;
+        result.putIfAbsent(weekday, () => []);
+        result[weekday]!.add(subject);
+      }
+
+      if (!offline && displayedWeekOffset == 0 && filter.id == _currentId) {
+        _offlineScheduleProvider.saveData(schedule);
+      }
+      return result;
+    } finally {
+      setState(ViewState.idle);
+    }
   }
 
   void _initGroup() {
@@ -261,16 +263,16 @@ class ScheduleTabViewModel extends BaseViewModel {
       }
 
       if (value is StudentData) {
-        final groupID = await _searchIdOnPortalService.findIDOnPortal(
+        final groupId = await _searchIdOnPortalService.findIdOnPortal(
           value.eduGroup,
           IdType.group,
         );
         _filter = ScheduleFilter(
           IdType.group,
-          groupID!.first.id,
+          groupId!.first.id,
           decidePivotWeek(),
         );
-        _currentId = groupID.first.id;
+        _currentId = groupId.first.id;
         _updateScheduleLoader();
       }
 

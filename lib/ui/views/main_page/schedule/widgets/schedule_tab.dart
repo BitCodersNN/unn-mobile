@@ -110,6 +110,7 @@ class ScheduleTabState extends State<ScheduleTab>
             const Duration(milliseconds: 50),
             () {
               SystemChannels.textInput.invokeMethod('TextInput.hide');
+              _searchFocusNode.unfocus();
             },
           );
         },
@@ -124,6 +125,7 @@ class ScheduleTabState extends State<ScheduleTab>
             const Duration(milliseconds: 50),
             () {
               SystemChannels.textInput.invokeMethod('TextInput.hide');
+              _searchFocusNode.unfocus();
             },
           );
         },
@@ -341,30 +343,43 @@ class ScheduleTabState extends State<ScheduleTab>
                   collapsedHeight: 50,
                   expandedHeight: 50,
                 ),
-              if (model.state == ViewState.idle && snapshot.hasData)
-                if (snapshot.data!.isNotEmpty)
-                  _scheduleSliverList(model, snapshot, theme)
+              if (snapshot.connectionState != ConnectionState.none)
+                if (model.state == ViewState.idle && snapshot.hasData)
+                  if (snapshot.data!.isNotEmpty)
+                    _scheduleSliverList(model, snapshot, theme)
+                  else
+                    SliverToBoxAdapter(
+                      child: Center(
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(
+                            'На этой неделе занятий нет :)',
+                            style: theme.textTheme.bodyLarge,
+                          ),
+                        ),
+                      ),
+                    )
                 else
-                  SliverToBoxAdapter(
+                  const SliverToBoxAdapter(
                     child: Center(
                       child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                          'На этой неделе занятий нет :)',
-                          style: theme.textTheme.bodyLarge,
+                        padding: EdgeInsets.all(20.0),
+                        child: SizedBox(
+                          width: 100,
+                          height: 100,
+                          child: CircularProgressIndicator(),
                         ),
                       ),
                     ),
                   )
-              else if (snapshot.connectionState != ConnectionState.none)
-                const SliverToBoxAdapter(
+              else
+                SliverToBoxAdapter(
                   child: Center(
                     child: Padding(
-                      padding: EdgeInsets.all(20.0),
-                      child: SizedBox(
-                        width: 100,
-                        height: 100,
-                        child: CircularProgressIndicator(),
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                        'Введите запрос в строку поиска',
+                        style: theme.textTheme.bodyLarge,
                       ),
                     ),
                   ),
@@ -378,7 +393,7 @@ class ScheduleTabState extends State<ScheduleTab>
 
   SliverList _scheduleSliverList(
     ScheduleTabViewModel model,
-    AsyncSnapshot<Map<int, List<Subject>>> snapshot,
+    AsyncSnapshot<Map<int, List<Subject>>?> snapshot,
     ThemeData theme,
   ) {
     return SliverList(
