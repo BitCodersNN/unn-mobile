@@ -34,16 +34,11 @@ final mainRouter = GoRouter(
                 pageBuilder: (context, state) =>
                     NoTransitionPage(child: route.route.builder(context)),
                 routes: [
-                  for (final subroute in MainPageRouting.drawerRoutes)
-                    GoRoute(
-                      path: '$drawerRoutePrefix/${subroute.pageRoute}',
-                      builder: (context, state) => subroute.builder(context),
-                    ),
-                  for (final subroute in route.route.subroutes)
-                    GoRoute(
-                      path: subroute.pageRoute,
-                      builder: (context, state) => subroute.builder(context),
-                    ),
+                  ..._buildSubroutes(
+                    MainPageRouting.drawerRoutes,
+                    prefix: '$drawerRoutePrefix/',
+                  ),
+                  ..._buildSubroutes(route.route.subroutes),
                 ],
               ),
             ],
@@ -73,3 +68,17 @@ final mainRouter = GoRouter(
     return null;
   },
 );
+
+List<GoRoute> _buildSubroutes(
+  List<MainPageRouteData> routes, {
+  String prefix = '',
+}) {
+  return routes
+      .map(
+        (route) => GoRoute(
+          path: '$prefix${route.pageRoute}',
+          builder: (context, state) => route.builder(context),
+        ),
+      )
+      .toList(growable: false);
+}
