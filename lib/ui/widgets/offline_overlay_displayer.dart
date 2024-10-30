@@ -6,6 +6,7 @@ import 'package:unn_mobile/core/services/interfaces/authorisation_refresh_servic
 class OfflineOverlayDisplayer extends StatefulWidget {
   final Widget child;
   final double bottomOffset;
+
   const OfflineOverlayDisplayer({
     super.key,
     required this.child,
@@ -20,10 +21,17 @@ class OfflineOverlayDisplayer extends StatefulWidget {
 class _OfflineOverlayDisplayerState extends State<OfflineOverlayDisplayer> {
   final OnlineStatusData onlineStatusData =
       Injector.appInstance.get<OnlineStatusData>();
-  OverlayEntry? offlineOverlayEntry;
+
+  bool _isOnline = false;
+
   @override
   Widget build(BuildContext context) {
-    return widget.child;
+    return Stack(
+      children: [
+        widget.child,
+        if (!_isOnline) _OfflineOverlay(bottomOffset: widget.bottomOffset),
+      ],
+    );
   }
 
   @override
@@ -34,38 +42,16 @@ class _OfflineOverlayDisplayerState extends State<OfflineOverlayDisplayer> {
   }
 
   void onlineChanged() {
-    WidgetsBinding.instance.endOfFrame.whenComplete(() {
-      if (!onlineStatusData.isOnline) {
-        offlineOverlayEntry = generateOverlay();
-        showOverlay();
-      } else {
-        offlineOverlayEntry?.remove();
-        offlineOverlayEntry?.dispose();
-        offlineOverlayEntry = null;
-      }
+    setState(() {
+      _isOnline = onlineStatusData.isOnline;
     });
   }
 
-  void showOverlay() {
-    Overlay.of(context).insert(offlineOverlayEntry!);
-  }
-
-  OverlayEntry generateOverlay() {
-    return OverlayEntry(
-      builder: (context) {
-        return _OfflineOverlay(
-          bottomOffset: widget.bottomOffset,
-        );
-      },
-    );
-  }
+  void showOverlay() {}
 
   @override
   void dispose() {
     onlineStatusData.notifier.removeListener(onlineChanged);
-    offlineOverlayEntry?.remove();
-    offlineOverlayEntry?.dispose();
-    offlineOverlayEntry = null;
     super.dispose();
   }
 }
