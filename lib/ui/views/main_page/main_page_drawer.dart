@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:unn_mobile/core/viewmodels/main_page_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/profile_view_model.dart';
+import 'package:unn_mobile/ui/builders/online_status_builder.dart';
 
 class MainPageDrawer extends StatefulWidget {
   final MainPageViewModel model;
@@ -18,24 +19,29 @@ class MainPageDrawer extends StatefulWidget {
 }
 
 class _MainPageDrawerState extends State<MainPageDrawer> {
-  final List<Widget> children = [];
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     Theme.of(context);
 
-    if (children.isEmpty) {
-      children.addAll(_generateChildren(widget.model, context));
-    }
-    return NavigationDrawer(
-      onDestinationSelected: widget.onDestinationSelected,
-      selectedIndex: null,
-      children: children,
+    return OnlineStatusBuilder(
+      builder: (context, value) {
+        return NavigationDrawer(
+          onDestinationSelected: widget.onDestinationSelected,
+          selectedIndex: null,
+          children: _generateChildren(widget.model, value, context),
+        );
+      },
     );
   }
 
   List<Widget> _generateChildren(
     MainPageViewModel viewModel,
+    bool isOnline,
     BuildContext context,
   ) {
     final theme = Theme.of(context);
@@ -43,11 +49,12 @@ class _MainPageDrawerState extends State<MainPageDrawer> {
     final List<Widget> drawerChildren = [
       _getDrawerHeader(theme, viewModel.profileViewModel),
       for (final route in viewModel.routes)
-        NavigationDrawerDestination(
-          icon: Icon(route.selectedIcon),
-          label: Text(route.pageTitle),
-          enabled: !route.isDisabled,
-        ),
+        if (!route.onlineOnly || isOnline)
+          NavigationDrawerDestination(
+            icon: Icon(route.selectedIcon),
+            label: Text(route.pageTitle),
+            enabled: !route.isDisabled,
+          ),
     ];
     return drawerChildren;
   }
