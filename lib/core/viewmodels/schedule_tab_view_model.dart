@@ -70,6 +70,7 @@ class ScheduleTabViewModel extends BaseViewModel {
   void updateOnlineStatus() {
     notifyListeners();
   }
+
   DateTimeRange get displayedWeek =>
       offline ? decidePivotWeek() : _filter.dateTimeRange;
   ScheduleFilter get filter => _filter;
