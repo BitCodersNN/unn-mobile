@@ -5,6 +5,7 @@ import 'package:unn_mobile/core/viewmodels/feed_screen_view_model.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/widgets/feed_post.dart';
 import 'package:unn_mobile/ui/views/main_page/main_page_tab_state.dart';
+import 'package:unn_mobile/ui/widgets/offline_overlay_displayer.dart';
 
 class FeedScreenView extends StatefulWidget {
   final int routeIndex;
@@ -50,66 +51,68 @@ class FeedScreenViewState extends State<FeedScreenView>
   Widget build(BuildContext context) {
     final parentScaffold = Scaffold.maybeOf(context);
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Лента'),
-        leading: parentScaffold?.hasDrawer ?? false
-            ? IconButton(
-                onPressed: () {
-                  parentScaffold?.openDrawer();
-                },
-                icon: const Icon(Icons.menu),
-              )
-            : null,
-      ),
-      body: BaseView<FeedScreenViewModel>(
-        model: _viewModel,
-        builder: (context, model, child) {
-          return Column(
-            children: [
-              if (model.showSyncFeedButton)
-                TextButton(
-                  onPressed: () => model.syncFeed(),
-                  child: const Text('Sync Feed'),
-                ),
-              Expanded(
-                child: NotificationListener<ScrollEndNotification>(
-                  child: RefreshIndicator(
-                    onRefresh: model.updateFeed,
-                    child: SingleChildScrollView(
-                      physics: const AlwaysScrollableScrollPhysics(),
-                      controller: _scrollController,
-                      child: Column(
-                        children: [
-                          for (final post in model.posts)
-                            FeedPost(
-                              post: post,
-                              showingComments: false,
-                            ),
-                          if (model.loadingPosts)
-                            const SizedBox(
-                              height: 24,
-                              width: 24,
-                              child: CircularProgressIndicator(),
-                            ),
-                          const SizedBox(height: 16),
-                        ],
+    return OfflineOverlayDisplayer(
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Лента'),
+          leading: parentScaffold?.hasDrawer ?? false
+              ? IconButton(
+                  onPressed: () {
+                    parentScaffold?.openDrawer();
+                  },
+                  icon: const Icon(Icons.menu),
+                )
+              : null,
+        ),
+        body: BaseView<FeedScreenViewModel>(
+          model: _viewModel,
+          builder: (context, model, child) {
+            return Column(
+              children: [
+                if (model.showSyncFeedButton)
+                  TextButton(
+                    onPressed: () => model.syncFeed(),
+                    child: const Text('Обновить ленту'),
+                  ),
+                Expanded(
+                  child: NotificationListener<ScrollEndNotification>(
+                    child: RefreshIndicator(
+                      onRefresh: model.updateFeed,
+                      child: SingleChildScrollView(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        controller: _scrollController,
+                        child: Column(
+                          children: [
+                            for (final post in model.posts)
+                              FeedPost(
+                                post: post,
+                                showingComments: false,
+                              ),
+                            if (model.loadingPosts)
+                              const SizedBox(
+                                height: 24,
+                                width: 24,
+                                child: CircularProgressIndicator(),
+                              ),
+                            const SizedBox(height: 16),
+                          ],
+                        ),
                       ),
                     ),
+                    onNotification: (scrollEnd) {
+                      final metrics = scrollEnd.metrics;
+                      if (metrics.maxScrollExtent - metrics.pixels < 300) {
+                        model.getMorePosts();
+                      }
+                      return true;
+                    },
                   ),
-                  onNotification: (scrollEnd) {
-                    final metrics = scrollEnd.metrics;
-                    if (metrics.maxScrollExtent - metrics.pixels < 300) {
-                      model.getMorePosts();
-                    }
-                    return true;
-                  },
                 ),
-              ),
-            ],
-          );
-        },
-        onModelReady: (model) => model.init(),
+              ],
+            );
+          },
+          onModelReady: (model) => model.init(),
+        ),
       ),
     );
   }

@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:unn_mobile/core/models/mark_by_subject.dart';
 import 'package:unn_mobile/core/viewmodels/grades_screen_view_model.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
+import 'package:unn_mobile/ui/widgets/offline_overlay_displayer.dart';
 
 class GradesScreenView extends StatefulWidget {
   const GradesScreenView({super.key});
@@ -14,12 +15,14 @@ class GradesScreenView extends StatefulWidget {
 class _GradesScreenViewState extends State<GradesScreenView> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Зачётная книжка')),
-      body: BaseView<GradesScreenViewModel>(
-        builder: (context, value, child) {
-          return _getGradesBook(context: context, model: value);
-        },
+    return OfflineOverlayDisplayer(
+      child: Scaffold(
+        appBar: AppBar(title: const Text('Зачётная книжка')),
+        body: BaseView<GradesScreenViewModel>(
+          builder: (context, value, child) {
+            return _getGradesBook(context: context, model: value);
+          },
+        ),
       ),
     );
   }

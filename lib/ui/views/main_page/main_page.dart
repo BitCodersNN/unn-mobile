@@ -1,7 +1,6 @@
 import 'package:go_router/go_router.dart';
 import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/misc/app_open_tracker.dart';
-import 'package:unn_mobile/ui/builders/online_status_builder.dart';
 import 'package:unn_mobile/ui/router.dart';
 import 'package:unn_mobile/ui/views/main_page/main_page_routing.dart';
 import 'package:unn_mobile/ui/widgets/dialogs/changelog_dialog.dart';
@@ -78,10 +77,7 @@ class _MainPageState extends State<MainPage> {
               : null,
           body: Builder(
             builder: (context) {
-              return OfflineOverlayDisplayer(
-                bottomOffset: MainPageNavigationBar.navbarHeight,
-                child: widget.shell,
-              );
+              return widget.shell;
             },
           ),
           bottomNavigationBar: MainPageNavigationBar(

@@ -17,4 +17,8 @@ extension ExtraDateComparisons on DateTime {
     return isAfterOrEqualIgnoringYear(range.start) &&
         isBeforeOrEqualIgnoringYear(range.end);
   }
+
+  DateTime date() {
+    return DateTime(year, month, day);
+  }
 }
