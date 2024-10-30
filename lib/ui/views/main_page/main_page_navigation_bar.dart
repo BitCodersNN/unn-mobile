@@ -6,6 +6,7 @@ import 'package:unn_mobile/ui/views/main_page/main_page_routing.dart';
 class MainPageNavigationBar extends StatelessWidget {
   final void Function(int)? onDestinationSelected;
   final MainPageViewModel model;
+
   const MainPageNavigationBar({
     super.key,
     this.onDestinationSelected,
@@ -14,23 +15,15 @@ class MainPageNavigationBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      alignment: Alignment.bottomCenter,
+    return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
-        Positioned(
-          top: 0,
-          left: 0,
-          right: 0,
-          child: Container(
-            height: 0.3,
-            color: Colors.grey.withOpacity(0.5),
-          ),
+        Container(
+          height: 0.3,
+          color: Colors.grey.withOpacity(0.5),
         ),
         NavigationBar(
-          destinations: _getNavbarDestinations(
-            model,
-            context,
-          ),
+          destinations: _getNavbarDestinations(model, context),
           height: 60,
           backgroundColor: Colors.transparent,
           indicatorColor: Colors.transparent,
