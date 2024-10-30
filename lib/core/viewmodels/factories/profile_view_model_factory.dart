@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:unn_mobile/core/misc/current_user_sync_storage.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_profile.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_profile_of_current_user_service.dart';
 import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
@@ -18,6 +19,11 @@ class ProfileViewModelFactory
       getService<GettingProfileOfCurrentUser>(),
       getService<GettingProfile>(),
       getService<LoggerService>(),
+      getService<CurrentUserSyncStorage>(),
     );
+  }
+
+  ProfileViewModel getCurrentUserViewModel() {
+    return createViewModel(0)..init(loadCurrentUser: true);
   }
 }

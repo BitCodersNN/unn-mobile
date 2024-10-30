@@ -1,60 +1,42 @@
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/material.dart';
+import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/misc/current_user_sync_storage.dart';
-import 'package:unn_mobile/core/models/student_data.dart';
-import 'package:unn_mobile/core/services/interfaces/getting_profile_of_current_user_service.dart';
-import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
+import 'package:unn_mobile/core/viewmodels/factories/main_page_routes_view_models_factory.dart';
+import 'package:unn_mobile/core/viewmodels/main_page_route_view_model.dart';
+import 'package:unn_mobile/core/viewmodels/profile_view_model.dart';
+import 'package:unn_mobile/ui/views/main_page/main_page_routing.dart';
 
 class MainPageViewModel extends BaseViewModel {
-  final LoggerService _loggerService;
-  final GettingProfileOfCurrentUser _gettingCurrentUser;
   final CurrentUserSyncStorage _currentUserSyncStorage;
+  late ProfileViewModel _profileViewModel;
 
-  String _userNameAndSurname = '';
-  String _userGroup = '';
+  List<MainPageRouteData> _routes = [];
 
-  ImageProvider<Object>? _userAvatar;
+  MainPageViewModel(this._currentUserSyncStorage);
 
-  String? _avatarUrl;
-
-  MainPageViewModel(
-    this._gettingCurrentUser,
-    this._currentUserSyncStorage,
-    this._loggerService,
-  );
-
-  String? get avatarUrl => _avatarUrl;
-  ImageProvider<Object>? get userAvatar => _userAvatar;
-  String get userGroup => _userGroup;
-  String get userNameAndSurname => _userNameAndSurname;
+  ProfileViewModel get profileViewModel => _profileViewModel;
+  List<MainPageRouteData> get routes => _routes;
 
   void init() {
-    setState(ViewState.busy);
-    // _feedUpdaterService.updateFeed();
-    _gettingCurrentUser.getProfileOfCurrentUser().then(
-      (value) {
-        value = value ?? _currentUserSyncStorage.currentUserData;
-        if (value == null) {
-          setState(ViewState.idle);
-          return;
-        }
-        if (value is StudentData) {
-          final StudentData studentProfile = value;
-          _userNameAndSurname =
-              '${studentProfile.name} ${studentProfile.lastname}';
-          _userGroup = studentProfile.eduGroup;
-          _userAvatar = studentProfile.fullUrlPhoto == null
-              ? null
-              : CachedNetworkImageProvider(studentProfile.fullUrlPhoto!);
-        }
-        setState(ViewState.idle);
-      },
-    ).onError(
-      (error, stackTrace) {
-        _loggerService.logError(error, stackTrace);
-        setState(ViewState.idle);
-      },
-    );
+    if (isInitialized) {
+      return;
+    }
+    _routes = MainPageRouting.drawerRoutes
+        .where(
+          (route) =>
+              route.userTypes.contains(_currentUserSyncStorage.typeOfUser),
+        )
+        .toList(growable: false);
+    isInitialized = true;
+    _profileViewModel = ProfileViewModel.currentUser();
+  }
+
+  void refreshTab(int index) {
+    final tab = Injector.appInstance
+        .get<MainPageRoutesViewModelsFactory>()
+        .getViewModelByRouteIndex(index);
+    if (tab is MainPageRouteViewModel) {
+      (tab as MainPageRouteViewModel).refresh();
+    }
   }
 }

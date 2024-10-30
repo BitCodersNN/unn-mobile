@@ -11,7 +11,7 @@ import 'package:unn_mobile/core/services/interfaces/storage_service.dart';
 class ScheduleSearchHistoryServiceImpl implements ScheduleSearchHistoryService {
   final StorageService _storage;
   final LoggerService _loggerService;
-  final Map<IDType, Queue<ScheduleSearchSuggestionItem>> _historyQueues = {};
+  final Map<IdType, Queue<ScheduleSearchSuggestionItem>> _historyQueues = {};
 
   final _storageKeySuffix = 'ScheduleSearchHistory';
   final _maxHistoryItems = 5;
@@ -23,7 +23,7 @@ class ScheduleSearchHistoryServiceImpl implements ScheduleSearchHistoryService {
   );
 
   Future<void> _initFromStorage() async {
-    for (final type in IDType.values) {
+    for (final type in IdType.values) {
       final key = _getStorageKeyForType(type);
       try {
         final Iterable rawHistory =
@@ -49,7 +49,7 @@ class ScheduleSearchHistoryServiceImpl implements ScheduleSearchHistoryService {
     _isInitialized = true;
   }
 
-  String _getStorageKeyForType(IDType type) => type.name + _storageKeySuffix;
+  String _getStorageKeyForType(IdType type) => type.name + _storageKeySuffix;
 
   Future<void> _initIfNeeded() async {
     if (_isInitialized) return;
@@ -57,14 +57,14 @@ class ScheduleSearchHistoryServiceImpl implements ScheduleSearchHistoryService {
   }
 
   @override
-  Future<List<ScheduleSearchSuggestionItem>> getHistory(IDType type) async {
+  Future<List<ScheduleSearchSuggestionItem>> getHistory(IdType type) async {
     await _initIfNeeded();
     return _historyQueues[type]!.toList(growable: false);
   }
 
   @override
   FutureOr<void> pushToHistory(
-    IDType type,
+    IdType type,
     ScheduleSearchSuggestionItem item,
   ) async {
     _historyQueues[type]!.remove(item);
