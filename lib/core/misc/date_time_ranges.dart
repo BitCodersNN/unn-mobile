@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:unn_mobile/core/misc/date_time_extensions.dart';
 
 class DateTimeRanges {
   static DateTimeRange currentWeek() {
@@ -45,7 +44,7 @@ class DateTimeRanges {
   }
 
   static DateTimeRange untilEndOfWeek() {
-    final DateTime now = DateTime.now().date();
+    final DateTime now = DateTime.now();
     final DateTime endOfWeek =
         now.add(Duration(days: DateTime.daysPerWeek - now.weekday));
 
@@ -53,7 +52,7 @@ class DateTimeRanges {
   }
 
   static DateTimeRange untilEndOfMonth() {
-    final DateTime now = DateTime.now().date();
+    final DateTime now = DateTime.now();
     final endOfMonth =
         DateTime(now.year, now.month + 1, 1).subtract(const Duration(days: 1));
 
@@ -61,7 +60,7 @@ class DateTimeRanges {
   }
 
   static DateTimeRange untilEndOfSemester() {
-    final now = DateTime.now().date();
+    final now = DateTime.now();
     DateTime endOfSemester;
     if (DateTime.february <= now.month && now.month < DateTime.september) {
       endOfSemester = DateTime(now.year, DateTime.july, 15);
