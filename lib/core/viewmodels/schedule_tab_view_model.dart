@@ -57,9 +57,7 @@ class ScheduleTabViewModel extends BaseViewModel {
     this._historyService,
     this._onlineStatusData,
     this._exportScheduleService,
-  ) {
-    _onlineStatusData.notifier.addListener(updateOnlineStatus);
-  }
+  );
 
   @override
   void dispose() {
@@ -154,6 +152,7 @@ class ScheduleTabViewModel extends BaseViewModel {
     if (isInitialized) {
       return;
     }
+    _onlineStatusData.notifier.addListener(updateOnlineStatus);
     isInitialized = true;
     _onScheduleLoaded = onScheduleLoaded;
     _idType = type;
