@@ -75,7 +75,11 @@ class _MainPageState extends State<MainPage> {
                   },
                 )
               : null,
-          body: widget.shell,
+          body: Builder(
+            builder: (context) {
+              return widget.shell;
+            },
+          ),
           bottomNavigationBar: MainPageNavigationBar(
             model: model,
             onDestinationSelected: (value) {

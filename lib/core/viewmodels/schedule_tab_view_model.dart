@@ -58,6 +58,17 @@ class ScheduleTabViewModel extends BaseViewModel {
     this._onlineStatusData,
     this._exportScheduleService,
   );
+
+  @override
+  void dispose() {
+    _onlineStatusData.notifier.removeListener(updateOnlineStatus);
+    super.dispose();
+  }
+
+  void updateOnlineStatus() {
+    notifyListeners();
+  }
+
   DateTimeRange get displayedWeek =>
       offline ? decidePivotWeek() : _filter.dateTimeRange;
   ScheduleFilter get filter => _filter;
@@ -141,6 +152,7 @@ class ScheduleTabViewModel extends BaseViewModel {
     if (isInitialized) {
       return;
     }
+    _onlineStatusData.notifier.addListener(updateOnlineStatus);
     isInitialized = true;
     _onScheduleLoaded = onScheduleLoaded;
     _idType = type;
