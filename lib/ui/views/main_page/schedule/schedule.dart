@@ -52,11 +52,9 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView>
           return Scaffold(
             appBar: AppBar(
               title: const Text('Расписание'),
-              leading: parentScaffold?.hasDrawer ?? false
+              leading: parentScaffold?.hasDrawer == true
                   ? IconButton(
-                      onPressed: () {
-                        parentScaffold?.openDrawer();
-                      },
+                      onPressed: parentScaffold?.openDrawer,
                       icon: const Icon(Icons.menu),
                     )
                   : null,
@@ -77,9 +75,7 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView>
                           ),
                       ],
                       controller: _tabController,
-                      onTap: (value) {
-                        model.selectedTab = value;
-                      },
+                      onTap: (value) => model.selectedTab = value,
                     ),
                   ),
                   expanded,

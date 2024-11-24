@@ -19,7 +19,7 @@ class OfflineOverlayDisplayer extends StatefulWidget {
 }
 
 class _OfflineOverlayDisplayerState extends State<OfflineOverlayDisplayer> {
-  final OnlineStatusData onlineStatusData =
+  final OnlineStatusData _onlineStatusData =
       Injector.appInstance.get<OnlineStatusData>();
 
   bool _isOnline = false;
@@ -37,13 +37,13 @@ class _OfflineOverlayDisplayerState extends State<OfflineOverlayDisplayer> {
   @override
   void initState() {
     super.initState();
-    onlineStatusData.notifier.addListener(onlineChanged);
-    onlineChanged();
+    _onlineStatusData.notifier.addListener(_onOnlineChanged);
+    _onOnlineChanged();
   }
 
-  void onlineChanged() {
+  void _onOnlineChanged() {
     setState(() {
-      _isOnline = onlineStatusData.isOnline;
+      _isOnline = _onlineStatusData.isOnline;
     });
   }
 
@@ -51,7 +51,7 @@ class _OfflineOverlayDisplayerState extends State<OfflineOverlayDisplayer> {
 
   @override
   void dispose() {
-    onlineStatusData.notifier.removeListener(onlineChanged);
+    _onlineStatusData.notifier.removeListener(_onOnlineChanged);
     super.dispose();
   }
 }
