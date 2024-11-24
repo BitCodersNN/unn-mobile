@@ -49,7 +49,7 @@ class ScheduleTabViewModel extends BaseViewModel {
   );
   String _searchPlaceholderText = '';
   void Function(Map<int, List<Subject>>)? _onScheduleLoaded;
-  
+
   final LoggerService _loggerService;
 
   ScheduleTabViewModel(
@@ -59,7 +59,8 @@ class ScheduleTabViewModel extends BaseViewModel {
     this._gettingProfileOfCurrentUser,
     this._historyService,
     this._onlineStatusData,
-    this._exportScheduleService, this._loggerService,
+    this._exportScheduleService,
+    this._loggerService,
   );
 
   @override
@@ -241,7 +242,10 @@ class ScheduleTabViewModel extends BaseViewModel {
           () => null,
         );
         if (id == null) {
-          _loggerService.logError(Exception('Cannot get id'), StackTrace.current);
+          _loggerService.logError(
+            Exception('Cannot get id'),
+            StackTrace.current,
+          );
           return {};
         }
         _filter = ScheduleFilter(_filter.idType, id.id, _filter.dateTimeRange);

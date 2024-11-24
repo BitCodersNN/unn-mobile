@@ -313,7 +313,8 @@ class ScheduleTabState extends State<ScheduleTab>
                   pinned: false,
                   floating: true,
                 ),
-              if (snapshot.connectionState != ConnectionState.none && !model.offline)
+              if (snapshot.connectionState != ConnectionState.none &&
+                  !model.offline)
                 SliverAppBar(
                   leading: model.offline
                       ? null
