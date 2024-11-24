@@ -12,6 +12,7 @@ import 'package:unn_mobile/core/models/subject.dart';
 import 'package:unn_mobile/core/services/interfaces/export_schedule_service.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_profile_of_current_user_service.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_schedule_service.dart';
+import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 import 'package:unn_mobile/core/services/interfaces/offline_schedule_provider.dart';
 import 'package:unn_mobile/core/services/interfaces/schedule_search_history_service.dart';
 import 'package:unn_mobile/core/services/interfaces/search_id_on_portal_service.dart';
@@ -48,6 +49,8 @@ class ScheduleTabViewModel extends BaseViewModel {
   );
   String _searchPlaceholderText = '';
   void Function(Map<int, List<Subject>>)? _onScheduleLoaded;
+  
+  final LoggerService _loggerService;
 
   ScheduleTabViewModel(
     this._getScheduleService,
@@ -56,7 +59,7 @@ class ScheduleTabViewModel extends BaseViewModel {
     this._gettingProfileOfCurrentUser,
     this._historyService,
     this._onlineStatusData,
-    this._exportScheduleService,
+    this._exportScheduleService, this._loggerService,
   );
 
   @override
@@ -66,6 +69,7 @@ class ScheduleTabViewModel extends BaseViewModel {
   }
 
   void updateOnlineStatus() {
+    _updateScheduleLoader();
     notifyListeners();
   }
 
@@ -152,6 +156,7 @@ class ScheduleTabViewModel extends BaseViewModel {
     if (isInitialized) {
       return;
     }
+    setState(ViewState.busy);
     _onlineStatusData.notifier.addListener(updateOnlineStatus);
     isInitialized = true;
     _onScheduleLoaded = onScheduleLoaded;
@@ -230,6 +235,17 @@ class ScheduleTabViewModel extends BaseViewModel {
   Future<Map<int, List<Subject>>> _getScheduleLoader() async {
     setState(ViewState.busy);
     try {
+      if (!offline && _filter.id.isEmpty) {
+        final id = await tryLoginAndRetrieveData<IdForSchedule?>(
+          _searchIdOnPortalService.getIdOfLoggedInUser,
+          () => null,
+        );
+        if (id == null) {
+          _loggerService.logError(Exception('Cannot get id'), StackTrace.current);
+          return {};
+        }
+        _filter = ScheduleFilter(_filter.idType, id.id, _filter.dateTimeRange);
+      }
       if (_filter.id == '-1') {
         _filter = ScheduleFilter(
           _ExclusionId._vacancy.idType,
