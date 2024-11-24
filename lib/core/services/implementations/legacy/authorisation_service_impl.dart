@@ -129,9 +129,13 @@ class LegacyAuthorizationServiceImpl extends ChangeNotifier
         .contains(ConnectivityResult.none);
   }
 
+
+  @override
+  void logout() {}
+
   @override
   String? get guestId => throw UnimplementedError();
 
   @override
-  void logout() {}
+  Map<String, dynamic>? get cookie => throw UnimplementedError();
 }
