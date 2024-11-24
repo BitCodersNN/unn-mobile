@@ -290,6 +290,10 @@ class ScheduleTabState extends State<ScheduleTab>
       child: FutureBuilder(
         future: model.scheduleLoader,
         builder: (context, snapshot) {
+          final formattedHeaderText =
+              '${headerFormatter.format(model.displayedWeek.start)}'
+              ' - ${headerFormatter.format(model.displayedWeek.end)}';
+
           return CustomScrollView(
             controller: _scrollController,
             cacheExtent: 10,
@@ -309,7 +313,8 @@ class ScheduleTabState extends State<ScheduleTab>
                   pinned: false,
                   floating: true,
                 ),
-              if (snapshot.connectionState != ConnectionState.none)
+              if (snapshot.connectionState != ConnectionState.none &&
+                  !model.offline)
                 SliverAppBar(
                   leading: model.offline
                       ? null
@@ -333,7 +338,7 @@ class ScheduleTabState extends State<ScheduleTab>
                   title: MediaQuery.withClampedTextScaling(
                     maxScaleFactor: 1,
                     child: Text(
-                      '${headerFormatter.format(model.displayedWeek.start)} - ${headerFormatter.format(model.displayedWeek.end)}',
+                      formattedHeaderText,
                     ),
                   ),
                   backgroundColor: theme.colorScheme.surface,
@@ -372,7 +377,7 @@ class ScheduleTabState extends State<ScheduleTab>
                       ),
                     ),
                   )
-              else
+              else if (!model.offline)
                 SliverToBoxAdapter(
                   child: Center(
                     child: Padding(
@@ -400,7 +405,8 @@ class ScheduleTabState extends State<ScheduleTab>
       delegate: SliverChildBuilderDelegate(
         (context, index) {
           final formatedDate = toBeginningOfSentenceCase(
-            DateFormat.MMMMEEEEd('ru_RU').format(
+            (model.offline ? DateFormat.EEEE : DateFormat.MMMMEEEEd)('ru_RU')
+                .format(
               model.displayedWeek.start.add(
                 Duration(days: snapshot.data!.keys.elementAt(index) - 1),
               ),

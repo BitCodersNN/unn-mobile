@@ -144,6 +144,7 @@ void registerDependencies() {
     () => AuthorizationServiceImpl(
       get<OnlineStatusData>(),
       get<LoggerService>(),
+      get<AuthDataProvider>(),
     ),
   );
   injector.registerSingleton<AuthDataProvider>(
@@ -340,6 +341,7 @@ void registerDependencies() {
       get<ScheduleSearchHistoryService>(),
       get<OnlineStatusData>(),
       get<ExportScheduleService>(),
+      get<LoggerService>(),
     ),
   );
   injector.registerDependency(
