@@ -6,7 +6,6 @@ import 'package:unn_mobile/core/services/interfaces/file_downloader.dart';
 import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 
 abstract class BaseFileDownloaderService implements FileDownloaderService {
-  final _maxFileNameLength = 127;
   final LoggerService _loggerService;
   final BaseApiHelper _baseApiHelper;
   final String? _path;
