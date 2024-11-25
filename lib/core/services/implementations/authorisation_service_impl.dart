@@ -76,7 +76,7 @@ class AuthorizationServiceImpl extends ChangeNotifier
           case DioExceptionType.sendTimeout:
           case DioExceptionType.receiveTimeout:
           case DioExceptionType.connectionError:
-           return await _getOfflineResult();
+            return await _getOfflineResult();
 
           case DioExceptionType.badCertificate:
           case DioExceptionType.cancel:

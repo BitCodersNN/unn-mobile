@@ -129,7 +129,6 @@ class LegacyAuthorizationServiceImpl extends ChangeNotifier
         .contains(ConnectivityResult.none);
   }
 
-
   @override
   void logout() {}
 
