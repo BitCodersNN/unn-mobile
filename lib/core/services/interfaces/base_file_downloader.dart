@@ -32,12 +32,7 @@ abstract class BaseFileDownloaderService implements FileDownloaderService {
       return null;
     }
 
-    final shortenedFileName = filePath.substring(
-      0,
-      filePath.length < _maxFileNameLength
-          ? filePath.length
-          : _maxFileNameLength,
-    );
+    final shortenedFileName = shortenFileName(filePath);
 
     final storedFile = File('$downloadsPath/$shortenedFileName');
 
@@ -88,5 +83,20 @@ abstract class BaseFileDownloaderService implements FileDownloaderService {
     final fileList = data.map((dynamic item) => item as File).toList();
 
     return fileList;
+  }
+
+  String shortenFileName(String fileName, [int maxFileNameLength = 127]) {
+    final extension = fileName.split('.').last;
+    final baseName = fileName.substring(
+      0,
+      fileName.length - extension.length - 1,
+    );
+    final shortenedBaseName = baseName.substring(
+      0,
+      baseName.length < maxFileNameLength
+          ? baseName.length
+          : maxFileNameLength - extension.length - 1,
+    );
+    return '$shortenedBaseName.$extension';
   }
 }
