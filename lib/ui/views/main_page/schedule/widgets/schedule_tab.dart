@@ -7,7 +7,6 @@ import 'package:unn_mobile/core/misc/date_time_ranges.dart';
 import 'package:unn_mobile/core/models/schedule_filter.dart';
 import 'package:unn_mobile/core/models/subject.dart';
 import 'package:unn_mobile/core/services/interfaces/export_schedule_service.dart';
-import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/schedule_tab_view_model.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
 import 'package:unn_mobile/ui/views/main_page/schedule/widgets/schedule_item_normal.dart';
@@ -348,50 +347,99 @@ class ScheduleTabState extends State<ScheduleTab>
                   collapsedHeight: 50,
                   expandedHeight: 50,
                 ),
-              if (snapshot.connectionState != ConnectionState.none)
-                if (model.state == ViewState.idle && snapshot.hasData)
-                  if (snapshot.data!.isNotEmpty)
-                    _scheduleSliverList(model, snapshot, theme)
-                  else
-                    SliverToBoxAdapter(
-                      child: Center(
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(
-                            'На этой неделе занятий нет :)',
-                            style: theme.textTheme.bodyLarge,
-                          ),
-                        ),
-                      ),
-                    )
-                else
-                  const SliverToBoxAdapter(
-                    child: Center(
-                      child: Padding(
-                        padding: EdgeInsets.all(20.0),
-                        child: SizedBox(
-                          width: 100,
-                          height: 100,
-                          child: CircularProgressIndicator(),
-                        ),
-                      ),
-                    ),
-                  )
-              else if (!model.offline)
-                SliverToBoxAdapter(
-                  child: Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text(
-                        'Введите запрос в строку поиска',
-                        style: theme.textTheme.bodyLarge,
-                      ),
-                    ),
-                  ),
-                ),
+              if (model.isBusy)
+                _showCircularLoader()
+              else
+                switch (snapshot.connectionState) {
+                  ConnectionState.none => snapshot.hasData
+                      ? _showScheduleData(context, snapshot, model)
+                      : (model.offline
+                          ? _showCircularLoader()
+                          : _showLabel(
+                              context,
+                              'Введите запрос в строку поиска',
+                            )),
+                  ConnectionState.waiting => _showCircularLoader(),
+                  ConnectionState.done =>
+                    _handleReadyScheduleSnapshot(context, snapshot, model),
+                  //
+                  // Поскольку нельзя вернуть пустоту, возвращаем пустой контейнер:
+                  _ => Container(),
+                },
             ],
           );
         },
+      ),
+    );
+  }
+
+  Widget _handleReadyScheduleSnapshot(
+    BuildContext context,
+    AsyncSnapshot<Map<int, List<Subject>>?> snapshot,
+    ScheduleTabViewModel model,
+  ) {
+    if (snapshot.hasError) {
+      final message = model.offline
+          ? 'Ошибка загрузки расписания.\n'
+              'Скорее всего, оно еще не было сохранено'
+          : 'Ошибка загрузки расписания';
+      return _showLabel(context, message);
+    }
+    if (snapshot.hasData) {
+      return _showScheduleData(context, snapshot, model);
+    }
+    return _showLabel(
+      context,
+      'Нет ни данных, ни ошибки ಠ_ಠ\n'
+      'Если вы это видите, возможно, стоит написать разработчикам :)',
+    );
+  }
+
+  Widget _showLabel(BuildContext context, String text) {
+    final theme = Theme.of(context);
+    return SliverToBoxAdapter(
+      child: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Text(
+            text,
+            softWrap: true,
+            textAlign: TextAlign.center,
+            style: theme.textTheme.bodyLarge,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _showScheduleData(
+    BuildContext context,
+    AsyncSnapshot<Map<int, List<Subject>>?> snapshot,
+    ScheduleTabViewModel model,
+  ) {
+    final theme = Theme.of(context);
+    if (snapshot.data!.isNotEmpty) {
+      return _scheduleSliverList(model, snapshot, theme);
+    } else {
+      final message = model.offline
+          ? 'Сохранённое расписание пусто'
+          : 'На этой неделе занятий нет :)';
+
+      return _showLabel(context, message);
+    }
+  }
+
+  Widget _showCircularLoader() {
+    return const SliverToBoxAdapter(
+      child: Center(
+        child: Padding(
+          padding: EdgeInsets.all(20.0),
+          child: SizedBox(
+            width: 100,
+            height: 100,
+            child: CircularProgressIndicator(),
+          ),
+        ),
       ),
     );
   }
