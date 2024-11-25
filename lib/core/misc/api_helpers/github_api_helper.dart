@@ -1,8 +1,8 @@
 import 'package:unn_mobile/core/constants/api_url_strings.dart';
-import 'package:unn_mobile/core/misc/api_helpers/api_helper_impl.dart';
+import 'package:unn_mobile/core/misc/api_helpers/base_api_helper.dart';
 import 'package:unn_mobile/core/misc/api_helpers/base_options_factory.dart';
 
-class GithubApiHelper extends ApiHelperImpl {
+final class GithubApiHelper extends BaseApiHelper {
   GithubApiHelper()
       : super(
           options: createBaseOptions(

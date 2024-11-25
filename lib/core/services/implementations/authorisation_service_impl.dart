@@ -3,7 +3,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:unn_mobile/core/constants/api_url_strings.dart';
 import 'package:unn_mobile/core/constants/session_identifier_strings.dart';
-import 'package:unn_mobile/core/misc/api_helpers/api_helper_impl.dart';
+import 'package:unn_mobile/core/misc/api_helpers/base_api_helper.dart';
 import 'package:unn_mobile/core/misc/api_helpers/base_options_factory.dart';
 import 'package:unn_mobile/core/models/online_status_data.dart';
 import 'package:unn_mobile/core/services/interfaces/auth_data_provider.dart';
@@ -19,24 +19,27 @@ class AuthorizationServiceImpl extends ChangeNotifier
   final String _userPassword = 'USER_PASSWORD';
   final String _bxPortatlUnnGuestId = 'BX_PORTAL_UNN_GUEST_ID';
 
-  Map<String, dynamic>? _cookie;
+  Map<String, dynamic>? _headers;
   bool _isAuthorised = false;
 
   @override
   bool get isAuthorised => _isAuthorised;
 
   @override
-  Map<String, dynamic>? get cookie => _cookie;
-
-  @override
-  String? get csrf => _cookie?[SessionIdentifierStrings.csrf];
+  String? get csrf => _headers?[SessionIdentifierStrings.csrf];
 
   @override
   String? get sessionId =>
-      _cookie?[SessionIdentifierStrings.sessionIdCookieKey];
+      _headers?[SessionIdentifierStrings.sessionIdCookieKey];
 
   @override
-  String? get guestId => _cookie?[_bxPortatlUnnGuestId];
+  Map<String, dynamic>? get headers => {
+        SessionIdentifierStrings.csrfToken: csrf,
+        'Cookie': '${SessionIdentifierStrings.sessionIdCookieKey}=$sessionId',
+      };
+
+  @override
+  String? get guestId => _headers?[_bxPortatlUnnGuestId];
 
   AuthorizationServiceImpl(
     this._onlineStatus,
@@ -52,7 +55,7 @@ class AuthorizationServiceImpl extends ChangeNotifier
         return await _getOfflineResult();
       }
 
-      final apiHelper = ApiHelperImpl(
+      final apiHelper = BaseApiHelper(
         options: createBaseOptions(
           baseUrl: ApiPaths.unnMobileHost,
         ),
@@ -67,7 +70,6 @@ class AuthorizationServiceImpl extends ChangeNotifier
             _userPassword: password,
           },
         );
-        
       } on DioException catch (exc) {
         switch (exc.type) {
           case DioExceptionType.connectionTimeout:
@@ -89,16 +91,12 @@ class AuthorizationServiceImpl extends ChangeNotifier
         }
       }
 
-      String responseString;
-
       try {
-        responseString = await apiHelper.responseToStringBody(response);
+        _headers = _parseCookies(response.data.trim());
       } catch (error, stackTrace) {
         _loggerService.logError(error, stackTrace);
         return AuthRequestResult.unknown;
       }
-
-      _cookie = _parseCookies(responseString.trim());
 
       _isAuthorised = true;
 
@@ -143,7 +141,7 @@ class AuthorizationServiceImpl extends ChangeNotifier
 
   @override
   void logout() {
-    _cookie = null;
+    _headers = null;
     _isAuthorised = false;
     notifyListeners();
   }

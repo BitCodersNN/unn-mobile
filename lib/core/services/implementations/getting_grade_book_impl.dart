@@ -1,11 +1,7 @@
-import 'dart:convert';
-import 'dart:io';
-
+import 'package:dio/dio.dart';
 import 'package:unn_mobile/core/constants/api_url_strings.dart';
-import 'package:unn_mobile/core/constants/session_identifier_strings.dart';
-import 'package:unn_mobile/core/misc/http_helper.dart';
+import 'package:unn_mobile/core/misc/api_helpers/base_api_helper.dart';
 import 'package:unn_mobile/core/models/mark_by_subject.dart';
-import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_grade_book.dart';
 import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 
@@ -16,44 +12,20 @@ class _JsonKeys {
 }
 
 class GettingGradeBookImpl implements GettingGradeBook {
-  final AuthorizationService _authorizationService;
   final LoggerService _loggerService;
+  final BaseApiHelper _baseApiHelper;
 
   GettingGradeBookImpl(
-    this._authorizationService,
     this._loggerService,
+    this._baseApiHelper,
   );
+
   @override
   Future<Map<int, List<MarkBySubject>>?> getGradeBook() async {
-    final requestSender = HttpRequestSender(
-      path: ApiPaths.marks,
-      cookies: {
-        SessionIdentifierStrings.sessionIdCookieKey:
-            _authorizationService.sessionId ?? '',
-      },
-    );
-
-    HttpClientResponse response;
+    Response response;
     try {
-      response = await requestSender.get();
-    } catch (error, stackTrace) {
-      _loggerService.logError(error, stackTrace);
-      return null;
-    }
-
-    final statusCode = response.statusCode;
-
-    if (statusCode != 200) {
-      _loggerService.log('statusCode = $statusCode');
-      return null;
-    }
-
-    dynamic jsonMap;
-    try {
-      jsonMap = jsonDecode(
-        await HttpRequestSender.responseToStringBody(
-          response,
-        ),
+      response = await _baseApiHelper.get(
+        path: ApiPaths.marks,
       );
     } catch (error, stackTrace) {
       _loggerService.logError(error, stackTrace);
@@ -61,7 +33,7 @@ class GettingGradeBookImpl implements GettingGradeBook {
     }
 
     final Map<int, List<MarkBySubject>> marks = {};
-    for (final course in jsonMap) {
+    for (final course in response.data) {
       for (final semesterInfo in course[_JsonKeys.semesters] ?? []) {
         final semester = semesterInfo[_JsonKeys.semester]?.toInt();
         final data = semesterInfo[_JsonKeys.data] ?? [];

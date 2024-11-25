@@ -1,11 +1,7 @@
-import 'dart:convert';
-import 'dart:io';
-
+import 'package:dio/dio.dart';
 import 'package:unn_mobile/core/constants/api_url_strings.dart';
-import 'package:unn_mobile/core/constants/session_identifier_strings.dart';
-import 'package:unn_mobile/core/misc/http_helper.dart';
+import 'package:unn_mobile/core/misc/api_helpers/base_api_helper.dart';
 import 'package:unn_mobile/core/models/feed/blog_post.dart';
-import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/blog_posts.dart';
 import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 
@@ -15,12 +11,12 @@ class _QueryParamNames {
 }
 
 class BlogPostsServiceImpl implements BlogPostsService {
-  final AuthorizationService _authorisationService;
   final LoggerService _loggerService;
+  final BaseApiHelper _baseApiHelper;
 
   BlogPostsServiceImpl(
-    this._authorisationService,
     this._loggerService,
+    this._baseApiHelper,
   );
 
   @override
@@ -28,40 +24,28 @@ class BlogPostsServiceImpl implements BlogPostsService {
     int pageNumber = 1,
     int postsPerPage = 20,
   }) async {
-    final requestSender = HttpRequestSender(
-      path: ApiPaths.blogPostWithLoadedInfo,
-      queryParams: {
-        _QueryParamNames.numPage: pageNumber.toString(),
-        _QueryParamNames.perPage: postsPerPage.toString(),
-      },
-      cookies: {
-        SessionIdentifierStrings.sessionIdCookieKey:
-            _authorisationService.sessionId ?? '',
-      },
-    );
-
-    HttpClientResponse response;
+    Response response;
     try {
-      response = await requestSender.get(timeoutSeconds: 60);
+      response = await _baseApiHelper.get(
+        path: ApiPaths.blogPostWithLoadedInfo,
+        queryParameters: {
+          _QueryParamNames.numPage: pageNumber.toString(),
+          _QueryParamNames.perPage: postsPerPage.toString(),
+        },
+        options: Options(
+          sendTimeout: const Duration(seconds: 30),
+          receiveTimeout: const Duration(seconds: 30),
+        ),
+      );
     } catch (error, stackTrace) {
       _loggerService.log('Exception: $error\nStackTrace: $stackTrace');
-      return null;
-    }
-
-    final statusCode = response.statusCode;
-
-    if (statusCode != 200) {
-      _loggerService.log(
-        'statusCode = $statusCode; ${_QueryParamNames.perPage} = $postsPerPage; ${_QueryParamNames.numPage} = $pageNumber;',
-      );
       return null;
     }
 
     List<dynamic> jsonList;
 
     try {
-      jsonList =
-          jsonDecode(await HttpRequestSender.responseToStringBody(response));
+      jsonList = response.data;
     } catch (error, stackTrace) {
       _loggerService.logError(error, stackTrace);
       return null;

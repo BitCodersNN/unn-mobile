@@ -1,4 +1,8 @@
 import 'package:injector/injector.dart';
+import 'package:unn_mobile/core/misc/api_helpers/github_api_helper.dart';
+import 'package:unn_mobile/core/misc/api_helpers/github_raw_api_helper.dart';
+import 'package:unn_mobile/core/misc/api_helpers/unn_mobile_api_helper.dart';
+import 'package:unn_mobile/core/misc/api_helpers/unn_portal_api_helper.dart';
 import 'package:unn_mobile/core/misc/app_open_tracker.dart';
 import 'package:unn_mobile/core/misc/current_user_sync_storage.dart';
 import 'package:unn_mobile/core/models/online_status_data.dart';
@@ -6,6 +10,7 @@ import 'package:unn_mobile/core/services/implementations/auth_data_provider_impl
 import 'package:unn_mobile/core/services/implementations/authorisation_refresh_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/authorisation_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/export_schedule_service_impl.dart';
+import 'package:unn_mobile/core/services/implementations/feed/blog_post.dart';
 import 'package:unn_mobile/core/services/implementations/feed/feed_file_downloader_impl.dart';
 import 'package:unn_mobile/core/services/implementations/feed/feed_updater_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/firebase_logger.dart';
@@ -35,6 +40,7 @@ import 'package:unn_mobile/core/services/interfaces/auth_data_provider.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation_refresh_service.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
 import 'package:unn_mobile/core/services/interfaces/export_schedule_service.dart';
+import 'package:unn_mobile/core/services/interfaces/feed/blog_posts.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/feed_updater_service.dart';
 import 'package:unn_mobile/core/services/interfaces/file_downloader.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/getting_blog_post_comments.dart';
@@ -92,40 +98,66 @@ void registerDependencies() {
   injector.registerSingleton<OnlineStatusData>(() => OnlineStatusData());
 
   injector.registerSingleton<StorageService>(() => StorageServiceImpl());
-  injector.registerSingleton<ExportScheduleService>(
-    () => ExportScheduleServiceImpl(),
-  );
+
   /* legacy
     injector.registerSingleton<AuthorizationService>(
       () => LegacyAuthorizationServiceImpl(get<OnlineStatusData>()),
     );
   */
 
-  //   get<LastCommitShaService>(),
+  injector.registerSingleton<AuthorizationService>(
+    () => AuthorizationServiceImpl(
+      get<OnlineStatusData>(),
+      get<LoggerService>(),
+      get<AuthDataProvider>(),
+    ),
+  );
+
+  injector.registerSingleton<GithubApiHelper>(
+    () => GithubApiHelper(),
+  );
+  injector.registerSingleton<GitHubRawApiHelper>(
+    () => GitHubRawApiHelper(),
+  );
+  injector.registerSingleton<UnnPortalApiHelper>(
+    () => UnnPortalApiHelper(
+      authorizationService: get<AuthorizationService>(),
+    ),
+  );
+  injector.registerSingleton<UnnMobileApiHelper>(
+    () => UnnMobileApiHelper(
+      authorizationService: get<AuthorizationService>(),
+    ),
+  );
+
+  // get<LastCommitShaService>(),
   // get<LoadingPageConfigService>(),
   // get<LastCommitShaProvider>(),
   // get<LoadingPageProvider>(),
   injector.registerSingleton<LastCommitShaService>(
     () => LastCommitShaServiceImpl(
       get<LoggerService>(),
+      get<GithubApiHelper>(),
     ),
   );
   injector.registerSingleton<LoadingPageConfigService>(
     () => LoadingPageConfigServiceImpl(
       get<LoggerService>(),
+      get<GitHubRawApiHelper>(),
     ),
   );
 
   injector.registerSingleton<FileDownloaderService>(
     () => LogoDownloaderServiceImpl(
       injector.get<LoggerService>(),
+      injector.get<GitHubRawApiHelper>(),
     ),
     dependencyName: 'LogoDownloaderService',
   );
   injector.registerSingleton<FileDownloaderService>(
     () => FeedFileDownloaderImpl(
       get<LoggerService>(),
-      get<AuthorizationService>(),
+      get<UnnPortalApiHelper>(),
     ),
     dependencyName: 'FeedFileDownloaderService',
   );
@@ -138,13 +170,6 @@ void registerDependencies() {
   injector.registerSingleton<LoadingPageProvider>(
     () => LoadingPageProviderImpl(
       get<StorageService>(),
-    ),
-  );
-  injector.registerSingleton<AuthorizationService>(
-    () => AuthorizationServiceImpl(
-      get<OnlineStatusData>(),
-      get<LoggerService>(),
-      get<AuthDataProvider>(),
     ),
   );
   injector.registerSingleton<AuthDataProvider>(
@@ -162,19 +187,26 @@ void registerDependencies() {
   );
   injector.registerSingleton<GettingProfileOfCurrentUser>(
     () => GettingProfileOfCurrentUserImpl(
-      get<AuthorizationService>(),
       get<LoggerService>(),
+      get<UnnPortalApiHelper>(),
     ),
   );
   injector.registerSingleton<SearchIdOnPortalService>(
     () => SearchIdOnPortalServiceImpl(
       get<GettingProfileOfCurrentUser>(),
       get<LoggerService>(),
+      get<UnnPortalApiHelper>(),
     ),
   );
   injector.registerSingleton<GettingScheduleService>(
     () => GettingScheduleServiceImpl(
       get<LoggerService>(),
+      get<UnnPortalApiHelper>(),
+    ),
+  );
+  injector.registerSingleton<ExportScheduleService>(
+    () => ExportScheduleServiceImpl(
+      get<UnnPortalApiHelper>(),
     ),
   );
   injector.registerSingleton<OfflineScheduleProvider>(
@@ -192,22 +224,29 @@ void registerDependencies() {
       get<LoggerService>(),
     ),
   );
+  injector.registerDependency<BlogPostsService>(
+    () => BlogPostsServiceImpl(
+      get<LoggerService>(),
+      get<UnnMobileApiHelper>(),
+    ),
+  );
   injector.registerSingleton<GettingBlogPosts>(
     () => GettingBlogPostsImpl(
       get<AuthorizationService>(),
       get<LoggerService>(),
+      get<UnnPortalApiHelper>(),
     ),
   );
   injector.registerSingleton<GettingBlogPostComments>(
     () => GettingBlogPostCommentsImpl(
-      get<AuthorizationService>(),
       get<LoggerService>(),
+      get<UnnPortalApiHelper>(),
     ),
   );
   injector.registerSingleton<GettingProfile>(
     () => GettingProfileImpl(
-      get<AuthorizationService>(),
       get<LoggerService>(),
+      get<UnnPortalApiHelper>(),
     ),
   );
 
@@ -215,18 +254,19 @@ void registerDependencies() {
     () => GettingFileDataImpl(
       get<AuthorizationService>(),
       get<LoggerService>(),
+      get<UnnPortalApiHelper>(),
     ),
   );
   injector.registerSingleton<GettingRatingList>(
     () => GettingRatingListImpl(
-      get<AuthorizationService>(),
       get<LoggerService>(),
+      get<UnnPortalApiHelper>(),
     ),
   );
   injector.registerSingleton<GettingVoteKeySigned>(
     () => GettingVoteKeySignedImpl(
-      get<AuthorizationService>(),
       get<LoggerService>(),
+      get<UnnPortalApiHelper>(),
     ),
   );
   injector.registerSingleton<LastFeedLoadDateTimeProvider>(
@@ -251,8 +291,8 @@ void registerDependencies() {
   );
   injector.registerSingleton<GettingGradeBook>(
     () => GettingGradeBookImpl(
-      get<AuthorizationService>(),
       get<LoggerService>(),
+      get<UnnPortalApiHelper>(),
     ),
   );
   injector.registerSingleton<MarkBySubjectProvider>(
@@ -265,9 +305,9 @@ void registerDependencies() {
   );
   injector.registerSingleton<ReactionManager>(
     () => ReactionManagerImpl(
-      get<AuthorizationService>(),
       get<CurrentUserSyncStorage>(),
       get<LoggerService>(),
+      get<UnnPortalApiHelper>(),
     ),
   );
 

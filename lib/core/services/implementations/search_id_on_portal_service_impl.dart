@@ -1,8 +1,6 @@
-import 'dart:convert';
-import 'dart:io';
-
+import 'package:dio/dio.dart';
 import 'package:unn_mobile/core/constants/api_url_strings.dart';
-import 'package:unn_mobile/core/misc/http_helper.dart';
+import 'package:unn_mobile/core/misc/api_helpers/base_api_helper.dart';
 import 'package:unn_mobile/core/models/employee_data.dart';
 import 'package:unn_mobile/core/models/schedule_search_suggestion_item.dart';
 import 'package:unn_mobile/core/models/schedule_filter.dart';
@@ -12,8 +10,6 @@ import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 import 'package:unn_mobile/core/services/interfaces/search_id_on_portal_service.dart';
 
 class SearchIdOnPortalServiceImpl implements SearchIdOnPortalService {
-  final GettingProfileOfCurrentUser _gettingProfileOfCurrentUser;
-  final LoggerService _loggerService;
   final String _uns = 'uns';
   final String _term = 'term';
   final String _type = 'type';
@@ -21,37 +17,29 @@ class SearchIdOnPortalServiceImpl implements SearchIdOnPortalService {
   final String _id = 'id';
   final String _description = 'description';
 
+  final GettingProfileOfCurrentUser _gettingProfileOfCurrentUser;
+  final LoggerService _loggerService;
+  final BaseApiHelper _baseApiHelper;
+
   SearchIdOnPortalServiceImpl(
     this._gettingProfileOfCurrentUser,
     this._loggerService,
+    this._baseApiHelper,
   );
 
   Future<String?> _getIdOfLoggedInStudent(String uns) async {
-    final requestSender = HttpRequestSender(
-      path: ApiPaths.studentInfo,
-      queryParams: {_uns: uns},
-    );
-
-    HttpClientResponse response;
+    Response response;
     try {
-      response = await requestSender.get();
+      response = await _baseApiHelper.get(
+        path: ApiPaths.studentInfo,
+        queryParameters: {_uns: uns},
+      );
     } catch (error, stackTrace) {
       _loggerService.logError(error, stackTrace);
       return null;
     }
 
-    final statusCode = response.statusCode;
-
-    if (statusCode != 200) {
-      _loggerService.log('statusCode = $statusCode; userLogin = $uns');
-      return null;
-    }
-
-    final Map<dynamic, dynamic> jsonMap = jsonDecode(
-      await HttpRequestSender.responseToStringBody(response),
-    );
-
-    return jsonMap[_id];
+    return response.data[_id];
   }
 
   @override
@@ -79,32 +67,19 @@ class SearchIdOnPortalServiceImpl implements SearchIdOnPortalService {
     String value,
     IdType valueType,
   ) async {
-    final requestSender = HttpRequestSender(
-      path: ApiPaths.search,
-      queryParams: {_term: value, _type: valueType.name},
-    );
-    HttpClientResponse response;
+    Response response;
     try {
-      response = await requestSender.get();
+      response = await _baseApiHelper.get(
+        path: ApiPaths.search,
+        queryParameters: {_term: value, _type: valueType.name},
+      );
     } catch (error, stackTrace) {
       _loggerService.logError(error, stackTrace);
       return null;
     }
 
-    final statusCode = response.statusCode;
-
-    if (statusCode != 200) {
-      _loggerService.log(
-        'statusCode = $statusCode; value = $value; valueType = $valueType',
-      );
-      return null;
-    }
-
-    final List<dynamic> jsonList =
-        jsonDecode(await HttpRequestSender.responseToStringBody(response));
-
     final List<ScheduleSearchSuggestionItem> result = [];
-    for (final jsonMap in jsonList) {
+    for (final jsonMap in response.data) {
       result.add(
         ScheduleSearchSuggestionItem(
           jsonMap[_id],

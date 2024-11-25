@@ -1,10 +1,12 @@
 import 'package:dio/dio.dart';
-import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
+import 'package:unn_mobile/core/misc/api_helpers/interfaces/api_options_helper.dart';
+import 'package:unn_mobile/core/misc/api_helpers/interfaces/get_api_helper.dart';
+import 'package:unn_mobile/core/misc/api_helpers/interfaces/post_api_helper.dart';
 
-class ApiHelperImpl implements ApiHelper {
+class BaseApiHelper implements GetApiHelper, PostApiHelper, ApiOptionsHelper {
   final Dio _dio;
 
-  ApiHelperImpl({
+  BaseApiHelper({
     required BaseOptions options,
   }) : _dio = Dio(options);
 
@@ -15,7 +17,7 @@ class ApiHelperImpl implements ApiHelper {
     Options? options,
   }) async {
     return await _dio.get(
-      path, 
+      path,
       queryParameters: queryParameters,
       options: options,
     );
@@ -35,18 +37,14 @@ class ApiHelperImpl implements ApiHelper {
       options: options,
     );
   }
-  
-  @override
-  Future<String> responseToStringBody(Response response) async {
-    if (response.data is String) {
-      return response.data.trim();
-    } else {
-      return response.data.toString().trim();
-    }
-  }
 
   @override
   void updateOptions(BaseOptions newOptions) {
     _dio.options = newOptions;
+  }
+
+  @override
+  void updateHeaders(Map<String, dynamic> newHeaders) {
+    _dio.options.headers.addAll(newHeaders);
   }
 }

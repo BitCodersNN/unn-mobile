@@ -23,9 +23,9 @@ abstract interface class AuthorizationService extends Listenable {
   Future<AuthRequestResult> auth(String login, String password);
 
   void logout();
-  Map<String, dynamic>? get cookie;
   bool get isAuthorised;
   String? get csrf;
   String? get sessionId;
   String? get guestId;
+  Map<String, dynamic>? get headers;
 }

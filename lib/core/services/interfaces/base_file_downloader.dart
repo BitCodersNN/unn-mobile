@@ -1,30 +1,22 @@
 import 'dart:io';
-
+import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:unn_mobile/core/misc/api_helpers/base_api_helper.dart';
 import 'package:unn_mobile/core/misc/file_functions.dart';
-import 'package:unn_mobile/core/misc/http_helper.dart';
 import 'package:unn_mobile/core/services/interfaces/file_downloader.dart';
 import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 
 abstract class BaseFileDownloaderService implements FileDownloaderService {
   final LoggerService _loggerService;
-  final String? _host;
+  final BaseApiHelper _baseApiHelper;
   final String? _path;
-  Map<String, String> _cookies;
 
   BaseFileDownloaderService(
-    this._loggerService, {
-    String? host,
+    this._loggerService,
+    this._baseApiHelper, {
     String? path,
     Map<String, String> cookies = const {},
-  })  : _host = host,
-        _path = path,
-        _cookies = cookies;
-
-  @protected
-  void updateCookies(Map<String, String> newCookies) {
-    _cookies = newCookies;
-  }
+  }) : _path = path;
 
   @override
   Future<File?> downloadFile(
@@ -32,7 +24,7 @@ abstract class BaseFileDownloaderService implements FileDownloaderService {
     String? downloadUrl,
     bool force = false,
   }) async {
-    assert(_host != null && _path != null || downloadUrl != null);
+    assert(_path != null || downloadUrl != null);
 
     final String? downloadsPath = await getDownloadPath();
     if (downloadsPath == null) {
@@ -47,42 +39,28 @@ abstract class BaseFileDownloaderService implements FileDownloaderService {
     }
 
     await storedFile.parent.create(recursive: true);
-    String host = _host ?? '';
     String path = '$_path/$filePath';
     Map<String, dynamic> queryParams = {};
     if (downloadUrl != null) {
       final uri = Uri.parse(downloadUrl);
-      host = uri.host;
       path = uri.path;
       queryParams = uri.queryParameters;
     }
-    final requestSender = HttpRequestSender(
-      host: host,
-      path: path,
-      queryParams: queryParams,
-      cookies: _cookies,
-    );
 
-    HttpClientResponse response;
+    Response response;
     try {
-      response = await requestSender.get();
+      response = await _baseApiHelper.get(
+        path: path,
+        queryParameters: queryParams,
+      );
     } catch (error, stackTrace) {
       _loggerService.log('Exception: $error\nStackTrace: $stackTrace');
       return null;
     }
 
-    final statusCode = response.statusCode;
-
-    if (statusCode != 200) {
-      _loggerService.log(
-        'statusCode = $statusCode;',
-      );
-      return null;
-    }
-
     Uint8List bytes;
     try {
-      bytes = await consolidateHttpClientResponseBytes(response);
+      bytes = Uint8List.fromList(response.data);
     } catch (error, stackTrace) {
       _loggerService.log('Exception: $error\nStackTrace: $stackTrace');
       return null;

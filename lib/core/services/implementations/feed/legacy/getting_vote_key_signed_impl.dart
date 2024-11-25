@@ -1,10 +1,7 @@
-import 'dart:io';
-
+import 'package:dio/dio.dart';
 import 'package:unn_mobile/core/constants/regular_expressions.dart';
 import 'package:unn_mobile/core/constants/api_url_strings.dart';
-import 'package:unn_mobile/core/constants/session_identifier_strings.dart';
-import 'package:unn_mobile/core/misc/http_helper.dart';
-import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
+import 'package:unn_mobile/core/misc/api_helpers/base_api_helper.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/getting_vote_key_signed.dart';
 import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 
@@ -13,12 +10,12 @@ class _PathParts {
 }
 
 class GettingVoteKeySignedImpl implements GettingVoteKeySigned {
-  final AuthorizationService _authorizationService;
   final LoggerService _loggerService;
+  final BaseApiHelper _baseApiHelper;
 
   GettingVoteKeySignedImpl(
-    this._authorizationService,
     this._loggerService,
+    this._baseApiHelper,
   );
 
   @override
@@ -29,43 +26,25 @@ class GettingVoteKeySignedImpl implements GettingVoteKeySigned {
     final path =
         '${ApiPaths.companyPersonalUser}/$authorId/${_PathParts.blog}/$postId/';
 
-    final requestSender = HttpRequestSender(
-      path: path,
-      headers: {
-        SessionIdentifierStrings.csrfToken: _authorizationService.csrf ?? '',
-      },
-      cookies: {
-        SessionIdentifierStrings.sessionIdCookieKey:
-            _authorizationService.sessionId ?? '',
-      },
-    );
-
-    final HttpClientResponse response;
+    final Response response;
 
     try {
-      response = await requestSender.get(timeoutSeconds: 60);
+      response = await _baseApiHelper.get(
+        path: path,
+        options: Options(
+          sendTimeout: const Duration(seconds: 60),
+          receiveTimeout: const Duration(seconds: 60),
+        ),
+      );
     } catch (error, stackTrace) {
       _loggerService.log('Exception: $error\nStackTrace: $stackTrace');
-      return null;
-    }
-
-    if (response.statusCode != 200) {
-      _loggerService.log('statusCode = ${response.statusCode}');
-      return null;
-    }
-
-    String responseStr;
-    try {
-      responseStr = await HttpRequestSender.responseToStringBody(response);
-    } catch (error, stackTrace) {
-      _loggerService.logError(error, stackTrace);
       return null;
     }
 
     String? keySignedMatches;
     try {
       keySignedMatches = (RegularExpressions.keySignedRegExp
-          .firstMatch(responseStr)
+          .firstMatch(response.data)
           ?.group(0) as String);
     } catch (error, stackTrace) {
       _loggerService.logError(error, stackTrace);
