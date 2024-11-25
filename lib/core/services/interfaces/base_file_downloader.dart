@@ -1,12 +1,12 @@
 import 'dart:io';
 import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart';
 import 'package:unn_mobile/core/misc/api_helpers/base_api_helper.dart';
 import 'package:unn_mobile/core/misc/file_functions.dart';
 import 'package:unn_mobile/core/services/interfaces/file_downloader.dart';
 import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 
 abstract class BaseFileDownloaderService implements FileDownloaderService {
+  final _maxFileNameLength = 127;
   final LoggerService _loggerService;
   final BaseApiHelper _baseApiHelper;
   final String? _path;
@@ -32,7 +32,14 @@ abstract class BaseFileDownloaderService implements FileDownloaderService {
       return null;
     }
 
-    final storedFile = File('$downloadsPath/$filePath');
+    final shortenedFileName = filePath.substring(
+      0,
+      filePath.length < _maxFileNameLength
+          ? filePath.length
+          : _maxFileNameLength,
+    );
+
+    final storedFile = File('$downloadsPath/$shortenedFileName');
 
     if (!force && await storedFile.exists()) {
       return storedFile;
@@ -52,22 +59,15 @@ abstract class BaseFileDownloaderService implements FileDownloaderService {
       response = await _baseApiHelper.get(
         path: path,
         queryParameters: queryParams,
+        options: Options(responseType: ResponseType.bytes),
       );
     } catch (error, stackTrace) {
       _loggerService.log('Exception: $error\nStackTrace: $stackTrace');
       return null;
     }
 
-    Uint8List bytes;
     try {
-      bytes = Uint8List.fromList(response.data);
-    } catch (error, stackTrace) {
-      _loggerService.log('Exception: $error\nStackTrace: $stackTrace');
-      return null;
-    }
-
-    try {
-      await storedFile.writeAsBytes(bytes);
+      await storedFile.writeAsBytes(response.data);
     } catch (error, stackTrace) {
       _loggerService.log('Exception: $error\nStackTrace: $stackTrace');
       return null;
