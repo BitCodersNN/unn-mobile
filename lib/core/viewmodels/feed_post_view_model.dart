@@ -1,9 +1,9 @@
 import 'package:event/event.dart';
 import 'package:html_unescape/html_unescape.dart';
 import 'package:injector/injector.dart';
-import 'package:unn_mobile/core/models/blog_data.dart';
-import 'package:unn_mobile/core/services/interfaces/getting_blog_posts.dart';
-import 'package:unn_mobile/core/services/interfaces/last_feed_load_date_time_provider.dart';
+import 'package:unn_mobile/core/models/feed/blog_post_data.dart';
+import 'package:unn_mobile/core/services/interfaces/feed/getting_blog_posts.dart';
+import 'package:unn_mobile/core/services/interfaces/feed/last_feed_load_date_time_provider.dart';
 import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 import 'package:unn_mobile/core/viewmodels/attached_file_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
@@ -22,7 +22,7 @@ class FeedPostViewModel extends BaseViewModel {
 
   final onError = Event();
 
-  late BlogData blogData;
+  late BlogPostData blogData;
 
   late ProfileViewModel _profileViewModel;
 
@@ -39,7 +39,7 @@ class FeedPostViewModel extends BaseViewModel {
         .getViewModel(key);
   }
 
-  int get authorId => blogData.bitrixID;
+  int get authorId => blogData.authorBitrixId;
 
   int get commentsCount => blogData.numberOfComments;
 
@@ -57,16 +57,16 @@ class FeedPostViewModel extends BaseViewModel {
 
   ReactionViewModel get reactionViewModel => _reactionViewModel;
 
-  void init(BlogData blogData) {
+  void init(BlogPostData blogData) {
     this.blogData = blogData;
 
-    _profileViewModel = ProfileViewModel.cached(blogData.bitrixID)
-      ..init(loadFromPost: true, userId: blogData.bitrixID);
-    _reactionViewModel = ReactionViewModel.cached(blogData.bitrixID)
-      ..init(postId: blogData.id, authorId: blogData.bitrixID);
+    _profileViewModel = ProfileViewModel.cached(blogData.authorBitrixId)
+      ..init(loadFromPost: true, userId: blogData.authorBitrixId);
+    _reactionViewModel = ReactionViewModel.cached(blogData.authorBitrixId)
+      ..init(postId: blogData.id, authorId: blogData.authorBitrixId);
     attachedFileViewModels.clear();
     attachedFileViewModels.addAll(
-      blogData.files?.map((f) => AttachedFileViewModel.cached(int.parse(f))) ??
+      blogData.files?.map((fileId) => AttachedFileViewModel.cached(fileId)) ??
           [],
     );
     notifyListeners();

@@ -6,12 +6,14 @@ import 'package:unn_mobile/core/constants/session_identifier_strings.dart';
 import 'package:unn_mobile/core/misc/api_helpers/api_helper_impl.dart';
 import 'package:unn_mobile/core/misc/api_helpers/base_options_factory.dart';
 import 'package:unn_mobile/core/models/online_status_data.dart';
+import 'package:unn_mobile/core/services/interfaces/auth_data_provider.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
 import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 
 class AuthorizationServiceImpl extends ChangeNotifier
     implements AuthorizationService {
   final OnlineStatusData _onlineStatus;
+  final AuthDataProvider _authDataProvider;
   final LoggerService _loggerService;
   final String _userLogin = 'USER_LOGIN';
   final String _userPassword = 'USER_PASSWORD';
@@ -36,15 +38,18 @@ class AuthorizationServiceImpl extends ChangeNotifier
   @override
   String? get guestId => _cookie?[_bxPortatlUnnGuestId];
 
-  AuthorizationServiceImpl(this._onlineStatus, this._loggerService);
+  AuthorizationServiceImpl(
+    this._onlineStatus,
+    this._loggerService,
+    this._authDataProvider,
+  );
 
   @override
   Future<AuthRequestResult> auth(String login, String password) async {
     try {
       _isAuthorised = false;
       if (await _isOffline()) {
-        _onlineStatus.isOnline = false;
-        return AuthRequestResult.noInternet;
+        return await _getOfflineResult();
       }
 
       final apiHelper = ApiHelperImpl(
@@ -69,8 +74,7 @@ class AuthorizationServiceImpl extends ChangeNotifier
           case DioExceptionType.sendTimeout:
           case DioExceptionType.receiveTimeout:
           case DioExceptionType.connectionError:
-            _onlineStatus.isOnline = false;
-            return AuthRequestResult.noInternet;
+           return await _getOfflineResult();
 
           case DioExceptionType.badCertificate:
           case DioExceptionType.cancel:
@@ -124,6 +128,12 @@ class AuthorizationServiceImpl extends ChangeNotifier
     });
 
     return cookieMap;
+  }
+
+  Future<AuthRequestResult> _getOfflineResult() async {
+    _onlineStatus.isOnline = false;
+    _isAuthorised = await _authDataProvider.isContained();
+    return AuthRequestResult.noInternet;
   }
 
   Future<bool> _isOffline() async {

@@ -8,7 +8,7 @@ import 'package:unn_mobile/core/models/schedule_filter.dart';
 import 'package:unn_mobile/core/models/subject.dart';
 import 'package:unn_mobile/core/services/interfaces/export_schedule_service.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
-import 'package:unn_mobile/core/viewmodels/schedule_screen_view_model.dart';
+import 'package:unn_mobile/core/viewmodels/schedule_tab_view_model.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
 import 'package:unn_mobile/ui/views/main_page/schedule/widgets/schedule_item_normal.dart';
 import 'package:unn_mobile/ui/views/main_page/schedule/widgets/schedule_search_suggestion_item_view.dart';
@@ -18,9 +18,10 @@ import 'package:unn_mobile/ui/widgets/dialogs/radio_group_dialog.dart';
 import 'package:unn_mobile/ui/widgets/persistent_header.dart';
 
 class ScheduleTab extends StatefulWidget {
-  final IDType type;
+  final IdType type;
+  final ScheduleTabViewModel viewModel;
 
-  const ScheduleTab(this.type, {super.key});
+  const ScheduleTab(this.type, this.viewModel, {super.key});
 
   @override
   State<ScheduleTab> createState() => ScheduleTabState();
@@ -30,8 +31,8 @@ class ScheduleTabState extends State<ScheduleTab>
     with AutomaticKeepAliveClientMixin {
   final _searchController = flutter_changed.SearchController();
   final _searchFocusNode = FocusNode();
-  final _scrollController = AutoScrollController();
-  final _viewKey = GlobalKey();
+  late final AutoScrollController _scrollController;
+
   final Map<DateTimeRange, Widget> _exportRanges = {
     DateTimeRanges.untilEndOfWeek(): const Text('До конца этой недели'),
     DateTimeRanges.untilEndOfMonth(): const Text('До конца этого месяца'),
@@ -42,12 +43,16 @@ class ScheduleTabState extends State<ScheduleTab>
   @override
   void initState() {
     super.initState();
-    _searchController.addListener(() {
-      if (!_searchViewOpen && _searchController.isOpen) {
-        searchQueryForRestore = _searchController.text;
-      }
-      _searchViewOpen = _searchController.isOpen;
-    });
+    _searchController.addListener(searchListener);
+    _scrollController = AutoScrollController();
+    widget.viewModel.onRefresh = refreshTab;
+  }
+
+  void searchListener() {
+    if (!_searchViewOpen && _searchController.isOpen) {
+      searchQueryForRestore = _searchController.text;
+    }
+    _searchViewOpen = _searchController.isOpen;
   }
 
   @override
@@ -55,8 +60,8 @@ class ScheduleTabState extends State<ScheduleTab>
     super.build(context);
     final theme = Theme.of(context);
 
-    return BaseView<ScheduleScreenViewModel>(
-      key: _viewKey,
+    return BaseView<ScheduleTabViewModel>(
+      model: widget.viewModel,
       builder: (context, model, child) {
         return Column(
           children: [_customScrollView(theme, model)],
@@ -94,7 +99,7 @@ class ScheduleTabState extends State<ScheduleTab>
     );
   }
 
-  Widget _searchBar(ScheduleScreenViewModel model, BuildContext context) {
+  Widget _searchBar(ScheduleTabViewModel model, BuildContext context) {
     return Container(
       color: Theme.of(context).colorScheme.surface,
       child: flutter_changed.SearchAnchor(
@@ -105,6 +110,7 @@ class ScheduleTabState extends State<ScheduleTab>
             const Duration(milliseconds: 50),
             () {
               SystemChannels.textInput.invokeMethod('TextInput.hide');
+              _searchFocusNode.unfocus();
             },
           );
         },
@@ -119,6 +125,7 @@ class ScheduleTabState extends State<ScheduleTab>
             const Duration(milliseconds: 50),
             () {
               SystemChannels.textInput.invokeMethod('TextInput.hide');
+              _searchFocusNode.unfocus();
             },
           );
         },
@@ -276,13 +283,17 @@ class ScheduleTabState extends State<ScheduleTab>
   @override
   bool get wantKeepAlive => true;
 
-  Widget _customScrollView(ThemeData theme, ScheduleScreenViewModel model) {
+  Widget _customScrollView(ThemeData theme, ScheduleTabViewModel model) {
     final headerFormatter = DateFormat.yMd('ru_RU');
 
     return Expanded(
       child: FutureBuilder(
         future: model.scheduleLoader,
         builder: (context, snapshot) {
+          final formattedHeaderText =
+              '${headerFormatter.format(model.displayedWeek.start)}'
+              ' - ${headerFormatter.format(model.displayedWeek.end)}';
+
           return CustomScrollView(
             controller: _scrollController,
             cacheExtent: 10,
@@ -302,7 +313,8 @@ class ScheduleTabState extends State<ScheduleTab>
                   pinned: false,
                   floating: true,
                 ),
-              if (snapshot.connectionState != ConnectionState.none)
+              if (snapshot.connectionState != ConnectionState.none &&
+                  !model.offline)
                 SliverAppBar(
                   leading: model.offline
                       ? null
@@ -326,7 +338,7 @@ class ScheduleTabState extends State<ScheduleTab>
                   title: MediaQuery.withClampedTextScaling(
                     maxScaleFactor: 1,
                     child: Text(
-                      '${headerFormatter.format(model.displayedWeek.start)} - ${headerFormatter.format(model.displayedWeek.end)}',
+                      formattedHeaderText,
                     ),
                   ),
                   backgroundColor: theme.colorScheme.surface,
@@ -336,30 +348,43 @@ class ScheduleTabState extends State<ScheduleTab>
                   collapsedHeight: 50,
                   expandedHeight: 50,
                 ),
-              if (model.state == ViewState.idle && snapshot.hasData)
-                if (snapshot.data!.isNotEmpty)
-                  _scheduleSliverList(model, snapshot, theme)
+              if (snapshot.connectionState != ConnectionState.none)
+                if (model.state == ViewState.idle && snapshot.hasData)
+                  if (snapshot.data!.isNotEmpty)
+                    _scheduleSliverList(model, snapshot, theme)
+                  else
+                    SliverToBoxAdapter(
+                      child: Center(
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(
+                            'На этой неделе занятий нет :)',
+                            style: theme.textTheme.bodyLarge,
+                          ),
+                        ),
+                      ),
+                    )
                 else
-                  SliverToBoxAdapter(
+                  const SliverToBoxAdapter(
                     child: Center(
                       child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                          'На этой неделе занятий нет :)',
-                          style: theme.textTheme.bodyLarge,
+                        padding: EdgeInsets.all(20.0),
+                        child: SizedBox(
+                          width: 100,
+                          height: 100,
+                          child: CircularProgressIndicator(),
                         ),
                       ),
                     ),
                   )
-              else if (snapshot.connectionState != ConnectionState.none)
-                const SliverToBoxAdapter(
+              else if (!model.offline)
+                SliverToBoxAdapter(
                   child: Center(
                     child: Padding(
-                      padding: EdgeInsets.all(20.0),
-                      child: SizedBox(
-                        width: 100,
-                        height: 100,
-                        child: CircularProgressIndicator(),
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                        'Введите запрос в строку поиска',
+                        style: theme.textTheme.bodyLarge,
                       ),
                     ),
                   ),
@@ -372,15 +397,16 @@ class ScheduleTabState extends State<ScheduleTab>
   }
 
   SliverList _scheduleSliverList(
-    ScheduleScreenViewModel model,
-    AsyncSnapshot<Map<int, List<Subject>>> snapshot,
+    ScheduleTabViewModel model,
+    AsyncSnapshot<Map<int, List<Subject>>?> snapshot,
     ThemeData theme,
   ) {
     return SliverList(
       delegate: SliverChildBuilderDelegate(
         (context, index) {
           final formatedDate = toBeginningOfSentenceCase(
-            DateFormat.MMMMEEEEd('ru_RU').format(
+            (model.offline ? DateFormat.EEEE : DateFormat.MMMMEEEEd)('ru_RU')
+                .format(
               model.displayedWeek.start.add(
                 Duration(days: snapshot.data!.keys.elementAt(index) - 1),
               ),
@@ -432,11 +458,18 @@ class ScheduleTabState extends State<ScheduleTab>
     );
   }
 
+  @override
+  void dispose() {
+    widget.viewModel.onRefresh = null;
+    _scrollController.dispose();
+    _searchController.removeListener(searchListener);
+    _searchController.dispose();
+    super.dispose();
+  }
+
   void refreshTab() {
-    final model =
-        (_viewKey.currentState as BaseViewState<ScheduleScreenViewModel>).model;
-    if (model.displayedWeekOffset != 0) {
-      model.resetWeek();
+    if (widget.viewModel.displayedWeekOffset != 0) {
+      widget.viewModel.resetWeek();
     }
   }
 }

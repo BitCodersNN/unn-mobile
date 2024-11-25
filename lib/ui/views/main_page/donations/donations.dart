@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:webview_flutter/webview_flutter.dart';
+import 'package:webview_flutter_android/webview_flutter_android.dart';
 
 class DonationsScreenView extends StatefulWidget {
   const DonationsScreenView({super.key});
@@ -22,8 +23,14 @@ class _DonationsScreenViewState extends State<DonationsScreenView> {
   void initState() {
     super.initState();
     loadHtmlFromAssets();
+
     controller = WebViewController()
-      ..setJavaScriptMode(JavaScriptMode.unrestricted);
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..enableZoom(false);
+    if (controller.platform is AndroidWebViewController) {
+      final androidController = controller.platform as AndroidWebViewController;
+      androidController.setTextZoom(100);
+    }
   }
 
   @override

@@ -46,9 +46,11 @@ class AuthDataProviderImpl implements AuthDataProvider {
   Future<bool> isContained() async {
     return (await _storage.containsKey(
           key: _AuthDataProviderKeys._loginKey,
+          secure: true,
         ) &&
         await _storage.containsKey(
           key: _AuthDataProviderKeys._passwotdKey,
+          secure: true,
         ));
   }
 }

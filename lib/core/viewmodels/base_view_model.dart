@@ -3,15 +3,16 @@ import 'package:flutter/material.dart';
 class BaseViewModel extends ChangeNotifier {
   ViewState _state = ViewState.idle;
 
-  ViewState get state => _state;
-  bool get isBusy => _state == ViewState.busy;
-
   bool disposed = false;
 
-  void setState(ViewState viewState) {
-    _state = viewState;
-    notifyListeners();
-  }
+  @protected
+  bool isInitialized = false;
+
+  bool get initialized => isInitialized;
+
+  bool get isBusy => _state == ViewState.busy;
+
+  ViewState get state => _state;
 
   @override
   void dispose() {
@@ -26,6 +27,11 @@ class BaseViewModel extends ChangeNotifier {
         () => super.notifyListeners(),
       );
     }
+  }
+
+  void setState(ViewState viewState) {
+    _state = viewState;
+    notifyListeners();
   }
 }
 

@@ -27,7 +27,10 @@ class ApiPaths {
   static const String schedule = 'ruzapi/schedule/';
 
   /// Для получения записей из живой ленты
-  static const String blogpostGet = 'rest/log.blogpost.get.json';
+  static const String blogPostGet = 'rest/log.blogpost.get.json';
+
+  /// Для получения записей из живой ленты со всей информацией
+  static const String blogPostWithLoadedInfo = 'portal2/api/news.php';
 
   /// Для получения информации о файлах
   static const String diskAttachedObjectGet = 'rest/disk.attachedObject.get';
