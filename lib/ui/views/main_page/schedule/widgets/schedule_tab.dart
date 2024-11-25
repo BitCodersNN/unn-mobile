@@ -379,14 +379,11 @@ class ScheduleTabState extends State<ScheduleTab>
     ScheduleTabViewModel model,
   ) {
     if (snapshot.hasError) {
-      if (model.offline) {
-        return _showLabel(
-          context,
-          'Ошибка загрузки расписания.\nСкорее всего, оно еще не было сохранено',
-        );
-      } else {
-        return _showLabel(context, 'Ошибка загрузки расписания');
-      }
+      final message = model.offline
+          ? 'Ошибка загрузки расписания.\n'
+              'Скорее всего, оно еще не было сохранено'
+          : 'Ошибка загрузки расписания';
+      return _showLabel(context, message);
     }
     if (snapshot.hasData) {
       return _showScheduleData(context, snapshot, model);
@@ -424,11 +421,11 @@ class ScheduleTabState extends State<ScheduleTab>
     if (snapshot.data!.isNotEmpty) {
       return _scheduleSliverList(model, snapshot, theme);
     } else {
-      if (model.offline) {
-        return _showLabel(context, 'Сохранённое расписание пусто');
-      } else {
-        return _showLabel(context, 'На этой неделе занятий нет :)');
-      }
+      final message = model.offline
+          ? 'Сохранённое расписание пусто'
+          : 'На этой неделе занятий нет :)';
+
+      return _showLabel(context, message);
     }
   }
 
