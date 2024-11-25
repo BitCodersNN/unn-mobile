@@ -331,20 +331,18 @@ class ScheduleTabViewModel extends BaseViewModel {
         _filter = ScheduleFilter(value.idType, value.id, decidePivotWeek());
         _currentId = value.id;
         _updateScheduleLoader();
+        return;
       }
-      notifyListeners();
+      setState(ViewState.idle);
     });
   }
 
   FutureOr<void> _invokeOnScheduleLoaded(value) {
-    if (_onScheduleLoaded != null) {
-      _onScheduleLoaded!(value);
-    }
+    _onScheduleLoaded?.call(value);
   }
 
   void _updateScheduleLoader() {
-    _scheduleLoader = _getScheduleLoader();
-    _scheduleLoader!.then(_invokeOnScheduleLoaded);
+    _scheduleLoader = _getScheduleLoader()..then(_invokeOnScheduleLoaded);
   }
 }
 
