@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:unn_mobile/core/constants/regular_expressions.dart';
 import 'package:unn_mobile/core/constants/api_url_strings.dart';
-import 'package:unn_mobile/core/misc/api_helpers/base_api_helper.dart';
+import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/models/feed/blog_post_comment_data.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/getting_blog_post_comments.dart';
 import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
@@ -12,11 +12,11 @@ class _JsonKeys {
 
 class GettingBlogPostCommentsImpl implements GettingBlogPostComments {
   final LoggerService _loggerService;
-  final BaseApiHelper _baseApiHelper;
+  final ApiHelper _apiHelper;
 
   GettingBlogPostCommentsImpl(
     this._loggerService,
-    this._baseApiHelper,
+    this._apiHelper,
   );
   @override
   Future<List<BlogPostCommentData>?> getBlogPostComments({
@@ -41,14 +41,14 @@ class GettingBlogPostCommentsImpl implements GettingBlogPostComments {
   }) async {
     final Response response;
     try {
-      response = await _baseApiHelper.post(
+      response = await _apiHelper.post(
         path: ApiPaths.ajax,
         queryParameters: {
           'mode': 'class',
           AjaxActionStrings.actionKey: AjaxActionStrings.navigateComment,
           'c': AjaxActionStrings.comment,
         },
-        data: {
+        body: {
           'ENTITY_XML_ID': 'BLOG_$postId',
           'AJAX_POST': 'Y',
           'MODE': 'LIST',

@@ -3,10 +3,10 @@ import 'package:unn_mobile/core/misc/api_helpers/interfaces/api_options_helper.d
 import 'package:unn_mobile/core/misc/api_helpers/interfaces/get_api_helper.dart';
 import 'package:unn_mobile/core/misc/api_helpers/interfaces/post_api_helper.dart';
 
-class BaseApiHelper implements GetApiHelper, PostApiHelper, ApiOptionsHelper {
+class ApiHelper implements GetApiHelper, PostApiHelper, ApiOptionsHelper {
   final Dio _dio;
 
-  BaseApiHelper({
+  ApiHelper({
     required BaseOptions options,
   }) : _dio = Dio(options);
 
@@ -26,13 +26,13 @@ class BaseApiHelper implements GetApiHelper, PostApiHelper, ApiOptionsHelper {
   @override
   Future<Response> post({
     required String path,
-    dynamic data,
+    dynamic body,
     Map<String, dynamic>? queryParameters,
     Options? options,
   }) async {
     return await _dio.post(
       path,
-      data: data,
+      data: body,
       queryParameters: queryParameters,
       options: options,
     );

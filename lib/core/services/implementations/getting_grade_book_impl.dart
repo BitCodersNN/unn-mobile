@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:unn_mobile/core/constants/api_url_strings.dart';
-import 'package:unn_mobile/core/misc/api_helpers/base_api_helper.dart';
+import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/models/mark_by_subject.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_grade_book.dart';
 import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
@@ -13,18 +13,18 @@ class _JsonKeys {
 
 class GettingGradeBookImpl implements GettingGradeBook {
   final LoggerService _loggerService;
-  final BaseApiHelper _baseApiHelper;
+  final ApiHelper _apiHelper;
 
   GettingGradeBookImpl(
     this._loggerService,
-    this._baseApiHelper,
+    this._apiHelper,
   );
 
   @override
   Future<Map<int, List<MarkBySubject>>?> getGradeBook() async {
     Response response;
     try {
-      response = await _baseApiHelper.get(
+      response = await _apiHelper.get(
         path: ApiPaths.marks,
       );
     } catch (error, stackTrace) {

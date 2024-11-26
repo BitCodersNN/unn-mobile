@@ -2,7 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:unn_mobile/core/constants/api_url_strings.dart';
-import 'package:unn_mobile/core/misc/api_helpers/base_api_helper.dart';
+import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/models/schedule_filter.dart';
 import 'package:unn_mobile/core/models/subject.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_schedule_service.dart';
@@ -17,11 +17,11 @@ class GettingScheduleServiceImpl implements GettingScheduleService {
   final String _splitPaternForStream = '|';
 
   final LoggerService _loggerService;
-  final BaseApiHelper _baseApiHelper;
+  final ApiHelper _apiHelper;
 
   GettingScheduleServiceImpl(
     this._loggerService,
-    this._baseApiHelper,
+    this._apiHelper,
   );
 
   @override
@@ -31,7 +31,7 @@ class GettingScheduleServiceImpl implements GettingScheduleService {
 
     Response response;
     try {
-      response = await _baseApiHelper.get(
+      response = await _apiHelper.get(
         path: path,
         queryParameters: {
           _start: scheduleFilter.dateTimeRange.start

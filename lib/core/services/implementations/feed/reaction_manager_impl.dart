@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:unn_mobile/core/constants/api_url_strings.dart';
 import 'package:unn_mobile/core/constants/rating_list_strings.dart';
-import 'package:unn_mobile/core/misc/api_helpers/base_api_helper.dart';
+import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/misc/current_user_sync_storage.dart';
 import 'package:unn_mobile/core/models/rating_list.dart';
 import 'package:unn_mobile/core/models/user_short_info.dart';
@@ -19,12 +19,12 @@ class _KeysForReactionManagerJsonConverter {
 class ReactionManagerImpl implements ReactionManager {
   final LoggerService _loggerService;
   final CurrentUserSyncStorage _currentUserSync;
-  final BaseApiHelper _baseApiHelper;
+  final ApiHelper _apiHelper;
 
   ReactionManagerImpl(
     this._currentUserSync,
     this._loggerService,
-    this._baseApiHelper,
+    this._apiHelper,
   );
 
   @override
@@ -65,13 +65,13 @@ class ReactionManagerImpl implements ReactionManager {
     final Response response;
 
     try {
-      response = await _baseApiHelper.post(
+      response = await _apiHelper.post(
         path: ApiPaths.ajax,
         queryParameters: {
           RatingListStrings.analyticsLabel: AjaxActionStrings.addLike,
           AjaxActionStrings.actionKey: AjaxActionStrings.ratingVote,
         },
-        data: body,
+        body: body,
         options: Options(
           sendTimeout: const Duration(seconds: 60),
           receiveTimeout: const Duration(seconds: 60),

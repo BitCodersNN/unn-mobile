@@ -3,7 +3,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:unn_mobile/core/constants/api_url_strings.dart';
 import 'package:unn_mobile/core/constants/session_identifier_strings.dart';
-import 'package:unn_mobile/core/misc/api_helpers/base_api_helper.dart';
+import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/misc/api_helpers/base_options_factory.dart';
 import 'package:unn_mobile/core/models/online_status_data.dart';
 import 'package:unn_mobile/core/services/interfaces/auth_data_provider.dart';
@@ -55,7 +55,7 @@ class AuthorizationServiceImpl extends ChangeNotifier
         return await _getOfflineResult();
       }
 
-      final apiHelper = BaseApiHelper(
+      final apiHelper = ApiHelper(
         options: createBaseOptions(
           baseUrl: ApiPaths.unnMobileHost,
         ),
@@ -65,13 +65,13 @@ class AuthorizationServiceImpl extends ChangeNotifier
       try {
         response = await apiHelper.post(
           path: ApiPaths.authWithCookie,
-          data: {
+          body: {
             _userLogin: login,
             _userPassword: password,
           },
         );
-      } on DioException catch (exc) {
-        switch (exc.type) {
+      } on DioException catch (exception) {
+        switch (exception.type) {
           case DioExceptionType.connectionTimeout:
           case DioExceptionType.sendTimeout:
           case DioExceptionType.receiveTimeout:
@@ -84,7 +84,7 @@ class AuthorizationServiceImpl extends ChangeNotifier
             rethrow;
 
           case DioExceptionType.badResponse:
-            if (exc.response!.statusCode == 401) {
+            if (exception.response!.statusCode == 401) {
               return AuthRequestResult.wrongCredentials;
             }
             return AuthRequestResult.unknown;
@@ -92,7 +92,7 @@ class AuthorizationServiceImpl extends ChangeNotifier
       }
 
       try {
-        _headers = _parseCookies(response.data.trim());
+        _headers = _parseHeaders(response.data.trim());
       } catch (error, stackTrace) {
         _loggerService.logError(error, stackTrace);
         return AuthRequestResult.unknown;
@@ -113,19 +113,19 @@ class AuthorizationServiceImpl extends ChangeNotifier
     }
   }
 
-  Map<String, dynamic> _parseCookies(String cookies) {
-    final Map<String, dynamic> cookieMap = {};
+  Map<String, dynamic> _parseHeaders(String headers) {
+    final Map<String, dynamic> headersMap = {};
 
-    cookies.split(';').forEach((cookie) {
+    headers.split(';').forEach((cookie) {
       final parts = cookie.split('=');
       if (parts.length == 2) {
         final key = parts[0].trim();
         final value = parts[1].trim();
-        cookieMap[key] = value;
+        headersMap[key] = value;
       }
     });
 
-    return cookieMap;
+    return headersMap;
   }
 
   Future<AuthRequestResult> _getOfflineResult() async {

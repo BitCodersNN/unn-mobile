@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:unn_mobile/core/constants/api_url_strings.dart';
 import 'package:unn_mobile/core/constants/session_identifier_strings.dart';
-import 'package:unn_mobile/core/misc/api_helpers/base_api_helper.dart';
+import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/models/feed/blog_post_data.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/getting_blog_posts.dart';
@@ -15,13 +15,13 @@ class _QueryParamNames {
 class GettingBlogPostsImpl implements GettingBlogPosts {
   final AuthorizationService _authorizationService;
   final LoggerService _loggerService;
-  final BaseApiHelper _baseApiHelper;
+  final ApiHelper _apiHelper;
   final int _numberOfPostsPerPage = 50;
 
   GettingBlogPostsImpl(
     this._authorizationService,
     this._loggerService,
-    this._baseApiHelper,
+    this._apiHelper,
   );
 
   @override
@@ -31,7 +31,7 @@ class GettingBlogPostsImpl implements GettingBlogPosts {
   }) async {
     Response response;
     try {
-      response = await _baseApiHelper.get(
+      response = await _apiHelper.get(
         path: ApiPaths.blogPostGet,
         queryParameters: {
           SessionIdentifierStrings.sessid: _authorizationService.csrf ?? '',

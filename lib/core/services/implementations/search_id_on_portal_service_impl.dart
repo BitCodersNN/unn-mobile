@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:unn_mobile/core/constants/api_url_strings.dart';
-import 'package:unn_mobile/core/misc/api_helpers/base_api_helper.dart';
+import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/models/employee_data.dart';
 import 'package:unn_mobile/core/models/schedule_search_suggestion_item.dart';
 import 'package:unn_mobile/core/models/schedule_filter.dart';
@@ -19,18 +19,18 @@ class SearchIdOnPortalServiceImpl implements SearchIdOnPortalService {
 
   final GettingProfileOfCurrentUser _gettingProfileOfCurrentUser;
   final LoggerService _loggerService;
-  final BaseApiHelper _baseApiHelper;
+  final ApiHelper _apiHelper;
 
   SearchIdOnPortalServiceImpl(
     this._gettingProfileOfCurrentUser,
     this._loggerService,
-    this._baseApiHelper,
+    this._apiHelper,
   );
 
   Future<String?> _getIdOfLoggedInStudent(String uns) async {
     Response response;
     try {
-      response = await _baseApiHelper.get(
+      response = await _apiHelper.get(
         path: ApiPaths.studentInfo,
         queryParameters: {_uns: uns},
       );
@@ -69,7 +69,7 @@ class SearchIdOnPortalServiceImpl implements SearchIdOnPortalService {
   ) async {
     Response response;
     try {
-      response = await _baseApiHelper.get(
+      response = await _apiHelper.get(
         path: ApiPaths.search,
         queryParameters: {_term: value, _type: valueType.name},
       );

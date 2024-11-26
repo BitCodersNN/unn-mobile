@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:unn_mobile/core/constants/api_url_strings.dart';
 import 'package:unn_mobile/core/constants/session_identifier_strings.dart';
-import 'package:unn_mobile/core/misc/api_helpers/base_api_helper.dart';
+import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/models/file_data.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_file_data.dart';
@@ -10,13 +10,13 @@ import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 class GettingFileDataImpl implements GettingFileData {
   final AuthorizationService _authorizationService;
   final LoggerService _loggerService;
-  final BaseApiHelper _baseApiHelper;
+  final ApiHelper _apiHelper;
   final String _id = 'id';
 
   GettingFileDataImpl(
     this._authorizationService,
     this._loggerService,
-    this._baseApiHelper,
+    this._apiHelper,
   );
 
   @override
@@ -25,7 +25,7 @@ class GettingFileDataImpl implements GettingFileData {
   }) async {
     Response response;
     try {
-      response = await _baseApiHelper.get(
+      response = await _apiHelper.get(
         path: ApiPaths.diskAttachedObjectGet,
         queryParameters: {
           SessionIdentifierStrings.sessid: _authorizationService.csrf ?? '',

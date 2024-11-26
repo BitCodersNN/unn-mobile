@@ -3,7 +3,8 @@ import 'package:dio/dio.dart';
 import 'package:icalendar_parser/icalendar_parser.dart';
 import 'package:permission_handler_platform_interface/permission_handler_platform_interface.dart';
 import 'package:unn_mobile/core/constants/api_url_strings.dart';
-import 'package:unn_mobile/core/misc/api_helpers/base_api_helper.dart';
+import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
+import 'package:unn_mobile/core/misc/date_time_extensions.dart';
 import 'package:unn_mobile/core/models/schedule_filter.dart';
 import 'package:unn_mobile/core/services/interfaces/export_schedule_service.dart';
 
@@ -19,9 +20,9 @@ class ExportScheduleServiceImpl implements ExportScheduleService {
   final String _lng = 'lng';
   final String _timeZone = 'Europe/Moscow';
 
-  final BaseApiHelper _baseApiHelper;
+  final ApiHelper _apiHelper;
 
-  ExportScheduleServiceImpl(this._baseApiHelper);
+  ExportScheduleServiceImpl(this._apiHelper);
 
   @override
   Future<ExportScheduleResult> exportSchedule(
@@ -32,17 +33,11 @@ class ExportScheduleServiceImpl implements ExportScheduleService {
 
     Response response;
     try {
-      response = await _baseApiHelper.get(
+      response = await _apiHelper.get(
         path: path,
         queryParameters: {
-          _start: scheduleFilter.dateTimeRange.start
-              .toIso8601String()
-              .split('T')[0]
-              .replaceAll('-', '.'),
-          _finish: scheduleFilter.dateTimeRange.end
-              .toIso8601String()
-              .split('T')[0]
-              .replaceAll('-', '.'),
+          _start: scheduleFilter.dateTimeRange.start.toFormattedString(),
+          _finish: scheduleFilter.dateTimeRange.end.toFormattedString(),
           _lng: '1',
         },
       );

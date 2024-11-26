@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:unn_mobile/core/constants/regular_expressions.dart';
 import 'package:unn_mobile/core/constants/api_url_strings.dart';
-import 'package:unn_mobile/core/misc/api_helpers/base_api_helper.dart';
+import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/getting_vote_key_signed.dart';
 import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 
@@ -11,11 +11,11 @@ class _PathParts {
 
 class GettingVoteKeySignedImpl implements GettingVoteKeySigned {
   final LoggerService _loggerService;
-  final BaseApiHelper _baseApiHelper;
+  final ApiHelper _apiHelper;
 
   GettingVoteKeySignedImpl(
     this._loggerService,
-    this._baseApiHelper,
+    this._apiHelper,
   );
 
   @override
@@ -29,7 +29,7 @@ class GettingVoteKeySignedImpl implements GettingVoteKeySigned {
     final Response response;
 
     try {
-      response = await _baseApiHelper.get(
+      response = await _apiHelper.get(
         path: path,
         options: Options(
           sendTimeout: const Duration(seconds: 60),

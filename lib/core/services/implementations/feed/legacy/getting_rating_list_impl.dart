@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:unn_mobile/core/constants/api_url_strings.dart';
 import 'package:unn_mobile/core/constants/rating_list_strings.dart';
-import 'package:unn_mobile/core/misc/api_helpers/base_api_helper.dart';
+import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/models/rating_list.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/getting_rating_list.dart';
 import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
@@ -13,11 +13,11 @@ class _JsonKeys {
 
 class GettingRatingListImpl implements GettingRatingList {
   final LoggerService _loggerService;
-  final BaseApiHelper _baseApiHelper;
+  final ApiHelper _apiHelper;
 
   GettingRatingListImpl(
     this._loggerService,
-    this._baseApiHelper,
+    this._apiHelper,
   );
 
   @override
@@ -39,12 +39,12 @@ class GettingRatingListImpl implements GettingRatingList {
     final Response response;
 
     try {
-      response = await _baseApiHelper.post(
+      response = await _apiHelper.post(
         path: ApiPaths.ajax,
         queryParameters: {
           AjaxActionStrings.actionKey: AjaxActionStrings.ratingList,
         },
-        data: body,
+        body: body,
         options: Options(
           sendTimeout: const Duration(seconds: 60),
           receiveTimeout: const Duration(seconds: 60),
@@ -93,12 +93,12 @@ class GettingRatingListImpl implements GettingRatingList {
     final Response response;
 
     try {
-      response = await _baseApiHelper.post(
+      response = await _apiHelper.post(
         path: ApiPaths.ajax,
         queryParameters: {
           AjaxActionStrings.actionKey: AjaxActionStrings.ratingList,
         },
-        data: body,
+        body: body,
         options: Options(
           sendTimeout: const Duration(seconds: 60),
           receiveTimeout: const Duration(seconds: 60),

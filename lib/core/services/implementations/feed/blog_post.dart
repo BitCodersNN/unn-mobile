@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:unn_mobile/core/constants/api_url_strings.dart';
-import 'package:unn_mobile/core/misc/api_helpers/base_api_helper.dart';
+import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/models/feed/blog_post.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/blog_posts.dart';
 import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
@@ -12,11 +12,11 @@ class _QueryParamNames {
 
 class BlogPostsServiceImpl implements BlogPostsService {
   final LoggerService _loggerService;
-  final BaseApiHelper _baseApiHelper;
+  final ApiHelper _apiHelper;
 
   BlogPostsServiceImpl(
     this._loggerService,
-    this._baseApiHelper,
+    this._apiHelper,
   );
 
   @override
@@ -26,7 +26,7 @@ class BlogPostsServiceImpl implements BlogPostsService {
   }) async {
     Response response;
     try {
-      response = await _baseApiHelper.get(
+      response = await _apiHelper.get(
         path: ApiPaths.blogPostWithLoadedInfo,
         queryParameters: {
           _QueryParamNames.numPage: pageNumber.toString(),
@@ -42,16 +42,7 @@ class BlogPostsServiceImpl implements BlogPostsService {
       return null;
     }
 
-    List<dynamic> jsonList;
-
-    try {
-      jsonList = response.data;
-    } catch (error, stackTrace) {
-      _loggerService.logError(error, stackTrace);
-      return null;
-    }
-
-    final blogPosts = _parseBlogPostsFromJsonList(jsonList);
+    final blogPosts = _parseBlogPostsFromJsonList(response.data);
 
     return blogPosts;
   }

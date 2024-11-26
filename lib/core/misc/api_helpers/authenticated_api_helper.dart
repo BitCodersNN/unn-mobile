@@ -1,7 +1,7 @@
-import 'package:unn_mobile/core/misc/api_helpers/base_api_helper.dart';
+import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
 
-abstract class AuthenticatedApiHelper extends BaseApiHelper {
+abstract class AuthenticatedApiHelper extends ApiHelper {
   final AuthorizationService _authorizationService;
 
   AuthenticatedApiHelper(

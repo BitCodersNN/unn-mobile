@@ -1,18 +1,19 @@
 import 'dart:io';
 import 'package:dio/dio.dart';
-import 'package:unn_mobile/core/misc/api_helpers/base_api_helper.dart';
+import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/misc/file_functions.dart';
 import 'package:unn_mobile/core/services/interfaces/file_downloader.dart';
 import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
+import 'package:path/path.dart' as path;
 
 abstract class BaseFileDownloaderService implements FileDownloaderService {
   final LoggerService _loggerService;
-  final BaseApiHelper _baseApiHelper;
+  final ApiHelper _apiHelper;
   final String? _path;
 
   BaseFileDownloaderService(
     this._loggerService,
-    this._baseApiHelper, {
+    this._apiHelper, {
     String? path,
     Map<String, String> cookies = const {},
   }) : _path = path;
@@ -50,7 +51,7 @@ abstract class BaseFileDownloaderService implements FileDownloaderService {
 
     Response response;
     try {
-      response = await _baseApiHelper.get(
+      response = await _apiHelper.get(
         path: path,
         queryParameters: queryParams,
         options: Options(responseType: ResponseType.bytes),
@@ -85,11 +86,9 @@ abstract class BaseFileDownloaderService implements FileDownloaderService {
   }
 
   String shortenFileName(String fileName, [int maxFileNameLength = 127]) {
-    final extension = fileName.split('.').last;
-    final baseName = fileName.substring(
-      0,
-      fileName.length - extension.length - 1,
-    );
+    final extension = path.extension(fileName);
+    final baseName = path.basenameWithoutExtension(fileName);
+
     final shortenedBaseName = baseName.substring(
       0,
       baseName.length < maxFileNameLength

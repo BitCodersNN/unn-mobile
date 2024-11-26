@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:unn_mobile/core/constants/api_url_strings.dart';
 import 'package:unn_mobile/core/constants/profiles_strings.dart';
-import 'package:unn_mobile/core/misc/api_helpers/base_api_helper.dart';
+import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/models/employee_data.dart';
 import 'package:unn_mobile/core/models/student_data.dart';
 import 'package:unn_mobile/core/models/user_data.dart';
@@ -13,11 +13,11 @@ class GettingProfileImpl implements GettingProfile {
   final String _id = 'id';
 
   final LoggerService _loggerService;
-  final BaseApiHelper _baseApiHelper;
+  final ApiHelper _apiHelper;
 
   GettingProfileImpl(
     this._loggerService,
-    this._baseApiHelper,
+    this._apiHelper,
   );
 
   @override
@@ -27,7 +27,7 @@ class GettingProfileImpl implements GettingProfile {
 
     Response response;
     try {
-      response = await _baseApiHelper.get(path: path);
+      response = await _apiHelper.get(path: path);
     } catch (error, stackTrace) {
       _loggerService.logError(error, stackTrace);
       return null;
@@ -49,7 +49,7 @@ class GettingProfileImpl implements GettingProfile {
 
     Response response;
     try {
-      response = await _baseApiHelper.get(path: path);
+      response = await _apiHelper.get(path: path);
     } catch (error, stackTrace) {
       _loggerService.logError(error, stackTrace);
       return null;
@@ -71,8 +71,11 @@ class GettingProfileImpl implements GettingProfile {
               ? EmployeeData.fromJson(profileJsonMap)
               : UserData.fromJson(profileJsonMap);
     } catch (error, stackTrace) {
-      _loggerService
-          .logError(error, stackTrace, information: [response.data.toString()]);
+      _loggerService.logError(
+        error,
+        stackTrace,
+        information: [response.data.toString()],
+      );
     }
 
     return userData;
