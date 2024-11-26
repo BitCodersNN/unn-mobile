@@ -36,8 +36,8 @@ class ExportScheduleServiceImpl implements ExportScheduleService {
       response = await _apiHelper.get(
         path: path,
         queryParameters: {
-          _start: scheduleFilter.dateTimeRange.start.toFormattedString(),
-          _finish: scheduleFilter.dateTimeRange.end.toFormattedString(),
+          _start: scheduleFilter.dateTimeRange.start.toFormattedDateString(),
+          _finish: scheduleFilter.dateTimeRange.end.toFormattedDateString(),
           _lng: '1',
         },
       );

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-extension ExtraDateComparisons on DateTime {
+extension DateTimeExtensions on DateTime {
   bool isSameDate(DateTime other) {
     return day == other.day && month == other.month && year == other.year;
   }
@@ -19,7 +19,7 @@ extension ExtraDateComparisons on DateTime {
         isBeforeOrEqualIgnoringYear(range.end);
   }
 
-  String toFormattedString() {
+  String toFormattedDateString() {
     return DateFormat('yyyy.MM.dd').format(this);
   }
 }

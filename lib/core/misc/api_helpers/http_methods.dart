@@ -5,9 +5,7 @@ enum HttpMethod {
   delete,
   patch,
   head,
-  options,
-}
+  options;
 
-extension HttpMethodExtension on HttpMethod {
   String get asString => name.toUpperCase();
 }
