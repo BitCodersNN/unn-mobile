@@ -1,12 +1,8 @@
-import 'dart:convert';
-import 'dart:io';
-
+import 'package:dio/dio.dart';
 import 'package:unn_mobile/core/constants/api_url_strings.dart';
 import 'package:unn_mobile/core/constants/rating_list_strings.dart';
-import 'package:unn_mobile/core/constants/session_identifier_strings.dart';
-import 'package:unn_mobile/core/misc/http_helper.dart';
+import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/models/rating_list.dart';
-import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/getting_rating_list.dart';
 import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 
@@ -16,12 +12,12 @@ class _JsonKeys {
 }
 
 class GettingRatingListImpl implements GettingRatingList {
-  final AuthorizationService _authorizationService;
   final LoggerService _loggerService;
+  final ApiHelper _apiHelper;
 
   GettingRatingListImpl(
-    this._authorizationService,
     this._loggerService,
+    this._apiHelper,
   );
 
   @override
@@ -30,20 +26,6 @@ class GettingRatingListImpl implements GettingRatingList {
     required ReactionType reactionType,
     int pageNumber = 0,
   }) async {
-    final requestSender = HttpRequestSender(
-      path: ApiPaths.ajax,
-      queryParams: {
-        AjaxActionStrings.actionKey: AjaxActionStrings.ratingList,
-      },
-      headers: {
-        SessionIdentifierStrings.csrfToken: _authorizationService.csrf ?? '',
-      },
-      cookies: {
-        SessionIdentifierStrings.sessionIdCookieKey:
-            _authorizationService.sessionId ?? '',
-      },
-    );
-
     final Map<String, dynamic> body = {
       RatingListStrings.voteTypeId: voteKeySigned.split('-')[0],
       RatingListStrings.voteKeySigned: voteKeySigned,
@@ -54,28 +36,28 @@ class GettingRatingListImpl implements GettingRatingList {
           RatingListStrings.valueOfpathToUserProfile,
     };
 
-    final HttpClientResponse response;
+    final Response response;
 
     try {
-      response = await requestSender.postForm(
-        body,
-        timeoutSeconds: 60,
+      response = await _apiHelper.post(
+        path: ApiPaths.ajax,
+        queryParameters: {
+          AjaxActionStrings.actionKey: AjaxActionStrings.ratingList,
+        },
+        body: body,
+        options: Options(
+          sendTimeout: const Duration(seconds: 60),
+          receiveTimeout: const Duration(seconds: 60),
+        ),
       );
     } catch (error, stackTrace) {
       _loggerService.log('Exception: $error\nStackTrace: $stackTrace');
       return null;
     }
 
-    if (response.statusCode != 200) {
-      _loggerService.log('statusCode = ${response.statusCode}');
-      return null;
-    }
-
     dynamic jsonMap;
     try {
-      jsonMap = jsonDecode(
-        await HttpRequestSender.responseToStringBody(response),
-      )[_JsonKeys.data];
+      jsonMap = response.data[_JsonKeys.data];
     } catch (error, stackTrace) {
       _loggerService.logError(error, stackTrace);
       return null;
@@ -100,20 +82,6 @@ class GettingRatingListImpl implements GettingRatingList {
   Future<Map<ReactionType, int>?> getNumbersOfReactions({
     required String voteKeySigned,
   }) async {
-    final requestSender = HttpRequestSender(
-      path: ApiPaths.ajax,
-      queryParams: {
-        AjaxActionStrings.actionKey: AjaxActionStrings.ratingList,
-      },
-      headers: {
-        SessionIdentifierStrings.csrfToken: _authorizationService.csrf ?? '',
-      },
-      cookies: {
-        SessionIdentifierStrings.sessionIdCookieKey:
-            _authorizationService.sessionId ?? '',
-      },
-    );
-
     final Map<String, dynamic> body = {
       RatingListStrings.voteTypeId: voteKeySigned.split('-')[0],
       RatingListStrings.voteKeySigned: voteKeySigned,
@@ -122,33 +90,32 @@ class GettingRatingListImpl implements GettingRatingList {
           RatingListStrings.valueOfpathToUserProfile,
     };
 
-    final HttpClientResponse response;
+    final Response response;
 
     try {
-      response = await requestSender.postForm(
-        body,
-        timeoutSeconds: 60,
+      response = await _apiHelper.post(
+        path: ApiPaths.ajax,
+        queryParameters: {
+          AjaxActionStrings.actionKey: AjaxActionStrings.ratingList,
+        },
+        body: body,
+        options: Options(
+          sendTimeout: const Duration(seconds: 60),
+          receiveTimeout: const Duration(seconds: 60),
+        ),
       );
     } catch (error, stackTrace) {
       _loggerService.log('Exception: $error\nStackTrace: $stackTrace');
       return null;
     }
 
-    if (response.statusCode != 200) {
-      _loggerService.log('statusCode = ${response.statusCode}');
-      return null;
-    }
-
-    dynamic responseJson;
+    dynamic jsonMap;
     try {
-      responseJson =
-          jsonDecode(await HttpRequestSender.responseToStringBody(response));
+      jsonMap = response.data[_JsonKeys.data][_JsonKeys.reactions];
     } catch (error, stackTrace) {
       _loggerService.logError(error, stackTrace);
       return null;
     }
-
-    final jsonMap = responseJson[_JsonKeys.data][_JsonKeys.reactions];
 
     if (jsonMap is List) {
       return null;

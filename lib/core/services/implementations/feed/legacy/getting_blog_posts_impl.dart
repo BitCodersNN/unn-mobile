@@ -1,9 +1,7 @@
-import 'dart:convert';
-import 'dart:io';
-
+import 'package:dio/dio.dart';
 import 'package:unn_mobile/core/constants/api_url_strings.dart';
 import 'package:unn_mobile/core/constants/session_identifier_strings.dart';
-import 'package:unn_mobile/core/misc/http_helper.dart';
+import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/models/feed/blog_post_data.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/getting_blog_posts.dart';
@@ -15,13 +13,15 @@ class _QueryParamNames {
 }
 
 class GettingBlogPostsImpl implements GettingBlogPosts {
-  final AuthorizationService _authorisationService;
+  final AuthorizationService _authorizationService;
   final LoggerService _loggerService;
+  final ApiHelper _apiHelper;
   final int _numberOfPostsPerPage = 50;
 
   GettingBlogPostsImpl(
-    this._authorisationService,
+    this._authorizationService,
     this._loggerService,
+    this._apiHelper,
   );
 
   @override
@@ -29,40 +29,29 @@ class GettingBlogPostsImpl implements GettingBlogPosts {
     int pageNumber = 0,
     int? postId,
   }) async {
-    final requestSender = HttpRequestSender(
-      path: ApiPaths.blogPostGet,
-      queryParams: {
-        SessionIdentifierStrings.sessid: _authorisationService.csrf ?? '',
-        _QueryParamNames.start: (_numberOfPostsPerPage * pageNumber).toString(),
-        _QueryParamNames._postId: postId.toString(),
-      },
-      cookies: {
-        SessionIdentifierStrings.sessionIdCookieKey:
-            _authorisationService.sessionId ?? '',
-      },
-    );
-
-    HttpClientResponse response;
+    Response response;
     try {
-      response = await requestSender.get(timeoutSeconds: 60);
+      response = await _apiHelper.get(
+        path: ApiPaths.blogPostGet,
+        queryParameters: {
+          SessionIdentifierStrings.sessid: _authorizationService.csrf ?? '',
+          _QueryParamNames.start:
+              (_numberOfPostsPerPage * pageNumber).toString(),
+          _QueryParamNames._postId: postId.toString(),
+        },
+        options: Options(
+          sendTimeout: const Duration(seconds: 60),
+          receiveTimeout: const Duration(seconds: 60),
+        ),
+      );
     } catch (error, stackTrace) {
       _loggerService.log('Exception: $error\nStackTrace: $stackTrace');
       return null;
     }
 
-    final statusCode = response.statusCode;
-
-    if (statusCode != 200) {
-      _loggerService.log(
-        'statusCode = $statusCode; pageNumber = $pageNumber; postId = $postId;',
-      );
-      return null;
-    }
-
-    final str = await HttpRequestSender.responseToStringBody(response);
     dynamic jsonList;
     try {
-      jsonList = jsonDecode(str)['result'];
+      jsonList = response.data['result'];
     } catch (erorr, stackTrace) {
       _loggerService.logError(erorr, stackTrace);
       return null;

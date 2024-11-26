@@ -1,30 +1,22 @@
 import 'dart:io';
-
-import 'package:flutter/foundation.dart';
+import 'package:dio/dio.dart';
+import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/misc/file_functions.dart';
-import 'package:unn_mobile/core/misc/http_helper.dart';
 import 'package:unn_mobile/core/services/interfaces/file_downloader.dart';
 import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
+import 'package:path/path.dart' as path;
 
 abstract class BaseFileDownloaderService implements FileDownloaderService {
   final LoggerService _loggerService;
-  final String? _host;
+  final ApiHelper _apiHelper;
   final String? _path;
-  Map<String, String> _cookies;
 
   BaseFileDownloaderService(
-    this._loggerService, {
-    String? host,
+    this._loggerService,
+    this._apiHelper, {
     String? path,
     Map<String, String> cookies = const {},
-  })  : _host = host,
-        _path = path,
-        _cookies = cookies;
-
-  @protected
-  void updateCookies(Map<String, String> newCookies) {
-    _cookies = newCookies;
-  }
+  }) : _path = path;
 
   @override
   Future<File?> downloadFile(
@@ -32,7 +24,7 @@ abstract class BaseFileDownloaderService implements FileDownloaderService {
     String? downloadUrl,
     bool force = false,
   }) async {
-    assert(_host != null && _path != null || downloadUrl != null);
+    assert(_path != null || downloadUrl != null);
 
     final String? downloadsPath = await getDownloadPath();
     if (downloadsPath == null) {
@@ -40,56 +32,37 @@ abstract class BaseFileDownloaderService implements FileDownloaderService {
       return null;
     }
 
-    final storedFile = File('$downloadsPath/$filePath');
+    final shortenedFileName = shortenFileName(filePath);
+
+    final storedFile = File('$downloadsPath/$shortenedFileName');
 
     if (!force && await storedFile.exists()) {
       return storedFile;
     }
 
     await storedFile.parent.create(recursive: true);
-    String host = _host ?? '';
     String path = '$_path/$filePath';
     Map<String, dynamic> queryParams = {};
     if (downloadUrl != null) {
       final uri = Uri.parse(downloadUrl);
-      host = uri.host;
       path = uri.path;
       queryParams = uri.queryParameters;
     }
-    final requestSender = HttpRequestSender(
-      host: host,
-      path: path,
-      queryParams: queryParams,
-      cookies: _cookies,
-    );
 
-    HttpClientResponse response;
+    Response response;
     try {
-      response = await requestSender.get();
-    } catch (error, stackTrace) {
-      _loggerService.log('Exception: $error\nStackTrace: $stackTrace');
-      return null;
-    }
-
-    final statusCode = response.statusCode;
-
-    if (statusCode != 200) {
-      _loggerService.log(
-        'statusCode = $statusCode;',
+      response = await _apiHelper.get(
+        path: path,
+        queryParameters: queryParams,
+        options: Options(responseType: ResponseType.bytes),
       );
-      return null;
-    }
-
-    Uint8List bytes;
-    try {
-      bytes = await consolidateHttpClientResponseBytes(response);
     } catch (error, stackTrace) {
       _loggerService.log('Exception: $error\nStackTrace: $stackTrace');
       return null;
     }
 
     try {
-      await storedFile.writeAsBytes(bytes);
+      await storedFile.writeAsBytes(response.data);
     } catch (error, stackTrace) {
       _loggerService.log('Exception: $error\nStackTrace: $stackTrace');
       return null;
@@ -110,5 +83,18 @@ abstract class BaseFileDownloaderService implements FileDownloaderService {
     final fileList = data.map((dynamic item) => item as File).toList();
 
     return fileList;
+  }
+
+  String shortenFileName(String fileName, [int maxFileNameLength = 127]) {
+    final extension = path.extension(fileName);
+    final baseName = path.basenameWithoutExtension(fileName);
+
+    final shortenedBaseName = baseName.substring(
+      0,
+      baseName.length < maxFileNameLength
+          ? baseName.length
+          : maxFileNameLength - extension.length - 1,
+    );
+    return '$shortenedBaseName.$extension';
   }
 }

@@ -2,7 +2,7 @@ name: unn_mobile
 description: A mobile application for UNN Portal website
 publish_to: 'none'
 
-version: 0.2.3+236
+version: 0.2.3+237
 
 environment:
   sdk: '>=3.1.2 <4.0.0'
@@ -13,7 +13,7 @@ dependencies:
 
   webview_flutter: ^4.9.0
   flutter_secure_storage: ^9.2.2
-  http: ^1.1.0
+  dio: ^5.7.0
   injector: ^4.0.0
   provider: ^6.0.5
   shared_preferences: ^2.2.2

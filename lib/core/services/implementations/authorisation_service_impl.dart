@@ -1,10 +1,10 @@
-import 'dart:io';
-
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:unn_mobile/core/constants/api_url_strings.dart';
 import 'package:unn_mobile/core/constants/session_identifier_strings.dart';
-import 'package:unn_mobile/core/misc/http_helper.dart';
+import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
+import 'package:unn_mobile/core/misc/api_helpers/base_options_factory.dart';
 import 'package:unn_mobile/core/models/online_status_data.dart';
 import 'package:unn_mobile/core/services/interfaces/auth_data_provider.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
@@ -16,25 +16,30 @@ class AuthorizationServiceImpl extends ChangeNotifier
   final AuthDataProvider _authDataProvider;
   final LoggerService _loggerService;
   final String _userLogin = 'USER_LOGIN';
-  final String _userPasswortd = 'USER_PASSWORD';
+  final String _userPassword = 'USER_PASSWORD';
   final String _bxPortatlUnnGuestId = 'BX_PORTAL_UNN_GUEST_ID';
 
-  String? _sessionId;
-  String? _csrf;
-  String? _guestId;
+  Map<String, dynamic>? _headers;
   bool _isAuthorised = false;
-
-  @override
-  String? get csrf => _csrf;
 
   @override
   bool get isAuthorised => _isAuthorised;
 
   @override
-  String? get sessionId => _sessionId;
+  String? get csrf => _headers?[SessionIdentifierStrings.csrf];
 
   @override
-  String? get guestId => _guestId;
+  String? get sessionId =>
+      _headers?[SessionIdentifierStrings.sessionIdCookieKey];
+
+  @override
+  Map<String, dynamic>? get headers => {
+        SessionIdentifierStrings.csrfToken: csrf,
+        'Cookie': '${SessionIdentifierStrings.sessionIdCookieKey}=$sessionId',
+      };
+
+  @override
+  String? get guestId => _headers?[_bxPortatlUnnGuestId];
 
   AuthorizationServiceImpl(
     this._onlineStatus,
@@ -50,58 +55,49 @@ class AuthorizationServiceImpl extends ChangeNotifier
         return await _getOfflineResult();
       }
 
-      final requestSender = HttpRequestSender(
-        host: ApiPaths.unnMobileHost,
-        path: ApiPaths.authWithCookie,
+      final apiHelper = ApiHelper(
+        options: createBaseOptions(
+          baseUrl: ApiPaths.unnMobileHost,
+        ),
       );
 
-      HttpClientResponse response;
+      Response response;
       try {
-        response = await requestSender.postForm(
-          {
+        response = await apiHelper.post(
+          path: ApiPaths.authWithCookie,
+          body: {
             _userLogin: login,
-            _userPasswortd: password,
+            _userPassword: password,
           },
-          timeoutSeconds: 15,
         );
-      } on TimeoutException {
-        return await _getOfflineResult();
-      } on SocketException catch (e) {
-        if ({100, 101, 102, 103, 104, 110, 111, 112, 113}
-            .contains(e.osError?.errorCode)) {
-          return await _getOfflineResult();
-        } else {
-          rethrow;
+      } on DioException catch (exception) {
+        switch (exception.type) {
+          case DioExceptionType.connectionTimeout:
+          case DioExceptionType.sendTimeout:
+          case DioExceptionType.receiveTimeout:
+          case DioExceptionType.connectionError:
+            return await _getOfflineResult();
+
+          case DioExceptionType.badCertificate:
+          case DioExceptionType.cancel:
+          case DioExceptionType.unknown:
+            rethrow;
+
+          case DioExceptionType.badResponse:
+            if (exception.response!.statusCode == 401) {
+              return AuthRequestResult.wrongCredentials;
+            }
+            return AuthRequestResult.unknown;
         }
-      } on Exception catch (_) {
-        rethrow;
       }
 
-      if (response.statusCode == 401) {
-        return AuthRequestResult.wrongCredentials;
-      }
-
-      if (response.statusCode != 200) {
-        return AuthRequestResult.unknown;
-      }
-
-      String responseString;
       try {
-        responseString = await HttpRequestSender.responseToStringBody(response);
+        _headers = _parseHeaders(response.data.trim());
       } catch (error, stackTrace) {
         _loggerService.logError(error, stackTrace);
         return AuthRequestResult.unknown;
       }
 
-      _setSessionId(
-        _extractValue(
-          responseString,
-          SessionIdentifierStrings.sessionIdCookieKey,
-        ),
-      );
-
-      _guestId = _extractValue(responseString, _bxPortatlUnnGuestId);
-      _csrf = _extractValue(responseString, SessionIdentifierStrings.csrf);
       _isAuthorised = true;
 
       _onlineStatus.isOnline = true;
@@ -117,20 +113,25 @@ class AuthorizationServiceImpl extends ChangeNotifier
     }
   }
 
+  Map<String, dynamic> _parseHeaders(String headers) {
+    final Map<String, dynamic> headersMap = {};
+
+    headers.split(';').forEach((cookie) {
+      final parts = cookie.split('=');
+      if (parts.length == 2) {
+        final key = parts[0].trim();
+        final value = parts[1].trim();
+        headersMap[key] = value;
+      }
+    });
+
+    return headersMap;
+  }
+
   Future<AuthRequestResult> _getOfflineResult() async {
     _onlineStatus.isOnline = false;
     _isAuthorised = await _authDataProvider.isContained();
     return AuthRequestResult.noInternet;
-  }
-
-  void _setSessionId(String newSessionId) {
-    _sessionId = newSessionId;
-  }
-
-  String _extractValue(String input, String key) {
-    final RegExp regExp = RegExp('$key=([^;]+)');
-    final Match? match = regExp.firstMatch(input);
-    return match?.group(1) ?? '';
   }
 
   Future<bool> _isOffline() async {
@@ -140,9 +141,7 @@ class AuthorizationServiceImpl extends ChangeNotifier
 
   @override
   void logout() {
-    _sessionId = null;
-    _guestId = null;
-    _csrf = null;
+    _headers = null;
     _isAuthorised = false;
     notifyListeners();
   }

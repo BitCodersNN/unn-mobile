@@ -1,17 +1,14 @@
-import 'dart:convert';
-import 'dart:io';
-
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:unn_mobile/core/constants/api_url_strings.dart';
-import 'package:unn_mobile/core/misc/http_helper.dart';
+import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/models/schedule_filter.dart';
 import 'package:unn_mobile/core/models/subject.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_schedule_service.dart';
 import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 
 class GettingScheduleServiceImpl implements GettingScheduleService {
-  final LoggerService _loggerService;
   final String _start = 'start';
   final String _finish = 'finish';
   final String _lng = 'lng';
@@ -19,53 +16,40 @@ class GettingScheduleServiceImpl implements GettingScheduleService {
   final String _dateFormat = 'y.MM.dd H:m';
   final String _splitPaternForStream = '|';
 
-  GettingScheduleServiceImpl(this._loggerService);
+  final LoggerService _loggerService;
+  final ApiHelper _apiHelper;
+
+  GettingScheduleServiceImpl(
+    this._loggerService,
+    this._apiHelper,
+  );
 
   @override
   Future<List<Subject>?> getSchedule(ScheduleFilter scheduleFilter) async {
     final path =
         '${ApiPaths.schedule}${scheduleFilter.idType.name}/${scheduleFilter.id}';
-    final requestSender = HttpRequestSender(
-      path: path,
-      queryParams: {
-        _start: scheduleFilter.dateTimeRange.start
-            .toIso8601String()
-            .split('T')[0]
-            .replaceAll('-', '.'),
-        _finish: scheduleFilter.dateTimeRange.end
-            .toIso8601String()
-            .split('T')[0]
-            .replaceAll('-', '.'),
-        _lng: '1',
-      },
-    );
 
-    HttpClientResponse response;
+    Response response;
     try {
-      response = await requestSender.get();
+      response = await _apiHelper.get(
+        path: path,
+        queryParameters: {
+          _start: scheduleFilter.dateTimeRange.start
+              .toIso8601String()
+              .split('T')[0]
+              .replaceAll('-', '.'),
+          _finish: scheduleFilter.dateTimeRange.end
+              .toIso8601String()
+              .split('T')[0]
+              .replaceAll('-', '.'),
+          _lng: '1',
+        },
+      );
     } catch (error, stackTrace) {
       _loggerService.log('Exception: $error\nStackTrace: $stackTrace');
       return null;
     }
-
-    final statusCode = response.statusCode;
-
-    if (statusCode != 200) {
-      _loggerService.log(
-        'statusCode = $statusCode; scheduleId = ${scheduleFilter.id}',
-      );
-      return null;
-    }
-
-    List<dynamic> jsonList;
-
-    try {
-      jsonList =
-          jsonDecode(await HttpRequestSender.responseToStringBody(response));
-    } catch (error, stackTrace) {
-      _loggerService.logError(error, stackTrace);
-      return null;
-    }
+    final List<dynamic> jsonList = response.data;
 
     final List<Subject> schedule = [];
 

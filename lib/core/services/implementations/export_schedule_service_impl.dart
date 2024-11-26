@@ -1,10 +1,10 @@
-import 'dart:io';
-
 import 'package:device_calendar/device_calendar.dart';
+import 'package:dio/dio.dart';
 import 'package:icalendar_parser/icalendar_parser.dart';
 import 'package:permission_handler_platform_interface/permission_handler_platform_interface.dart';
 import 'package:unn_mobile/core/constants/api_url_strings.dart';
-import 'package:unn_mobile/core/misc/http_helper.dart';
+import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
+import 'package:unn_mobile/core/misc/date_time_extensions.dart';
 import 'package:unn_mobile/core/models/schedule_filter.dart';
 import 'package:unn_mobile/core/services/interfaces/export_schedule_service.dart';
 
@@ -20,6 +20,10 @@ class ExportScheduleServiceImpl implements ExportScheduleService {
   final String _lng = 'lng';
   final String _timeZone = 'Europe/Moscow';
 
+  final ApiHelper _apiHelper;
+
+  ExportScheduleServiceImpl(this._apiHelper);
+
   @override
   Future<ExportScheduleResult> exportSchedule(
     ScheduleFilter scheduleFilter,
@@ -27,36 +31,34 @@ class ExportScheduleServiceImpl implements ExportScheduleService {
     final path =
         '${ApiPaths.schedule}${scheduleFilter.idType.name}/${scheduleFilter.id}.$_ics';
 
-    final requestSender = HttpRequestSender(
-      path: path,
-      queryParams: {
-        _start: scheduleFilter.dateTimeRange.start
-            .toIso8601String()
-            .split('T')[0]
-            .replaceAll('-', '.'),
-        _finish: scheduleFilter.dateTimeRange.end
-            .toIso8601String()
-            .split('T')[0]
-            .replaceAll('-', '.'),
-        _lng: '1',
-      },
-    );
-
-    HttpClientResponse response;
+    Response response;
     try {
-      response = await requestSender.get();
-    } on TimeoutException {
-      return ExportScheduleResult.timeout;
-    } catch (e) {
-      rethrow;
-    }
-
-    if (response.statusCode != 200) {
-      return ExportScheduleResult.statusCodeIsntOk;
+      response = await _apiHelper.get(
+        path: path,
+        queryParameters: {
+          _start: scheduleFilter.dateTimeRange.start.toFormattedDateString(),
+          _finish: scheduleFilter.dateTimeRange.end.toFormattedDateString(),
+          _lng: '1',
+        },
+      );
+    } on DioException catch (exc) {
+      switch (exc.type) {
+        case DioExceptionType.connectionTimeout:
+        case DioExceptionType.sendTimeout:
+        case DioExceptionType.receiveTimeout:
+        case DioExceptionType.connectionError:
+          return ExportScheduleResult.timeout;
+        case DioExceptionType.badCertificate:
+        case DioExceptionType.cancel:
+        case DioExceptionType.unknown:
+          rethrow;
+        case DioExceptionType.badResponse:
+          return ExportScheduleResult.statusCodeIsntOk;
+      }
     }
 
     final iCalendarData = ICalendar.fromString(
-      await HttpRequestSender.responseToStringBody(response),
+      response.data,
     ).data;
     iCalendarData.removeAt(0);
 

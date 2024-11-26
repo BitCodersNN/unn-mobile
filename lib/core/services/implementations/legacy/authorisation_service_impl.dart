@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:unn_mobile/core/constants/api_url_strings.dart';
 import 'package:unn_mobile/core/constants/session_identifier_strings.dart';
 import 'package:unn_mobile/core/misc/custom_errors/auth_errors.dart';
-import 'package:unn_mobile/core/misc/http_helper.dart';
+import 'package:unn_mobile/core/misc/api_helpers/legacy/http_helper.dart';
 import 'package:unn_mobile/core/models/online_status_data.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
 
@@ -130,8 +130,11 @@ class LegacyAuthorizationServiceImpl extends ChangeNotifier
   }
 
   @override
+  void logout() {}
+
+  @override
   String? get guestId => throw UnimplementedError();
 
   @override
-  void logout() {}
+  Map<String, dynamic>? get headers => throw UnimplementedError();
 }

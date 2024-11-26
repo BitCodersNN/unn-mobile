@@ -1,12 +1,8 @@
-import 'dart:convert';
-import 'dart:io';
-
+import 'package:dio/dio.dart';
 import 'package:unn_mobile/core/constants/regular_expressions.dart';
 import 'package:unn_mobile/core/constants/api_url_strings.dart';
-import 'package:unn_mobile/core/constants/session_identifier_strings.dart';
-import 'package:unn_mobile/core/misc/http_helper.dart';
+import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/models/feed/blog_post_comment_data.dart';
-import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/getting_blog_post_comments.dart';
 import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 
@@ -15,97 +11,74 @@ class _JsonKeys {
 }
 
 class GettingBlogPostCommentsImpl implements GettingBlogPostComments {
-  final AuthorizationService _authService;
   final LoggerService _loggerService;
+  final ApiHelper _apiHelper;
 
   GettingBlogPostCommentsImpl(
-    this._authService,
     this._loggerService,
+    this._apiHelper,
   );
   @override
   Future<List<BlogPostCommentData>?> getBlogPostComments({
     required int postId,
     int pageNumber = 1,
   }) async {
-    final sessionId = _authService.sessionId;
-    final csrf = _authService.csrf;
-
-    if (sessionId == null || csrf == null) {
-      _loggerService.log('Error, user not authorized');
-      return null;
-    }
-
-    final bodyAsString = await getRawBodyOfBlogComments(
+    final bodyAsJson = await getRawBodyOfBlogComments(
       postId: postId,
       pageNumber: pageNumber,
-      csrf: csrf,
-      sessionId: sessionId,
     );
 
-    if (bodyAsString == null) {
+    if (bodyAsJson == null) {
       return null;
     }
 
-    return parseComments(bodyAsString);
+    return parseComments(bodyAsJson);
   }
 
-  Future<String?> getRawBodyOfBlogComments({
+  Future<Map<String, dynamic>?> getRawBodyOfBlogComments({
     required int postId,
     int pageNumber = 0,
-    required String csrf,
-    required String sessionId,
   }) async {
-    final requestSender = HttpRequestSender(
-      path: ApiPaths.ajax,
-      queryParams: {
-        'mode': 'class',
-        AjaxActionStrings.actionKey: AjaxActionStrings.navigateComment,
-        'c': AjaxActionStrings.comment,
-      },
-      headers: {SessionIdentifierStrings.csrfToken: csrf},
-      cookies: {SessionIdentifierStrings.sessionIdCookieKey: sessionId},
-    );
-
-    final HttpClientResponse response;
+    final Response response;
     try {
-      response = await requestSender.postForm(
-        {
+      response = await _apiHelper.post(
+        path: ApiPaths.ajax,
+        queryParameters: {
+          'mode': 'class',
+          AjaxActionStrings.actionKey: AjaxActionStrings.navigateComment,
+          'c': AjaxActionStrings.comment,
+        },
+        body: {
           'ENTITY_XML_ID': 'BLOG_$postId',
           'AJAX_POST': 'Y',
           'MODE': 'LIST',
           'comment_post_id': postId.toString(),
           'PAGEN_1': pageNumber.toString(),
         },
-        timeoutSeconds: 30,
+        options: Options(
+          sendTimeout: const Duration(seconds: 30),
+          receiveTimeout: const Duration(seconds: 30),
+        ),
       );
     } catch (error, stackTrace) {
       _loggerService.log('Exception: $error\nStackTrace: $stackTrace');
       return null;
     }
 
-    if (response.statusCode != 200) {
-      _loggerService.log(
-        '${runtimeType.toString()}: statusCode = ${response.statusCode}',
-      );
-      return null;
-    }
-
-    return await HttpRequestSender.responseToStringBody(response);
+    return response.data;
   }
 
-  List<BlogPostCommentData>? parseComments(String jsonStr) {
+  List<BlogPostCommentData>? parseComments(Map<String, dynamic> bodyAsJson) {
     const unknownString = 'unknown';
 
-    final Map<String, dynamic> parsedJson = json.decode(jsonStr);
-
-    if (!parsedJson.containsKey(_JsonKeys._messageListKey)) {
+    if (!bodyAsJson.containsKey(_JsonKeys._messageListKey)) {
       _loggerService.log(
         'json doesn\'t contain the messageList key',
       );
       return null;
     }
 
-    final htmlBody = parsedJson[_JsonKeys._messageListKey] as String;
+    final htmlBody = bodyAsJson[_JsonKeys._messageListKey] as String;
 
     final comments = <BlogPostCommentData>[];
 

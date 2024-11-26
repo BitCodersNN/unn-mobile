@@ -1,14 +1,10 @@
-import 'dart:convert';
-import 'dart:io';
-
+import 'package:dio/dio.dart';
 import 'package:unn_mobile/core/constants/api_url_strings.dart';
 import 'package:unn_mobile/core/constants/rating_list_strings.dart';
-import 'package:unn_mobile/core/constants/session_identifier_strings.dart';
+import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/misc/current_user_sync_storage.dart';
-import 'package:unn_mobile/core/misc/http_helper.dart';
 import 'package:unn_mobile/core/models/rating_list.dart';
 import 'package:unn_mobile/core/models/user_short_info.dart';
-import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
 import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/reaction_manager.dart';
 
@@ -22,13 +18,13 @@ class _KeysForReactionManagerJsonConverter {
 
 class ReactionManagerImpl implements ReactionManager {
   final LoggerService _loggerService;
-  final AuthorizationService _authorizationService;
   final CurrentUserSyncStorage _currentUserSync;
+  final ApiHelper _apiHelper;
 
   ReactionManagerImpl(
-    this._authorizationService,
     this._currentUserSync,
     this._loggerService,
+    this._apiHelper,
   );
 
   @override
@@ -58,21 +54,6 @@ class ReactionManagerImpl implements ReactionManager {
     String voteKeySigned,
     String action,
   ) async {
-    final requestSender = HttpRequestSender(
-      path: ApiPaths.ajax,
-      queryParams: {
-        RatingListStrings.analyticsLabel: AjaxActionStrings.addLike,
-        AjaxActionStrings.actionKey: AjaxActionStrings.ratingVote,
-      },
-      headers: {
-        SessionIdentifierStrings.csrfToken: _authorizationService.csrf ?? '',
-      },
-      cookies: {
-        SessionIdentifierStrings.sessionIdCookieKey:
-            _authorizationService.sessionId ?? '',
-      },
-    );
-
     final Map<String, dynamic> body = {
       RatingListStrings.voteTypeId: voteKeySigned.split('-')[0],
       RatingListStrings.voteKeySigned: voteKeySigned,
@@ -81,28 +62,29 @@ class ReactionManagerImpl implements ReactionManager {
       RatingListStrings.voteReaction: reactionType.name,
     };
 
-    final HttpClientResponse response;
+    final Response response;
 
     try {
-      response = await requestSender.postForm(
-        body,
-        timeoutSeconds: 60,
+      response = await _apiHelper.post(
+        path: ApiPaths.ajax,
+        queryParameters: {
+          RatingListStrings.analyticsLabel: AjaxActionStrings.addLike,
+          AjaxActionStrings.actionKey: AjaxActionStrings.ratingVote,
+        },
+        body: body,
+        options: Options(
+          sendTimeout: const Duration(seconds: 60),
+          receiveTimeout: const Duration(seconds: 60),
+        ),
       );
     } catch (error, stackTrace) {
       _loggerService.log('Exception: $error\nStackTrace: $stackTrace');
       return null;
     }
 
-    if (response.statusCode != 200) {
-      _loggerService.log('statusCode = ${response.statusCode}');
-      return null;
-    }
-
     dynamic jsonMap;
     try {
-      jsonMap = jsonDecode(
-        await HttpRequestSender.responseToStringBody(response),
-      )[_KeysForReactionManagerJsonConverter.data]
+      jsonMap = response.data[_KeysForReactionManagerJsonConverter.data]
           [_KeysForReactionManagerJsonConverter.userData];
     } catch (error, stackTrace) {
       _loggerService.logError(error, stackTrace);

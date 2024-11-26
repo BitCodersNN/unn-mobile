@@ -1,58 +1,41 @@
-import 'dart:convert';
-import 'dart:io';
-
+import 'package:dio/dio.dart';
 import 'package:unn_mobile/core/constants/api_url_strings.dart';
 import 'package:unn_mobile/core/constants/profiles_strings.dart';
-import 'package:unn_mobile/core/constants/session_identifier_strings.dart';
-import 'package:unn_mobile/core/misc/http_helper.dart';
+import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/models/employee_data.dart';
 import 'package:unn_mobile/core/models/student_data.dart';
 import 'package:unn_mobile/core/models/user_data.dart';
-import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_profile.dart';
 import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 
 class GettingProfileImpl implements GettingProfile {
-  final AuthorizationService _authorizationService;
-  final LoggerService _loggerService;
   final String _pathSecondPartForGettingId = 'bx/';
   final String _id = 'id';
 
+  final LoggerService _loggerService;
+  final ApiHelper _apiHelper;
+
   GettingProfileImpl(
-    this._authorizationService,
     this._loggerService,
+    this._apiHelper,
   );
 
   @override
   Future<int?> getProfileIdByBitrixID({required int bitrixID}) async {
-    final requestSender = HttpRequestSender(
-      path: ApiPaths.user + _pathSecondPartForGettingId + bitrixID.toString(),
-      cookies: {
-        SessionIdentifierStrings.sessionIdCookieKey:
-            _authorizationService.sessionId ?? '',
-      },
-    );
+    final path =
+        ApiPaths.user + _pathSecondPartForGettingId + bitrixID.toString();
 
-    HttpClientResponse response;
+    Response response;
     try {
-      response = await requestSender.get(timeoutSeconds: 5);
+      response = await _apiHelper.get(path: path);
     } catch (error, stackTrace) {
       _loggerService.logError(error, stackTrace);
       return null;
     }
 
-    final statusCode = response.statusCode;
-
-    if (statusCode != 200) {
-      _loggerService.log('statusCode = $statusCode; authorId = $bitrixID');
-      return null;
-    }
-
     int? id;
     try {
-      id = jsonDecode(
-        await HttpRequestSender.responseToStringBody(response),
-      )[_id];
+      id = response.data[_id];
     } catch (error, stackTrace) {
       _loggerService.logError(error, stackTrace);
     }
@@ -62,44 +45,22 @@ class GettingProfileImpl implements GettingProfile {
 
   @override
   Future<UserData?> getProfile({required int userId}) async {
-    final requestSender = HttpRequestSender(
-      path: ApiPaths.user + userId.toString(),
-      cookies: {
-        SessionIdentifierStrings.sessionIdCookieKey:
-            _authorizationService.sessionId ?? '',
-      },
-    );
+    final path = ApiPaths.user + userId.toString();
 
-    HttpClientResponse response;
+    Response response;
     try {
-      response = await requestSender.get();
+      response = await _apiHelper.get(path: path);
     } catch (error, stackTrace) {
       _loggerService.logError(error, stackTrace);
       return null;
     }
 
-    final statusCode = response.statusCode;
-
-    if (statusCode != 200) {
-      _loggerService.log('statusCode = $statusCode; userId = $userId');
-      return null;
-    }
-
-    dynamic jsonMap;
-    try {
-      jsonMap =
-          jsonDecode(await HttpRequestSender.responseToStringBody(response));
-    } catch (error, stackTrace) {
-      _loggerService.logError(error, stackTrace);
-      return null;
-    }
-
-    final profileJsonMap = jsonMap[ProfilesStrings.profilesKey][0];
+    final profileJsonMap = response.data[ProfilesStrings.profilesKey][0];
     final userType = profileJsonMap[ProfilesStrings.type];
 
     // Костыль, т.к. на сайте есть небольшой процент профилей, отличающихся от остальных
     if (profileJsonMap[ProfilesStrings.user] == null) {
-      profileJsonMap[ProfilesStrings.user] = jsonMap;
+      profileJsonMap[ProfilesStrings.user] = response.data;
     }
 
     UserData? userData;
@@ -110,8 +71,11 @@ class GettingProfileImpl implements GettingProfile {
               ? EmployeeData.fromJson(profileJsonMap)
               : UserData.fromJson(profileJsonMap);
     } catch (error, stackTrace) {
-      _loggerService
-          .logError(error, stackTrace, information: [jsonMap.toString()]);
+      _loggerService.logError(
+        error,
+        stackTrace,
+        information: [response.data.toString()],
+      );
     }
 
     return userData;
