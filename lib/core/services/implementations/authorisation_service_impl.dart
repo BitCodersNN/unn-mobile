@@ -65,7 +65,7 @@ class AuthorizationServiceImpl extends ChangeNotifier
       try {
         response = await apiHelper.post(
           path: ApiPaths.authWithCookie,
-          body: {
+          data: {
             _userLogin: login,
             _userPassword: password,
           },

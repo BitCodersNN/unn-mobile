@@ -44,7 +44,7 @@ class GettingRatingListImpl implements GettingRatingList {
         queryParameters: {
           AjaxActionStrings.actionKey: AjaxActionStrings.ratingList,
         },
-        body: body,
+        data: body,
         options: Options(
           sendTimeout: const Duration(seconds: 60),
           receiveTimeout: const Duration(seconds: 60),
@@ -98,7 +98,7 @@ class GettingRatingListImpl implements GettingRatingList {
         queryParameters: {
           AjaxActionStrings.actionKey: AjaxActionStrings.ratingList,
         },
-        body: body,
+        data: body,
         options: Options(
           sendTimeout: const Duration(seconds: 60),
           receiveTimeout: const Duration(seconds: 60),
