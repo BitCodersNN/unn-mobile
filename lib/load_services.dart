@@ -1,5 +1,7 @@
-// import 'package:flutter/foundation.dart';
+import 'package:flutter/foundation.dart';
 import 'package:injector/injector.dart';
+import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
+import 'package:unn_mobile/core/misc/api_helpers/final/host_type.dart';
 import 'package:unn_mobile/core/misc/api_helpers/final/github_api_helper.dart';
 import 'package:unn_mobile/core/misc/api_helpers/final/github_raw_api_helper.dart';
 import 'package:unn_mobile/core/misc/api_helpers/final/unn_mobile_api_helper.dart';
@@ -85,11 +87,28 @@ import 'package:unn_mobile/core/viewmodels/schedule_tab_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/settings_screen_view_model.dart';
 
 void registerDependencies() {
-  const kIsWeb = true;
   final injector = Injector.appInstance;
 
   T get<T>({String dependencyName = ''}) {
     return injector.get<T>(dependencyName: dependencyName);
+  }
+
+  ApiHelper getPlatformSpecificHelper //
+      <TWeb extends ApiHelper, TDefault extends ApiHelper>() {
+    return kIsWeb ? get<TWeb>() : get<TDefault>();
+  }
+
+  final apiHelperFactories = {
+    HostType.github: () => get<GithubApiHelper>(),
+    HostType.githubRaw: () => get<GitHubRawApiHelper>(),
+    HostType.unnMobile: () =>
+        getPlatformSpecificHelper<WebUnnMobileApiHelper, UnnMobileApiHelper>(),
+    HostType.unnPortal: () =>
+        getPlatformSpecificHelper<WebUnnPortalApiHelper, UnnPortalApiHelper>(),
+  };
+
+  ApiHelper getApiHelper(HostType hostType) {
+    return apiHelperFactories[hostType]!();
   }
 
   // register all the dependencies here:
@@ -151,13 +170,13 @@ void registerDependencies() {
   injector.registerSingleton<LastCommitShaService>(
     () => LastCommitShaServiceImpl(
       get<LoggerService>(),
-      get<GithubApiHelper>(),
+      getApiHelper(HostType.github),
     ),
   );
   injector.registerSingleton<LoadingPageConfigService>(
     () => LoadingPageConfigServiceImpl(
       get<LoggerService>(),
-      get<GitHubRawApiHelper>(),
+      getApiHelper(HostType.githubRaw),
     ),
   );
 
@@ -171,7 +190,7 @@ void registerDependencies() {
   injector.registerSingleton<FileDownloaderService>(
     () => FeedFileDownloaderImpl(
       get<LoggerService>(),
-      kIsWeb ? get<WebUnnPortalApiHelper>() : get<UnnPortalApiHelper>(),
+      getApiHelper(HostType.unnPortal),
     ),
     dependencyName: 'FeedFileDownloaderService',
   );
@@ -202,25 +221,25 @@ void registerDependencies() {
   injector.registerSingleton<GettingProfileOfCurrentUser>(
     () => GettingProfileOfCurrentUserImpl(
       get<LoggerService>(),
-      kIsWeb ? get<WebUnnPortalApiHelper>() : get<UnnPortalApiHelper>(),
+      getApiHelper(HostType.unnPortal),
     ),
   );
   injector.registerSingleton<SearchIdOnPortalService>(
     () => SearchIdOnPortalServiceImpl(
       get<GettingProfileOfCurrentUser>(),
       get<LoggerService>(),
-      kIsWeb ? get<WebUnnPortalApiHelper>() : get<UnnPortalApiHelper>(),
+      getApiHelper(HostType.unnPortal),
     ),
   );
   injector.registerSingleton<GettingScheduleService>(
     () => GettingScheduleServiceImpl(
       get<LoggerService>(),
-      kIsWeb ? get<WebUnnPortalApiHelper>() : get<UnnPortalApiHelper>(),
+      getApiHelper(HostType.unnPortal),
     ),
   );
   injector.registerSingleton<ExportScheduleService>(
     () => ExportScheduleServiceImpl(
-      kIsWeb ? get<WebUnnPortalApiHelper>() : get<UnnPortalApiHelper>(),
+      getApiHelper(HostType.unnPortal),
     ),
   );
   injector.registerSingleton<OfflineScheduleProvider>(
@@ -241,26 +260,26 @@ void registerDependencies() {
   injector.registerDependency<BlogPostsService>(
     () => BlogPostsServiceImpl(
       get<LoggerService>(),
-      kIsWeb ? get<WebUnnMobileApiHelper>() : get<UnnMobileApiHelper>(),
+      getApiHelper(HostType.unnMobile),
     ),
   );
   injector.registerSingleton<GettingBlogPosts>(
     () => GettingBlogPostsImpl(
       get<AuthorizationService>(),
       get<LoggerService>(),
-      kIsWeb ? get<WebUnnPortalApiHelper>() : get<UnnPortalApiHelper>(),
+      getApiHelper(HostType.unnPortal),
     ),
   );
   injector.registerSingleton<GettingBlogPostComments>(
     () => GettingBlogPostCommentsImpl(
       get<LoggerService>(),
-      kIsWeb ? get<WebUnnPortalApiHelper>() : get<UnnPortalApiHelper>(),
+      getApiHelper(HostType.unnPortal),
     ),
   );
   injector.registerSingleton<GettingProfile>(
     () => GettingProfileImpl(
       get<LoggerService>(),
-      kIsWeb ? get<WebUnnPortalApiHelper>() : get<UnnPortalApiHelper>(),
+      getApiHelper(HostType.unnPortal),
     ),
   );
 
@@ -268,19 +287,19 @@ void registerDependencies() {
     () => GettingFileDataImpl(
       get<AuthorizationService>(),
       get<LoggerService>(),
-      kIsWeb ? get<WebUnnPortalApiHelper>() : get<UnnPortalApiHelper>(),
+      getApiHelper(HostType.unnPortal),
     ),
   );
   injector.registerSingleton<GettingRatingList>(
     () => GettingRatingListImpl(
       get<LoggerService>(),
-      kIsWeb ? get<WebUnnPortalApiHelper>() : get<UnnPortalApiHelper>(),
+      getApiHelper(HostType.unnPortal),
     ),
   );
   injector.registerSingleton<GettingVoteKeySigned>(
     () => GettingVoteKeySignedImpl(
       get<LoggerService>(),
-      kIsWeb ? get<WebUnnPortalApiHelper>() : get<UnnPortalApiHelper>(),
+      getApiHelper(HostType.unnPortal),
     ),
   );
   injector.registerSingleton<LastFeedLoadDateTimeProvider>(
@@ -306,7 +325,7 @@ void registerDependencies() {
   injector.registerSingleton<GettingGradeBook>(
     () => GettingGradeBookImpl(
       get<LoggerService>(),
-      kIsWeb ? get<WebUnnPortalApiHelper>() : get<UnnPortalApiHelper>(),
+      getApiHelper(HostType.unnPortal),
     ),
   );
   injector.registerSingleton<MarkBySubjectProvider>(
@@ -321,7 +340,7 @@ void registerDependencies() {
     () => ReactionManagerImpl(
       get<CurrentUserSyncStorage>(),
       get<LoggerService>(),
-      kIsWeb ? get<WebUnnPortalApiHelper>() : get<UnnPortalApiHelper>(),
+      getApiHelper(HostType.unnPortal),
     ),
   );
 

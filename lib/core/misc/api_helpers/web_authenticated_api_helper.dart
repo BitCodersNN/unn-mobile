@@ -1,11 +1,15 @@
+import 'dart:convert';
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
 import 'package:unn_mobile/core/constants/api_url_strings.dart';
+import 'package:unn_mobile/core/constants/session_identifier_strings.dart';
 import 'package:unn_mobile/core/misc/api_helpers/authenticated_api_helper.dart';
 import 'package:unn_mobile/core/misc/api_helpers/base_options_factory.dart';
 import 'package:unn_mobile/core/misc/api_helpers/http_methods.dart';
 
-class WebAuthenticatedApiHelper extends AuthenticatedApiHelper {
+abstract class WebAuthenticatedApiHelper extends AuthenticatedApiHelper {
   final String _baseUrl;
+  String? _dioCookie;
 
   WebAuthenticatedApiHelper({
     required baseUrl,
@@ -18,6 +22,17 @@ class WebAuthenticatedApiHelper extends AuthenticatedApiHelper {
             headers: authorizationService.headers,
           ),
         );
+
+  @override
+  @protected
+  void onAuthChanged() {
+    final currentHeaders = authorizationService.headers;
+    _dioCookie = currentHeaders?.remove('Cookie');
+    if (currentHeaders == null) {
+      return;
+    }
+    updateHeaders(currentHeaders);
+  }
 
   @override
   Future<Response> get({
@@ -56,7 +71,27 @@ class WebAuthenticatedApiHelper extends AuthenticatedApiHelper {
     Map<String, dynamic>? queryParameters,
     Options? options,
   }) async {
-    _baseUrl;
-    throw UnimplementedError();
+    final String? optionsCookie = options?.headers?.remove('Cookie');
+    final cookieString = '${_dioCookie ?? ''};${optionsCookie ?? ''}';
+    final contentType = options?.contentType ?? dio.options.contentType;
+    final csrf = dio.options.headers[SessionIdentifierStrings.csrfToken];
+    final myParams = jsonEncode({...?body, ...?queryParameters});
+
+    final temp = {
+      'MYURL': '$_baseUrl$path',
+      'MYMETHOD': httpMethod.asString,
+      'MYCONTENTTYPE': contentType,
+      'MYCOOKIE': cookieString,
+      'MYCSRF': csrf,
+      'MYPARAMS': myParams,
+    };
+
+    final x = await super.post(
+      path: '',
+      data: temp,
+      options: options,
+    );
+
+    return x;
   }
 }

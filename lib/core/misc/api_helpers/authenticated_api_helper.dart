@@ -1,18 +1,21 @@
+import 'package:flutter/material.dart';
 import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
 
 abstract class AuthenticatedApiHelper extends ApiHelper {
-  final AuthorizationService _authorizationService;
+  @protected
+  final AuthorizationService authorizationService;
 
   AuthenticatedApiHelper(
-    this._authorizationService, {
+    this.authorizationService, {
     required super.options,
   }) {
-    _authorizationService.addListener(_updateHeaders);
+    authorizationService.addListener(onAuthChanged);
   }
 
-  void _updateHeaders() {
-    final currentHeaders = _authorizationService.headers;
+  @protected
+  void onAuthChanged() {
+    final currentHeaders = authorizationService.headers;
     if (currentHeaders == null) {
       return;
     }
