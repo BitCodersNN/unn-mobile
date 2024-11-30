@@ -71,7 +71,7 @@ class ReactionManagerImpl implements ReactionManager {
           RatingListStrings.analyticsLabel: AjaxActionStrings.addLike,
           AjaxActionStrings.actionKey: AjaxActionStrings.ratingVote,
         },
-        body: body,
+        data: body,
         options: Options(
           sendTimeout: const Duration(seconds: 60),
           receiveTimeout: const Duration(seconds: 60),

@@ -3,7 +3,7 @@ import 'package:dio/dio.dart';
 BaseOptions createBaseOptions({
   required String baseUrl,
   bool useSSL = true,
-  String contentType = 'application/x-www-form-urlencoded',
+  String contentType = Headers.formUrlEncodedContentType,
   Duration sendTimeout = const Duration(seconds: 15),
   Duration receiveTimeout = const Duration(seconds: 15),
   Map<String, dynamic>? headers,

@@ -48,7 +48,7 @@ class GettingBlogPostCommentsImpl implements GettingBlogPostComments {
           AjaxActionStrings.actionKey: AjaxActionStrings.navigateComment,
           'c': AjaxActionStrings.comment,
         },
-        body: {
+        data: {
           'ENTITY_XML_ID': 'BLOG_$postId',
           'AJAX_POST': 'Y',
           'MODE': 'LIST',
