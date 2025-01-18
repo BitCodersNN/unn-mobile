@@ -75,8 +75,8 @@ class JustifyAlignTag extends WrappedStyleTag {
       WidgetSpan(
         child: SizedBox(
           width: double.infinity,
-          child: RichText(
-            text: TextSpan(children: spans),
+          child: SelectableText.rich(
+            TextSpan(children: spans),
             textAlign: TextAlign.justify,
           ),
         ),
@@ -160,8 +160,8 @@ class CodeTag extends WrappedStyleTag {
             padding: const EdgeInsets.all(8.0),
             child: SizedBox(
               width: double.infinity,
-              child: RichText(
-                text: TextSpan(children: spans),
+              child: SelectableText.rich(
+                TextSpan(children: spans),
                 textAlign: TextAlign.left,
               ),
             ),
@@ -206,8 +206,8 @@ class TableTag extends WrappedStyleTag {
           child: Column(
             children: [
               RichText(
-                textWidthBasis: TextWidthBasis.longestLine,
                 text: TextSpan(children: spans),
+                textWidthBasis: TextWidthBasis.longestLine,
               ),
             ],
           ),
@@ -345,6 +345,7 @@ class UserTag extends StyleTag {
 
 BBStylesheet getBBStyleSheet() {
   return defaultBBStylesheet()
+      .copyWith(selectableText: true)
       .replaceTag(
         UrlTag(
           onTap: (url) async {
