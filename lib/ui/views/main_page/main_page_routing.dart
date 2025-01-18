@@ -20,12 +20,14 @@ class MainPageRouteData {
   final bool isDisabled;
   final List<Type> userTypes;
   final List<MainPageRouteData> subroutes;
+  final bool onlineOnly;
 
   const MainPageRouteData(
     this.selectedIcon,
     this.unselectedIcon,
     this.pageTitle,
     this.pageRoute, {
+    this.onlineOnly = false,
     this.subroutes = const [],
     this.isDisabled = false,
     required this.userTypes,
@@ -124,6 +126,7 @@ class MainPageRouting {
       'donations',
       builder: (p0) => const DonationsScreenView(),
       userTypes: [StudentData, EmployeeData, UserData],
+      onlineOnly: true,
     ),
     MainPageRouteData(
       Icons.info,
