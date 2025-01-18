@@ -13,7 +13,7 @@ class GettingScheduleServiceImpl implements GettingScheduleService {
   final String _finish = 'finish';
   final String _lng = 'lng';
   final String _date = 'date';
-  final String _dateFormat = 'y.MM.dd H:m';
+  final String _dateFormat = 'y-MM-dd H:m';
   final String _splitPaternForStream = '|';
 
   final LoggerService _loggerService;
