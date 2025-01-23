@@ -1,5 +1,5 @@
-abstract interface class ReferenceUrlService {
-  /// Получает URL для скачивания справки (документа) на основе указанных параметров.
+abstract interface class ReferencePathService {
+  /// Получает Path для скачивания справки (документа) на основе указанных параметров.
   ///
   /// [sendtype] - обязательный параметр, определяющий тип отправляемой справки.
   /// [number] - необязательный параметр, определяющий номер справки (по умолчанию 0).
@@ -9,7 +9,7 @@ abstract interface class ReferenceUrlService {
   ///
   /// Примечание:
   /// - URL формируется на основе хост-адреса API и пути к документам.
-  Future<String?> getReferenceUrl({
+  Future<String?> getReferencePath({
     required int sendtype,
     int number = 0,
   });

@@ -2,24 +2,24 @@ import 'package:dio/dio.dart';
 import 'package:unn_mobile/core/constants/api_url_strings.dart';
 import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
-import 'package:unn_mobile/core/services/interfaces/reference/reference_url.dart';
+import 'package:unn_mobile/core/services/interfaces/reference/reference_path.dart';
 
 class _DataNames {
   static const String sendtype = 'sendtype';
   static const String num = 'num';
 }
 
-class ReferenceUrlServiceImpl implements ReferenceUrlService {
+class ReferencePathServiceImpl implements ReferencePathService {
   final LoggerService _loggerService;
   final ApiHelper _apiHelper;
 
-  ReferenceUrlServiceImpl(
+  ReferencePathServiceImpl(
     this._loggerService,
     this._apiHelper,
   );
 
   @override
-  Future<String?> getReferenceUrl({
+  Future<String?> getReferencePath({
     required int sendtype,
     int number = 0,
   }) async {
@@ -37,6 +37,6 @@ class ReferenceUrlServiceImpl implements ReferenceUrlService {
       return null;
     }
 
-    return 'https://${ApiPaths.unnHost}/${ApiPaths.spravkaDocs}/${response.data}.pdf';
+    return '${ApiPaths.spravkaDocs}/${response.data}.pdf';
   }
 }

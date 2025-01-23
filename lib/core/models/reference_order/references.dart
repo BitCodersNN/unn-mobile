@@ -20,7 +20,10 @@ class References {
       if (referenceType == _KeysForPracticesJsonConverter.practices) {
         references.addAll(_parsePracticeReferences(reference as List));
       } else if (referenceTypesInfo.containsKey(referenceType)) {
-        final referenceJson = _createReferenceJson(referenceType, reference);
+        final referenceJson = _createReferenceJson(
+          referenceType,
+          reference as String?,
+        );
         references.add(Reference.fromJson(referenceJson));
       }
     });
@@ -40,21 +43,31 @@ class References {
 
   static Map<String, Object?> _createReferenceJson(
     String referenceType,
-    Object? reference,
+    String? referenceUri,
   ) {
-    final referenceJson = Map<String, Object?>.from(referenceTypesInfo[referenceType]!);
-    referenceJson[KeysForReferenceJsonConverter.referenceUrl] = reference;
+    final referenceJson =
+        Map<String, Object?>.from(referenceTypesInfo[referenceType]!);
+
+    referenceJson[KeysForReferenceJsonConverter.referencePath] =
+        referenceUri?.isNotEmpty == true
+            ? Uri.parse(referenceUri!).path.substring(1)
+            : '';
+
     return referenceJson;
   }
 
   static Map<String, Object?> _createPracticeReferenceJson(
     Map<String, Object?> practice,
   ) {
+    final referenceUri =
+        practice[_KeysForPracticesJsonConverter.practice] as String?;
     final practiceReferenceJson = Map<String, Object?>.from(practice);
     practiceReferenceJson
         .addAll(referenceTypesInfo[_KeysForPracticesJsonConverter.practice]!);
-    practiceReferenceJson[KeysForReferenceJsonConverter.referenceUrl] =
-        practice[_KeysForPracticesJsonConverter.practice];
+    practiceReferenceJson[KeysForReferenceJsonConverter.referencePath] =
+        referenceUri?.isNotEmpty == true
+            ? Uri.parse(referenceUri!).path.substring(1)
+            : '';
     return practiceReferenceJson;
   }
 }

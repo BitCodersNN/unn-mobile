@@ -24,8 +24,6 @@ abstract class BaseFileDownloaderService implements FileDownloaderService {
     String? downloadUrl,
     bool force = false,
   }) async {
-    assert(_path != null || downloadUrl != null);
-
     final String? downloadsPath = await getDownloadPath();
     if (downloadsPath == null) {
       _loggerService.log('Download path is null');
@@ -43,7 +41,12 @@ abstract class BaseFileDownloaderService implements FileDownloaderService {
     await storedFile.parent.create(recursive: true);
     String path = '$_path/$filePath';
     Map<String, dynamic> queryParams = {};
-    if (downloadUrl != null) {
+
+    if (_path == null) {
+      path = '/$filePath';
+    }
+
+    if (downloadUrl != null && downloadUrl.isNotEmpty) {
       final uri = Uri.parse(downloadUrl);
       path = uri.path;
       queryParams = uri.queryParameters;

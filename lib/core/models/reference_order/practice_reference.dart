@@ -17,7 +17,7 @@ class PracticeReference extends Reference {
     required super.name,
     required super.sendtype,
     required super.description,
-    required super.referenceUrl,
+    required super.referencePath,
     required this.type,
     required this.practiceDateTimeRange,
     required this.num,
@@ -30,7 +30,7 @@ class PracticeReference extends Reference {
       name: reference.name,
       sendtype: reference.sendtype,
       description: reference.description,
-      referenceUrl: reference.referenceUrl,
+      referencePath: reference.referencePath,
       type: jsonMap[_KeysForPracticeReferenceJsonConverter.type] as String,
       practiceDateTimeRange: DateTimeRange(
         start: DateTime.parse(
