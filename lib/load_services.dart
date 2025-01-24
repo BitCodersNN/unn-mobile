@@ -48,8 +48,8 @@ import 'package:unn_mobile/core/services/interfaces/authorisation_refresh_servic
 import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
 import 'package:unn_mobile/core/services/interfaces/export_schedule_service.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/blog_posts.dart';
+import 'package:unn_mobile/core/services/interfaces/feed/feed_file_downloader.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/feed_updater_service.dart';
-import 'package:unn_mobile/core/services/interfaces/file_downloader.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/getting_blog_post_comments.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/getting_blog_posts.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_file_data.dart';
@@ -64,6 +64,7 @@ import 'package:unn_mobile/core/services/interfaces/loading_page/last_commit_sha
 import 'package:unn_mobile/core/services/interfaces/loading_page/last_commit_sha_provider.dart';
 import 'package:unn_mobile/core/services/interfaces/loading_page/loading_page_config.dart';
 import 'package:unn_mobile/core/services/interfaces/loading_page/loading_page_provider.dart';
+import 'package:unn_mobile/core/services/interfaces/loading_page/logo_downloader.dart';
 import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 import 'package:unn_mobile/core/services/interfaces/mark_by_subject_provider.dart';
 import 'package:unn_mobile/core/services/interfaces/offline_schedule_provider.dart';
@@ -184,19 +185,17 @@ void registerDependencies() {
     ),
   );
 
-  injector.registerSingleton<FileDownloaderService>(
+  injector.registerSingleton<LogoDownloaderService>(
     () => LogoDownloaderServiceImpl(
       injector.get<LoggerService>(),
       injector.get<GitHubRawApiHelper>(),
     ),
-    dependencyName: 'LogoDownloaderService',
   );
-  injector.registerSingleton<FileDownloaderService>(
-    () => FeedFileDownloaderImpl(
+  injector.registerSingleton<FeedFileDownloaderService>(
+    () => FeedFileDownloaderServiceImpl(
       get<LoggerService>(),
       getApiHelper(HostType.unnPortal),
     ),
-    dependencyName: 'FeedFileDownloaderService',
   );
 
   injector.registerSingleton<LastCommitShaProvider>(
@@ -401,7 +400,7 @@ void registerDependencies() {
       get<AuthorizationRefreshService>(),
       get<LastCommitShaService>(),
       get<LoadingPageConfigService>(),
-      get<FileDownloaderService>(dependencyName: 'LogoDownloaderService'),
+      get<LogoDownloaderService>(),
       get<LastCommitShaProvider>(),
       get<LoadingPageProvider>(),
       get<CurrentUserSyncStorage>(),
