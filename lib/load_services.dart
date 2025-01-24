@@ -37,6 +37,8 @@ import 'package:unn_mobile/core/services/implementations/loading_page/logo_downl
 import 'package:unn_mobile/core/services/implementations/mark_by_subject_provider_impl.dart';
 import 'package:unn_mobile/core/services/implementations/offline_schedule_provider_impl.dart';
 import 'package:unn_mobile/core/services/implementations/feed/reaction_manager_impl.dart';
+import 'package:unn_mobile/core/services/implementations/reference/reference_path_service_impl.dart';
+import 'package:unn_mobile/core/services/implementations/reference/references_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/schedule_search_history_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/search_id_on_portal_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/storage_service_impl.dart';
@@ -66,6 +68,8 @@ import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 import 'package:unn_mobile/core/services/interfaces/mark_by_subject_provider.dart';
 import 'package:unn_mobile/core/services/interfaces/offline_schedule_provider.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/reaction_manager.dart';
+import 'package:unn_mobile/core/services/interfaces/reference/reference_path.dart';
+import 'package:unn_mobile/core/services/interfaces/reference/references.dart';
 import 'package:unn_mobile/core/services/interfaces/schedule_search_history_service.dart';
 import 'package:unn_mobile/core/services/interfaces/search_id_on_portal_service.dart';
 import 'package:unn_mobile/core/services/interfaces/storage_service.dart';
@@ -339,6 +343,19 @@ void registerDependencies() {
   injector.registerSingleton<ReactionManager>(
     () => ReactionManagerImpl(
       get<CurrentUserSyncStorage>(),
+      get<LoggerService>(),
+      getApiHelper(HostType.unnPortal),
+    ),
+  );
+
+  injector.registerSingleton<ReferencesService>(
+    () => ReferencesServiceImpl(
+      get<LoggerService>(),
+      getApiHelper(HostType.unnPortal),
+    ),
+  );
+  injector.registerSingleton<ReferencePathService>(
+    () => ReferencePathServiceImpl(
       get<LoggerService>(),
       getApiHelper(HostType.unnPortal),
     ),
