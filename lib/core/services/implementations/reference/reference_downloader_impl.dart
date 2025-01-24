@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:unn_mobile/core/misc/file_helpers/file_downloader.dart';
 import 'package:unn_mobile/core/services/interfaces/reference/reference_downloader.dart';
 
-class ReferenceDownloaderServiceImpl implements ReferenceDownloaderService{
+class ReferenceDownloaderServiceImpl implements ReferenceDownloaderService {
   final FileDownloader _fileDownloader;
 
   ReferenceDownloaderServiceImpl(

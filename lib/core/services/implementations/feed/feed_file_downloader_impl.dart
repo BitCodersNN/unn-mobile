@@ -23,7 +23,8 @@ class FeedFileDownloaderServiceImpl implements FeedFileDownloaderService {
     return _fileDownloader.downloadFile(
       fileName,
       downloadUrl: downloadUrl,
-      force: force,);
+      force: force,
+    );
   }
 
   @override

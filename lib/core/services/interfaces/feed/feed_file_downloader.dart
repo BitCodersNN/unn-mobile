@@ -13,7 +13,7 @@ abstract interface class FeedFileDownloaderService {
     required String downloadUrl,
     required bool force,
   });
-  
+
   /// Загружает список файлов с именами [fileNames] по URL [downloadUrl].
   ///
   /// [fileNames] - список имен файлов для загрузки.
