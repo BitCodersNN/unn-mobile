@@ -34,6 +34,9 @@ class ApiPaths {
   /// Для получения записей из живой ленты со всей информацией
   static const String blogPostWithLoadedInfo = 'portal2/api/news.php';
 
+  /// Для получения закреплённых и важных записей из живой ленты со всей информацией
+  static const String featuredBlogPostWithLoadedInfo = 'portal2/api/importantnews.php';
+
   /// Для получения информации о файлах
   static const String diskAttachedObjectGet = 'rest/disk.attachedObject.get';
 

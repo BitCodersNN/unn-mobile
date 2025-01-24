@@ -15,7 +15,8 @@ import 'package:unn_mobile/core/services/implementations/auth_data_provider_impl
 import 'package:unn_mobile/core/services/implementations/authorisation_refresh_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/authorisation_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/export_schedule_service_impl.dart';
-import 'package:unn_mobile/core/services/implementations/feed/blog_post.dart';
+import 'package:unn_mobile/core/services/implementations/feed/featured_blog_post_impl.dart';
+import 'package:unn_mobile/core/services/implementations/feed/regular_blog_post_impl.dart';
 import 'package:unn_mobile/core/services/implementations/feed/feed_file_downloader_impl.dart';
 import 'package:unn_mobile/core/services/implementations/feed/feed_updater_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/firebase_logger.dart';
@@ -45,7 +46,8 @@ import 'package:unn_mobile/core/services/interfaces/auth_data_provider.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation_refresh_service.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
 import 'package:unn_mobile/core/services/interfaces/export_schedule_service.dart';
-import 'package:unn_mobile/core/services/interfaces/feed/blog_posts.dart';
+import 'package:unn_mobile/core/services/interfaces/feed/featured_blog_post.dart';
+import 'package:unn_mobile/core/services/interfaces/feed/regular_blog_posts.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/feed_updater_service.dart';
 import 'package:unn_mobile/core/services/interfaces/file_downloader.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/getting_blog_post_comments.dart';
@@ -257,8 +259,14 @@ void registerDependencies() {
       get<LoggerService>(),
     ),
   );
-  injector.registerDependency<BlogPostsService>(
-    () => BlogPostsServiceImpl(
+  injector.registerDependency<RegularBlogPostsService>(
+    () => RegularBlogPostsServiceImpl(
+      get<LoggerService>(),
+      getApiHelper(HostType.unnMobile),
+    ),
+  );
+  injector.registerDependency<FeaturedBlogPostService>(
+    () => FeaturedBlogPostServiceImpl(
       get<LoggerService>(),
       getApiHelper(HostType.unnMobile),
     ),

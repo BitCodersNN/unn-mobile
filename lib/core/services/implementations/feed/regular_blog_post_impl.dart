@@ -2,7 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:unn_mobile/core/constants/api_url_strings.dart';
 import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/models/feed/blog_post.dart';
-import 'package:unn_mobile/core/services/interfaces/feed/blog_posts.dart';
+import 'package:unn_mobile/core/services/interfaces/feed/regular_blog_posts.dart';
 import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 
 class _QueryParamNames {
@@ -10,17 +10,17 @@ class _QueryParamNames {
   static const perPage = 'perpage';
 }
 
-class BlogPostsServiceImpl implements BlogPostsService {
+class RegularBlogPostsServiceImpl implements RegularBlogPostsService {
   final LoggerService _loggerService;
   final ApiHelper _apiHelper;
 
-  BlogPostsServiceImpl(
+  RegularBlogPostsServiceImpl(
     this._loggerService,
     this._apiHelper,
   );
 
   @override
-  Future<List<BlogPost>?> getBlogPosts({
+  Future<List<BlogPost>?> getRegularBlogPosts({
     int pageNumber = 1,
     int postsPerPage = 20,
   }) async {
