@@ -8,7 +8,6 @@ class RatingListStrings {
   static const String ratingVoteAction = 'params[RATING_VOTE_ACTION]';
   static const String valueOfpathToUserProfile =
       '/company/personal/user/#user_id#/';
-  static const String analyticsLabel = 'analyticsLabel[b24statAction]';
   static const String plus = 'plus';
   static const String cancel = 'cancel';
 }

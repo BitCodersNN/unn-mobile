@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:unn_mobile/core/constants/api_url_strings.dart';
 import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
@@ -42,7 +44,7 @@ class RegularBlogPostsServiceImpl implements RegularBlogPostsService {
       return null;
     }
 
-    final blogPosts = _parseBlogPostsFromJsonList(response.data);
+    final blogPosts = _parseBlogPostsFromJsonList(jsonDecode(response.data));
 
     return blogPosts;
   }

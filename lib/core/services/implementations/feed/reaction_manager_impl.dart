@@ -68,7 +68,7 @@ class ReactionManagerImpl implements ReactionManager {
       response = await _apiHelper.post(
         path: ApiPaths.ajax,
         queryParameters: {
-          RatingListStrings.analyticsLabel: AjaxActionStrings.addLike,
+          AnalyticsLabel.b24statAction: AnalyticsLabel.addLike,
           AjaxActionStrings.actionKey: AjaxActionStrings.ratingVote,
         },
         data: body,

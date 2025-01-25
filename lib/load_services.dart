@@ -16,6 +16,7 @@ import 'package:unn_mobile/core/services/implementations/authorisation_refresh_s
 import 'package:unn_mobile/core/services/implementations/authorisation_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/export_schedule_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/feed/featured_blog_post_impl.dart';
+import 'package:unn_mobile/core/services/implementations/feed/pinning_blog_post_impl.dart';
 import 'package:unn_mobile/core/services/implementations/feed/regular_blog_post_impl.dart';
 import 'package:unn_mobile/core/services/implementations/feed/feed_file_downloader_impl.dart';
 import 'package:unn_mobile/core/services/implementations/feed/feed_updater_service_impl.dart';
@@ -47,6 +48,7 @@ import 'package:unn_mobile/core/services/interfaces/authorisation_refresh_servic
 import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
 import 'package:unn_mobile/core/services/interfaces/export_schedule_service.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/featured_blog_post.dart';
+import 'package:unn_mobile/core/services/interfaces/feed/pinning_blog_post.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/regular_blog_posts.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/feed_updater_service.dart';
 import 'package:unn_mobile/core/services/interfaces/file_downloader.dart';
@@ -267,6 +269,12 @@ void registerDependencies() {
   );
   injector.registerDependency<FeaturedBlogPostService>(
     () => FeaturedBlogPostServiceImpl(
+      get<LoggerService>(),
+      getApiHelper(HostType.unnMobile),
+    ),
+  );
+  injector.registerDependency<PinningBlogPostService>(
+    () => PinningBlogPostServiceImpl(
       get<LoggerService>(),
       getApiHelper(HostType.unnMobile),
     ),
