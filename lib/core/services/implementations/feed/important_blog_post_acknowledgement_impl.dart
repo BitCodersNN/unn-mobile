@@ -2,55 +2,34 @@ import 'package:dio/dio.dart';
 import 'package:unn_mobile/core/constants/api_url_strings.dart';
 import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/misc/blog_post_response_validator.dart';
-import 'package:unn_mobile/core/services/interfaces/feed/pinning_blog_post.dart';
+import 'package:unn_mobile/core/services/interfaces/feed/important_blog_post_acknowledgement.dart';
 import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 
 class _DataKeys {
-  static const String logId = 'params[logId]';
+  static const String postId = 'params[POST_ID]';
 }
 
-class PinningBlogPostServiceImpl implements PinningBlogPostService {
+class ImportantBlogPostAcknowledgementServiceImpl
+    implements ImportantBlogPostAcknowledgementService {
   final LoggerService _loggerService;
   final ApiHelper _apiHelper;
 
-  PinningBlogPostServiceImpl(
+  ImportantBlogPostAcknowledgementServiceImpl(
     this._loggerService,
     this._apiHelper,
   );
 
   @override
-  Future<bool> pin(int pinnedId) async {
-    return await _updatePostPinStatus(
-      pinnedId,
-      AnalyticsLabel.pinBlogPost,
-      AjaxActionStrings.pinBlogPost,
-    );
-  }
-
-  @override
-  Future<bool> unpin(int pinnedId) async {
-    return await _updatePostPinStatus(
-      pinnedId,
-      AnalyticsLabel.unpinBlogPost,
-      AjaxActionStrings.unpinBlogPost,
-    );
-  }
-
-  Future<bool> _updatePostPinStatus(
-    int pinnedId,
-    String b24statAction,
-    String actionKey,
-  ) async {
+  Future<bool> read(int postId) async {
     Response response;
     try {
       response = await _apiHelper.post(
         path: ApiPaths.ajax,
         queryParameters: {
-          AnalyticsLabel.b24statAction: b24statAction,
-          AjaxActionStrings.actionKey: actionKey,
+          AjaxActionStrings.actionKey: AjaxActionStrings.readImportantBlogPost,
         },
         data: {
-          _DataKeys.logId: pinnedId,
+          _DataKeys.postId: postId,
         },
         options: Options(
           sendTimeout: const Duration(seconds: 10),
@@ -61,7 +40,6 @@ class PinningBlogPostServiceImpl implements PinningBlogPostService {
       _loggerService.log('Exception: $error\nStackTrace: $stackTrace');
       return false;
     }
-
     return BlogPostResponseValidator.validate(response.data, _loggerService);
   }
 }

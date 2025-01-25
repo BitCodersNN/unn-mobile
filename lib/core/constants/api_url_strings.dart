@@ -85,6 +85,9 @@ class AjaxActionStrings {
   /// Для открепления поста в живой ленте
   static const String unpinBlogPost =
       'socialnetwork.api.livefeed.logentry.unpin';
+
+  static const String readImportantBlogPost =
+      'socialnetwork.api.livefeed.blogpost.important.vote';
 }
 
 class AnalyticsLabel {
