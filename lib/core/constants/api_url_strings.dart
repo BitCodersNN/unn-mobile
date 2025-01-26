@@ -86,8 +86,13 @@ class AjaxActionStrings {
   static const String unpinBlogPost =
       'socialnetwork.api.livefeed.logentry.unpin';
 
+  /// Для прочтения важного сообщения
   static const String readImportantBlogPost =
       'socialnetwork.api.livefeed.blogpost.important.vote';
+
+  /// Для просмотра пользователей, прочитавших важное сообщение
+  static const String importantBlogPostUsers =
+      'socialnetwork.api.livefeed.blogpost.important.getUsers';
 }
 
 class AnalyticsLabel {

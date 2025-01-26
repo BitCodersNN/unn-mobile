@@ -2,7 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:unn_mobile/core/constants/api_url_strings.dart';
 import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/misc/blog_post_response_validator.dart';
-import 'package:unn_mobile/core/services/interfaces/feed/important_blog_post_acknowledgement.dart';
+import 'package:unn_mobile/core/services/interfaces/feed/featured_blog_post_action/important_blog_post_acknowledgement.dart';
 import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 
 class _DataKeys {
@@ -40,6 +40,6 @@ class ImportantBlogPostAcknowledgementServiceImpl
       _loggerService.log('Exception: $error\nStackTrace: $stackTrace');
       return false;
     }
-    return BlogPostResponseValidator.validate(response.data, _loggerService);
+    return FeedResponseValidator.validate(response.data, _loggerService);
   }
 }

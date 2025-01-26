@@ -16,12 +16,12 @@ class _KeysForReactionManagerJsonConverter {
   static const String src = 'SRC';
 }
 
-class ReactionManagerImpl implements ReactionManager {
+class ReactionServiceImpl implements ReactionService {
   final LoggerService _loggerService;
   final CurrentUserSyncStorage _currentUserSync;
   final ApiHelper _apiHelper;
 
-  ReactionManagerImpl(
+  ReactionServiceImpl(
     this._currentUserSync,
     this._loggerService,
     this._apiHelper,

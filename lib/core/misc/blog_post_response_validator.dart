@@ -7,7 +7,7 @@ class _ResponseDataJsonKeys {
   static const String message = 'message';
 }
 
-class BlogPostResponseValidator {
+class FeedResponseValidator {
   static bool validate(
     Map<String, dynamic> responseData,
     LoggerService loggerService,

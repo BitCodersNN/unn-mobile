@@ -1,7 +1,7 @@
 import 'package:unn_mobile/core/models/rating_list.dart';
 import 'package:unn_mobile/core/models/user_short_info.dart';
 
-abstract interface class ReactionManager {
+abstract interface class ReactionService {
   /// Добавление реакции
   ///
   /// [ReactionType] reactionType: тип реакции
