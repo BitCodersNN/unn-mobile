@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:dio/dio.dart';
+import 'package:unn_mobile/core/constants/regular_expressions.dart';
 import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/misc/file_helpers/file_functions.dart';
 import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
@@ -137,7 +138,10 @@ class FileDownloader {
   String _buildRequestPath(String? downloadUrl, String fileName) {
     return downloadUrl?.isNotEmpty == true
         ? Uri.parse(downloadUrl!).path
-        : '${_basePath ?? ''}/$fileName'.replaceAll(RegExp(r'^/+'), '/');
+        : '${_basePath ?? ''}/$fileName'.replaceAll(
+            RegularExpressions.leadingSlashesRegExp,
+            '/',
+          );
   }
 
   Map<String, String> _extractQueryParameters(String? downloadUrl) {
