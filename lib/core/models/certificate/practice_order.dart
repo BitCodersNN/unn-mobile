@@ -17,20 +17,20 @@ class PracticeOrder extends Certificate {
     required super.name,
     required super.sendtype,
     required super.description,
-    required super.referencePath,
+    required super.certificatePath,
     required this.type,
     required this.practiceDateTimeRange,
     required this.num,
   });
 
   factory PracticeOrder.fromJson(Map<String, Object?> jsonMap) {
-    final reference = Certificate.fromJson(jsonMap);
+    final certificate = Certificate.fromJson(jsonMap);
 
     return PracticeOrder(
-      name: reference.name,
-      sendtype: reference.sendtype,
-      description: reference.description,
-      referencePath: reference.referencePath,
+      name: certificate.name,
+      sendtype: certificate.sendtype,
+      description: certificate.description,
+      certificatePath: certificate.certificatePath,
       type: jsonMap[_KeysForPracticeOrderJsonConverter.type] as String,
       practiceDateTimeRange: DateTimeRange(
         start: DateTime.parse(

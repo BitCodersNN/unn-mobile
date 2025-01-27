@@ -8,65 +8,65 @@ class _KeysForCertificatesJsonConverter {
 }
 
 class Certificates {
-  final List<Certificate> references;
+  final List<Certificate> certificates;
 
-  Certificates._({required this.references});
+  Certificates._({required this.certificates});
 
-  Certificates.empty() : this._(references: []);
+  Certificates.empty() : this._(certificates: []);
 
   factory Certificates.fromJson(Map<String, Object?> jsonMap) {
-    final references = <Certificate>[];
-    jsonMap.forEach((referenceType, reference) {
-      if (referenceType == _KeysForCertificatesJsonConverter.practices) {
-        references.addAll(_parsePracticeReferences(reference as List));
-      } else if (certificateTypesInfo.containsKey(referenceType)) {
-        final referenceJson = _createReferenceJson(
-          referenceType,
-          reference as String?,
+    final certificates = <Certificate>[];
+    jsonMap.forEach((certificateType, certificate) {
+      if (certificateType == _KeysForCertificatesJsonConverter.practices) {
+        certificates.addAll(_parsePracticeCertificates(certificate as List));
+      } else if (certificateTypesInfo.containsKey(certificateType)) {
+        final certificateJson = _createCertificateJson(
+          certificateType,
+          certificate as String?,
         );
-        references.add(Certificate.fromJson(referenceJson));
+        certificates.add(Certificate.fromJson(certificateJson));
       }
     });
-    return Certificates._(references: references);
+    return Certificates._(certificates: certificates);
   }
 
-  static List<Certificate> _parsePracticeReferences(List<dynamic> practices) {
+  static List<Certificate> _parsePracticeCertificates(List<dynamic> practices) {
     return practices
         .whereType<Map<String, Object?>>()
         .map(
           (practice) => PracticeOrder.fromJson(
-            _createPracticeReferenceJson(practice),
+            _createPracticeCertificateJson(practice),
           ),
         )
         .toList();
   }
 
-  static Map<String, Object?> _createReferenceJson(
-    String referenceType,
-    String? referenceUri,
+  static Map<String, Object?> _createCertificateJson(
+    String certificateType,
+    String? certificateUri,
   ) {
-    final referenceJson =
-        Map<String, Object?>.from(certificateTypesInfo[referenceType]!);
+    final certificateJson =
+        Map<String, Object?>.from(certificateTypesInfo[certificateType]!);
 
-    referenceJson[KeysForCertificateJsonConverter.referencePath] =
-        referenceUri?.isNotEmpty == true
-            ? Uri.parse(referenceUri!).path.substring(1)
+    certificateJson[KeysForCertificateJsonConverter.certificatePath] =
+        certificateUri?.isNotEmpty == true
+            ? Uri.parse(certificateUri!).path.substring(1)
             : '';
 
-    return referenceJson;
+    return certificateJson;
   }
 
-  static Map<String, Object?> _createPracticeReferenceJson(
+  static Map<String, Object?> _createPracticeCertificateJson(
     Map<String, Object?> practice,
   ) {
-    final referenceUri =
+    final certificateUri =
         practice[_KeysForCertificatesJsonConverter.practice] as String?;
     final practiceReferenceJson = Map<String, Object?>.from(practice);
-    practiceReferenceJson
-        .addAll(certificateTypesInfo[_KeysForCertificatesJsonConverter.practice]!);
-    practiceReferenceJson[KeysForCertificateJsonConverter.referencePath] =
-        referenceUri?.isNotEmpty == true
-            ? Uri.parse(referenceUri!).path.substring(1)
+    practiceReferenceJson.addAll(
+        certificateTypesInfo[_KeysForCertificatesJsonConverter.practice]!);
+    practiceReferenceJson[KeysForCertificateJsonConverter.certificatePath] =
+        certificateUri?.isNotEmpty == true
+            ? Uri.parse(certificateUri!).path.substring(1)
             : '';
     return practiceReferenceJson;
   }
