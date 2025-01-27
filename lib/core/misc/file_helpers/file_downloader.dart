@@ -136,7 +136,7 @@ class FileDownloader {
   }
 
   String _buildRequestPath(String? downloadUrl, String fileName) {
-    return downloadUrl?.isNotEmpty == true
+    return downloadUrl?.isNotEmpty ?? false
         ? Uri.parse(downloadUrl!).path
         : '${_basePath ?? ''}/$fileName'.replaceAll(
             RegularExpressions.leadingSlashesRegExp,
@@ -145,7 +145,7 @@ class FileDownloader {
   }
 
   Map<String, String> _extractQueryParameters(String? downloadUrl) {
-    return downloadUrl != null && downloadUrl.isNotEmpty
+    return downloadUrl?.isNotEmpty ?? false
         ? Uri.parse(downloadUrl).queryParameters
         : <String, String>{};
   }
