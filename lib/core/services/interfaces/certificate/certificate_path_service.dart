@@ -1,4 +1,4 @@
-abstract interface class ReferencePathService {
+abstract interface class CertificatePathService {
   /// Получает Path для скачивания справки (документа) на основе указанных параметров.
   ///
   /// [sendtype] - обязательный параметр, определяющий тип отправляемой справки.
@@ -9,7 +9,7 @@ abstract interface class ReferencePathService {
   ///
   /// Примечание:
   /// - URL формируется на основе хост-адреса API и пути к документам.
-  Future<String?> getReferencePath({
+  Future<String?> getCertificatePath({
     required int sendtype,
     int number = 0,
   });

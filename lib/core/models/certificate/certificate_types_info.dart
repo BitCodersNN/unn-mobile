@@ -1,4 +1,4 @@
-const Map<String, Map<String, Object>> referenceTypesInfo = {
+const Map<String, Map<String, Object>> certificateTypesInfo = {
   'spravka': {
     'name': 'Справка об обучении',
     'sendtype': 1,

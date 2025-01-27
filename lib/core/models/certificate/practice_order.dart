@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:unn_mobile/core/models/reference_order/reference.dart';
+import 'package:unn_mobile/core/models/certificate/certificate.dart';
 
-class _KeysForPracticeReferenceJsonConverter {
+class _KeysForPracticeOrderJsonConverter {
   static const String type = 'type';
   static const String date1 = 'date1';
   static const String date2 = 'date2';
   static const String num = 'num';
 }
 
-class PracticeReference extends Reference {
+class PracticeOrder extends Certificate {
   final String type;
   final DateTimeRange practiceDateTimeRange;
   final int num;
 
-  PracticeReference({
+  PracticeOrder({
     required super.name,
     required super.sendtype,
     required super.description,
@@ -23,35 +23,35 @@ class PracticeReference extends Reference {
     required this.num,
   });
 
-  factory PracticeReference.fromJson(Map<String, Object?> jsonMap) {
-    final reference = Reference.fromJson(jsonMap);
+  factory PracticeOrder.fromJson(Map<String, Object?> jsonMap) {
+    final reference = Certificate.fromJson(jsonMap);
 
-    return PracticeReference(
+    return PracticeOrder(
       name: reference.name,
       sendtype: reference.sendtype,
       description: reference.description,
       referencePath: reference.referencePath,
-      type: jsonMap[_KeysForPracticeReferenceJsonConverter.type] as String,
+      type: jsonMap[_KeysForPracticeOrderJsonConverter.type] as String,
       practiceDateTimeRange: DateTimeRange(
         start: DateTime.parse(
-          jsonMap[_KeysForPracticeReferenceJsonConverter.date1] as String,
+          jsonMap[_KeysForPracticeOrderJsonConverter.date1] as String,
         ),
         end: DateTime.parse(
-          jsonMap[_KeysForPracticeReferenceJsonConverter.date2] as String,
+          jsonMap[_KeysForPracticeOrderJsonConverter.date2] as String,
         ),
       ),
-      num: jsonMap[_KeysForPracticeReferenceJsonConverter.num] as int,
+      num: jsonMap[_KeysForPracticeOrderJsonConverter.num] as int,
     );
   }
 
   @override
   Map<String, dynamic> toJson() => {
         ...super.toJson(),
-        _KeysForPracticeReferenceJsonConverter.type: type,
-        _KeysForPracticeReferenceJsonConverter.date1:
+        _KeysForPracticeOrderJsonConverter.type: type,
+        _KeysForPracticeOrderJsonConverter.date1:
             practiceDateTimeRange.start.toIso8601String(),
-        _KeysForPracticeReferenceJsonConverter.date2:
+        _KeysForPracticeOrderJsonConverter.date2:
             practiceDateTimeRange.end.toIso8601String(),
-        _KeysForPracticeReferenceJsonConverter.num: num,
+        _KeysForPracticeOrderJsonConverter.num: num,
       };
 }
