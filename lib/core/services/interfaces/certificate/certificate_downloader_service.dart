@@ -1,10 +1,10 @@
 import 'dart:io';
 
-abstract interface class ReferenceDownloaderService {
+abstract interface class CertificateDownloaderService {
   /// Загружает справочный файл с указанным именем [fileName].
   ///
   /// [fileName] - имя файла, который нужно загрузить.
   ///
-  /// Возвращает [File], если загрузка прошла успешно, или `null`, если произошла ошибка.
+  /// Возвращает [File], если загрузка прошла успешно, или null, если произошла ошибка.
   Future<File?> downloadFile(String fileName);
 }
