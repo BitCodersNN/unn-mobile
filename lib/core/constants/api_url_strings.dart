@@ -54,6 +54,15 @@ class ApiPaths {
 
   /// Для получения зачетной книжки
   static const String marks = 'bitrix/vuz/api/marks2';
+
+  /// Для получения информации о справках
+  static const String spravka = 'spravka/json.php';
+
+  /// Для получения справки
+  static const String createSpravka = 'spravka/create.php';
+
+  /// Для скачивания справки
+  static const String spravkaDocs = 'spravka/docs';
 }
 
 class AjaxActionStrings {
