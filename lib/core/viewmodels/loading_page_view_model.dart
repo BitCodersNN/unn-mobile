@@ -15,7 +15,7 @@ import 'package:unn_mobile/core/services/interfaces/loading_page/last_commit_sha
 import 'package:unn_mobile/core/services/interfaces/loading_page/last_commit_sha_provider.dart';
 import 'package:unn_mobile/core/services/interfaces/loading_page/loading_page_config.dart';
 import 'package:unn_mobile/core/services/interfaces/loading_page/loading_page_provider.dart';
-import 'package:unn_mobile/core/services/interfaces/loading_page/logo_downloader.dart';
+import 'package:unn_mobile/core/services/interfaces/loading_page/logo_downloader_service.dart';
 import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 import 'package:unn_mobile/core/services/interfaces/user_data_provider.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';

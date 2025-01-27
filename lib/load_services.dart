@@ -17,7 +17,7 @@ import 'package:unn_mobile/core/services/implementations/authorisation_service_i
 import 'package:unn_mobile/core/services/implementations/certificate/certificate_downloader_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/export_schedule_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/feed/blog_post.dart';
-import 'package:unn_mobile/core/services/implementations/feed/feed_file_downloader_impl.dart';
+import 'package:unn_mobile/core/services/implementations/feed/feed_file_downloader_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/feed/feed_updater_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/firebase_logger.dart';
 import 'package:unn_mobile/core/services/implementations/feed/legacy/getting_blog_post_comments_impl.dart';
@@ -34,7 +34,7 @@ import 'package:unn_mobile/core/services/implementations/loading_page/last_commi
 import 'package:unn_mobile/core/services/implementations/loading_page/last_commit_sha_provider_impl.dart';
 import 'package:unn_mobile/core/services/implementations/loading_page/loading_page_config.dart';
 import 'package:unn_mobile/core/services/implementations/loading_page/loading_page_provider_impl.dart';
-import 'package:unn_mobile/core/services/implementations/loading_page/logo_downloader_impl.dart';
+import 'package:unn_mobile/core/services/implementations/loading_page/logo_downloader_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/mark_by_subject_provider_impl.dart';
 import 'package:unn_mobile/core/services/implementations/offline_schedule_provider_impl.dart';
 import 'package:unn_mobile/core/services/implementations/feed/reaction_manager_impl.dart';
@@ -50,7 +50,7 @@ import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
 import 'package:unn_mobile/core/services/interfaces/certificate/certificate_downloader_service.dart';
 import 'package:unn_mobile/core/services/interfaces/export_schedule_service.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/blog_posts.dart';
-import 'package:unn_mobile/core/services/interfaces/feed/feed_file_downloader.dart';
+import 'package:unn_mobile/core/services/interfaces/feed/feed_file_downloader_service.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/feed_updater_service.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/getting_blog_post_comments.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/getting_blog_posts.dart';
@@ -66,7 +66,7 @@ import 'package:unn_mobile/core/services/interfaces/loading_page/last_commit_sha
 import 'package:unn_mobile/core/services/interfaces/loading_page/last_commit_sha_provider.dart';
 import 'package:unn_mobile/core/services/interfaces/loading_page/loading_page_config.dart';
 import 'package:unn_mobile/core/services/interfaces/loading_page/loading_page_provider.dart';
-import 'package:unn_mobile/core/services/interfaces/loading_page/logo_downloader.dart';
+import 'package:unn_mobile/core/services/interfaces/loading_page/logo_downloader_service.dart';
 import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 import 'package:unn_mobile/core/services/interfaces/mark_by_subject_provider.dart';
 import 'package:unn_mobile/core/services/interfaces/offline_schedule_provider.dart';

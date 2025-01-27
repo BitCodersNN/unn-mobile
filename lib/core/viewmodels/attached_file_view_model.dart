@@ -4,7 +4,7 @@ import 'package:injector/injector.dart';
 import 'package:path/path.dart' as path;
 import 'package:unn_mobile/core/misc/file_helpers/size_converter.dart';
 import 'package:unn_mobile/core/models/file_data.dart';
-import 'package:unn_mobile/core/services/interfaces/feed/feed_file_downloader.dart';
+import 'package:unn_mobile/core/services/interfaces/feed/feed_file_downloader_service.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_file_data.dart';
 import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
