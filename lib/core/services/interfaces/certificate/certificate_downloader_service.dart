@@ -1,7 +1,7 @@
 import 'dart:io';
 
 abstract interface class CertificateDownloaderService {
-  /// Загружает справочный файл с указанным именем [fileName].
+  /// Загружает файл справки с указанным именем [fileName].
   ///
   /// [fileName] - имя файла, который нужно загрузить.
   ///
