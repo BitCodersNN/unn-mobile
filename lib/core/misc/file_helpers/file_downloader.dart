@@ -7,30 +7,39 @@ import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 class FileDownloader {
   final LoggerService _loggerService;
   final ApiHelper _apiHelper;
+  final String? _downloadFolderName;
   final String? _basePath;
 
   /// Создает экземпляр [FileDownloader].
   ///
   /// [LoggerService] - сервис для логирования ошибок и информации.
   /// [ApiHelper] - помощник для выполнения HTTP-запросов.
+  /// [downloadFolderName] - название папки, в которую будут загружаться файлы (опционально).
+  ///   Если не указано, файлы будут сохраняться в корневую директорию загрузок.
   /// [basePath] - базовый путь для загрузки файлов (опционально).
   /// [cookies] - cookies, которые могут быть использованы при запросах (опционально).
   FileDownloader(
     this._loggerService,
     this._apiHelper, {
+    String? downloadFolderName,
     String? basePath,
     Map<String, String> cookies = const {},
-  }) : _basePath = basePath;
+  })  : _downloadFolderName = downloadFolderName,
+        _basePath = basePath;
 
   /// Загружает файл с указанным именем [fileName].
   ///
   /// [fileName] - имя файла, который нужно загрузить.
-  /// [downloadUrl] - URL для загрузки файла (опционально). Если не указан, используется [_basePath].
+  /// [downloadFolderName] - название папки, в которую будут загружаться файл (опционально).
+  ///   Если не указан, используется [_downloadFolderName]
+  /// [downloadUrl] - URL для загрузки файла (опционально).
+  ///   Если не указан, используется [_basePath].
   /// [force] - если `true`, файл будет загружен повторно, даже если он уже существует.
   ///
   /// Возвращает [File], если загрузка прошла успешно, или `null`, если произошла ошибка.
   Future<File?> downloadFile(
     String fileName, {
+    String? downloadFolderName,
     String? downloadUrl,
     bool force = false,
   }) async {
@@ -40,8 +49,13 @@ class FileDownloader {
       return null;
     }
 
-    final shortenedFileName = shortenFileName(fileName);
-    final storedFile = File('$downloadsPath/$shortenedFileName');
+    final String filePath = _buildFilePath(
+      downloadsPath,
+      fileName,
+      downloadFolderName,
+    );
+
+    final storedFile = File(filePath);
 
     if (!force && await storedFile.exists()) {
       return storedFile;
@@ -49,21 +63,11 @@ class FileDownloader {
 
     await storedFile.parent.create(recursive: true);
 
-    final path = downloadUrl != null && downloadUrl.isNotEmpty
-        ? Uri.parse(downloadUrl).path
-        : _basePath != null
-            ? '$_basePath/$fileName'
-            : '/$fileName';
-
-    final queryParams = downloadUrl != null && downloadUrl.isNotEmpty
-        ? Uri.parse(downloadUrl).queryParameters
-        : <String, String>{};
-
     Response response;
     try {
       response = await _apiHelper.get(
-        path: path,
-        queryParameters: queryParams,
+        path: _buildRequestPath(downloadUrl, fileName),
+        queryParameters: _extractQueryParameters(downloadUrl),
         options: Options(responseType: ResponseType.bytes),
       );
     } catch (error, stackTrace) {
@@ -112,5 +116,33 @@ class FileDownloader {
     }
 
     return fileList;
+  }
+
+  String _buildFilePath(
+    String downloadsPath,
+    String fileName,
+    String? downloadFolderName,
+  ) {
+    final String shortenedFileName = shortenFileName(fileName);
+
+    if (downloadFolderName?.isNotEmpty ?? false) {
+      return '$downloadsPath/$downloadFolderName/$shortenedFileName';
+    }
+    if (_downloadFolderName?.isNotEmpty ?? false) {
+      return '$downloadsPath/$_downloadFolderName/$shortenedFileName';
+    }
+    return '$downloadsPath/$shortenedFileName';
+  }
+
+  String _buildRequestPath(String? downloadUrl, String fileName) {
+    return downloadUrl?.isNotEmpty == true
+        ? Uri.parse(downloadUrl!).path
+        : '${_basePath ?? ''}/$fileName'.replaceAll(RegExp(r'^/+'), '/');
+  }
+
+  Map<String, String> _extractQueryParameters(String? downloadUrl) {
+    return downloadUrl != null && downloadUrl.isNotEmpty
+        ? Uri.parse(downloadUrl).queryParameters
+        : <String, String>{};
   }
 }

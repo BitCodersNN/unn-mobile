@@ -12,6 +12,7 @@ class FeedFileDownloaderServiceImpl implements FeedFileDownloaderService {
   ) : _fileDownloader = FileDownloader(
           loggerService,
           apiHelper,
+          downloadFolderName: 'feed',
         );
 
   @override

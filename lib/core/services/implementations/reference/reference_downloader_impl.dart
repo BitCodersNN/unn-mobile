@@ -12,6 +12,7 @@ class ReferenceDownloaderServiceImpl implements ReferenceDownloaderService {
   ) : _fileDownloader = FileDownloader(
           loggerService,
           apiHelper,
+          downloadFolderName: 'certificate',
         );
 
   @override

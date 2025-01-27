@@ -13,6 +13,7 @@ class LogoDownloaderServiceImpl implements LogoDownloaderService {
   ) : _fileDownloader = FileDownloader(
           loggerService,
           apiHelper,
+          downloadFolderName: 'logos',
           basePath: '${ApiPaths.gitRepository}/main',
         );
 
