@@ -146,7 +146,7 @@ class FileDownloader {
 
   Map<String, String> _extractQueryParameters(String? downloadUrl) {
     return downloadUrl?.isNotEmpty ?? false
-        ? Uri.parse(downloadUrl).queryParameters
+        ? Uri.parse(downloadUrl!).queryParameters
         : <String, String>{};
   }
 }
