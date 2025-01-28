@@ -10,12 +10,12 @@ import 'package:unn_mobile/core/misc/date_time_extensions.dart';
 import 'package:unn_mobile/core/models/loading_page_data.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation_refresh_service.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
-import 'package:unn_mobile/core/services/interfaces/file_downloader.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_profile_of_current_user_service.dart';
 import 'package:unn_mobile/core/services/interfaces/loading_page/last_commit_sha.dart';
 import 'package:unn_mobile/core/services/interfaces/loading_page/last_commit_sha_provider.dart';
 import 'package:unn_mobile/core/services/interfaces/loading_page/loading_page_config.dart';
 import 'package:unn_mobile/core/services/interfaces/loading_page/loading_page_provider.dart';
+import 'package:unn_mobile/core/services/interfaces/loading_page/logo_downloader_service.dart';
 import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 import 'package:unn_mobile/core/services/interfaces/user_data_provider.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
@@ -26,7 +26,7 @@ class LoadingPageViewModel extends BaseViewModel {
   final AuthorizationRefreshService _initializingApplicationService;
   final LastCommitShaService _lastCommitShaService;
   final LoadingPageConfigService _loadingPageConfigService;
-  final FileDownloaderService _logoDownloaderService;
+  final LogoDownloaderService _logoDownloaderService;
   final LastCommitShaProvider _lastCommitShaProvider;
   final LoadingPageProvider _loadingPageProvider;
   final CurrentUserSyncStorage _typeOfCurrentUser;
@@ -167,7 +167,7 @@ class LoadingPageViewModel extends BaseViewModel {
     await Future.wait([
       _loadingPageProvider.saveData(loadingPagesConfig),
       _logoDownloaderService.downloadFiles(
-        loadingPagesConfig.map((model) => model.imagePath).toList(),
+        fileNames: loadingPagesConfig.map((model) => model.imagePath).toList(),
       ),
     ]);
   }
