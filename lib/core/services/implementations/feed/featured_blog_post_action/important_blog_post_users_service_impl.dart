@@ -3,7 +3,7 @@ import 'package:unn_mobile/core/constants/api_url_strings.dart';
 import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/misc/blog_post_response_validator.dart';
 import 'package:unn_mobile/core/models/user_short_info.dart';
-import 'package:unn_mobile/core/services/interfaces/feed/featured_blog_post_action/important_blog_post_users.dart';
+import 'package:unn_mobile/core/services/interfaces/feed/featured_blog_post_action/important_blog_post_users_service.dart';
 import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 
 class _DataKeys {
