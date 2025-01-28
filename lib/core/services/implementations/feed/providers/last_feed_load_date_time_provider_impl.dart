@@ -1,9 +1,11 @@
 import 'package:unn_mobile/core/services/interfaces/feed/providers/last_feed_load_date_time_provider.dart';
 import 'package:unn_mobile/core/services/interfaces/storage_service.dart';
 
-class LastFeedLoadDateTimeProviderImpl implements LastFeedLoadDateTimeProvider {
-  static const String _feedTimeStorageKey = 'lastFeedLoadDateTime';
+class _LastFeedLoadDateTimeProviderKeys {
+  static const String feedTimeStorageKey = 'lastFeedLoadDateTime';
+}
 
+class LastFeedLoadDateTimeProviderImpl implements LastFeedLoadDateTimeProvider {
   final StorageService _storage;
 
   DateTime? _storedTime;
@@ -19,19 +21,24 @@ class LastFeedLoadDateTimeProviderImpl implements LastFeedLoadDateTimeProvider {
       return null;
     }
     return _storedTime = DateTime.tryParse(
-      (await _storage.read(key: _feedTimeStorageKey)) ?? '_',
+      (await _storage.read(
+            key: _LastFeedLoadDateTimeProviderKeys.feedTimeStorageKey,
+          )) ??
+          '_',
     );
   }
 
   @override
   Future<bool> isContained() async {
-    return await _storage.containsKey(key: _feedTimeStorageKey);
+    return await _storage.containsKey(
+      key: _LastFeedLoadDateTimeProviderKeys.feedTimeStorageKey,
+    );
   }
 
   @override
   Future<void> saveData(DateTime? data) async {
     _storage.write(
-      key: _feedTimeStorageKey,
+      key: _LastFeedLoadDateTimeProviderKeys.feedTimeStorageKey,
       value: data?.toIso8601String() ?? '_',
     );
     _storedTime = data;

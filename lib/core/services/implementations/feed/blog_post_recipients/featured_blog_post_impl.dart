@@ -46,7 +46,7 @@ class FeaturedBlogPostServiceImpl implements FeaturedBlogPostService {
     for (final jsonMap in jsonList) {
       BlogPost blogPost;
       try {
-        blogPost = BlogPost.fromJsonPortal2(jsonMap);
+        blogPost = BlogPost.fromJson(jsonMap);
       } catch (error, stackTrace) {
         _loggerService.logError(error, stackTrace);
         return null;

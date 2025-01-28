@@ -10,6 +10,7 @@ import 'package:unn_mobile/core/misc/api_helpers/final/web_unn_mobile_api_helper
 import 'package:unn_mobile/core/misc/api_helpers/final/web_unn_portal_api_helper.dart';
 import 'package:unn_mobile/core/misc/app_open_tracker.dart';
 import 'package:unn_mobile/core/misc/current_user_sync_storage.dart';
+import 'package:unn_mobile/core/models/feed/blog_post_type.dart';
 import 'package:unn_mobile/core/models/online_status_data.dart';
 import 'package:unn_mobile/core/services/implementations/auth_data_provider_impl.dart';
 import 'package:unn_mobile/core/services/implementations/authorisation_refresh_service_impl.dart';
@@ -23,6 +24,7 @@ import 'package:unn_mobile/core/services/implementations/feed/featured_blog_post
 import 'package:unn_mobile/core/services/implementations/feed/featured_blog_post_action/important_blog_post_users_impl.dart';
 import 'package:unn_mobile/core/services/implementations/feed/featured_blog_post_action/pinning_blog_post_impl.dart';
 import 'package:unn_mobile/core/services/implementations/feed/feed_file_downloader_service_impl.dart';
+import 'package:unn_mobile/core/services/implementations/feed/providers/blog_post_provider_impl.dart';
 import 'package:unn_mobile/core/services/implementations/firebase_logger.dart';
 import 'package:unn_mobile/core/services/implementations/feed/legacy/getting_blog_post_comments_impl.dart';
 import 'package:unn_mobile/core/services/implementations/feed/legacy/getting_blog_posts_impl.dart';
@@ -62,6 +64,7 @@ import 'package:unn_mobile/core/services/interfaces/feed/blog_post_recipients/fe
 import 'package:unn_mobile/core/services/interfaces/feed/legacy/getting_blog_post_comments.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/legacy/getting_blog_posts.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/feed_file_downloader_service.dart';
+import 'package:unn_mobile/core/services/interfaces/feed/providers/blog_post_provider.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_file_data.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_grade_book.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_profile.dart';
@@ -288,6 +291,15 @@ void registerDependencies() {
       getApiHelper(HostType.unnMobile),
     ),
   );
+  for (final type in BlogPostType.values) {
+    injector.registerDependency<BlogPostProvider>(
+      () => BlogPostProviderImpl(
+        injector.get<StorageService>(),
+        type,
+      ),
+      dependencyName: type.stringValue,
+    );
+  }
   injector.registerDependency<ImportantBlogPostAcknowledgementService>(
     () => ImportantBlogPostAcknowledgementServiceImpl(
       get<LoggerService>(),

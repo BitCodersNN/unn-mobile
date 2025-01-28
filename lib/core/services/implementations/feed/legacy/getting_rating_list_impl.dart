@@ -70,7 +70,7 @@ class GettingRatingListImpl implements GettingRatingList {
 
     RatingList? ratingList;
     try {
-      ratingList = RatingList.fromJson(json);
+      ratingList = RatingList.fromJsonLegacy(json);
     } catch (e, stackTrace) {
       _loggerService.logError(e, stackTrace);
     }

@@ -52,13 +52,19 @@ class RegularBlogPostsServiceImpl implements RegularBlogPostsService {
   List<BlogPost>? _parseBlogPostsFromJsonList(List<dynamic> jsonList) {
     List<BlogPost>? blogPosts;
 
-    try {
-      blogPosts = jsonList.map<BlogPost>((jsonMap) {
-        return BlogPost.fromJsonPortal2(jsonMap);
-      }).toList();
-    } catch (error, stackTrace) {
-      _loggerService.logError(error, stackTrace);
-    }
+    blogPosts = jsonList
+        .map<BlogPost?>((jsonMap) {
+          try {
+            return BlogPost.fromJson(jsonMap);
+          } catch (error, stackTrace) {
+            _loggerService.log(
+              'Failed to parse BlogPost from jsonMap: $jsonMap  Exception: $error\nStackTrace: $stackTrace',
+            );
+            return null;
+          }
+        })
+        .whereType<BlogPost>()
+        .toList();
 
     return blogPosts;
   }

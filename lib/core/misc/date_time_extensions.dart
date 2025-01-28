@@ -22,4 +22,9 @@ extension DateTimeExtensions on DateTime {
   String toFormattedDateString() {
     return DateFormat('yyyy.MM.dd').format(this);
   }
+
+  // ignore: non_constant_identifier_names
+  String formatDateTime_ddMMyyyy_HHmmss() {
+    return DateFormat('dd.MM.yyyy HH:mm:ss').format(this);
+  }
 }

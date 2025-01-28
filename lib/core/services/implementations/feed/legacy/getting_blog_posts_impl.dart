@@ -61,7 +61,7 @@ class GettingBlogPostsImpl implements GettingBlogPosts {
     try {
       blogPosts = jsonList
           .map<BlogPostData>(
-            (blogPostJson) => BlogPostData.fromJson(blogPostJson),
+            (blogPostJson) => BlogPostData.fromJsonLegacy(blogPostJson),
           )
           .toList();
     } catch (error, stackTrace) {

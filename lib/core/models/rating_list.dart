@@ -1,6 +1,6 @@
 import 'package:unn_mobile/core/models/user_short_info.dart';
 
-class _KeysForUserInfoJsonConverterPortal2 {
+class _KeysForUserInfoJsonConverter {
   static const String users = 'users';
   static const String reaction = 'reaction';
 }
@@ -35,7 +35,7 @@ enum ReactionType {
   cry,
   facepalm,
   angry,
-  ; // О_о
+  ;
 
   String get assetName => _reactionAssets[this]!;
   String get caption => _reactionNames[this]!;
@@ -120,33 +120,13 @@ class RatingList {
 
   factory RatingList.fromJson(Map<String, Object?> jsonMap) {
     final Map<ReactionType, List<UserShortInfo>> ratingList = {};
-
-    jsonMap.forEach((key, value) {
-      if (value is List) {
-        final List<UserShortInfo> userList = [];
-        for (final userJson in value) {
-          if (userJson is Map<String, dynamic>) {
-            userList.add(UserShortInfo.fromJson(userJson));
-          }
-        }
-        ratingList[ReactionType.values.firstWhere((e) => e.toString() == key)] =
-            userList;
-      }
-    });
-
-    return RatingList(ratingList);
-  }
-
-  factory RatingList.fromJsonPortal2(Map<String, Object?> jsonMap) {
-    final Map<ReactionType, List<UserShortInfo>> ratingList = {};
-    final usersList =
-        jsonMap[_KeysForUserInfoJsonConverterPortal2.users] as List;
+    final usersList = jsonMap[_KeysForUserInfoJsonConverter.users] as List;
     for (final userMap in usersList) {
-      final userInfo = UserShortInfo.fromJsonPortal2(userMap);
+      final userInfo = UserShortInfo.fromJson(userMap);
       final userReaction = ReactionType.values.firstWhere(
         (reaction) => reaction
             .toString()
-            .endsWith(userMap[_KeysForUserInfoJsonConverterPortal2.reaction]),
+            .endsWith(userMap[_KeysForUserInfoJsonConverter.reaction]),
       );
 
       ratingList.putIfAbsent(userReaction, () => []);
@@ -155,12 +135,40 @@ class RatingList {
     return RatingList(ratingList);
   }
 
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> json = {};
-    _ratingList.forEach((key, value) {
-      json[key.toString()] = value.map((user) => user.toJson()).toList();
+  Map<String, Object?> toJson() {
+    final List<Map<String, Object?>> usersList = [];
+
+    ratingList.forEach((reaction, users) {
+      for (final user in users) {
+        usersList.add({
+          _KeysForUserInfoJsonConverter.reaction:
+              reaction.toString().split('.').last,
+          ...user.toJson(),
+        });
+      }
     });
 
-    return json;
+    return {
+      _KeysForUserInfoJsonConverter.users: usersList,
+    };
+  }
+
+  factory RatingList.fromJsonLegacy(Map<String, Object?> jsonMap) {
+    final Map<ReactionType, List<UserShortInfo>> ratingList = {};
+
+    jsonMap.forEach((key, value) {
+      if (value is List) {
+        final List<UserShortInfo> userList = [];
+        for (final userJson in value) {
+          if (userJson is Map<String, dynamic>) {
+            userList.add(UserShortInfo.fromJsonLegacy(userJson));
+          }
+        }
+        ratingList[ReactionType.values.firstWhere((e) => e.toString() == key)] =
+            userList;
+      }
+    });
+
+    return RatingList(ratingList);
   }
 }
