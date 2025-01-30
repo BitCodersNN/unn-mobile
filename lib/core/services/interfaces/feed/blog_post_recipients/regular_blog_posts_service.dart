@@ -7,12 +7,8 @@ abstract interface class RegularBlogPostsService {
   /// [postsPerPage]: количество постов на странице
   ///
   /// Возвращает:
-  ///   - список [BlogPost]
-  ///   - null, если:
-  ///     1. Не вышло получить ответ от сервера
-  ///     2. statusCode не равен 200
-  ///     3. Не вышло декодировать ответ
-  ///     4. Не вышло распарсить JSON в объекты [BlogPost]
+  ///   - [Future<List<BlogPost>?>] - список постов.
+  ///   - `null`, если произошла ошибка при выполнении запроса или парсинге данных.
   Future<List<BlogPost>?> getRegularBlogPosts({
     int pageNumber = 1,
     int postsPerPage = 20,
