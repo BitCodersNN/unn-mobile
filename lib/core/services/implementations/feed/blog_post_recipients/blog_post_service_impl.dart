@@ -11,7 +11,7 @@ class _QueryParamNames {
   static const id = 'id';
 }
 
-class BlogPostServiceImpl implements BlogPostService{
+class BlogPostServiceImpl implements BlogPostService {
   final LoggerService _loggerService;
   final ApiHelper _apiHelper;
 
