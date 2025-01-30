@@ -13,6 +13,5 @@ abstract interface class BlogPostService {
   ///   - `null`, если произошла ошибка при запросе.
   ///
   /// Логирует ошибки и исключения с помощью [LoggerService].
-  @override
   Future<BlogPost?> getBlogPost({required int id});
 }
