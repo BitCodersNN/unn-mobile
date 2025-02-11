@@ -4,7 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:unn_mobile/core/constants/api_url_strings.dart';
 import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/models/feed/blog_post.dart';
-import 'package:unn_mobile/core/services/interfaces/feed/blog_post_recipients/blog_post_service.dart';
+import 'package:unn_mobile/core/services/interfaces/feed/blog_post_receivers/blog_post_service.dart';
 import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 
 class _QueryParamNames {

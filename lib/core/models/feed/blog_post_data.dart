@@ -1,5 +1,6 @@
 import 'package:intl/intl.dart';
-import 'package:unn_mobile/core/misc/date_time_extensions.dart';
+import 'package:unn_mobile/core/constants/date_pattern.dart';
+import 'package:unn_mobile/core/misc/date_time_utilities/date_time_extensions.dart';
 
 class _KeysForBlogPostDataJsonConverterLegacy {
   static const String id = 'ID';
@@ -86,7 +87,7 @@ class BlogPostData {
         _KeysForBlogPostDataJsonConverter.title: title,
         _KeysForBlogPostDataJsonConverter.fulltext: detailText,
         _KeysForBlogPostDataJsonConverter.time:
-            datePublish.formatDateTime_ddMMyyyy_HHmmss(),
+            datePublish.formatDateTime(DatePattern.ddmmyyyyhhmmss),
         _KeysForBlogPostDataJsonConverter.commentsNum:
             numberOfComments.toString(),
         _KeysForBlogPostDataJsonConverter.attach:

@@ -3,8 +3,9 @@ import 'package:dio/dio.dart';
 import 'package:icalendar_parser/icalendar_parser.dart';
 import 'package:permission_handler_platform_interface/permission_handler_platform_interface.dart';
 import 'package:unn_mobile/core/constants/api_url_strings.dart';
+import 'package:unn_mobile/core/constants/date_pattern.dart';
 import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
-import 'package:unn_mobile/core/misc/date_time_extensions.dart';
+import 'package:unn_mobile/core/misc/date_time_utilities/date_time_extensions.dart';
 import 'package:unn_mobile/core/models/schedule_filter.dart';
 import 'package:unn_mobile/core/services/interfaces/export_schedule_service.dart';
 
@@ -36,8 +37,12 @@ class ExportScheduleServiceImpl implements ExportScheduleService {
       response = await _apiHelper.get(
         path: path,
         queryParameters: {
-          _start: scheduleFilter.dateTimeRange.start.toFormattedDateString(),
-          _finish: scheduleFilter.dateTimeRange.end.toFormattedDateString(),
+          _start: scheduleFilter.dateTimeRange.start.formatDateTime(
+            DatePattern.yyyymmdd,
+          ),
+          _finish: scheduleFilter.dateTimeRange.end.formatDateTime(
+            DatePattern.yyyymmdd,
+          ),
           _lng: '1',
         },
       );

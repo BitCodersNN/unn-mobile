@@ -1,4 +1,4 @@
-import 'package:unn_mobile/core/services/interfaces/feed/blog_post_recipients/feed_updater_service.dart';
+import 'package:unn_mobile/core/services/interfaces/feed/blog_post_receivers/feed_updater_service.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/providers/last_feed_load_date_time_provider.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/feed_post_view_model.dart';
