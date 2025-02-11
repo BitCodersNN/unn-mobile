@@ -87,7 +87,7 @@ class BlogPostData {
         _KeysForBlogPostDataJsonConverter.title: title,
         _KeysForBlogPostDataJsonConverter.fulltext: detailText,
         _KeysForBlogPostDataJsonConverter.time:
-            datePublish.formatDateTime(DatePattern.ddmmyyyyhhmmss),
+            datePublish.format(DatePattern.ddmmyyyyhhmmss),
         _KeysForBlogPostDataJsonConverter.commentsNum:
             numberOfComments.toString(),
         _KeysForBlogPostDataJsonConverter.attach:

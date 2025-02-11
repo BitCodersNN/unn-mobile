@@ -37,10 +37,10 @@ class ExportScheduleServiceImpl implements ExportScheduleService {
       response = await _apiHelper.get(
         path: path,
         queryParameters: {
-          _start: scheduleFilter.dateTimeRange.start.formatDateTime(
+          _start: scheduleFilter.dateTimeRange.start.format(
             DatePattern.yyyymmdd,
           ),
-          _finish: scheduleFilter.dateTimeRange.end.formatDateTime(
+          _finish: scheduleFilter.dateTimeRange.end.format(
             DatePattern.yyyymmdd,
           ),
           _lng: '1',

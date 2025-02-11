@@ -19,7 +19,7 @@ extension DateTimeExtensions on DateTime {
         isBeforeOrEqualIgnoringYear(range.end);
   }
 
-  String formatDateTime(String pattern) {
+  String format(String pattern) {
     return DateFormat(pattern).format(this);
   }
 }
