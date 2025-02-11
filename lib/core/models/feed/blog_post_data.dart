@@ -1,6 +1,8 @@
 import 'package:intl/intl.dart';
+import 'package:unn_mobile/core/constants/date_pattern.dart';
+import 'package:unn_mobile/core/misc/date_time_utilities/date_time_extensions.dart';
 
-class _KeysForBlogPostDataJsonConverter {
+class _KeysForBlogPostDataJsonConverterLegacy {
   static const String id = 'ID';
   static const String blogId = 'BLOG_ID';
   static const String authorId = 'AUTHOR_ID';
@@ -11,7 +13,7 @@ class _KeysForBlogPostDataJsonConverter {
   static const String files = 'FILES';
 }
 
-class _KeysForBlogPostDataJsonConverterPortal2 {
+class _KeysForBlogPostDataJsonConverter {
   static const String id = 'id';
   static const String author = 'author';
   static const String title = 'title';
@@ -50,69 +52,76 @@ class BlogPostData {
 
   factory BlogPostData.fromJson(Map<String, Object?> jsonMap) {
     return BlogPostData._(
-      id: int.parse(jsonMap[_KeysForBlogPostDataJsonConverter.id] as String),
-      blogId: int.tryParse(
-        jsonMap[_KeysForBlogPostDataJsonConverter.blogId] as String,
-      ),
-      authorBitrixId: int.parse(
-        jsonMap[_KeysForBlogPostDataJsonConverter.authorId] as String,
-      ),
-      title: jsonMap[_KeysForBlogPostDataJsonConverter.title] as String,
-      detailText:
-          jsonMap[_KeysForBlogPostDataJsonConverter.detailText] as String,
-      datePublish: DateTime.parse(
-        jsonMap[_KeysForBlogPostDataJsonConverter.datePublish] as String,
-      ),
-      numberOfComments: int.parse(
-        jsonMap[_KeysForBlogPostDataJsonConverter.numComments] as String,
-      ),
-      files:
-          (jsonMap[_KeysForBlogPostDataJsonConverter.files] as List<dynamic>?)
-              ?.map((element) => element as int)
-              .toList(),
-    );
-  }
-
-  factory BlogPostData.fromJsonPortal2(Map<String, Object?> jsonMap) {
-    return BlogPostData._(
       id: int.parse(
-        jsonMap[_KeysForBlogPostDataJsonConverterPortal2.id] as String,
+        jsonMap[_KeysForBlogPostDataJsonConverter.id] as String,
       ),
       blogId: null,
       authorBitrixId: int.parse(
-        (jsonMap[_KeysForBlogPostDataJsonConverterPortal2.author] as Map<String,
-            Object?>)[_KeysForBlogPostDataJsonConverterPortal2.id] as String,
+        (jsonMap[_KeysForBlogPostDataJsonConverter.author]
+                as Map<String, Object?>)[_KeysForBlogPostDataJsonConverter.id]
+            as String,
       ),
-      title: jsonMap[_KeysForBlogPostDataJsonConverterPortal2.title] as String,
-      detailText:
-          jsonMap[_KeysForBlogPostDataJsonConverterPortal2.fulltext] as String,
+      title: jsonMap[_KeysForBlogPostDataJsonConverter.title] as String,
+      detailText: jsonMap[_KeysForBlogPostDataJsonConverter.fulltext] as String,
       datePublish: _parseCustomDateTime(
-        jsonMap[_KeysForBlogPostDataJsonConverterPortal2.time] as String,
+        jsonMap[_KeysForBlogPostDataJsonConverter.time] as String,
       ),
       numberOfComments: int.parse(
-        jsonMap[_KeysForBlogPostDataJsonConverterPortal2.commentsNum] as String,
+        jsonMap[_KeysForBlogPostDataJsonConverter.commentsNum] as String,
       ),
-      files: (jsonMap[_KeysForBlogPostDataJsonConverterPortal2.attach]
-              as List<dynamic>?)
-          ?.map((element) => element.toString().hashCode)
-          .toList(),
-      pinnedId:
-          jsonMap[_KeysForBlogPostDataJsonConverterPortal2.pinnedId] as int?,
-      keySigned: jsonMap[_KeysForBlogPostDataJsonConverterPortal2.keySigned]
-          as String?,
+      files:
+          (jsonMap[_KeysForBlogPostDataJsonConverter.attach] as List<dynamic>?)
+              ?.map((element) => element.toString().hashCode)
+              .toList(),
+      pinnedId: jsonMap[_KeysForBlogPostDataJsonConverter.pinnedId] as int?,
+      keySigned:
+          jsonMap[_KeysForBlogPostDataJsonConverter.keySigned] as String?,
     );
   }
 
   Map<String, dynamic> toJson() => {
-        _KeysForBlogPostDataJsonConverter.id: id,
-        _KeysForBlogPostDataJsonConverter.blogId: blogId,
-        _KeysForBlogPostDataJsonConverter.authorId: authorBitrixId,
+        _KeysForBlogPostDataJsonConverter.id: id.toString(),
+        _KeysForBlogPostDataJsonConverter.author: {
+          _KeysForBlogPostDataJsonConverter.id: authorBitrixId.toString(),
+        },
         _KeysForBlogPostDataJsonConverter.title: title,
-        _KeysForBlogPostDataJsonConverter.detailText: detailText,
-        _KeysForBlogPostDataJsonConverter.datePublish: datePublish.toString(),
-        _KeysForBlogPostDataJsonConverter.numComments: numberOfComments,
-        _KeysForBlogPostDataJsonConverter.files: files,
+        _KeysForBlogPostDataJsonConverter.fulltext: detailText,
+        _KeysForBlogPostDataJsonConverter.time:
+            datePublish.format(DatePattern.ddmmyyyyhhmmss),
+        _KeysForBlogPostDataJsonConverter.commentsNum:
+            numberOfComments.toString(),
+        _KeysForBlogPostDataJsonConverter.attach:
+            files?.map((hash) => hash.toString()).toList(),
+        _KeysForBlogPostDataJsonConverter.pinnedId: pinnedId,
+        _KeysForBlogPostDataJsonConverter.keySigned: keySigned,
       };
+
+  factory BlogPostData.fromJsonLegacy(Map<String, Object?> jsonMap) {
+    return BlogPostData._(
+      id: int.parse(
+        jsonMap[_KeysForBlogPostDataJsonConverterLegacy.id] as String,
+      ),
+      blogId: int.tryParse(
+        jsonMap[_KeysForBlogPostDataJsonConverterLegacy.blogId] as String,
+      ),
+      authorBitrixId: int.parse(
+        jsonMap[_KeysForBlogPostDataJsonConverterLegacy.authorId] as String,
+      ),
+      title: jsonMap[_KeysForBlogPostDataJsonConverterLegacy.title] as String,
+      detailText:
+          jsonMap[_KeysForBlogPostDataJsonConverterLegacy.detailText] as String,
+      datePublish: DateTime.parse(
+        jsonMap[_KeysForBlogPostDataJsonConverterLegacy.datePublish] as String,
+      ),
+      numberOfComments: int.parse(
+        jsonMap[_KeysForBlogPostDataJsonConverterLegacy.numComments] as String,
+      ),
+      files: (jsonMap[_KeysForBlogPostDataJsonConverterLegacy.files]
+              as List<dynamic>?)
+          ?.map((element) => element as int)
+          .toList(),
+    );
+  }
 
   static DateTime _parseCustomDateTime(String input) {
     final formatter = DateFormat('dd.MM.yyyy HH:mm:ss');

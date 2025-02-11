@@ -34,6 +34,10 @@ class ApiPaths {
   /// Для получения записей из живой ленты со всей информацией
   static const String blogPostWithLoadedInfo = 'portal2/api/news.php';
 
+  /// Для получения закреплённых и важных записей из живой ленты со всей информацией
+  static const String featuredBlogPostWithLoadedInfo =
+      'portal2/api/importantnews.php';
+
   /// Для получения информации о файлах
   static const String diskAttachedObjectGet = 'rest/disk.attachedObject.get';
 
@@ -84,6 +88,32 @@ class AjaxActionStrings {
   /// Для управления реакцией к посту/комментарию в живой ленте
   static const String ratingVote = 'main.rating.vote';
 
+  /// Для закрепления поста в живой ленте
+  static const String pinBlogPost = 'socialnetwork.api.livefeed.logentry.pin';
+
+  /// Для открепления поста в живой ленте
+  static const String unpinBlogPost =
+      'socialnetwork.api.livefeed.logentry.unpin';
+
+  /// Для прочтения важного сообщения
+  static const String readImportantBlogPost =
+      'socialnetwork.api.livefeed.blogpost.important.vote';
+
+  /// Для просмотра пользователей, прочитавших важное сообщение
+  static const String importantBlogPostUsers =
+      'socialnetwork.api.livefeed.blogpost.important.getUsers';
+}
+
+class AnalyticsLabel {
+  /// QueryParams для указания analyticsLabel[b24statAction]
+  static const String b24statAction = 'analyticsLabel[b24statAction]';
+
   /// Для управления реакцией к посту/комментарию в живой ленте
   static const String addLike = 'addLike';
+
+  /// Для закрепления поста в живой ленте
+  static const String pinBlogPost = 'pinLivefeedEntry';
+
+  /// Для открепления поста в живой ленте
+  static const String unpinBlogPost = 'unpinLivefeedEntry';
 }

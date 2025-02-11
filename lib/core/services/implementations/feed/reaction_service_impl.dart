@@ -6,7 +6,7 @@ import 'package:unn_mobile/core/misc/current_user_sync_storage.dart';
 import 'package:unn_mobile/core/models/rating_list.dart';
 import 'package:unn_mobile/core/models/user_short_info.dart';
 import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
-import 'package:unn_mobile/core/services/interfaces/feed/reaction_manager.dart';
+import 'package:unn_mobile/core/services/interfaces/feed/reaction_service.dart';
 
 class _KeysForReactionManagerJsonConverter {
   static const String data = 'data';
@@ -16,12 +16,12 @@ class _KeysForReactionManagerJsonConverter {
   static const String src = 'SRC';
 }
 
-class ReactionManagerImpl implements ReactionManager {
+class ReactionServiceImpl implements ReactionService {
   final LoggerService _loggerService;
   final CurrentUserSyncStorage _currentUserSync;
   final ApiHelper _apiHelper;
 
-  ReactionManagerImpl(
+  ReactionServiceImpl(
     this._currentUserSync,
     this._loggerService,
     this._apiHelper,
@@ -68,7 +68,7 @@ class ReactionManagerImpl implements ReactionManager {
       response = await _apiHelper.post(
         path: ApiPaths.ajax,
         queryParameters: {
-          RatingListStrings.analyticsLabel: AjaxActionStrings.addLike,
+          AnalyticsLabel.b24statAction: AnalyticsLabel.addLike,
           AjaxActionStrings.actionKey: AjaxActionStrings.ratingVote,
         },
         data: body,

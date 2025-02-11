@@ -52,7 +52,7 @@ class GettingFileDataImpl implements GettingFileData {
 
     FileData? fileData;
     try {
-      fileData = FileData.fromJson(jsonMap);
+      fileData = FileData.fromJsonLegacy(jsonMap);
     } catch (error, stackTrace) {
       _loggerService.logError(error, stackTrace);
     }
