@@ -39,7 +39,7 @@ class Fullname {
 class UserData {
   static final String _urlPhotoFirstPart =
       '${ProtocolType.https.name}://${Host.unn}';
-      
+
   final int _bitrixId;
   final String? _login;
   final Fullname _fullname;
