@@ -8,7 +8,7 @@ final class UnnMobileApiHelper extends AuthenticatedApiHelper {
   }) : super(
           authorizationService,
           options: createBaseOptions(
-            host: Host.unnMobileHost,
+            host: Host.unnMobile,
             headers: authorizationService.headers,
           ),
         );

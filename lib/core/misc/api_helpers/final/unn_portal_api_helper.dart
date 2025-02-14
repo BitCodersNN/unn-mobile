@@ -8,7 +8,7 @@ final class UnnPortalApiHelper extends AuthenticatedApiHelper {
   }) : super(
           authorizationService,
           options: createBaseOptions(
-            host: Host.unnHost,
+            host: Host.unn,
             headers: authorizationService.headers,
           ),
         );

@@ -5,6 +5,6 @@ final class WebUnnMobileApiHelper extends WebAuthenticatedApiHelper {
   WebUnnMobileApiHelper({
     required super.authorizationService,
   }) : super(
-          host: Host.unnMobileHost,
+          host: Host.unnMobile,
         );
 }

@@ -8,7 +8,7 @@ final class UnnSourceApiHelper extends AuthenticatedApiHelper {
   }) : super(
           authorizationService,
           options: createBaseOptions(
-            host: Host.unnSourceHost,
+            host: Host.unnSource,
             headers: authorizationService.headers,
           ),
         );

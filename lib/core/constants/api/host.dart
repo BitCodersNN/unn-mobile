@@ -1,16 +1,16 @@
 class Host {
   /// Доменное имя gitHub
-  static const String gitHubHost = 'raw.githubusercontent.com';
+  static const String gitHub = 'raw.githubusercontent.com';
 
   /// Доменное имя api gitHub
-  static const String gitHubApiHost = 'api.github.com';
+  static const String gitHubApi = 'api.github.com';
 
   /// Доменное имя unn портала
-  static const String unnHost = 'portal.unn.ru';
+  static const String unn = 'portal.unn.ru';
 
   /// Второе доменное имя unn портала
-  static const String unnMobileHost = 'portal-m.unn.ru';
+  static const String unnMobile = 'portal-m.unn.ru';
 
   /// Доменное имя unn source
-  static const String unnSourceHost = 'source.unn.ru';
+  static const String unnSource = 'source.unn.ru';
 }

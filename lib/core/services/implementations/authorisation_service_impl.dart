@@ -58,7 +58,7 @@ class AuthorizationServiceImpl extends ChangeNotifier
 
       final apiHelper = ApiHelper(
         options: createBaseOptions(
-          host: Host.unnMobileHost,
+          host: Host.unnMobile,
         ),
       );
 

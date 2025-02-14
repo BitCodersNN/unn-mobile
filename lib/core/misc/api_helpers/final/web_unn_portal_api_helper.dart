@@ -5,6 +5,6 @@ final class WebUnnPortalApiHelper extends WebAuthenticatedApiHelper {
   WebUnnPortalApiHelper({
     required super.authorizationService,
   }) : super(
-          host: Host.unnHost,
+          host: Host.unn,
         );
 }

@@ -59,7 +59,7 @@ class UserShortInfo {
             as String?;
 
     final String? resolvedPhotoSrc = photoSrc?.isNotEmpty == true
-        ? 'https://${Host.unnHost}${photoSrc!}'
+        ? 'https://${Host.unn}${photoSrc!}'
         : null;
 
     return UserShortInfo(

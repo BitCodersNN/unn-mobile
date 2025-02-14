@@ -6,7 +6,7 @@ final class GithubApiHelper extends ApiHelper {
   GithubApiHelper()
       : super(
           options: createBaseOptions(
-            host: Host.gitHubApiHost,
+            host: Host.gitHubApi,
           ),
         );
 }
