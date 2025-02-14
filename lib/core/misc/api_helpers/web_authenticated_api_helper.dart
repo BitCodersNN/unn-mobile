@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:unn_mobile/core/constants/api/host_with_base_path.dart';
+import 'package:unn_mobile/core/constants/api/protocol_type.dart';
 import 'package:unn_mobile/core/constants/regular_expressions.dart';
 import 'package:unn_mobile/core/constants/session_identifier_strings.dart';
 import 'package:unn_mobile/core/misc/api_helpers/authenticated_api_helper.dart';
@@ -25,7 +26,8 @@ abstract class WebAuthenticatedApiHelper extends AuthenticatedApiHelper {
   WebAuthenticatedApiHelper({
     required host,
     required authorizationService,
-  })  : _baseUrl = 'https://$host/',
+    ProtocolType protocol = ProtocolType.https,
+  })  : _baseUrl = '${protocol.name}://$host/',
         super(
           authorizationService,
           options: createBaseOptions(

@@ -1,4 +1,5 @@
 import 'package:unn_mobile/core/constants/api/host.dart';
+import 'package:unn_mobile/core/constants/api/protocol_type.dart';
 
 class _KeysForUserInfoJsonConverterLegacy {
   static const String id = 'USER_ID';
@@ -59,7 +60,7 @@ class UserShortInfo {
             as String?;
 
     final String? resolvedPhotoSrc = photoSrc?.isNotEmpty == true
-        ? 'https://${Host.unn}${photoSrc!}'
+        ? '${ProtocolType.https.name}://${Host.unn}${photoSrc!}'
         : null;
 
     return UserShortInfo(

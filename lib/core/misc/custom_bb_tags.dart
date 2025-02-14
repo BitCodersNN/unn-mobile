@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:injector/injector.dart';
+import 'package:unn_mobile/core/constants/api/protocol_type.dart';
 import 'package:unn_mobile/core/misc/hex_color.dart';
 import 'package:flutter_bbcode/flutter_bbcode.dart';
 import 'package:bbob_dart/bbob_dart.dart' as bbob;
@@ -99,7 +100,7 @@ class VideoTag extends StyleTag {
       url = 'URL is missing!';
     }
     if (url.startsWith('//')) {
-      url = 'https:$url';
+      url = '${ProtocolType.https.name}:$url';
     }
     renderer.pushTapAction(() {
       onTap?.call(url);
