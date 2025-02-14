@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
-import 'package:unn_mobile/core/constants/api_url_strings.dart';
+import 'package:unn_mobile/core/constants/api/path.dart';
 import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/models/feed/blog_post.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/blog_post_receivers/regular_blog_posts_service.dart';
@@ -29,7 +29,7 @@ class RegularBlogPostsServiceImpl implements RegularBlogPostsService {
     Response response;
     try {
       response = await _apiHelper.get(
-        path: ApiPaths.blogPostWithLoadedInfo,
+        path: ApiPath.blogPostWithLoadedInfo,
         queryParameters: {
           _QueryParamNames.numPage: pageNumber.toString(),
           _QueryParamNames.perPage: postsPerPage.toString(),

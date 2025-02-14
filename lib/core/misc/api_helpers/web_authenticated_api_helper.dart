@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:unn_mobile/core/constants/api_url_strings.dart';
+import 'package:unn_mobile/core/constants/api/host_with_base_path.dart';
 import 'package:unn_mobile/core/constants/regular_expressions.dart';
 import 'package:unn_mobile/core/constants/session_identifier_strings.dart';
 import 'package:unn_mobile/core/misc/api_helpers/authenticated_api_helper.dart';
@@ -23,13 +23,13 @@ abstract class WebAuthenticatedApiHelper extends AuthenticatedApiHelper {
   String? _dioCookie;
 
   WebAuthenticatedApiHelper({
-    required baseUrl,
+    required host,
     required authorizationService,
-  })  : _baseUrl = baseUrl,
+  })  : _baseUrl = 'https://$host/',
         super(
           authorizationService,
           options: createBaseOptions(
-            baseUrl: ApiPaths.redirectUrl,
+            host: HostWithBasePath.redirect,
             headers: authorizationService.headers,
           ),
         );

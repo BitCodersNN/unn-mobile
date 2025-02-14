@@ -63,7 +63,6 @@ class FileDownloader {
     }
 
     await storedFile.parent.create(recursive: true);
-
     Response response;
     try {
       response = await _apiHelper.get(

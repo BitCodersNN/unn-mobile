@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
-import 'package:unn_mobile/core/constants/api_url_strings.dart';
+import 'package:unn_mobile/core/constants/api/path.dart';
 import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/models/feed/blog_post.dart';
 import 'package:unn_mobile/core/models/feed/blog_post_type.dart';
@@ -22,7 +22,7 @@ class FeaturedBlogPostsServiceImpl implements FeaturedBlogPostsService {
     Response response;
     try {
       response = await _apiHelper.get(
-        path: ApiPaths.featuredBlogPostWithLoadedInfo,
+        path: ApiPath.featuredBlogPostWithLoadedInfo,
         options: Options(
           sendTimeout: const Duration(seconds: 30),
           receiveTimeout: const Duration(seconds: 30),

@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:unn_mobile/core/constants/api_url_strings.dart';
+import 'package:unn_mobile/core/constants/api/path.dart';
 import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 import 'package:unn_mobile/core/services/interfaces/certificate/certificate_path_service.dart';
@@ -26,7 +26,7 @@ class CertificatePathServiceImpl implements CertificatePathService {
     Response response;
     try {
       response = await _apiHelper.post(
-        path: ApiPaths.createSpravka,
+        path: ApiPath.createSpravka,
         data: {
           _DataNames.sendtype: sendtype,
           _DataNames.num: number,
@@ -37,6 +37,6 @@ class CertificatePathServiceImpl implements CertificatePathService {
       return null;
     }
 
-    return '${ApiPaths.spravkaDocs}/${response.data}.pdf';
+    return '${ApiPath.spravkaDocs}/${response.data}.pdf';
   }
 }

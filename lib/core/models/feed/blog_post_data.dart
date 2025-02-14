@@ -1,6 +1,6 @@
-import 'package:intl/intl.dart';
 import 'package:unn_mobile/core/constants/date_pattern.dart';
 import 'package:unn_mobile/core/misc/date_time_utilities/date_time_extensions.dart';
+import 'package:unn_mobile/core/misc/date_time_utilities/date_time_parser.dart';
 
 class _KeysForBlogPostDataJsonConverterLegacy {
   static const String id = 'ID';
@@ -63,8 +63,9 @@ class BlogPostData {
       ),
       title: jsonMap[_KeysForBlogPostDataJsonConverter.title] as String,
       detailText: jsonMap[_KeysForBlogPostDataJsonConverter.fulltext] as String,
-      datePublish: _parseCustomDateTime(
+      datePublish: DateTimeParser.parse(
         jsonMap[_KeysForBlogPostDataJsonConverter.time] as String,
+        DatePattern.ddmmyyyyhhmmss,
       ),
       numberOfComments: int.parse(
         jsonMap[_KeysForBlogPostDataJsonConverter.commentsNum] as String,
@@ -121,10 +122,5 @@ class BlogPostData {
           ?.map((element) => element as int)
           .toList(),
     );
-  }
-
-  static DateTime _parseCustomDateTime(String input) {
-    final formatter = DateFormat('dd.MM.yyyy HH:mm:ss');
-    return formatter.parse(input);
   }
 }

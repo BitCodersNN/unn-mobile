@@ -1,7 +1,8 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
-import 'package:unn_mobile/core/constants/api_url_strings.dart';
+import 'package:unn_mobile/core/constants/api/host.dart';
+import 'package:unn_mobile/core/constants/api/path.dart';
 import 'package:unn_mobile/core/constants/session_identifier_strings.dart';
 import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/misc/api_helpers/base_options_factory.dart';
@@ -57,14 +58,14 @@ class AuthorizationServiceImpl extends ChangeNotifier
 
       final apiHelper = ApiHelper(
         options: createBaseOptions(
-          baseUrl: ApiPaths.unnMobileHost,
+          host: Host.unnMobileHost,
         ),
       );
 
       Response response;
       try {
         response = await apiHelper.post(
-          path: ApiPaths.authWithCookie,
+          path: ApiPath.authWithCookie,
           data: {
             _userLogin: login,
             _userPassword: password,

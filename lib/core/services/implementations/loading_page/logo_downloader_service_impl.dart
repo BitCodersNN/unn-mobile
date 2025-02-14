@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:unn_mobile/core/constants/api_url_strings.dart';
+import 'package:unn_mobile/core/constants/api/path.dart';
 import 'package:unn_mobile/core/misc/file_helpers/file_downloader.dart';
 import 'package:unn_mobile/core/services/interfaces/loading_page/logo_downloader_service.dart';
 
@@ -14,7 +14,7 @@ class LogoDownloaderServiceImpl implements LogoDownloaderService {
           loggerService,
           apiHelper,
           downloadFolderName: 'logos',
-          basePath: '${ApiPaths.gitRepository}/main',
+          basePath: '${ApiPath.gitRepository}/main',
         );
 
   @override

@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:unn_mobile/core/constants/api_url_strings.dart';
+import 'package:unn_mobile/core/constants/api/path.dart';
 import 'package:unn_mobile/core/constants/session_identifier_strings.dart';
 import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/models/feed/blog_post_data.dart';
@@ -32,7 +32,7 @@ class GettingBlogPostsImpl implements GettingBlogPosts {
     Response response;
     try {
       response = await _apiHelper.get(
-        path: ApiPaths.blogPostGet,
+        path: ApiPath.blogPostGet,
         queryParameters: {
           SessionIdentifierStrings.sessid: _authorizationService.csrf ?? '',
           _QueryParamNames.start:

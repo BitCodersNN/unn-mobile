@@ -1,5 +1,7 @@
 import 'package:dio/dio.dart';
-import 'package:unn_mobile/core/constants/api_url_strings.dart';
+import 'package:unn_mobile/core/constants/api/ajax_action.dart';
+import 'package:unn_mobile/core/constants/api/path.dart';
+import 'package:unn_mobile/core/constants/api/analytics_label.dart';
 import 'package:unn_mobile/core/constants/rating_list_strings.dart';
 import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/misc/current_user_sync_storage.dart';
@@ -66,7 +68,7 @@ class ReactionServiceImpl implements ReactionService {
 
     try {
       response = await _apiHelper.post(
-        path: ApiPaths.ajax,
+        path: ApiPath.ajax,
         queryParameters: {
           AnalyticsLabel.b24statAction: AnalyticsLabel.addLike,
           AjaxActionStrings.actionKey: AjaxActionStrings.ratingVote,

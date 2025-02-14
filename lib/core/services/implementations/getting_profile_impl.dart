@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:unn_mobile/core/constants/api_url_strings.dart';
+import 'package:unn_mobile/core/constants/api/path.dart';
 import 'package:unn_mobile/core/constants/profiles_strings.dart';
 import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/models/employee_data.dart';
@@ -23,7 +23,7 @@ class GettingProfileImpl implements GettingProfile {
   @override
   Future<int?> getProfileIdByBitrixID({required int bitrixID}) async {
     final path =
-        ApiPaths.user + _pathSecondPartForGettingId + bitrixID.toString();
+        ApiPath.user + _pathSecondPartForGettingId + bitrixID.toString();
 
     Response response;
     try {
@@ -45,7 +45,7 @@ class GettingProfileImpl implements GettingProfile {
 
   @override
   Future<UserData?> getProfile({required int userId}) async {
-    final path = ApiPaths.user + userId.toString();
+    final path = ApiPath.user + userId.toString();
 
     Response response;
     try {

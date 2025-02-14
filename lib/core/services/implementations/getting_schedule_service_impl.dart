@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:unn_mobile/core/constants/api_url_strings.dart';
+import 'package:unn_mobile/core/constants/api/path.dart';
 import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/models/schedule_filter.dart';
 import 'package:unn_mobile/core/models/subject.dart';
@@ -27,7 +27,7 @@ class GettingScheduleServiceImpl implements GettingScheduleService {
   @override
   Future<List<Subject>?> getSchedule(ScheduleFilter scheduleFilter) async {
     final path =
-        '${ApiPaths.schedule}${scheduleFilter.idType.name}/${scheduleFilter.id}';
+        '${ApiPath.schedule}${scheduleFilter.idType.name}/${scheduleFilter.id}';
 
     Response response;
     try {
