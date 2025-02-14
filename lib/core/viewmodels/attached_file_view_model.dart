@@ -119,6 +119,11 @@ class AttachedFileViewModel extends BaseViewModel {
     }
   }
 
+  void initFromFileData(FileData data) {
+    _fileId = data.id;
+    _loadedData = data;
+  }
+
   void init(int fileId) {
     _fileId = fileId;
     _isLoadingData = true;

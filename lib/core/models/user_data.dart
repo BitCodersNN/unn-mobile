@@ -71,8 +71,9 @@ class UserData {
   String get sex => _sex;
   String? get notes => _notes;
   String? get urlPhoto => _urlPhoto;
-  String? get fullUrlPhoto =>
-      _urlPhoto != null ? _urlPhotoFirstPart + _urlPhoto! : null;
+  String? get fullUrlPhoto => _urlPhoto != null
+      ? (_urlPhoto!.startsWith('https:') ? '' : _urlPhotoFirstPart) + _urlPhoto!
+      : null;
 
   factory UserData.fromJson(Map<String, Object?> jsonMap) {
     final userJsonMap =

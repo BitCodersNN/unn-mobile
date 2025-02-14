@@ -75,6 +75,13 @@ class ReactionViewModel extends BaseViewModel {
     });
   }
 
+  void initFull(String voteKeySigned, RatingList ratingList) {
+    _ratingList = ratingList;
+    _voteKeySigned = voteKeySigned;
+    _isLoading = false;
+    notifyListeners();
+  }
+
   void toggleLike() {
     if (currentReaction != null) {
       _setReaction(null);

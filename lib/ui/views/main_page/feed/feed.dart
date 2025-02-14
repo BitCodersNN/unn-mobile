@@ -50,7 +50,6 @@ class FeedScreenViewState extends State<FeedScreenView>
   @override
   Widget build(BuildContext context) {
     final parentScaffold = Scaffold.maybeOf(context);
-
     return OfflineOverlayDisplayer(
       child: Scaffold(
         appBar: AppBar(
@@ -69,15 +68,22 @@ class FeedScreenViewState extends State<FeedScreenView>
           builder: (context, model, child) {
             return Column(
               children: [
-                if (model.showSyncFeedButton)
-                  TextButton(
-                    onPressed: () => model.syncFeed(),
-                    child: const Text('Обновить ленту'),
+                if (model.failedToLoad)
+                  _coloredTopMessage(
+                    context,
+                    const Color(0xFFBB1111),
+                    const Color(0xFFFFFFFF),
+                  ),
+                if (model.showingOfflinePosts && model.posts.isNotEmpty)
+                  _coloredTopMessage(
+                    context,
+                    const Color(0xFF696969),
+                    const Color(0xFFFFFFFF),
                   ),
                 Expanded(
                   child: NotificationListener<ScrollEndNotification>(
                     child: RefreshIndicator(
-                      onRefresh: model.updateFeed,
+                      onRefresh: model.reload,
                       child: SingleChildScrollView(
                         physics: const AlwaysScrollableScrollPhysics(),
                         controller: _scrollController,
@@ -88,11 +94,19 @@ class FeedScreenViewState extends State<FeedScreenView>
                                 post: post,
                                 showingComments: false,
                               ),
-                            if (model.loadingPosts)
+                            if (model.loadingMore)
                               const SizedBox(
-                                height: 24,
-                                width: 24,
-                                child: CircularProgressIndicator(),
+                                width: double.infinity,
+                                child: Center(
+                                  child: Padding(
+                                    padding: EdgeInsets.all(8.0),
+                                    child: SizedBox(
+                                      width: 24,
+                                      height: 24,
+                                      child: CircularProgressIndicator(),
+                                    ),
+                                  ),
+                                ),
                               ),
                             const SizedBox(height: 16),
                           ],
@@ -102,7 +116,7 @@ class FeedScreenViewState extends State<FeedScreenView>
                     onNotification: (scrollEnd) {
                       final metrics = scrollEnd.metrics;
                       if (metrics.maxScrollExtent - metrics.pixels < 300) {
-                        model.getMorePosts();
+                        model.loadMorePosts();
                       }
                       return true;
                     },
@@ -113,6 +127,26 @@ class FeedScreenViewState extends State<FeedScreenView>
           },
           onModelReady: (model) => model.init(),
         ),
+      ),
+    );
+  }
+
+  Container _coloredTopMessage(
+    BuildContext context,
+    Color background,
+    Color foreground,
+  ) {
+    final theme = Theme.of(context);
+    return Container(
+      color: background,
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(
+        vertical: 8.0,
+        horizontal: 8.0,
+      ),
+      child: Text(
+        'Не удалось загрузить посты',
+        style: theme.textTheme.bodyLarge?.copyWith(color: foreground),
       ),
     );
   }

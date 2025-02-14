@@ -1,7 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bbcode/flutter_bbcode.dart';
-import 'package:unn_mobile/core/misc/custom_bb_tags.dart';
+import 'package:flutter_widget_from_html_core/flutter_widget_from_html_core.dart';
 import 'package:unn_mobile/core/models/rating_list.dart';
 import 'package:unn_mobile/core/viewmodels/feed_comment_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/profile_view_model.dart';
@@ -42,10 +41,7 @@ class FeedCommentView extends StatelessWidget {
                   top: 8,
                 ),
                 child: model.renderMessage
-                    ? BBCodeText(
-                        data: model.message,
-                        stylesheet: getBBStyleSheet(),
-                      )
+                    ? HtmlWidget(model.message)
                     : const SizedBox(),
               ),
               for (final file in model.attachedFileViewModels)

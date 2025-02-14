@@ -19,7 +19,6 @@ import 'package:unn_mobile/core/services/implementations/certificate/certificate
 import 'package:unn_mobile/core/services/implementations/export_schedule_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/feed/blog_post_receivers/blog_post_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/feed/blog_post_receivers/featured_blog_posts_service_impl.dart';
-import 'package:unn_mobile/core/services/implementations/feed/blog_post_receivers/feed_updater_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/feed/blog_post_receivers/regular_blog_posts_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/feed/featured_blog_post_action/important_blog_post_acknowledgement_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/feed/featured_blog_post_action/important_blog_post_users_service_impl.dart';
@@ -62,7 +61,6 @@ import 'package:unn_mobile/core/services/interfaces/feed/featured_blog_post_acti
 import 'package:unn_mobile/core/services/interfaces/feed/featured_blog_post_action/important_blog_post_users_service.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/featured_blog_post_action/pinning_blog_post_service.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/blog_post_receivers/regular_blog_posts_service.dart';
-import 'package:unn_mobile/core/services/interfaces/feed/blog_post_receivers/feed_updater_service.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/legacy/getting_blog_post_comments.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/legacy/getting_blog_posts.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/feed_file_downloader_service.dart';
@@ -91,7 +89,6 @@ import 'package:unn_mobile/core/services/interfaces/search_id_on_portal_service.
 import 'package:unn_mobile/core/services/interfaces/storage_service.dart';
 import 'package:unn_mobile/core/services/interfaces/user_data_provider.dart';
 import 'package:unn_mobile/core/viewmodels/auth_page_view_model.dart';
-import 'package:unn_mobile/core/viewmodels/comments_page_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/factories/attached_file_view_model_factory.dart';
 import 'package:unn_mobile/core/viewmodels/factories/feed_comment_view_model_factory.dart';
 import 'package:unn_mobile/core/viewmodels/factories/feed_post_view_model_factory.dart';
@@ -364,15 +361,6 @@ void registerDependencies() {
       get<StorageService>(),
     ),
   );
-  injector.registerSingleton<FeedUpdaterService>(
-    () => FeedUpdaterServiceImpl(
-      get<GettingBlogPosts>(),
-      get<LoggerService>(),
-      get<OnlineStatusData>(),
-      get<LastFeedLoadDateTimeProvider>(),
-      get<AuthorizationService>(),
-    ),
-  );
   injector.registerSingleton<CurrentUserSyncStorage>(
     () => CurrentUserSyncStorage(
       get<UserDataProvider>(),
@@ -495,13 +483,9 @@ void registerDependencies() {
   );
   injector.registerDependency(
     () => FeedScreenViewModel(
-      get<FeedUpdaterService>(),
       get<LastFeedLoadDateTimeProvider>(),
-    ),
-  );
-  injector.registerDependency(
-    () => CommentsPageViewModel(
-      get<GettingBlogPostComments>(),
+      get<BlogPostProvider>(dependencyName: BlogPostType.regular.stringValue),
+      get<RegularBlogPostsService>(),
     ),
   );
   injector.registerDependency(

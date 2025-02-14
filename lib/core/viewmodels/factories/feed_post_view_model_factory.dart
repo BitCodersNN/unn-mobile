@@ -1,4 +1,4 @@
-import 'package:unn_mobile/core/services/interfaces/feed/legacy/getting_blog_posts.dart';
+import 'package:unn_mobile/core/services/interfaces/feed/blog_post_receivers/blog_post_service.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/providers/last_feed_load_date_time_provider.dart';
 import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 import 'package:unn_mobile/core/viewmodels/factories/cached_view_model_factory_base.dart';
@@ -13,7 +13,7 @@ class FeedPostViewModelFactory
   @override
   FeedPostViewModel createViewModel(key) {
     return FeedPostViewModel(
-      getService<GettingBlogPosts>(),
+      getService<BlogPostService>(),
       getService<LoggerService>(),
       getService<LastFeedLoadDateTimeProvider>(),
     );
