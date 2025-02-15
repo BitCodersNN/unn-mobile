@@ -71,12 +71,14 @@ class FeedScreenViewState extends State<FeedScreenView>
                 if (model.failedToLoad)
                   _coloredTopMessage(
                     context,
+                    'Не удалось загрузить посты',
                     const Color(0xFFBB1111),
                     const Color(0xFFFFFFFF),
                   ),
                 if (model.showingOfflinePosts && model.posts.isNotEmpty)
                   _coloredTopMessage(
                     context,
+                    'Показаны последние загруженные посты',
                     const Color(0xFF696969),
                     const Color(0xFFFFFFFF),
                   ),
@@ -89,12 +91,31 @@ class FeedScreenViewState extends State<FeedScreenView>
                         controller: _scrollController,
                         child: Column(
                           children: [
+                            // Чтобы можно было обновить, если постов нет
+                            if (model.posts.isEmpty)
+                              const SizedBox(
+                                height: 200.0,
+                              ),
+                            if (model.loadingMore && model.showingOfflinePosts)
+                              const SizedBox(
+                                width: double.infinity,
+                                child: Center(
+                                  child: Padding(
+                                    padding: EdgeInsets.all(8.0),
+                                    child: SizedBox(
+                                      width: 24,
+                                      height: 24,
+                                      child: CircularProgressIndicator(),
+                                    ),
+                                  ),
+                                ),
+                              ),
                             for (final post in model.posts)
                               FeedPost(
                                 post: post,
                                 showingComments: false,
                               ),
-                            if (model.loadingMore)
+                            if (model.loadingMore && !model.showingOfflinePosts)
                               const SizedBox(
                                 width: double.infinity,
                                 child: Center(
@@ -114,6 +135,9 @@ class FeedScreenViewState extends State<FeedScreenView>
                       ),
                     ),
                     onNotification: (scrollEnd) {
+                      if (model.showingOfflinePosts) {
+                        return false;
+                      }
                       final metrics = scrollEnd.metrics;
                       if (metrics.maxScrollExtent - metrics.pixels < 300) {
                         model.loadMorePosts();
@@ -133,6 +157,7 @@ class FeedScreenViewState extends State<FeedScreenView>
 
   Container _coloredTopMessage(
     BuildContext context,
+    String text,
     Color background,
     Color foreground,
   ) {
@@ -145,7 +170,7 @@ class FeedScreenViewState extends State<FeedScreenView>
         horizontal: 8.0,
       ),
       child: Text(
-        'Не удалось загрузить посты',
+        text,
         style: theme.textTheme.bodyLarge?.copyWith(color: foreground),
       ),
     );
