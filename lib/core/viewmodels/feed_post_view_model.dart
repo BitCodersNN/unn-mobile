@@ -63,23 +63,26 @@ class FeedPostViewModel extends BaseViewModel {
 
   void initFromFullInfo(BlogPost post) {
     blogData = post.data;
-    comments.clear();
-    comments.addAll(
-      post.comments.map(
-        (c) => FeedCommentViewModel.cached(c.data.id)..initFromFullInfo(c),
-      ),
-    );
+    comments
+      ..clear()
+      ..addAll(
+        post.comments.map(
+          (c) => FeedCommentViewModel.cached(c.data.id)..initFromFullInfo(c),
+        ),
+      );
     _profileViewModel =
         ProfileViewModel.cached(post.userShortInfo.bitrixId ?? 0)
           ..initFromShortInfo(post.userShortInfo);
     _reactionViewModel = ReactionViewModel.cached(post.data.id)
       ..initFull(post.data.keySigned!, post.ratingList);
-    attachedFileViewModels.clear();
-    attachedFileViewModels.addAll(
-      post.attachFiles.map(
-        (file) => AttachedFileViewModel.cached(file.id)..initFromFileData(file),
-      ),
-    );
+    attachedFileViewModels
+      ..clear()
+      ..addAll(
+        post.attachFiles.map(
+          (file) =>
+              AttachedFileViewModel.cached(file.id)..initFromFileData(file),
+        ),
+      );
     notifyListeners();
   }
 

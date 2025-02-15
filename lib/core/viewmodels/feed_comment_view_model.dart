@@ -39,10 +39,11 @@ class FeedCommentViewModel extends BaseViewModel {
       ..init(voteKeySigned: comment.keySigned);
     _profileViewModel = ProfileViewModel.cached(comment.authorBitrixId)
       ..init(loadFromPost: true, userId: comment.authorBitrixId);
-    attachedFileViewModels.clear();
-    attachedFileViewModels.addAll(
-      comment.attachedFiles.map((f) => AttachedFileViewModel.cached(f)),
-    );
+    attachedFileViewModels
+      ..clear()
+      ..addAll(
+        comment.attachedFiles.map((f) => AttachedFileViewModel.cached(f)),
+      );
     notifyListeners();
   }
 
