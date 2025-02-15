@@ -47,11 +47,7 @@ class MainPageRouting {
       builder: (p0) => FeedScreenView(
         routeIndex: _navbarIndex++,
       ),
-      userTypes: [
-        StudentData,
-        EmployeeData,
-        UserData,
-      ],
+      userTypes: [],
       subroutes: [
         MainPageRouteData(
           Icons.comment,
@@ -60,7 +56,7 @@ class MainPageRouting {
           'comments',
           builder: (p0) => const CommentsPage(),
           isDisabled: false,
-          userTypes: [StudentData, EmployeeData, UserData],
+          userTypes: [],
         ),
       ],
     ),
@@ -72,7 +68,7 @@ class MainPageRouting {
       builder: (p0) => ScheduleScreenView(
         routeIndex: _navbarIndex++,
       ),
-      userTypes: [StudentData, EmployeeData, UserData],
+      userTypes: [],
     ),
     MainPageRouteData(
       Icons.map,
@@ -81,7 +77,7 @@ class MainPageRouting {
       '/map',
       builder: (p0) => const Placeholder(),
       isDisabled: true,
-      userTypes: [StudentData, EmployeeData, UserData],
+      userTypes: [],
     ),
     MainPageRouteData(
       Icons.menu_book,
@@ -90,7 +86,7 @@ class MainPageRouting {
       '/source',
       builder: (p0) => const Placeholder(),
       isDisabled: true,
-      userTypes: [StudentData, EmployeeData, UserData],
+      userTypes: [],
     ),
   ];
 

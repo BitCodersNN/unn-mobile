@@ -24,6 +24,7 @@ class MainPageViewModel extends BaseViewModel {
     _routes = MainPageRouting.drawerRoutes
         .where(
           (route) =>
+              route.userTypes.isEmpty ||
               route.userTypes.contains(_currentUserSyncStorage.typeOfUser),
         )
         .toList(growable: false);
