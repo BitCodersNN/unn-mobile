@@ -75,6 +75,9 @@ class UserData {
     if (_urlPhoto == null) {
       return null;
     }
+    if (_urlPhoto == 'https://portal.unn.ru') {
+      return null;
+    }
     if (_urlPhoto!.startsWith(ProtocolType.https.name)) {
       return _urlPhoto!;
     }
