@@ -54,12 +54,14 @@ class FeedCommentViewModel extends BaseViewModel {
           ..initFromShortInfo(comment.userShortInfo);
     _reactionViewModel = ReactionViewModel.cached(comment.data.id)
       ..initFull(comment.data.keySigned, comment.ratingList!);
-    attachedFileViewModels.clear();
-    attachedFileViewModels.addAll(
-      comment.attachFiles.map(
-        (file) => AttachedFileViewModel.cached(file.id)..initFromFileData(file),
-      ),
-    );
+    attachedFileViewModels
+      ..clear()
+      ..addAll(
+        comment.attachFiles.map(
+          (file) =>
+              AttachedFileViewModel.cached(file.id)..initFromFileData(file),
+        ),
+      );
     notifyListeners();
   }
 }
