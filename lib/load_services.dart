@@ -278,25 +278,25 @@ void registerDependencies() {
   injector.registerDependency<RegularBlogPostsService>(
     () => RegularBlogPostsServiceImpl(
       get<LoggerService>(),
-      getApiHelper(HostType.unnMobile),
+      getApiHelper(HostType.unnPortal),
     ),
   );
   injector.registerDependency<FeaturedBlogPostsService>(
     () => FeaturedBlogPostsServiceImpl(
       get<LoggerService>(),
-      getApiHelper(HostType.unnMobile),
+      getApiHelper(HostType.unnPortal),
     ),
   );
   injector.registerSingleton<BlogPostService>(
     () => BlogPostServiceImpl(
       get<LoggerService>(),
-      getApiHelper(HostType.unnMobile),
+      getApiHelper(HostType.unnPortal),
     ),
   );
   injector.registerDependency<PinningBlogPostService>(
     () => PinningBlogPostServiceImpl(
       get<LoggerService>(),
-      getApiHelper(HostType.unnMobile),
+      getApiHelper(HostType.unnPortal),
     ),
   );
   for (final type in BlogPostType.values) {
@@ -311,13 +311,13 @@ void registerDependencies() {
   injector.registerDependency<ImportantBlogPostAcknowledgementService>(
     () => ImportantBlogPostAcknowledgementServiceImpl(
       get<LoggerService>(),
-      getApiHelper(HostType.unnMobile),
+      getApiHelper(HostType.unnPortal),
     ),
   );
   injector.registerDependency<ImportantBlogPostUsersService>(
     () => ImportantBlogPostUsersServiceImpl(
       get<LoggerService>(),
-      getApiHelper(HostType.unnMobile),
+      getApiHelper(HostType.unnPortal),
     ),
   );
   injector.registerSingleton<GettingBlogPosts>(

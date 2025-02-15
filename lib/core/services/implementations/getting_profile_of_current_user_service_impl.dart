@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:unn_mobile/core/constants/api_url_strings.dart';
+import 'package:unn_mobile/core/constants/api/path.dart';
 import 'package:unn_mobile/core/constants/profiles_strings.dart';
 import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/models/employee_data.dart';
@@ -20,7 +20,7 @@ class GettingProfileOfCurrentUserImpl implements GettingProfileOfCurrentUser {
   Future<UserData?> getProfileOfCurrentUser() async {
     Response response;
     try {
-      response = await _apiHelper.get(path: ApiPaths.currentProfile);
+      response = await _apiHelper.get(path: ApiPath.currentProfile);
     } catch (error, stackTrace) {
       _loggerService.logError(error, stackTrace);
       return null;

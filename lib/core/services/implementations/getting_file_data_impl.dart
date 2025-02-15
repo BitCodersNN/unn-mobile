@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:unn_mobile/core/constants/api_url_strings.dart';
+import 'package:unn_mobile/core/constants/api/path.dart';
 import 'package:unn_mobile/core/constants/session_identifier_strings.dart';
 import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/models/file_data.dart';
@@ -26,7 +26,7 @@ class GettingFileDataImpl implements GettingFileData {
     Response response;
     try {
       response = await _apiHelper.get(
-        path: ApiPaths.diskAttachedObjectGet,
+        path: ApiPath.diskAttachedObjectGet,
         queryParameters: {
           SessionIdentifierStrings.sessid: _authorizationService.csrf ?? '',
           _id: id.toString(),

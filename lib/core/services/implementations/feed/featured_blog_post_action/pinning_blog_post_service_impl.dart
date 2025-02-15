@@ -1,5 +1,7 @@
 import 'package:dio/dio.dart';
-import 'package:unn_mobile/core/constants/api_url_strings.dart';
+import 'package:unn_mobile/core/constants/api/ajax_action.dart';
+import 'package:unn_mobile/core/constants/api/path.dart';
+import 'package:unn_mobile/core/constants/api/analytics_label.dart';
 import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/misc/blog_post_response_validator.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/featured_blog_post_action/pinning_blog_post_service.dart';
@@ -44,7 +46,7 @@ class PinningBlogPostServiceImpl implements PinningBlogPostService {
     Response response;
     try {
       response = await _apiHelper.post(
-        path: ApiPaths.ajax,
+        path: ApiPath.ajax,
         queryParameters: {
           AnalyticsLabel.b24statAction: b24statAction,
           AjaxActionStrings.actionKey: actionKey,

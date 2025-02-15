@@ -2,7 +2,8 @@ import 'dart:io';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
-import 'package:unn_mobile/core/constants/api_url_strings.dart';
+import 'package:unn_mobile/core/constants/api/ajax_action.dart';
+import 'package:unn_mobile/core/constants/api/path.dart';
 import 'package:unn_mobile/core/constants/session_identifier_strings.dart';
 import 'package:unn_mobile/core/misc/custom_errors/auth_errors.dart';
 import 'package:unn_mobile/core/misc/api_helpers/legacy/http_helper.dart';
@@ -98,7 +99,7 @@ class LegacyAuthorizationServiceImpl extends ChangeNotifier
     String password,
   ) async {
     final requestSender = HttpRequestSender(
-      path: ApiPaths.auth,
+      path: ApiPath.auth,
       queryParams: {'login': 'yes'},
     );
 
@@ -116,7 +117,7 @@ class LegacyAuthorizationServiceImpl extends ChangeNotifier
 
   Future<HttpClientResponse> _sendCsrfRequest(String session) async {
     final requestSender = HttpRequestSender(
-      path: ApiPaths.ajax,
+      path: ApiPath.ajax,
       queryParams: {AjaxActionStrings.actionKey: AjaxActionStrings.getNextPage},
       cookies: {SessionIdentifierStrings.sessionIdCookieKey: session},
     );

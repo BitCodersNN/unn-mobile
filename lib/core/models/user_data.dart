@@ -1,3 +1,6 @@
+import 'package:unn_mobile/core/constants/api/host.dart';
+import 'package:unn_mobile/core/constants/api/protocol_type.dart';
+
 class _KeysForUserDataJsonConverter {
   static const String bitrixId = 'bitrix_id';
   static const String user = 'user';
@@ -34,6 +37,9 @@ class Fullname {
 }
 
 class UserData {
+  static final String _urlPhotoFirstPart =
+      '${ProtocolType.https.name}://${Host.unn}';
+
   final int _bitrixId;
   final String? _login;
   final Fullname _fullname;
@@ -41,7 +47,6 @@ class UserData {
   final String? _phone;
   final String _sex;
   final String? _notes;
-  final String _urlPhotoFirstPart = 'https://portal.unn.ru';
   final String? _urlPhoto;
 
   const UserData(

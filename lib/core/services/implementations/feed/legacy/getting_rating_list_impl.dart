@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
-import 'package:unn_mobile/core/constants/api_url_strings.dart';
+import 'package:unn_mobile/core/constants/api/ajax_action.dart';
+import 'package:unn_mobile/core/constants/api/path.dart';
 import 'package:unn_mobile/core/constants/rating_list_strings.dart';
 import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/models/rating_list.dart';
@@ -40,7 +41,7 @@ class GettingRatingListImpl implements GettingRatingList {
 
     try {
       response = await _apiHelper.post(
-        path: ApiPaths.ajax,
+        path: ApiPath.ajax,
         queryParameters: {
           AjaxActionStrings.actionKey: AjaxActionStrings.ratingList,
         },
@@ -94,7 +95,7 @@ class GettingRatingListImpl implements GettingRatingList {
 
     try {
       response = await _apiHelper.post(
-        path: ApiPaths.ajax,
+        path: ApiPath.ajax,
         queryParameters: {
           AjaxActionStrings.actionKey: AjaxActionStrings.ratingList,
         },
