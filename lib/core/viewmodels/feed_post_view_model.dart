@@ -45,7 +45,7 @@ class FeedPostViewModel extends BaseViewModel {
 
   int get authorId => blogData.authorBitrixId;
 
-  int get commentsCount => blogData.numberOfComments;
+  int get commentsCount => comments.length;
 
   int get filesCount => blogData.files?.length ?? 0;
 

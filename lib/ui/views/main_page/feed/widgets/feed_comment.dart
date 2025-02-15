@@ -1,6 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_widget_from_html_core/flutter_widget_from_html_core.dart';
 import 'package:unn_mobile/core/models/rating_list.dart';
 import 'package:unn_mobile/core/viewmodels/feed_comment_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/profile_view_model.dart';
@@ -8,6 +7,7 @@ import 'package:unn_mobile/core/viewmodels/reaction_view_model.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/functions/reactions_window.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/widgets/attached_file.dart';
+import 'package:unn_mobile/ui/views/main_page/feed/widgets/feed_post.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/widgets/reaction_bubble.dart';
 import 'package:unn_mobile/ui/widgets/shimmer.dart';
 import 'package:unn_mobile/ui/widgets/shimmer_loading.dart';
@@ -41,7 +41,7 @@ class FeedCommentView extends StatelessWidget {
                   top: 8,
                 ),
                 child: model.renderMessage
-                    ? HtmlWidget(model.message)
+                    ? FeedPost.htmlWidget(model.message, context)
                     : const SizedBox(),
               ),
               for (final file in model.attachedFileViewModels)

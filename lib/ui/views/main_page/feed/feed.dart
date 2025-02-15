@@ -36,7 +36,11 @@ class FeedScreenViewState extends State<FeedScreenView>
 
     _viewModel.scrollToTop = () {
       if (_scrollController.hasClients) {
-        _scrollController.jumpTo(0);
+        _scrollController.animateTo(
+          0,
+          duration: Durations.medium1,
+          curve: Curves.decelerate,
+        );
       }
     };
     _viewModel.onRefresh = () => refreshTab();
