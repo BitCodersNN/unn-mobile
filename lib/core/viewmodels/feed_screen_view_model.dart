@@ -140,6 +140,8 @@ class FeedScreenViewModel extends BaseViewModel
     final featuredPosts =
         await _featuredBlogPostsService.getFeaturedBlogPosts();
     pinnedPosts.clear();
+    notifyListeners();
+    await Future.delayed(const Duration(milliseconds: 10));
     pinnedPosts.addAll(
       featuredPosts?[BlogPostType.pinned]?.map(
             (p) =>
@@ -147,7 +149,10 @@ class FeedScreenViewModel extends BaseViewModel
           ) ??
           [],
     );
+    notifyListeners();
     announcements.clear();
+    notifyListeners();
+    await Future.delayed(const Duration(milliseconds: 10));
     announcements.addAll(
       featuredPosts?[BlogPostType.important]?.map(
             (p) =>
@@ -155,6 +160,7 @@ class FeedScreenViewModel extends BaseViewModel
           ) ??
           [],
     );
+    notifyListeners();
   }
 
   bool isPostPinned(int id) => pinnedPosts.any((p) => p.blogData.id == id);

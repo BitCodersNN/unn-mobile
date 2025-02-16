@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/viewmodels/factories/main_page_routes_view_models_factory.dart';
 import 'package:unn_mobile/core/viewmodels/feed_screen_view_model.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/widgets/feed_post.dart';
+import 'package:unn_mobile/ui/views/main_page/main_page_routing.dart';
 import 'package:unn_mobile/ui/views/main_page/main_page_tab_state.dart';
 import 'package:unn_mobile/ui/widgets/offline_overlay_displayer.dart';
 
@@ -54,10 +56,33 @@ class FeedScreenViewState extends State<FeedScreenView>
   @override
   Widget build(BuildContext context) {
     final parentScaffold = Scaffold.maybeOf(context);
+
     return OfflineOverlayDisplayer(
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Лента'),
+          actions: [
+            PopupMenuButton(
+              itemBuilder: (context) {
+                return [
+                  const PopupMenuItem(
+                    value: 'announcements',
+                    child: Text('Важные сообщения'),
+                  ),
+                ];
+              },
+              onSelected: (value) {
+                switch (value) {
+                  case 'announcements':
+                    GoRouter.of(context).go(
+                      '${GoRouter.of(context).routeInformationProvider.value.uri.path}/'
+                      '${announcementsRoute.pageRoute}',
+                    );
+                    break;
+                }
+              },
+            ),
+          ],
           leading: parentScaffold?.hasDrawer ?? false
               ? IconButton(
                   onPressed: () {
@@ -85,6 +110,21 @@ class FeedScreenViewState extends State<FeedScreenView>
                     'Показаны последние загруженные посты',
                     const Color(0xFF696969),
                     const Color(0xFFFFFFFF),
+                  ),
+                if (model.pinnedPosts.isNotEmpty)
+                  GestureDetector(
+                    onTap: () {
+                      GoRouter.of(context).go(
+                        '${GoRouter.of(context).routeInformationProvider.value.uri.path}/'
+                        '${pinnedPostsRoute.pageRoute}',
+                      );
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.all(16.0),
+                      width: double.infinity,
+                      color: Theme.of(context).focusColor,
+                      child: const Text('Закреплённые посты'),
+                    ),
                   ),
                 Expanded(
                   child: NotificationListener<ScrollEndNotification>(

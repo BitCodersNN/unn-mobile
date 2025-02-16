@@ -35,25 +35,14 @@ class FeedPostViewModel extends BaseViewModel {
 
   late ReactionViewModel _reactionViewModel;
 
-  bool get isPinned {
-    try {
-      return _feedScreenViewModel.isPostPinned(blogData.id);
-    } catch (_) {
-      return false;
-    }
-  }
+  bool get isPinned => _feedScreenViewModel?.isPostPinned(blogData.id) ?? false;
 
-  bool get isAnnouncement {
-    try {
-      return _feedScreenViewModel.isPostImportant(blogData.id);
-    } catch (_) {
-      return false;
-    }
-  }
+  bool get isAnnouncement =>
+      _feedScreenViewModel?.isPostImportant(blogData.id) ?? false;
 
   final List<FeedCommentViewModel> comments = [];
 
-  late final FeedScreenViewModel _feedScreenViewModel;
+  FeedScreenViewModel? _feedScreenViewModel;
 
   FeedPostViewModel(
     this._postsService,
@@ -86,7 +75,7 @@ class FeedPostViewModel extends BaseViewModel {
 
   ReactionViewModel get reactionViewModel => _reactionViewModel;
 
-  void initFromFullInfo(BlogPost post, FeedScreenViewModel feedVm) {
+  void initFromFullInfo(BlogPost post, FeedScreenViewModel? feedVm) {
     _feedScreenViewModel = feedVm;
 
     blogData = post.data;
@@ -110,11 +99,12 @@ class FeedPostViewModel extends BaseViewModel {
               AttachedFileViewModel.cached(file.id)..initFromFileData(file),
         ),
       );
+
     notifyListeners();
   }
 
   Future<void> refresh() async {
-    await _feedScreenViewModel.refreshFeatured();
+    await _feedScreenViewModel?.refreshFeatured();
     final post = await _postsService.getBlogPost(id: blogData.id);
     if (post == null) {
       _loggerService.log('Failed to refresh post');
@@ -125,13 +115,13 @@ class FeedPostViewModel extends BaseViewModel {
 
   Future<void> togglePin() async {
     if (isPinned) {
-      if (await _pinningService.pin(blogData.id)) {
-        await _feedScreenViewModel.refreshFeatured();
+      if (await _pinningService.unpin(blogData.pinnedId ?? 0)) {
+        await _feedScreenViewModel?.refreshFeatured();
         notifyListeners();
       }
     } else {
-      if (await _pinningService.unpin(blogData.id)) {
-        await _feedScreenViewModel.refreshFeatured();
+      if (await _pinningService.pin(blogData.pinnedId ?? 0)) {
+        await _feedScreenViewModel?.refreshFeatured();
         notifyListeners();
       }
     }
@@ -140,7 +130,7 @@ class FeedPostViewModel extends BaseViewModel {
   Future<void> markReadIfImportant() async {
     if (isAnnouncement) {
       if (await _postAcknowledgementService.read(blogData.id)) {
-        await _feedScreenViewModel.refreshFeatured();
+        await _feedScreenViewModel?.refreshFeatured();
         notifyListeners();
       }
     }

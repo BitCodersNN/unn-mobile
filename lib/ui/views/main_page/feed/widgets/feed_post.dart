@@ -37,7 +37,7 @@ class FeedPost extends StatefulWidget {
   @override
   State<FeedPost> createState() => _FeedPostState();
 
-  static HtmlWidget htmlWidget(String text, BuildContext context) {
+  static Widget htmlWidget(String text, BuildContext context) {
     return HtmlWidget(
       text,
       onTapUrl: (url) async {
@@ -149,9 +149,8 @@ class FeedPost extends StatefulWidget {
     FeedPostViewModel post,
   ) async {
     GoRouter.of(context).go(
-      '${MainPageRouting.navbarRoutes[0].pageRoute}/'
-      '${MainPageRouting.navbarRoutes[0].subroutes[0].pageRoute}',
-      extra: post,
+      '${GoRouter.of(context).routeInformationProvider.value.uri.path}/'
+      '${postCommentsRoute.pageRoute.replaceAll(':postId', post.blogData.id.toString())}',
     );
   }
 }
@@ -186,9 +185,7 @@ class _FeedPostState extends State<FeedPost> {
               padding: const EdgeInsets.all(18),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(0.0),
-                color: model.isNewPost
-                    ? theme.extension<UnnMobileColors>()!.newPostHighlight
-                    : theme.colorScheme.surface,
+                color: getPostColor(context, model),
                 boxShadow: const [
                   BoxShadow(
                     offset: Offset(0, 0),
@@ -200,12 +197,31 @@ class _FeedPostState extends State<FeedPost> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _PostHeader(
-                    postTime: model.postTime,
-                    viewModel: model.profileViewModel,
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _PostHeader(
+                          postTime: model.postTime,
+                          viewModel: model.profileViewModel,
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: model.togglePin,
+                        icon: Icon(
+                          model.isPinned
+                              ? Icons.push_pin
+                              : Icons.push_pin_outlined,
+                        ),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 16.0),
                   FeedPost.htmlWidget(model.postText, context),
+                  if (model.isAnnouncement)
+                    TextButton(
+                      onPressed: model.markReadIfImportant,
+                      child: const Text('Отметить прочитанным'),
+                    ),
                   const SizedBox(height: 16.0),
                   for (final file in model.attachedFileViewModels)
                     AttachedFile(viewModel: file),
@@ -283,6 +299,17 @@ class _FeedPostState extends State<FeedPost> {
       onModelReady: (p0) => p0.onError.subscribe(onPostRefreshError),
       onDispose: (p0) => p0.onError.unsubscribe(onPostRefreshError),
     );
+  }
+
+  Color? getPostColor(BuildContext context, FeedPostViewModel model) {
+    final theme = Theme.of(context);
+    final unnMobileColors = theme.extension<UnnMobileColors>()!;
+    if (model.isAnnouncement) {
+      return theme.highlightColor;
+    }
+    return model.isNewPost
+        ? unnMobileColors.newPostHighlight
+        : theme.colorScheme.surface;
   }
 }
 
