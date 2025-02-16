@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:unn_mobile/core/models/employee_data.dart';
 import 'package:unn_mobile/core/models/student_data.dart';
-import 'package:unn_mobile/core/models/user_data.dart';
 import 'package:unn_mobile/ui/views/main_page/about/about.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/feed.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/widgets/comments_page.dart';
 import 'package:unn_mobile/ui/views/main_page/grades/grades.dart';
 import 'package:unn_mobile/ui/views/main_page/schedule/schedule.dart';
 import 'package:unn_mobile/ui/views/main_page/settings/settings.dart';
-import 'package:unn_mobile/ui/views/main_page/certificates_online/certificates_online.dart';
 import 'package:unn_mobile/ui/views/main_page/donations/donations.dart';
 
 class MainPageRouteData {
@@ -47,11 +44,7 @@ class MainPageRouting {
       builder: (p0) => FeedScreenView(
         routeIndex: _navbarIndex++,
       ),
-      userTypes: [
-        StudentData,
-        EmployeeData,
-        UserData,
-      ],
+      userTypes: [],
       subroutes: [
         MainPageRouteData(
           Icons.comment,
@@ -60,7 +53,7 @@ class MainPageRouting {
           'comments',
           builder: (p0) => const CommentsPage(),
           isDisabled: false,
-          userTypes: [StudentData, EmployeeData, UserData],
+          userTypes: [],
         ),
       ],
     ),
@@ -72,7 +65,7 @@ class MainPageRouting {
       builder: (p0) => ScheduleScreenView(
         routeIndex: _navbarIndex++,
       ),
-      userTypes: [StudentData, EmployeeData, UserData],
+      userTypes: [],
     ),
     MainPageRouteData(
       Icons.map,
@@ -81,7 +74,7 @@ class MainPageRouting {
       '/map',
       builder: (p0) => const Placeholder(),
       isDisabled: true,
-      userTypes: [StudentData, EmployeeData, UserData],
+      userTypes: [],
     ),
     MainPageRouteData(
       Icons.menu_book,
@@ -90,7 +83,7 @@ class MainPageRouting {
       '/source',
       builder: (p0) => const Placeholder(),
       isDisabled: true,
-      userTypes: [StudentData, EmployeeData, UserData],
+      userTypes: [],
     ),
   ];
 
@@ -103,21 +96,21 @@ class MainPageRouting {
       builder: (p0) => const GradesScreenView(),
       userTypes: [StudentData],
     ),
-    MainPageRouteData(
+    /*MainPageRouteData(
       Icons.description,
       Icons.description_outlined,
       'Справки онлайн',
       'online_certificates',
       builder: (p0) => const OnlineCertificatesScreenView(),
       userTypes: [],
-    ),
+    ),*/
     MainPageRouteData(
       Icons.settings,
       Icons.settings_outlined,
       'Настройки',
       'settings',
       builder: (p0) => const SettingsScreenView(),
-      userTypes: [StudentData, EmployeeData, UserData],
+      userTypes: [],
     ),
     MainPageRouteData(
       Icons.credit_card,
@@ -125,7 +118,7 @@ class MainPageRouting {
       'Поддержать',
       'donations',
       builder: (p0) => const DonationsScreenView(),
-      userTypes: [StudentData, EmployeeData, UserData],
+      userTypes: [],
       onlineOnly: true,
     ),
     MainPageRouteData(
@@ -134,7 +127,7 @@ class MainPageRouting {
       'О нас',
       'about',
       builder: (p0) => AboutScreenView(),
-      userTypes: [StudentData, EmployeeData, UserData],
+      userTypes: [],
     ),
   ];
   static final List<MainPageRouteData> _activeNavbarRoutes =
