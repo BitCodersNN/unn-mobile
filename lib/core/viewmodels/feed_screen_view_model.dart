@@ -1,3 +1,5 @@
+import 'package:unn_mobile/core/models/feed/blog_post_type.dart';
+import 'package:unn_mobile/core/services/interfaces/feed/blog_post_receivers/featured_blog_post_service.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/blog_post_receivers/regular_blog_posts_service.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/providers/blog_post_provider.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/providers/last_feed_load_date_time_provider.dart';
@@ -12,8 +14,11 @@ class FeedScreenViewModel extends BaseViewModel
   final LastFeedLoadDateTimeProvider _lastFeedLoadDateTimeProvider;
   final BlogPostProvider _blogPostProvider;
   final RegularBlogPostsService _regularBlogPostsService;
+  final FeaturedBlogPostsService _featuredBlogPostsService;
 
   final List<FeedPostViewModel> posts = [];
+  final List<FeedPostViewModel> pinnedPosts = [];
+  final List<FeedPostViewModel> announcements = [];
 
   bool _failedToLoad = false;
   int _nextPage = 1;
@@ -51,6 +56,7 @@ class FeedScreenViewModel extends BaseViewModel
     this._lastFeedLoadDateTimeProvider,
     this._blogPostProvider,
     this._regularBlogPostsService,
+    this._featuredBlogPostsService,
   );
 
   void init() {
@@ -63,8 +69,8 @@ class FeedScreenViewModel extends BaseViewModel
         .then(
           (value) => posts.addAll(
             value?.map(
-                  (p) =>
-                      FeedPostViewModel.cached(p.data.id)..initFromFullInfo(p),
+                  (p) => FeedPostViewModel.cached(p.data.id)
+                    ..initFromFullInfo(p, this),
                 ) ??
                 [],
           ),
@@ -92,7 +98,7 @@ class FeedScreenViewModel extends BaseViewModel
     }
     posts.addAll(
       freshPosts.map(
-        (p) => FeedPostViewModel.cached(p.data.id)..initFromFullInfo(p),
+        (p) => FeedPostViewModel.cached(p.data.id)..initFromFullInfo(p, this),
       ),
     );
     failedToLoad = false;
@@ -103,6 +109,9 @@ class FeedScreenViewModel extends BaseViewModel
   Future<void> reload() async {
     failedToLoad = false;
     loadingMore = true;
+
+    await refreshFeatured();
+
     final freshPosts = await _regularBlogPostsService.getRegularBlogPosts(
       postsPerPage: postsPerPage,
     );
@@ -118,7 +127,7 @@ class FeedScreenViewModel extends BaseViewModel
     await Future.delayed(const Duration(milliseconds: 500));
     posts.addAll(
       freshPosts.map(
-        (p) => FeedPostViewModel.cached(p.data.id)..initFromFullInfo(p),
+        (p) => FeedPostViewModel.cached(p.data.id)..initFromFullInfo(p, this),
       ),
     );
     showingOfflinePosts = false;
@@ -126,6 +135,31 @@ class FeedScreenViewModel extends BaseViewModel
     _nextPage = 2;
     notifyListeners();
   }
+
+  Future<void> refreshFeatured() async {
+    final featuredPosts =
+        await _featuredBlogPostsService.getFeaturedBlogPosts();
+    pinnedPosts.clear();
+    pinnedPosts.addAll(
+      featuredPosts?[BlogPostType.pinned]?.map(
+            (p) =>
+                FeedPostViewModel.cached(p.data.id)..initFromFullInfo(p, this),
+          ) ??
+          [],
+    );
+    announcements.clear();
+    announcements.addAll(
+      featuredPosts?[BlogPostType.important]?.map(
+            (p) =>
+                FeedPostViewModel.cached(p.data.id)..initFromFullInfo(p, this),
+          ) ??
+          [],
+    );
+  }
+
+  bool isPostPinned(int id) => pinnedPosts.any((p) => p.blogData.id == id);
+
+  bool isPostImportant(int id) => announcements.any((p) => p.blogData.id == id);
 
   @override
   void refresh() {
