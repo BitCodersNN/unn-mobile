@@ -18,6 +18,6 @@ class AttachedFileViewModelFactory extends CachedViewModelFactoryBase<
       getService<GettingFileData>(),
       getService<LoggerService>(),
       getService<FeedFileDownloaderService>(),
-    )..init(key);
+    );
   }
 }

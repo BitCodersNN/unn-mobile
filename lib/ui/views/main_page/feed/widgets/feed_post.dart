@@ -1,13 +1,15 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:event/event.dart';
+import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_bbcode/flutter_bbcode.dart';
+import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:go_router/go_router.dart';
+import 'package:injector/injector.dart';
 import 'package:intl/intl.dart';
 import 'package:unn_mobile/core/misc/app_settings.dart';
-import 'package:unn_mobile/core/misc/custom_bb_tags.dart';
 import 'package:unn_mobile/core/models/rating_list.dart';
+import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 import 'package:unn_mobile/core/viewmodels/feed_post_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/profile_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/reaction_view_model.dart';
@@ -18,6 +20,7 @@ import 'package:unn_mobile/ui/views/main_page/feed/widgets/attached_file.dart';
 import 'package:unn_mobile/ui/views/main_page/main_page_routing.dart';
 import 'package:unn_mobile/ui/widgets/shimmer.dart';
 import 'package:unn_mobile/ui/widgets/shimmer_loading.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 const idkWhatColor = Color(0xFF989EA9);
 
@@ -33,6 +36,51 @@ class FeedPost extends StatefulWidget {
 
   @override
   State<FeedPost> createState() => _FeedPostState();
+
+  static HtmlWidget htmlWidget(String text, BuildContext context) {
+    return HtmlWidget(
+      text,
+      onTapUrl: (url) async {
+        if (!await launchUrl(Uri.parse(url))) {
+          Injector.appInstance
+              .get<LoggerService>()
+              .log('Could not launch url $url');
+        }
+        return true;
+      },
+      onTapImage: (imageMetadata) async {
+        await showDialog(
+          context: context,
+          builder: (context) {
+            return ExtendedImageSlidePage(
+              slideAxis: SlideAxis.vertical,
+              child: ExtendedImage(
+                enableLoadState: true,
+                mode: ExtendedImageMode.gesture,
+                initGestureConfigHandler: (state) {
+                  return GestureConfig(
+                    minScale: 0.9,
+                    animationMinScale: 0.7,
+                    maxScale: 3.0,
+                    animationMaxScale: 3.5,
+                    speed: 1.0,
+                    inertialSpeed: 100.0,
+                    initialScale: 1.0,
+                    inPageView: false,
+                    initialAlignment: InitialAlignment.center,
+                  );
+                },
+                image: CachedNetworkImageProvider(
+                  imageMetadata.sources.first.url,
+                ),
+                enableSlideOutPage: true,
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
 
   static Widget _reactionCounterWithIcons(
     ReactionViewModel model,
@@ -157,32 +205,10 @@ class _FeedPostState extends State<FeedPost> {
                     viewModel: model.profileViewModel,
                   ),
                   const SizedBox(height: 16.0),
-                  BBCodeText(
-                    data: model.postText,
-                    stylesheet: getBBStyleSheet(),
-                    errorBuilder: (context, error, stack) {
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            'Failed to parse BBCode correctly. ',
-                            style: TextStyle(color: Colors.red),
-                          ),
-                          const Text(
-                            'This usually means on of the tags is not properly handling unexpected input.\n',
-                          ),
-                          const Text('Original text: '),
-                          Text(model.postText.replaceAll('\n', '\n#')),
-                          Text(error.toString()),
-                        ],
-                      );
-                    },
-                  ),
+                  FeedPost.htmlWidget(model.postText, context),
                   const SizedBox(height: 16.0),
                   for (final file in model.attachedFileViewModels)
-                    AttachedFile(
-                      viewModel: file,
-                    ),
+                    AttachedFile(viewModel: file),
                   if (!widget.showingComments)
                     const Padding(
                       padding: EdgeInsets.only(left: 4, right: 4, top: 10),

@@ -1,4 +1,5 @@
-import 'package:unn_mobile/core/services/interfaces/feed/blog_post_receivers/feed_updater_service.dart';
+import 'package:unn_mobile/core/services/interfaces/feed/blog_post_receivers/regular_blog_posts_service.dart';
+import 'package:unn_mobile/core/services/interfaces/feed/providers/blog_post_provider.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/providers/last_feed_load_date_time_provider.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/feed_post_view_model.dart';
@@ -6,148 +7,128 @@ import 'package:unn_mobile/core/viewmodels/main_page_route_view_model.dart';
 
 class FeedScreenViewModel extends BaseViewModel
     implements MainPageRouteViewModel {
-  static const postsPerPage = 5;
-
-  final FeedUpdaterService _feedStreamUpdater;
+  static const postsPerPage = 10;
+  late DateTime lastFeedLoadDateTime;
   final LastFeedLoadDateTimeProvider _lastFeedLoadDateTimeProvider;
+  final BlogPostProvider _blogPostProvider;
+  final RegularBlogPostsService _regularBlogPostsService;
 
   final List<FeedPostViewModel> posts = [];
 
-  double scrollPosition = 0.0;
+  bool _failedToLoad = false;
+  int _nextPage = 1;
 
-  bool _showUpdateButton = false;
+  bool get failedToLoad => _failedToLoad;
+  bool get showingOfflinePosts => _showingOfflinePosts;
+  bool get loadingMore => _loadingMore;
+
+  set failedToLoad(bool value) {
+    _failedToLoad = value;
+    notifyListeners();
+  }
+
+  set showingOfflinePosts(bool value) {
+    _showingOfflinePosts = value;
+    notifyListeners();
+  }
+
+  set loadingMore(bool value) {
+    _loadingMore = value;
+    notifyListeners();
+  }
+
+  double scrollPosition = 0.0;
 
   void Function()? scrollToTop;
 
   void Function()? onRefresh;
 
-  bool _loadingPosts = false;
+  bool _showingOfflinePosts = false;
 
-  int _lastLoadedPost = 0;
-
-  bool _isUpdatingFeed = false;
+  bool _loadingMore = false;
 
   FeedScreenViewModel(
-    this._feedStreamUpdater,
     this._lastFeedLoadDateTimeProvider,
+    this._blogPostProvider,
+    this._regularBlogPostsService,
   );
 
-  bool get loadingPosts => _loadingPosts;
-
-  bool get showSyncFeedButton => _showUpdateButton;
-
-  set showSyncFeedButton(bool value) {
-    _showUpdateButton = value;
-    notifyListeners();
+  void init() {
+    _lastFeedLoadDateTimeProvider.getData().then(
+          (value) => lastFeedLoadDateTime = value ?? DateTime(2000, 1, 1),
+        );
+    showingOfflinePosts = true;
+    _blogPostProvider
+        .getData()
+        .then(
+          (value) => posts.addAll(
+            value?.map(
+                  (p) =>
+                      FeedPostViewModel.cached(p.data.id)..initFromFullInfo(p),
+                ) ??
+                [],
+          ),
+        )
+        .whenComplete(
+      () async {
+        await reload();
+      },
+    );
   }
 
-  @override
-  void dispose() {
-    _feedStreamUpdater.removeListener(onFeedUpdated);
-    super.dispose();
-  }
-
-  void getMorePosts() {
-    if (_isUpdatingFeed) {
+  Future<void> loadMorePosts() async {
+    if (loadingMore) {
       return;
     }
-    if (_loadingPosts) {
-      return;
-    }
-    _loadingPosts = true;
-    notifyListeners();
-
-    if (_lastLoadedPost + postsPerPage > _feedStreamUpdater.feedPosts.length) {
-      posts.addAll(
-        _feedStreamUpdater.feedPosts
-            .getRange(
-              _lastLoadedPost,
-              _feedStreamUpdater.feedPosts.length,
-            )
-            .map(
-              (p) => FeedPostViewModel.cached(p.id)..init(p),
-            ),
-        //
-      );
-      _lastLoadedPost = _feedStreamUpdater.feedPosts.length;
-      notifyListeners();
-      _loadNextPage();
+    loadingMore = true;
+    final freshPosts = await _regularBlogPostsService.getRegularBlogPosts(
+      pageNumber: _nextPage,
+      postsPerPage: postsPerPage,
+    );
+    if (freshPosts == null) {
+      failedToLoad = true;
+      loadingMore = false;
       return;
     }
     posts.addAll(
-      _feedStreamUpdater.feedPosts
-          .getRange(
-            _lastLoadedPost,
-            _lastLoadedPost + postsPerPage,
-          )
-          .map(
-            (p) => FeedPostViewModel.cached(p.id)..init(p),
-          ),
-      //
+      freshPosts.map(
+        (p) => FeedPostViewModel.cached(p.data.id)..initFromFullInfo(p),
+      ),
     );
-    _lastLoadedPost += postsPerPage;
-    _loadingPosts = false;
+    failedToLoad = false;
+    _nextPage++;
+    loadingMore = false;
+  }
+
+  Future<void> reload() async {
+    failedToLoad = false;
+    loadingMore = true;
+    final freshPosts = await _regularBlogPostsService.getRegularBlogPosts(
+      postsPerPage: postsPerPage,
+    );
+    if (freshPosts == null) {
+      loadingMore = false;
+      failedToLoad = true;
+      return;
+    }
+    _blogPostProvider.saveData(freshPosts);
+    posts.clear();
     notifyListeners();
-  }
-
-  void init() {
-    if (isInitialized) {
-      return;
-    }
-    isInitialized = true;
-
-    syncFeed();
-    _feedStreamUpdater.addListener(onFeedUpdated);
-  }
-
-  void onFeedUpdated() {
-    if (posts.isEmpty) {
-      syncFeed();
-      return;
-    }
-    if (_feedStreamUpdater.feedPosts.firstOrNull !=
-        posts.firstOrNull?.blogData) {
-      showSyncFeedButton = true;
-    }
+    // Если не подождать, то не работает...
+    await Future.delayed(const Duration(milliseconds: 500));
+    posts.addAll(
+      freshPosts.map(
+        (p) => FeedPostViewModel.cached(p.data.id)..initFromFullInfo(p),
+      ),
+    );
+    showingOfflinePosts = false;
+    loadingMore = false;
+    _nextPage = 2;
     notifyListeners();
   }
 
   @override
   void refresh() {
-    onRefresh?.call();
-  }
-
-  /// Синхронизирует посты в вьюмодели с сервисом
-  void syncFeed() {
-    _lastLoadedPost = 0;
-    posts.clear();
-    showSyncFeedButton = false;
-    Future.delayed(const Duration(milliseconds: 300), () async {
-      getMorePosts();
-      scrollToTop?.call();
-      // await _lastFeedLoadDateTimeProvider.saveData(DateTime.now());
-      Future.delayed(const Duration(seconds: 2), () async {
-        if (posts.isNotEmpty) {
-          _lastFeedLoadDateTimeProvider.saveData(posts.first.postTime);
-        }
-      });
-    });
-  }
-
-  /// Отправляет сигнал сервису для обновления постов
-  Future<void> updateFeed() async {
-    showSyncFeedButton = false;
-    _isUpdatingFeed = true;
-    await _feedStreamUpdater.updateFeed();
-    _isUpdatingFeed = false;
-    syncFeed();
-  }
-
-  void _loadNextPage() {
-    _loadingPosts = true;
-    _feedStreamUpdater.loadNextPage().whenComplete(() {
-      _loadingPosts = false;
-      notifyListeners();
-    });
+    scrollToTop?.call();
   }
 }

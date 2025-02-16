@@ -3,6 +3,7 @@ import 'package:unn_mobile/core/misc/current_user_sync_storage.dart';
 import 'package:unn_mobile/core/misc/user_functions.dart';
 import 'package:unn_mobile/core/models/student_data.dart';
 import 'package:unn_mobile/core/models/user_data.dart';
+import 'package:unn_mobile/core/models/user_short_info.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_profile.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_profile_of_current_user_service.dart';
 import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
@@ -61,10 +62,11 @@ class ProfileViewModel extends BaseViewModel {
     int? userId,
     bool loadCurrentUser = false,
     bool loadFromPost = false,
+    bool setBusy = true,
   }) {
-    assert((userId == null) == loadCurrentUser);
+    assert((userId != null) || loadCurrentUser);
     if (force || _loadedData == null) {
-      _isLoading = true;
+      _isLoading = setBusy;
       _hasError = false;
       notifyListeners();
       (loadCurrentUser ? _getCurrentUser() : _getProfile(userId!, loadFromPost))
@@ -82,6 +84,28 @@ class ProfileViewModel extends BaseViewModel {
         notifyListeners();
       });
     }
+  }
+
+  void initFromShortInfo(UserShortInfo info, {bool force = false}) {
+    if (_loadedData != null && !force) {
+      return;
+    }
+    _loadedData = UserData(
+      info.bitrixId ?? 0,
+      null,
+      Fullname(info.fullname, null, null),
+      null,
+      null,
+      '',
+      info.photoSrc,
+      null,
+    );
+    init(
+      force: true,
+      userId: info.bitrixId ?? 0,
+      loadFromPost: true,
+      setBusy: false,
+    );
   }
 
   Future<UserData?> _getCurrentUser() async {
