@@ -50,6 +50,8 @@ dependencies:
   event: ^3.1.0
   webview_flutter_android: ^4.0.0
   flutter_widget_from_html: ^0.15.3
+  flutter_file_dialog: ^3.0.2
+  mime: ^2.0.0
 
 dev_dependencies:
   flutter_test:

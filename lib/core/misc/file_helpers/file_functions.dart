@@ -56,5 +56,5 @@ String shortenFileName(String fileName, [int maxFileNameLength = 127]) {
         ? baseName.length
         : maxFileNameLength - extension.length - 1,
   );
-  return '$shortenedBaseName.$extension';
+  return '$shortenedBaseName$extension';
 }

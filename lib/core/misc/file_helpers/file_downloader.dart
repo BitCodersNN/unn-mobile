@@ -1,5 +1,7 @@
 import 'dart:io';
 import 'package:dio/dio.dart';
+import 'package:flutter_file_dialog/flutter_file_dialog.dart';
+import 'package:mime/mime.dart';
 import 'package:unn_mobile/core/constants/regular_expressions.dart';
 import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/misc/file_helpers/file_functions.dart';
@@ -36,6 +38,7 @@ class FileDownloader {
   /// [downloadUrl] - URL для загрузки файла (опционально).
   ///   Если не указан, используется [_basePath].
   /// [force] - если `true`, файл будет загружен повторно, даже если он уже существует.
+  /// [pickLocation] - если `true`, то пользователю будет предложено выбрать место для загрузки.
   ///
   /// Возвращает [File], если загрузка прошла успешно, или `null`, если произошла ошибка.
   Future<File?> downloadFile(
@@ -43,8 +46,38 @@ class FileDownloader {
     String? downloadFolderName,
     String? downloadUrl,
     bool force = false,
+    bool pickLocation = false,
   }) async {
-    final String? downloadsPath = await getDownloadPath();
+    if (pickLocation && await FlutterFileDialog.isPickDirectorySupported()) {
+      final location = await FlutterFileDialog.pickDirectory();
+      if (location == null) {
+        return null;
+      }
+      final response = await _getFileResponse(downloadUrl, fileName);
+      if (response == null) {
+        return null;
+      }
+
+      try {
+        final shortenedFileName = shortenFileName(fileName);
+        final mimeType = lookupMimeType(shortenedFileName);
+        final path = await FlutterFileDialog.saveFileToDirectory(
+          directory: location,
+          data: response.data,
+          fileName: shortenedFileName,
+          mimeType: mimeType,
+          replace: true,
+        );
+        if (path == null) {
+          return null;
+        }
+        return File(path);
+      } catch (error, stackTrace) {
+        _loggerService.log('Exception: $error\nStackTrace: $stackTrace');
+        return null;
+      }
+    }
+    final downloadsPath = await getDownloadPath();
     if (downloadsPath == null) {
       _loggerService.log('Download path is null');
       return null;
@@ -63,6 +96,21 @@ class FileDownloader {
     }
 
     await storedFile.parent.create(recursive: true);
+    final response = await _getFileResponse(downloadUrl, fileName);
+    try {
+      await storedFile.writeAsBytes(response!.data);
+    } catch (error, stackTrace) {
+      _loggerService.log('Exception: $error\nStackTrace: $stackTrace');
+      return null;
+    }
+
+    return storedFile;
+  }
+
+  Future<Response?> _getFileResponse(
+    String? downloadUrl,
+    String fileName,
+  ) async {
     Response response;
     try {
       response = await _apiHelper.get(
@@ -70,19 +118,11 @@ class FileDownloader {
         queryParameters: _extractQueryParameters(downloadUrl),
         options: Options(responseType: ResponseType.bytes),
       );
+      return response;
     } catch (error, stackTrace) {
       _loggerService.log('Exception: $error\nStackTrace: $stackTrace');
       return null;
     }
-
-    try {
-      await storedFile.writeAsBytes(response.data);
-    } catch (error, stackTrace) {
-      _loggerService.log('Exception: $error\nStackTrace: $stackTrace');
-      return null;
-    }
-
-    return storedFile;
   }
 
   /// Загружает список файлов с именами [fileNames].
