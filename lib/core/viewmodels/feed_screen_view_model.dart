@@ -141,7 +141,7 @@ class FeedScreenViewModel extends BaseViewModel
         await _featuredBlogPostsService.getFeaturedBlogPosts();
     pinnedPosts.clear();
     notifyListeners();
-    await Future.delayed(const Duration(milliseconds: 10));
+    await Future.delayed(const Duration(milliseconds: 50));
     pinnedPosts.addAll(
       featuredPosts?[BlogPostType.pinned]?.map(
             (p) =>
@@ -152,7 +152,7 @@ class FeedScreenViewModel extends BaseViewModel
     notifyListeners();
     announcements.clear();
     notifyListeners();
-    await Future.delayed(const Duration(milliseconds: 10));
+    await Future.delayed(const Duration(milliseconds: 50));
     announcements.addAll(
       featuredPosts?[BlogPostType.important]?.map(
             (p) =>

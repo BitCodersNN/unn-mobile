@@ -182,7 +182,6 @@ class _FeedPostState extends State<FeedPost> {
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 100),
               margin: const EdgeInsets.only(top: 12),
-              padding: const EdgeInsets.all(18),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(0.0),
                 color: getPostColor(context, model),
@@ -195,100 +194,119 @@ class _FeedPostState extends State<FeedPost> {
                 ],
               ),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: _PostHeader(
-                          postTime: model.postTime,
-                          viewModel: model.profileViewModel,
-                        ),
-                      ),
-                      IconButton(
-                        onPressed: model.togglePin,
-                        icon: Icon(
-                          model.isPinned
-                              ? Icons.push_pin
-                              : Icons.push_pin_outlined,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16.0),
-                  FeedPost.htmlWidget(model.postText, context),
                   if (model.isAnnouncement)
-                    TextButton(
-                      onPressed: model.markReadIfImportant,
-                      child: const Text('Отметить прочитанным'),
+                    Container(
+                      decoration: const BoxDecoration(color: Color(0x33000000)),
+                      padding: const EdgeInsets.all(8.0),
+                      width: double.infinity,
+                      child: const Text('Важное сообщение'),
                     ),
-                  const SizedBox(height: 16.0),
-                  for (final file in model.attachedFileViewModels)
-                    AttachedFile(viewModel: file),
-                  if (!widget.showingComments)
-                    const Padding(
-                      padding: EdgeInsets.only(left: 4, right: 4, top: 10),
-                      child: Divider(
-                        thickness: 0.4,
-                        color: idkWhatColor,
-                      ),
-                    ),
-                  const SizedBox(height: 8),
-                  if (widget.showingComments)
-                    Row(
+                  Padding(
+                    padding: const EdgeInsets.all(18.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        FeedPost._reactionCounterWithIcons(
-                          model.reactionViewModel,
-                          reactionsSize,
-                          idkWhatColor,
-                        ),
-                      ],
-                    ),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      _ReactionButton(
-                        model.reactionViewModel,
-                        !widget.showingComments,
-                      ),
-                      const SizedBox(width: 12),
-                      GestureDetector(
-                        onTap: () async {
-                          if (widget.showingComments) {
-                            return;
-                          }
-                          FeedPost._openPostCommentsPage(context, widget.post);
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 6,
-                          ).copyWith(right: 8),
-                          decoration: BoxDecoration(
-                            color: idkWhatColor.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const Icon(
-                                Icons.chat_bubble_outline,
-                                color: idkWhatColor,
-                                size: 23,
+                        Row(
+                          children: [
+                            Expanded(
+                              child: _PostHeader(
+                                postTime: model.postTime,
+                                viewModel: model.profileViewModel,
                               ),
-                              const SizedBox(width: 6),
-                              Text(
-                                '${model.commentsCount}',
-                                style: const TextStyle(
-                                  fontSize: 14,
-                                  color: idkWhatColor,
-                                ),
+                            ),
+                            IconButton(
+                              onPressed: model.togglePin,
+                              icon: Icon(
+                                model.isPinned
+                                    ? Icons.push_pin
+                                    : Icons.push_pin_outlined,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 16.0),
+                        FeedPost.htmlWidget(model.postText, context),
+                        if (model.isAnnouncement)
+                          FilledButton(
+                            onPressed: model.markReadIfImportant,
+                            child: const Text('Отметить прочитанным'),
+                          )
+                        else
+                          const SizedBox(height: 16.0),
+                        for (final file in model.attachedFileViewModels)
+                          AttachedFile(viewModel: file),
+                        if (!widget.showingComments)
+                          const Padding(
+                            padding:
+                                EdgeInsets.only(left: 4, right: 4, top: 10),
+                            child: Divider(
+                              thickness: 0.4,
+                              color: idkWhatColor,
+                            ),
+                          ),
+                        const SizedBox(height: 8),
+                        if (widget.showingComments)
+                          Row(
+                            children: [
+                              FeedPost._reactionCounterWithIcons(
+                                model.reactionViewModel,
+                                reactionsSize,
+                                idkWhatColor,
                               ),
                             ],
                           ),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            _ReactionButton(
+                              model.reactionViewModel,
+                              !widget.showingComments,
+                            ),
+                            const SizedBox(width: 12),
+                            GestureDetector(
+                              onTap: () async {
+                                if (widget.showingComments) {
+                                  return;
+                                }
+                                FeedPost._openPostCommentsPage(
+                                  context,
+                                  widget.post,
+                                );
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 6,
+                                ).copyWith(right: 8),
+                                decoration: BoxDecoration(
+                                  color: idkWhatColor.withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    const Icon(
+                                      Icons.chat_bubble_outline,
+                                      color: idkWhatColor,
+                                      size: 23,
+                                    ),
+                                    const SizedBox(width: 6),
+                                    Text(
+                                      '${model.commentsCount}',
+                                      style: const TextStyle(
+                                        fontSize: 14,
+                                        color: idkWhatColor,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ],
               ),
@@ -305,7 +323,7 @@ class _FeedPostState extends State<FeedPost> {
     final theme = Theme.of(context);
     final unnMobileColors = theme.extension<UnnMobileColors>()!;
     if (model.isAnnouncement) {
-      return theme.highlightColor;
+      return unnMobileColors.importantPostHighlight;
     }
     return model.isNewPost
         ? unnMobileColors.newPostHighlight
