@@ -154,9 +154,9 @@ class FeedScreenViewState extends State<FeedScreenView>
                                   const Color(0xFF696969),
                                   const Color(0xFFFFFFFF),
                                 ),
-                              SliverToBoxAdapter(
-                                child: Column(
-                                  children: [
+                              SliverList(
+                                delegate: SliverChildListDelegate(
+                                  [
                                     // Чтобы можно было обновить, если постов нет
                                     if (model.posts.isEmpty)
                                       const SizedBox(

@@ -264,43 +264,32 @@ class _FeedPostState extends State<FeedPost> {
                               !widget.showingComments,
                             ),
                             const SizedBox(width: 12),
-                            GestureDetector(
-                              onTap: () async {
-                                if (widget.showingComments) {
-                                  return;
-                                }
-                                FeedPost._openPostCommentsPage(
-                                  context,
-                                  widget.post,
-                                );
-                              },
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 12,
-                                  vertical: 6,
-                                ).copyWith(right: 8),
-                                decoration: BoxDecoration(
-                                  color: idkWhatColor.withOpacity(0.1),
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    const Icon(
-                                      Icons.chat_bubble_outline,
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 6,
+                              ).copyWith(right: 8),
+                              decoration: BoxDecoration(
+                                color: idkWhatColor.withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Icon(
+                                    Icons.chat_bubble_outline,
+                                    color: idkWhatColor,
+                                    size: 23,
+                                  ),
+                                  const SizedBox(width: 6),
+                                  Text(
+                                    '${model.commentsCount}',
+                                    style: const TextStyle(
+                                      fontSize: 14,
                                       color: idkWhatColor,
-                                      size: 23,
                                     ),
-                                    const SizedBox(width: 6),
-                                    Text(
-                                      '${model.commentsCount}',
-                                      style: const TextStyle(
-                                        fontSize: 14,
-                                        color: idkWhatColor,
-                                      ),
-                                    ),
-                                  ],
-                                ),
+                                  ),
+                                ],
                               ),
                             ),
                           ],

@@ -31,28 +31,31 @@ class PinnedPostsPage extends StatelessWidget {
                     await viewModel?.refreshFeatured();
                   }
                 },
-                child: SingleChildScrollView(
+                child: ListView(
                   physics: const AlwaysScrollableScrollPhysics(),
-                  child: Column(
-                    children: [
-                      if (viewModel == null) const Text('Что-то пошло не так'),
-                      if (viewModel?.pinnedPosts.isEmpty ?? false) ...[
-                        const Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Text('Нет Закреплённых постов'),
+                  children: [
+                    if (viewModel == null) const Text('Что-то пошло не так'),
+                    if (viewModel?.pinnedPosts.isEmpty ?? false) ...[
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Center(
+                          child: Text(
+                            'Нет закреплённых постов',
+                            style: Theme.of(context).textTheme.bodyLarge,
+                          ),
                         ),
-                        const SizedBox(
-                          height: 200,
-                          width: double.infinity,
-                        ),
-                      ],
-                      for (final post in viewModel?.pinnedPosts ?? [])
-                        FeedPost(
-                          post: post,
-                          showingComments: false,
-                        ),
+                      ),
+                      const SizedBox(
+                        height: 200,
+                        width: double.infinity,
+                      ),
                     ],
-                  ),
+                    for (final post in viewModel?.pinnedPosts ?? [])
+                      FeedPost(
+                        post: post,
+                        showingComments: false,
+                      ),
+                  ],
                 ),
               );
             },

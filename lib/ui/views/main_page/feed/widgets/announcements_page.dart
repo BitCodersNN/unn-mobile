@@ -29,28 +29,31 @@ class AnnouncementsPage extends StatelessWidget {
                     await viewModel?.refreshFeatured();
                   }
                 },
-                child: SingleChildScrollView(
+                child: ListView(
                   physics: const AlwaysScrollableScrollPhysics(),
-                  child: Column(
-                    children: [
-                      if (viewModel == null) const Text('Что-то пошло не так'),
-                      if (viewModel?.announcements.isEmpty ?? false) ...[
-                        const Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Text('Нет важных постов'),
+                  children: [
+                    if (viewModel == null) const Text('Что-то пошло не так'),
+                    if (viewModel?.announcements.isEmpty ?? false) ...[
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Center(
+                          child: Text(
+                            'Нет важных постов',
+                            style: Theme.of(context).textTheme.bodyLarge,
+                          ),
                         ),
-                        const SizedBox(
-                          height: 200,
-                          width: double.infinity,
-                        ),
-                      ],
-                      for (final post in viewModel?.announcements ?? [])
-                        FeedPost(
-                          post: post,
-                          showingComments: false,
-                        ),
+                      ),
+                      const SizedBox(
+                        height: 200,
+                        width: double.infinity,
+                      ),
                     ],
-                  ),
+                    for (final post in viewModel?.announcements ?? [])
+                      FeedPost(
+                        post: post,
+                        showingComments: false,
+                      ),
+                  ],
                 ),
               );
             },
