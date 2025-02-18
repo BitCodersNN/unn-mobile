@@ -104,12 +104,7 @@ class FeedScreenViewState extends State<FeedScreenView>
                     Expanded(
                       child: NotificationListener<ScrollEndNotification>(
                         child: RefreshIndicator(
-                          onRefresh: () async {
-                            if (!online) {
-                              return;
-                            }
-                            return model.reload();
-                          },
+                          onRefresh: model.reload,
                           child: CustomScrollView(
                             physics: const AlwaysScrollableScrollPhysics(),
                             controller: _scrollController,
