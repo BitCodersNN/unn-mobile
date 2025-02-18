@@ -17,6 +17,7 @@ class FeedScreenViewModel extends BaseViewModel
   final FeaturedBlogPostsService _featuredBlogPostsService;
 
   final List<FeedPostViewModel> posts = [];
+  final List<FeedPostViewModel> offlinePosts = [];
   final List<FeedPostViewModel> pinnedPosts = [];
   final List<FeedPostViewModel> announcements = [];
 
@@ -24,16 +25,10 @@ class FeedScreenViewModel extends BaseViewModel
   int _nextPage = 1;
 
   bool get failedToLoad => _failedToLoad;
-  bool get showingOfflinePosts => _showingOfflinePosts;
   bool get loadingMore => _loadingMore;
 
   set failedToLoad(bool value) {
     _failedToLoad = value;
-    notifyListeners();
-  }
-
-  set showingOfflinePosts(bool value) {
-    _showingOfflinePosts = value;
     notifyListeners();
   }
 
@@ -48,8 +43,6 @@ class FeedScreenViewModel extends BaseViewModel
 
   void Function()? onRefresh;
 
-  bool _showingOfflinePosts = false;
-
   bool _loadingMore = false;
 
   FeedScreenViewModel(
@@ -63,11 +56,10 @@ class FeedScreenViewModel extends BaseViewModel
     _lastFeedLoadDateTimeProvider.getData().then(
           (value) => lastFeedLoadDateTime = value ?? DateTime(2000, 1, 1),
         );
-    showingOfflinePosts = true;
     _blogPostProvider
         .getData()
         .then(
-          (value) => posts.addAll(
+          (value) => offlinePosts.addAll(
             value?.map(
                   (p) => FeedPostViewModel.cached(p.data.id)
                     ..initFromFullInfo(p, this),
@@ -121,6 +113,7 @@ class FeedScreenViewModel extends BaseViewModel
       return;
     }
     _blogPostProvider.saveData(freshPosts);
+    offlinePosts.clear();
     posts.clear();
     notifyListeners();
     // Если не подождать, то не работает...
@@ -130,7 +123,7 @@ class FeedScreenViewModel extends BaseViewModel
         (p) => FeedPostViewModel.cached(p.data.id)..initFromFullInfo(p, this),
       ),
     );
-    showingOfflinePosts = false;
+    offlinePosts.addAll(posts);
     loadingMore = false;
     _nextPage = 2;
     notifyListeners();
