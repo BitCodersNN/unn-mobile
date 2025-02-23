@@ -78,65 +78,59 @@ class FeedScreenViewModel extends BaseViewModel
     posts.addAll(postViewmodels ?? []);
   }
 
-  Future<void> loadMorePosts() async {
-    if (loadingMore) {
-      return;
-    }
-    loadingMore = true;
-    final freshPosts = await _regularBlogPostsService.getRegularBlogPosts(
-      pageNumber: _nextPage,
-      postsPerPage: postsPerPage,
-    );
-    if (freshPosts == null) {
-      failedToLoad = true;
-      loadingMore = false;
-      return;
-    }
-    _addPostsToList(posts, freshPosts);
-    failedToLoad = false;
-    _nextPage++;
-    loadingMore = false;
-  }
+  Future<void> loadMorePosts() async => await changeState(() async {
+        if (loadingMore) {
+          return;
+        }
+        loadingMore = true;
+        final freshPosts = await _regularBlogPostsService.getRegularBlogPosts(
+          pageNumber: _nextPage,
+          postsPerPage: postsPerPage,
+        );
+        if (freshPosts == null) {
+          failedToLoad = true;
+          loadingMore = false;
+          return;
+        }
+        _addPostsToList(posts, freshPosts);
+        failedToLoad = false;
+        _nextPage++;
+        loadingMore = false;
+      });
 
-  Future<void> reload() async {
-    failedToLoad = false;
-    loadingMore = true;
+  Future<void> reload() async => await changeState(() async {
+        failedToLoad = false;
+        loadingMore = true;
 
-    await refreshFeatured();
+        await refreshFeatured();
 
-    final freshPosts = await _regularBlogPostsService.getRegularBlogPosts(
-      postsPerPage: postsPerPage,
-    );
-    if (freshPosts == null) {
-      loadingMore = false;
-      failedToLoad = true;
-      return;
-    }
-    _blogPostProvider.saveData(freshPosts);
-    offlinePosts.clear();
-    posts.clear();
+        final freshPosts = await _regularBlogPostsService.getRegularBlogPosts(
+          postsPerPage: postsPerPage,
+        );
+        if (freshPosts == null) {
+          loadingMore = false;
+          failedToLoad = true;
+          return;
+        }
+        _blogPostProvider.saveData(freshPosts);
+        offlinePosts.clear();
+        posts.clear();
 
-    _addPostsToList(posts, freshPosts);
+        _addPostsToList(posts, freshPosts);
 
-    offlinePosts.addAll(posts);
-    loadingMore = false;
-    _nextPage = 2;
-    notifyListeners();
-  }
+        offlinePosts.addAll(posts);
+        loadingMore = false;
+        _nextPage = 2;
+      });
 
-  Future<void> refreshFeatured() async {
-    final featuredPosts =
-        await _featuredBlogPostsService.getFeaturedBlogPosts();
-    pinnedPosts.clear();
-
-    _addPostsToList(pinnedPosts, featuredPosts?[BlogPostType.pinned]);
-
-    announcements.clear();
-
-    _addPostsToList(announcements, featuredPosts?[BlogPostType.important]);
-
-    notifyListeners();
-  }
+  Future<void> refreshFeatured() async => changeState(() async {
+        final featuredPosts =
+            await _featuredBlogPostsService.getFeaturedBlogPosts();
+        pinnedPosts.clear();
+        _addPostsToList(pinnedPosts, featuredPosts?[BlogPostType.pinned]);
+        announcements.clear();
+        _addPostsToList(announcements, featuredPosts?[BlogPostType.important]);
+      });
 
   bool isPostPinned(int id) => pinnedPosts.any((p) => p.blogData.id == id);
 

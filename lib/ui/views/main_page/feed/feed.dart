@@ -181,6 +181,7 @@ class FeedScreenViewState extends State<FeedScreenView>
                                         ? model.posts
                                         : model.offlinePosts)
                                       FeedPost(
+                                        key: ObjectKey(post),
                                         post: post,
                                         showingComments: false,
                                       ),
