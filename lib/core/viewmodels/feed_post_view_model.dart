@@ -114,25 +114,24 @@ class FeedPostViewModel extends BaseViewModel {
   }
 
   Future<void> togglePin() async {
-    if (isPinned) {
-      if (await _pinningService.unpin(blogData.pinnedId ?? 0)) {
-        await _feedScreenViewModel?.refreshFeatured();
-        notifyListeners();
-      }
-    } else {
-      if (await _pinningService.pin(blogData.pinnedId ?? 0)) {
-        await _feedScreenViewModel?.refreshFeatured();
-        notifyListeners();
-      }
+    final pinnedId = blogData.pinnedId ?? 0;
+    final success = isPinned
+        ? await _pinningService.unpin(pinnedId)
+        : await _pinningService.pin(pinnedId);
+
+    if (success) {
+      await _feedScreenViewModel?.refreshFeatured();
+      notifyListeners();
     }
   }
 
   Future<void> markReadIfImportant() async {
-    if (isAnnouncement) {
-      if (await _postAcknowledgementService.read(blogData.id)) {
-        await _feedScreenViewModel?.refreshFeatured();
-        notifyListeners();
-      }
+    if (!isAnnouncement) {
+      return;
+    }
+    if (await _postAcknowledgementService.read(blogData.id)) {
+      await _feedScreenViewModel?.refreshFeatured();
+      notifyListeners();
     }
   }
 }
