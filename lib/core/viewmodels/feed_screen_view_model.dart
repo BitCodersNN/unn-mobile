@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:unn_mobile/core/models/feed/blog_post.dart';
 import 'package:unn_mobile/core/models/feed/blog_post_type.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/blog_post_receivers/featured_blog_post_service.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/blog_post_receivers/regular_blog_posts_service.dart';
@@ -59,19 +60,22 @@ class FeedScreenViewModel extends BaseViewModel
         );
     _blogPostProvider //
         .getData() //
-        .then(_applyOfflinePosts) //
+        .then((posts) => _addPostsToList(offlinePosts, posts)) //
         .whenComplete(reload);
   }
 
-  Future<void> _applyOfflinePosts(posts) async {
-    final postViewmodels = posts?.map(
+  void _addPostsToList(
+    List<FeedPostViewModel> posts,
+    List<BlogPost>? newPosts,
+  ) {
+    final postViewmodels = newPosts?.map(
       (p) {
         final post = FeedPostViewModel.cached(p.data.id);
         post.initFromFullInfo(p, this);
         return post;
       },
     );
-    offlinePosts.addAll(postViewmodels ?? []);
+    posts.addAll(postViewmodels ?? []);
   }
 
   Future<void> loadMorePosts() async {
@@ -88,12 +92,7 @@ class FeedScreenViewModel extends BaseViewModel
       loadingMore = false;
       return;
     }
-    posts.addAll(
-      freshPosts.map(
-        (p) => FeedPostViewModel.cached(p.data.id)..initFromFullInfo(p, this),
-      ),
-    );
-
+    _addPostsToList(posts, freshPosts);
     failedToLoad = false;
     _nextPage++;
     loadingMore = false;
@@ -116,13 +115,9 @@ class FeedScreenViewModel extends BaseViewModel
     _blogPostProvider.saveData(freshPosts);
     offlinePosts.clear();
     posts.clear();
-    notifyListeners();
 
-    posts.addAll(
-      freshPosts.map(
-        (p) => FeedPostViewModel.cached(p.data.id)..initFromFullInfo(p, this),
-      ),
-    );
+    _addPostsToList(posts, freshPosts);
+
     offlinePosts.addAll(posts);
     loadingMore = false;
     _nextPage = 2;
@@ -133,26 +128,13 @@ class FeedScreenViewModel extends BaseViewModel
     final featuredPosts =
         await _featuredBlogPostsService.getFeaturedBlogPosts();
     pinnedPosts.clear();
-    notifyListeners();
 
-    pinnedPosts.addAll(
-      featuredPosts?[BlogPostType.pinned]?.map(
-            (p) =>
-                FeedPostViewModel.cached(p.data.id)..initFromFullInfo(p, this),
-          ) ??
-          [],
-    );
-    notifyListeners();
+    _addPostsToList(pinnedPosts, featuredPosts?[BlogPostType.pinned]);
+
     announcements.clear();
-    notifyListeners();
 
-    announcements.addAll(
-      featuredPosts?[BlogPostType.important]?.map(
-            (p) =>
-                FeedPostViewModel.cached(p.data.id)..initFromFullInfo(p, this),
-          ) ??
-          [],
-    );
+    _addPostsToList(announcements, featuredPosts?[BlogPostType.important]);
+
     notifyListeners();
   }
 
