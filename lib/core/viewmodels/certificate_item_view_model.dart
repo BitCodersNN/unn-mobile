@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:open_filex/open_filex.dart';
 import 'package:unn_mobile/core/models/certificate/certificate.dart';
 import 'package:unn_mobile/core/models/certificate/practice_order.dart';
@@ -40,13 +42,14 @@ class CertificateItemViewModel extends BaseViewModel {
     notifyListeners();
   }
 
-  Future<void> receivePath() async => await _busyCall(() async {
+  Future<void> askForPath() async => await _busyCall(() async {
+        final certificate = _certificate;
         if (_certificate == null) {
           return;
         }
         int num = 0;
-        if (_certificate is PracticeOrder) {
-          num = (_certificate as PracticeOrder).num;
+        if (certificate is PracticeOrder) {
+          num = certificate.num;
         }
         final path = await _certificatePathService.getCertificatePath(
           sendtype: _certificate!.sendtype,
@@ -65,11 +68,7 @@ class CertificateItemViewModel extends BaseViewModel {
       });
 
   Future<void> download() async => await _busyCall(() async {
-        if (!downloadAvailable) {
-          return;
-        }
-        final file = await _certificateDownloaderService
-            .downloadFile(_certificate!.certificatePath);
+        final file = await _downloadFile(_certificate?.certificatePath);
         if (file == null) {
           return;
         }
@@ -77,16 +76,22 @@ class CertificateItemViewModel extends BaseViewModel {
       });
 
   Future<void> downloadSig() async => await _busyCall(() async {
-        if (!downloadAvailable) {
-          return;
-        }
-        final file = await _certificateDownloaderService
-            .downloadFile(_certificate!.certificatePath);
-        if (file == null) {
+        if (await _downloadFile(_certificate!.certificateSigPath) == null) {
           return;
         }
         onSigDownloaded?.call();
       });
+
+  Future<File?> _downloadFile(String? path) async {
+    if (path == null) {
+      return null;
+    }
+    if (!downloadAvailable) {
+      return null;
+    }
+    return await _certificateDownloaderService
+        .downloadFile(_certificate!.certificatePath);
+  }
 
   Future<void> _busyCall(Future<void> Function() task) async {
     if (isBusy) {

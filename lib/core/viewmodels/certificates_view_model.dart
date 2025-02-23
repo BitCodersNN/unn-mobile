@@ -21,12 +21,10 @@ class CertificatesViewModel extends BaseViewModel {
       (value) {
         _certificates = value;
         certificates.clear();
-        certificates.addAll(
-          value?.certificates.map(
-                (c) => Injector.appInstance.get<CertificateItemViewModel>()
-                  ..init(c),
-              ) ??
-              [],
+        _certificates?.certificates.forEach(
+          (c) => certificates.add(
+            Injector.appInstance.get<CertificateItemViewModel>()..init(c),
+          ),
         );
         setState(ViewState.idle);
       },

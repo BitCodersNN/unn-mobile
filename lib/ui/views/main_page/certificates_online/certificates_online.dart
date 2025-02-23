@@ -148,7 +148,7 @@ class _OnlineCertificatesScreenViewState
                                     if (model.downloadAvailable) {
                                       await model.download();
                                     } else {
-                                      await model.receivePath();
+                                      await model.askForPath();
                                     }
                                   },
                             child: Text(

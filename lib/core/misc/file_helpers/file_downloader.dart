@@ -49,34 +49,22 @@ class FileDownloader {
     bool pickLocation = false,
   }) async {
     if (pickLocation && await FlutterFileDialog.isPickDirectorySupported()) {
-      final location = await FlutterFileDialog.pickDirectory();
-      if (location == null) {
-        return null;
-      }
-      final response = await _getFileResponse(downloadUrl, fileName);
-      if (response == null) {
-        return null;
-      }
-
-      try {
-        final shortenedFileName = shortenFileName(fileName);
-        final mimeType = lookupMimeType(shortenedFileName);
-        final path = await FlutterFileDialog.saveFileToDirectory(
-          directory: location,
-          data: response.data,
-          fileName: shortenedFileName,
-          mimeType: mimeType,
-          replace: true,
-        );
-        if (path == null) {
-          return null;
-        }
-        return File(path);
-      } catch (error, stackTrace) {
-        _loggerService.log('Exception: $error\nStackTrace: $stackTrace');
-        return null;
-      }
+      return await _downloadToUserSelectedDirectory(downloadUrl, fileName);
     }
+    return await _downloadToDefaultDirectory(
+      fileName,
+      downloadFolderName,
+      force,
+      downloadUrl,
+    );
+  }
+
+  Future<File?> _downloadToDefaultDirectory(
+    String fileName,
+    String? downloadFolderName,
+    bool force,
+    String? downloadUrl,
+  ) async {
     final downloadsPath = await getDownloadPath();
     if (downloadsPath == null) {
       _loggerService.log('Download path is null');
@@ -107,6 +95,40 @@ class FileDownloader {
     return storedFile;
   }
 
+  Future<File?> _downloadToUserSelectedDirectory(
+    String? downloadUrl,
+    String fileName,
+  ) async {
+    final location = await FlutterFileDialog.pickDirectory();
+    if (location == null) {
+      return null;
+    }
+    final response = await _getFileResponse(downloadUrl, fileName);
+    if (response == null) {
+      return null;
+    }
+
+    final shortenedFileName = shortenFileName(fileName);
+    final mimeType = lookupMimeType(shortenedFileName);
+    String? path;
+    try {
+      path = await FlutterFileDialog.saveFileToDirectory(
+        directory: location,
+        data: response.data,
+        fileName: shortenedFileName,
+        mimeType: mimeType,
+        replace: true,
+      );
+    } catch (error, stackTrace) {
+      _loggerService.log('Exception: $error\nStackTrace: $stackTrace');
+      return null;
+    }
+    if (path == null) {
+      return null;
+    }
+    return File(path);
+  }
+
   Future<Response?> _getFileResponse(
     String? downloadUrl,
     String fileName,
@@ -118,11 +140,11 @@ class FileDownloader {
         queryParameters: _extractQueryParameters(downloadUrl),
         options: Options(responseType: ResponseType.bytes),
       );
-      return response;
     } catch (error, stackTrace) {
       _loggerService.log('Exception: $error\nStackTrace: $stackTrace');
       return null;
     }
+    return response;
   }
 
   /// Загружает список файлов с именами [fileNames].
