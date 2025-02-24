@@ -130,7 +130,7 @@ class MainPageRouting {
       Icons.description_outlined,
       'Справки онлайн',
       'online_certificates',
-      builder: (p0) => const OnlineCertificatesScreenView(),
+      builder: (_, __) => const OnlineCertificatesScreenView(),
       userTypes: [StudentData],
     ),
     MainPageRouteData(
