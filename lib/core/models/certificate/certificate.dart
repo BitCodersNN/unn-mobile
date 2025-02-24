@@ -5,6 +5,8 @@ class KeysForCertificateJsonConverter {
   static const String sendtype = 'sendtype';
   static const String description = 'description';
   static const String certificatePath = 'certificate_path';
+  static const String practices = 'practices';
+  static const String practice = 'practice';
 }
 
 class Certificate {
@@ -33,10 +35,15 @@ class Certificate {
       );
 
   factory Certificate.fromPracticeUrl(String practiceUrl) {
+    final practiceTypeInfo =
+        certificateTypesInfo[KeysForCertificateJsonConverter.practices];
     return Certificate(
       name: 'Предписание на практику',
-      sendtype: certificateTypesInfo['practices']?['sendtype'] as int,
-      description: certificateTypesInfo['practices']?['description'] as String,
+      sendtype:
+          practiceTypeInfo?[KeysForCertificateJsonConverter.sendtype] as int,
+      description:
+          practiceTypeInfo?[KeysForCertificateJsonConverter.description]
+              as String,
       certificatePath: practiceUrl,
     );
   }

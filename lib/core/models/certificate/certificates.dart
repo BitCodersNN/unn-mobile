@@ -27,7 +27,8 @@ class Certificates {
         certificates.add(Certificate.fromJson(certificateJson));
       }
     });
-    if (jsonMap.containsKey(_KeysForCertificatesJsonConverter.practice)) {
+    if ((jsonMap[_KeysForCertificatesJsonConverter.practice] as String)
+        .isNotEmpty) {
       certificates.add(
         Certificate.fromPracticeUrl(
           jsonMap[_KeysForCertificatesJsonConverter.practice]! as String,
