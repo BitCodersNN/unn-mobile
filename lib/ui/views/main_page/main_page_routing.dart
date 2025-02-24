@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:unn_mobile/core/models/student_data.dart';
 import 'package:unn_mobile/ui/views/main_page/about/about.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/feed.dart';
+import 'package:unn_mobile/ui/views/main_page/feed/widgets/announcements_page.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/widgets/comments_page.dart';
+import 'package:unn_mobile/ui/views/main_page/feed/widgets/pinned_posts_page.dart';
 import 'package:unn_mobile/ui/views/main_page/grades/grades.dart';
 import 'package:unn_mobile/ui/views/main_page/schedule/schedule.dart';
 import 'package:unn_mobile/ui/views/main_page/settings/settings.dart';
@@ -13,7 +16,7 @@ class MainPageRouteData {
   final IconData unselectedIcon;
   final String pageTitle;
   final String pageRoute;
-  final Widget Function(BuildContext) builder;
+  final Widget Function(BuildContext, GoRouterState) builder;
   final bool isDisabled;
   final List<Type> userTypes;
   final List<MainPageRouteData> subroutes;
@@ -32,6 +35,37 @@ class MainPageRouteData {
   });
 }
 
+final MainPageRouteData postCommentsRoute = MainPageRouteData(
+  Icons.comment,
+  Icons.comment,
+  'Комментарии к записи',
+  'comments/:postId',
+  builder: (_, state) => CommentsPage(
+    postId: int.tryParse(state.pathParameters['postId'] ?? '0') ?? 0,
+  ),
+  isDisabled: false,
+  userTypes: [],
+);
+final MainPageRouteData pinnedPostsRoute = MainPageRouteData(
+  Icons.pin,
+  Icons.pin,
+  'Закреплённые посты',
+  'pinned',
+  userTypes: [],
+  builder: (_, __) => const PinnedPostsPage(),
+  subroutes: [
+    postCommentsRoute,
+  ],
+);
+final MainPageRouteData announcementsRoute = MainPageRouteData(
+  Icons.label_important,
+  Icons.label_important,
+  'Важные посты',
+  'announcements',
+  userTypes: [],
+  builder: (_, __) => const AnnouncementsPage(),
+);
+
 int _navbarIndex = 0; // I hate myself
 
 class MainPageRouting {
@@ -41,20 +75,14 @@ class MainPageRouting {
       Icons.star_border,
       'Лента',
       '/feed',
-      builder: (p0) => FeedScreenView(
+      builder: (_, __) => FeedScreenView(
         routeIndex: _navbarIndex++,
       ),
       userTypes: [],
       subroutes: [
-        MainPageRouteData(
-          Icons.comment,
-          Icons.comment,
-          'Комментарии к записи',
-          'comments',
-          builder: (p0) => const CommentsPage(),
-          isDisabled: false,
-          userTypes: [],
-        ),
+        postCommentsRoute,
+        pinnedPostsRoute,
+        announcementsRoute,
       ],
     ),
     MainPageRouteData(
@@ -62,7 +90,7 @@ class MainPageRouting {
       Icons.calendar_month_outlined,
       'Расписание',
       '/schedule',
-      builder: (p0) => ScheduleScreenView(
+      builder: (_, __) => ScheduleScreenView(
         routeIndex: _navbarIndex++,
       ),
       userTypes: [],
@@ -72,7 +100,7 @@ class MainPageRouting {
       Icons.map_outlined,
       'Карта',
       '/map',
-      builder: (p0) => const Placeholder(),
+      builder: (_, __) => const Placeholder(),
       isDisabled: true,
       userTypes: [],
     ),
@@ -81,7 +109,7 @@ class MainPageRouting {
       Icons.menu_book_outlined,
       'Материалы',
       '/source',
-      builder: (p0) => const Placeholder(),
+      builder: (_, __) => const Placeholder(),
       isDisabled: true,
       userTypes: [],
     ),
@@ -93,7 +121,7 @@ class MainPageRouting {
       Icons.book_outlined,
       'Зачётная книжка',
       'grades',
-      builder: (p0) => const GradesScreenView(),
+      builder: (_, __) => const GradesScreenView(),
       userTypes: [StudentData],
     ),
     /*MainPageRouteData(
@@ -109,7 +137,7 @@ class MainPageRouting {
       Icons.settings_outlined,
       'Настройки',
       'settings',
-      builder: (p0) => const SettingsScreenView(),
+      builder: (_, __) => const SettingsScreenView(),
       userTypes: [],
     ),
     MainPageRouteData(
@@ -117,7 +145,7 @@ class MainPageRouting {
       Icons.credit_card_outlined,
       'Поддержать',
       'donations',
-      builder: (p0) => const DonationsScreenView(),
+      builder: (_, __) => const DonationsScreenView(),
       userTypes: [],
       onlineOnly: true,
     ),
@@ -126,7 +154,7 @@ class MainPageRouting {
       Icons.info_outline,
       'О нас',
       'about',
-      builder: (p0) => AboutScreenView(),
+      builder: (_, __) => AboutScreenView(),
       userTypes: [],
     ),
   ];

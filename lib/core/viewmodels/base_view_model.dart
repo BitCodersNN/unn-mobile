@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 class BaseViewModel extends ChangeNotifier {
@@ -32,6 +34,26 @@ class BaseViewModel extends ChangeNotifier {
   void setState(ViewState viewState) {
     _state = viewState;
     notifyListeners();
+  }
+
+  FutureOr<void> busyCallAsync(FutureOr<void> Function() task) async {
+    if (isBusy) {
+      return;
+    }
+    try {
+      setState(ViewState.busy);
+      await task();
+    } finally {
+      setState(ViewState.idle);
+    }
+  }
+
+  FutureOr<void> changeState(FutureOr<void> Function() task) async {
+    try {
+      await task();
+    } finally {
+      notifyListeners();
+    }
   }
 }
 

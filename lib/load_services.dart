@@ -486,6 +486,7 @@ void registerDependencies() {
       get<LastFeedLoadDateTimeProvider>(),
       get<BlogPostProvider>(dependencyName: BlogPostType.regular.stringValue),
       get<RegularBlogPostsService>(),
+      get<FeaturedBlogPostsService>(),
     ),
   );
   injector.registerDependency(
