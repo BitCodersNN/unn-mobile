@@ -89,6 +89,8 @@ import 'package:unn_mobile/core/services/interfaces/search_id_on_portal_service.
 import 'package:unn_mobile/core/services/interfaces/storage_service.dart';
 import 'package:unn_mobile/core/services/interfaces/user_data_provider.dart';
 import 'package:unn_mobile/core/viewmodels/auth_page_view_model.dart';
+import 'package:unn_mobile/core/viewmodels/certificate_item_view_model.dart';
+import 'package:unn_mobile/core/viewmodels/certificates_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/factories/attached_file_view_model_factory.dart';
 import 'package:unn_mobile/core/viewmodels/factories/feed_comment_view_model_factory.dart';
 import 'package:unn_mobile/core/viewmodels/factories/feed_post_view_model_factory.dart';
@@ -479,6 +481,15 @@ void registerDependencies() {
       get<OnlineStatusData>(),
       get<ExportScheduleService>(),
       get<LoggerService>(),
+    ),
+  );
+  injector.registerDependency(
+    () => CertificatesViewModel(get<CertificatesService>()),
+  );
+  injector.registerDependency(
+    () => CertificateItemViewModel(
+      get<CertificatePathService>(),
+      get<CertificateDownloaderService>(),
     ),
   );
   injector.registerDependency(

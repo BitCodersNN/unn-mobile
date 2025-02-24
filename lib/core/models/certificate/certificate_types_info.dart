@@ -13,6 +13,7 @@ const Map<String, Map<String, Object>> certificateTypesInfo = {
   },
   'practices': {
     'sendtype': 2,
-    'description': 'Справка, подписанная электронной цифровой подписью',
+    'description':
+        'Предписание на практику, подписанное электронной цифровой подписью',
   },
 };
