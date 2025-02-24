@@ -17,17 +17,15 @@ class CertificatesViewModel extends BaseViewModel {
 
   void init() {
     setState(ViewState.busy);
-    _certificatesService.getCertificates().then(
-      (value) {
-        _certificates = value;
-        certificates.clear();
-        _certificates?.certificates.forEach(
-          (c) => certificates.add(
-            Injector.appInstance.get<CertificateItemViewModel>()..init(c),
-          ),
-        );
-        setState(ViewState.idle);
-      },
-    );
+
+    busyCallAsync(() async {
+      _certificates = await _certificatesService.getCertificates();
+      certificates.clear();
+      _certificates?.certificates.forEach(
+        (c) => certificates.add(
+          Injector.appInstance.get<CertificateItemViewModel>()..init(c),
+        ),
+      );
+    });
   }
 }

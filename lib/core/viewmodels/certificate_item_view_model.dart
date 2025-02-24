@@ -42,7 +42,7 @@ class CertificateItemViewModel extends BaseViewModel {
     notifyListeners();
   }
 
-  Future<void> askForPath() async => await _busyCall(() async {
+  Future<void> askForPath() async => await busyCallAsync(() async {
         final certificate = _certificate;
         if (_certificate == null) {
           return;
@@ -67,7 +67,7 @@ class CertificateItemViewModel extends BaseViewModel {
         );
       });
 
-  Future<void> download() async => await _busyCall(() async {
+  Future<void> download() async => await busyCallAsync(() async {
         final file = await _downloadFile(_certificate?.certificatePath);
         if (file == null) {
           return;
@@ -75,7 +75,7 @@ class CertificateItemViewModel extends BaseViewModel {
         await OpenFilex.open(file.path);
       });
 
-  Future<void> downloadSig() async => await _busyCall(() async {
+  Future<void> downloadSig() async => await busyCallAsync(() async {
         if (await _downloadFile(_certificate!.certificateSigPath) == null) {
           return;
         }
@@ -91,17 +91,5 @@ class CertificateItemViewModel extends BaseViewModel {
     }
     return await _certificateDownloaderService
         .downloadFile(_certificate!.certificatePath);
-  }
-
-  Future<void> _busyCall(Future<void> Function() task) async {
-    if (isBusy) {
-      return;
-    }
-    try {
-      setState(ViewState.busy);
-      await task();
-    } finally {
-      setState(ViewState.idle);
-    }
   }
 }
