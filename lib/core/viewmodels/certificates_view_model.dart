@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/models/certificate/certificates.dart';
 import 'package:unn_mobile/core/services/interfaces/certificate/certificates_service.dart';
@@ -16,16 +17,16 @@ class CertificatesViewModel extends BaseViewModel {
   final List<CertificateItemViewModel> certificates = [];
 
   void init() {
-    setState(ViewState.busy);
-
-    busyCallAsync(() async {
-      _certificates = await _certificatesService.getCertificates();
-      certificates.clear();
-      _certificates?.certificates.forEach(
-        (c) => certificates.add(
-          Injector.appInstance.get<CertificateItemViewModel>()..init(c),
-        ),
-      );
-    });
+    reload();
   }
+
+  Future<void> reload() async => await busyCallAsync(() async {
+        _certificates = await _certificatesService.getCertificates();
+        certificates.clear();
+        _certificates?.certificates.forEach(
+          (c) => certificates.add(
+            Injector.appInstance.get<CertificateItemViewModel>()..init(c),
+          ),
+        );
+      });
 }

@@ -63,7 +63,7 @@ class Certificates {
         practice[_KeysForCertificatesJsonConverter.practice] as String?;
     final practiceReferenceJson = Map<String, Object?>.from(practice);
     practiceReferenceJson.addAll(
-      certificateTypesInfo[_KeysForCertificatesJsonConverter.practice]!,
+      certificateTypesInfo[_KeysForCertificatesJsonConverter.practices]!,
     );
     practiceReferenceJson[KeysForCertificateJsonConverter.certificatePath] =
         certificateUri?.isNotEmpty == true

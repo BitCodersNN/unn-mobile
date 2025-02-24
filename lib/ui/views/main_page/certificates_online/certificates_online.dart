@@ -30,33 +30,49 @@ class _OnlineCertificatesScreenViewState
               ),
             );
           }
-          return SingleChildScrollView(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              children: [
-                if (model.hasError)
-                  Center(
-                    child: Column(
-                      children: [
-                        const Text('Не удалось загрузить...'),
-                        TextButton(
-                          onPressed: () {
-                            model.init();
-                          },
-                          child: const Text('Попробовать снова'),
-                        ),
-                      ],
+          return LayoutBuilder(
+            builder: (context, constraints) {
+              return RefreshIndicator(
+                onRefresh: model.reload,
+                child: SingleChildScrollView(
+                  // padding: const EdgeInsets.all(16.0),
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      minHeight: constraints.maxHeight,
                     ),
-                  )
-                else if (model.certificates.isEmpty)
-                  const Text('Нет доступных справок')
-                else
-                  for (final cert in model.certificates) ...[
-                    _buildCertificateCard(cert),
-                    const SizedBox(height: 16.0),
-                  ],
-              ],
-            ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        children: [
+                          if (model.hasError)
+                            Center(
+                              child: Column(
+                                children: [
+                                  const Text('Не удалось загрузить...'),
+                                  TextButton(
+                                    onPressed: () {
+                                      model.init();
+                                    },
+                                    child: const Text('Попробовать снова'),
+                                  ),
+                                ],
+                              ),
+                            )
+                          else if (model.certificates.isEmpty)
+                            const Text('Нет доступных справок')
+                          else
+                            for (final cert in model.certificates) ...[
+                              _buildCertificateCard(cert),
+                              const SizedBox(height: 16.0),
+                            ],
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            },
           );
         },
         onModelReady: (p0) => p0.init(),
@@ -117,6 +133,11 @@ class _OnlineCertificatesScreenViewState
                         model.description,
                         style: const TextStyle(fontSize: 15.0),
                       ),
+                      if (model.isPractice) ...[
+                        _extraField('Тип практики: ', model.practiceType),
+                        _extraField('Название практики: ', model.practiceName),
+                        _extraField('Даты проведения: ', model.practiceDates),
+                      ],
                       const SizedBox(height: 35.0),
                       SizedBox(
                         width: double.infinity,
@@ -220,6 +241,27 @@ class _OnlineCertificatesScreenViewState
           const SnackBar(content: Text('Подпись загружена успешно')),
         );
       },
+    );
+  }
+
+  Padding _extraField(String title, String? text) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: RichText(
+        text: TextSpan(
+          style: const TextStyle(
+            fontSize: 15,
+            color: Colors.black,
+          ),
+          children: [
+            TextSpan(
+              text: title,
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+            TextSpan(text: text),
+          ],
+        ),
+      ),
     );
   }
 }
