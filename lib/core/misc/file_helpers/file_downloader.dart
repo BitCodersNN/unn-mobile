@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter_file_dialog/flutter_file_dialog.dart';
 import 'package:mime/mime.dart';
+import 'package:unn_mobile/core/constants/api/protocol_type.dart';
 import 'package:unn_mobile/core/constants/regular_expressions.dart';
 import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/misc/file_helpers/file_functions.dart';
@@ -199,10 +200,12 @@ class FileDownloader {
   String _buildRequestPath(String? downloadUrl, String fileName) {
     return downloadUrl?.isNotEmpty ?? false
         ? Uri.parse(downloadUrl!).path
-        : '${_basePath ?? ''}/$fileName'.replaceAll(
-            RegularExpressions.leadingSlashesRegExp,
-            '/',
-          );
+        : fileName.startsWith(ProtocolType.https.name)
+            ? fileName
+            : '${_basePath ?? ''}/$fileName'.replaceAll(
+                RegularExpressions.leadingSlashesRegExp,
+                '/',
+              );
   }
 
   Map<String, String> _extractQueryParameters(String? downloadUrl) {

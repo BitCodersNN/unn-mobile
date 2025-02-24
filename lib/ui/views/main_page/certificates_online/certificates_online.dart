@@ -106,12 +106,25 @@ class _OnlineCertificatesScreenViewState
                 ),
                 child: ListTile(
                   contentPadding: EdgeInsets.zero,
-                  title: Text(
-                    model.name,
-                    style: const TextStyle(
-                      fontSize: 17.0,
-                      fontWeight: FontWeight.bold,
-                    ),
+                  title: Row(
+                    children: [
+                      Text(
+                        model.name,
+                        style: const TextStyle(
+                          fontSize: 17.0,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      if (model.isBusy)
+                        const Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 8.0),
+                          child: SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(),
+                          ),
+                        ),
+                    ],
                   ),
                   trailing: Icon(
                     model.isViewExpanded
@@ -236,10 +249,17 @@ class _OnlineCertificatesScreenViewState
         );
       },
       model: viewModel,
-      onModelReady: (model) => model.onSigDownloaded = () {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Подпись загружена успешно')),
-        );
+      onModelReady: (model) {
+        model.onSigDownloaded = () {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Подпись загружена успешно')),
+          );
+        };
+        model.onCertificateDownloaded = () {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Файл загружен успешно')),
+          );
+        };
       },
     );
   }

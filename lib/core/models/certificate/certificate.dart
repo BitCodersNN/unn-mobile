@@ -1,3 +1,5 @@
+import 'package:unn_mobile/core/models/certificate/certificate_types_info.dart';
+
 class KeysForCertificateJsonConverter {
   static const String name = 'name';
   static const String sendtype = 'sendtype';
@@ -30,6 +32,14 @@ class Certificate {
             jsonMap[KeysForCertificateJsonConverter.certificatePath] as String,
       );
 
+  factory Certificate.fromPracticeUrl(String practiceUrl) {
+    return Certificate(
+      name: 'Предписание на практику',
+      sendtype: certificateTypesInfo['practices']?['sendtype'] as int,
+      description: certificateTypesInfo['practices']?['description'] as String,
+      certificatePath: practiceUrl,
+    );
+  }
   Map<String, dynamic> toJson() => {
         KeysForCertificateJsonConverter.name: name,
         KeysForCertificateJsonConverter.sendtype: sendtype,

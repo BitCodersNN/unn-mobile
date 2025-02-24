@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:open_filex/open_filex.dart';
 import 'package:unn_mobile/core/constants/date_pattern.dart';
 import 'package:unn_mobile/core/misc/date_time_utilities/date_time_extensions.dart';
 import 'package:unn_mobile/core/models/certificate/certificate.dart';
@@ -34,6 +33,7 @@ class CertificateItemViewModel extends BaseViewModel {
       'по ${_practiceOrder?.practiceDateTimeRange.end.format(DatePattern.ddmmyyyy)}';
 
   void Function()? onSigDownloaded;
+  void Function()? onCertificateDownloaded;
 
   set isViewExpanded(bool value) {
     _isViewExpanded = value;
@@ -92,7 +92,7 @@ class CertificateItemViewModel extends BaseViewModel {
         if (file == null) {
           return;
         }
-        await OpenFilex.open(file.path);
+        onCertificateDownloaded?.call();
       });
 
   Future<void> downloadSig() async => await busyCallAsync(() async {

@@ -27,6 +27,13 @@ class Certificates {
         certificates.add(Certificate.fromJson(certificateJson));
       }
     });
+    if (jsonMap.containsKey(_KeysForCertificatesJsonConverter.practice)) {
+      certificates.add(
+        Certificate.fromPracticeUrl(
+          jsonMap[_KeysForCertificatesJsonConverter.practice]! as String,
+        ),
+      );
+    }
     return Certificates._(certificates: certificates);
   }
 
