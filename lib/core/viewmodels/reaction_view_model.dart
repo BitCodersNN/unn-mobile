@@ -2,9 +2,9 @@ import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/misc/current_user_sync_storage.dart';
 import 'package:unn_mobile/core/models/rating_list.dart';
 import 'package:unn_mobile/core/models/user_short_info.dart';
-import 'package:unn_mobile/core/services/interfaces/feed/getting_rating_list.dart';
-import 'package:unn_mobile/core/services/interfaces/feed/getting_vote_key_signed.dart';
-import 'package:unn_mobile/core/services/interfaces/feed/reaction_manager.dart';
+import 'package:unn_mobile/core/services/interfaces/feed/legacy/getting_rating_list.dart';
+import 'package:unn_mobile/core/services/interfaces/feed/legacy/getting_vote_key_signed.dart';
+import 'package:unn_mobile/core/services/interfaces/feed/reaction_service.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/factories/reaction_view_model_factory.dart';
 
@@ -13,7 +13,7 @@ class ReactionViewModel extends BaseViewModel {
 
   final GettingVoteKeySigned _gettingVoteKeySigned;
   final GettingRatingList _gettingRatingList;
-  final ReactionManager _reactionManager;
+  final ReactionService _reactionManager;
   final CurrentUserSyncStorage _currentUserSyncStorage;
 
   RatingList? _ratingList;
@@ -73,6 +73,13 @@ class ReactionViewModel extends BaseViewModel {
       _isLoading = false;
       notifyListeners();
     });
+  }
+
+  void initFull(String voteKeySigned, RatingList ratingList) {
+    _ratingList = ratingList;
+    _voteKeySigned = voteKeySigned;
+    _isLoading = false;
+    notifyListeners();
   }
 
   void toggleLike() {

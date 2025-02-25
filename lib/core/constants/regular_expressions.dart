@@ -8,6 +8,7 @@ class _RegularExpressionSource {
   static const files =
       r'top\.arComDFiles(\d+) = BX\.util\.array_merge\(\(top\.arComDFiles\d+ \|\| \[\]\), \[(.*?)\]';
   static const cookieCleanup = r'^;+|;+$';
+  static const leadingSlashes = r'^/+';
 }
 
 class RegularExpressions {
@@ -33,5 +34,9 @@ class RegularExpressions {
 
   static final cookieCleanupRegExp = RegExp(
     _RegularExpressionSource.cookieCleanup,
+  );
+
+  static final leadingSlashesRegExp = RegExp(
+    _RegularExpressionSource.leadingSlashes,
   );
 }

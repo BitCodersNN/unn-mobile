@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:unn_mobile/core/constants/api_url_strings.dart';
+import 'package:unn_mobile/core/constants/api/path.dart';
 import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/models/mark_by_subject.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_grade_book.dart';
@@ -25,7 +25,7 @@ class GettingGradeBookImpl implements GettingGradeBook {
     Response response;
     try {
       response = await _apiHelper.get(
-        path: ApiPaths.marks,
+        path: ApiPath.marks,
       );
     } catch (error, stackTrace) {
       _loggerService.logError(error, stackTrace);

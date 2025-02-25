@@ -41,25 +41,6 @@ class BlogPostComment {
     );
   }
 
-  factory BlogPostComment.fromJsonPortal2(Map<String, dynamic> jsonMap) {
-    return BlogPostComment._(
-      data: BlogPostCommentData.fromJsonPortal2(jsonMap),
-      ratingList:
-          jsonMap[_KeysForBlogPostCommentDataWithRatings.reaction] != null
-              ? RatingList.fromJsonPortal2(
-                  jsonMap[_KeysForBlogPostCommentDataWithRatings.reaction],
-                )
-              : null,
-      userShortInfo: UserShortInfo.fromJsonPortal2(
-        jsonMap[_KeysForBlogPostCommentDataWithRatings.author],
-      ),
-      attachFiles:
-          (jsonMap[_KeysForBlogPostCommentDataWithRatings.attach] as List)
-              .map((item) => FileData.fromJsonPortal2(item))
-              .toList(),
-    );
-  }
-
   Map<String, dynamic> toJson() {
     return {
       ...data.toJson(),
@@ -68,5 +49,24 @@ class BlogPostComment {
       _KeysForBlogPostCommentDataWithRatings.attach:
           attachFiles.map((file) => file.toJson()).toList(),
     };
+  }
+
+  factory BlogPostComment.fromJsonLegacy(Map<String, dynamic> jsonMap) {
+    return BlogPostComment._(
+      data: BlogPostCommentData.fromJsonLegacy(jsonMap),
+      ratingList:
+          jsonMap[_KeysForBlogPostCommentDataWithRatings.reaction] != null
+              ? RatingList.fromJsonLegacy(
+                  jsonMap[_KeysForBlogPostCommentDataWithRatings.reaction],
+                )
+              : null,
+      userShortInfo: UserShortInfo.fromJsonLegacy(
+        jsonMap[_KeysForBlogPostCommentDataWithRatings.author],
+      ),
+      attachFiles:
+          (jsonMap[_KeysForBlogPostCommentDataWithRatings.attach] as List)
+              .map((item) => FileData.fromJsonLegacy(item))
+              .toList(),
+    );
   }
 }

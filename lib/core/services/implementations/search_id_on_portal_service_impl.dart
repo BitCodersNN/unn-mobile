@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:unn_mobile/core/constants/api_url_strings.dart';
+import 'package:unn_mobile/core/constants/api/path.dart';
 import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/models/employee_data.dart';
 import 'package:unn_mobile/core/models/schedule_search_suggestion_item.dart';
@@ -31,7 +31,7 @@ class SearchIdOnPortalServiceImpl implements SearchIdOnPortalService {
     Response response;
     try {
       response = await _apiHelper.get(
-        path: ApiPaths.studentInfo,
+        path: ApiPath.studentInfo,
         queryParameters: {_uns: uns},
       );
     } catch (error, stackTrace) {
@@ -70,7 +70,7 @@ class SearchIdOnPortalServiceImpl implements SearchIdOnPortalService {
     Response response;
     try {
       response = await _apiHelper.get(
-        path: ApiPaths.search,
+        path: ApiPath.search,
         queryParameters: {_term: value, _type: valueType.name},
       );
     } catch (error, stackTrace) {

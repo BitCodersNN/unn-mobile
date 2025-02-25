@@ -1,13 +1,13 @@
 import 'dart:convert';
 import 'package:dio/dio.dart';
-import 'package:unn_mobile/core/constants/api_url_strings.dart';
+import 'package:unn_mobile/core/constants/api/path.dart';
 import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/models/loading_page_data.dart';
 import 'package:unn_mobile/core/services/interfaces/loading_page/loading_page_config.dart';
 import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 
 class LoadingPageConfigServiceImpl implements LoadingPageConfigService {
-  final _path = '${ApiPaths.gitRepository}/main/loading_page_config.json';
+  final _path = '${ApiPath.gitRepository}/main/loading_page_config.json';
   final LoggerService _loggerService;
   final ApiHelper _apiHelper;
 

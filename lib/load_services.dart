@@ -10,14 +10,21 @@ import 'package:unn_mobile/core/misc/api_helpers/final/web_unn_mobile_api_helper
 import 'package:unn_mobile/core/misc/api_helpers/final/web_unn_portal_api_helper.dart';
 import 'package:unn_mobile/core/misc/app_open_tracker.dart';
 import 'package:unn_mobile/core/misc/current_user_sync_storage.dart';
+import 'package:unn_mobile/core/models/feed/blog_post_type.dart';
 import 'package:unn_mobile/core/models/online_status_data.dart';
 import 'package:unn_mobile/core/services/implementations/auth_data_provider_impl.dart';
 import 'package:unn_mobile/core/services/implementations/authorisation_refresh_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/authorisation_service_impl.dart';
+import 'package:unn_mobile/core/services/implementations/certificate/certificate_downloader_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/export_schedule_service_impl.dart';
-import 'package:unn_mobile/core/services/implementations/feed/blog_post.dart';
-import 'package:unn_mobile/core/services/implementations/feed/feed_file_downloader_impl.dart';
-import 'package:unn_mobile/core/services/implementations/feed/feed_updater_service_impl.dart';
+import 'package:unn_mobile/core/services/implementations/feed/blog_post_receivers/blog_post_service_impl.dart';
+import 'package:unn_mobile/core/services/implementations/feed/blog_post_receivers/featured_blog_posts_service_impl.dart';
+import 'package:unn_mobile/core/services/implementations/feed/blog_post_receivers/regular_blog_posts_service_impl.dart';
+import 'package:unn_mobile/core/services/implementations/feed/featured_blog_post_action/important_blog_post_acknowledgement_service_impl.dart';
+import 'package:unn_mobile/core/services/implementations/feed/featured_blog_post_action/important_blog_post_users_service_impl.dart';
+import 'package:unn_mobile/core/services/implementations/feed/featured_blog_post_action/pinning_blog_post_service_impl.dart';
+import 'package:unn_mobile/core/services/implementations/feed/feed_file_downloader_service_impl.dart';
+import 'package:unn_mobile/core/services/implementations/feed/providers/blog_post_provider_impl.dart';
 import 'package:unn_mobile/core/services/implementations/firebase_logger.dart';
 import 'package:unn_mobile/core/services/implementations/feed/legacy/getting_blog_post_comments_impl.dart';
 import 'package:unn_mobile/core/services/implementations/feed/legacy/getting_blog_posts_impl.dart';
@@ -28,15 +35,17 @@ import 'package:unn_mobile/core/services/implementations/getting_profile_of_curr
 import 'package:unn_mobile/core/services/implementations/feed/legacy/getting_rating_list_impl.dart';
 import 'package:unn_mobile/core/services/implementations/getting_schedule_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/feed/legacy/getting_vote_key_signed_impl.dart';
-import 'package:unn_mobile/core/services/implementations/feed/last_feed_load_date_time_provider_impl.dart';
+import 'package:unn_mobile/core/services/implementations/feed/providers/last_feed_load_date_time_provider_impl.dart';
 import 'package:unn_mobile/core/services/implementations/loading_page/last_commit_sha_impl.dart';
 import 'package:unn_mobile/core/services/implementations/loading_page/last_commit_sha_provider_impl.dart';
 import 'package:unn_mobile/core/services/implementations/loading_page/loading_page_config.dart';
 import 'package:unn_mobile/core/services/implementations/loading_page/loading_page_provider_impl.dart';
-import 'package:unn_mobile/core/services/implementations/loading_page/logo_downloader_impl.dart';
+import 'package:unn_mobile/core/services/implementations/loading_page/logo_downloader_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/mark_by_subject_provider_impl.dart';
 import 'package:unn_mobile/core/services/implementations/offline_schedule_provider_impl.dart';
-import 'package:unn_mobile/core/services/implementations/feed/reaction_manager_impl.dart';
+import 'package:unn_mobile/core/services/implementations/feed/reaction_service_impl.dart';
+import 'package:unn_mobile/core/services/implementations/certificate/certificate_path_service_impl.dart';
+import 'package:unn_mobile/core/services/implementations/certificate/certificate_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/schedule_search_history_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/search_id_on_portal_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/storage_service_impl.dart';
@@ -44,34 +53,44 @@ import 'package:unn_mobile/core/services/implementations/user_data_provider_impl
 import 'package:unn_mobile/core/services/interfaces/auth_data_provider.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation_refresh_service.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
+import 'package:unn_mobile/core/services/interfaces/certificate/certificate_downloader_service.dart';
 import 'package:unn_mobile/core/services/interfaces/export_schedule_service.dart';
-import 'package:unn_mobile/core/services/interfaces/feed/blog_posts.dart';
-import 'package:unn_mobile/core/services/interfaces/feed/feed_updater_service.dart';
-import 'package:unn_mobile/core/services/interfaces/file_downloader.dart';
-import 'package:unn_mobile/core/services/interfaces/feed/getting_blog_post_comments.dart';
-import 'package:unn_mobile/core/services/interfaces/feed/getting_blog_posts.dart';
+import 'package:unn_mobile/core/services/interfaces/feed/blog_post_receivers/blog_post_service.dart';
+import 'package:unn_mobile/core/services/interfaces/feed/blog_post_receivers/featured_blog_post_service.dart';
+import 'package:unn_mobile/core/services/interfaces/feed/featured_blog_post_action/important_blog_post_acknowledgement_service.dart';
+import 'package:unn_mobile/core/services/interfaces/feed/featured_blog_post_action/important_blog_post_users_service.dart';
+import 'package:unn_mobile/core/services/interfaces/feed/featured_blog_post_action/pinning_blog_post_service.dart';
+import 'package:unn_mobile/core/services/interfaces/feed/blog_post_receivers/regular_blog_posts_service.dart';
+import 'package:unn_mobile/core/services/interfaces/feed/legacy/getting_blog_post_comments.dart';
+import 'package:unn_mobile/core/services/interfaces/feed/legacy/getting_blog_posts.dart';
+import 'package:unn_mobile/core/services/interfaces/feed/feed_file_downloader_service.dart';
+import 'package:unn_mobile/core/services/interfaces/feed/providers/blog_post_provider.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_file_data.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_grade_book.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_profile.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_profile_of_current_user_service.dart';
-import 'package:unn_mobile/core/services/interfaces/feed/getting_rating_list.dart';
+import 'package:unn_mobile/core/services/interfaces/feed/legacy/getting_rating_list.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_schedule_service.dart';
-import 'package:unn_mobile/core/services/interfaces/feed/getting_vote_key_signed.dart';
-import 'package:unn_mobile/core/services/interfaces/feed/last_feed_load_date_time_provider.dart';
+import 'package:unn_mobile/core/services/interfaces/feed/legacy/getting_vote_key_signed.dart';
+import 'package:unn_mobile/core/services/interfaces/feed/providers/last_feed_load_date_time_provider.dart';
 import 'package:unn_mobile/core/services/interfaces/loading_page/last_commit_sha.dart';
 import 'package:unn_mobile/core/services/interfaces/loading_page/last_commit_sha_provider.dart';
 import 'package:unn_mobile/core/services/interfaces/loading_page/loading_page_config.dart';
 import 'package:unn_mobile/core/services/interfaces/loading_page/loading_page_provider.dart';
+import 'package:unn_mobile/core/services/interfaces/loading_page/logo_downloader_service.dart';
 import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 import 'package:unn_mobile/core/services/interfaces/mark_by_subject_provider.dart';
 import 'package:unn_mobile/core/services/interfaces/offline_schedule_provider.dart';
-import 'package:unn_mobile/core/services/interfaces/feed/reaction_manager.dart';
+import 'package:unn_mobile/core/services/interfaces/feed/reaction_service.dart';
+import 'package:unn_mobile/core/services/interfaces/certificate/certificate_path_service.dart';
+import 'package:unn_mobile/core/services/interfaces/certificate/certificates_service.dart';
 import 'package:unn_mobile/core/services/interfaces/schedule_search_history_service.dart';
 import 'package:unn_mobile/core/services/interfaces/search_id_on_portal_service.dart';
 import 'package:unn_mobile/core/services/interfaces/storage_service.dart';
 import 'package:unn_mobile/core/services/interfaces/user_data_provider.dart';
 import 'package:unn_mobile/core/viewmodels/auth_page_view_model.dart';
-import 'package:unn_mobile/core/viewmodels/comments_page_view_model.dart';
+import 'package:unn_mobile/core/viewmodels/certificate_item_view_model.dart';
+import 'package:unn_mobile/core/viewmodels/certificates_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/factories/attached_file_view_model_factory.dart';
 import 'package:unn_mobile/core/viewmodels/factories/feed_comment_view_model_factory.dart';
 import 'package:unn_mobile/core/viewmodels/factories/feed_post_view_model_factory.dart';
@@ -180,19 +199,17 @@ void registerDependencies() {
     ),
   );
 
-  injector.registerSingleton<FileDownloaderService>(
+  injector.registerSingleton<LogoDownloaderService>(
     () => LogoDownloaderServiceImpl(
       injector.get<LoggerService>(),
       injector.get<GitHubRawApiHelper>(),
     ),
-    dependencyName: 'LogoDownloaderService',
   );
-  injector.registerSingleton<FileDownloaderService>(
-    () => FeedFileDownloaderImpl(
+  injector.registerSingleton<FeedFileDownloaderService>(
+    () => FeedFileDownloaderServiceImpl(
       get<LoggerService>(),
       getApiHelper(HostType.unnPortal),
     ),
-    dependencyName: 'FeedFileDownloaderService',
   );
 
   injector.registerSingleton<LastCommitShaProvider>(
@@ -257,10 +274,49 @@ void registerDependencies() {
       get<LoggerService>(),
     ),
   );
-  injector.registerDependency<BlogPostsService>(
-    () => BlogPostsServiceImpl(
+  injector.registerDependency<RegularBlogPostsService>(
+    () => RegularBlogPostsServiceImpl(
       get<LoggerService>(),
-      getApiHelper(HostType.unnMobile),
+      getApiHelper(HostType.unnPortal),
+    ),
+  );
+  injector.registerDependency<FeaturedBlogPostsService>(
+    () => FeaturedBlogPostsServiceImpl(
+      get<LoggerService>(),
+      getApiHelper(HostType.unnPortal),
+    ),
+  );
+  injector.registerSingleton<BlogPostService>(
+    () => BlogPostServiceImpl(
+      get<LoggerService>(),
+      getApiHelper(HostType.unnPortal),
+    ),
+  );
+  injector.registerDependency<PinningBlogPostService>(
+    () => PinningBlogPostServiceImpl(
+      get<LoggerService>(),
+      getApiHelper(HostType.unnPortal),
+    ),
+  );
+  for (final type in BlogPostType.values) {
+    injector.registerDependency<BlogPostProvider>(
+      () => BlogPostProviderImpl(
+        injector.get<StorageService>(),
+        type,
+      ),
+      dependencyName: type.stringValue,
+    );
+  }
+  injector.registerDependency<ImportantBlogPostAcknowledgementService>(
+    () => ImportantBlogPostAcknowledgementServiceImpl(
+      get<LoggerService>(),
+      getApiHelper(HostType.unnPortal),
+    ),
+  );
+  injector.registerDependency<ImportantBlogPostUsersService>(
+    () => ImportantBlogPostUsersServiceImpl(
+      get<LoggerService>(),
+      getApiHelper(HostType.unnPortal),
     ),
   );
   injector.registerSingleton<GettingBlogPosts>(
@@ -307,15 +363,6 @@ void registerDependencies() {
       get<StorageService>(),
     ),
   );
-  injector.registerSingleton<FeedUpdaterService>(
-    () => FeedUpdaterServiceImpl(
-      get<GettingBlogPosts>(),
-      get<LoggerService>(),
-      get<OnlineStatusData>(),
-      get<LastFeedLoadDateTimeProvider>(),
-      get<AuthorizationService>(),
-    ),
-  );
   injector.registerSingleton<CurrentUserSyncStorage>(
     () => CurrentUserSyncStorage(
       get<UserDataProvider>(),
@@ -336,9 +383,28 @@ void registerDependencies() {
   injector.registerSingleton<AppOpenTracker>(
     () => AppOpenTracker(get<StorageService>()),
   );
-  injector.registerSingleton<ReactionManager>(
-    () => ReactionManagerImpl(
+  injector.registerSingleton<ReactionService>(
+    () => ReactionServiceImpl(
       get<CurrentUserSyncStorage>(),
+      get<LoggerService>(),
+      getApiHelper(HostType.unnPortal),
+    ),
+  );
+
+  injector.registerSingleton<CertificatesService>(
+    () => CertificatesServiceImpl(
+      get<LoggerService>(),
+      getApiHelper(HostType.unnPortal),
+    ),
+  );
+  injector.registerSingleton<CertificatePathService>(
+    () => CertificatePathServiceImpl(
+      get<LoggerService>(),
+      getApiHelper(HostType.unnPortal),
+    ),
+  );
+  injector.registerSingleton<CertificateDownloaderService>(
+    () => CertificateDownloaderServiceImpl(
       get<LoggerService>(),
       getApiHelper(HostType.unnPortal),
     ),
@@ -384,7 +450,7 @@ void registerDependencies() {
       get<AuthorizationRefreshService>(),
       get<LastCommitShaService>(),
       get<LoadingPageConfigService>(),
-      get<FileDownloaderService>(dependencyName: 'LogoDownloaderService'),
+      get<LogoDownloaderService>(),
       get<LastCommitShaProvider>(),
       get<LoadingPageProvider>(),
       get<CurrentUserSyncStorage>(),
@@ -418,14 +484,20 @@ void registerDependencies() {
     ),
   );
   injector.registerDependency(
-    () => FeedScreenViewModel(
-      get<FeedUpdaterService>(),
-      get<LastFeedLoadDateTimeProvider>(),
+    () => CertificatesViewModel(get<CertificatesService>()),
+  );
+  injector.registerDependency(
+    () => CertificateItemViewModel(
+      get<CertificatePathService>(),
+      get<CertificateDownloaderService>(),
     ),
   );
   injector.registerDependency(
-    () => CommentsPageViewModel(
-      get<GettingBlogPostComments>(),
+    () => FeedScreenViewModel(
+      get<LastFeedLoadDateTimeProvider>(),
+      get<BlogPostProvider>(dependencyName: BlogPostType.regular.stringValue),
+      get<RegularBlogPostsService>(),
+      get<FeaturedBlogPostsService>(),
     ),
   );
   injector.registerDependency(

@@ -5,6 +5,7 @@ class UnnMobileColors extends ThemeExtension<UnnMobileColors> {
   final Color? scheduleDayHighlight;
   final Color? scheduleSubjectHighlight;
   final Color? defaultPostHighlight;
+  final Color? importantPostHighlight;
   final Color? newPostHighlight;
   final Map<SubjectType, Color>? subjectTypeHighlight;
   final Color? ligtherTextColor;
@@ -13,6 +14,7 @@ class UnnMobileColors extends ThemeExtension<UnnMobileColors> {
     required this.scheduleDayHighlight,
     required this.scheduleSubjectHighlight,
     required this.defaultPostHighlight,
+    required this.importantPostHighlight,
     required this.newPostHighlight,
     required this.subjectTypeHighlight,
     required this.ligtherTextColor,
@@ -23,6 +25,7 @@ class UnnMobileColors extends ThemeExtension<UnnMobileColors> {
     Color? scheduleDayHighlight,
     Color? scheduleSubjectHighlight,
     Color? defaultPostHighlight,
+    Color? importantPostHighlight,
     Color? newPostHighlight,
     Map<SubjectType, Color>? subjectTypeHighlight,
     Color? ligtherTextColor,
@@ -32,6 +35,8 @@ class UnnMobileColors extends ThemeExtension<UnnMobileColors> {
       scheduleSubjectHighlight:
           scheduleSubjectHighlight ?? this.scheduleSubjectHighlight,
       defaultPostHighlight: defaultPostHighlight ?? this.defaultPostHighlight,
+      importantPostHighlight:
+          importantPostHighlight ?? this.importantPostHighlight,
       newPostHighlight: newPostHighlight ?? this.newPostHighlight,
       subjectTypeHighlight: subjectTypeHighlight ?? this.subjectTypeHighlight,
       ligtherTextColor: ligtherTextColor ?? this.ligtherTextColor,
@@ -63,6 +68,11 @@ class UnnMobileColors extends ThemeExtension<UnnMobileColors> {
       defaultPostHighlight: Color.lerp(
         defaultPostHighlight,
         otherColors.defaultPostHighlight,
+        t,
+      ),
+      importantPostHighlight: Color.lerp(
+        importantPostHighlight,
+        otherColors.importantPostHighlight,
         t,
       ),
       newPostHighlight: Color.lerp(

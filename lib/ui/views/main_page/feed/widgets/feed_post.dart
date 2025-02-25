@@ -1,13 +1,15 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:event/event.dart';
+import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_bbcode/flutter_bbcode.dart';
+import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:go_router/go_router.dart';
+import 'package:injector/injector.dart';
 import 'package:intl/intl.dart';
 import 'package:unn_mobile/core/misc/app_settings.dart';
-import 'package:unn_mobile/core/misc/custom_bb_tags.dart';
 import 'package:unn_mobile/core/models/rating_list.dart';
+import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 import 'package:unn_mobile/core/viewmodels/feed_post_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/profile_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/reaction_view_model.dart';
@@ -18,6 +20,7 @@ import 'package:unn_mobile/ui/views/main_page/feed/widgets/attached_file.dart';
 import 'package:unn_mobile/ui/views/main_page/main_page_routing.dart';
 import 'package:unn_mobile/ui/widgets/shimmer.dart';
 import 'package:unn_mobile/ui/widgets/shimmer_loading.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 const idkWhatColor = Color(0xFF989EA9);
 
@@ -33,6 +36,51 @@ class FeedPost extends StatefulWidget {
 
   @override
   State<FeedPost> createState() => _FeedPostState();
+
+  static Widget htmlWidget(String text, BuildContext context) {
+    return HtmlWidget(
+      text,
+      onTapUrl: (url) async {
+        if (!await launchUrl(Uri.parse(url))) {
+          Injector.appInstance
+              .get<LoggerService>()
+              .log('Could not launch url $url');
+        }
+        return true;
+      },
+      onTapImage: (imageMetadata) async {
+        await showDialog(
+          context: context,
+          builder: (context) {
+            return ExtendedImageSlidePage(
+              slideAxis: SlideAxis.vertical,
+              child: ExtendedImage(
+                enableLoadState: true,
+                mode: ExtendedImageMode.gesture,
+                initGestureConfigHandler: (state) {
+                  return GestureConfig(
+                    minScale: 0.9,
+                    animationMinScale: 0.7,
+                    maxScale: 3.0,
+                    animationMaxScale: 3.5,
+                    speed: 1.0,
+                    inertialSpeed: 100.0,
+                    initialScale: 1.0,
+                    inPageView: false,
+                    initialAlignment: InitialAlignment.center,
+                  );
+                },
+                image: CachedNetworkImageProvider(
+                  imageMetadata.sources.first.url,
+                ),
+                enableSlideOutPage: true,
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
 
   static Widget _reactionCounterWithIcons(
     ReactionViewModel model,
@@ -101,9 +149,8 @@ class FeedPost extends StatefulWidget {
     FeedPostViewModel post,
   ) async {
     GoRouter.of(context).go(
-      '${MainPageRouting.navbarRoutes[0].pageRoute}/'
-      '${MainPageRouting.navbarRoutes[0].subroutes[0].pageRoute}',
-      extra: post,
+      '${GoRouter.of(context).routeInformationProvider.value.uri.path}/'
+      '${postCommentsRoute.pageRoute.replaceAll(':postId', post.blogData.id.toString())}',
     );
   }
 }
@@ -135,12 +182,9 @@ class _FeedPostState extends State<FeedPost> {
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 100),
               margin: const EdgeInsets.only(top: 12),
-              padding: const EdgeInsets.all(18),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(0.0),
-                color: model.isNewPost
-                    ? theme.extension<UnnMobileColors>()!.newPostHighlight
-                    : theme.colorScheme.surface,
+                color: getPostColor(context, model),
                 boxShadow: const [
                   BoxShadow(
                     offset: Offset(0, 0),
@@ -150,103 +194,108 @@ class _FeedPostState extends State<FeedPost> {
                 ],
               ),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _PostHeader(
-                    postTime: model.postTime,
-                    viewModel: model.profileViewModel,
-                  ),
-                  const SizedBox(height: 16.0),
-                  BBCodeText(
-                    data: model.postText,
-                    stylesheet: getBBStyleSheet(),
-                    errorBuilder: (context, error, stack) {
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            'Failed to parse BBCode correctly. ',
-                            style: TextStyle(color: Colors.red),
-                          ),
-                          const Text(
-                            'This usually means on of the tags is not properly handling unexpected input.\n',
-                          ),
-                          const Text('Original text: '),
-                          Text(model.postText.replaceAll('\n', '\n#')),
-                          Text(error.toString()),
-                        ],
-                      );
-                    },
-                  ),
-                  const SizedBox(height: 16.0),
-                  for (final file in model.attachedFileViewModels)
-                    AttachedFile(
-                      viewModel: file,
+                  if (model.isAnnouncement)
+                    Container(
+                      decoration: const BoxDecoration(color: Color(0x33000000)),
+                      padding: const EdgeInsets.all(8.0),
+                      width: double.infinity,
+                      child: const Text('Важное сообщение'),
                     ),
-                  if (!widget.showingComments)
-                    const Padding(
-                      padding: EdgeInsets.only(left: 4, right: 4, top: 10),
-                      child: Divider(
-                        thickness: 0.4,
-                        color: idkWhatColor,
-                      ),
-                    ),
-                  const SizedBox(height: 8),
-                  if (widget.showingComments)
-                    Row(
+                  Padding(
+                    padding: const EdgeInsets.all(18.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        FeedPost._reactionCounterWithIcons(
-                          model.reactionViewModel,
-                          reactionsSize,
-                          idkWhatColor,
-                        ),
-                      ],
-                    ),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      _ReactionButton(
-                        model.reactionViewModel,
-                        !widget.showingComments,
-                      ),
-                      const SizedBox(width: 12),
-                      GestureDetector(
-                        onTap: () async {
-                          if (widget.showingComments) {
-                            return;
-                          }
-                          FeedPost._openPostCommentsPage(context, widget.post);
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 6,
-                          ).copyWith(right: 8),
-                          decoration: BoxDecoration(
-                            color: idkWhatColor.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const Icon(
-                                Icons.chat_bubble_outline,
-                                color: idkWhatColor,
-                                size: 23,
+                        Row(
+                          children: [
+                            Expanded(
+                              child: _PostHeader(
+                                postTime: model.postTime,
+                                viewModel: model.profileViewModel,
                               ),
-                              const SizedBox(width: 6),
-                              Text(
-                                '${model.commentsCount}',
-                                style: const TextStyle(
-                                  fontSize: 14,
-                                  color: idkWhatColor,
-                                ),
+                            ),
+                            IconButton(
+                              onPressed: model.togglePin,
+                              icon: Icon(
+                                model.isPinned
+                                    ? Icons.push_pin
+                                    : Icons.push_pin_outlined,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 16.0),
+                        FeedPost.htmlWidget(model.postText, context),
+                        if (model.isAnnouncement)
+                          FilledButton(
+                            onPressed: model.markReadIfImportant,
+                            child: const Text('Отметить прочитанным'),
+                          )
+                        else
+                          const SizedBox(height: 16.0),
+                        for (final file in model.attachedFileViewModels)
+                          AttachedFile(viewModel: file),
+                        if (!widget.showingComments)
+                          const Padding(
+                            padding:
+                                EdgeInsets.only(left: 4, right: 4, top: 10),
+                            child: Divider(
+                              thickness: 0.4,
+                              color: idkWhatColor,
+                            ),
+                          ),
+                        const SizedBox(height: 8),
+                        if (widget.showingComments)
+                          Row(
+                            children: [
+                              FeedPost._reactionCounterWithIcons(
+                                model.reactionViewModel,
+                                reactionsSize,
+                                idkWhatColor,
                               ),
                             ],
                           ),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            _ReactionButton(
+                              model.reactionViewModel,
+                              !widget.showingComments,
+                            ),
+                            const SizedBox(width: 12),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 6,
+                              ).copyWith(right: 8),
+                              decoration: BoxDecoration(
+                                color: idkWhatColor.withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Icon(
+                                    Icons.chat_bubble_outline,
+                                    color: idkWhatColor,
+                                    size: 23,
+                                  ),
+                                  const SizedBox(width: 6),
+                                  Text(
+                                    '${model.commentsCount}',
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      color: idkWhatColor,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ],
               ),
@@ -257,6 +306,17 @@ class _FeedPostState extends State<FeedPost> {
       onModelReady: (p0) => p0.onError.subscribe(onPostRefreshError),
       onDispose: (p0) => p0.onError.unsubscribe(onPostRefreshError),
     );
+  }
+
+  Color? getPostColor(BuildContext context, FeedPostViewModel model) {
+    final theme = Theme.of(context);
+    final unnMobileColors = theme.extension<UnnMobileColors>()!;
+    if (model.isAnnouncement) {
+      return unnMobileColors.importantPostHighlight;
+    }
+    return model.isNewPost
+        ? unnMobileColors.newPostHighlight
+        : theme.colorScheme.surface;
   }
 }
 

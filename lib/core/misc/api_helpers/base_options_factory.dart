@@ -1,15 +1,16 @@
 import 'package:dio/dio.dart';
+import 'package:unn_mobile/core/constants/api/protocol_type.dart';
 
 BaseOptions createBaseOptions({
-  required String baseUrl,
-  bool useSSL = true,
+  required String host,
+  ProtocolType protocol = ProtocolType.https,
   String contentType = Headers.formUrlEncodedContentType,
   Duration sendTimeout = const Duration(seconds: 15),
   Duration receiveTimeout = const Duration(seconds: 15),
   Map<String, dynamic>? headers,
 }) {
   return BaseOptions(
-    baseUrl: '${useSSL ? "https" : "http"}://$baseUrl/',
+    baseUrl: '${protocol.name}://$host/',
     contentType: contentType,
     sendTimeout: sendTimeout,
     receiveTimeout: receiveTimeout,

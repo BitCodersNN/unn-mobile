@@ -1,9 +1,10 @@
 import 'package:dio/dio.dart';
+import 'package:unn_mobile/core/constants/api/ajax_action.dart';
+import 'package:unn_mobile/core/constants/api/path.dart';
 import 'package:unn_mobile/core/constants/regular_expressions.dart';
-import 'package:unn_mobile/core/constants/api_url_strings.dart';
 import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/models/feed/blog_post_comment_data.dart';
-import 'package:unn_mobile/core/services/interfaces/feed/getting_blog_post_comments.dart';
+import 'package:unn_mobile/core/services/interfaces/feed/legacy/getting_blog_post_comments.dart';
 import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 
 class _JsonKeys {
@@ -42,7 +43,7 @@ class GettingBlogPostCommentsImpl implements GettingBlogPostComments {
     final Response response;
     try {
       response = await _apiHelper.post(
-        path: ApiPaths.ajax,
+        path: ApiPath.ajax,
         queryParameters: {
           'mode': 'class',
           AjaxActionStrings.actionKey: AjaxActionStrings.navigateComment,
