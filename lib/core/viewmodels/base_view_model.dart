@@ -3,13 +3,16 @@ import 'package:flutter/material.dart';
 class BaseViewModel extends ChangeNotifier {
   ViewState _state = ViewState.idle;
 
-  ViewState get state => _state;
   bool disposed = false;
 
-  void setState(ViewState viewState) {
-    _state = viewState;
-    notifyListeners();
-  }
+  @protected
+  bool isInitialized = false;
+
+  bool get initialized => isInitialized;
+
+  bool get isBusy => _state == ViewState.busy;
+
+  ViewState get state => _state;
 
   @override
   void dispose() {
@@ -20,8 +23,15 @@ class BaseViewModel extends ChangeNotifier {
   @override
   void notifyListeners() {
     if (!disposed) {
-      super.notifyListeners();
+      WidgetsBinding.instance.endOfFrame.whenComplete(
+        () => super.notifyListeners(),
+      );
     }
+  }
+
+  void setState(ViewState viewState) {
+    _state = viewState;
+    notifyListeners();
   }
 }
 

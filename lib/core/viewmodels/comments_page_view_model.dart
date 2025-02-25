@@ -1,128 +1,79 @@
-import 'package:injector/injector.dart';
-import 'package:unn_mobile/core/misc/type_defs.dart';
-import 'package:unn_mobile/core/models/blog_data.dart';
-import 'package:unn_mobile/core/models/blog_post_comment.dart';
-import 'package:unn_mobile/core/models/blog_post_comment_with_loaded_info.dart';
-import 'package:unn_mobile/core/models/file_data.dart';
-import 'package:unn_mobile/core/models/user_data.dart';
-import 'package:unn_mobile/core/services/interfaces/getting_blog_post_comments.dart';
-import 'package:unn_mobile/core/services/interfaces/getting_blog_posts.dart';
-import 'package:unn_mobile/core/services/interfaces/getting_file_data.dart';
-import 'package:unn_mobile/core/services/interfaces/getting_profile.dart';
+import 'package:unn_mobile/core/services/interfaces/feed/getting_blog_post_comments.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
+import 'package:unn_mobile/core/viewmodels/feed_comment_view_model.dart';
+import 'package:unn_mobile/core/viewmodels/feed_post_view_model.dart';
 
 class CommentsPageViewModel extends BaseViewModel {
-  final _gettingBlogPostCommentsService =
-      Injector.appInstance.get<GettingBlogPostComments>();
-  final _gettingProfileService = Injector.appInstance.get<GettingProfile>();
-  final _gettingFileDataService = Injector.appInstance.get<GettingFileData>();
-  final _lruCacheBlogPostCommentWithLoadedInfo =
-      Injector.appInstance.get<LRUCacheBlogPostCommentWithLoadedInfo>();
-  final _lruCacheProfile = Injector.appInstance.get<LRUCacheUserData>();
+  final GettingBlogPostComments _gettingBlogPostCommentsService;
 
-  BlogData? post;
-  List<Future<List<BlogPostCommentWithLoadedInfo?>>> commentLoaders = [];
+  final List<FeedCommentViewModel> commentViewmodels = [];
 
-  int lastPage = 1;
+  FeedPostViewModel? post;
+
+  int loadedPage = 1;
   int totalPages = 1;
 
-  Future<BlogPostCommentWithLoadedInfo?> loadCommentInfo(
-    BlogPostComment comment,
-  ) async {
-    final futures = <Future>[];
+  CommentsPageViewModel(
+    this._gettingBlogPostCommentsService,
+  );
 
-    BlogPostCommentWithLoadedInfo? blogPostCommentWithLoadedInfo =
-        _lruCacheBlogPostCommentWithLoadedInfo.get(comment.id);
+  bool get commentsAvailable => loadedPage < totalPages;
 
-    if (blogPostCommentWithLoadedInfo != null) {
-      return blogPostCommentWithLoadedInfo;
-    }
+  int get commentsCount => post?.blogData.numberOfComments ?? 0;
 
-    UserData? profile = _lruCacheProfile.get(comment.authorId);
+  bool get isLoadingComments => state == ViewState.busy;
 
-    if (profile == null) {
-      futures.add(_gettingProfileService.getProfileByAuthorIdFromPost(
-        authorId: comment.authorId,
-      ));
-    }
-
-    for (final fileId in comment.attachedFiles) {
-      futures.add(_gettingFileDataService.getFileData(id: fileId));
-    }
-
-    final data = await Future.wait(futures);
-
-    final startPosFilesInData = profile == null ? 1 : 0;
-    profile ??= data.first;
-
-    blogPostCommentWithLoadedInfo = BlogPostCommentWithLoadedInfo(
-      comment: comment,
-      author: profile!,
-      files:
-          List<FileData>.from(data.getRange(startPosFilesInData, data.length)),
-    );
-
-    _lruCacheProfile.save(
-      comment.authorId,
-      profile,
-    );
-
-    _lruCacheBlogPostCommentWithLoadedInfo.save(
-      comment.id,
-      blogPostCommentWithLoadedInfo,
-    );
-
-    return blogPostCommentWithLoadedInfo;
+  void init(FeedPostViewModel post) {
+    this.post = post;
+    refresh();
   }
 
-  Future<List<BlogPostCommentWithLoadedInfo?>> loadComments(int page) async {
-    if (post == null) {
-      return [];
-    }
-    if (page == 1) {
-      final comNumbers =
-          (await Injector.appInstance.get<GettingBlogPosts>().getBlogPosts(
-                    postId: post!.id,
-                  ))?[0]
-              .numberOfComments;
-      if (comNumbers != null) {
-        const commentsPerPage = 20;
-        totalPages = comNumbers ~/ commentsPerPage +
-            ((comNumbers % commentsPerPage == 0) ? 0 : 1);
-      }
-    }
-    final comments = await _gettingBlogPostCommentsService.getBlogPostComments(
-      postId: post!.id,
-      pageNumber: page,
-    );
-    if (comments == null) {
-      return [];
-    }
-    return await Future.wait(comments.map(
-      (e) => loadCommentInfo(e),
-    ));
-  }
-
-  void loadMoreComments() {
-    if (lastPage == totalPages) {
+  Future<void> loadMoreComments() async {
+    if (isLoadingComments || loadedPage == 1) {
       return;
     }
-    lastPage++;
-    commentLoaders.add(loadComments(lastPage));
-    notifyListeners();
+    loadedPage--;
+    await _loadComments(loadedPage);
   }
 
-  void refresh() {
-    commentLoaders.clear();
-    lastPage = 1;
-    commentLoaders.add(loadComments(1));
-    notifyListeners();
+  Future<void> refresh() async {
+    totalPages = 1;
+    await post?.refresh();
+    totalPages =
+        (commentsCount / GettingBlogPostComments.commentsPerPage).ceil();
+    loadedPage = totalPages;
+    commentViewmodels.clear();
+
+    await _loadComments(loadedPage);
+    // Загружаем до конца, либо первые 3 страницы, если их больше
+    while (loadedPage > 1 && loadedPage > totalPages - 2) {
+      await loadMoreComments();
+    }
   }
 
-  bool get commentsAvailable => lastPage < totalPages;
-  void init(BlogData post) {
-    this.post = post;
-    commentLoaders.add(loadComments(1));
-    notifyListeners();
+  Future<void> _loadComments(int page) async {
+    if (isLoadingComments) {
+      return;
+    }
+    try {
+      setState(ViewState.busy);
+      if (post == null) {
+        return;
+      }
+      final comments =
+          await _gettingBlogPostCommentsService.getBlogPostComments(
+        postId: post!.blogData.id,
+        pageNumber: page,
+      );
+      if (comments == null) {
+        return;
+      }
+      commentViewmodels.addAll(
+        comments.map((c) => FeedCommentViewModel.cached(c.id)..init(c)),
+      );
+    } finally {
+      // Не важно, как мы вышли - флаги убрать всё равно надо
+      setState(ViewState.idle);
+    }
   }
 }

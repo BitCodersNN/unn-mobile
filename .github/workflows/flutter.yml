@@ -4,6 +4,7 @@
 # documentation.
 
 name: Flutter Analyze
+run-name: Analyze formatting in PR ${{ github.event.number }}
 
 on:
   pull_request:
@@ -12,7 +13,7 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 jobs:
-  build:
+  check-format:
     if: github.event.pull_request.head.repo.fork == false
     runs-on: ubuntu-latest
 
@@ -27,7 +28,7 @@ jobs:
       # - uses: dart-lang/setup-dart@v1
       - uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.19.3'
+          flutter-version: '3.24.1'
           channel: 'stable'
       - name: get firebase config
         uses: mobiledevops/secret-to-file-action@v1
@@ -37,10 +38,9 @@ jobs:
           working-directory: ./lib
       - name: Install dependencies
         run: flutter pub get
-
-      # Uncomment this step to verify the use of 'dart format' on each commit.
-      # - name: Verify formatting
-      #   run: dart format --output=none --set-exit-if-changed .
+        
+      - name: Verify formatting
+        run: dart format --output=none --set-exit-if-changed ./lib/
 
       # Consider passing '--fatal-infos' for slightly stricter analysis.
       - name: Analyze project source

@@ -1,56 +1,52 @@
-import 'dart:convert';
-import 'dart:io';
-
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
-import 'package:injector/injector.dart';
-import 'package:unn_mobile/core/misc/http_helper.dart';
+import 'package:dio/dio.dart';
+import 'package:unn_mobile/core/constants/api_url_strings.dart';
+import 'package:unn_mobile/core/constants/session_identifier_strings.dart';
+import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/models/file_data.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_file_data.dart';
+import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 
 class GettingFileDataImpl implements GettingFileData {
-  final String _path = 'rest/disk.attachedObject.get';
-  final String _sessid = 'sessid';
+  final AuthorizationService _authorizationService;
+  final LoggerService _loggerService;
+  final ApiHelper _apiHelper;
   final String _id = 'id';
-  final String _sessionIdCookieKey = "PHPSESSID";
+
+  GettingFileDataImpl(
+    this._authorizationService,
+    this._loggerService,
+    this._apiHelper,
+  );
 
   @override
   Future<FileData?> getFileData({
     required int id,
   }) async {
-    final authorisationService =
-        Injector.appInstance.get<AuthorisationService>();
-
-    final requestSender = HttpRequestSender(path: _path, queryParams: {
-      _sessid: authorisationService.csrf ?? '',
-      _id: id.toString(),
-    }, cookies: {
-      _sessionIdCookieKey: authorisationService.sessionId ?? '',
-    });
-
-    HttpClientResponse response;
+    Response response;
     try {
-      response = await requestSender.get(timeoutSeconds: 60);
+      response = await _apiHelper.get(
+        path: ApiPaths.diskAttachedObjectGet,
+        queryParameters: {
+          SessionIdentifierStrings.sessid: _authorizationService.csrf ?? '',
+          _id: id.toString(),
+        },
+        options: Options(
+          sendTimeout: const Duration(seconds: 60),
+          receiveTimeout: const Duration(seconds: 60),
+        ),
+      );
     } catch (error, stackTrace) {
-      await FirebaseCrashlytics.instance
-          .log("Exception: $error\nStackTrace: $stackTrace");
-      return null;
-    }
-
-    final statusCode = response.statusCode;
-
-    if (statusCode != 200) {
-      await FirebaseCrashlytics.instance.log(
-          '${runtimeType.toString()}: statusCode = $statusCode; fileId = $id');
+      _loggerService.log('Exception: $error\nStackTrace: $stackTrace');
       return null;
     }
 
     dynamic jsonMap;
+
     try {
-      jsonMap = jsonDecode(
-          await HttpRequestSender.responseToStringBody(response))['result'];
+      jsonMap = response.data['result'];
     } catch (error, stackTrace) {
-      await FirebaseCrashlytics.instance.recordError(error, stackTrace);
+      _loggerService.logError(error, stackTrace);
       return null;
     }
 
@@ -58,7 +54,7 @@ class GettingFileDataImpl implements GettingFileData {
     try {
       fileData = FileData.fromJson(jsonMap);
     } catch (error, stackTrace) {
-      await FirebaseCrashlytics.instance.recordError(error, stackTrace);
+      _loggerService.logError(error, stackTrace);
     }
 
     return fileData;

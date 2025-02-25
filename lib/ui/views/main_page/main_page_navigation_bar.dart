@@ -1,76 +1,67 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart';
 import 'package:unn_mobile/core/viewmodels/main_page_view_model.dart';
+import 'package:unn_mobile/ui/views/main_page/main_page_routing.dart';
 
 class MainPageNavigationBar extends StatelessWidget {
   final void Function(int)? onDestinationSelected;
+  final MainPageViewModel model;
 
-  MainPageNavigationBar({super.key, this.onDestinationSelected});
-  final List<IconData> selectedBarIcons = [
-    Icons.star,
-    Icons.calendar_month,
-    Icons.map,
-    Icons.menu_book,
-  ];
-  final List<IconData> unselectedBarIcons = [
-    Icons.star_border,
-    Icons.calendar_month_outlined,
-    Icons.map_outlined,
-    Icons.menu_book_outlined,
-  ];
+  static const navbarHeight = 60.0;
+  const MainPageNavigationBar({
+    super.key,
+    this.onDestinationSelected,
+    required this.model,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<MainPageViewModel>(
-      builder: (context, model, child) {
-        return Stack(
-          alignment: Alignment.bottomCenter,
-          children: [
-            ClipRect(
-              child: BackdropFilter(
-                filter: ImageFilter.blur(
-                  sigmaX: 6.0,
-                  sigmaY: 6.0,
-                ),
-                child: Container(
-                    width: double.maxFinite,
-                    height: 60,
-                    color: Colors.transparent),
-              ),
-            ),
-            NavigationBar(
-              destinations: _getNavbarDestinations(
-                  model, context),
-              height: 60,
-              backgroundColor: Colors.transparent,
-              indicatorColor: Colors.transparent,
-              indicatorShape: const Border(),
-              animationDuration: const Duration(milliseconds: 0),
-              selectedIndex: model.selectedBarItem,
-              onDestinationSelected: onDestinationSelected, 
-            ),
-          ],
-        );
-      },
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          height: 0.3,
+          color: Colors.grey.withOpacity(0.5),
+        ),
+        NavigationBar(
+          destinations: _getNavbarDestinations(
+            model,
+            context,
+          ),
+          height: navbarHeight,
+          backgroundColor: Colors.transparent,
+          indicatorColor: Colors.transparent,
+          animationDuration: const Duration(milliseconds: 0),
+          selectedIndex: getSelectedBarIndex(context),
+          onDestinationSelected: onDestinationSelected,
+        ),
+      ],
     );
   }
 
+  static int getSelectedBarIndex(BuildContext context) {
+    final String location = GoRouterState.of(context).uri.path;
+    return MainPageRouting.navbarRoutes
+        .indexWhere((route) => location.startsWith(route.pageRoute));
+  }
+
   List<Widget> _getNavbarDestinations(
-      MainPageViewModel model, BuildContext context) {
-    List<Widget> destinations = [];
-    final theme = Theme.of(context);
-    for (int i = 0; i < model.barScreenNames.length; ++i) {
-      var isIconSelected =
-          !model.isDrawerItemSelected && model.selectedBarItem == i;
-      destinations.add(NavigationDestination(
-          icon: Icon(
-              isIconSelected ? selectedBarIcons[i] : unselectedBarIcons[i],
-              color: isIconSelected
-                  ? theme.primaryColor
-                  : theme.colorScheme.onBackground),
-          label: model.barScreenNames[i]));
-    }
+    MainPageViewModel model,
+    BuildContext context,
+  ) {
+    final routes = MainPageRouting.navbarRoutes;
+    final destinations = [
+      for (final route in routes)
+        NavigationDestination(
+          icon: Icon(route.unselectedIcon),
+          selectedIcon: Icon(
+            route.selectedIcon,
+            color: Theme.of(context).primaryColorDark,
+          ),
+          label: route.pageTitle,
+          enabled: !route.isDisabled,
+        ),
+    ];
     return destinations;
   }
 }

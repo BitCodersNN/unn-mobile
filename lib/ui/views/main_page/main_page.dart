@@ -1,154 +1,104 @@
-import 'package:unn_mobile/ui/views/main_page/employees/employees.dart';
-import 'package:unn_mobile/ui/views/main_page/feed/feed.dart';
-import 'package:unn_mobile/ui/views/main_page/main_page_tab_state.dart';
-import 'package:unn_mobile/ui/views/main_page/map/map.dart';
-import 'package:unn_mobile/ui/views/main_page/materials/materials.dart';
-import 'package:unn_mobile/ui/views/main_page/payment_site/payment_site.dart';
-import 'package:unn_mobile/ui/views/main_page/settings/settings.dart';
-import 'package:unn_mobile/ui/widgets/placeholder.dart' as placeholder;
+import 'package:go_router/go_router.dart';
+import 'package:injector/injector.dart';
+import 'package:unn_mobile/core/misc/app_open_tracker.dart';
+import 'package:unn_mobile/ui/router.dart';
+import 'package:unn_mobile/ui/views/main_page/main_page_routing.dart';
+import 'package:unn_mobile/ui/widgets/dialogs/changelog_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:unn_mobile/core/viewmodels/main_page_view_model.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
-import 'package:unn_mobile/ui/views/main_page/about/about.dart';
 import 'package:unn_mobile/ui/views/main_page/main_page_drawer.dart';
 import 'package:unn_mobile/ui/views/main_page/main_page_navigation_bar.dart';
-import 'package:unn_mobile/ui/views/main_page/schedule/schedule.dart';
-import 'package:unn_mobile/ui/router.dart' as local_router;
 
 class MainPage extends StatefulWidget {
-  final String subroute;
+  final StatefulNavigationShell shell;
 
-  const MainPage({super.key, required this.subroute});
+  const MainPage({super.key, required this.shell});
 
   @override
   State<MainPage> createState() => _MainPageState();
 }
 
 class _MainPageState extends State<MainPage> {
-  final _navigatorKey = GlobalKey<NavigatorState>();
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
-  final Map<int, GlobalKey> tabKeys = {
-    1: GlobalKey<State<ScheduleScreenView>>()
-  };
-
-  final List<String> drawerRoutes = [
-    'placeholder',
-    'placeholder',
-    'employees',
-    'placeholder',
-    'placeholder',
-    'placeholder',
-    'payment_site',
-    'settings',
-    'about',
-    'exit'
-  ];
-  final List<String> navbarRoutes = [
-    'feed',
-    'schedule',
-    'map',
-    'materials',
-    'placeholder',
-  ];
 
   final drawerIdOffset = 10;
+
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (await Injector.appInstance
+          .get<AppOpenTracker>()
+          .isFirstTimeOpenOnVersion()) {
+        if (mounted) {
+          await showDialog(
+            context: context,
+            builder: (context) => const ChangelogDialog(),
+          );
+        }
+      }
+    });
+  }
+
+  bool isRootScreen(BuildContext context) {
+    final location = GoRouterState.of(context).uri.path;
+    return MainPageRouting.navbarRoutes.any((r) => r.pageRoute == location);
+  }
+
   @override
   Widget build(BuildContext context) {
     return BaseView<MainPageViewModel>(
-      builder: (context, model, child) {
+      builder: (context, model, _) {
         return Scaffold(
-          key: scaffoldKey,
-          appBar: getCurrentAppBar(model, context),
           drawerEdgeDragWidth: MediaQuery.of(context).size.width,
           extendBody: false,
-          body: Navigator(
-            key: _navigatorKey,
-            initialRoute: widget.subroute,
-            onGenerateRoute: (settings) {
-              switch (settings.name) {
-                case 'about':
-                  return local_router.Router.createCustomRoute(
-                    AboutScreenView(),
-                  );
-                case 'feed':
-                  return local_router.Router.createCustomRoute(
-                    const FeedScreenView(),
-                    
-                  );
-                case '':
-                case 'schedule':
-                  tabKeys[1] = GlobalKey<State<ScheduleScreenView>>();
-                  return local_router.Router.createCustomRoute(
-                    ScheduleScreenView(key: tabKeys[1]),
-                  );
-                case 'map':
-                  return local_router.Router.createCustomRoute(
-                    const MapScreenView(),
-                  );
-                case 'materials':
-                  return local_router.Router.createCustomRoute(
-                    const MaterialsScreenView(),
-                  );
-                case 'employees':
-                  return local_router.Router.createCustomRoute(
-                    const EmployeesScreenView(),
-                  );
-                case 'payment_site':
-                  return local_router.Router.createCustomRoute(
-                    const PaymentSiteScreenView(),
-                  );
-                case 'settings':
-                  return local_router.Router.createCustomRoute(
-                    const SettingsScreenView(),
-                  );
-                case 'placeholder':
-                  return local_router.Router.createCustomRoute(
-                    const placeholder.Placeholder(),
-                  );
-                default:
-                  return local_router.Router.createCustomRoute(
-                    const Text('Unknown page'),
-                  );
-              }
+          drawer: isRootScreen(context)
+              ? Builder(
+                  // Разделяем контекст, иначе в текущем нет Scaffold, а он нам нужен
+                  builder: (context) {
+                    return MainPageDrawer(
+                      model: model,
+                      onDestinationSelected: (value) {
+                        Scaffold.of(context).closeDrawer();
+                        final selectedBarIndex = widget.shell.currentIndex;
+                        final currentPageRoute = MainPageRouting
+                            .navbarRoutes[selectedBarIndex].pageRoute;
+                        final destinationSubroute =
+                            model.routes[value].pageRoute;
+                        GoRouter.of(context).go(
+                          '$currentPageRoute/$drawerRoutePrefix/$destinationSubroute',
+                        );
+                      },
+                    );
+                  },
+                )
+              : null,
+          body: Builder(
+            builder: (context) {
+              return widget.shell;
             },
           ),
-          drawer: MainPageDrawer(onDestinationSelected: (value) {
-            bool stateChanged = !model.isDrawerItemSelected ||
-                model.selectedDrawerItem != value;
-            model.selectedDrawerItem = value;
-            model.isDrawerItemSelected = true;
-            scaffoldKey.currentState!.closeDrawer();
-            if (stateChanged) {
-              _navigatorKey.currentState!.popAndPushNamed(
-                drawerRoutes[value],
-              );
-            } else {
-              if (tabKeys.containsKey(drawerIdOffset + value)) {
-                if (tabKeys[value]!.currentState != null &&
-                    tabKeys[value]!.currentState is MainPageTabState) {
-                  (tabKeys[value]!.currentState as MainPageTabState)
-                      .refreshTab();
-                }
-              }
-            }
-          }),
           bottomNavigationBar: MainPageNavigationBar(
+            model: model,
             onDestinationSelected: (value) {
-              bool stateChanged =
-                  model.isDrawerItemSelected || model.selectedBarItem != value;
-              model.selectedBarItem = value;
-              model.isDrawerItemSelected = false;
-              if (stateChanged) {
-                _navigatorKey.currentState!
-                    .popAndPushNamed(navbarRoutes[value]);
-              } else {
-                if (tabKeys.containsKey(value)) {
-                  if (tabKeys[value]!.currentState != null &&
-                      tabKeys[value]!.currentState is MainPageTabState) {
-                    (tabKeys[value]!.currentState as MainPageTabState)
-                        .refreshTab();
-                  }
+              final currentRouteIndex = widget.shell.currentIndex;
+              if (value == currentRouteIndex) {
+                if (isRootScreen(context)) {
+                  model.refreshTab(value);
+                } else {
+                  goToRootScreen(context, currentRouteIndex);
                 }
+              } else {
+                if (GoRouterState.of(context).uri.path.contains('drawer')) {
+                  goToRootScreen(context, currentRouteIndex);
+                }
+                // Без делея эта хрень не работает >:(
+                Future.delayed(
+                  const Duration(milliseconds: 10),
+                  () => widget.shell.goBranch(value),
+                );
               }
             },
           ),
@@ -158,15 +108,8 @@ class _MainPageState extends State<MainPage> {
     );
   }
 
-  AppBar getCurrentAppBar(MainPageViewModel model, BuildContext context) {
-    final theme = Theme.of(context);
-    return AppBar(
-      title: Text(model.selectedScreenName),
-      backgroundColor: theme.appBarTheme.backgroundColor,
-      /*actions: [
-        IconButton(onPressed: () {}, icon: const Icon(Icons.notifications)),
-        IconButton(onPressed: () {}, icon: const Icon(Icons.search)),
-      ],*/
-    );
+  void goToRootScreen(BuildContext context, int currentRouteIndex) {
+    GoRouter.of(context)
+        .go(MainPageRouting.navbarRoutes[currentRouteIndex].pageRoute);
   }
 }

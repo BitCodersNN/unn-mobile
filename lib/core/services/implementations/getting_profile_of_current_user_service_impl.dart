@@ -1,63 +1,42 @@
-import 'dart:convert';
-import 'dart:io';
-
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
-import 'package:injector/injector.dart';
-import 'package:unn_mobile/core/misc/http_helper.dart';
+import 'package:dio/dio.dart';
+import 'package:unn_mobile/core/constants/api_url_strings.dart';
+import 'package:unn_mobile/core/constants/profiles_strings.dart';
+import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/models/employee_data.dart';
 import 'package:unn_mobile/core/models/student_data.dart';
 import 'package:unn_mobile/core/models/user_data.dart';
-import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_profile_of_current_user_service.dart';
+import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 
 class GettingProfileOfCurrentUserImpl implements GettingProfileOfCurrentUser {
-  final String _path = 'bitrix/vuz/api/profile/current';
-  final String _sessionIdCookieKey = "PHPSESSID";
+  final LoggerService _loggerService;
+  final ApiHelper _apiHelper;
 
+  GettingProfileOfCurrentUserImpl(
+    this._loggerService,
+    this._apiHelper,
+  );
   @override
   Future<UserData?> getProfileOfCurrentUser() async {
-    final authorisationService =
-        Injector.appInstance.get<AuthorisationService>();
-
-    final requestSender = HttpRequestSender(path: _path, cookies: {
-      _sessionIdCookieKey: authorisationService.sessionId ?? '',
-    });
-
-    HttpClientResponse response;
+    Response response;
     try {
-      response = await requestSender.get();
+      response = await _apiHelper.get(path: ApiPaths.currentProfile);
     } catch (error, stackTrace) {
-      await FirebaseCrashlytics.instance.recordError(error, stackTrace);
+      _loggerService.logError(error, stackTrace);
       return null;
     }
 
-    final statusCode = response.statusCode;
-
-    if (statusCode != 200) {
-      await FirebaseCrashlytics.instance
-          .log('${runtimeType.toString()}: statusCode = $statusCode');
-      return null;
-    }
-
-    dynamic jsonMap;
-    try {
-      jsonMap =
-          jsonDecode(await HttpRequestSender.responseToStringBody(response));
-    } catch (error, stackTrace) {
-      await FirebaseCrashlytics.instance.recordError(error, stackTrace);
-      return null;
-    }
+    final jsonMap = response.data;
 
     UserData? userData;
     try {
-      userData = jsonMap['type'] == 'student'
+      userData = jsonMap[ProfilesStrings.type] == ProfilesStrings.student
           ? StudentData.fromJson(jsonMap)
-          : jsonMap['type'] == 'employee'
+          : jsonMap[ProfilesStrings.type] == ProfilesStrings.employee
               ? EmployeeData.fromJson(jsonMap)
               : null;
     } catch (e, stackTrace) {
-      await FirebaseCrashlytics.instance
-          .recordError(e, stackTrace, information: [jsonMap.toString()]);
+      _loggerService.logError(e, stackTrace, information: [jsonMap.toString()]);
     }
 
     return userData;

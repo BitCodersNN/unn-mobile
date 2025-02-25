@@ -1,6 +1,6 @@
 # unn-mobile
 
-[![android test deploy](https://github.com/BitCodersNN/unn-mobile/actions/workflows/deploy-develop.yml/badge.svg?branch=develop)](https://github.com/BitCodersNN/unn-mobile/actions/workflows/deploy-develop.yml)
+[![deploy-develop-android](https://github.com/BitCodersNN/unn-mobile/actions/workflows/deploy-develop.yml/badge.svg?branch=develop&event=push)](https://github.com/BitCodersNN/unn-mobile/actions/workflows/deploy-develop.yml)
 
 Мобильное приложение для Портала ННГУ.
 

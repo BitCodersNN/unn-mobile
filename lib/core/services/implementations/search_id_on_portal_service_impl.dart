@@ -1,20 +1,15 @@
-import 'dart:convert';
-import 'dart:io';
-
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
-import 'package:injector/injector.dart';
-import 'package:unn_mobile/core/misc/http_helper.dart';
+import 'package:dio/dio.dart';
+import 'package:unn_mobile/core/constants/api_url_strings.dart';
+import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/models/employee_data.dart';
-import 'package:unn_mobile/core/models/schedule_search_result_item.dart';
+import 'package:unn_mobile/core/models/schedule_search_suggestion_item.dart';
 import 'package:unn_mobile/core/models/schedule_filter.dart';
 import 'package:unn_mobile/core/models/student_data.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_profile_of_current_user_service.dart';
+import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 import 'package:unn_mobile/core/services/interfaces/search_id_on_portal_service.dart';
 
 class SearchIdOnPortalServiceImpl implements SearchIdOnPortalService {
-  final String _ruzapi = 'ruzapi/';
-  final String _studentinfo = 'studentinfo/';
-  final String _search = 'search';
   final String _uns = 'uns';
   final String _term = 'term';
   final String _type = 'type';
@@ -22,41 +17,38 @@ class SearchIdOnPortalServiceImpl implements SearchIdOnPortalService {
   final String _id = 'id';
   final String _description = 'description';
 
+  final GettingProfileOfCurrentUser _gettingProfileOfCurrentUser;
+  final LoggerService _loggerService;
+  final ApiHelper _apiHelper;
+
+  SearchIdOnPortalServiceImpl(
+    this._gettingProfileOfCurrentUser,
+    this._loggerService,
+    this._apiHelper,
+  );
+
   Future<String?> _getIdOfLoggedInStudent(String uns) async {
-    final requestSender = HttpRequestSender(
-        path: _ruzapi + _studentinfo, queryParams: {_uns: uns});
-
-    HttpClientResponse response;
+    Response response;
     try {
-      response = await requestSender.get();
+      response = await _apiHelper.get(
+        path: ApiPaths.studentInfo,
+        queryParameters: {_uns: uns},
+      );
     } catch (error, stackTrace) {
-      await FirebaseCrashlytics.instance.recordError(error, stackTrace);
+      _loggerService.logError(error, stackTrace);
       return null;
     }
 
-    final statusCode = response.statusCode;
-
-    if (statusCode != 200) {
-      await FirebaseCrashlytics.instance.log(
-          '${runtimeType.toString()}: statusCode = $statusCode; userLogin = $uns');
-      return null;
-    }
-
-    Map<dynamic, dynamic> jsonMap =
-        jsonDecode(await HttpRequestSender.responseToStringBody(response));
-
-    return jsonMap[_id];
+    return response.data[_id];
   }
 
   @override
-  Future<IDForSchedule?> getIdOfLoggedInUser() async {
-    final gettingProfileOfCurrentUser =
-        Injector.appInstance.get<GettingProfileOfCurrentUser>();
+  Future<IdForSchedule?> getIdOfLoggedInUser() async {
     final userData =
-        await gettingProfileOfCurrentUser.getProfileOfCurrentUser();
+        await _gettingProfileOfCurrentUser.getProfileOfCurrentUser();
 
     if (userData is EmployeeData) {
-      return IDForSchedule(IDType.person, userData.syncID);
+      return IdForSchedule(IdType.person, userData.syncID);
     }
 
     if (userData is StudentData) {
@@ -64,41 +56,37 @@ class SearchIdOnPortalServiceImpl implements SearchIdOnPortalService {
       if (id == null) {
         return null;
       }
-      return IDForSchedule(IDType.student, id);
+      return IdForSchedule(IdType.student, id);
     }
 
     return null;
   }
 
   @override
-  Future<List<ScheduleSearchResultItem>?> findIDOnPortal(
-      String value, IDType valueType) async {
-    final requestSender = HttpRequestSender(
-        path: _ruzapi + _search,
-        queryParams: {_term: value, _type: valueType.name});
-    HttpClientResponse response;
+  Future<List<ScheduleSearchSuggestionItem>?> findIdOnPortal(
+    String value,
+    IdType valueType,
+  ) async {
+    Response response;
     try {
-      response = await requestSender.get();
+      response = await _apiHelper.get(
+        path: ApiPaths.search,
+        queryParameters: {_term: value, _type: valueType.name},
+      );
     } catch (error, stackTrace) {
-      await FirebaseCrashlytics.instance.recordError(error, stackTrace);
+      _loggerService.logError(error, stackTrace);
       return null;
     }
 
-    final statusCode = response.statusCode;
-
-    if (statusCode != 200) {
-      await FirebaseCrashlytics.instance.log(
-          '${runtimeType.toString()}: statusCode = $statusCode; value = $value; valueType = $valueType');
-      return null;
-    }
-
-    List<dynamic> jsonList =
-        jsonDecode(await HttpRequestSender.responseToStringBody(response));
-
-    List<ScheduleSearchResultItem> result = [];
-    for (var jsonMap in jsonList) {
-      result.add(ScheduleSearchResultItem(
-          jsonMap[_id], jsonMap[_label], jsonMap[_description]));
+    final List<ScheduleSearchSuggestionItem> result = [];
+    for (final jsonMap in response.data) {
+      result.add(
+        ScheduleSearchSuggestionItem(
+          jsonMap[_id],
+          jsonMap[_label],
+          jsonMap[_description],
+        ),
+      );
     }
 
     return result;

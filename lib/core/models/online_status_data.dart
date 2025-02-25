@@ -1,18 +1,15 @@
-import 'dart:async';
+import 'package:flutter/material.dart';
 
 class OnlineStatusData {
-  late DateTime timeOfLastOnline;
-  
-  final _controller = StreamController<bool>.broadcast();
-  bool _isOnline = false;
+  DateTime? timeOfLastOnline;
 
-  bool get isOnline => _isOnline;
-  Stream<bool> get changeOnlineStream => _controller.stream;
+  final ValueNotifier<bool> _isOnline = ValueNotifier<bool>(false);
+
+  ValueNotifier<bool> get notifier => _isOnline;
+
+  bool get isOnline => _isOnline.value;
 
   set isOnline(bool value) {
-    if (_isOnline != value) {
-      _controller.sink.add(value);
-    }
-    _isOnline = value;
+    _isOnline.value = value;
   }
 }

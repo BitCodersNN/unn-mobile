@@ -1,68 +1,59 @@
-import 'dart:convert';
-import 'dart:io';
-
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:unn_mobile/core/misc/http_helper.dart';
+import 'package:unn_mobile/core/constants/api_url_strings.dart';
+import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/models/schedule_filter.dart';
 import 'package:unn_mobile/core/models/subject.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_schedule_service.dart';
+import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 
 class GettingScheduleServiceImpl implements GettingScheduleService {
   final String _start = 'start';
   final String _finish = 'finish';
   final String _lng = 'lng';
-  final String _path = 'ruzapi/schedule/';
   final String _date = 'date';
-  final String _dateFormat = 'y.MM.dd H:m';
+  final String _dateFormat = 'y-MM-dd H:m';
   final String _splitPaternForStream = '|';
+
+  final LoggerService _loggerService;
+  final ApiHelper _apiHelper;
+
+  GettingScheduleServiceImpl(
+    this._loggerService,
+    this._apiHelper,
+  );
 
   @override
   Future<List<Subject>?> getSchedule(ScheduleFilter scheduleFilter) async {
-    final path = '$_path${scheduleFilter.idType.name}/${scheduleFilter.id}';
-    final requestSender = HttpRequestSender(path: path, queryParams: {
-      _start: scheduleFilter.dateTimeRange.start
-          .toIso8601String()
-          .split('T')[0]
-          .replaceAll('-', '.'),
-      _finish: scheduleFilter.dateTimeRange.end
-          .toIso8601String()
-          .split('T')[0]
-          .replaceAll('-', '.'),
-      _lng: '1',
-    });
+    final path =
+        '${ApiPaths.schedule}${scheduleFilter.idType.name}/${scheduleFilter.id}';
 
-    HttpClientResponse response;
+    Response response;
     try {
-      response = await requestSender.get();
+      response = await _apiHelper.get(
+        path: path,
+        queryParameters: {
+          _start: scheduleFilter.dateTimeRange.start
+              .toIso8601String()
+              .split('T')[0]
+              .replaceAll('-', '.'),
+          _finish: scheduleFilter.dateTimeRange.end
+              .toIso8601String()
+              .split('T')[0]
+              .replaceAll('-', '.'),
+          _lng: '1',
+        },
+      );
     } catch (error, stackTrace) {
-      await FirebaseCrashlytics.instance
-          .log("Exception: $error\nStackTrace: $stackTrace");
+      _loggerService.log('Exception: $error\nStackTrace: $stackTrace');
       return null;
     }
+    final List<dynamic> jsonList = response.data;
 
-    final statusCode = response.statusCode;
+    final List<Subject> schedule = [];
 
-    if (statusCode != 200) {
-      await FirebaseCrashlytics.instance.log(
-          '${runtimeType.toString()}: statusCode = $statusCode; scheduleId = ${scheduleFilter.id}');
-      return null;
-    }
-
-    List<dynamic> jsonList;
-
-    try {
-      jsonList =
-          jsonDecode(await HttpRequestSender.responseToStringBody(response));
-    } catch (error, stackTrace) {
-      await FirebaseCrashlytics.instance.recordError(error, stackTrace);
-      return null;
-    }
-
-    List<Subject> schedule = [];
-
-    for (var jsonMap in jsonList) {
+    for (final jsonMap in jsonList) {
       schedule.add(_convertFromJson(jsonMap));
     }
 
@@ -70,16 +61,20 @@ class GettingScheduleServiceImpl implements GettingScheduleService {
   }
 
   Subject _convertFromJson(Map<String, Object?> jsonMap) {
-    DateTime startDateTime = DateFormat(_dateFormat).parse(
-        '${jsonMap[_date] as String} ${jsonMap[KeysForSubjectJsonConverter.beginLesson] as String}');
-    DateTime endDateTime = DateFormat(_dateFormat).parse(
-        '${jsonMap[_date] as String} ${jsonMap[KeysForSubjectJsonConverter.endLesson] as String}');
+    final DateTime startDateTime = DateFormat(_dateFormat).parse(
+      '${jsonMap[_date] as String} ${jsonMap[KeysForSubjectJsonConverter.beginLesson] as String}',
+    );
+    final DateTime endDateTime = DateFormat(_dateFormat).parse(
+      '${jsonMap[_date] as String} ${jsonMap[KeysForSubjectJsonConverter.endLesson] as String}',
+    );
 
     return Subject(
       jsonMap[KeysForSubjectJsonConverter.discipline] as String,
       (jsonMap[KeysForSubjectJsonConverter.kindOfWork] ?? '') as String,
-      Address(jsonMap[KeysForSubjectJsonConverter.auditorium] as String,
-          jsonMap[KeysForSubjectJsonConverter.building] as String),
+      Address(
+        jsonMap[KeysForSubjectJsonConverter.auditorium] as String,
+        jsonMap[KeysForSubjectJsonConverter.building] as String,
+      ),
       ((jsonMap[KeysForSubjectJsonConverter.stream] ?? '') as String)
           .split(_splitPaternForStream),
       (jsonMap[KeysForSubjectJsonConverter.lecturer] ?? '') as String,

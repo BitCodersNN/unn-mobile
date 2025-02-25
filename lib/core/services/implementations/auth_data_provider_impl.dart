@@ -1,4 +1,3 @@
-import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/services/interfaces/auth_data_provider.dart';
 import 'package:unn_mobile/core/services/interfaces/storage_service.dart';
 import 'package:unn_mobile/core/models/auth_data.dart';
@@ -9,15 +8,21 @@ class _AuthDataProviderKeys {
 }
 
 class AuthDataProviderImpl implements AuthDataProvider {
-  final _securityStorage = Injector.appInstance.get<StorageService>();
+  final StorageService _storage;
+
+  AuthDataProviderImpl(this._storage);
 
   @override
   Future<AuthData> getData() async {
-    var login = await _securityStorage.read(
-            key: _AuthDataProviderKeys._loginKey, secure: true) ??
+    final login = await _storage.read(
+          key: _AuthDataProviderKeys._loginKey,
+          secure: true,
+        ) ??
         AuthData.getDefaultParameter();
-    var password = await _securityStorage.read(
-            key: _AuthDataProviderKeys._passwotdKey, secure: true) ??
+    final password = await _storage.read(
+          key: _AuthDataProviderKeys._passwotdKey,
+          secure: true,
+        ) ??
         AuthData.getDefaultParameter();
 
     return AuthData(login, password);
@@ -25,21 +30,27 @@ class AuthDataProviderImpl implements AuthDataProvider {
 
   @override
   Future<void> saveData(AuthData authData) async {
-    await _securityStorage.write(
-        key: _AuthDataProviderKeys._loginKey,
-        value: authData.login,
-        secure: true);
-    await _securityStorage.write(
-        key: _AuthDataProviderKeys._passwotdKey,
-        value: authData.password,
-        secure: true);
+    await _storage.write(
+      key: _AuthDataProviderKeys._loginKey,
+      value: authData.login,
+      secure: true,
+    );
+    await _storage.write(
+      key: _AuthDataProviderKeys._passwotdKey,
+      value: authData.password,
+      secure: true,
+    );
   }
 
   @override
   Future<bool> isContained() async {
-    return (await _securityStorage.containsKey(
-            key: _AuthDataProviderKeys._loginKey) &&
-        await _securityStorage.containsKey(
-            key: _AuthDataProviderKeys._passwotdKey));
+    return (await _storage.containsKey(
+          key: _AuthDataProviderKeys._loginKey,
+          secure: true,
+        ) &&
+        await _storage.containsKey(
+          key: _AuthDataProviderKeys._passwotdKey,
+          secure: true,
+        ));
   }
 }

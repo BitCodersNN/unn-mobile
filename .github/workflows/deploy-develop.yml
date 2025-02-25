@@ -1,10 +1,14 @@
 name: deploy-develop-android
 run-name: Build and deploy develop build for Android
 on:
+  pull_request:
+    branches:
+      - 'ci/**'
   push:
     branches:
       - "develop"
     paths:
+      - ".github/**"
       - "android/**"
       - "lib/**"
       - "pubspec.yaml"
@@ -22,9 +26,9 @@ jobs:
         with:
           submodules: recursive
           ref: develop
-      - uses: subosito/flutter-action@v2
+      - uses: flutter-actions/setup-flutter@v3.6
         with:
-          flutter-version: '3.19.3'
+          version: '3.24.0'
           channel: 'stable'
       - name: load certificate
         uses: mobiledevops/secret-to-file-action@v1
@@ -39,13 +43,18 @@ jobs:
           echo -e "storePassword: $keystore_pass\nkeyPassword: $keystore_pass\nkeyAlias: upload-unn-mobile\nstoreFile=keystore.jks\n" >> ./android/key.properties
       - name: install firebase
         run: curl -sL https://firebase.tools | bash
+      - name: install java (?)
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'oracle'
+          java-version: '17'
       - name: get dependencies
         run: flutter pub get
       - name: configure flutterfire
         env: 
           firebase_token: ${{ secrets.FIREBASE_TOKEN }}
         run: |
-          dart pub global activate flutterfire_cli
+          dart pub global activate flutterfire_cli 1.0.1-dev.4
           flutterfire configure -t $firebase_token -y -p unn-mobile-1 --platforms=android --android-package-name=ru.unn.unn_mobile
       - name: build
         run: flutter build appbundle

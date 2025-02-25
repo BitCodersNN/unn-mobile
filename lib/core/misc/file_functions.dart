@@ -1,7 +1,8 @@
 import 'dart:io';
 
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:injector/injector.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 
 Future<String?> getDownloadPath() async {
   Directory? directory;
@@ -11,24 +12,35 @@ Future<String?> getDownloadPath() async {
       directory.createSync();
     }
   } catch (err, stack) {
-    FirebaseCrashlytics.instance.recordError(
-      "Cannot get download folder path: $err",
-      stack,
-    );
+    Injector.appInstance.get<LoggerService>().logError(
+          err,
+          stack,
+        );
   }
   return directory?.path;
 }
 
 Future<void> clearCacheFolder() async {
-  try {
-    final cachePath = await getDownloadPath();
-    if (cachePath != null) {
-      final directory = Directory(cachePath);
-      if (directory.existsSync()) {
-        await directory.delete(recursive: true);
-      }
-    }
-  } catch (error, stack) {
-    FirebaseCrashlytics.instance.recordError(error, stack);
+  const String projectName = 'ru.unn.unnMobile';
+  final loggerService = Injector.appInstance.get<LoggerService>();
+  final cachePath = await getDownloadPath();
+  if (cachePath == null) {
+    return;
   }
+  final directory = Directory(cachePath);
+  final entities = directory.listSync();
+
+  await Future.forEach(entities, (entity) async {
+    if (entity.path.endsWith(projectName)) {
+      return;
+    }
+    if (!await entity.exists()) {
+      return;
+    }
+    try {
+      await entity.delete(recursive: entity is Directory);
+    } catch (err, stack) {
+      loggerService.logError(err, stack);
+    }
+  });
 }

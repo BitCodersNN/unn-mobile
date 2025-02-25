@@ -5,7 +5,7 @@ class UnnMobileColors extends ThemeExtension<UnnMobileColors> {
   final Color? scheduleDayHighlight;
   final Color? scheduleSubjectHighlight;
   final Color? defaultPostHighlight;
-  final Color? newPostHiglaght;
+  final Color? newPostHighlight;
   final Map<SubjectType, Color>? subjectTypeHighlight;
   final Color? ligtherTextColor;
 
@@ -13,7 +13,7 @@ class UnnMobileColors extends ThemeExtension<UnnMobileColors> {
     required this.scheduleDayHighlight,
     required this.scheduleSubjectHighlight,
     required this.defaultPostHighlight,
-    required this.newPostHiglaght,
+    required this.newPostHighlight,
     required this.subjectTypeHighlight,
     required this.ligtherTextColor,
   });
@@ -23,7 +23,7 @@ class UnnMobileColors extends ThemeExtension<UnnMobileColors> {
     Color? scheduleDayHighlight,
     Color? scheduleSubjectHighlight,
     Color? defaultPostHighlight,
-    Color? newPostHiglaght,
+    Color? newPostHighlight,
     Map<SubjectType, Color>? subjectTypeHighlight,
     Color? ligtherTextColor,
   }) {
@@ -32,7 +32,7 @@ class UnnMobileColors extends ThemeExtension<UnnMobileColors> {
       scheduleSubjectHighlight:
           scheduleSubjectHighlight ?? this.scheduleSubjectHighlight,
       defaultPostHighlight: defaultPostHighlight ?? this.defaultPostHighlight,
-      newPostHiglaght: newPostHiglaght ?? this.newPostHiglaght,
+      newPostHighlight: newPostHighlight ?? this.newPostHighlight,
       subjectTypeHighlight: subjectTypeHighlight ?? this.subjectTypeHighlight,
       ligtherTextColor: ligtherTextColor ?? this.ligtherTextColor,
     );
@@ -47,7 +47,7 @@ class UnnMobileColors extends ThemeExtension<UnnMobileColors> {
       return this;
     }
 
-    UnnMobileColors otherColors = other as UnnMobileColors;
+    final UnnMobileColors otherColors = other as UnnMobileColors;
 
     return UnnMobileColors(
       scheduleDayHighlight: Color.lerp(
@@ -65,9 +65,9 @@ class UnnMobileColors extends ThemeExtension<UnnMobileColors> {
         otherColors.defaultPostHighlight,
         t,
       ),
-      newPostHiglaght: Color.lerp(
-        newPostHiglaght,
-        otherColors.newPostHiglaght,
+      newPostHighlight: Color.lerp(
+        newPostHighlight,
+        otherColors.newPostHighlight,
         t,
       ),
       subjectTypeHighlight: Map.fromIterables(

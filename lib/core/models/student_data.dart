@@ -25,18 +25,26 @@ class StudentData extends UserData {
   final String? _eduSpecialization;
 
   StudentData(
-      UserData userData,
-      this._eduForm,
-      this._eduStatus,
-      this._eduCourse,
-      this._eduYear,
-      this._eduLevel,
-      this._faculty,
-      this._eduDirection,
-      this._eduGroup,
-      this._eduSpecialization)
-      : super(userData.login, userData.fullname, userData.email, userData.phone,
-            userData.sex, userData.urlPhoto, userData.notes);
+    UserData userData,
+    this._eduForm,
+    this._eduStatus,
+    this._eduCourse,
+    this._eduYear,
+    this._eduLevel,
+    this._faculty,
+    this._eduDirection,
+    this._eduGroup,
+    this._eduSpecialization,
+  ) : super(
+          userData.bitrixId,
+          userData.login,
+          userData.fullname,
+          userData.email,
+          userData.phone,
+          userData.sex,
+          userData.urlPhoto,
+          userData.notes,
+        );
 
   String get eduForm => _eduForm;
   String get eduStatus => _eduStatus;

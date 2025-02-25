@@ -1,113 +1,148 @@
-import 'dart:io';
-
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:injector/injector.dart';
-import 'package:unn_mobile/core/misc/custom_errors/auth_errors.dart';
-import 'package:unn_mobile/core/misc/http_helper.dart';
+import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
+import 'package:unn_mobile/core/constants/api_url_strings.dart';
+import 'package:unn_mobile/core/constants/session_identifier_strings.dart';
+import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
+import 'package:unn_mobile/core/misc/api_helpers/base_options_factory.dart';
 import 'package:unn_mobile/core/models/online_status_data.dart';
+import 'package:unn_mobile/core/services/interfaces/auth_data_provider.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
+import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 
-class AuthorisationServiceImpl implements AuthorisationService {
-  final String _sessionIdCookieKey = "PHPSESSID";
-  final String _csrfHeaderName = "x-bitrix-new-csrf";
+class AuthorizationServiceImpl extends ChangeNotifier
+    implements AuthorizationService {
+  final OnlineStatusData _onlineStatus;
+  final AuthDataProvider _authDataProvider;
+  final LoggerService _loggerService;
+  final String _userLogin = 'USER_LOGIN';
+  final String _userPassword = 'USER_PASSWORD';
+  final String _bxPortatlUnnGuestId = 'BX_PORTAL_UNN_GUEST_ID';
 
-  String? _sessionId;
-  String? _csrf;
+  Map<String, dynamic>? _headers;
   bool _isAuthorised = false;
-
-  @override
-  Future<AuthRequestResult> auth(String login, String password) async {
-    if (await _isOffline()) {
-      return AuthRequestResult.noInternet;
-    }
-
-    HttpClientResponse authResponse;
-    HttpClientResponse csrfResponse;
-
-    try {
-      authResponse = await _sendAuthRequest(login, password);
-    } on TimeoutException {
-      return AuthRequestResult.noInternet;
-    } on Exception catch (_) {
-      rethrow;
-    }
-
-    if (authResponse.statusCode != 302) {
-      return AuthRequestResult.wrongCredentials;
-    }
-
-    final sessionCookie = authResponse.cookies
-        .where((cookie) => cookie.name == _sessionIdCookieKey)
-        .firstOrNull;
-
-    if (sessionCookie == null) {
-      throw SessionCookieException(
-          message: 'sessionCookie is null',
-          privateInformation: {'user_login': login});
-    }
-
-    try {
-      csrfResponse = await _sendCsrfRequest(sessionCookie.value);
-    } on TimeoutException {
-      return AuthRequestResult.noInternet;
-    } on Exception catch (_) {
-      rethrow;
-    }
-
-    final csrfValue = csrfResponse.headers.value(_csrfHeaderName);
-
-    if (csrfValue == null) {
-      throw CsrfValueException(
-          message: 'csrfValue is null',
-          privateInformation: {'user_login': login});
-    }
-
-    // bind properties
-    _sessionId = sessionCookie.value;
-    _csrf = csrfValue;
-    _isAuthorised = true;
-
-    // success result
-    final onlineStatus = Injector.appInstance.get<OnlineStatusData>();
-    onlineStatus.isOnline = true;
-    onlineStatus.timeOfLastOnline = DateTime.now();
-
-    return AuthRequestResult.success;
-  }
-
-  @override
-  String? get csrf => _csrf;
 
   @override
   bool get isAuthorised => _isAuthorised;
 
   @override
-  String? get sessionId => _sessionId;
+  String? get csrf => _headers?[SessionIdentifierStrings.csrf];
 
-  Future<HttpClientResponse> _sendAuthRequest(
-      String login, String password) async {
-    final requestSender =
-        HttpRequestSender(path: "auth/", queryParams: {"login": "yes"});
+  @override
+  String? get sessionId =>
+      _headers?[SessionIdentifierStrings.sessionIdCookieKey];
 
-    return await requestSender.postForm({
-      "AUTH_FORM": "Y",
-      "TYPE": "AUTH",
-      "backurl": "/",
-      "USER_LOGIN": login,
-      "USER_PASSWORD": password,
-    }, timeoutSeconds: 15);
+  @override
+  Map<String, dynamic>? get headers => {
+        SessionIdentifierStrings.csrfToken: csrf,
+        'Cookie': '${SessionIdentifierStrings.sessionIdCookieKey}=$sessionId',
+      };
+
+  @override
+  String? get guestId => _headers?[_bxPortatlUnnGuestId];
+
+  AuthorizationServiceImpl(
+    this._onlineStatus,
+    this._loggerService,
+    this._authDataProvider,
+  );
+
+  @override
+  Future<AuthRequestResult> auth(String login, String password) async {
+    try {
+      _isAuthorised = false;
+      if (await _isOffline()) {
+        return await _getOfflineResult();
+      }
+
+      final apiHelper = ApiHelper(
+        options: createBaseOptions(
+          baseUrl: ApiPaths.unnMobileHost,
+        ),
+      );
+
+      Response response;
+      try {
+        response = await apiHelper.post(
+          path: ApiPaths.authWithCookie,
+          data: {
+            _userLogin: login,
+            _userPassword: password,
+          },
+        );
+      } on DioException catch (exception) {
+        switch (exception.type) {
+          case DioExceptionType.connectionTimeout:
+          case DioExceptionType.sendTimeout:
+          case DioExceptionType.receiveTimeout:
+          case DioExceptionType.connectionError:
+            return await _getOfflineResult();
+
+          case DioExceptionType.badCertificate:
+          case DioExceptionType.cancel:
+          case DioExceptionType.unknown:
+            rethrow;
+
+          case DioExceptionType.badResponse:
+            if (exception.response!.statusCode == 401) {
+              return AuthRequestResult.wrongCredentials;
+            }
+            return AuthRequestResult.unknown;
+        }
+      }
+
+      try {
+        _headers = _parseHeaders(response.data.trim());
+      } catch (error, stackTrace) {
+        _loggerService.logError(error, stackTrace);
+        return AuthRequestResult.unknown;
+      }
+
+      _isAuthorised = true;
+
+      _onlineStatus.isOnline = true;
+      _onlineStatus.timeOfLastOnline = DateTime.now();
+
+      return AuthRequestResult.success;
+    } finally {
+      // Сообщаем, что авторизация могла измениться
+      // Это надо делать независимо от того, как мы выйдем отсюда
+      // и ТОЛЬКО в конце, когда состояние isAuth уже не изменится
+      // до следующего вызова этого метода
+      notifyListeners();
+    }
   }
 
-  Future<HttpClientResponse> _sendCsrfRequest(String session) async {
-    final requestSender = HttpRequestSender(
-        path: "bitrix/services/main/ajax.php",
-        queryParams: {"action": "socialnetwork.api.livefeed.getNextPage"},
-        cookies: {_sessionIdCookieKey: session});
+  Map<String, dynamic> _parseHeaders(String headers) {
+    final Map<String, dynamic> headersMap = {};
 
-    return await requestSender.get(timeoutSeconds: 15);
+    headers.split(';').forEach((cookie) {
+      final parts = cookie.split('=');
+      if (parts.length == 2) {
+        final key = parts[0].trim();
+        final value = parts[1].trim();
+        headersMap[key] = value;
+      }
+    });
+
+    return headersMap;
+  }
+
+  Future<AuthRequestResult> _getOfflineResult() async {
+    _onlineStatus.isOnline = false;
+    _isAuthorised = await _authDataProvider.isContained();
+    return AuthRequestResult.noInternet;
   }
 
   Future<bool> _isOffline() async {
-    return await Connectivity().checkConnectivity() == ConnectivityResult.none;
+    return (await Connectivity().checkConnectivity())
+        .contains(ConnectivityResult.none);
+  }
+
+  @override
+  void logout() {
+    _headers = null;
+    _isAuthorised = false;
+    notifyListeners();
   }
 }

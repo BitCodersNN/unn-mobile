@@ -1,4 +1,5 @@
 class _KeysForUserDataJsonConverter {
+  static const String bitrixId = 'bitrix_id';
   static const String user = 'user';
   static const String login = 'login';
   static const String name = 'name';
@@ -25,9 +26,15 @@ class Fullname {
   String? get name => _name;
   String? get lastname => _lastname;
   String? get surname => _surname;
+
+  @override
+  String toString() => [lastname, name, surname]
+      .where((part) => part != null && part.isNotEmpty)
+      .join(' ');
 }
 
 class UserData {
+  final int _bitrixId;
   final String? _login;
   final Fullname _fullname;
   final String? _email;
@@ -37,9 +44,18 @@ class UserData {
   final String _urlPhotoFirstPart = 'https://portal.unn.ru';
   final String? _urlPhoto;
 
-  const UserData(this._login, this._fullname, this._email, this._phone,
-      this._sex, this._urlPhoto, this._notes);
+  const UserData(
+    this._bitrixId,
+    this._login,
+    this._fullname,
+    this._email,
+    this._phone,
+    this._sex,
+    this._urlPhoto,
+    this._notes,
+  );
 
+  int get bitrixId => _bitrixId;
   String? get login => _login;
   Fullname get fullname => _fullname;
   String? get name => _fullname.name;
@@ -57,11 +73,13 @@ class UserData {
     final userJsonMap =
         jsonMap[_KeysForUserDataJsonConverter.user] as Map<String, Object?>;
     return UserData(
+      userJsonMap[_KeysForUserDataJsonConverter.bitrixId] as int,
       userJsonMap[_KeysForUserDataJsonConverter.login] as String?,
       Fullname(
-          userJsonMap[_KeysForUserDataJsonConverter.name] as String?,
-          userJsonMap[_KeysForUserDataJsonConverter.lastname] as String?,
-          userJsonMap[_KeysForUserDataJsonConverter.surname] as String?),
+        userJsonMap[_KeysForUserDataJsonConverter.name] as String?,
+        userJsonMap[_KeysForUserDataJsonConverter.lastname] as String?,
+        userJsonMap[_KeysForUserDataJsonConverter.surname] as String?,
+      ),
       userJsonMap[_KeysForUserDataJsonConverter.email] as String?,
       userJsonMap[_KeysForUserDataJsonConverter.phone] as String?,
       userJsonMap[_KeysForUserDataJsonConverter.sex] as String,
@@ -74,6 +92,7 @@ class UserData {
 
   Map<String, dynamic> toJson() => {
         _KeysForUserDataJsonConverter.user: {
+          _KeysForUserDataJsonConverter.bitrixId: _bitrixId,
           _KeysForUserDataJsonConverter.login: _login,
           _KeysForUserDataJsonConverter.name: _fullname.name,
           _KeysForUserDataJsonConverter.lastname: _fullname.lastname,
@@ -85,6 +104,6 @@ class UserData {
           _KeysForUserDataJsonConverter.photo: {
             _KeysForUserDataJsonConverter.orig: _urlPhoto,
           },
-        }
+        },
       };
 }

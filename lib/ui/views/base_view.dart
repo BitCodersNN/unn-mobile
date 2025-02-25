@@ -4,20 +4,30 @@ import 'package:provider/provider.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
 
 class BaseView<T extends BaseViewModel> extends StatefulWidget {
-  final Widget Function(BuildContext context, T value, Widget? child) builder;
+  final Widget Function(BuildContext context, T model, Widget? child) builder;
   final void Function(T)? onModelReady;
 
-  const BaseView({super.key, required this.builder, this.onModelReady});
+  final void Function(T)? onDispose;
+
+  final T? model;
+
+  const BaseView({
+    super.key,
+    this.model,
+    required this.builder,
+    this.onModelReady,
+    this.onDispose,
+  });
 
   @override
   State<BaseView<T>> createState() => BaseViewState<T>();
 }
 
 class BaseViewState<T extends BaseViewModel> extends State<BaseView<T>> {
-  T model = Injector.appInstance.get<T>();
-
+  late T model;
   @override
   void initState() {
+    model = widget.model ?? Injector.appInstance.get<T>();
     if (widget.onModelReady != null) {
       widget.onModelReady!(model);
     }
@@ -26,11 +36,18 @@ class BaseViewState<T extends BaseViewModel> extends State<BaseView<T>> {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => model,
-      child: Consumer<T>(
-        builder: widget.builder,
+    return ChangeNotifierProvider.value(
+      value: model,
+      child: ListenableBuilder(
+        builder: (context, child) => widget.builder(context, model, child),
+        listenable: model,
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    widget.onDispose?.call(model);
+    super.dispose();
   }
 }

@@ -1,60 +1,43 @@
-import 'dart:convert';
-import 'dart:io';
-
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
-import 'package:injector/injector.dart';
-import 'package:unn_mobile/core/misc/http_helper.dart';
+import 'package:dio/dio.dart';
+import 'package:unn_mobile/core/constants/api_url_strings.dart';
+import 'package:unn_mobile/core/constants/profiles_strings.dart';
+import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/models/employee_data.dart';
 import 'package:unn_mobile/core/models/student_data.dart';
 import 'package:unn_mobile/core/models/user_data.dart';
-import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_profile.dart';
+import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 
 class GettingProfileImpl implements GettingProfile {
-  final String _path = 'bitrix/vuz/api/user/';
   final String _pathSecondPartForGettingId = 'bx/';
-  final String _sessionIdCookieKey = "PHPSESSID";
-  final String _profiles = 'profiles';
   final String _id = 'id';
-  final String _user = 'user';
-  final String _type = 'type';
-  final String _student = 'student';
-  final String _employee = 'employee';
+
+  final LoggerService _loggerService;
+  final ApiHelper _apiHelper;
+
+  GettingProfileImpl(
+    this._loggerService,
+    this._apiHelper,
+  );
 
   @override
-  Future<int?> getProfileIdByAuthorIdFromPost({required int authorId}) async {
-    final authorisationService =
-        Injector.appInstance.get<AuthorisationService>();
+  Future<int?> getProfileIdByBitrixID({required int bitrixID}) async {
+    final path =
+        ApiPaths.user + _pathSecondPartForGettingId + bitrixID.toString();
 
-    final requestSender = HttpRequestSender(
-      path: _path + _pathSecondPartForGettingId + authorId.toString(),
-      cookies: {
-        _sessionIdCookieKey: authorisationService.sessionId ?? '',
-      },
-    );
-
-    HttpClientResponse response;
+    Response response;
     try {
-      response = await requestSender.get(timeoutSeconds: 5);
+      response = await _apiHelper.get(path: path);
     } catch (error, stackTrace) {
-      await FirebaseCrashlytics.instance.recordError(error, stackTrace);
-      return null;
-    }
-
-    final statusCode = response.statusCode;
-
-    if (statusCode != 200) {
-      await FirebaseCrashlytics.instance.log(
-          '${runtimeType.toString()}: statusCode = $statusCode; authorId = $authorId');
+      _loggerService.logError(error, stackTrace);
       return null;
     }
 
     int? id;
     try {
-      id = jsonDecode(
-          await HttpRequestSender.responseToStringBody(response))[_id];
+      id = response.data[_id];
     } catch (error, stackTrace) {
-      await FirebaseCrashlytics.instance.recordError(error, stackTrace);
+      _loggerService.logError(error, stackTrace);
     }
 
     return id;
@@ -62,66 +45,47 @@ class GettingProfileImpl implements GettingProfile {
 
   @override
   Future<UserData?> getProfile({required int userId}) async {
-    final authorisationService =
-        Injector.appInstance.get<AuthorisationService>();
+    final path = ApiPaths.user + userId.toString();
 
-    final requestSender =
-        HttpRequestSender(path: _path + userId.toString(), cookies: {
-      _sessionIdCookieKey: authorisationService.sessionId ?? '',
-    });
-
-    HttpClientResponse response;
+    Response response;
     try {
-      response = await requestSender.get();
+      response = await _apiHelper.get(path: path);
     } catch (error, stackTrace) {
-      await FirebaseCrashlytics.instance.recordError(error, stackTrace);
+      _loggerService.logError(error, stackTrace);
       return null;
     }
 
-    final statusCode = response.statusCode;
-
-    if (statusCode != 200) {
-      await FirebaseCrashlytics.instance.log(
-          '${runtimeType.toString()}: statusCode = $statusCode; userId = $userId');
-      return null;
-    }
-
-    dynamic jsonMap;
-    try {
-      jsonMap =
-          jsonDecode(await HttpRequestSender.responseToStringBody(response));
-    } catch (error, stackTrace) {
-      await FirebaseCrashlytics.instance.recordError(error, stackTrace);
-      return null;
-    }
-
-    final profileJsonMap = jsonMap[_profiles][0];
-    final userType = profileJsonMap[_type];
+    final profileJsonMap = response.data[ProfilesStrings.profilesKey][0];
+    final userType = profileJsonMap[ProfilesStrings.type];
 
     // Костыль, т.к. на сайте есть небольшой процент профилей, отличающихся от остальных
-    if (profileJsonMap[_user] == null) {
-      profileJsonMap[_user] = jsonMap;
+    if (profileJsonMap[ProfilesStrings.user] == null) {
+      profileJsonMap[ProfilesStrings.user] = response.data;
     }
 
     UserData? userData;
     try {
-      userData = (userType == _student)
+      userData = (userType == ProfilesStrings.student)
           ? StudentData.fromJson(profileJsonMap)
-          : userType == _employee
+          : userType == ProfilesStrings.employee
               ? EmployeeData.fromJson(profileJsonMap)
               : UserData.fromJson(profileJsonMap);
     } catch (error, stackTrace) {
-      await FirebaseCrashlytics.instance
-          .recordError(error, stackTrace, information: [jsonMap.toString()]);
+      _loggerService.logError(
+        error,
+        stackTrace,
+        information: [response.data.toString()],
+      );
     }
 
     return userData;
   }
 
   @override
-  Future<UserData?> getProfileByAuthorIdFromPost(
-      {required int authorId}) async {
-    final userId = await getProfileIdByAuthorIdFromPost(authorId: authorId);
+  Future<UserData?> getProfileByAuthorIdFromPost({
+    required int authorId,
+  }) async {
+    final userId = await getProfileIdByBitrixID(bitrixID: authorId);
     if (userId == null) {
       return null;
     }

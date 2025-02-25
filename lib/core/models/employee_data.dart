@@ -6,7 +6,6 @@ class _KeysForEmployeeDataJsonConverter {
   static const String jobType = 'job_type';
   static const String jobTitle = 'job_title';
   static const String department = 'department';
-  static const String child = 'child';
   static const String title = 'title';
   static const String manager = 'manager';
   static const String fullname = 'fullname';
@@ -26,12 +25,20 @@ class EmployeeData extends UserData {
     this._jobTitle,
     this._department,
     this._manager,
-  ) : super(userData.login, userData.fullname, userData.email, userData.phone,
-            userData.sex, userData.urlPhoto, userData.notes);
+  ) : super(
+          userData.bitrixId,
+          userData.login,
+          userData.fullname,
+          userData.email,
+          userData.phone,
+          userData.sex,
+          userData.urlPhoto,
+          userData.notes,
+        );
 
   String get syncID => _syncID;
   String get jobType => _jobType;
-  String get jobTitel => _jobTitle;
+  String get jobTitle => _jobTitle;
   String get department => _department;
   String? get manager => _manager;
 
@@ -59,11 +66,6 @@ class EmployeeData extends UserData {
     json[_KeysForEmployeeDataJsonConverter.jobType] = _jobType;
     json[_KeysForEmployeeDataJsonConverter.jobTitle] = _jobTitle;
     json[_KeysForEmployeeDataJsonConverter.department] ??= {};
-    json[_KeysForEmployeeDataJsonConverter.department]
-        [_KeysForEmployeeDataJsonConverter.child] ??= {};
-    json[_KeysForEmployeeDataJsonConverter.department]
-            [_KeysForEmployeeDataJsonConverter.child]
-        [_KeysForEmployeeDataJsonConverter.child] ??= {};
     json[_KeysForEmployeeDataJsonConverter.department]
         [_KeysForEmployeeDataJsonConverter.title] = _department;
     json[_KeysForEmployeeDataJsonConverter.manager] ??= {};

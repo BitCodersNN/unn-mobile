@@ -1,24 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:unn_mobile/core/models/subject.dart';
-import 'package:unn_mobile/ui/router.dart' as router;
+import 'package:unn_mobile/ui/router.dart';
 import 'package:unn_mobile/ui/unn_mobile_colors.dart';
-import 'package:unn_mobile/ui/views/loading_page/loading_page.dart';
 
 class UnnMobile extends StatelessWidget {
   const UnnMobile({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: const LoadingPage(),
-      onGenerateRoute: router.Router.generateRoute,
+    return MaterialApp.router(
+      routerConfig: mainRouter,
       theme: ThemeData(
+        appBarTheme: const AppBarTheme(
+          scrolledUnderElevation: 3,
+          backgroundColor: Colors.white,
+          surfaceTintColor: Colors.transparent,
+          shadowColor: Colors.black,
+        ),
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(
           seedColor: const Color(0xAA1A63B7),
-          background: const Color(0xFFF9FAFF),
           surface: const Color(0xFFFFFFFF),
-          surfaceVariant: const Color(0xFFEFF1FB),
+          surfaceContainerHighest: const Color(0xFFEFF1FB),
         ),
         textTheme: Typography.blackRedwoodCity,
         extensions: const [
@@ -26,7 +29,7 @@ class UnnMobile extends StatelessWidget {
             scheduleDayHighlight: Color(0xFFEEEEEE),
             scheduleSubjectHighlight: Color(0xFFFFF6E8),
             defaultPostHighlight: Color(0xFFFFFFFF),
-            newPostHiglaght: Color(0xFFFFF6E8),
+            newPostHighlight: Color(0xFFFFF6E8),
             subjectTypeHighlight: {
               SubjectType.lecture: Color(0xFF1CA49C),
               SubjectType.practice: Color(0xFFCD7255),
@@ -36,7 +39,7 @@ class UnnMobile extends StatelessWidget {
               SubjectType.unknown: Color(0xFF6E757C),
             },
             ligtherTextColor: Color(0xFF717A84),
-          )
+          ),
         ],
       ),
     );

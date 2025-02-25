@@ -8,33 +8,59 @@ class LoadingPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BaseView<LoadingPageViewModel>(
-      builder: (context, model, child) => Scaffold(
-        body: Center(
-          child: MediaQuery.withNoTextScaling(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                _text(model.loadingPageData.title,
-                    model.loadingPageData.titleStyle),
-                const SizedBox(height: 30),
-                Image(image: AssetImage(model.loadingPageData.imagePath)),
-                const SizedBox(height: 30),
-                if (model.actualLoadingPage.description != null &&
-                    model.actualLoadingPage.descriptionStyle != null)
-                  _text(model.actualLoadingPage.description!,
-                      model.actualLoadingPage.descriptionStyle!)
-              ],
-            ),
-          ),
-        ),
+      builder: (context, model, child) => FutureBuilder<void>(
+        future: model.initLoadingPages(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Scaffold(
+              backgroundColor: Colors.white,
+            );
+          } else {
+            return Scaffold(
+              backgroundColor: Colors.white,
+              body: _buildContent(context, model),
+            );
+          }
+        },
       ),
-      onModelReady: (model) => model.disateRoute(context),
+      onModelReady: (model) => model.decideRoute(context),
     );
   }
 
-  Text _text(String title, TextStyle textStyle,
-      {TextAlign textAlign = TextAlign.center}) {
+  Widget _buildContent(BuildContext context, LoadingPageViewModel model) {
+    return Center(
+      child: MediaQuery.withNoTextScaling(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            _text(
+              model.loadingPageData?.title ?? '',
+              model.loadingPageData?.titleStyle ?? const TextStyle(),
+            ),
+            if (model.logoImage != null) ...[
+              const SizedBox(height: 30),
+              Image.file(model.logoImage!),
+            ],
+            if (model.loadingPageData?.description != null &&
+                model.loadingPageData?.descriptionStyle != null) ...[
+              const SizedBox(height: 30),
+              _text(
+                model.loadingPageData!.description!,
+                model.loadingPageData!.descriptionStyle!,
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  Text _text(
+    String title,
+    TextStyle textStyle, {
+    TextAlign textAlign = TextAlign.center,
+  }) {
     return Text(
       title,
       style: textStyle,

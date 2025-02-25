@@ -5,9 +5,11 @@ import 'package:unn_mobile/core/services/interfaces/storage_service.dart';
 
 class StorageServiceImpl implements StorageService {
   SharedPreferences? _sharedPreferences;
-  final FlutterSecureStorage _secureStorage = const FlutterSecureStorage(aOptions: AndroidOptions(
-    encryptedSharedPreferences: true
-  ));
+  final FlutterSecureStorage _secureStorage = const FlutterSecureStorage(
+    aOptions: AndroidOptions(
+      encryptedSharedPreferences: true,
+    ),
+  );
 
   final Map<String, String?> _secureCache = {};
   final Map<String, String?> _nonSecureCache = {};
@@ -15,7 +17,7 @@ class StorageServiceImpl implements StorageService {
   @override
   Future<bool> containsKey({required String key, bool secure = false}) async {
     await _initIfNeeded();
-    var cacheMap = secure ? _secureCache : _nonSecureCache;
+    final cacheMap = secure ? _secureCache : _nonSecureCache;
     if (cacheMap.containsKey(key)) {
       return true;
     }
@@ -27,11 +29,11 @@ class StorageServiceImpl implements StorageService {
   @override
   Future<String?> read({required String key, bool secure = false}) async {
     await _initIfNeeded();
-    var cacheMap = secure ? _secureCache : _nonSecureCache;
+    final cacheMap = secure ? _secureCache : _nonSecureCache;
     if (cacheMap.containsKey(key)) {
       return cacheMap[key];
     }
-    var value = secure
+    final value = secure
         ? await _secureStorage.read(key: key)
         : _sharedPreferences!.getString(key);
     cacheMap.putIfAbsent(key, () => value);
@@ -39,10 +41,13 @@ class StorageServiceImpl implements StorageService {
   }
 
   @override
-  Future<void> write(
-      {required String key, required String value, bool secure = false}) async {
+  Future<void> write({
+    required String key,
+    required String value,
+    bool secure = false,
+  }) async {
     await _initIfNeeded();
-    var cacheMap = secure ? _secureCache : _nonSecureCache;
+    final cacheMap = secure ? _secureCache : _nonSecureCache;
     cacheMap.update(key, (_) => value, ifAbsent: () => value);
     secure
         ? await _secureStorage.write(key: key, value: value)
@@ -62,7 +67,7 @@ class StorageServiceImpl implements StorageService {
     WidgetsFlutterBinding.ensureInitialized();
     _sharedPreferences ??= await SharedPreferences.getInstance();
     if (_sharedPreferences == null) {
-      throw Exception("Could not get storage instance");
+      throw Exception('Could not get storage instance');
     }
   }
 }

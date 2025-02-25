@@ -1,92 +1,42 @@
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/material.dart';
 import 'package:injector/injector.dart';
-import 'package:unn_mobile/core/models/student_data.dart';
-import 'package:unn_mobile/core/services/interfaces/feed_stream_updater_service.dart';
-import 'package:unn_mobile/core/services/interfaces/getting_profile_of_current_user_service.dart';
+import 'package:unn_mobile/core/misc/current_user_sync_storage.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
+import 'package:unn_mobile/core/viewmodels/factories/main_page_routes_view_models_factory.dart';
+import 'package:unn_mobile/core/viewmodels/main_page_route_view_model.dart';
+import 'package:unn_mobile/core/viewmodels/profile_view_model.dart';
+import 'package:unn_mobile/ui/views/main_page/main_page_routing.dart';
 
 class MainPageViewModel extends BaseViewModel {
-  final GettingProfileOfCurrentUser _currentUser =
-      Injector.appInstance.get<GettingProfileOfCurrentUser>();
-  int _selectedDrawerItem = 0;
-  int _selectedBarItem = 1;
-  bool _isDrawerItemSelected = false;
-  String _userNameAndSurname = '';
-  String _userGroup = '';
+  final CurrentUserSyncStorage _currentUserSyncStorage;
+  late ProfileViewModel _profileViewModel;
 
-  ImageProvider<Object>? _userAvatar;
-  String? get avatarUrl => _avatarUrl;
-  String? _avatarUrl;
+  List<MainPageRouteData> _routes = [];
 
-  int get selectedDrawerItem => _selectedDrawerItem;
-  set selectedDrawerItem(int value) {
-    _selectedDrawerItem = value;
-    notifyListeners();
-  }
+  MainPageViewModel(this._currentUserSyncStorage);
 
-  int get selectedBarItem => _selectedBarItem;
-  set selectedBarItem(value) {
-    _selectedBarItem = value;
-    notifyListeners();
-  }
-
-  bool get isDrawerItemSelected => _isDrawerItemSelected;
-  set isDrawerItemSelected(bool value) {
-    _isDrawerItemSelected = value;
-    notifyListeners();
-  }
-
-  final List<String> _barScreenNames = [
-    "Лента",
-    "Расписание",
-    "Карта",
-    "Материалы",
-  ];
-  final List<String> _drawerScreenNames = [
-    "Чаты",
-    "Справки",
-    "Сотрудники",
-    "Календарь",
-    "Подразделения",
-    "Библиотечные ресурсы",
-    "Сайт оплаты",
-    "Настройки",
-    "О нас",
-  ];
-  String get selectedScreenName {
-    return isDrawerItemSelected
-        ? _drawerScreenNames[_selectedDrawerItem]
-        : _barScreenNames[_selectedBarItem];
-  }
-
-  List<String> get drawerScreenNames => _drawerScreenNames;
-  List<String> get barScreenNames => _barScreenNames;
-
-  ImageProvider<Object>? get userAvatar => _userAvatar;
-  String get userNameAndSurname => _userNameAndSurname;
-  String get userGroup => _userGroup;
+  ProfileViewModel get profileViewModel => _profileViewModel;
+  List<MainPageRouteData> get routes => _routes;
 
   void init() {
-    setState(ViewState.busy);
-    Injector.appInstance.get<FeedUpdaterService>().updateFeed();
-    _currentUser.getProfileOfCurrentUser().then(
-      (value) {
-        if (value == null) {
-          setState(ViewState.idle);
-          return;
-        }
-        if (value is StudentData) {
-          final StudentData studentProfile = value;
-          _userNameAndSurname =
-              '${studentProfile.name} ${studentProfile.lastname}';
-          _userGroup = studentProfile.eduGroup;
-          _userAvatar = studentProfile.fullUrlPhoto == null
-              ? null
-              : CachedNetworkImageProvider(studentProfile.fullUrlPhoto!);
-        }
-        setState(ViewState.idle);
-      },
-    );
+    if (isInitialized) {
+      return;
+    }
+    _routes = MainPageRouting.drawerRoutes
+        .where(
+          (route) =>
+              route.userTypes.contains(_currentUserSyncStorage.typeOfUser),
+        )
+        .toList(growable: false);
+    isInitialized = true;
+    _profileViewModel = ProfileViewModel.currentUser();
+  }
+
+  void refreshTab(int index) {
+    final tab = Injector.appInstance
+        .get<MainPageRoutesViewModelsFactory>()
+        .getViewModelByRouteIndex(index);
+    if (tab is MainPageRouteViewModel) {
+      (tab as MainPageRouteViewModel).refresh();
+    }
   }
 }

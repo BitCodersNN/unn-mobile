@@ -1,21 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/misc/hex_color.dart';
 import 'package:flutter_bbcode/flutter_bbcode.dart';
 import 'package:bbob_dart/bbob_dart.dart' as bbob;
+import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 import 'package:unn_mobile/ui/widgets/spoiler_display.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class PTag extends StyleTag {
-  PTag() : super("p");
+  PTag() : super('p');
 
   @override
   TextStyle transformStyle(
-      TextStyle oldStyle, Map<String, String>? attributes) {
+    TextStyle oldStyle,
+    Map<String, String>? attributes,
+  ) {
     return oldStyle;
   }
 }
 
 class SizeTag extends StyleTag {
-  SizeTag() : super("size");
+  SizeTag() : super('size');
 
   @override
   TextStyle transformStyle(
@@ -25,7 +30,7 @@ class SizeTag extends StyleTag {
     if (attributes?.entries.isEmpty ?? true) {
       return oldStyle;
     }
-    String? size = attributes?.entries.first.key;
+    final String? size = attributes?.entries.first.key;
     if (size == null) {
       return oldStyle;
     }
@@ -38,7 +43,7 @@ class SizeTag extends StyleTag {
 }
 
 class ColorTag extends StyleTag {
-  ColorTag() : super("color");
+  ColorTag() : super('color');
 
   @override
   TextStyle transformStyle(
@@ -49,7 +54,7 @@ class ColorTag extends StyleTag {
       return oldStyle;
     }
 
-    String? hexColor = attributes?.entries.first.key;
+    final String? hexColor = attributes?.entries.first.key;
     if (hexColor == null) {
       return oldStyle;
     }
@@ -58,7 +63,7 @@ class ColorTag extends StyleTag {
 }
 
 class JustifyAlignTag extends WrappedStyleTag {
-  JustifyAlignTag() : super("justify");
+  JustifyAlignTag() : super('justify');
 
   @override
   List<InlineSpan> wrap(
@@ -70,8 +75,8 @@ class JustifyAlignTag extends WrappedStyleTag {
       WidgetSpan(
         child: SizedBox(
           width: double.infinity,
-          child: RichText(
-            text: TextSpan(children: spans),
+          child: SelectableText.rich(
+            TextSpan(children: spans),
             textAlign: TextAlign.justify,
           ),
         ),
@@ -83,7 +88,7 @@ class JustifyAlignTag extends WrappedStyleTag {
 class VideoTag extends StyleTag {
   final Function(String)? onTap;
 
-  VideoTag({this.onTap}) : super("video");
+  VideoTag({this.onTap}) : super('video');
 
   @override
   void onTagStart(FlutterRenderer renderer) {
@@ -91,10 +96,10 @@ class VideoTag extends StyleTag {
     if (renderer.currentTag?.children.isNotEmpty ?? false) {
       url = renderer.currentTag!.children.first.textContent;
     } else {
-      url = "URL is missing!";
+      url = 'URL is missing!';
     }
-    if (url.startsWith("//")) {
-      url = "https:$url";
+    if (url.startsWith('//')) {
+      url = 'https:$url';
     }
     renderer.pushTapAction(() {
       onTap?.call(url);
@@ -121,7 +126,7 @@ class VideoTag extends StyleTag {
 }
 
 class FontTag extends StyleTag {
-  FontTag() : super("font");
+  FontTag() : super('font');
 
   @override
   TextStyle transformStyle(
@@ -131,13 +136,13 @@ class FontTag extends StyleTag {
     if (attributes?.entries.isEmpty ?? true) {
       return oldStyle;
     }
-    String? font = attributes?.entries.first.key;
+    final String? font = attributes?.entries.first.key;
     return oldStyle.copyWith(fontFamily: font);
   }
 }
 
 class CodeTag extends WrappedStyleTag {
-  CodeTag() : super("code");
+  CodeTag() : super('code');
 
   @override
   List<InlineSpan> wrap(
@@ -155,30 +160,32 @@ class CodeTag extends WrappedStyleTag {
             padding: const EdgeInsets.all(8.0),
             child: SizedBox(
               width: double.infinity,
-              child: RichText(
-                text: TextSpan(children: spans),
+              child: SelectableText.rich(
+                TextSpan(children: spans),
                 textAlign: TextAlign.left,
               ),
             ),
           ),
         ),
-      )
+      ),
     ];
   }
 }
 
 class DiskTag extends StyleTag {
-  DiskTag() : super("disk");
+  DiskTag() : super('disk');
 
   @override
   TextStyle transformStyle(
-      TextStyle oldStyle, Map<String, String>? attributes) {
+    TextStyle oldStyle,
+    Map<String, String>? attributes,
+  ) {
     return oldStyle;
   }
 }
 
 class TableTag extends WrappedStyleTag {
-  TableTag() : super("table");
+  TableTag() : super('table');
 
   @override
   List<InlineSpan> wrap(
@@ -186,10 +193,10 @@ class TableTag extends WrappedStyleTag {
     bbob.Element element,
     List<InlineSpan> spans,
   ) {
-    if (spans.first.toPlainText() == "\n") {
+    if (spans.first.toPlainText() == '\n') {
       spans.removeAt(0);
     }
-    if (spans.last.toPlainText() == "\n") {
+    if (spans.last.toPlainText() == '\n') {
       spans.removeLast();
     }
 
@@ -199,8 +206,8 @@ class TableTag extends WrappedStyleTag {
           child: Column(
             children: [
               RichText(
-                textWidthBasis: TextWidthBasis.longestLine,
                 text: TextSpan(children: spans),
+                textWidthBasis: TextWidthBasis.longestLine,
               ),
             ],
           ),
@@ -211,7 +218,7 @@ class TableTag extends WrappedStyleTag {
 }
 
 class TRTag extends WrappedStyleTag {
-  TRTag() : super("tr");
+  TRTag() : super('tr');
 
   @override
   List<InlineSpan> wrap(
@@ -239,7 +246,7 @@ class TRTag extends WrappedStyleTag {
 }
 
 class TDTag extends StyleTag {
-  TDTag() : super("td");
+  TDTag() : super('td');
 
   @override
   TextStyle transformStyle(
@@ -251,19 +258,19 @@ class TDTag extends StyleTag {
 }
 
 class ImgTag extends AdvancedTag {
-  ImgTag() : super("img");
+  ImgTag() : super('img');
 
   @override
   List<InlineSpan> parse(FlutterRenderer renderer, bbob.Element element) {
     if (element.children.isEmpty) {
-      return [TextSpan(text: "[$tag]")];
+      return [TextSpan(text: '[$tag]')];
     }
 
     final String imageUrl = element.children.first.textContent;
     double? width;
     double? height;
-    const widthKey = "WIDTH";
-    const heightKey = "HEIGHT";
+    const widthKey = 'WIDTH';
+    const heightKey = 'HEIGHT';
     if (element.attributes.containsKey(widthKey)) {
       width = double.tryParse(element.attributes[widthKey]!);
     }
@@ -274,7 +281,7 @@ class ImgTag extends AdvancedTag {
       imageUrl,
       width: width,
       height: height,
-      errorBuilder: (context, error, stack) => Text("[$tag]"),
+      errorBuilder: (context, error, stack) => Text('[$tag]'),
     );
 
     if (renderer.peekTapAction() != null) {
@@ -297,7 +304,7 @@ class ImgTag extends AdvancedTag {
 }
 
 class SpoilerTag extends WrappedStyleTag {
-  SpoilerTag() : super("spoiler");
+  SpoilerTag() : super('spoiler');
 
   @override
   List<InlineSpan> wrap(
@@ -309,7 +316,7 @@ class SpoilerTag extends WrappedStyleTag {
     if (element.attributes.isNotEmpty) {
       text = "Spoiler: ${element.attributes.values.join(' ')}";
     } else {
-      text = "Spoiler";
+      text = 'Spoiler';
     }
 
     return [
@@ -325,10 +332,56 @@ class SpoilerTag extends WrappedStyleTag {
 }
 
 class UserTag extends StyleTag {
-  UserTag() : super("user");
+  UserTag() : super('user');
 
   @override
-  TextStyle transformStyle(TextStyle oldStyle, Map<String, String>? attributes) {
+  TextStyle transformStyle(
+    TextStyle oldStyle,
+    Map<String, String>? attributes,
+  ) {
     return oldStyle;
   }
+}
+
+BBStylesheet getBBStyleSheet() {
+  return defaultBBStylesheet()
+      .copyWith(selectableText: true)
+      .replaceTag(
+        UrlTag(
+          onTap: (url) async {
+            if (!await launchUrl(Uri.parse(url))) {
+              Injector.appInstance
+                  .get<LoggerService>()
+                  .log('Could not launch url $url');
+            }
+          },
+        ),
+      )
+      .addTag(PTag())
+      .addTag(SizeTag())
+      .addTag(
+        VideoTag(
+          onTap: (url) async {
+            if (!await launchUrl(
+              Uri.parse(url),
+              mode: LaunchMode.platformDefault,
+            )) {
+              Injector.appInstance
+                  .get<LoggerService>()
+                  .log('Could not launch url $url');
+            }
+          },
+        ),
+      )
+      .addTag(JustifyAlignTag())
+      .addTag(FontTag())
+      .addTag(CodeTag())
+      .addTag(DiskTag())
+      .addTag(TableTag())
+      .addTag(TRTag())
+      .addTag(TDTag())
+      .addTag(UserTag())
+      .replaceTag(ColorTag())
+      .replaceTag(ImgTag())
+      .replaceTag(SpoilerTag());
 }
