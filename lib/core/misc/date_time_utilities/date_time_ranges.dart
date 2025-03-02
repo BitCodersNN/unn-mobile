@@ -45,16 +45,28 @@ class DateTimeRanges {
 
   static DateTimeRange untilEndOfWeek() {
     final DateTime now = DateTime.now();
-    final DateTime endOfWeek =
-        now.add(Duration(days: DateTime.daysPerWeek - now.weekday));
+    final DateTime endOfWeek = now
+        .add(
+          Duration(days: DateTime.daysPerWeek - now.weekday),
+        )
+        .copyWith(
+          hour: 23,
+          minute: 59,
+          second: 59,
+        );
 
     return DateTimeRange(start: now, end: endOfWeek);
   }
 
   static DateTimeRange untilEndOfMonth() {
     final DateTime now = DateTime.now();
-    final endOfMonth =
-        DateTime(now.year, now.month + 1, 1).subtract(const Duration(days: 1));
+    final DateTime endOfMonth = DateTime(now.year, now.month + 1, 1)
+        .subtract(const Duration(days: 1))
+        .copyWith(
+          hour: 23,
+          minute: 59,
+          second: 59,
+        );
 
     return DateTimeRange(start: now, end: endOfMonth);
   }
