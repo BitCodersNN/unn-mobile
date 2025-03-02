@@ -8,7 +8,7 @@ class ResponseTypeInterceptorKey {
 
 void _checkType<T>(dynamic data) {
   if (data is! T) {
-    throw ResponseTypeError(
+    throw ResponseTypeException(
       expectedType: T,
       actualType: data.runtimeType,
       responseData: data,
