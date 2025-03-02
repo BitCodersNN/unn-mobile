@@ -4,6 +4,8 @@ import 'package:unn_mobile/core/constants/api/path.dart';
 import 'package:unn_mobile/core/constants/api/analytics_label.dart';
 import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/misc/blog_post_response_validator.dart';
+import 'package:unn_mobile/core/misc/dio_interceptor/response_data_type.dart';
+import 'package:unn_mobile/core/misc/options_factory/options_with_timeout_and_expected_type_factory.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/featured_blog_post_action/pinning_blog_post_service.dart';
 import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 
@@ -54,13 +56,13 @@ class PinningBlogPostServiceImpl implements PinningBlogPostService {
         data: {
           _DataKeys.logId: pinnedId,
         },
-        options: Options(
-          sendTimeout: const Duration(seconds: 10),
-          receiveTimeout: const Duration(seconds: 10),
+        options: OptionsWithTimeoutAndExpectedTypeFactory.options(
+          10,
+          ResponseDataType.jsonMap,
         ),
       );
     } catch (error, stackTrace) {
-      _loggerService.log('Exception: $error\nStackTrace: $stackTrace');
+      _loggerService.logError(error, stackTrace);
       return false;
     }
 

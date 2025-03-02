@@ -5,6 +5,8 @@ import 'package:unn_mobile/core/constants/api/analytics_label.dart';
 import 'package:unn_mobile/core/constants/rating_list_strings.dart';
 import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/misc/current_user_sync_storage.dart';
+import 'package:unn_mobile/core/misc/dio_interceptor/response_data_type.dart';
+import 'package:unn_mobile/core/misc/options_factory/options_with_timeout_and_expected_type_factory.dart';
 import 'package:unn_mobile/core/models/rating_list.dart';
 import 'package:unn_mobile/core/models/user_short_info.dart';
 import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
@@ -74,9 +76,9 @@ class ReactionServiceImpl implements ReactionService {
           AjaxActionStrings.actionKey: AjaxActionStrings.ratingVote,
         },
         data: body,
-        options: Options(
-          sendTimeout: const Duration(seconds: 60),
-          receiveTimeout: const Duration(seconds: 60),
+        options: OptionsWithTimeoutAndExpectedTypeFactory.options(
+          60,
+          ResponseDataType.jsonMap,
         ),
       );
     } catch (error, stackTrace) {

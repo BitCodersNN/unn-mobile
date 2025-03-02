@@ -53,8 +53,9 @@ class DateTimeRanges {
 
   static DateTimeRange untilEndOfMonth() {
     final DateTime now = DateTime.now();
-    final endOfMonth =
-        DateTime(now.year, now.month + 1, 1).subtract(const Duration(days: 1));
+    final endOfMonth = DateTime(now.year, now.month + 1, 1)
+        .subtract(const Duration(days: 1))
+        .add(const Duration(hours: 23, minutes: 59, seconds: 59));
 
     return DateTimeRange(start: now, end: endOfMonth);
   }

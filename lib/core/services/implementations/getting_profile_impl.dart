@@ -2,6 +2,9 @@ import 'package:dio/dio.dart';
 import 'package:unn_mobile/core/constants/api/path.dart';
 import 'package:unn_mobile/core/constants/profiles_strings.dart';
 import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
+import 'package:unn_mobile/core/misc/options_factory/options_with_expected_type_factory.dart';
+import 'package:unn_mobile/core/misc/dio_interceptor/response_data_type.dart';
+import 'package:unn_mobile/core/misc/dio_interceptor/response_type_Interceptor.dart';
 import 'package:unn_mobile/core/models/employee_data.dart';
 import 'package:unn_mobile/core/models/student_data.dart';
 import 'package:unn_mobile/core/models/user_data.dart';
@@ -27,7 +30,14 @@ class GettingProfileImpl implements GettingProfile {
 
     Response response;
     try {
-      response = await _apiHelper.get(path: path);
+      response = await _apiHelper.get(
+        path: path,
+        options: Options(
+          extra: {
+            ResponseTypeInterceptorKey.expectedType: ResponseDataType.jsonMap,
+          },
+        ),
+      );
     } catch (error, stackTrace) {
       _loggerService.logError(error, stackTrace);
       return null;
@@ -49,7 +59,10 @@ class GettingProfileImpl implements GettingProfile {
 
     Response response;
     try {
-      response = await _apiHelper.get(path: path);
+      response = await _apiHelper.get(
+        path: path,
+        options: OptionsWithExpectedTypeFactory.jsonMap,
+      );
     } catch (error, stackTrace) {
       _loggerService.logError(error, stackTrace);
       return null;
