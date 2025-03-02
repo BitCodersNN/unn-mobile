@@ -1,0 +1,18 @@
+name: Check if app version changed since last release
+run-name: Check app version in PR ${{ github.event.number }}
+on: 
+  pull_request:
+    branches: [ "develop" ]
+jobs:
+  check-version:
+    if: github.event.pull_request.head.repo.fork == false
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.ref }}
+      - name: check if version was changed at all
+        run: git diff origin/main HEAD pubspec.yaml | grep -m 2 -q '[-+]version:'
+      - name: check if display version (like 0.2.0) was changed
+        run: git diff origin/main HEAD pubspec.yaml | grep "[-+]version:" | sed "s/[-+]version:[ ]\(\([0-9]\+\.\)\+[0-9]\+\)+[0-9]\+/'\1'\n!=/" | head -n 3 | if xargs -r test; then exit 0; else exit 1; fi
