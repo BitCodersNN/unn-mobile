@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:unn_mobile/core/misc/api_helpers/interfaces/api_options_helper.dart';
 import 'package:unn_mobile/core/misc/api_helpers/interfaces/get_api_helper.dart';
 import 'package:unn_mobile/core/misc/api_helpers/interfaces/post_api_helper.dart';
-import 'package:unn_mobile/core/misc/dio_interceptor/response_type_Interceptor.dart';
+import 'package:unn_mobile/core/misc/dio_interceptor/response_type_interceptor.dart';
 
 class ApiHelper implements GetApiHelper, PostApiHelper, ApiOptionsHelper {
   @protected
