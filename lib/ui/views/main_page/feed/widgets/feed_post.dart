@@ -314,9 +314,7 @@ class _FeedPostState extends State<FeedPost> {
     if (model.isAnnouncement) {
       return unnMobileColors.importantPostHighlight;
     }
-    return model.isNewPost
-        ? unnMobileColors.newPostHighlight
-        : theme.colorScheme.surface;
+    return theme.colorScheme.surface;
   }
 }
 
