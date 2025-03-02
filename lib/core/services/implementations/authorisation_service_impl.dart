@@ -6,7 +6,7 @@ import 'package:unn_mobile/core/constants/api/path.dart';
 import 'package:unn_mobile/core/constants/session_identifier_strings.dart';
 import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/misc/api_helpers/base_options_factory.dart';
-import 'package:unn_mobile/core/misc/options_factory/options_with_expected_type_factory.dart';
+import 'package:unn_mobile/core/misc/dio_options_factory/options_with_expected_type_factory.dart';
 import 'package:unn_mobile/core/models/online_status_data.dart';
 import 'package:unn_mobile/core/services/interfaces/auth_data_provider.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';

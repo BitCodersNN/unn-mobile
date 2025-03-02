@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:unn_mobile/core/constants/api/path.dart';
 import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
-import 'package:unn_mobile/core/misc/options_factory/options_with_expected_type_factory.dart';
+import 'package:unn_mobile/core/misc/dio_options_factory/options_with_expected_type_factory.dart';
 import 'package:unn_mobile/core/models/mark_by_subject.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_grade_book.dart';
 import 'package:unn_mobile/core/services/interfaces/logger_service.dart';

@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:unn_mobile/core/misc/custom_errors/response_type_error.dart';
+import 'package:unn_mobile/core/misc/custom_errors/response_type_exception.dart';
 import 'package:unn_mobile/core/misc/dio_interceptor/response_data_type.dart';
 
 class ResponseTypeInterceptorKey {
