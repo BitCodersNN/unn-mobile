@@ -13,7 +13,7 @@ class FirebaseLogger implements LoggerService {
   @override
   void logError(
     dynamic exception,
-    StackTrace stack, {
+    StackTrace? stack, {
     bool fatal = false,
     dynamic reason,
     Iterable<Object> information = const [],

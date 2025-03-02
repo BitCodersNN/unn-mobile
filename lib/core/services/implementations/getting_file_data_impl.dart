@@ -2,6 +2,8 @@ import 'package:dio/dio.dart';
 import 'package:unn_mobile/core/constants/api/path.dart';
 import 'package:unn_mobile/core/constants/session_identifier_strings.dart';
 import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
+import 'package:unn_mobile/core/misc/dio_interceptor/response_data_type.dart';
+import 'package:unn_mobile/core/misc/dio_options_factory/options_with_timeout_and_expected_type_factory.dart';
 import 'package:unn_mobile/core/models/file_data.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
 import 'package:unn_mobile/core/services/interfaces/getting_file_data.dart';
@@ -31,13 +33,13 @@ class GettingFileDataImpl implements GettingFileData {
           SessionIdentifierStrings.sessid: _authorizationService.csrf ?? '',
           _id: id.toString(),
         },
-        options: Options(
-          sendTimeout: const Duration(seconds: 60),
-          receiveTimeout: const Duration(seconds: 60),
+        options: OptionsWithTimeoutAndExpectedTypeFactory.options(
+          60,
+          ResponseDataType.jsonMap,
         ),
       );
     } catch (error, stackTrace) {
-      _loggerService.log('Exception: $error\nStackTrace: $stackTrace');
+      _loggerService.logError(error, stackTrace);
       return null;
     }
 

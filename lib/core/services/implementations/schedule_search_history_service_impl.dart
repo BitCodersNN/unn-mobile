@@ -23,30 +23,47 @@ class ScheduleSearchHistoryServiceImpl implements ScheduleSearchHistoryService {
   );
 
   Future<void> _initFromStorage() async {
-    for (final type in IdType.values) {
-      final key = _getStorageKeyForType(type);
-      try {
-        final Iterable rawHistory =
-            jsonDecode((await _storage.read(key: key))!);
-        _historyQueues.putIfAbsent(
-          type,
-          () => Queue.from(
-            rawHistory.map(
-              (h) => ScheduleSearchSuggestionItem.fromJson(h),
-            ),
-          ),
-        );
-      } catch (e, stack) {
-        _loggerService.logError(e, stack);
-      } finally {
-        // Если что угодно пошло не так
-        // (нет ключа в хранилище или там невалидные данные)
-        // Просто добавляем пустую очередь
-        _historyQueues.putIfAbsent(type, () => Queue());
-      }
+    try {
+      await Future.wait(
+        IdType.values.map(_loadHistoryQueueForType).toList(),
+      );
+    } catch (e, stack) {
+      _loggerService.logError(e, stack);
+    } finally {
+      _isInitialized = true;
+    }
+  }
+
+  Future<void> _loadHistoryQueueForType(IdType type) async {
+    final key = _getStorageKeyForType(type);
+    final rawHistoryJson = await _storage.read(key: key);
+
+    if (rawHistoryJson == null) {
+      _historyQueues.putIfAbsent(
+        type,
+        () => Queue<ScheduleSearchSuggestionItem>(),
+      );
+      return;
     }
 
-    _isInitialized = true;
+    Queue<ScheduleSearchSuggestionItem> queue;
+    try {
+      queue = await _parseHistoryQueue(rawHistoryJson);
+    } catch (e, stack) {
+      _loggerService.logError(e, stack);
+      queue = Queue<ScheduleSearchSuggestionItem>();
+    }
+
+    _historyQueues.putIfAbsent(type, () => queue);
+  }
+
+  Future<Queue<ScheduleSearchSuggestionItem>> _parseHistoryQueue(
+    String rawHistoryJson,
+  ) async {
+    final rawHistory = jsonDecode(rawHistoryJson) as List<dynamic>;
+    return Queue<ScheduleSearchSuggestionItem>.from(
+      rawHistory.map((h) => ScheduleSearchSuggestionItem.fromJson(h)),
+    );
   }
 
   String _getStorageKeyForType(IdType type) => type.name + _storageKeySuffix;

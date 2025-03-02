@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:unn_mobile/core/constants/api/path.dart';
 import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
+import 'package:unn_mobile/core/misc/dio_interceptor/response_data_type.dart';
+import 'package:unn_mobile/core/misc/dio_options_factory/options_with_timeout_and_expected_type_factory.dart';
 import 'package:unn_mobile/core/models/feed/blog_post.dart';
 import 'package:unn_mobile/core/models/feed/blog_post_type.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/blog_post_receivers/featured_blog_post_service.dart';
@@ -23,13 +25,13 @@ class FeaturedBlogPostsServiceImpl implements FeaturedBlogPostsService {
     try {
       response = await _apiHelper.get(
         path: ApiPath.featuredBlogPostWithLoadedInfo,
-        options: Options(
-          sendTimeout: const Duration(seconds: 30),
-          receiveTimeout: const Duration(seconds: 30),
+        options: OptionsWithTimeoutAndExpectedTypeFactory.options(
+          30,
+          ResponseDataType.string,
         ),
       );
     } catch (error, stackTrace) {
-      _loggerService.log('Exception: $error\nStackTrace: $stackTrace');
+      _loggerService.logError(error, stackTrace);
       return null;
     }
 

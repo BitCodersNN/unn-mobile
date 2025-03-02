@@ -3,4 +3,5 @@ class DatePattern {
   static const String ddmmyyyyhhmmss = 'dd.MM.yyyy HH:mm:ss';
   static const String yyyymmddhhmmss = 'yyyy-MM-dd HH:mm:ss';
   static const String ddmmyyyy = 'dd.MM.yyyy';
+  static const String ymmddhm = 'y-MM-dd H:m';
 }
