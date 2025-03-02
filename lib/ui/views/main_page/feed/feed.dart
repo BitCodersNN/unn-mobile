@@ -157,11 +157,6 @@ class FeedScreenViewState extends State<FeedScreenView>
                               SliverList(
                                 delegate: SliverChildListDelegate(
                                   [
-                                    // Чтобы можно было обновить, если постов нет
-                                    if (model.posts.isEmpty)
-                                      const SizedBox(
-                                        height: 200.0,
-                                      ),
                                     if (model.loadingMore && online)
                                       const SizedBox(
                                         width: double.infinity,
@@ -185,7 +180,6 @@ class FeedScreenViewState extends State<FeedScreenView>
                                         post: post,
                                         showingComments: false,
                                       ),
-                                    const SizedBox(height: 16),
                                   ],
                                 ),
                               ),
