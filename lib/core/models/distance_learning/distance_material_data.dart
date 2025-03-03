@@ -7,5 +7,5 @@ abstract base class DistanceMaterialData {
     required this.dateTime,
   });
 
-   Map<String, Object?> toJson();
+  Map<String, Object?> toJson();
 }

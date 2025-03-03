@@ -198,6 +198,16 @@ void registerDependencies() {
       authorizationService: get<UnnAuthorisationService>(),
     ),
   );
+  injector.registerSingleton<UnnSourceApiHelper>(
+    () => UnnSourceApiHelper(
+      authorizationService: get<SourceAuthorisationService>(),
+    ),
+  );
+  injector.registerSingleton<WebUnnSourceApiHelper>(
+    () => WebUnnSourceApiHelper(
+      authorizationService: get<SourceAuthorisationService>(),
+    ),
+  );
 
   // get<LastCommitShaService>(),
   // get<LoadingPageConfigService>(),
@@ -427,14 +437,14 @@ void registerDependencies() {
     ),
   );
 
-   injector.registerSingleton<DistanceCourseSemesterService>(
+  injector.registerSingleton<DistanceCourseSemesterService>(
     () => DistanceCourseSemesterServiceImpl(
       get<LoggerService>(),
       getApiHelper(HostType.unnSource),
     ),
-   );
+  );
 
-    injector.registerSingleton<DistanceCourseService>(
+  injector.registerSingleton<DistanceCourseService>(
     () => DistanceCourseServiceImpl(
       get<LoggerService>(),
       getApiHelper(HostType.unnSource),
