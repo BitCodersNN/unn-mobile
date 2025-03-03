@@ -71,8 +71,18 @@ class UserData {
   String get sex => _sex;
   String? get notes => _notes;
   String? get urlPhoto => _urlPhoto;
-  String? get fullUrlPhoto =>
-      _urlPhoto != null ? _urlPhotoFirstPart + _urlPhoto! : null;
+  String? get fullUrlPhoto {
+    if (_urlPhoto == null) {
+      return null;
+    }
+    if (_urlPhoto == 'https://portal.unn.ru') {
+      return null;
+    }
+    if (_urlPhoto!.startsWith(ProtocolType.https.name)) {
+      return _urlPhoto!;
+    }
+    return _urlPhotoFirstPart + _urlPhoto!;
+  }
 
   factory UserData.fromJson(Map<String, Object?> jsonMap) {
     final userJsonMap =

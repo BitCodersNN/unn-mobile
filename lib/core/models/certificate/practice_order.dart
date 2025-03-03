@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:unn_mobile/core/constants/date_pattern.dart';
+import 'package:unn_mobile/core/misc/date_time_utilities/date_time_extensions.dart';
+import 'package:unn_mobile/core/misc/date_time_utilities/date_time_parser.dart';
 import 'package:unn_mobile/core/models/certificate/certificate.dart';
 
 class _KeysForPracticeOrderJsonConverter {
@@ -33,11 +36,13 @@ class PracticeOrder extends Certificate {
       certificatePath: certificate.certificatePath,
       type: jsonMap[_KeysForPracticeOrderJsonConverter.type] as String,
       practiceDateTimeRange: DateTimeRange(
-        start: DateTime.parse(
+        start: DateTimeParser.parse(
           jsonMap[_KeysForPracticeOrderJsonConverter.date1] as String,
+          DatePattern.ddmmyyyy,
         ),
-        end: DateTime.parse(
+        end: DateTimeParser.parse(
           jsonMap[_KeysForPracticeOrderJsonConverter.date2] as String,
+          DatePattern.ddmmyyyy,
         ),
       ),
       num: jsonMap[_KeysForPracticeOrderJsonConverter.num] as int,
@@ -49,9 +54,9 @@ class PracticeOrder extends Certificate {
         ...super.toJson(),
         _KeysForPracticeOrderJsonConverter.type: type,
         _KeysForPracticeOrderJsonConverter.date1:
-            practiceDateTimeRange.start.toIso8601String(),
+            practiceDateTimeRange.start.format(DatePattern.ddmmyyyy),
         _KeysForPracticeOrderJsonConverter.date2:
-            practiceDateTimeRange.end.toIso8601String(),
+            practiceDateTimeRange.end.format(DatePattern.ddmmyyyy),
         _KeysForPracticeOrderJsonConverter.num: num,
       };
 }

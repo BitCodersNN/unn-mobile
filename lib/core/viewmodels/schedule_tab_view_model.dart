@@ -19,6 +19,8 @@ import 'package:unn_mobile/core/services/interfaces/search_id_on_portal_service.
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
 
 class ScheduleTabViewModel extends BaseViewModel {
+  final int minValueLenForFindId = 3;
+
   final GettingScheduleService _getScheduleService;
   final SearchIdOnPortalService _searchIdOnPortalService;
   final OfflineScheduleProvider _offlineScheduleProvider;
@@ -121,7 +123,7 @@ class ScheduleTabViewModel extends BaseViewModel {
   Future<List<ScheduleSearchSuggestionItem>> getSearchSuggestions(
     String value,
   ) async {
-    if (value.isEmpty) {
+    if (value.isEmpty || value.length < minValueLenForFindId) {
       return await _getHistorySuggestions();
     }
     final suggestions = await tryLoginAndRetrieveData(

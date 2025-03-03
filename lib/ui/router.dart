@@ -18,6 +18,7 @@ final shellBranchKeys = //
 
 final mainRouter = GoRouter(
   initialLocation: loadingPageRoute,
+  initialExtra: <String, Object>{},
   routes: [
     StatefulShellRoute.indexedStack(
       builder: (context, state, shell) => MainPage(
@@ -31,8 +32,9 @@ final mainRouter = GoRouter(
               GoRoute(
                 path: route.route.pageRoute,
                 name: route.route.pageTitle,
-                pageBuilder: (context, state) =>
-                    NoTransitionPage(child: route.route.builder(context)),
+                pageBuilder: (context, state) => NoTransitionPage(
+                  child: route.route.builder(context, state),
+                ),
                 routes: [
                   ..._buildSubroutes(
                     MainPageRouting.drawerRoutes,
@@ -77,7 +79,8 @@ List<GoRoute> _buildSubroutes(
       .map(
         (route) => GoRoute(
           path: '$prefix${route.pageRoute}',
-          builder: (context, state) => route.builder(context),
+          builder: (context, state) => route.builder(context, state),
+          routes: _buildSubroutes(route.subroutes),
         ),
       )
       .toList(growable: false);

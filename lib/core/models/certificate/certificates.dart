@@ -27,6 +27,14 @@ class Certificates {
         certificates.add(Certificate.fromJson(certificateJson));
       }
     });
+    if ((jsonMap[_KeysForCertificatesJsonConverter.practice] as String)
+        .isNotEmpty) {
+      certificates.add(
+        Certificate.fromPracticeUrl(
+          jsonMap[_KeysForCertificatesJsonConverter.practice]! as String,
+        ),
+      );
+    }
     return Certificates._(certificates: certificates);
   }
 
@@ -63,7 +71,7 @@ class Certificates {
         practice[_KeysForCertificatesJsonConverter.practice] as String?;
     final practiceReferenceJson = Map<String, Object?>.from(practice);
     practiceReferenceJson.addAll(
-      certificateTypesInfo[_KeysForCertificatesJsonConverter.practice]!,
+      certificateTypesInfo[_KeysForCertificatesJsonConverter.practices]!,
     );
     practiceReferenceJson[KeysForCertificateJsonConverter.certificatePath] =
         certificateUri?.isNotEmpty == true
