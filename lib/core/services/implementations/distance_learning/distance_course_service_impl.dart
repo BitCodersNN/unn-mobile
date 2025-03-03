@@ -24,16 +24,15 @@ class DistanceCourseServiceImpl implements DistanceCourseService {
 
   @override
   Future<List<DistanceCourse>?> getDistanceCourses({
-    required int semester,
-    required int year,
+    required Semester semester,
   }) async {
     Response response;
     try {
       response = await _apiHelper.get(
         path: ApiPath.materials,
         queryParameters: {
-          _QueryParamNames.semester: semester,
-          _QueryParamNames.year: year,
+          _QueryParamNames.semester: semester.semester,
+          _QueryParamNames.year: semester.year,
         },
         options: Options(
           responseType: ResponseType.plain,

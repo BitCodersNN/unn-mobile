@@ -28,15 +28,14 @@ abstract class WebAuthenticatedApiHelper extends AuthenticatedApiHelper {
     required authorizationService,
     ProtocolType protocol = ProtocolType.https,
   })  : _baseUrl = '${protocol.name}://$host/',
-        _dioCookie =
-            authorizationService.headers?.remove(_HttpHeaders.cookieKey),
         super(
           authorizationService,
           options: createBaseOptions(
             host: HostWithBasePath.redirect,
-            headers: authorizationService.headers,
           ),
-        );
+        ) {
+    onAuthChanged();
+  }
 
   @override
   @protected

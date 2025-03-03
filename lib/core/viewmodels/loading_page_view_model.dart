@@ -23,7 +23,7 @@ import 'package:unn_mobile/ui/router.dart';
 
 class LoadingPageViewModel extends BaseViewModel {
   final LoggerService _loggerService;
-  final AuthorizationRefreshService _initializingApplicationService;
+  final AuthorisationRefreshService _initializingApplicationService;
   final LastCommitShaService _lastCommitShaService;
   final LoadingPageConfigService _loadingPageConfigService;
   final LogoDownloaderService _logoDownloaderService;

@@ -12,8 +12,8 @@ Future<T?> tryLoginAndRetrieveData<T>(Function online, Function offline) async {
   final LoggerService loggerService = Injector.appInstance.get<LoggerService>();
   final UnnAuthorisationService authorisationService =
       Injector.appInstance.get<UnnAuthorisationService>();
-  final AuthorizationRefreshService authorisationRefreshService =
-      Injector.appInstance.get<AuthorizationRefreshService>();
+  final AuthorisationRefreshService authorisationRefreshService =
+      Injector.appInstance.get<AuthorisationRefreshService>();
   final OnlineStatusData onlineStatus =
       Injector.appInstance.get<OnlineStatusData>();
 

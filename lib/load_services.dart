@@ -158,7 +158,7 @@ void registerDependencies() {
   */
 
   injector.registerSingleton<UnnAuthorisationService>(
-    () => UnnAuthorizationServiceImpl(
+    () => UnnAuthorisationServiceImpl(
       get<OnlineStatusData>(),
       get<AuthDataProvider>(),
       get<LoggerService>(),
@@ -254,8 +254,8 @@ void registerDependencies() {
       get<StorageService>(),
     ),
   );
-  injector.registerSingleton<AuthorizationRefreshService>(
-    () => AuthorizationRefreshServiceImpl(
+  injector.registerSingleton<AuthorisationRefreshService>(
+    () => AuthorisationRefreshServiceImpl(
       get<AuthDataProvider>(),
       get<UnnAuthorisationService>(),
       get<StorageService>(),
@@ -488,7 +488,7 @@ void registerDependencies() {
   injector.registerDependency(
     () => LoadingPageViewModel(
       get<LoggerService>(),
-      get<AuthorizationRefreshService>(),
+      get<AuthorisationRefreshService>(),
       get<LastCommitShaService>(),
       get<LoadingPageConfigService>(),
       get<LogoDownloaderService>(),

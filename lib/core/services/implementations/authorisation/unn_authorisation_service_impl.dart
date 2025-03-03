@@ -12,7 +12,7 @@ import 'package:unn_mobile/core/services/interfaces/auth_data_provider.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation/unn_authorisation_service.dart';
 import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 
-class UnnAuthorizationServiceImpl extends ChangeNotifier
+class UnnAuthorisationServiceImpl extends ChangeNotifier
     implements UnnAuthorisationService {
   late AuthorisationHelper _authorisationHelper;
   final OnlineStatusData _onlineStatus;
@@ -44,7 +44,7 @@ class UnnAuthorizationServiceImpl extends ChangeNotifier
   @override
   String? get guestId => _headers?[_bxPortatlUnnGuestId];
 
-  UnnAuthorizationServiceImpl(
+  UnnAuthorisationServiceImpl(
     this._onlineStatus,
     this._authDataProvider,
     this._loggerService,
