@@ -1,9 +1,10 @@
-import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
+import 'package:unn_mobile/core/misc/auth/auth_request_result.dart';
+import 'package:unn_mobile/core/services/interfaces/authorisation/unn_authorisation_service.dart';
 
 abstract interface class AuthorizationRefreshService {
   /// Если логин и пароль есть в хранилище, то авторизует пользователя
   ///
-  /// Выбрасывает те же исключения, что и [AuthorizationService.auth]
+  /// Выбрасывает те же исключения, что и [UnnAuthorisationService.auth]
   ///
   /// Возвращает результат авторизации или 'null', если данных пользователя нет в хранилище
   Future<AuthRequestResult?> refreshLogin();

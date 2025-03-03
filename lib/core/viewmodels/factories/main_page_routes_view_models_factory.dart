@@ -1,9 +1,9 @@
 import 'package:injector/injector.dart';
-import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
+import 'package:unn_mobile/core/services/interfaces/authorisation/unn_authorisation_service.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
 
 class MainPageRoutesViewModelsFactory {
-  final AuthorizationService _authorizationService;
+  final UnnAuthorisationService _authorizationService;
 
   final Map<int, BaseViewModel> _viewModels = {};
 

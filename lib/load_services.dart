@@ -6,16 +6,21 @@ import 'package:unn_mobile/core/misc/api_helpers/final/github_api_helper.dart';
 import 'package:unn_mobile/core/misc/api_helpers/final/github_raw_api_helper.dart';
 import 'package:unn_mobile/core/misc/api_helpers/final/unn_mobile_api_helper.dart';
 import 'package:unn_mobile/core/misc/api_helpers/final/unn_portal_api_helper.dart';
+import 'package:unn_mobile/core/misc/api_helpers/final/unn_source_api_helper.dart';
 import 'package:unn_mobile/core/misc/api_helpers/final/web_unn_mobile_api_helper.dart';
 import 'package:unn_mobile/core/misc/api_helpers/final/web_unn_portal_api_helper.dart';
+import 'package:unn_mobile/core/misc/api_helpers/final/web_unn_source_api_helper.dart';
 import 'package:unn_mobile/core/misc/app_open_tracker.dart';
 import 'package:unn_mobile/core/misc/current_user_sync_storage.dart';
 import 'package:unn_mobile/core/models/feed/blog_post_type.dart';
 import 'package:unn_mobile/core/models/online_status_data.dart';
 import 'package:unn_mobile/core/services/implementations/auth_data_provider_impl.dart';
-import 'package:unn_mobile/core/services/implementations/authorisation_refresh_service_impl.dart';
-import 'package:unn_mobile/core/services/implementations/authorisation_service_impl.dart';
+import 'package:unn_mobile/core/services/implementations/authorisation/source_authorisation_service_impl.dart';
+import 'package:unn_mobile/core/services/implementations/authorisation/unn_authorisation_refresh_service_impl.dart';
+import 'package:unn_mobile/core/services/implementations/authorisation/unn_authorisation_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/certificate/certificate_downloader_service_impl.dart';
+import 'package:unn_mobile/core/services/implementations/distance_learning/distance_course_semester_service_impl.dart';
+import 'package:unn_mobile/core/services/implementations/distance_learning/distance_course_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/export_schedule_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/feed/blog_post_receivers/blog_post_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/feed/blog_post_receivers/featured_blog_posts_service_impl.dart';
@@ -52,9 +57,12 @@ import 'package:unn_mobile/core/services/implementations/search_id_on_portal_ser
 import 'package:unn_mobile/core/services/implementations/storage_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/user_data_provider_impl.dart';
 import 'package:unn_mobile/core/services/interfaces/auth_data_provider.dart';
-import 'package:unn_mobile/core/services/interfaces/authorisation_refresh_service.dart';
-import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
+import 'package:unn_mobile/core/services/interfaces/authorisation/authorisation_refresh_service.dart';
+import 'package:unn_mobile/core/services/interfaces/authorisation/source_authorisation_service.dart';
+import 'package:unn_mobile/core/services/interfaces/authorisation/unn_authorisation_service.dart';
 import 'package:unn_mobile/core/services/interfaces/certificate/certificate_downloader_service.dart';
+import 'package:unn_mobile/core/services/interfaces/distance_learning/distance_course_semester_service.dart';
+import 'package:unn_mobile/core/services/interfaces/distance_learning/distance_course_service.dart';
 import 'package:unn_mobile/core/services/interfaces/export_schedule_service.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/blog_post_receivers/blog_post_service.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/blog_post_receivers/featured_blog_post_service.dart';
@@ -125,6 +133,8 @@ void registerDependencies() {
         getPlatformSpecificHelper<WebUnnMobileApiHelper, UnnMobileApiHelper>(),
     HostType.unnPortal: () =>
         getPlatformSpecificHelper<WebUnnPortalApiHelper, UnnPortalApiHelper>(),
+    HostType.unnSource: () =>
+        getPlatformSpecificHelper<WebUnnSourceApiHelper, UnnSourceApiHelper>(),
   };
 
   ApiHelper getApiHelper(HostType hostType) {
@@ -148,11 +158,18 @@ void registerDependencies() {
     );
   */
 
-  injector.registerSingleton<AuthorizationService>(
-    () => AuthorizationServiceImpl(
+  injector.registerSingleton<UnnAuthorisationService>(
+    () => UnnAuthorizationServiceImpl(
+      get<OnlineStatusData>(),
+      get<AuthDataProvider>(),
+      get<LoggerService>(),
+    ),
+  );
+
+  injector.registerSingleton<SourceAuthorisationService>(
+    () => SourceAuthorisationServiceImpl(
       get<OnlineStatusData>(),
       get<LoggerService>(),
-      get<AuthDataProvider>(),
     ),
   );
 
@@ -164,22 +181,22 @@ void registerDependencies() {
   );
   injector.registerSingleton<UnnPortalApiHelper>(
     () => UnnPortalApiHelper(
-      authorizationService: get<AuthorizationService>(),
+      authorizationService: get<UnnAuthorisationService>(),
     ),
   );
   injector.registerSingleton<UnnMobileApiHelper>(
     () => UnnMobileApiHelper(
-      authorizationService: get<AuthorizationService>(),
+      authorizationService: get<UnnAuthorisationService>(),
     ),
   );
   injector.registerSingleton<WebUnnPortalApiHelper>(
     () => WebUnnPortalApiHelper(
-      authorizationService: get<AuthorizationService>(),
+      authorizationService: get<UnnAuthorisationService>(),
     ),
   );
   injector.registerSingleton<WebUnnMobileApiHelper>(
     () => WebUnnMobileApiHelper(
-      authorizationService: get<AuthorizationService>(),
+      authorizationService: get<UnnAuthorisationService>(),
     ),
   );
 
@@ -231,7 +248,7 @@ void registerDependencies() {
   injector.registerSingleton<AuthorizationRefreshService>(
     () => AuthorizationRefreshServiceImpl(
       get<AuthDataProvider>(),
-      get<AuthorizationService>(),
+      get<UnnAuthorisationService>(),
       get<StorageService>(),
       get<LoggerService>(),
     ),
@@ -322,7 +339,7 @@ void registerDependencies() {
   );
   injector.registerSingleton<GettingBlogPosts>(
     () => GettingBlogPostsImpl(
-      get<AuthorizationService>(),
+      get<UnnAuthorisationService>(),
       get<LoggerService>(),
       getApiHelper(HostType.unnPortal),
     ),
@@ -342,7 +359,7 @@ void registerDependencies() {
 
   injector.registerSingleton<GettingFileData>(
     () => GettingFileDataImpl(
-      get<AuthorizationService>(),
+      get<UnnAuthorisationService>(),
       get<LoggerService>(),
       getApiHelper(HostType.unnPortal),
     ),
@@ -370,7 +387,7 @@ void registerDependencies() {
       get<LoggerService>(),
       get<OnlineStatusData>(),
       get<LastFeedLoadDateTimeProvider>(),
-      get<AuthorizationService>(),
+      get<UnnAuthorisationService>(),
     ),
   );
   injector.registerSingleton<CurrentUserSyncStorage>(
@@ -420,6 +437,20 @@ void registerDependencies() {
     ),
   );
 
+   injector.registerSingleton<DistanceCourseSemesterService>(
+    () => DistanceCourseSemesterServiceImpl(
+      get<LoggerService>(),
+      getApiHelper(HostType.unnSource),
+    ),
+   );
+
+    injector.registerSingleton<DistanceCourseService>(
+    () => DistanceCourseServiceImpl(
+      get<LoggerService>(),
+      getApiHelper(HostType.unnSource),
+    ),
+  );
+
   //
   // Factories
   //
@@ -446,7 +477,7 @@ void registerDependencies() {
 
   injector.registerSingleton<MainPageRoutesViewModelsFactory>(
     () => MainPageRoutesViewModelsFactory(
-      get<AuthorizationService>(),
+      get<UnnAuthorisationService>(),
     ),
   );
 
@@ -472,7 +503,7 @@ void registerDependencies() {
   injector.registerDependency(
     () => AuthPageViewModel(
       get<AuthDataProvider>(),
-      get<AuthorizationService>(),
+      get<UnnAuthorisationService>(),
       get<LoggerService>(),
     ),
   );

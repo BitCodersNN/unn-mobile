@@ -5,13 +5,14 @@ import 'package:flutter/material.dart';
 import 'package:unn_mobile/core/constants/api/ajax_action.dart';
 import 'package:unn_mobile/core/constants/api/path.dart';
 import 'package:unn_mobile/core/constants/session_identifier_strings.dart';
+import 'package:unn_mobile/core/misc/auth/auth_request_result.dart';
 import 'package:unn_mobile/core/misc/custom_errors/auth_errors.dart';
 import 'package:unn_mobile/core/misc/api_helpers/legacy/http_helper.dart';
 import 'package:unn_mobile/core/models/online_status_data.dart';
-import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
+import 'package:unn_mobile/core/services/interfaces/authorisation/unn_authorisation_service.dart';
 
 class LegacyAuthorizationServiceImpl extends ChangeNotifier
-    implements AuthorizationService {
+    implements UnnAuthorisationService {
   final OnlineStatusData _onlineStatus;
   String? _sessionId;
   String? _csrf;

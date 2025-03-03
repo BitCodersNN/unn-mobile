@@ -3,4 +3,5 @@ enum HostType {
   githubRaw,
   unnMobile,
   unnPortal,
+  unnSource,
 }

@@ -28,6 +28,8 @@ abstract class WebAuthenticatedApiHelper extends AuthenticatedApiHelper {
     required authorizationService,
     ProtocolType protocol = ProtocolType.https,
   })  : _baseUrl = '${protocol.name}://$host/',
+        _dioCookie =
+            authorizationService.headers?.remove(_HttpHeaders.cookieKey),
         super(
           authorizationService,
           options: createBaseOptions(
@@ -126,7 +128,7 @@ abstract class WebAuthenticatedApiHelper extends AuthenticatedApiHelper {
   ) {
     final cleanedCookieString = _buildCookieString(options);
     final contentType = options?.contentType ?? dio.options.contentType;
-    final csrf = dio.options.headers[SessionIdentifierStrings.csrfToken];
+    final csrf = dio.options.headers[SessionIdentifierStrings.csrfToken] ?? '';
     final myParams = jsonEncode({...?body, ...?queryParameters});
 
     return {

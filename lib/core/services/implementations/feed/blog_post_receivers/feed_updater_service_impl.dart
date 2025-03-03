@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:unn_mobile/core/models/feed/blog_post_data.dart';
 import 'package:unn_mobile/core/models/online_status_data.dart';
-import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
+import 'package:unn_mobile/core/services/interfaces/authorisation/unn_authorisation_service.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/blog_post_receivers/feed_updater_service.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/legacy/getting_blog_posts.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/providers/last_feed_load_date_time_provider.dart';
@@ -10,7 +10,7 @@ import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 class FeedUpdaterServiceImpl with ChangeNotifier implements FeedUpdaterService {
   final LoggerService _loggerService;
   final OnlineStatusData _onlineStatusData;
-  final AuthorizationService _authorizationService;
+  final UnnAuthorisationService _authorizationService;
   final LastFeedLoadDateTimeProvider _lastLoadDateProvider;
   final GettingBlogPosts _gettingBlogPostsService;
 

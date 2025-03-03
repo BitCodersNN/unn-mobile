@@ -8,6 +8,9 @@ class ApiPath {
   /// Для авторизации с получением куки (через второе доменное имя)
   static const String authWithCookie = 'api/getcookie.php';
 
+  /// Для авторизация на source
+  static const String sourceAuth = 'api/source.php';
+
   /// Для обработки AJAX-запросов
   static const String ajax = 'bitrix/services/main/ajax.php';
 
@@ -53,6 +56,9 @@ class ApiPath {
 
   /// Для скачивания справки
   static const String spravkaDocs = 'spravka/docs';
+
+  /// Для получения url на авторизацию в source unn
+  static const String educationDistance = 'education/distance/';
 
   /// Для получения материалов для дистанционных занятий
   static const String materials = 'ajax/get/materials.php';

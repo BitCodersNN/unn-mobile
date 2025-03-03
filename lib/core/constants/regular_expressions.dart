@@ -9,6 +9,9 @@ class _RegularExpressionSource {
       r'top\.arComDFiles(\d+) = BX\.util\.array_merge\(\(top\.arComDFiles\d+ \|\| \[\]\), \[(.*?)\]';
   static const cookieCleanup = r'^;+|;+$';
   static const leadingSlashes = r'^/+';
+  static const phpsessid = r'PHPSESSID=([^;]+)';
+  static const distanceCourseSemester =
+      r'selectedYear == (\d{4}) && selectedSemester == (\d)';
 }
 
 class RegularExpressions {
@@ -38,5 +41,13 @@ class RegularExpressions {
 
   static final leadingSlashesRegExp = RegExp(
     _RegularExpressionSource.leadingSlashes,
+  );
+
+  static final phpsessidRegExp = RegExp(
+    _RegularExpressionSource.phpsessid,
+  );
+
+  static final distanceCourseSemesterExp = RegExp(
+    _RegularExpressionSource.distanceCourseSemester,
   );
 }
