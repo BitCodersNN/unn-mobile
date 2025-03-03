@@ -40,12 +40,14 @@ abstract class WebAuthenticatedApiHelper extends AuthenticatedApiHelper {
   @override
   @protected
   void onAuthChanged() {
-    final currentHeaders = authorizationService.headers;
-    _dioCookie = currentHeaders?.remove(_HttpHeaders.cookieKey);
-    if (currentHeaders == null) {
-      return;
+    final currentHeaders = Map<String, dynamic>.from(
+      authorizationService.headers ?? {},
+    );
+    _dioCookie = currentHeaders.remove(_HttpHeaders.cookieKey);
+
+    if (currentHeaders.isNotEmpty) {
+      updateHeaders(currentHeaders);
     }
-    updateHeaders(currentHeaders);
   }
 
   @override
