@@ -1,18 +1,19 @@
 import 'package:flutter/services.dart';
+import 'package:unn_mobile/core/misc/auth/auth_request_result.dart';
 import 'package:unn_mobile/core/services/interfaces/auth_data_provider.dart';
-import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
+import 'package:unn_mobile/core/services/interfaces/authorisation/unn_authorisation_service.dart';
 import 'package:unn_mobile/core/models/auth_data.dart';
-import 'package:unn_mobile/core/services/interfaces/authorisation_refresh_service.dart';
+import 'package:unn_mobile/core/services/interfaces/authorisation/authorisation_refresh_service.dart';
 import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 import 'package:unn_mobile/core/services/interfaces/storage_service.dart';
 
-class AuthorizationRefreshServiceImpl implements AuthorizationRefreshService {
+class AuthorisationRefreshServiceImpl implements AuthorisationRefreshService {
   final AuthDataProvider _authDataProvider;
-  final AuthorizationService _authorisationService;
+  final UnnAuthorisationService _authorisationService;
   final StorageService _storage;
   final LoggerService _loggerService;
 
-  AuthorizationRefreshServiceImpl(
+  AuthorisationRefreshServiceImpl(
     this._authDataProvider,
     this._authorisationService,
     this._storage,

@@ -3,7 +3,7 @@ import 'dart:collection';
 
 import 'package:flutter/material.dart';
 import 'package:unn_mobile/core/misc/date_time_utilities/date_time_ranges.dart';
-import 'package:unn_mobile/core/misc/try_login_and_retrieve_data.dart';
+import 'package:unn_mobile/core/misc/auth/try_login_and_retrieve_data.dart';
 import 'package:unn_mobile/core/models/online_status_data.dart';
 import 'package:unn_mobile/core/models/schedule_filter.dart';
 import 'package:unn_mobile/core/models/schedule_search_suggestion_item.dart';

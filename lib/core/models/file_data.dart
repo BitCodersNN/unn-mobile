@@ -17,7 +17,7 @@ class FileData {
   final int sizeInBytes;
   final String downloadUrl;
 
-  FileData._({
+  FileData({
     required this.id,
     required this.name,
     required this.sizeInBytes,
@@ -26,7 +26,7 @@ class FileData {
 
   factory FileData.fromJson(Map<String, Object?> jsonMap) {
     final fileName = jsonMap[_KeysForFileDataJsonConverter.name] as String;
-    return FileData._(
+    return FileData(
       id: fileName.hashCode,
       name: fileName,
       sizeInBytes: int.parse(
@@ -43,7 +43,7 @@ class FileData {
       };
 
   factory FileData.fromJsonLegacy(Map<String, Object?> jsonMap) {
-    return FileData._(
+    return FileData(
       id: int.parse(jsonMap[_KeysForFileDataJsonConverterLegacy.id] as String),
       name: jsonMap[_KeysForFileDataJsonConverterLegacy.name] as String,
       sizeInBytes: int.parse(

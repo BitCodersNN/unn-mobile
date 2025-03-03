@@ -1,7 +1,8 @@
 import 'package:injector/injector.dart';
+import 'package:unn_mobile/core/misc/auth/auth_request_result.dart';
 import 'package:unn_mobile/core/models/online_status_data.dart';
-import 'package:unn_mobile/core/services/interfaces/authorisation_refresh_service.dart';
-import 'package:unn_mobile/core/services/interfaces/authorisation_service.dart';
+import 'package:unn_mobile/core/services/interfaces/authorisation/authorisation_refresh_service.dart';
+import 'package:unn_mobile/core/services/interfaces/authorisation/unn_authorisation_service.dart';
 import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 
 /// Получает данные или от функции, требующей доступ к серверу, или от функции, использующей локальное хранилище
@@ -9,10 +10,10 @@ import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
 /// Возвращает данные полученные от [online], если есть интернет и сервер работает, иначе возвращает [offline]
 Future<T?> tryLoginAndRetrieveData<T>(Function online, Function offline) async {
   final LoggerService loggerService = Injector.appInstance.get<LoggerService>();
-  final AuthorizationService authorisationService =
-      Injector.appInstance.get<AuthorizationService>();
-  final AuthorizationRefreshService authorisationRefreshService =
-      Injector.appInstance.get<AuthorizationRefreshService>();
+  final UnnAuthorisationService authorisationService =
+      Injector.appInstance.get<UnnAuthorisationService>();
+  final AuthorisationRefreshService authorisationRefreshService =
+      Injector.appInstance.get<AuthorisationRefreshService>();
   final OnlineStatusData onlineStatus =
       Injector.appInstance.get<OnlineStatusData>();
 

@@ -22,6 +22,7 @@ class FirebaseLogger implements LoggerService {
       exception,
       stack,
       fatal: fatal,
+      information: information,
       printDetails: true,
       reason: reason,
     );

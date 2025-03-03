@@ -32,19 +32,22 @@ abstract class WebAuthenticatedApiHelper extends AuthenticatedApiHelper {
           authorizationService,
           options: createBaseOptions(
             host: HostWithBasePath.redirect,
-            headers: authorizationService.headers,
           ),
-        );
+        ) {
+    onAuthChanged();
+  }
 
   @override
   @protected
   void onAuthChanged() {
-    final currentHeaders = authorizationService.headers;
-    _dioCookie = currentHeaders?.remove(_HttpHeaders.cookieKey);
-    if (currentHeaders == null) {
-      return;
+    final currentHeaders = Map<String, dynamic>.from(
+      authorizationService.headers ?? {},
+    );
+    _dioCookie = currentHeaders.remove(_HttpHeaders.cookieKey);
+
+    if (currentHeaders.isNotEmpty) {
+      updateHeaders(currentHeaders);
     }
-    updateHeaders(currentHeaders);
   }
 
   @override
@@ -126,7 +129,7 @@ abstract class WebAuthenticatedApiHelper extends AuthenticatedApiHelper {
   ) {
     final cleanedCookieString = _buildCookieString(options);
     final contentType = options?.contentType ?? dio.options.contentType;
-    final csrf = dio.options.headers[SessionIdentifierStrings.csrfToken];
+    final csrf = dio.options.headers[SessionIdentifierStrings.csrfToken] ?? '';
     final myParams = jsonEncode({...?body, ...?queryParameters});
 
     return {
