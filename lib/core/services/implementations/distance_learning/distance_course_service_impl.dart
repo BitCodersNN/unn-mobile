@@ -36,8 +36,6 @@ class DistanceCourseServiceImpl implements DistanceCourseService {
           _QueryParamNames.year: year,
         },
         options: Options(
-          sendTimeout: const Duration(seconds: 5),
-          receiveTimeout: const Duration(seconds: 5),
           responseType: ResponseType.plain,
         ),
       );

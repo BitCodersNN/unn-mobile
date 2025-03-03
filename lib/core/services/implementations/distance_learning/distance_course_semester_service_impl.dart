@@ -1,6 +1,8 @@
 import 'package:dio/dio.dart';
 import 'package:unn_mobile/core/constants/regular_expressions.dart';
 import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
+import 'package:unn_mobile/core/misc/dio_interceptor/response_data_type.dart';
+import 'package:unn_mobile/core/misc/dio_options_factory/options_with_timeout_and_expected_type_factory.dart';
 import 'package:unn_mobile/core/models/distance_learning/semester.dart';
 import 'package:unn_mobile/core/services/interfaces/distance_learning/distance_course_semester_service.dart';
 import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
@@ -21,9 +23,9 @@ class DistanceCourseSemesterServiceImpl
     try {
       response = await _apiHelper.get(
         path: '',
-        options: Options(
-          sendTimeout: const Duration(seconds: 10),
-          receiveTimeout: const Duration(seconds: 10),
+        options: OptionsWithTimeoutAndExpectedTypeFactory.options(
+          10,
+          ResponseDataType.string,
         ),
       );
     } catch (exception, stackTrace) {
@@ -34,7 +36,7 @@ class DistanceCourseSemesterServiceImpl
     final matches = RegularExpressions.distanceCourseSemesterExp.allMatches(
       response.data,
     );
-    
+
     try {
       return _parseSemesters(matches);
     } catch (exception, stackTrace) {
