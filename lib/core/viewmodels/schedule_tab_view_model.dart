@@ -3,28 +3,28 @@ import 'dart:collection';
 
 import 'package:flutter/material.dart';
 import 'package:unn_mobile/core/misc/date_time_utilities/date_time_ranges.dart';
-import 'package:unn_mobile/core/misc/auth/try_login_and_retrieve_data.dart';
-import 'package:unn_mobile/core/models/online_status_data.dart';
-import 'package:unn_mobile/core/models/schedule_filter.dart';
-import 'package:unn_mobile/core/models/schedule_search_suggestion_item.dart';
-import 'package:unn_mobile/core/models/student_data.dart';
-import 'package:unn_mobile/core/models/subject.dart';
-import 'package:unn_mobile/core/services/interfaces/export_schedule_service.dart';
-import 'package:unn_mobile/core/services/interfaces/getting_profile_of_current_user_service.dart';
-import 'package:unn_mobile/core/services/interfaces/getting_schedule_service.dart';
-import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
-import 'package:unn_mobile/core/services/interfaces/offline_schedule_provider.dart';
-import 'package:unn_mobile/core/services/interfaces/schedule_search_history_service.dart';
-import 'package:unn_mobile/core/services/interfaces/search_id_on_portal_service.dart';
+import 'package:unn_mobile/core/misc/authorisation/try_login_and_retrieve_data.dart';
+import 'package:unn_mobile/core/models/common/online_status_data.dart';
+import 'package:unn_mobile/core/models/schedule/schedule_filter.dart';
+import 'package:unn_mobile/core/models/schedule/schedule_search_suggestion_item.dart';
+import 'package:unn_mobile/core/models/profile/student_data.dart';
+import 'package:unn_mobile/core/models/schedule/subject.dart';
+import 'package:unn_mobile/core/services/interfaces/schedule/export_schedule_service.dart';
+import 'package:unn_mobile/core/services/interfaces/profile/profile_of_current_user_service.dart';
+import 'package:unn_mobile/core/services/interfaces/schedule/schedule_service.dart';
+import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
+import 'package:unn_mobile/core/providers/interfaces/schedule/offline_schedule_provider.dart';
+import 'package:unn_mobile/core/services/interfaces/schedule/schedule_search_history_service.dart';
+import 'package:unn_mobile/core/services/interfaces/common/search_id_on_portal_service.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
 
 class ScheduleTabViewModel extends BaseViewModel {
   final int minValueLenForFindId = 3;
 
-  final GettingScheduleService _getScheduleService;
+  final ScheduleService _getScheduleService;
   final SearchIdOnPortalService _searchIdOnPortalService;
   final OfflineScheduleProvider _offlineScheduleProvider;
-  final GettingProfileOfCurrentUser _gettingProfileOfCurrentUser;
+  final ProfileOfCurrentUserService _gettingProfileOfCurrentUser;
   final ScheduleSearchHistoryService _historyService;
   final OnlineStatusData _onlineStatusData;
   final ExportScheduleService _exportScheduleService;

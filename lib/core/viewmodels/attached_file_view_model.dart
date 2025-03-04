@@ -3,10 +3,10 @@ import 'dart:io';
 import 'package:injector/injector.dart';
 import 'package:path/path.dart' as path;
 import 'package:unn_mobile/core/misc/file_helpers/size_converter.dart';
-import 'package:unn_mobile/core/models/file_data.dart';
+import 'package:unn_mobile/core/models/common/file_data.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/feed_file_downloader_service.dart';
-import 'package:unn_mobile/core/services/interfaces/getting_file_data.dart';
-import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
+import 'package:unn_mobile/core/services/interfaces/common/file_data_service.dart';
+import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/factories/attached_file_view_model_factory.dart';
 
@@ -31,7 +31,7 @@ class AttachedFileViewModel extends BaseViewModel {
   /// Глобальный набор файлов, которые сейчас грузятся
   static final Map<int, Future<File?>> _pendingFileDownloads = {};
 
-  final GettingFileData _fileDataService;
+  final FileDataService _fileDataService;
   final LoggerService _loggerService;
   final FeedFileDownloaderService _feedFileDownloaderService;
 

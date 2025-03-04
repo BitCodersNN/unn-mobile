@@ -1,19 +1,19 @@
 import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/misc/current_user_sync_storage.dart';
 import 'package:unn_mobile/core/misc/user_functions.dart';
-import 'package:unn_mobile/core/models/student_data.dart';
-import 'package:unn_mobile/core/models/user_data.dart';
-import 'package:unn_mobile/core/models/user_short_info.dart';
-import 'package:unn_mobile/core/services/interfaces/getting_profile.dart';
-import 'package:unn_mobile/core/services/interfaces/getting_profile_of_current_user_service.dart';
-import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
+import 'package:unn_mobile/core/models/profile/student_data.dart';
+import 'package:unn_mobile/core/models/profile/user_data.dart';
+import 'package:unn_mobile/core/models/profile/user_short_info.dart';
+import 'package:unn_mobile/core/services/interfaces/profile/profile_service.dart';
+import 'package:unn_mobile/core/services/interfaces/profile/profile_of_current_user_service.dart';
+import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/factories/profile_view_model_factory.dart';
 
 class ProfileViewModel extends BaseViewModel {
-  final GettingProfileOfCurrentUser _getCurrentUserService;
+  final ProfileOfCurrentUserService _getCurrentUserService;
   final CurrentUserSyncStorage _currentUserSyncStorage;
-  final GettingProfile _getProfileService;
+  final ProfileService _getProfileService;
   final LoggerService _loggerService;
 
   bool _isLoading = false;

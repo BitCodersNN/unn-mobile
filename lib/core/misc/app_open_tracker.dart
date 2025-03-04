@@ -1,5 +1,5 @@
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:unn_mobile/core/services/interfaces/storage_service.dart';
+import 'package:unn_mobile/core/services/interfaces/common/storage_service.dart';
 
 class _AppOpenTrackerProviderKeys {
   static const _firstAppOpen = 'firs_app_open';

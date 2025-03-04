@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:injector/injector.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
+import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
 import 'package:path/path.dart' as p;
 
 Future<String?> getDownloadPath() async {

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:unn_mobile/core/misc/auth/auth_request_result.dart';
+import 'package:unn_mobile/core/misc/authorisation/authorisation_request_result.dart';
 
 abstract interface class AuthorisationService extends Listenable {
   String? get sessionId;

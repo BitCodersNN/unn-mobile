@@ -5,19 +5,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:go_router/go_router.dart';
 import 'package:unn_mobile/core/misc/app_open_tracker.dart';
-import 'package:unn_mobile/core/misc/auth/auth_request_result.dart';
+import 'package:unn_mobile/core/misc/authorisation/authorisation_request_result.dart';
 import 'package:unn_mobile/core/misc/current_user_sync_storage.dart';
 import 'package:unn_mobile/core/misc/date_time_utilities/date_time_extensions.dart';
-import 'package:unn_mobile/core/models/loading_page_data.dart';
+import 'package:unn_mobile/core/models/loading_page/loading_page_data.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation/authorisation_refresh_service.dart';
-import 'package:unn_mobile/core/services/interfaces/getting_profile_of_current_user_service.dart';
-import 'package:unn_mobile/core/services/interfaces/loading_page/last_commit_sha.dart';
-import 'package:unn_mobile/core/services/interfaces/loading_page/last_commit_sha_provider.dart';
-import 'package:unn_mobile/core/services/interfaces/loading_page/loading_page_config.dart';
-import 'package:unn_mobile/core/services/interfaces/loading_page/loading_page_provider.dart';
+import 'package:unn_mobile/core/services/interfaces/profile/profile_of_current_user_service.dart';
+import 'package:unn_mobile/core/services/interfaces/loading_page/last_commit_sha_service.dart';
+import 'package:unn_mobile/core/providers/interfaces/loading_page/last_commit_sha_provider.dart';
+import 'package:unn_mobile/core/services/interfaces/loading_page/loading_page_config_service.dart';
+import 'package:unn_mobile/core/providers/interfaces/loading_page/loading_page_provider.dart';
 import 'package:unn_mobile/core/services/interfaces/loading_page/logo_downloader_service.dart';
-import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
-import 'package:unn_mobile/core/services/interfaces/user_data_provider.dart';
+import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
+import 'package:unn_mobile/core/providers/interfaces/profile/user_data_provider.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
 import 'package:unn_mobile/ui/router.dart';
 
@@ -30,7 +30,7 @@ class LoadingPageViewModel extends BaseViewModel {
   final LastCommitShaProvider _lastCommitShaProvider;
   final LoadingPageProvider _loadingPageProvider;
   final CurrentUserSyncStorage _typeOfCurrentUser;
-  final GettingProfileOfCurrentUser _gettingProfileOfCurrentUser;
+  final ProfileOfCurrentUserService _gettingProfileOfCurrentUser;
   final UserDataProvider _userDataProvider;
   final AppOpenTracker _appOpenTracker;
 

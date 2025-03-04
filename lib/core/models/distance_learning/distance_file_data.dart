@@ -1,7 +1,7 @@
 import 'package:unn_mobile/core/constants/api/host_with_base_path.dart';
 import 'package:unn_mobile/core/constants/api/protocol_type.dart';
 import 'package:unn_mobile/core/models/distance_learning/distance_material_data.dart';
-import 'package:unn_mobile/core/models/file_data.dart';
+import 'package:unn_mobile/core/models/common/file_data.dart';
 
 class _KeysForFileDataJsonConverter {
   static const String id = 'id';

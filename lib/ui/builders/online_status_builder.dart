@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:injector/injector.dart';
-import 'package:unn_mobile/core/models/online_status_data.dart';
+import 'package:unn_mobile/core/models/common/online_status_data.dart';
 
 /// Данный виджет отслеживает состояние онлайн/оффлайн
 /// и перерисовывается в соответствии с этим состоянием.

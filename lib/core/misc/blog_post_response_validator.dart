@@ -1,4 +1,4 @@
-import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
+import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
 
 class _ResponseDataJsonKeys {
   static const String status = 'status';
