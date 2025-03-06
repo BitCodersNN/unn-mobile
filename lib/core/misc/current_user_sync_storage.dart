@@ -1,12 +1,12 @@
-import 'package:unn_mobile/core/models/student_data.dart';
-import 'package:unn_mobile/core/models/employee_data.dart';
-import 'package:unn_mobile/core/models/user_data.dart';
-import 'package:unn_mobile/core/services/interfaces/getting_profile_of_current_user_service.dart';
-import 'package:unn_mobile/core/services/interfaces/user_data_provider.dart';
+import 'package:unn_mobile/core/models/profile/student_data.dart';
+import 'package:unn_mobile/core/models/profile/employee_data.dart';
+import 'package:unn_mobile/core/models/profile/user_data.dart';
+import 'package:unn_mobile/core/services/interfaces/profile/profile_of_current_user_service.dart';
+import 'package:unn_mobile/core/providers/interfaces/profile/user_data_provider.dart';
 
 class CurrentUserSyncStorage {
   final UserDataProvider _userDataProvider;
-  final GettingProfileOfCurrentUser _gettingProfileOfCurrentUser;
+  final ProfileOfCurrentUserService _gettingProfileOfCurrentUser;
 
   UserData? _currentUserData;
 

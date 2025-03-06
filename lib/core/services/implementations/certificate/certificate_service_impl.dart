@@ -4,7 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:unn_mobile/core/constants/api/path.dart';
 import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/models/certificate/certificates.dart';
-import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
+import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
 import 'package:unn_mobile/core/services/interfaces/certificate/certificates_service.dart';
 
 class CertificatesServiceImpl implements CertificatesService {

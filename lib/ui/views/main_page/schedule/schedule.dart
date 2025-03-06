@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:injector/injector.dart';
-import 'package:unn_mobile/core/models/schedule_filter.dart';
+import 'package:unn_mobile/core/models/schedule/schedule_filter.dart';
 import 'package:unn_mobile/core/viewmodels/factories/main_page_routes_view_models_factory.dart';
 import 'package:unn_mobile/core/viewmodels/schedule_screen_view_model.dart';
 import 'package:unn_mobile/ui/builders/online_status_builder.dart';

@@ -1,7 +1,7 @@
 import 'package:unn_mobile/core/models/feed/blog_post_comment_data.dart';
-import 'package:unn_mobile/core/models/file_data.dart';
-import 'package:unn_mobile/core/models/rating_list.dart';
-import 'package:unn_mobile/core/models/user_short_info.dart';
+import 'package:unn_mobile/core/models/common/file_data.dart';
+import 'package:unn_mobile/core/models/feed/rating_list.dart';
+import 'package:unn_mobile/core/models/profile/user_short_info.dart';
 
 class _KeysForBlogPostCommentDataWithRatings {
   static const String author = 'author';

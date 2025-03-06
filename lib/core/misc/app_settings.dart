@@ -1,6 +1,6 @@
 import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/constants/app_settings_keys.dart';
-import 'package:unn_mobile/core/services/interfaces/storage_service.dart';
+import 'package:unn_mobile/core/services/interfaces/common/storage_service.dart';
 
 class AppSettings {
   static bool vibrationEnabled = true;

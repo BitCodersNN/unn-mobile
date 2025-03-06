@@ -1,6 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:unn_mobile/core/models/rating_list.dart';
+import 'package:unn_mobile/core/models/feed/rating_list.dart';
 import 'package:unn_mobile/core/viewmodels/feed_comment_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/profile_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/reaction_view_model.dart';

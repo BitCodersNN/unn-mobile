@@ -1,4 +1,4 @@
-import 'package:unn_mobile/core/misc/auth/auth_request_result.dart';
+import 'package:unn_mobile/core/misc/authorisation/authorisation_request_result.dart';
 
 extension AuthRequestResultErrorMessages on AuthRequestResult {
   String get errorMessage => switch (this) {

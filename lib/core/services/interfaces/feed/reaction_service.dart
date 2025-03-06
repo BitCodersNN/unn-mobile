@@ -1,5 +1,5 @@
-import 'package:unn_mobile/core/models/rating_list.dart';
-import 'package:unn_mobile/core/models/user_short_info.dart';
+import 'package:unn_mobile/core/models/feed/rating_list.dart';
+import 'package:unn_mobile/core/models/profile/user_short_info.dart';
 
 abstract interface class ReactionService {
   /// Добавление реакции

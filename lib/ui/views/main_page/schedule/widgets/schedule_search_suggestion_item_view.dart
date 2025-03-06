@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:unn_mobile/core/models/schedule_search_suggestion_item.dart';
+import 'package:unn_mobile/core/models/schedule/schedule_search_suggestion_item.dart';
 
 class ScheduleSearchSuggestionItemView extends StatelessWidget {
   final ScheduleSearchSuggestionItem model;

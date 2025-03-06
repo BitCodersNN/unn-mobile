@@ -6,11 +6,11 @@ import 'package:unn_mobile/core/constants/regular_expressions.dart';
 import 'package:unn_mobile/core/constants/session_identifier_strings.dart';
 import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/misc/api_helpers/base_options_factory.dart';
-import 'package:unn_mobile/core/misc/auth/auth_request_result.dart';
-import 'package:unn_mobile/core/misc/auth/authorisation_helper.dart';
-import 'package:unn_mobile/core/models/online_status_data.dart';
+import 'package:unn_mobile/core/misc/authorisation/authorisation_request_result.dart';
+import 'package:unn_mobile/core/misc/authorisation/authorisation_helper.dart';
+import 'package:unn_mobile/core/models/common/online_status_data.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation/source_authorisation_service.dart';
-import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
+import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
 
 class _FormDataKeys {
   static const String login = 'login';

@@ -13,15 +13,15 @@ import 'package:unn_mobile/core/misc/api_helpers/final/web_unn_source_api_helper
 import 'package:unn_mobile/core/misc/app_open_tracker.dart';
 import 'package:unn_mobile/core/misc/current_user_sync_storage.dart';
 import 'package:unn_mobile/core/models/feed/blog_post_type.dart';
-import 'package:unn_mobile/core/models/online_status_data.dart';
-import 'package:unn_mobile/core/services/implementations/auth_data_provider_impl.dart';
+import 'package:unn_mobile/core/models/common/online_status_data.dart';
+import 'package:unn_mobile/core/providers/implementations/authorisation/authorisation_data_provider_impl.dart';
 import 'package:unn_mobile/core/services/implementations/authorisation/source_authorisation_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/authorisation/unn_authorisation_refresh_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/authorisation/unn_authorisation_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/certificate/certificate_downloader_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/distance_learning/distance_course_semester_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/distance_learning/distance_course_service_impl.dart';
-import 'package:unn_mobile/core/services/implementations/export_schedule_service_impl.dart';
+import 'package:unn_mobile/core/services/implementations/schedule/export_schedule_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/feed/blog_post_receivers/blog_post_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/feed/blog_post_receivers/featured_blog_posts_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/feed/blog_post_receivers/regular_blog_posts_service_impl.dart';
@@ -29,40 +29,40 @@ import 'package:unn_mobile/core/services/implementations/feed/featured_blog_post
 import 'package:unn_mobile/core/services/implementations/feed/featured_blog_post_action/important_blog_post_users_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/feed/featured_blog_post_action/pinning_blog_post_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/feed/feed_file_downloader_service_impl.dart';
-import 'package:unn_mobile/core/services/implementations/feed/providers/blog_post_provider_impl.dart';
-import 'package:unn_mobile/core/services/implementations/firebase_logger.dart';
+import 'package:unn_mobile/core/providers/implementations/feed/blog_post_provider_impl.dart';
+import 'package:unn_mobile/core/services/implementations/common/firebase_logger_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/feed/legacy/getting_blog_post_comments_impl.dart';
 import 'package:unn_mobile/core/services/implementations/feed/legacy/getting_blog_posts_impl.dart';
-import 'package:unn_mobile/core/services/implementations/getting_file_data_impl.dart';
-import 'package:unn_mobile/core/services/implementations/getting_grade_book_impl.dart';
-import 'package:unn_mobile/core/services/implementations/getting_profile_impl.dart';
-import 'package:unn_mobile/core/services/implementations/getting_profile_of_current_user_service_impl.dart';
+import 'package:unn_mobile/core/services/implementations/common/file_data_service_impl.dart';
+import 'package:unn_mobile/core/services/implementations/grade_book/grade_book_service_impl.dart';
+import 'package:unn_mobile/core/services/implementations/profile/profile_service_impl.dart';
+import 'package:unn_mobile/core/services/implementations/profile/profile_of_current_user_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/feed/legacy/getting_rating_list_impl.dart';
-import 'package:unn_mobile/core/services/implementations/getting_schedule_service_impl.dart';
+import 'package:unn_mobile/core/services/implementations/schedule/schedule_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/feed/legacy/getting_vote_key_signed_impl.dart';
-import 'package:unn_mobile/core/services/implementations/feed/providers/last_feed_load_date_time_provider_impl.dart';
-import 'package:unn_mobile/core/services/implementations/loading_page/last_commit_sha_impl.dart';
-import 'package:unn_mobile/core/services/implementations/loading_page/last_commit_sha_provider_impl.dart';
-import 'package:unn_mobile/core/services/implementations/loading_page/loading_page_config.dart';
-import 'package:unn_mobile/core/services/implementations/loading_page/loading_page_provider_impl.dart';
+import 'package:unn_mobile/core/providers/implementations/feed/last_feed_load_date_time_provider_impl.dart';
+import 'package:unn_mobile/core/services/implementations/loading_page/last_commit_sha_service_impl.dart';
+import 'package:unn_mobile/core/providers/implementations/loading_page/last_commit_sha_provider_impl.dart';
+import 'package:unn_mobile/core/services/implementations/loading_page/loading_page_config_service_impl.dart';
+import 'package:unn_mobile/core/providers/implementations/loading_page/loading_page_provider_impl.dart';
 import 'package:unn_mobile/core/services/implementations/loading_page/logo_downloader_service_impl.dart';
-import 'package:unn_mobile/core/services/implementations/mark_by_subject_provider_impl.dart';
-import 'package:unn_mobile/core/services/implementations/offline_schedule_provider_impl.dart';
+import 'package:unn_mobile/core/providers/implementations/grade_book/mark_by_subject_provider_impl.dart';
+import 'package:unn_mobile/core/providers/implementations/schedule/offline_schedule_provider_impl.dart';
 import 'package:unn_mobile/core/services/implementations/feed/reaction_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/certificate/certificate_path_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/certificate/certificate_service_impl.dart';
-import 'package:unn_mobile/core/services/implementations/schedule_search_history_service_impl.dart';
-import 'package:unn_mobile/core/services/implementations/search_id_on_portal_service_impl.dart';
-import 'package:unn_mobile/core/services/implementations/storage_service_impl.dart';
-import 'package:unn_mobile/core/services/implementations/user_data_provider_impl.dart';
-import 'package:unn_mobile/core/services/interfaces/auth_data_provider.dart';
+import 'package:unn_mobile/core/services/implementations/schedule/schedule_search_history_service_impl.dart';
+import 'package:unn_mobile/core/services/implementations/common/search_id_on_portal_service_impl.dart';
+import 'package:unn_mobile/core/services/implementations/common/storage_service_impl.dart';
+import 'package:unn_mobile/core/providers/implementations/profile/user_data_provider_impl.dart';
+import 'package:unn_mobile/core/providers/interfaces/authorisation/auth_data_provider.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation/authorisation_refresh_service.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation/source_authorisation_service.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation/unn_authorisation_service.dart';
 import 'package:unn_mobile/core/services/interfaces/certificate/certificate_downloader_service.dart';
 import 'package:unn_mobile/core/services/interfaces/distance_learning/distance_course_semester_service.dart';
 import 'package:unn_mobile/core/services/interfaces/distance_learning/distance_course_service.dart';
-import 'package:unn_mobile/core/services/interfaces/export_schedule_service.dart';
+import 'package:unn_mobile/core/services/interfaces/schedule/export_schedule_service.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/blog_post_receivers/blog_post_service.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/blog_post_receivers/featured_blog_post_service.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/featured_blog_post_action/important_blog_post_acknowledgement_service.dart';
@@ -72,30 +72,30 @@ import 'package:unn_mobile/core/services/interfaces/feed/blog_post_receivers/reg
 import 'package:unn_mobile/core/services/interfaces/feed/legacy/getting_blog_post_comments.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/legacy/getting_blog_posts.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/feed_file_downloader_service.dart';
-import 'package:unn_mobile/core/services/interfaces/feed/providers/blog_post_provider.dart';
-import 'package:unn_mobile/core/services/interfaces/getting_file_data.dart';
-import 'package:unn_mobile/core/services/interfaces/getting_grade_book.dart';
-import 'package:unn_mobile/core/services/interfaces/getting_profile.dart';
-import 'package:unn_mobile/core/services/interfaces/getting_profile_of_current_user_service.dart';
+import 'package:unn_mobile/core/providers/interfaces/feed/blog_post_provider.dart';
+import 'package:unn_mobile/core/services/interfaces/common/file_data_service.dart';
+import 'package:unn_mobile/core/services/interfaces/grade_book/grade_book_service.dart';
+import 'package:unn_mobile/core/services/interfaces/profile/profile_service.dart';
+import 'package:unn_mobile/core/services/interfaces/profile/profile_of_current_user_service.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/legacy/getting_rating_list.dart';
-import 'package:unn_mobile/core/services/interfaces/getting_schedule_service.dart';
+import 'package:unn_mobile/core/services/interfaces/schedule/schedule_service.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/legacy/getting_vote_key_signed.dart';
-import 'package:unn_mobile/core/services/interfaces/feed/providers/last_feed_load_date_time_provider.dart';
-import 'package:unn_mobile/core/services/interfaces/loading_page/last_commit_sha.dart';
-import 'package:unn_mobile/core/services/interfaces/loading_page/last_commit_sha_provider.dart';
-import 'package:unn_mobile/core/services/interfaces/loading_page/loading_page_config.dart';
-import 'package:unn_mobile/core/services/interfaces/loading_page/loading_page_provider.dart';
+import 'package:unn_mobile/core/providers/interfaces/feed/last_feed_load_date_time_provider.dart';
+import 'package:unn_mobile/core/services/interfaces/loading_page/last_commit_sha_service.dart';
+import 'package:unn_mobile/core/providers/interfaces/loading_page/last_commit_sha_provider.dart';
+import 'package:unn_mobile/core/services/interfaces/loading_page/loading_page_config_service.dart';
+import 'package:unn_mobile/core/providers/interfaces/loading_page/loading_page_provider.dart';
 import 'package:unn_mobile/core/services/interfaces/loading_page/logo_downloader_service.dart';
-import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
-import 'package:unn_mobile/core/services/interfaces/mark_by_subject_provider.dart';
-import 'package:unn_mobile/core/services/interfaces/offline_schedule_provider.dart';
+import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
+import 'package:unn_mobile/core/providers/interfaces/grade_book/mark_by_subject_provider.dart';
+import 'package:unn_mobile/core/providers/interfaces/schedule/offline_schedule_provider.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/reaction_service.dart';
 import 'package:unn_mobile/core/services/interfaces/certificate/certificate_path_service.dart';
 import 'package:unn_mobile/core/services/interfaces/certificate/certificates_service.dart';
-import 'package:unn_mobile/core/services/interfaces/schedule_search_history_service.dart';
-import 'package:unn_mobile/core/services/interfaces/search_id_on_portal_service.dart';
-import 'package:unn_mobile/core/services/interfaces/storage_service.dart';
-import 'package:unn_mobile/core/services/interfaces/user_data_provider.dart';
+import 'package:unn_mobile/core/services/interfaces/schedule/schedule_search_history_service.dart';
+import 'package:unn_mobile/core/services/interfaces/common/search_id_on_portal_service.dart';
+import 'package:unn_mobile/core/services/interfaces/common/storage_service.dart';
+import 'package:unn_mobile/core/providers/interfaces/profile/user_data_provider.dart';
 import 'package:unn_mobile/core/viewmodels/auth_page_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/certificate_item_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/certificates_view_model.dart';
@@ -146,7 +146,7 @@ void registerDependencies() {
   // Services
   //
 
-  injector.registerSingleton<LoggerService>(() => FirebaseLogger());
+  injector.registerSingleton<LoggerService>(() => FirebaseLoggerServiceImpl());
   injector.registerSingleton<OnlineStatusData>(() => OnlineStatusData());
 
   injector.registerSingleton<StorageService>(() => StorageServiceImpl());
@@ -250,7 +250,7 @@ void registerDependencies() {
     ),
   );
   injector.registerSingleton<AuthDataProvider>(
-    () => AuthDataProviderImpl(
+    () => AuthorisationDataProviderImpl(
       get<StorageService>(),
     ),
   );
@@ -262,21 +262,21 @@ void registerDependencies() {
       get<LoggerService>(),
     ),
   );
-  injector.registerSingleton<GettingProfileOfCurrentUser>(
-    () => GettingProfileOfCurrentUserImpl(
+  injector.registerSingleton<ProfileOfCurrentUserService>(
+    () => ProfileOfCurrentUserServiceImpl(
       get<LoggerService>(),
       getApiHelper(HostType.unnPortal),
     ),
   );
   injector.registerSingleton<SearchIdOnPortalService>(
     () => SearchIdOnPortalServiceImpl(
-      get<GettingProfileOfCurrentUser>(),
+      get<ProfileOfCurrentUserService>(),
       get<LoggerService>(),
       getApiHelper(HostType.unnPortal),
     ),
   );
-  injector.registerSingleton<GettingScheduleService>(
-    () => GettingScheduleServiceImpl(
+  injector.registerSingleton<ScheduleService>(
+    () => ScheduleServiceImpl(
       get<LoggerService>(),
       getApiHelper(HostType.unnPortal),
     ),
@@ -359,15 +359,15 @@ void registerDependencies() {
       getApiHelper(HostType.unnPortal),
     ),
   );
-  injector.registerSingleton<GettingProfile>(
-    () => GettingProfileImpl(
+  injector.registerSingleton<ProfileService>(
+    () => ProfileServiceImpl(
       get<LoggerService>(),
       getApiHelper(HostType.unnPortal),
     ),
   );
 
-  injector.registerSingleton<GettingFileData>(
-    () => GettingFileDataImpl(
+  injector.registerSingleton<FileDataService>(
+    () => FileDataServiceImpl(
       get<UnnAuthorisationService>(),
       get<LoggerService>(),
       getApiHelper(HostType.unnPortal),
@@ -393,11 +393,11 @@ void registerDependencies() {
   injector.registerSingleton<CurrentUserSyncStorage>(
     () => CurrentUserSyncStorage(
       get<UserDataProvider>(),
-      get<GettingProfileOfCurrentUser>(),
+      get<ProfileOfCurrentUserService>(),
     ),
   );
-  injector.registerSingleton<GettingGradeBook>(
-    () => GettingGradeBookImpl(
+  injector.registerSingleton<GradeBookService>(
+    () => GradeBookServiceImpl(
       get<LoggerService>(),
       getApiHelper(HostType.unnPortal),
     ),
@@ -495,7 +495,7 @@ void registerDependencies() {
       get<LastCommitShaProvider>(),
       get<LoadingPageProvider>(),
       get<CurrentUserSyncStorage>(),
-      get<GettingProfileOfCurrentUser>(),
+      get<ProfileOfCurrentUserService>(),
       get<UserDataProvider>(),
       get<AppOpenTracker>(),
     ),
@@ -514,10 +514,10 @@ void registerDependencies() {
   );
   injector.registerDependency(
     () => ScheduleTabViewModel(
-      get<GettingScheduleService>(),
+      get<ScheduleService>(),
       get<SearchIdOnPortalService>(),
       get<OfflineScheduleProvider>(),
-      get<GettingProfileOfCurrentUser>(),
+      get<ProfileOfCurrentUserService>(),
       get<ScheduleSearchHistoryService>(),
       get<OnlineStatusData>(),
       get<ExportScheduleService>(),
@@ -543,7 +543,7 @@ void registerDependencies() {
   );
   injector.registerDependency(
     () => GradesScreenViewModel(
-      get<GettingGradeBook>(),
+      get<GradeBookService>(),
       get<MarkBySubjectProvider>(),
     ),
   );
