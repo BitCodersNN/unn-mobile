@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:injector/injector.dart';
-import 'package:unn_mobile/core/services/interfaces/logger_service.dart';
+import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class AboutScreenView extends StatelessWidget {
