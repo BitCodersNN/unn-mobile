@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:unn_mobile/core/constants/api/path.dart';
 import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
-import 'package:unn_mobile/core/misc/json_list_parser.dart';
+import 'package:unn_mobile/core/misc/json_iterable_parser.dart';
 import 'package:unn_mobile/core/models/distance_learning/distance_course.dart';
 import 'package:unn_mobile/core/models/distance_learning/semester.dart';
 import 'package:unn_mobile/core/services/interfaces/distance_learning/distance_course_service.dart';
@@ -49,7 +49,7 @@ class DistanceCourseServiceImpl implements DistanceCourseService {
       return null;
     }
 
-    return parseJsonList<DistanceCourse>(
+    return parseJsonIterable<DistanceCourse>(
       jsonMap.values.toList(),
       _processCourse,
       _loggerService,

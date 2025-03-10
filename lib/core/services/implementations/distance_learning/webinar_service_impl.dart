@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:unn_mobile/core/constants/api/path.dart';
 import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
-import 'package:unn_mobile/core/misc/json_list_parser.dart';
+import 'package:unn_mobile/core/misc/json_iterable_parser.dart';
 import 'package:unn_mobile/core/models/distance_learning/semester.dart';
 import 'package:unn_mobile/core/models/distance_learning/webinar.dart';
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
@@ -50,7 +50,7 @@ class WebinarServiceImpl implements WebinarService {
       return null;
     }
 
-    return parseJsonList<Webinar>(
+    return parseJsonIterable<Webinar>(
       jsonMap,
       Webinar.fromJson,
       _loggerService,
