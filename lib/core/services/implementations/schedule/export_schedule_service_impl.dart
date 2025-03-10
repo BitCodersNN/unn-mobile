@@ -39,10 +39,10 @@ class ExportScheduleServiceImpl implements ExportScheduleService {
         path: path,
         queryParameters: {
           _start: scheduleFilter.dateTimeRange.start.format(
-            DatePattern.yyyymmdd,
+            DatePattern.yyyymmddDot,
           ),
           _finish: scheduleFilter.dateTimeRange.end.format(
-            DatePattern.yyyymmdd,
+            DatePattern.yyyymmddDot,
           ),
           _lng: '1',
         },

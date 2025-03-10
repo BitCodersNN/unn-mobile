@@ -62,4 +62,7 @@ class ApiPath {
 
   /// Для получения материалов для дистанционных занятий
   static const String materials = 'ajax/get/materials.php';
+
+  /// Для получения расписание онлайн-занятий
+  static const String webinars = 'ajax/get/webinars.php';
 }
