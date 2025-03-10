@@ -50,7 +50,7 @@ class DistanceCourseServiceImpl implements DistanceCourseService {
     }
 
     return parseJsonIterable<DistanceCourse>(
-      jsonMap.values.toList(),
+      jsonMap.values,
       _processCourse,
       _loggerService,
     );
