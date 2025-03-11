@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:unn_mobile/core/constants/api/path.dart';
 import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/misc/dio_options_factory/options_with_expected_type_factory.dart';
+import 'package:unn_mobile/core/misc/json_iterable_parser.dart';
 import 'package:unn_mobile/core/models/grade_book/mark_by_subject.dart';
 import 'package:unn_mobile/core/services/interfaces/grade_book/grade_book_service.dart';
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
@@ -40,12 +41,11 @@ class GradeBookServiceImpl implements GradeBookService {
         final semester = semesterInfo[_JsonKeys.semester]?.toInt();
         final data = semesterInfo[_JsonKeys.data] ?? [];
         if (semester != null) {
-          final List<MarkBySubject> semesterMarks = data
-              .map<MarkBySubject>(
-                (markBySubject) => MarkBySubject.fromJson(markBySubject),
-              )
-              .toList();
-          marks[semester] = semesterMarks;
+          marks[semester] = parseJsonIterable<MarkBySubject>(
+            data,
+            MarkBySubject.fromJson,
+            _loggerService,
+          );
         }
       }
     }
