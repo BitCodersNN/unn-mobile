@@ -1,42 +1,82 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
+import 'package:injector/injector.dart';
+import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class AboutScreenView extends StatelessWidget {
   AboutScreenView({super.key});
 
   final List<_AuthorProfile> _authors = [
-    _AuthorProfile.create('Крисеев Михаил Алексеевич', 'michail.png'),
+    _AuthorProfile.create('Крисеев Михаил Алексеевич', 'mikhail.png'),
     _AuthorProfile.create('Юрин Андрей Юрьевич', 'andrew.png'),
+    _AuthorProfile.create('Соколова Дарья Владимировна', 'darya.png'),
+  ];
+
+  final List<_AuthorProfile> _pastAuthors = [
     _AuthorProfile.create('Ванюшкин Дмитрий Игоревич', 'dmitry.png'),
     _AuthorProfile.create(
       'Паймухин Виталий Евгеньевич',
       'vitaly.png',
       educationGroup: '3821Б1ПИис1',
     ),
-    _AuthorProfile.create('Соколова Дарья Владимировна', 'darya.png'),
   ];
-
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(title: const Text('О нас')),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.only(top: 15, bottom: 100),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Column(
-                children: _authors
-                    .map((authorProfile) => _AuthorProfileWidget(authorProfile))
-                    .toList(),
+                children: [
+                  Text(
+                    'Команда разработчиков',
+                    textAlign: TextAlign.left,
+                    style: theme.textTheme.headlineSmall
+                        ?.copyWith(color: Colors.black),
+                  ),
+                  ..._authors.map(
+                    (authorProfile) => _AuthorProfileWidget(authorProfile),
+                  ),
+                  const Divider(),
+                  ExpansionTile(
+                    shape: const Border(),
+                    title: Text(
+                      'Прошлые участники',
+                      textAlign: TextAlign.left,
+                      style: theme.textTheme.headlineSmall
+                          ?.copyWith(color: Colors.black),
+                    ),
+                    dense: true,
+                    children: [
+                      ..._pastAuthors.map(
+                        (authorProfile) => _AuthorProfileWidget(authorProfile),
+                      ),
+                    ],
+                  ),
+                  const Divider(),
+                ],
               ),
-              const Text(
-                'По всем вопросам можно обращаться: unnmobile@mail.ru',
-                textAlign: TextAlign.center,
-                style: TextStyle(
+              HtmlWidget(
+                'По всем вопросам можно обращаться: <a href="https://t.me/unn_mobile">t.me/unn_mobile</a>',
+                textStyle: const TextStyle(
                   color: Color(0xFF717A84),
                   fontFamily: 'Inter',
                   fontSize: 13,
                 ),
+                onTapUrl: (url) async {
+                  if (!await launchUrl(Uri.parse(url))) {
+                    Injector.appInstance
+                        .get<LoggerService>()
+                        .log('Could not launch url $url');
+                  }
+                  return true;
+                },
               ),
             ],
           ),
