@@ -1,6 +1,6 @@
 import 'package:unn_mobile/core/models/profile/user_data.dart';
 
-class _KeysForEmployeeDataJsonConverter {
+class _EmployeeDataJsonKeys {
   static const String user = 'user';
   static const String syncID = 'sync_id';
   static const String jobType = 'job_type';
@@ -45,32 +45,32 @@ class EmployeeData extends UserData {
   factory EmployeeData.fromJson(Map<String, Object?> jsonMap) {
     return EmployeeData(
       UserData.fromJson(jsonMap),
-      (jsonMap[_KeysForEmployeeDataJsonConverter.user]
-              as Map<String, Object?>)[_KeysForEmployeeDataJsonConverter.syncID]
+      (jsonMap[_EmployeeDataJsonKeys.user]
+              as Map<String, Object?>)[_EmployeeDataJsonKeys.syncID]
           as String,
-      jsonMap[_KeysForEmployeeDataJsonConverter.jobType] as String,
-      jsonMap[_KeysForEmployeeDataJsonConverter.jobTitle] as String,
-      (jsonMap[_KeysForEmployeeDataJsonConverter.department]
-              as Map<String, Object?>)[_KeysForEmployeeDataJsonConverter.title]
+      jsonMap[_EmployeeDataJsonKeys.jobType] as String,
+      jsonMap[_EmployeeDataJsonKeys.jobTitle] as String,
+      (jsonMap[_EmployeeDataJsonKeys.department]
+              as Map<String, Object?>)[_EmployeeDataJsonKeys.title]
           as String,
-      (jsonMap[_KeysForEmployeeDataJsonConverter.manager] as Map<String,
-          Object?>?)?[_KeysForEmployeeDataJsonConverter.fullname] as String?,
+      (jsonMap[_EmployeeDataJsonKeys.manager] as Map<String,
+          Object?>?)?[_EmployeeDataJsonKeys.fullname] as String?,
     );
   }
 
   @override
   Map<String, dynamic> toJson() {
     final json = super.toJson();
-    json[_KeysForEmployeeDataJsonConverter.user]
-        [_KeysForEmployeeDataJsonConverter.syncID] = _syncID;
-    json[_KeysForEmployeeDataJsonConverter.jobType] = _jobType;
-    json[_KeysForEmployeeDataJsonConverter.jobTitle] = _jobTitle;
-    json[_KeysForEmployeeDataJsonConverter.department] ??= {};
-    json[_KeysForEmployeeDataJsonConverter.department]
-        [_KeysForEmployeeDataJsonConverter.title] = _department;
-    json[_KeysForEmployeeDataJsonConverter.manager] ??= {};
-    json[_KeysForEmployeeDataJsonConverter.manager]
-        [_KeysForEmployeeDataJsonConverter.fullname] = _manager;
+    json[_EmployeeDataJsonKeys.user]
+        [_EmployeeDataJsonKeys.syncID] = _syncID;
+    json[_EmployeeDataJsonKeys.jobType] = _jobType;
+    json[_EmployeeDataJsonKeys.jobTitle] = _jobTitle;
+    json[_EmployeeDataJsonKeys.department] ??= {};
+    json[_EmployeeDataJsonKeys.department]
+        [_EmployeeDataJsonKeys.title] = _department;
+    json[_EmployeeDataJsonKeys.manager] ??= {};
+    json[_EmployeeDataJsonKeys.manager]
+        [_EmployeeDataJsonKeys.fullname] = _manager;
     return json;
   }
 }

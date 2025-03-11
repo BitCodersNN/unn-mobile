@@ -3,7 +3,7 @@ import 'package:unn_mobile/core/constants/api/protocol_type.dart';
 import 'package:unn_mobile/core/models/distance_learning/distance_material_data.dart';
 import 'package:unn_mobile/core/models/common/file_data.dart';
 
-class _KeysForFileDataJsonConverter {
+class _FileDataJsonKeys {
   static const String id = 'id';
   static const String fileSrcName = 'file_src_name';
   static const String fileSize = 'file_size';
@@ -42,26 +42,26 @@ final class DistanceFileData extends DistanceMaterialData {
   @override
   factory DistanceFileData.fromJson(Map<String, Object?> jsonMap) =>
       DistanceFileData(
-        comment: jsonMap[_KeysForFileDataJsonConverter.comment] as String,
+        comment: jsonMap[_FileDataJsonKeys.comment] as String,
         dateTime: DateTime.parse(
-          jsonMap[_KeysForFileDataJsonConverter.fileDate] as String,
+          jsonMap[_FileDataJsonKeys.fileDate] as String,
         ),
-        id: int.parse(jsonMap[_KeysForFileDataJsonConverter.id] as String),
-        name: jsonMap[_KeysForFileDataJsonConverter.fileSrcName] as String,
+        id: int.parse(jsonMap[_FileDataJsonKeys.id] as String),
+        name: jsonMap[_FileDataJsonKeys.fileSrcName] as String,
         sizeInBytes: int.parse(
-          jsonMap[_KeysForFileDataJsonConverter.fileSize] as String,
+          jsonMap[_FileDataJsonKeys.fileSize] as String,
         ),
         downloadUrl:
-            '$_baseDownloadUrl${jsonMap[_KeysForFileDataJsonConverter.fileHash]}',
+            '$_baseDownloadUrl${jsonMap[_FileDataJsonKeys.fileHash]}',
       );
 
   @override
   Map<String, Object?> toJson() => {
-        _KeysForFileDataJsonConverter.comment: comment,
-        _KeysForFileDataJsonConverter.fileDate: dateTime.toIso8601String(),
-        _KeysForFileDataJsonConverter.id: id.toString(),
-        _KeysForFileDataJsonConverter.fileSrcName: name,
-        _KeysForFileDataJsonConverter.fileSize: sizeInBytes.toString(),
-        _KeysForFileDataJsonConverter.fileHash: downloadUrl.split('hash=')[1],
+        _FileDataJsonKeys.comment: comment,
+        _FileDataJsonKeys.fileDate: dateTime.toIso8601String(),
+        _FileDataJsonKeys.id: id.toString(),
+        _FileDataJsonKeys.fileSrcName: name,
+        _FileDataJsonKeys.fileSize: sizeInBytes.toString(),
+        _FileDataJsonKeys.fileHash: downloadUrl.split('hash=')[1],
       };
 }

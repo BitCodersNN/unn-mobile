@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class _KeysForLoadingPageModelJsonConverter {
+class _LoadingPageModelJsonKeys {
   static const String logoPath = 'logo_path';
   static const String startDate = 'start_date';
   static const String endDate = 'end_date';
@@ -50,19 +50,19 @@ class LoadingPageModel {
 
   factory LoadingPageModel.fromJson(Map<String, dynamic> json) {
     final String imagePath =
-        json[_KeysForLoadingPageModelJsonConverter.logoPath];
+        json[_LoadingPageModelJsonKeys.logoPath];
 
     final DateTimeRange? dateTimeRange = _getDateTimeRangeFromJson(json);
 
-    final titleJson = json[_KeysForLoadingPageModelJsonConverter.title];
+    final titleJson = json[_LoadingPageModelJsonKeys.title];
     final String title =
-        titleJson?[_KeysForLoadingPageModelJsonConverter.text] ?? defaultTitle;
+        titleJson?[_LoadingPageModelJsonKeys.text] ?? defaultTitle;
     final titleStyle = _getTextStyleFromJson(titleJson) ?? defaultTextStyle;
 
     final descriptionJson =
-        json[_KeysForLoadingPageModelJsonConverter.description];
+        json[_LoadingPageModelJsonKeys.description];
     final String? description =
-        descriptionJson?[_KeysForLoadingPageModelJsonConverter.text];
+        descriptionJson?[_LoadingPageModelJsonKeys.text];
 
     final descriptionStyle = _getTextStyleFromJson(descriptionJson);
 
@@ -78,9 +78,9 @@ class LoadingPageModel {
 
   static DateTimeRange? _getDateTimeRangeFromJson(Map<String, dynamic> json) {
     final String? startDateStr =
-        json[_KeysForLoadingPageModelJsonConverter.startDate];
+        json[_LoadingPageModelJsonKeys.startDate];
     final String? endDateStr =
-        json[_KeysForLoadingPageModelJsonConverter.endDate];
+        json[_LoadingPageModelJsonKeys.endDate];
 
     DateTimeRange? dateTimeRange;
     if (startDateStr != null && endDateStr != null) {
@@ -103,14 +103,14 @@ class LoadingPageModel {
       return null;
     }
 
-    final colorFromJson = json[_KeysForLoadingPageModelJsonConverter.color];
+    final colorFromJson = json[_LoadingPageModelJsonKeys.color];
     final colorInt = int.tryParse(
       colorFromJson ?? defaultTextStyle.color.toString(),
     );
     final Color titleColor = Color(colorInt!);
 
     final fontSizeFromJson =
-        json[_KeysForLoadingPageModelJsonConverter.fontSize];
+        json[_LoadingPageModelJsonKeys.fontSize];
 
     final fontSize = double.tryParse(
       fontSizeFromJson ?? defaultTextStyle.fontSize.toString(),
@@ -127,24 +127,24 @@ class LoadingPageModel {
 
   Map<String, dynamic> toJson() {
     return {
-      _KeysForLoadingPageModelJsonConverter.logoPath: _imagePath,
-      _KeysForLoadingPageModelJsonConverter.startDate:
+      _LoadingPageModelJsonKeys.logoPath: _imagePath,
+      _LoadingPageModelJsonKeys.startDate:
           _dateTimeRangeToUseOn?.start.toString().substring(5, 10),
-      _KeysForLoadingPageModelJsonConverter.endDate:
+      _LoadingPageModelJsonKeys.endDate:
           _dateTimeRangeToUseOn?.end.toString().substring(5, 10),
-      _KeysForLoadingPageModelJsonConverter.title: {
-        _KeysForLoadingPageModelJsonConverter.text: _title,
-        _KeysForLoadingPageModelJsonConverter.color:
+      _LoadingPageModelJsonKeys.title: {
+        _LoadingPageModelJsonKeys.text: _title,
+        _LoadingPageModelJsonKeys.color:
             _titleStyle.color!.value.toString(),
-        _KeysForLoadingPageModelJsonConverter.fontSize:
+        _LoadingPageModelJsonKeys.fontSize:
             _titleStyle.fontSize.toString(),
       },
       if (_description != null)
-        _KeysForLoadingPageModelJsonConverter.description: {
-          _KeysForLoadingPageModelJsonConverter.text: _description,
-          _KeysForLoadingPageModelJsonConverter.color:
+        _LoadingPageModelJsonKeys.description: {
+          _LoadingPageModelJsonKeys.text: _description,
+          _LoadingPageModelJsonKeys.color:
               _descriptionStyle?.color!.value.toString(),
-          _KeysForLoadingPageModelJsonConverter.fontSize:
+          _LoadingPageModelJsonKeys.fontSize:
               _descriptionStyle?.fontSize.toString(),
         },
     };

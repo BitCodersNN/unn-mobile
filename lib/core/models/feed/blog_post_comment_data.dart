@@ -1,4 +1,4 @@
-class _KeysForBlogPostCommentDataJsonConverterLegacy {
+class _BlogPostCommentDataJsonBitrixKeys {
   static const String id = 'id';
   static const String dateTime = 'dateTime';
   static const String authorId = 'authorId';
@@ -7,7 +7,7 @@ class _KeysForBlogPostCommentDataJsonConverterLegacy {
   static const String attachedFiles = 'attachedFiles';
 }
 
-class _KeysForBlogPostCommentDataJsonConverter {
+class _BlogPostCommentDataJsonKeys {
   static const String id = 'id';
   static const String author = 'author';
   static const String time = 'time';
@@ -36,55 +36,55 @@ class BlogPostCommentData {
   factory BlogPostCommentData.fromJson(Map<String, Object?> jsonMap) =>
       BlogPostCommentData(
         id: int.parse(
-          jsonMap[_KeysForBlogPostCommentDataJsonConverter.id] as String,
+          jsonMap[_BlogPostCommentDataJsonKeys.id] as String,
         ),
         authorBitrixId: int.parse(
-          (jsonMap[_KeysForBlogPostCommentDataJsonConverter.author]
-              as Map)[_KeysForBlogPostCommentDataJsonConverter.id] as String,
+          (jsonMap[_BlogPostCommentDataJsonKeys.author]
+              as Map)[_BlogPostCommentDataJsonKeys.id] as String,
         ),
         dateTime:
-            jsonMap[_KeysForBlogPostCommentDataJsonConverter.time] as String,
+            jsonMap[_BlogPostCommentDataJsonKeys.time] as String,
         message:
-            jsonMap[_KeysForBlogPostCommentDataJsonConverter.text] as String,
-        keySigned: jsonMap[_KeysForBlogPostCommentDataJsonConverter.keysigned]
+            jsonMap[_BlogPostCommentDataJsonKeys.text] as String,
+        keySigned: jsonMap[_BlogPostCommentDataJsonKeys.keysigned]
             as String,
-        attachedFiles: (jsonMap[_KeysForBlogPostCommentDataJsonConverter.attach]
+        attachedFiles: (jsonMap[_BlogPostCommentDataJsonKeys.attach]
                 as List<dynamic>)
             .map((element) => element.toString().hashCode)
             .toList(),
       );
 
   Map<String, dynamic> toJson() => {
-        _KeysForBlogPostCommentDataJsonConverter.id: id.toString(),
-        _KeysForBlogPostCommentDataJsonConverter.author: {
-          _KeysForBlogPostCommentDataJsonConverter.id:
+        _BlogPostCommentDataJsonKeys.id: id.toString(),
+        _BlogPostCommentDataJsonKeys.author: {
+          _BlogPostCommentDataJsonKeys.id:
               authorBitrixId.toString(),
         },
-        _KeysForBlogPostCommentDataJsonConverter.time: dateTime,
-        _KeysForBlogPostCommentDataJsonConverter.text: message,
-        _KeysForBlogPostCommentDataJsonConverter.keysigned: keySigned,
-        _KeysForBlogPostCommentDataJsonConverter.attach:
+        _BlogPostCommentDataJsonKeys.time: dateTime,
+        _BlogPostCommentDataJsonKeys.text: message,
+        _BlogPostCommentDataJsonKeys.keysigned: keySigned,
+        _BlogPostCommentDataJsonKeys.attach:
             attachedFiles.map((hashCode) => hashCode.toString()).toList(),
       };
 
   factory BlogPostCommentData.fromJsonLegacy(Map<String, Object?> jsonMap) =>
       BlogPostCommentData(
         id: int.parse(
-          jsonMap[_KeysForBlogPostCommentDataJsonConverterLegacy.id] as String,
+          jsonMap[_BlogPostCommentDataJsonBitrixKeys.id] as String,
         ),
         authorBitrixId: int.parse(
-          jsonMap[_KeysForBlogPostCommentDataJsonConverterLegacy.authorId]
+          jsonMap[_BlogPostCommentDataJsonBitrixKeys.authorId]
               as String,
         ),
         dateTime:
-            jsonMap[_KeysForBlogPostCommentDataJsonConverterLegacy.dateTime]
+            jsonMap[_BlogPostCommentDataJsonBitrixKeys.dateTime]
                 as String,
-        message: jsonMap[_KeysForBlogPostCommentDataJsonConverterLegacy.message]
+        message: jsonMap[_BlogPostCommentDataJsonBitrixKeys.message]
             as String,
         keySigned:
-            jsonMap[_KeysForBlogPostCommentDataJsonConverterLegacy.keySigned]
+            jsonMap[_BlogPostCommentDataJsonBitrixKeys.keySigned]
                 as String,
-        attachedFiles: (jsonMap[_KeysForBlogPostCommentDataJsonConverterLegacy
+        attachedFiles: (jsonMap[_BlogPostCommentDataJsonBitrixKeys
                 .attachedFiles] as List<dynamic>)
             .map((element) => int.parse(element.toString()))
             .toList(),

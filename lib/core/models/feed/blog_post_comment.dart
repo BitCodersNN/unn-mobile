@@ -3,7 +3,7 @@ import 'package:unn_mobile/core/models/common/file_data.dart';
 import 'package:unn_mobile/core/models/feed/rating_list.dart';
 import 'package:unn_mobile/core/models/profile/user_short_info.dart';
 
-class _KeysForBlogPostCommentDataWithRatings {
+class _BlogPostCommentDataWithRatingsJsonKeys {
   static const String author = 'author';
   static const String attach = 'attach';
   static const String reaction = 'reaction';
@@ -26,16 +26,16 @@ class BlogPostComment {
     return BlogPostComment._(
       data: BlogPostCommentData.fromJson(jsonMap),
       ratingList:
-          jsonMap[_KeysForBlogPostCommentDataWithRatings.reaction] != null
+          jsonMap[_BlogPostCommentDataWithRatingsJsonKeys.reaction] != null
               ? RatingList.fromJson(
-                  jsonMap[_KeysForBlogPostCommentDataWithRatings.reaction],
+                  jsonMap[_BlogPostCommentDataWithRatingsJsonKeys.reaction],
                 )
               : null,
       userShortInfo: UserShortInfo.fromJson(
-        jsonMap[_KeysForBlogPostCommentDataWithRatings.author],
+        jsonMap[_BlogPostCommentDataWithRatingsJsonKeys.author],
       ),
       attachFiles:
-          (jsonMap[_KeysForBlogPostCommentDataWithRatings.attach] as List)
+          (jsonMap[_BlogPostCommentDataWithRatingsJsonKeys.attach] as List)
               .map((item) => FileData.fromJson(item))
               .toList(),
     );
@@ -44,9 +44,9 @@ class BlogPostComment {
   Map<String, dynamic> toJson() {
     return {
       ...data.toJson(),
-      _KeysForBlogPostCommentDataWithRatings.reaction: ratingList?.toJson(),
-      _KeysForBlogPostCommentDataWithRatings.author: userShortInfo.toJson(),
-      _KeysForBlogPostCommentDataWithRatings.attach:
+      _BlogPostCommentDataWithRatingsJsonKeys.reaction: ratingList?.toJson(),
+      _BlogPostCommentDataWithRatingsJsonKeys.author: userShortInfo.toJson(),
+      _BlogPostCommentDataWithRatingsJsonKeys.attach:
           attachFiles.map((file) => file.toJson()).toList(),
     };
   }
@@ -55,17 +55,17 @@ class BlogPostComment {
     return BlogPostComment._(
       data: BlogPostCommentData.fromJsonLegacy(jsonMap),
       ratingList:
-          jsonMap[_KeysForBlogPostCommentDataWithRatings.reaction] != null
+          jsonMap[_BlogPostCommentDataWithRatingsJsonKeys.reaction] != null
               ? RatingList.fromJsonLegacy(
-                  jsonMap[_KeysForBlogPostCommentDataWithRatings.reaction],
+                  jsonMap[_BlogPostCommentDataWithRatingsJsonKeys.reaction],
                 )
               : null,
       userShortInfo: UserShortInfo.fromJsonLegacy(
-        jsonMap[_KeysForBlogPostCommentDataWithRatings.author],
+        jsonMap[_BlogPostCommentDataWithRatingsJsonKeys.author],
       ),
       attachFiles:
-          (jsonMap[_KeysForBlogPostCommentDataWithRatings.attach] as List)
-              .map((item) => FileData.fromJsonLegacy(item))
+          (jsonMap[_BlogPostCommentDataWithRatingsJsonKeys.attach] as List)
+              .map((item) => FileData.fromBitrixJson(item))
               .toList(),
     );
   }

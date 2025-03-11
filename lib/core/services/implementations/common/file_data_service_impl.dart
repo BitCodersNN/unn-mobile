@@ -54,7 +54,7 @@ class FileDataServiceImpl implements FileDataService {
 
     FileData? fileData;
     try {
-      fileData = FileData.fromJsonLegacy(jsonMap);
+      fileData = FileData.fromBitrixJson(jsonMap);
     } catch (error, stackTrace) {
       _loggerService.logError(error, stackTrace);
     }

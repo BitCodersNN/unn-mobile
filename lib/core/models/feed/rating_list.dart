@@ -1,6 +1,6 @@
 import 'package:unn_mobile/core/models/profile/user_short_info.dart';
 
-class _KeysForUserInfoJsonConverter {
+class _UserInfoJsonKeys {
   static const String users = 'users';
   static const String reaction = 'reaction';
 }
@@ -120,13 +120,13 @@ class RatingList {
 
   factory RatingList.fromJson(Map<String, Object?> jsonMap) {
     final Map<ReactionType, List<UserShortInfo>> ratingList = {};
-    final usersList = jsonMap[_KeysForUserInfoJsonConverter.users] as List;
+    final usersList = jsonMap[_UserInfoJsonKeys.users] as List;
     for (final userMap in usersList) {
       final userInfo = UserShortInfo.fromJson(userMap);
       final userReaction = ReactionType.values.firstWhere(
         (reaction) => reaction
             .toString()
-            .endsWith(userMap[_KeysForUserInfoJsonConverter.reaction]),
+            .endsWith(userMap[_UserInfoJsonKeys.reaction]),
       );
 
       ratingList.putIfAbsent(userReaction, () => []);
@@ -141,7 +141,7 @@ class RatingList {
     ratingList.forEach((reaction, users) {
       for (final user in users) {
         usersList.add({
-          _KeysForUserInfoJsonConverter.reaction:
+          _UserInfoJsonKeys.reaction:
               reaction.toString().split('.').last,
           ...user.toJson(),
         });
@@ -149,7 +149,7 @@ class RatingList {
     });
 
     return {
-      _KeysForUserInfoJsonConverter.users: usersList,
+      _UserInfoJsonKeys.users: usersList,
     };
   }
 

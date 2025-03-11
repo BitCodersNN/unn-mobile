@@ -1,7 +1,7 @@
 import 'package:unn_mobile/core/constants/api/host.dart';
 import 'package:unn_mobile/core/constants/api/protocol_type.dart';
 
-class _KeysForUserDataJsonConverter {
+class _UserDataJsonKeys {
   static const String bitrixId = 'bitrix_id';
   static const String user = 'user';
   static const String login = 'login';
@@ -86,38 +86,38 @@ class UserData {
 
   factory UserData.fromJson(Map<String, Object?> jsonMap) {
     final userJsonMap =
-        jsonMap[_KeysForUserDataJsonConverter.user] as Map<String, Object?>;
+        jsonMap[_UserDataJsonKeys.user] as Map<String, Object?>;
     return UserData(
-      userJsonMap[_KeysForUserDataJsonConverter.bitrixId] as int,
-      userJsonMap[_KeysForUserDataJsonConverter.login] as String?,
+      userJsonMap[_UserDataJsonKeys.bitrixId] as int,
+      userJsonMap[_UserDataJsonKeys.login] as String?,
       Fullname(
-        userJsonMap[_KeysForUserDataJsonConverter.name] as String?,
-        userJsonMap[_KeysForUserDataJsonConverter.lastname] as String?,
-        userJsonMap[_KeysForUserDataJsonConverter.surname] as String?,
+        userJsonMap[_UserDataJsonKeys.name] as String?,
+        userJsonMap[_UserDataJsonKeys.lastname] as String?,
+        userJsonMap[_UserDataJsonKeys.surname] as String?,
       ),
-      userJsonMap[_KeysForUserDataJsonConverter.email] as String?,
-      userJsonMap[_KeysForUserDataJsonConverter.phone] as String?,
-      userJsonMap[_KeysForUserDataJsonConverter.sex] as String,
-      (userJsonMap[_KeysForUserDataJsonConverter.photo]
-              as Map<String, Object?>)[_KeysForUserDataJsonConverter.orig]
+      userJsonMap[_UserDataJsonKeys.email] as String?,
+      userJsonMap[_UserDataJsonKeys.phone] as String?,
+      userJsonMap[_UserDataJsonKeys.sex] as String,
+      (userJsonMap[_UserDataJsonKeys.photo]
+              as Map<String, Object?>)[_UserDataJsonKeys.orig]
           as String?,
-      userJsonMap[_KeysForUserDataJsonConverter.notes] as String?,
+      userJsonMap[_UserDataJsonKeys.notes] as String?,
     );
   }
 
   Map<String, dynamic> toJson() => {
-        _KeysForUserDataJsonConverter.user: {
-          _KeysForUserDataJsonConverter.bitrixId: _bitrixId,
-          _KeysForUserDataJsonConverter.login: _login,
-          _KeysForUserDataJsonConverter.name: _fullname.name,
-          _KeysForUserDataJsonConverter.lastname: _fullname.lastname,
-          _KeysForUserDataJsonConverter.surname: _fullname.surname,
-          _KeysForUserDataJsonConverter.email: _email,
-          _KeysForUserDataJsonConverter.phone: _phone,
-          _KeysForUserDataJsonConverter.sex: _sex,
-          _KeysForUserDataJsonConverter.notes: _notes,
-          _KeysForUserDataJsonConverter.photo: {
-            _KeysForUserDataJsonConverter.orig: _urlPhoto,
+        _UserDataJsonKeys.user: {
+          _UserDataJsonKeys.bitrixId: _bitrixId,
+          _UserDataJsonKeys.login: _login,
+          _UserDataJsonKeys.name: _fullname.name,
+          _UserDataJsonKeys.lastname: _fullname.lastname,
+          _UserDataJsonKeys.surname: _fullname.surname,
+          _UserDataJsonKeys.email: _email,
+          _UserDataJsonKeys.phone: _phone,
+          _UserDataJsonKeys.sex: _sex,
+          _UserDataJsonKeys.notes: _notes,
+          _UserDataJsonKeys.photo: {
+            _UserDataJsonKeys.orig: _urlPhoto,
           },
         },
       };

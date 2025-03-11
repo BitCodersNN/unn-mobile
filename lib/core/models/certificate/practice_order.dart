@@ -4,7 +4,7 @@ import 'package:unn_mobile/core/misc/date_time_utilities/date_time_extensions.da
 import 'package:unn_mobile/core/misc/date_time_utilities/date_time_parser.dart';
 import 'package:unn_mobile/core/models/certificate/certificate.dart';
 
-class _KeysForPracticeOrderJsonConverter {
+class _PracticeOrderJsonKeys {
   static const String type = 'type';
   static const String date1 = 'date1';
   static const String date2 = 'date2';
@@ -34,29 +34,29 @@ class PracticeOrder extends Certificate {
       sendtype: certificate.sendtype,
       description: certificate.description,
       certificatePath: certificate.certificatePath,
-      type: jsonMap[_KeysForPracticeOrderJsonConverter.type] as String,
+      type: jsonMap[_PracticeOrderJsonKeys.type] as String,
       practiceDateTimeRange: DateTimeRange(
         start: DateTimeParser.parse(
-          jsonMap[_KeysForPracticeOrderJsonConverter.date1] as String,
+          jsonMap[_PracticeOrderJsonKeys.date1] as String,
           DatePattern.ddmmyyyy,
         ),
         end: DateTimeParser.parse(
-          jsonMap[_KeysForPracticeOrderJsonConverter.date2] as String,
+          jsonMap[_PracticeOrderJsonKeys.date2] as String,
           DatePattern.ddmmyyyy,
         ),
       ),
-      num: jsonMap[_KeysForPracticeOrderJsonConverter.num] as int,
+      num: jsonMap[_PracticeOrderJsonKeys.num] as int,
     );
   }
 
   @override
   Map<String, dynamic> toJson() => {
         ...super.toJson(),
-        _KeysForPracticeOrderJsonConverter.type: type,
-        _KeysForPracticeOrderJsonConverter.date1:
+        _PracticeOrderJsonKeys.type: type,
+        _PracticeOrderJsonKeys.date1:
             practiceDateTimeRange.start.format(DatePattern.ddmmyyyy),
-        _KeysForPracticeOrderJsonConverter.date2:
+        _PracticeOrderJsonKeys.date2:
             practiceDateTimeRange.end.format(DatePattern.ddmmyyyy),
-        _KeysForPracticeOrderJsonConverter.num: num,
+        _PracticeOrderJsonKeys.num: num,
       };
 }
