@@ -28,10 +28,8 @@ class Certificate {
   factory Certificate.fromJson(Map<String, Object?> jsonMap) => Certificate(
         name: jsonMap[CertificateJsonKeys.name] as String,
         sendtype: jsonMap[CertificateJsonKeys.sendtype] as int,
-        description:
-            jsonMap[CertificateJsonKeys.description] as String,
-        certificatePath:
-            jsonMap[CertificateJsonKeys.certificatePath] as String,
+        description: jsonMap[CertificateJsonKeys.description] as String,
+        certificatePath: jsonMap[CertificateJsonKeys.certificatePath] as String,
       );
 
   factory Certificate.fromPracticeUrl(String practiceUrl) {
@@ -39,11 +37,8 @@ class Certificate {
         certificateTypesInfo[CertificateJsonKeys.practices];
     return Certificate(
       name: 'Предписание на практику',
-      sendtype:
-          practiceTypeInfo?[CertificateJsonKeys.sendtype] as int,
-      description:
-          practiceTypeInfo?[CertificateJsonKeys.description]
-              as String,
+      sendtype: practiceTypeInfo?[CertificateJsonKeys.sendtype] as int,
+      description: practiceTypeInfo?[CertificateJsonKeys.description] as String,
       certificatePath: practiceUrl,
     );
   }

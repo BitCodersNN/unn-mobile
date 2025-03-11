@@ -93,8 +93,7 @@ class Subject {
   }
 
   factory Subject.fromJson(Map<String, dynamic> jsonMap) {
-    final String date =
-        jsonMap[_SubjectJsonKeys.date] as String? ?? '';
+    final String date = jsonMap[_SubjectJsonKeys.date] as String? ?? '';
     final String beginLesson =
         jsonMap[_SubjectJsonKeys.beginLesson] as String? ?? '';
     final String endLesson =
@@ -107,12 +106,10 @@ class Subject {
         jsonMap[_SubjectJsonKeys.kindOfWork] as String? ?? '';
     final String auditorium =
         jsonMap[_SubjectJsonKeys.auditorium] as String? ?? '';
-    final String building =
-        jsonMap[_SubjectJsonKeys.building] as String? ?? '';
+    final String building = jsonMap[_SubjectJsonKeys.building] as String? ?? '';
     final String streamString =
         jsonMap[_SubjectJsonKeys.stream] as String? ?? '';
-    final String lecturer =
-        jsonMap[_SubjectJsonKeys.lecturer] as String? ?? '';
+    final String lecturer = jsonMap[_SubjectJsonKeys.lecturer] as String? ?? '';
 
     return Subject(
       name: discipline,

@@ -107,19 +107,16 @@ class MarkBySubject {
 
   factory MarkBySubject.fromJson(Map<String, Object?> jsonMap) {
     return MarkBySubject(
-      controlType:
-          jsonMap[_MarkBySubjectJsonKeys.controlType] as String,
+      controlType: jsonMap[_MarkBySubjectJsonKeys.controlType] as String,
       date: DateTime.parse(
         jsonMap[_MarkBySubjectJsonKeys.date] as String,
       ),
       hours: int.parse(
         jsonMap[_MarkBySubjectJsonKeys.hours] as String,
       ),
-      lecturers:
-          jsonMap[_MarkBySubjectJsonKeys.lecturers] as String?,
+      lecturers: jsonMap[_MarkBySubjectJsonKeys.lecturers] as String?,
       markType: MarkType.fromDouble(
-        (jsonMap[_MarkBySubjectJsonKeys.mark] as dynamic)
-            .toDouble(),
+        (jsonMap[_MarkBySubjectJsonKeys.mark] as dynamic).toDouble(),
       ),
       subject: jsonMap[_MarkBySubjectJsonKeys.subject] as String,
     );

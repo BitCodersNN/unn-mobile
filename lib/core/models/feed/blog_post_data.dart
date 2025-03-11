@@ -58,8 +58,7 @@ class BlogPostData {
       blogId: null,
       authorBitrixId: int.parse(
         (jsonMap[_BlogPostDataJsonKeys.author]
-                as Map<String, Object?>)[_BlogPostDataJsonKeys.id]
-            as String,
+            as Map<String, Object?>)[_BlogPostDataJsonKeys.id] as String,
       ),
       title: jsonMap[_BlogPostDataJsonKeys.title] as String,
       detailText: jsonMap[_BlogPostDataJsonKeys.fulltext] as String,
@@ -70,13 +69,11 @@ class BlogPostData {
       numberOfComments: int.parse(
         jsonMap[_BlogPostDataJsonKeys.commentsNum] as String,
       ),
-      files:
-          (jsonMap[_BlogPostDataJsonKeys.attach] as List<dynamic>?)
-              ?.map((element) => element.toString().hashCode)
-              .toList(),
+      files: (jsonMap[_BlogPostDataJsonKeys.attach] as List<dynamic>?)
+          ?.map((element) => element.toString().hashCode)
+          .toList(),
       pinnedId: jsonMap[_BlogPostDataJsonKeys.pinnedId] as int?,
-      keySigned:
-          jsonMap[_BlogPostDataJsonKeys.keySigned] as String?,
+      keySigned: jsonMap[_BlogPostDataJsonKeys.keySigned] as String?,
     );
   }
 
@@ -89,8 +86,7 @@ class BlogPostData {
         _BlogPostDataJsonKeys.fulltext: detailText,
         _BlogPostDataJsonKeys.time:
             datePublish.format(DatePattern.ddmmyyyyhhmmss),
-        _BlogPostDataJsonKeys.commentsNum:
-            numberOfComments.toString(),
+        _BlogPostDataJsonKeys.commentsNum: numberOfComments.toString(),
         _BlogPostDataJsonKeys.attach:
             files?.map((hash) => hash.toString()).toList(),
         _BlogPostDataJsonKeys.pinnedId: pinnedId,
@@ -109,16 +105,14 @@ class BlogPostData {
         jsonMap[_BlogPostDataJsonBitrixKeys.authorId] as String,
       ),
       title: jsonMap[_BlogPostDataJsonBitrixKeys.title] as String,
-      detailText:
-          jsonMap[_BlogPostDataJsonBitrixKeys.detailText] as String,
+      detailText: jsonMap[_BlogPostDataJsonBitrixKeys.detailText] as String,
       datePublish: DateTime.parse(
         jsonMap[_BlogPostDataJsonBitrixKeys.datePublish] as String,
       ),
       numberOfComments: int.parse(
         jsonMap[_BlogPostDataJsonBitrixKeys.numComments] as String,
       ),
-      files: (jsonMap[_BlogPostDataJsonBitrixKeys.files]
-              as List<dynamic>?)
+      files: (jsonMap[_BlogPostDataJsonBitrixKeys.files] as List<dynamic>?)
           ?.map((element) => element as int)
           .toList(),
     );

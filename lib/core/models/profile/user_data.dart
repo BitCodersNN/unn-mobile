@@ -85,8 +85,7 @@ class UserData {
   }
 
   factory UserData.fromJson(Map<String, Object?> jsonMap) {
-    final userJsonMap =
-        jsonMap[_UserDataJsonKeys.user] as Map<String, Object?>;
+    final userJsonMap = jsonMap[_UserDataJsonKeys.user] as Map<String, Object?>;
     return UserData(
       userJsonMap[_UserDataJsonKeys.bitrixId] as int,
       userJsonMap[_UserDataJsonKeys.login] as String?,
@@ -99,8 +98,7 @@ class UserData {
       userJsonMap[_UserDataJsonKeys.phone] as String?,
       userJsonMap[_UserDataJsonKeys.sex] as String,
       (userJsonMap[_UserDataJsonKeys.photo]
-              as Map<String, Object?>)[_UserDataJsonKeys.orig]
-          as String?,
+          as Map<String, Object?>)[_UserDataJsonKeys.orig] as String?,
       userJsonMap[_UserDataJsonKeys.notes] as String?,
     );
   }

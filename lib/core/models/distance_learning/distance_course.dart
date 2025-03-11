@@ -29,10 +29,8 @@ class DistanceCourse {
   factory DistanceCourse.fromJson(Map<String, Object?> jsonMap) =>
       DistanceCourse(
         semester: Semester.fromJson(jsonMap),
-        discipline:
-            jsonMap[DistanceCourseJsonKeys.discipline] as String,
-        employeeLogin:
-            jsonMap[DistanceCourseJsonKeys.login] as String,
+        discipline: jsonMap[DistanceCourseJsonKeys.discipline] as String,
+        employeeLogin: jsonMap[DistanceCourseJsonKeys.login] as String,
         groups: (jsonMap[DistanceCourseJsonKeys.groups] as String)
             .split('|')
             .where((element) => element.isNotEmpty)
@@ -53,12 +51,8 @@ class DistanceCourse {
   static List<DistanceMaterialData> _parseMaterials(
     Map<String, Object?> jsonMap,
   ) {
-    final files =
-        jsonMap[DistanceCourseJsonKeys.files] as List<dynamic>? ??
-            [];
-    final links =
-        jsonMap[DistanceCourseJsonKeys.links] as List<dynamic>? ??
-            [];
+    final files = jsonMap[DistanceCourseJsonKeys.files] as List<dynamic>? ?? [];
+    final links = jsonMap[DistanceCourseJsonKeys.links] as List<dynamic>? ?? [];
 
     final fileDataList = files
         .map((materialJson) => DistanceFileData.fromJson(materialJson))

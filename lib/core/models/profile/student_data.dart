@@ -65,17 +65,13 @@ class StudentData extends UserData {
       jsonMap[_StudentDataJsonKeys.eduYear] as int,
       jsonMap[_StudentDataJsonKeys.eduLevel] as String,
       (jsonMap[_StudentDataJsonKeys.faculty]
-              as Map<String, Object?>)[_StudentDataJsonKeys.title]
-          as String,
+          as Map<String, Object?>)[_StudentDataJsonKeys.title] as String,
       (jsonMap[_StudentDataJsonKeys.eduDirection]
-              as Map<String, Object?>)[_StudentDataJsonKeys.title]
-          as String,
+          as Map<String, Object?>)[_StudentDataJsonKeys.title] as String,
       (jsonMap[_StudentDataJsonKeys.eduGroup]
-              as Map<String, Object?>)[_StudentDataJsonKeys.title]
-          as String,
+          as Map<String, Object?>)[_StudentDataJsonKeys.title] as String,
       (jsonMap[_StudentDataJsonKeys.eduSpecialization]
-              as Map<String, Object?>?)?[_StudentDataJsonKeys.title]
-          as String?,
+          as Map<String, Object?>?)?[_StudentDataJsonKeys.title] as String?,
     );
   }
 
@@ -89,20 +85,18 @@ class StudentData extends UserData {
     json[_StudentDataJsonKeys.eduLevel] = _eduLevel;
 
     json[_StudentDataJsonKeys.faculty] ??= {};
-    json[_StudentDataJsonKeys.faculty]
-        [_StudentDataJsonKeys.title] = _faculty;
+    json[_StudentDataJsonKeys.faculty][_StudentDataJsonKeys.title] = _faculty;
 
     json[_StudentDataJsonKeys.eduDirection] ??= {};
-    json[_StudentDataJsonKeys.eduDirection]
-        [_StudentDataJsonKeys.title] = _eduDirection;
+    json[_StudentDataJsonKeys.eduDirection][_StudentDataJsonKeys.title] =
+        _eduDirection;
 
     json[_StudentDataJsonKeys.eduGroup] ??= {};
-    json[_StudentDataJsonKeys.eduGroup]
-        [_StudentDataJsonKeys.title] = _eduGroup;
+    json[_StudentDataJsonKeys.eduGroup][_StudentDataJsonKeys.title] = _eduGroup;
 
     json[_StudentDataJsonKeys.eduSpecialization] ??= {};
-    json[_StudentDataJsonKeys.eduSpecialization]
-        [_StudentDataJsonKeys.title] = _eduSpecialization;
+    json[_StudentDataJsonKeys.eduSpecialization][_StudentDataJsonKeys.title] =
+        _eduSpecialization;
     return json;
   }
 }

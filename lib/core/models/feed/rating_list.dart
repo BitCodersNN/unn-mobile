@@ -124,9 +124,8 @@ class RatingList {
     for (final userMap in usersList) {
       final userInfo = UserShortInfo.fromJson(userMap);
       final userReaction = ReactionType.values.firstWhere(
-        (reaction) => reaction
-            .toString()
-            .endsWith(userMap[_UserInfoJsonKeys.reaction]),
+        (reaction) =>
+            reaction.toString().endsWith(userMap[_UserInfoJsonKeys.reaction]),
       );
 
       ratingList.putIfAbsent(userReaction, () => []);
@@ -141,8 +140,7 @@ class RatingList {
     ratingList.forEach((reaction, users) {
       for (final user in users) {
         usersList.add({
-          _UserInfoJsonKeys.reaction:
-              reaction.toString().split('.').last,
+          _UserInfoJsonKeys.reaction: reaction.toString().split('.').last,
           ...user.toJson(),
         });
       }

@@ -53,11 +53,9 @@ class UserShortInfo {
       jsonMap[_UserInfoJsonImportantBlogPostKeys.id] as String,
     );
     final fullname =
-        jsonMap[_UserInfoJsonImportantBlogPostKeys.fullname]
-            as String;
+        jsonMap[_UserInfoJsonImportantBlogPostKeys.fullname] as String;
     final photoSrc =
-        jsonMap[_UserInfoJsonImportantBlogPostKeys.photoSrc]
-            as String?;
+        jsonMap[_UserInfoJsonImportantBlogPostKeys.photoSrc] as String?;
 
     final String? resolvedPhotoSrc = photoSrc?.isNotEmpty == true
         ? '${ProtocolType.https.name}://${Host.unn}${photoSrc!}'

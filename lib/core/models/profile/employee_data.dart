@@ -46,31 +46,28 @@ class EmployeeData extends UserData {
     return EmployeeData(
       UserData.fromJson(jsonMap),
       (jsonMap[_EmployeeDataJsonKeys.user]
-              as Map<String, Object?>)[_EmployeeDataJsonKeys.syncID]
-          as String,
+          as Map<String, Object?>)[_EmployeeDataJsonKeys.syncID] as String,
       jsonMap[_EmployeeDataJsonKeys.jobType] as String,
       jsonMap[_EmployeeDataJsonKeys.jobTitle] as String,
       (jsonMap[_EmployeeDataJsonKeys.department]
-              as Map<String, Object?>)[_EmployeeDataJsonKeys.title]
-          as String,
-      (jsonMap[_EmployeeDataJsonKeys.manager] as Map<String,
-          Object?>?)?[_EmployeeDataJsonKeys.fullname] as String?,
+          as Map<String, Object?>)[_EmployeeDataJsonKeys.title] as String,
+      (jsonMap[_EmployeeDataJsonKeys.manager]
+          as Map<String, Object?>?)?[_EmployeeDataJsonKeys.fullname] as String?,
     );
   }
 
   @override
   Map<String, dynamic> toJson() {
     final json = super.toJson();
-    json[_EmployeeDataJsonKeys.user]
-        [_EmployeeDataJsonKeys.syncID] = _syncID;
+    json[_EmployeeDataJsonKeys.user][_EmployeeDataJsonKeys.syncID] = _syncID;
     json[_EmployeeDataJsonKeys.jobType] = _jobType;
     json[_EmployeeDataJsonKeys.jobTitle] = _jobTitle;
     json[_EmployeeDataJsonKeys.department] ??= {};
-    json[_EmployeeDataJsonKeys.department]
-        [_EmployeeDataJsonKeys.title] = _department;
+    json[_EmployeeDataJsonKeys.department][_EmployeeDataJsonKeys.title] =
+        _department;
     json[_EmployeeDataJsonKeys.manager] ??= {};
-    json[_EmployeeDataJsonKeys.manager]
-        [_EmployeeDataJsonKeys.fullname] = _manager;
+    json[_EmployeeDataJsonKeys.manager][_EmployeeDataJsonKeys.fullname] =
+        _manager;
     return json;
   }
 }

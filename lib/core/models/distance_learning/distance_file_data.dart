@@ -51,8 +51,7 @@ final class DistanceFileData extends DistanceMaterialData {
         sizeInBytes: int.parse(
           jsonMap[_FileDataJsonKeys.fileSize] as String,
         ),
-        downloadUrl:
-            '$_baseDownloadUrl${jsonMap[_FileDataJsonKeys.fileHash]}',
+        downloadUrl: '$_baseDownloadUrl${jsonMap[_FileDataJsonKeys.fileHash]}',
       );
 
   @override

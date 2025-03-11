@@ -49,8 +49,7 @@ class FileData {
       sizeInBytes: int.parse(
         jsonMap[_FileDataJsonBitrixKeys.size] as String,
       ),
-      downloadUrl:
-          jsonMap[_FileDataJsonBitrixKeys.downloadUrl] as String,
+      downloadUrl: jsonMap[_FileDataJsonBitrixKeys.downloadUrl] as String,
     );
   }
 }

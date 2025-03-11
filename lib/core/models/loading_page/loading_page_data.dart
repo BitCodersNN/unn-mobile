@@ -49,8 +49,7 @@ class LoadingPageModel {
   TextStyle? get descriptionStyle => _descriptionStyle;
 
   factory LoadingPageModel.fromJson(Map<String, dynamic> json) {
-    final String imagePath =
-        json[_LoadingPageModelJsonKeys.logoPath];
+    final String imagePath = json[_LoadingPageModelJsonKeys.logoPath];
 
     final DateTimeRange? dateTimeRange = _getDateTimeRangeFromJson(json);
 
@@ -59,8 +58,7 @@ class LoadingPageModel {
         titleJson?[_LoadingPageModelJsonKeys.text] ?? defaultTitle;
     final titleStyle = _getTextStyleFromJson(titleJson) ?? defaultTextStyle;
 
-    final descriptionJson =
-        json[_LoadingPageModelJsonKeys.description];
+    final descriptionJson = json[_LoadingPageModelJsonKeys.description];
     final String? description =
         descriptionJson?[_LoadingPageModelJsonKeys.text];
 
@@ -77,10 +75,8 @@ class LoadingPageModel {
   }
 
   static DateTimeRange? _getDateTimeRangeFromJson(Map<String, dynamic> json) {
-    final String? startDateStr =
-        json[_LoadingPageModelJsonKeys.startDate];
-    final String? endDateStr =
-        json[_LoadingPageModelJsonKeys.endDate];
+    final String? startDateStr = json[_LoadingPageModelJsonKeys.startDate];
+    final String? endDateStr = json[_LoadingPageModelJsonKeys.endDate];
 
     DateTimeRange? dateTimeRange;
     if (startDateStr != null && endDateStr != null) {
@@ -109,8 +105,7 @@ class LoadingPageModel {
     );
     final Color titleColor = Color(colorInt!);
 
-    final fontSizeFromJson =
-        json[_LoadingPageModelJsonKeys.fontSize];
+    final fontSizeFromJson = json[_LoadingPageModelJsonKeys.fontSize];
 
     final fontSize = double.tryParse(
       fontSizeFromJson ?? defaultTextStyle.fontSize.toString(),
@@ -134,10 +129,8 @@ class LoadingPageModel {
           _dateTimeRangeToUseOn?.end.toString().substring(5, 10),
       _LoadingPageModelJsonKeys.title: {
         _LoadingPageModelJsonKeys.text: _title,
-        _LoadingPageModelJsonKeys.color:
-            _titleStyle.color!.value.toString(),
-        _LoadingPageModelJsonKeys.fontSize:
-            _titleStyle.fontSize.toString(),
+        _LoadingPageModelJsonKeys.color: _titleStyle.color!.value.toString(),
+        _LoadingPageModelJsonKeys.fontSize: _titleStyle.fontSize.toString(),
       },
       if (_description != null)
         _LoadingPageModelJsonKeys.description: {

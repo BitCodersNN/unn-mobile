@@ -61,8 +61,7 @@ class DistanceCourseServiceImpl implements DistanceCourseService {
 
     course[SemesterJsonKeys.semester] =
         firstMaterialData[SemesterJsonKeys.semester];
-    course[SemesterJsonKeys.year] =
-        firstMaterialData[SemesterJsonKeys.year];
+    course[SemesterJsonKeys.year] = firstMaterialData[SemesterJsonKeys.year];
     course[DistanceCourseJsonKeys.discipline] =
         firstMaterialData[DistanceCourseJsonKeys.discipline];
     course[DistanceCourseJsonKeys.login] =

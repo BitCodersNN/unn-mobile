@@ -67,12 +67,10 @@ class BlogPost {
   factory BlogPost.fromJsonLegacy(Map<String, dynamic> jsonMap) {
     return BlogPost._(
       data: BlogPostData.fromJsonLegacy(
-        jsonMap[_BlogPostJsonBitrixKeys.post]
-            as Map<String, Object?>,
+        jsonMap[_BlogPostJsonBitrixKeys.post] as Map<String, Object?>,
       ),
       ratingList: RatingList.fromJsonLegacy(
-        jsonMap[_BlogPostJsonBitrixKeys.ratingList]
-            as Map<String, Object?>,
+        jsonMap[_BlogPostJsonBitrixKeys.ratingList] as Map<String, Object?>,
       ),
       userShortInfo: UserShortInfo.fromJsonLegacy(
         jsonMap[_BlogPostJsonBitrixKeys.author],

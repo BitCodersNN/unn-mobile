@@ -42,23 +42,19 @@ class BlogPostCommentData {
           (jsonMap[_BlogPostCommentDataJsonKeys.author]
               as Map)[_BlogPostCommentDataJsonKeys.id] as String,
         ),
-        dateTime:
-            jsonMap[_BlogPostCommentDataJsonKeys.time] as String,
-        message:
-            jsonMap[_BlogPostCommentDataJsonKeys.text] as String,
-        keySigned: jsonMap[_BlogPostCommentDataJsonKeys.keysigned]
-            as String,
-        attachedFiles: (jsonMap[_BlogPostCommentDataJsonKeys.attach]
-                as List<dynamic>)
-            .map((element) => element.toString().hashCode)
-            .toList(),
+        dateTime: jsonMap[_BlogPostCommentDataJsonKeys.time] as String,
+        message: jsonMap[_BlogPostCommentDataJsonKeys.text] as String,
+        keySigned: jsonMap[_BlogPostCommentDataJsonKeys.keysigned] as String,
+        attachedFiles:
+            (jsonMap[_BlogPostCommentDataJsonKeys.attach] as List<dynamic>)
+                .map((element) => element.toString().hashCode)
+                .toList(),
       );
 
   Map<String, dynamic> toJson() => {
         _BlogPostCommentDataJsonKeys.id: id.toString(),
         _BlogPostCommentDataJsonKeys.author: {
-          _BlogPostCommentDataJsonKeys.id:
-              authorBitrixId.toString(),
+          _BlogPostCommentDataJsonKeys.id: authorBitrixId.toString(),
         },
         _BlogPostCommentDataJsonKeys.time: dateTime,
         _BlogPostCommentDataJsonKeys.text: message,
@@ -73,20 +69,17 @@ class BlogPostCommentData {
           jsonMap[_BlogPostCommentDataJsonBitrixKeys.id] as String,
         ),
         authorBitrixId: int.parse(
-          jsonMap[_BlogPostCommentDataJsonBitrixKeys.authorId]
-              as String,
+          jsonMap[_BlogPostCommentDataJsonBitrixKeys.authorId] as String,
         ),
         dateTime:
-            jsonMap[_BlogPostCommentDataJsonBitrixKeys.dateTime]
-                as String,
-        message: jsonMap[_BlogPostCommentDataJsonBitrixKeys.message]
-            as String,
+            jsonMap[_BlogPostCommentDataJsonBitrixKeys.dateTime] as String,
+        message: jsonMap[_BlogPostCommentDataJsonBitrixKeys.message] as String,
         keySigned:
-            jsonMap[_BlogPostCommentDataJsonBitrixKeys.keySigned]
-                as String,
-        attachedFiles: (jsonMap[_BlogPostCommentDataJsonBitrixKeys
-                .attachedFiles] as List<dynamic>)
-            .map((element) => int.parse(element.toString()))
-            .toList(),
+            jsonMap[_BlogPostCommentDataJsonBitrixKeys.keySigned] as String,
+        attachedFiles:
+            (jsonMap[_BlogPostCommentDataJsonBitrixKeys.attachedFiles]
+                    as List<dynamic>)
+                .map((element) => int.parse(element.toString()))
+                .toList(),
       );
 }

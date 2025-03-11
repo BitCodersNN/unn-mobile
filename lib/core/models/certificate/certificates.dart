@@ -27,8 +27,7 @@ class Certificates {
         certificates.add(Certificate.fromJson(certificateJson));
       }
     });
-    if ((jsonMap[_CertificatesJsonKeys.practice] as String)
-        .isNotEmpty) {
+    if ((jsonMap[_CertificatesJsonKeys.practice] as String).isNotEmpty) {
       certificates.add(
         Certificate.fromPracticeUrl(
           jsonMap[_CertificatesJsonKeys.practice]! as String,
@@ -67,8 +66,7 @@ class Certificates {
   static Map<String, Object?> _createPracticeCertificateJson(
     Map<String, Object?> practice,
   ) {
-    final certificateUri =
-        practice[_CertificatesJsonKeys.practice] as String?;
+    final certificateUri = practice[_CertificatesJsonKeys.practice] as String?;
     final practiceReferenceJson = Map<String, Object?>.from(practice);
     practiceReferenceJson.addAll(
       certificateTypesInfo[_CertificatesJsonKeys.practices]!,
