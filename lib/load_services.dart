@@ -21,6 +21,8 @@ import 'package:unn_mobile/core/services/implementations/authorisation/unn_autho
 import 'package:unn_mobile/core/services/implementations/certificate/certificate_downloader_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/distance_learning/distance_course_semester_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/distance_learning/distance_course_service_impl.dart';
+import 'package:unn_mobile/core/services/implementations/distance_learning/distance_learning_downloader_service_impl.dart';
+import 'package:unn_mobile/core/services/implementations/distance_learning/webinar_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/schedule/export_schedule_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/feed/blog_post_receivers/blog_post_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/feed/blog_post_receivers/featured_blog_posts_service_impl.dart';
@@ -62,6 +64,8 @@ import 'package:unn_mobile/core/services/interfaces/authorisation/unn_authorisat
 import 'package:unn_mobile/core/services/interfaces/certificate/certificate_downloader_service.dart';
 import 'package:unn_mobile/core/services/interfaces/distance_learning/distance_course_semester_service.dart';
 import 'package:unn_mobile/core/services/interfaces/distance_learning/distance_course_service.dart';
+import 'package:unn_mobile/core/services/interfaces/distance_learning/distance_learning_downloader_service.dart';
+import 'package:unn_mobile/core/services/interfaces/distance_learning/webinar_service.dart';
 import 'package:unn_mobile/core/services/interfaces/schedule/export_schedule_service.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/blog_post_receivers/blog_post_service.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/blog_post_receivers/featured_blog_post_service.dart';
@@ -446,6 +450,18 @@ void registerDependencies() {
 
   injector.registerSingleton<DistanceCourseService>(
     () => DistanceCourseServiceImpl(
+      get<LoggerService>(),
+      getApiHelper(HostType.unnSource),
+    ),
+  );
+  injector.registerSingleton<WebinarService>(
+    () => WebinarServiceImpl(
+      get<LoggerService>(),
+      getApiHelper(HostType.unnSource),
+    ),
+  );
+  injector.registerSingleton<DistanceLearningDownloaderService>(
+    () => DistanceLearningDownloaderServiceImpl(
       get<LoggerService>(),
       getApiHelper(HostType.unnSource),
     ),
