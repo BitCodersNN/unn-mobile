@@ -151,7 +151,7 @@ class RatingList {
     };
   }
 
-  factory RatingList.fromJsonLegacy(Map<String, Object?> jsonMap) {
+  factory RatingList.fromBitrixJson(Map<String, Object?> jsonMap) {
     final Map<ReactionType, List<UserShortInfo>> ratingList = {};
 
     jsonMap.forEach((key, value) {
@@ -159,7 +159,7 @@ class RatingList {
         final List<UserShortInfo> userList = [];
         for (final userJson in value) {
           if (userJson is Map<String, dynamic>) {
-            userList.add(UserShortInfo.fromJsonLegacy(userJson));
+            userList.add(UserShortInfo.fromBitrixJson(userJson));
           }
         }
         ratingList[ReactionType.values.firstWhere((e) => e.toString() == key)] =

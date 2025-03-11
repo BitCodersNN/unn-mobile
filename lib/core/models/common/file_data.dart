@@ -1,4 +1,4 @@
-class _FileDataJsonBitrixKeys {
+class _FileDataBitrixJsonKeys {
   static const String id = 'ID';
   static const String name = 'NAME';
   static const String size = 'SIZE';
@@ -44,12 +44,12 @@ class FileData {
 
   factory FileData.fromBitrixJson(Map<String, Object?> jsonMap) {
     return FileData(
-      id: int.parse(jsonMap[_FileDataJsonBitrixKeys.id] as String),
-      name: jsonMap[_FileDataJsonBitrixKeys.name] as String,
+      id: int.parse(jsonMap[_FileDataBitrixJsonKeys.id] as String),
+      name: jsonMap[_FileDataBitrixJsonKeys.name] as String,
       sizeInBytes: int.parse(
-        jsonMap[_FileDataJsonBitrixKeys.size] as String,
+        jsonMap[_FileDataBitrixJsonKeys.size] as String,
       ),
-      downloadUrl: jsonMap[_FileDataJsonBitrixKeys.downloadUrl] as String,
+      downloadUrl: jsonMap[_FileDataBitrixJsonKeys.downloadUrl] as String,
     );
   }
 }

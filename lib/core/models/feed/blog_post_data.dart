@@ -2,7 +2,7 @@ import 'package:unn_mobile/core/constants/date_pattern.dart';
 import 'package:unn_mobile/core/misc/date_time_utilities/date_time_extensions.dart';
 import 'package:unn_mobile/core/misc/date_time_utilities/date_time_parser.dart';
 
-class _BlogPostDataJsonBitrixKeys {
+class _BlogPostDataBitrixJsonKeys {
   static const String id = 'ID';
   static const String blogId = 'BLOG_ID';
   static const String authorId = 'AUTHOR_ID';
@@ -93,26 +93,26 @@ class BlogPostData {
         _BlogPostDataJsonKeys.keySigned: keySigned,
       };
 
-  factory BlogPostData.fromJsonLegacy(Map<String, Object?> jsonMap) {
+  factory BlogPostData.fromBitrixJson(Map<String, Object?> jsonMap) {
     return BlogPostData._(
       id: int.parse(
-        jsonMap[_BlogPostDataJsonBitrixKeys.id] as String,
+        jsonMap[_BlogPostDataBitrixJsonKeys.id] as String,
       ),
       blogId: int.tryParse(
-        jsonMap[_BlogPostDataJsonBitrixKeys.blogId] as String,
+        jsonMap[_BlogPostDataBitrixJsonKeys.blogId] as String,
       ),
       authorBitrixId: int.parse(
-        jsonMap[_BlogPostDataJsonBitrixKeys.authorId] as String,
+        jsonMap[_BlogPostDataBitrixJsonKeys.authorId] as String,
       ),
-      title: jsonMap[_BlogPostDataJsonBitrixKeys.title] as String,
-      detailText: jsonMap[_BlogPostDataJsonBitrixKeys.detailText] as String,
+      title: jsonMap[_BlogPostDataBitrixJsonKeys.title] as String,
+      detailText: jsonMap[_BlogPostDataBitrixJsonKeys.detailText] as String,
       datePublish: DateTime.parse(
-        jsonMap[_BlogPostDataJsonBitrixKeys.datePublish] as String,
+        jsonMap[_BlogPostDataBitrixJsonKeys.datePublish] as String,
       ),
       numberOfComments: int.parse(
-        jsonMap[_BlogPostDataJsonBitrixKeys.numComments] as String,
+        jsonMap[_BlogPostDataBitrixJsonKeys.numComments] as String,
       ),
-      files: (jsonMap[_BlogPostDataJsonBitrixKeys.files] as List<dynamic>?)
+      files: (jsonMap[_BlogPostDataBitrixJsonKeys.files] as List<dynamic>?)
           ?.map((element) => element as int)
           .toList(),
     );

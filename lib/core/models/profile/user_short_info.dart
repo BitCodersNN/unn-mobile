@@ -1,7 +1,7 @@
 import 'package:unn_mobile/core/constants/api/host.dart';
 import 'package:unn_mobile/core/constants/api/protocol_type.dart';
 
-class _UserInfoJsonBitrixKeys {
+class _UserInfoBitrixJsonKeys {
   static const String id = 'USER_ID';
   static const String fullname = 'FULL_NAME';
   static const String photoSrc = 'PHOTO_SRC';
@@ -68,10 +68,10 @@ class UserShortInfo {
     );
   }
 
-  factory UserShortInfo.fromJsonLegacy(Map<String, Object?> jsonMap) =>
+  factory UserShortInfo.fromBitrixJson(Map<String, Object?> jsonMap) =>
       UserShortInfo(
-        int.tryParse(jsonMap[_UserInfoJsonBitrixKeys.id] as String),
-        jsonMap[_UserInfoJsonBitrixKeys.fullname] as String,
-        jsonMap[_UserInfoJsonBitrixKeys.photoSrc] as String?,
+        int.tryParse(jsonMap[_UserInfoBitrixJsonKeys.id] as String),
+        jsonMap[_UserInfoBitrixJsonKeys.fullname] as String,
+        jsonMap[_UserInfoBitrixJsonKeys.photoSrc] as String?,
       );
 }

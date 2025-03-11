@@ -1,4 +1,4 @@
-class _BlogPostCommentDataJsonBitrixKeys {
+class _BlogPostCommentDataBitrixJsonKeys {
   static const String id = 'id';
   static const String dateTime = 'dateTime';
   static const String authorId = 'authorId';
@@ -63,21 +63,21 @@ class BlogPostCommentData {
             attachedFiles.map((hashCode) => hashCode.toString()).toList(),
       };
 
-  factory BlogPostCommentData.fromJsonLegacy(Map<String, Object?> jsonMap) =>
+  factory BlogPostCommentData.fromBitrixJson(Map<String, Object?> jsonMap) =>
       BlogPostCommentData(
         id: int.parse(
-          jsonMap[_BlogPostCommentDataJsonBitrixKeys.id] as String,
+          jsonMap[_BlogPostCommentDataBitrixJsonKeys.id] as String,
         ),
         authorBitrixId: int.parse(
-          jsonMap[_BlogPostCommentDataJsonBitrixKeys.authorId] as String,
+          jsonMap[_BlogPostCommentDataBitrixJsonKeys.authorId] as String,
         ),
         dateTime:
-            jsonMap[_BlogPostCommentDataJsonBitrixKeys.dateTime] as String,
-        message: jsonMap[_BlogPostCommentDataJsonBitrixKeys.message] as String,
+            jsonMap[_BlogPostCommentDataBitrixJsonKeys.dateTime] as String,
+        message: jsonMap[_BlogPostCommentDataBitrixJsonKeys.message] as String,
         keySigned:
-            jsonMap[_BlogPostCommentDataJsonBitrixKeys.keySigned] as String,
+            jsonMap[_BlogPostCommentDataBitrixJsonKeys.keySigned] as String,
         attachedFiles:
-            (jsonMap[_BlogPostCommentDataJsonBitrixKeys.attachedFiles]
+            (jsonMap[_BlogPostCommentDataBitrixJsonKeys.attachedFiles]
                     as List<dynamic>)
                 .map((element) => int.parse(element.toString()))
                 .toList(),

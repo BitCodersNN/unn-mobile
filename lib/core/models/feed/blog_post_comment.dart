@@ -51,16 +51,16 @@ class BlogPostComment {
     };
   }
 
-  factory BlogPostComment.fromJsonLegacy(Map<String, dynamic> jsonMap) {
+  factory BlogPostComment.fromBitrixJson(Map<String, dynamic> jsonMap) {
     return BlogPostComment._(
-      data: BlogPostCommentData.fromJsonLegacy(jsonMap),
+      data: BlogPostCommentData.fromBitrixJson(jsonMap),
       ratingList:
           jsonMap[_BlogPostCommentDataWithRatingsJsonKeys.reaction] != null
-              ? RatingList.fromJsonLegacy(
+              ? RatingList.fromBitrixJson(
                   jsonMap[_BlogPostCommentDataWithRatingsJsonKeys.reaction],
                 )
               : null,
-      userShortInfo: UserShortInfo.fromJsonLegacy(
+      userShortInfo: UserShortInfo.fromBitrixJson(
         jsonMap[_BlogPostCommentDataWithRatingsJsonKeys.author],
       ),
       attachFiles:

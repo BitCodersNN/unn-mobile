@@ -4,7 +4,7 @@ import 'package:unn_mobile/core/models/common/file_data.dart';
 import 'package:unn_mobile/core/models/feed/rating_list.dart';
 import 'package:unn_mobile/core/models/profile/user_short_info.dart';
 
-class _BlogPostJsonBitrixKeys {
+class _BlogPostBitrixJsonKeys {
   static const String author = 'author';
   static const String attach = 'attach';
   static const String comments = 'comments';
@@ -64,22 +64,22 @@ class BlogPost {
     };
   }
 
-  factory BlogPost.fromJsonLegacy(Map<String, dynamic> jsonMap) {
+  factory BlogPost.fromBitrixJson(Map<String, dynamic> jsonMap) {
     return BlogPost._(
-      data: BlogPostData.fromJsonLegacy(
-        jsonMap[_BlogPostJsonBitrixKeys.post] as Map<String, Object?>,
+      data: BlogPostData.fromBitrixJson(
+        jsonMap[_BlogPostBitrixJsonKeys.post] as Map<String, Object?>,
       ),
-      ratingList: RatingList.fromJsonLegacy(
-        jsonMap[_BlogPostJsonBitrixKeys.ratingList] as Map<String, Object?>,
+      ratingList: RatingList.fromBitrixJson(
+        jsonMap[_BlogPostBitrixJsonKeys.ratingList] as Map<String, Object?>,
       ),
-      userShortInfo: UserShortInfo.fromJsonLegacy(
-        jsonMap[_BlogPostJsonBitrixKeys.author],
+      userShortInfo: UserShortInfo.fromBitrixJson(
+        jsonMap[_BlogPostBitrixJsonKeys.author],
       ),
-      attachFiles: (jsonMap[_BlogPostJsonBitrixKeys.attach] as List)
+      attachFiles: (jsonMap[_BlogPostBitrixJsonKeys.attach] as List)
           .map((item) => FileData.fromBitrixJson(item))
           .toList(),
-      comments: (jsonMap[_BlogPostJsonBitrixKeys.comments] as List)
-          .map((comment) => BlogPostComment.fromJsonLegacy(comment))
+      comments: (jsonMap[_BlogPostBitrixJsonKeys.comments] as List)
+          .map((comment) => BlogPostComment.fromBitrixJson(comment))
           .toList(),
     );
   }
