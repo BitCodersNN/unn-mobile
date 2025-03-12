@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:unn_mobile/core/constants/api/path.dart';
 import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/misc/dio_options_factory/options_with_expected_type_factory.dart';
+import 'package:unn_mobile/core/misc/json_iterable_parser.dart';
 import 'package:unn_mobile/core/models/schedule/schedule_filter.dart';
 import 'package:unn_mobile/core/models/schedule/subject.dart';
 import 'package:unn_mobile/core/services/interfaces/schedule/schedule_service.dart';
@@ -48,14 +49,11 @@ class ScheduleServiceImpl implements ScheduleService {
       _loggerService.logError(error, stackTrace);
       return null;
     }
-    final List<dynamic> jsonList = response.data;
 
-    final List<Subject> schedule = [];
-
-    for (final jsonMap in jsonList) {
-      schedule.add(Subject.fromJson(jsonMap));
-    }
-
-    return schedule;
+    return parseJsonIterable<Subject>(
+      response.data,
+      Subject.fromJson,
+      _loggerService,
+    );
   }
 }
