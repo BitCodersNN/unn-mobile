@@ -59,16 +59,15 @@ class DistanceCourseServiceImpl implements DistanceCourseService {
   DistanceCourse _processCourse(Map<String, dynamic> course) {
     final firstMaterialData = (course.values.first as List).first;
 
-    course[KeysForSemesterJsonConverter.semester] =
-        firstMaterialData[KeysForSemesterJsonConverter.semester];
-    course[KeysForSemesterJsonConverter.year] =
-        firstMaterialData[KeysForSemesterJsonConverter.year];
-    course[KeysForDistanceCourseJsonConverter.discipline] =
-        firstMaterialData[KeysForDistanceCourseJsonConverter.discipline];
-    course[KeysForDistanceCourseJsonConverter.login] =
-        firstMaterialData[KeysForDistanceCourseJsonConverter.login];
-    course[KeysForDistanceCourseJsonConverter.groups] =
-        firstMaterialData[KeysForDistanceCourseJsonConverter.groups];
+    course[SemesterJsonKeys.semester] =
+        firstMaterialData[SemesterJsonKeys.semester];
+    course[SemesterJsonKeys.year] = firstMaterialData[SemesterJsonKeys.year];
+    course[DistanceCourseJsonKeys.discipline] =
+        firstMaterialData[DistanceCourseJsonKeys.discipline];
+    course[DistanceCourseJsonKeys.login] =
+        firstMaterialData[DistanceCourseJsonKeys.login];
+    course[DistanceCourseJsonKeys.groups] =
+        firstMaterialData[DistanceCourseJsonKeys.groups];
 
     return DistanceCourse.fromJson(course);
   }

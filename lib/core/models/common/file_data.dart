@@ -1,11 +1,11 @@
-class _KeysForFileDataJsonConverterLegacy {
+class _FileDataBitrixJsonKeys {
   static const String id = 'ID';
   static const String name = 'NAME';
   static const String size = 'SIZE';
   static const String downloadUrl = 'DOWNLOAD_URL';
 }
 
-class _KeysForFileDataJsonConverter {
+class _FileDataJsonKeys {
   static const String name = 'name';
   static const String size = 'size';
   static const String href = 'href';
@@ -25,32 +25,31 @@ class FileData {
   });
 
   factory FileData.fromJson(Map<String, Object?> jsonMap) {
-    final fileName = jsonMap[_KeysForFileDataJsonConverter.name] as String;
+    final fileName = jsonMap[_FileDataJsonKeys.name] as String;
     return FileData(
       id: fileName.hashCode,
       name: fileName,
       sizeInBytes: int.parse(
-        jsonMap[_KeysForFileDataJsonConverter.size] as String,
+        jsonMap[_FileDataJsonKeys.size] as String,
       ),
-      downloadUrl: jsonMap[_KeysForFileDataJsonConverter.href] as String,
+      downloadUrl: jsonMap[_FileDataJsonKeys.href] as String,
     );
   }
 
   Map<String, dynamic> toJson() => {
-        _KeysForFileDataJsonConverter.name: name,
-        _KeysForFileDataJsonConverter.size: sizeInBytes.toString(),
-        _KeysForFileDataJsonConverter.href: downloadUrl,
+        _FileDataJsonKeys.name: name,
+        _FileDataJsonKeys.size: sizeInBytes.toString(),
+        _FileDataJsonKeys.href: downloadUrl,
       };
 
-  factory FileData.fromJsonLegacy(Map<String, Object?> jsonMap) {
+  factory FileData.fromBitrixJson(Map<String, Object?> jsonMap) {
     return FileData(
-      id: int.parse(jsonMap[_KeysForFileDataJsonConverterLegacy.id] as String),
-      name: jsonMap[_KeysForFileDataJsonConverterLegacy.name] as String,
+      id: int.parse(jsonMap[_FileDataBitrixJsonKeys.id] as String),
+      name: jsonMap[_FileDataBitrixJsonKeys.name] as String,
       sizeInBytes: int.parse(
-        jsonMap[_KeysForFileDataJsonConverterLegacy.size] as String,
+        jsonMap[_FileDataBitrixJsonKeys.size] as String,
       ),
-      downloadUrl:
-          jsonMap[_KeysForFileDataJsonConverterLegacy.downloadUrl] as String,
+      downloadUrl: jsonMap[_FileDataBitrixJsonKeys.downloadUrl] as String,
     );
   }
 }

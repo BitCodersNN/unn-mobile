@@ -1,4 +1,4 @@
-class _ScheduleSearchSuggestionItemKeys {
+class _ScheduleSearchSuggestionJsonKeys {
   static const String id = 'id';
   static const String label = 'label';
   static const String description = 'description';
@@ -24,17 +24,17 @@ class ScheduleSearchSuggestionItem {
 
   factory ScheduleSearchSuggestionItem.fromJson(Map<String, Object?> jsonMap) {
     return ScheduleSearchSuggestionItem(
-      jsonMap[_ScheduleSearchSuggestionItemKeys.id] as String,
-      jsonMap[_ScheduleSearchSuggestionItemKeys.label] as String,
-      jsonMap[_ScheduleSearchSuggestionItemKeys.description] as String,
+      jsonMap[_ScheduleSearchSuggestionJsonKeys.id] as String,
+      jsonMap[_ScheduleSearchSuggestionJsonKeys.label] as String,
+      jsonMap[_ScheduleSearchSuggestionJsonKeys.description] as String,
     );
   }
 
   Map<String, Object?> toJson() {
     return {
-      _ScheduleSearchSuggestionItemKeys.id: _id,
-      _ScheduleSearchSuggestionItemKeys.label: _label,
-      _ScheduleSearchSuggestionItemKeys.description: _description,
+      _ScheduleSearchSuggestionJsonKeys.id: _id,
+      _ScheduleSearchSuggestionJsonKeys.label: _label,
+      _ScheduleSearchSuggestionJsonKeys.description: _description,
     };
   }
 }

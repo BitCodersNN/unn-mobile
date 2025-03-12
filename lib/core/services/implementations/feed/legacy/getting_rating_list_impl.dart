@@ -71,7 +71,7 @@ class GettingRatingListImpl implements GettingRatingList {
 
     RatingList? ratingList;
     try {
-      ratingList = RatingList.fromJsonLegacy(json);
+      ratingList = RatingList.fromBitrixJson(json);
     } catch (e, stackTrace) {
       _loggerService.logError(e, stackTrace);
     }

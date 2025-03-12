@@ -3,7 +3,7 @@ import 'package:unn_mobile/core/models/distance_learning/distance_link_data.dart
 import 'package:unn_mobile/core/models/distance_learning/distance_material_data.dart';
 import 'package:unn_mobile/core/models/distance_learning/semester.dart';
 
-class KeysForDistanceCourseJsonConverter {
+class DistanceCourseJsonKeys {
   static const String discipline = 'discipline';
   static const String login = 'login';
   static const String groups = 'groups';
@@ -29,11 +29,9 @@ class DistanceCourse {
   factory DistanceCourse.fromJson(Map<String, Object?> jsonMap) =>
       DistanceCourse(
         semester: Semester.fromJson(jsonMap),
-        discipline:
-            jsonMap[KeysForDistanceCourseJsonConverter.discipline] as String,
-        employeeLogin:
-            jsonMap[KeysForDistanceCourseJsonConverter.login] as String,
-        groups: (jsonMap[KeysForDistanceCourseJsonConverter.groups] as String)
+        discipline: jsonMap[DistanceCourseJsonKeys.discipline] as String,
+        employeeLogin: jsonMap[DistanceCourseJsonKeys.login] as String,
+        groups: (jsonMap[DistanceCourseJsonKeys.groups] as String)
             .split('|')
             .where((element) => element.isNotEmpty)
             .toSet()
@@ -43,22 +41,18 @@ class DistanceCourse {
 
   Map<String, Object?> toJson() => {
         ...semester.toJson(),
-        KeysForDistanceCourseJsonConverter.discipline: discipline,
-        KeysForDistanceCourseJsonConverter.login: employeeLogin,
-        KeysForDistanceCourseJsonConverter.groups: groups.join('|'),
-        KeysForDistanceCourseJsonConverter.files:
+        DistanceCourseJsonKeys.discipline: discipline,
+        DistanceCourseJsonKeys.login: employeeLogin,
+        DistanceCourseJsonKeys.groups: groups.join('|'),
+        DistanceCourseJsonKeys.files:
             materials.map((file) => file.toJson()).toList(),
       };
 
   static List<DistanceMaterialData> _parseMaterials(
     Map<String, Object?> jsonMap,
   ) {
-    final files =
-        jsonMap[KeysForDistanceCourseJsonConverter.files] as List<dynamic>? ??
-            [];
-    final links =
-        jsonMap[KeysForDistanceCourseJsonConverter.links] as List<dynamic>? ??
-            [];
+    final files = jsonMap[DistanceCourseJsonKeys.files] as List<dynamic>? ?? [];
+    final links = jsonMap[DistanceCourseJsonKeys.links] as List<dynamic>? ?? [];
 
     final fileDataList = files
         .map((materialJson) => DistanceFileData.fromJson(materialJson))

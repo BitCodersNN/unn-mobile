@@ -2,7 +2,7 @@ import 'package:unn_mobile/core/models/certificate/practice_order.dart';
 import 'package:unn_mobile/core/models/certificate/certificate.dart';
 import 'package:unn_mobile/core/models/certificate/certificate_types_info.dart';
 
-class _KeysForCertificatesJsonConverter {
+class _CertificatesJsonKeys {
   static const String practices = 'practices';
   static const String practice = 'practice';
 }
@@ -17,7 +17,7 @@ class Certificates {
   factory Certificates.fromJson(Map<String, Object?> jsonMap) {
     final certificates = <Certificate>[];
     jsonMap.forEach((certificateType, certificate) {
-      if (certificateType == _KeysForCertificatesJsonConverter.practices) {
+      if (certificateType == _CertificatesJsonKeys.practices) {
         certificates.addAll(_parsePracticeCertificates(certificate as List));
       } else if (certificateTypesInfo.containsKey(certificateType)) {
         final certificateJson = _createCertificateJson(
@@ -27,11 +27,10 @@ class Certificates {
         certificates.add(Certificate.fromJson(certificateJson));
       }
     });
-    if ((jsonMap[_KeysForCertificatesJsonConverter.practice] as String)
-        .isNotEmpty) {
+    if ((jsonMap[_CertificatesJsonKeys.practice] as String).isNotEmpty) {
       certificates.add(
         Certificate.fromPracticeUrl(
-          jsonMap[_KeysForCertificatesJsonConverter.practice]! as String,
+          jsonMap[_CertificatesJsonKeys.practice]! as String,
         ),
       );
     }
@@ -56,7 +55,7 @@ class Certificates {
     final certificateJson =
         Map<String, Object?>.from(certificateTypesInfo[certificateType]!);
 
-    certificateJson[KeysForCertificateJsonConverter.certificatePath] =
+    certificateJson[CertificateJsonKeys.certificatePath] =
         certificateUri?.isNotEmpty == true
             ? Uri.parse(certificateUri!).path.substring(1)
             : '';
@@ -67,13 +66,12 @@ class Certificates {
   static Map<String, Object?> _createPracticeCertificateJson(
     Map<String, Object?> practice,
   ) {
-    final certificateUri =
-        practice[_KeysForCertificatesJsonConverter.practice] as String?;
+    final certificateUri = practice[_CertificatesJsonKeys.practice] as String?;
     final practiceReferenceJson = Map<String, Object?>.from(practice);
     practiceReferenceJson.addAll(
-      certificateTypesInfo[_KeysForCertificatesJsonConverter.practices]!,
+      certificateTypesInfo[_CertificatesJsonKeys.practices]!,
     );
-    practiceReferenceJson[KeysForCertificateJsonConverter.certificatePath] =
+    practiceReferenceJson[CertificateJsonKeys.certificatePath] =
         certificateUri?.isNotEmpty == true
             ? Uri.parse(certificateUri!).path.substring(1)
             : '';

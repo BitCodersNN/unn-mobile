@@ -1,4 +1,4 @@
-class KeysForSemesterJsonConverter {
+class SemesterJsonKeys {
   static const String semester = 'semester';
   static const String year = 'year';
 }
@@ -14,15 +14,15 @@ class Semester {
 
   factory Semester.fromJson(Map<String, Object?> jsonMap) => Semester(
         semester: int.parse(
-          jsonMap[KeysForSemesterJsonConverter.semester] as String,
+          jsonMap[SemesterJsonKeys.semester] as String,
         ),
         year: int.parse(
-          jsonMap[KeysForSemesterJsonConverter.year] as String,
+          jsonMap[SemesterJsonKeys.year] as String,
         ),
       );
 
   Map<String, Object?> toJson() => {
-        KeysForSemesterJsonConverter.semester: semester.toString(),
-        KeysForSemesterJsonConverter.year: year.toString(),
+        SemesterJsonKeys.semester: semester.toString(),
+        SemesterJsonKeys.year: year.toString(),
       };
 }

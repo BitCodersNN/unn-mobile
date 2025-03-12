@@ -4,7 +4,7 @@ import 'package:unn_mobile/core/models/common/file_data.dart';
 import 'package:unn_mobile/core/models/feed/rating_list.dart';
 import 'package:unn_mobile/core/models/profile/user_short_info.dart';
 
-class _KeysForBlogPostJsonConverterLegacy {
+class _BlogPostBitrixJsonKeys {
   static const String author = 'author';
   static const String attach = 'attach';
   static const String comments = 'comments';
@@ -12,7 +12,7 @@ class _KeysForBlogPostJsonConverterLegacy {
   static const String ratingList = 'ratingList';
 }
 
-class _KeysForBlogPostJsonConverter {
+class _BlogPostJsonKeys {
   static const String author = 'author';
   static const String attach = 'attach';
   static const String comments = 'comments';
@@ -38,15 +38,15 @@ class BlogPost {
     return BlogPost._(
       data: BlogPostData.fromJson(jsonMap),
       ratingList: RatingList.fromJson(
-        jsonMap[_KeysForBlogPostJsonConverter.reaction],
+        jsonMap[_BlogPostJsonKeys.reaction],
       ),
       userShortInfo: UserShortInfo.fromJson(
-        jsonMap[_KeysForBlogPostJsonConverter.author],
+        jsonMap[_BlogPostJsonKeys.author],
       ),
-      attachFiles: (jsonMap[_KeysForBlogPostJsonConverter.attach] as List)
+      attachFiles: (jsonMap[_BlogPostJsonKeys.attach] as List)
           .map((item) => FileData.fromJson(item))
           .toList(),
-      comments: (jsonMap[_KeysForBlogPostJsonConverter.comments] as List)
+      comments: (jsonMap[_BlogPostJsonKeys.comments] as List)
           .map((comment) => BlogPostComment.fromJson(comment))
           .toList(),
     );
@@ -55,33 +55,31 @@ class BlogPost {
   Map<String, dynamic> toJson() {
     return {
       ...data.toJson(),
-      _KeysForBlogPostJsonConverter.reaction: ratingList.toJson(),
-      _KeysForBlogPostJsonConverter.author: userShortInfo.toJson(),
-      _KeysForBlogPostJsonConverter.attach:
+      _BlogPostJsonKeys.reaction: ratingList.toJson(),
+      _BlogPostJsonKeys.author: userShortInfo.toJson(),
+      _BlogPostJsonKeys.attach:
           attachFiles.map((file) => file.toJson()).toList(),
-      _KeysForBlogPostJsonConverter.comments:
+      _BlogPostJsonKeys.comments:
           comments.map((comment) => comment.toJson()).toList(),
     };
   }
 
-  factory BlogPost.fromJsonLegacy(Map<String, dynamic> jsonMap) {
+  factory BlogPost.fromBitrixJson(Map<String, dynamic> jsonMap) {
     return BlogPost._(
-      data: BlogPostData.fromJsonLegacy(
-        jsonMap[_KeysForBlogPostJsonConverterLegacy.post]
-            as Map<String, Object?>,
+      data: BlogPostData.fromBitrixJson(
+        jsonMap[_BlogPostBitrixJsonKeys.post] as Map<String, Object?>,
       ),
-      ratingList: RatingList.fromJsonLegacy(
-        jsonMap[_KeysForBlogPostJsonConverterLegacy.ratingList]
-            as Map<String, Object?>,
+      ratingList: RatingList.fromBitrixJson(
+        jsonMap[_BlogPostBitrixJsonKeys.ratingList] as Map<String, Object?>,
       ),
-      userShortInfo: UserShortInfo.fromJsonLegacy(
-        jsonMap[_KeysForBlogPostJsonConverterLegacy.author],
+      userShortInfo: UserShortInfo.fromBitrixJson(
+        jsonMap[_BlogPostBitrixJsonKeys.author],
       ),
-      attachFiles: (jsonMap[_KeysForBlogPostJsonConverterLegacy.attach] as List)
-          .map((item) => FileData.fromJsonLegacy(item))
+      attachFiles: (jsonMap[_BlogPostBitrixJsonKeys.attach] as List)
+          .map((item) => FileData.fromBitrixJson(item))
           .toList(),
-      comments: (jsonMap[_KeysForBlogPostJsonConverterLegacy.comments] as List)
-          .map((comment) => BlogPostComment.fromJsonLegacy(comment))
+      comments: (jsonMap[_BlogPostBitrixJsonKeys.comments] as List)
+          .map((comment) => BlogPostComment.fromBitrixJson(comment))
           .toList(),
     );
   }

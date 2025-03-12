@@ -31,7 +31,7 @@ enum SubjectType {
   consult,
 }
 
-class KeysForSubjectJsonConverter {
+class _SubjectJsonKeys {
   static const String discipline = 'discipline';
   static const String kindOfWork = 'kindOfWork';
   static const String auditorium = 'auditorium';
@@ -93,26 +93,23 @@ class Subject {
   }
 
   factory Subject.fromJson(Map<String, dynamic> jsonMap) {
-    final String date =
-        jsonMap[KeysForSubjectJsonConverter.date] as String? ?? '';
+    final String date = jsonMap[_SubjectJsonKeys.date] as String? ?? '';
     final String beginLesson =
-        jsonMap[KeysForSubjectJsonConverter.beginLesson] as String? ?? '';
+        jsonMap[_SubjectJsonKeys.beginLesson] as String? ?? '';
     final String endLesson =
-        jsonMap[KeysForSubjectJsonConverter.endLesson] as String? ?? '';
+        jsonMap[_SubjectJsonKeys.endLesson] as String? ?? '';
 
     final String discipline =
-        jsonMap[KeysForSubjectJsonConverter.discipline] as String? ?? '';
+        jsonMap[_SubjectJsonKeys.discipline] as String? ?? '';
 
     final String kindOfWork =
-        jsonMap[KeysForSubjectJsonConverter.kindOfWork] as String? ?? '';
+        jsonMap[_SubjectJsonKeys.kindOfWork] as String? ?? '';
     final String auditorium =
-        jsonMap[KeysForSubjectJsonConverter.auditorium] as String? ?? '';
-    final String building =
-        jsonMap[KeysForSubjectJsonConverter.building] as String? ?? '';
+        jsonMap[_SubjectJsonKeys.auditorium] as String? ?? '';
+    final String building = jsonMap[_SubjectJsonKeys.building] as String? ?? '';
     final String streamString =
-        jsonMap[KeysForSubjectJsonConverter.stream] as String? ?? '';
-    final String lecturer =
-        jsonMap[KeysForSubjectJsonConverter.lecturer] as String? ?? '';
+        jsonMap[_SubjectJsonKeys.stream] as String? ?? '';
+    final String lecturer = jsonMap[_SubjectJsonKeys.lecturer] as String? ?? '';
 
     return Subject(
       name: discipline,
@@ -132,15 +129,15 @@ class Subject {
 
   Map<String, dynamic> toJson() {
     return {
-      KeysForSubjectJsonConverter.date: dateTimeRange.start.toString(),
-      KeysForSubjectJsonConverter.beginLesson: _formatTime(dateTimeRange.start),
-      KeysForSubjectJsonConverter.endLesson: _formatTime(dateTimeRange.end),
-      KeysForSubjectJsonConverter.discipline: name,
-      KeysForSubjectJsonConverter.kindOfWork: subjectType,
-      KeysForSubjectJsonConverter.auditorium: address.auditorium,
-      KeysForSubjectJsonConverter.building: address.building,
-      KeysForSubjectJsonConverter.stream: groups.join('|'),
-      KeysForSubjectJsonConverter.lecturer: lecturer,
+      _SubjectJsonKeys.date: dateTimeRange.start.toString(),
+      _SubjectJsonKeys.beginLesson: _formatTime(dateTimeRange.start),
+      _SubjectJsonKeys.endLesson: _formatTime(dateTimeRange.end),
+      _SubjectJsonKeys.discipline: name,
+      _SubjectJsonKeys.kindOfWork: subjectType,
+      _SubjectJsonKeys.auditorium: address.auditorium,
+      _SubjectJsonKeys.building: address.building,
+      _SubjectJsonKeys.stream: groups.join('|'),
+      _SubjectJsonKeys.lecturer: lecturer,
     };
   }
 

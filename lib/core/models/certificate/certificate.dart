@@ -1,6 +1,6 @@
 import 'package:unn_mobile/core/models/certificate/certificate_types_info.dart';
 
-class KeysForCertificateJsonConverter {
+class CertificateJsonKeys {
   static const String name = 'name';
   static const String sendtype = 'sendtype';
   static const String description = 'description';
@@ -26,31 +26,26 @@ class Certificate {
       certificatePath.isEmpty ? null : '$certificatePath.sig';
 
   factory Certificate.fromJson(Map<String, Object?> jsonMap) => Certificate(
-        name: jsonMap[KeysForCertificateJsonConverter.name] as String,
-        sendtype: jsonMap[KeysForCertificateJsonConverter.sendtype] as int,
-        description:
-            jsonMap[KeysForCertificateJsonConverter.description] as String,
-        certificatePath:
-            jsonMap[KeysForCertificateJsonConverter.certificatePath] as String,
+        name: jsonMap[CertificateJsonKeys.name] as String,
+        sendtype: jsonMap[CertificateJsonKeys.sendtype] as int,
+        description: jsonMap[CertificateJsonKeys.description] as String,
+        certificatePath: jsonMap[CertificateJsonKeys.certificatePath] as String,
       );
 
   factory Certificate.fromPracticeUrl(String practiceUrl) {
     final practiceTypeInfo =
-        certificateTypesInfo[KeysForCertificateJsonConverter.practices];
+        certificateTypesInfo[CertificateJsonKeys.practices];
     return Certificate(
       name: 'Предписание на практику',
-      sendtype:
-          practiceTypeInfo?[KeysForCertificateJsonConverter.sendtype] as int,
-      description:
-          practiceTypeInfo?[KeysForCertificateJsonConverter.description]
-              as String,
+      sendtype: practiceTypeInfo?[CertificateJsonKeys.sendtype] as int,
+      description: practiceTypeInfo?[CertificateJsonKeys.description] as String,
       certificatePath: practiceUrl,
     );
   }
   Map<String, dynamic> toJson() => {
-        KeysForCertificateJsonConverter.name: name,
-        KeysForCertificateJsonConverter.sendtype: sendtype,
-        KeysForCertificateJsonConverter.description: description,
-        KeysForCertificateJsonConverter.certificatePath: certificatePath,
+        CertificateJsonKeys.name: name,
+        CertificateJsonKeys.sendtype: sendtype,
+        CertificateJsonKeys.description: description,
+        CertificateJsonKeys.certificatePath: certificatePath,
       };
 }

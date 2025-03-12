@@ -1,6 +1,6 @@
 import 'package:unn_mobile/core/models/profile/user_data.dart';
 
-class _KeysForStudentDataJsonConverter {
+class _StudentDataJsonKeys {
   static const String eduForm = 'edu_form';
   static const String eduStatus = 'edu_status';
   static const String eduCourse = 'edu_course';
@@ -59,50 +59,44 @@ class StudentData extends UserData {
   factory StudentData.fromJson(Map<String, Object?> jsonMap) {
     return StudentData(
       UserData.fromJson(jsonMap),
-      jsonMap[_KeysForStudentDataJsonConverter.eduForm] as String,
-      jsonMap[_KeysForStudentDataJsonConverter.eduStatus] as String,
-      jsonMap[_KeysForStudentDataJsonConverter.eduCourse] as int,
-      jsonMap[_KeysForStudentDataJsonConverter.eduYear] as int,
-      jsonMap[_KeysForStudentDataJsonConverter.eduLevel] as String,
-      (jsonMap[_KeysForStudentDataJsonConverter.faculty]
-              as Map<String, Object?>)[_KeysForStudentDataJsonConverter.title]
-          as String,
-      (jsonMap[_KeysForStudentDataJsonConverter.eduDirection]
-              as Map<String, Object?>)[_KeysForStudentDataJsonConverter.title]
-          as String,
-      (jsonMap[_KeysForStudentDataJsonConverter.eduGroup]
-              as Map<String, Object?>)[_KeysForStudentDataJsonConverter.title]
-          as String,
-      (jsonMap[_KeysForStudentDataJsonConverter.eduSpecialization]
-              as Map<String, Object?>?)?[_KeysForStudentDataJsonConverter.title]
-          as String?,
+      jsonMap[_StudentDataJsonKeys.eduForm] as String,
+      jsonMap[_StudentDataJsonKeys.eduStatus] as String,
+      jsonMap[_StudentDataJsonKeys.eduCourse] as int,
+      jsonMap[_StudentDataJsonKeys.eduYear] as int,
+      jsonMap[_StudentDataJsonKeys.eduLevel] as String,
+      (jsonMap[_StudentDataJsonKeys.faculty]
+          as Map<String, Object?>)[_StudentDataJsonKeys.title] as String,
+      (jsonMap[_StudentDataJsonKeys.eduDirection]
+          as Map<String, Object?>)[_StudentDataJsonKeys.title] as String,
+      (jsonMap[_StudentDataJsonKeys.eduGroup]
+          as Map<String, Object?>)[_StudentDataJsonKeys.title] as String,
+      (jsonMap[_StudentDataJsonKeys.eduSpecialization]
+          as Map<String, Object?>?)?[_StudentDataJsonKeys.title] as String?,
     );
   }
 
   @override
   Map<String, dynamic> toJson() {
     final json = super.toJson();
-    json[_KeysForStudentDataJsonConverter.eduForm] = _eduForm;
-    json[_KeysForStudentDataJsonConverter.eduStatus] = _eduStatus;
-    json[_KeysForStudentDataJsonConverter.eduCourse] = _eduCourse;
-    json[_KeysForStudentDataJsonConverter.eduYear] = _eduYear;
-    json[_KeysForStudentDataJsonConverter.eduLevel] = _eduLevel;
+    json[_StudentDataJsonKeys.eduForm] = _eduForm;
+    json[_StudentDataJsonKeys.eduStatus] = _eduStatus;
+    json[_StudentDataJsonKeys.eduCourse] = _eduCourse;
+    json[_StudentDataJsonKeys.eduYear] = _eduYear;
+    json[_StudentDataJsonKeys.eduLevel] = _eduLevel;
 
-    json[_KeysForStudentDataJsonConverter.faculty] ??= {};
-    json[_KeysForStudentDataJsonConverter.faculty]
-        [_KeysForStudentDataJsonConverter.title] = _faculty;
+    json[_StudentDataJsonKeys.faculty] ??= {};
+    json[_StudentDataJsonKeys.faculty][_StudentDataJsonKeys.title] = _faculty;
 
-    json[_KeysForStudentDataJsonConverter.eduDirection] ??= {};
-    json[_KeysForStudentDataJsonConverter.eduDirection]
-        [_KeysForStudentDataJsonConverter.title] = _eduDirection;
+    json[_StudentDataJsonKeys.eduDirection] ??= {};
+    json[_StudentDataJsonKeys.eduDirection][_StudentDataJsonKeys.title] =
+        _eduDirection;
 
-    json[_KeysForStudentDataJsonConverter.eduGroup] ??= {};
-    json[_KeysForStudentDataJsonConverter.eduGroup]
-        [_KeysForStudentDataJsonConverter.title] = _eduGroup;
+    json[_StudentDataJsonKeys.eduGroup] ??= {};
+    json[_StudentDataJsonKeys.eduGroup][_StudentDataJsonKeys.title] = _eduGroup;
 
-    json[_KeysForStudentDataJsonConverter.eduSpecialization] ??= {};
-    json[_KeysForStudentDataJsonConverter.eduSpecialization]
-        [_KeysForStudentDataJsonConverter.title] = _eduSpecialization;
+    json[_StudentDataJsonKeys.eduSpecialization] ??= {};
+    json[_StudentDataJsonKeys.eduSpecialization][_StudentDataJsonKeys.title] =
+        _eduSpecialization;
     return json;
   }
 }
