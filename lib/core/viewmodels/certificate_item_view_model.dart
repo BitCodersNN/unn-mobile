@@ -32,8 +32,8 @@ class CertificateItemViewModel extends BaseViewModel {
       'с ${_practiceOrder?.practiceDateTimeRange.start.format(DatePattern.ddmmyyyy)} '
       'по ${_practiceOrder?.practiceDateTimeRange.end.format(DatePattern.ddmmyyyy)}';
 
-  void Function()? onSigDownloaded;
-  void Function()? onCertificateDownloaded;
+  void Function(File file)? onSigDownloaded;
+  void Function(File file)? onCertificateDownloaded;
 
   set isViewExpanded(bool value) {
     _isViewExpanded = value;
@@ -88,18 +88,20 @@ class CertificateItemViewModel extends BaseViewModel {
       });
 
   Future<void> download() async => await busyCallAsync(() async {
-        if (await _downloadFile(_certificate?.certificatePath) == null) {
+        final file = await _downloadFile(_certificate?.certificatePath);
+        if (file == null) {
           return;
         }
 
-        onCertificateDownloaded?.call();
+        onCertificateDownloaded?.call(file);
       });
 
   Future<void> downloadSig() async => await busyCallAsync(() async {
-        if (await _downloadFile(_certificate!.certificateSigPath) == null) {
+        final file = await _downloadFile(_certificate!.certificateSigPath);
+        if (file == null) {
           return;
         }
-        onSigDownloaded?.call();
+        onSigDownloaded?.call(file);
       });
 
   Future<File?> _downloadFile(String? path) async {

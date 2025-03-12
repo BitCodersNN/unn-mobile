@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:injector/injector.dart';
+import 'package:mime/mime.dart';
+import 'package:unn_mobile/core/misc/file_helpers/file_functions.dart';
 import 'package:unn_mobile/core/viewmodels/factories/main_page_routes_view_models_factory.dart';
 import 'package:unn_mobile/core/viewmodels/source_course_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/source_item_view_model.dart';
@@ -72,10 +74,9 @@ class SourcePageView extends StatelessWidget {
                               ),
                             );
                           }
-                          if (model.hasError) {
+                          if (model.hasError || model.courses.isEmpty) {
                             return RefreshIndicator(
-                              onRefresh: () async =>
-                                  await model.initCurrentSemester(),
+                              onRefresh: () async => await model.refresh(),
                               child: LayoutBuilder(
                                 builder: (context, constraints) {
                                   return SingleChildScrollView(
@@ -86,7 +87,9 @@ class SourcePageView extends StatelessWidget {
                                         minWidth: constraints.maxWidth,
                                         minHeight: constraints.maxHeight,
                                       ),
-                                      child: Center(child: Text(model.error!)),
+                                      child: Center(
+                                        child: Text(model.error ?? ''),
+                                      ),
                                     ),
                                   );
                                 },
@@ -165,6 +168,21 @@ class SourceItemView extends StatelessWidget {
           );
         }
         return const Text('Неизвестный тип материала');
+      },
+      onModelReady: (p0) {
+        if (model.isFile) {
+          model.onFileDownloaded = (file) {
+            final mimeType = lookupMimeType(file.path);
+            if (mimeType != null) {
+              viewFile(file.path, mimeType);
+            }
+            ScaffoldMessenger.maybeOf(context)?.showSnackBar(
+              const SnackBar(
+                content: Text('Файл сохранён'),
+              ),
+            );
+          };
+        }
       },
     );
   }

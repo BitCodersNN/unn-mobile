@@ -4,6 +4,6 @@ abstract interface class DistanceLearningDownloaderService {
   Future<File?> downloadFile({
     required String fileName,
     required String downloadUrl,
-    required bool force,
+    bool force,
   });
 }

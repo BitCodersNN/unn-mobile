@@ -580,6 +580,7 @@ void registerDependencies() {
       get<DistanceCourseService>(),
       get<AuthDataProvider>(),
       get<SourceAuthorisationService>(),
+      get<DistanceLearningDownloaderService>(),
     ),
   );
 }

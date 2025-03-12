@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:mime/mime.dart';
+import 'package:unn_mobile/core/misc/file_helpers/file_functions.dart';
 import 'package:unn_mobile/core/viewmodels/certificate_item_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/certificates_view_model.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
@@ -250,12 +252,20 @@ class _OnlineCertificatesScreenViewState
       },
       model: viewModel,
       onModelReady: (model) {
-        model.onSigDownloaded = () {
+        model.onSigDownloaded = (file) {
+          final mimeType = lookupMimeType(file.path);
+          if (mimeType != null) {
+            viewFile(file.path, mimeType);
+          }
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Подпись загружена успешно')),
           );
         };
-        model.onCertificateDownloaded = () {
+        model.onCertificateDownloaded = (file) {
+          final mimeType = lookupMimeType(file.path);
+          if (mimeType != null) {
+            viewFile(file.path, mimeType);
+          }
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Файл загружен успешно')),
           );
