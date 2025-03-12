@@ -14,11 +14,11 @@ class SourceItemViewModel extends BaseViewModel {
   final DistanceFileData? _fileData;
   SourceItemViewModel(DistanceMaterialData material)
       : _material = material,
-        _linkData = material as DistanceLinkData,
-        _fileData = material as DistanceFileData;
+        _linkData = material is DistanceLinkData ? material : null,
+        _fileData = material is DistanceFileData ? material : null;
 
-  bool get isFile => _fileData != null;
-  bool get isLink => _linkData != null;
+  bool get isFile => _fileData is DistanceFileData;
+  bool get isLink => _linkData is DistanceLinkData;
 
   String get comment => _material.comment;
 

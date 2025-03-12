@@ -116,6 +116,7 @@ import 'package:unn_mobile/core/viewmodels/main_page_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/schedule_screen_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/schedule_tab_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/settings_screen_view_model.dart';
+import 'package:unn_mobile/core/viewmodels/source_page_view_model.dart';
 
 void registerDependencies() {
   final injector = Injector.appInstance;
@@ -571,6 +572,14 @@ void registerDependencies() {
   injector.registerDependency(
     () => ScheduleScreenViewModel(
       get<CurrentUserSyncStorage>(),
+    ),
+  );
+  injector.registerDependency(
+    () => SourcePageViewModel(
+      get<DistanceCourseSemesterService>(),
+      get<DistanceCourseService>(),
+      get<AuthDataProvider>(),
+      get<SourceAuthorisationService>(),
     ),
   );
 }
