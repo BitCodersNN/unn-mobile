@@ -40,8 +40,9 @@ class LoadingPageConfigServiceImpl implements LoadingPageConfigService {
       return null;
     }
 
+    final loadingPages = jsonMap.values.expand((list) => list).toList();
     return parseJsonIterable<LoadingPageModel>(
-      jsonMap.values,
+      loadingPages,
       LoadingPageModel.fromJson,
       _loggerService,
     );
