@@ -117,18 +117,6 @@ class MainActivity: FlutterActivity() {
             eventSink = null
         }
     }
-    // use ContentResolver to write file by Uri
-    // private fun copyFileToExternalStorage(destination: Uri) {
-    //     //val yourFile: File = 
-
-    //     try {
-    //         val outputStream = contentResolver.openOutputStream(destination) ?: return
-    //         outputStream.write(yourFile.readBytes())
-    //         outputStream.close()
-    //     } catch (e: IOException) {
-    //         e.printStackTrace()
-    //     }
-    // }
 
     private fun viewFileFromUri(uri: Uri, mimeType: String) {
         val fileIntent = Intent(Intent.ACTION_VIEW)
