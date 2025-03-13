@@ -25,24 +25,26 @@ class _MessageDialogState extends State<MessageDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog.adaptive(
-      content: Column(
-        children: [
-          widget.message,
-          if (widget.canBeIgnored && widget.messageKey.isNotEmpty)
-            Row(
-              children: [
-                Checkbox(
-                  value: ignoreCheckbox,
-                  onChanged: (value) {
-                    setState(() {
-                      ignoreCheckbox = value ?? false;
-                    });
-                  },
-                ),
-                const Text('Больше не показывать'),
-              ],
-            ),
-        ],
+      content: SingleChildScrollView(
+        child: Column(
+          children: [
+            widget.message,
+            if (widget.canBeIgnored && widget.messageKey.isNotEmpty)
+              Row(
+                children: [
+                  Checkbox(
+                    value: ignoreCheckbox,
+                    onChanged: (value) {
+                      setState(() {
+                        ignoreCheckbox = value ?? false;
+                      });
+                    },
+                  ),
+                  const Text('Больше не показывать'),
+                ],
+              ),
+          ],
+        ),
       ),
       contentPadding: const EdgeInsets.fromLTRB(20, 20, 20, 12),
       buttonPadding: EdgeInsets.zero,

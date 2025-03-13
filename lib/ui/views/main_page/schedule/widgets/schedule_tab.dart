@@ -197,7 +197,13 @@ class ScheduleTabState extends State<ScheduleTab>
                               final bool result = await model.exportSchedule(
                                 _exportRanges.keys.toList()[selectedRange],
                               );
-
+                              if (context.mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('Экспорт завершён'),
+                                  ),
+                                );
+                              }
                               await showMessage(
                                 // ignore: use_build_context_synchronously
                                 context,
