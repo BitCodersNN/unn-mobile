@@ -15,10 +15,13 @@ import 'package:unn_mobile/core/misc/current_user_sync_storage.dart';
 import 'package:unn_mobile/core/models/feed/blog_post_type.dart';
 import 'package:unn_mobile/core/models/common/online_status_data.dart';
 import 'package:unn_mobile/core/providers/implementations/authorisation/authorisation_data_provider_impl.dart';
+import 'package:unn_mobile/core/providers/implementations/common/message_ignored_keys_provider_impl.dart';
+import 'package:unn_mobile/core/providers/interfaces/common/message_ignored_keys_provider.dart';
 import 'package:unn_mobile/core/services/implementations/authorisation/source_authorisation_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/authorisation/unn_authorisation_refresh_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/authorisation/unn_authorisation_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/certificate/certificate_downloader_service_impl.dart';
+import 'package:unn_mobile/core/services/implementations/common/message_ignore_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/distance_learning/distance_course_semester_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/distance_learning/distance_course_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/distance_learning/distance_learning_downloader_service_impl.dart';
@@ -62,6 +65,7 @@ import 'package:unn_mobile/core/services/interfaces/authorisation/authorisation_
 import 'package:unn_mobile/core/services/interfaces/authorisation/source_authorisation_service.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation/unn_authorisation_service.dart';
 import 'package:unn_mobile/core/services/interfaces/certificate/certificate_downloader_service.dart';
+import 'package:unn_mobile/core/services/interfaces/common/message_ignore_service.dart';
 import 'package:unn_mobile/core/services/interfaces/distance_learning/distance_course_semester_service.dart';
 import 'package:unn_mobile/core/services/interfaces/distance_learning/distance_course_service.dart';
 import 'package:unn_mobile/core/services/interfaces/distance_learning/distance_learning_downloader_service.dart';
@@ -468,6 +472,13 @@ void registerDependencies() {
     ),
   );
 
+  injector.registerSingleton<MessageIgnoredKeysProvider>(
+    () => MessageIgnoredKeysProviderImpl(get<StorageService>()),
+  );
+
+  injector.registerSingleton<MessageIgnoreService>(
+    () => MessageIgnoreServiceImpl(get<MessageIgnoredKeysProvider>()),
+  );
   //
   // Factories
   //
@@ -581,6 +592,7 @@ void registerDependencies() {
       get<AuthDataProvider>(),
       get<SourceAuthorisationService>(),
       get<DistanceLearningDownloaderService>(),
+      get<WebinarService>(),
     ),
   );
 }

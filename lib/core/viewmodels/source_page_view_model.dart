@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/material.dart';
 import 'package:unn_mobile/core/misc/authorisation/authorisation_request_result.dart';
 import 'package:unn_mobile/core/models/distance_learning/semester.dart';
 import 'package:unn_mobile/core/providers/interfaces/authorisation/auth_data_provider.dart';
@@ -7,22 +8,30 @@ import 'package:unn_mobile/core/services/interfaces/authorisation/source_authori
 import 'package:unn_mobile/core/services/interfaces/distance_learning/distance_course_semester_service.dart';
 import 'package:unn_mobile/core/services/interfaces/distance_learning/distance_course_service.dart';
 import 'package:unn_mobile/core/services/interfaces/distance_learning/distance_learning_downloader_service.dart';
+import 'package:unn_mobile/core/services/interfaces/distance_learning/webinar_service.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/source_course_view_model.dart';
+import 'package:unn_mobile/core/viewmodels/source_webinar_view_model.dart';
 
 class SourcePageViewModel extends BaseViewModel {
   final DistanceCourseSemesterService _semesterService;
   final DistanceCourseService _courseService;
   final AuthDataProvider _authDataProvider;
   final SourceAuthorisationService _sourceAuthorisationService;
+  final WebinarService _webinarService;
   final DistanceLearningDownloaderService _downloader;
 
   final Map<Semester, Iterable<SourceCourseViewModel>> _materialsMap = {};
+  final Map<Semester, Map<DateTime, List<SourceWebinarViewModel>>>
+      _webinarsMap = {};
 
-  String? error;
-  bool get hasError => error != null;
+  String? materialsError;
+  String? webinarsError;
 
-  Semester? _currentSemester;
+  bool get hasMaterialsError => materialsError != null;
+  bool get hasWebinarsError => webinarsError != null;
+
+  int? _currentSemester;
 
   SourcePageViewModel(
     this._semesterService,
@@ -30,29 +39,35 @@ class SourcePageViewModel extends BaseViewModel {
     this._authDataProvider,
     this._sourceAuthorisationService,
     this._downloader,
+    this._webinarService,
   );
 
-  Iterable<Semester> _semesters = [];
+  List<Semester> _semesters = [];
 
-  Iterable<Semester> get semesters => _semesters;
+  List<Semester> get semesters => _semesters;
 
-  Semester? get currentSemester => _currentSemester;
+  Semester? get currentSemester =>
+      _currentSemester == null ? null : _semesters[_currentSemester!];
+
+  int? get currentSemesterIndex => _currentSemester;
 
   Iterable<SourceCourseViewModel> get courses =>
-      _materialsMap[_currentSemester] ?? [];
+      _materialsMap[currentSemester] ?? [];
+
+  Map<DateTime, List<SourceWebinarViewModel>> get webinars =>
+      _webinarsMap[currentSemester] ?? {};
 
   void init() {
     busyCallAsync(_init);
   }
 
   FutureOr<void> _init() async {
-    error = null;
+    resetAllErrors();
     final data = await _authDataProvider.getData();
     final authRes =
         await _sourceAuthorisationService.auth(data.login, data.password);
     if (authRes != AuthRequestResult.success) {
-      error = 'Не удалось авторизоваться';
-
+      setAllErrors('Не удалось авторизоваться');
       return;
     }
 
@@ -65,7 +80,10 @@ class SourcePageViewModel extends BaseViewModel {
       },
     );
     _semesters = semesters ?? [];
-    _currentSemester = _semesters.lastOrNull;
+    _currentSemester = //
+        _semesters.isNotEmpty
+            ? _semesters.length - 1 //
+            : null;
     await _initCurrentSemester();
   }
 
@@ -78,16 +96,72 @@ class SourcePageViewModel extends BaseViewModel {
       });
 
   FutureOr<void> _initCurrentSemester() async {
-    if (_currentSemester == null) {
-      error = 'Не удалось загрузить';
+    if (currentSemester == null) {
+      setAllErrors('Не удалось загрузить');
       return;
     }
+    resetAllErrors();
     final courses =
-        await _courseService.getDistanceCourses(semester: _currentSemester!);
-    _materialsMap[_currentSemester!] =
+        await _courseService.getDistanceCourses(semester: currentSemester!);
+    _materialsMap[currentSemester!] =
         courses?.map((c) => SourceCourseViewModel(c, _downloader)) ?? [];
     if (courses == null) {
-      error = 'Не удалось загрузить';
+      setMaterialsError('Не удалось загрузить');
     }
+
+    final webinars =
+        await _webinarService.getWebinars(semester: currentSemester!);
+    final groupedWebinars = <DateTime, List<SourceWebinarViewModel>>{};
+
+    if (webinars == null) {
+      setWebinarsError('Не удалось загрузить');
+      return;
+    }
+
+    for (final w in webinars) {
+      final date = DateUtils.dateOnly(w.dateTimeRange.start);
+      final list = groupedWebinars[date] ?? [];
+      list.add(SourceWebinarViewModel(w));
+      groupedWebinars[date] = list;
+    }
+
+    _webinarsMap[currentSemester!] = groupedWebinars;
+  }
+
+  FutureOr<void> setSemester(int semester) async {
+    if (semester < 0 || semester >= semesters.length) {
+      return;
+    }
+    _currentSemester = semester;
+    if (_materialsMap[currentSemester]?.isEmpty ?? true) {
+      await refresh();
+    }
+    notifyListeners();
+  }
+
+  void resetMaterialsError() {
+    materialsError = null;
+  }
+
+  void resetWebinarsError() {
+    webinarsError = null;
+  }
+
+  void setMaterialsError(String error) {
+    materialsError = error;
+  }
+
+  void setWebinarsError(String error) {
+    webinarsError = error;
+  }
+
+  void resetAllErrors() {
+    resetMaterialsError();
+    resetWebinarsError();
+  }
+
+  void setAllErrors(String error) {
+    setMaterialsError(error);
+    setWebinarsError(error);
   }
 }

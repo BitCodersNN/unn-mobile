@@ -24,7 +24,7 @@ class WebinarServiceImpl implements WebinarService {
   );
 
   @override
-  Future<List?> getWebinars({
+  Future<List<Webinar>?> getWebinars({
     required Semester semester,
   }) async {
     Response response;

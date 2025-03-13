@@ -46,7 +46,7 @@ class DistanceCourseServiceImpl implements DistanceCourseService {
     final jsonMap = jsonDecode(response.data.substring(6));
 
     if (jsonMap is List) {
-      return null;
+      return [];
     }
 
     return parseJsonIterable<DistanceCourse>(

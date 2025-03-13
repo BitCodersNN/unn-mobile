@@ -20,6 +20,6 @@ extension DateTimeExtensions on DateTime {
   }
 
   String format(String pattern) {
-    return DateFormat(pattern).format(this);
+    return DateFormat(pattern, 'ru-RU').format(this);
   }
 }
