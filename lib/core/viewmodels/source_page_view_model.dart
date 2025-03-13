@@ -13,6 +13,11 @@ import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/source_course_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/source_webinar_view_model.dart';
 
+class _ErrorTexts {
+  static const failedAuth = 'Не удалось авторизоваться';
+  static const failedLoad = 'Не удалось загрузить';
+}
+
 class SourcePageViewModel extends BaseViewModel {
   final DistanceCourseSemesterService _semesterService;
   final DistanceCourseService _courseService;
@@ -67,7 +72,7 @@ class SourcePageViewModel extends BaseViewModel {
     final authRes =
         await _sourceAuthorisationService.auth(data.login, data.password);
     if (authRes != AuthRequestResult.success) {
-      setAllErrors('Не удалось авторизоваться');
+      setAllErrors(_ErrorTexts.failedAuth);
       return;
     }
 
@@ -97,7 +102,7 @@ class SourcePageViewModel extends BaseViewModel {
 
   FutureOr<void> _initCurrentSemester() async {
     if (currentSemester == null) {
-      setAllErrors('Не удалось загрузить');
+      setAllErrors(_ErrorTexts.failedLoad);
       return;
     }
     resetAllErrors();
@@ -106,7 +111,7 @@ class SourcePageViewModel extends BaseViewModel {
     _materialsMap[currentSemester!] =
         courses?.map((c) => SourceCourseViewModel(c, _downloader)) ?? [];
     if (courses == null) {
-      setMaterialsError('Не удалось загрузить');
+      setMaterialsError(_ErrorTexts.failedLoad);
     }
 
     final webinars =
@@ -114,7 +119,7 @@ class SourcePageViewModel extends BaseViewModel {
     final groupedWebinars = <DateTime, List<SourceWebinarViewModel>>{};
 
     if (webinars == null) {
-      setWebinarsError('Не удалось загрузить');
+      setWebinarsError(_ErrorTexts.failedLoad);
       return;
     }
 
