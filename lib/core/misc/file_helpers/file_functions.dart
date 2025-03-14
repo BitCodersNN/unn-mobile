@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/services.dart';
 import 'package:injector/injector.dart';
+import 'package:open_filex/open_filex.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
 import 'package:path/path.dart' as p;
@@ -21,10 +22,14 @@ Future<String?> openFilePicker(String fileName, String mimeType) async {
 
 Future<void> viewFile(String uri, String mimeType) async {
   try {
-    await _fileChannel.invokeMethod('viewFile', {
-      'uri': uri,
-      'mimeType': mimeType,
-    });
+    if (Platform.isAndroid) {
+      await _fileChannel.invokeMethod('viewFile', {
+        'uri': uri,
+        'mimeType': mimeType,
+      });
+    } else if (Platform.isIOS) {
+      await OpenFilex.open(uri, type: mimeType);
+    }
   } catch (error, stack) {
     Injector.appInstance.get<LoggerService>().log(
           'Could not open file.\n'
