@@ -23,7 +23,7 @@ class _FormDataValues {
   static const String submit = 'Войти';
 }
 
-class SourceAuthorisationServiceImpl extends ChangeNotifier
+class LegacySourceAuthorisationServiceImpl extends ChangeNotifier
     implements SourceAuthorisationService {
   late AuthorisationHelper _authorisationHelper;
 
@@ -40,7 +40,7 @@ class SourceAuthorisationServiceImpl extends ChangeNotifier
         'Cookie': '${SessionIdentifierStrings.sessionIdCookieKey}=$sessionId',
       };
 
-  SourceAuthorisationServiceImpl(
+  LegacySourceAuthorisationServiceImpl(
     OnlineStatusData onlineStatus,
     LoggerService loggerService,
   ) {
