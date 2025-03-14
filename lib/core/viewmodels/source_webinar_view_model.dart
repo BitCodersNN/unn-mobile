@@ -16,4 +16,13 @@ class SourceWebinarViewModel extends BaseViewModel {
   String get title => _webinar.title;
 
   DateTimeRange get dateTimeRange => _webinar.dateTimeRange;
+
+  bool _expanded = false;
+
+  bool get expanded => _expanded;
+
+  set expanded(bool value) {
+    _expanded = value;
+    notifyListeners();
+  }
 }

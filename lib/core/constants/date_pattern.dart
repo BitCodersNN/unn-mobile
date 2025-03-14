@@ -6,5 +6,6 @@ class DatePattern {
   static const ymmddhm = 'y-MM-dd H:m';
   static const yyyymmddDash = 'yyyy-MM-dd';
   static const hhmmss = 'HH:mm:ss';
+  static const hhmm = 'HH:mm';
   static const dMMMM = 'd MMMM';
 }

@@ -51,7 +51,10 @@ class _ScheduleItemNormalState extends State<ScheduleItemNormal>
               bottomRight: Radius.circular(16),
             ),
             shape: BoxShape.rectangle,
-            color: getSurfaceColor(theme),
+            color: theme.getTimeBasedSurfaceColor(
+              widget.subject.dateTimeRange,
+              isEven: widget.even,
+            ),
           ),
           child: IntrinsicHeight(
             child: Row(
@@ -62,8 +65,7 @@ class _ScheduleItemNormalState extends State<ScheduleItemNormal>
                   width: 6,
                   decoration: BoxDecoration(
                     borderRadius: const BorderRadius.all(Radius.circular(3)),
-                    color: getColorOfSubjectType(
-                      theme,
+                    color: theme.getColorOfSubjectType(
                       widget.subject.subjectTypeEnum,
                     ),
                   ),
@@ -107,8 +109,7 @@ class _ScheduleItemNormalState extends State<ScheduleItemNormal>
                         Text(
                           widget.subject.subjectType,
                           style: theme.textTheme.labelLarge!.copyWith(
-                            color: getColorOfSubjectType(
-                              theme,
+                            color: theme.getColorOfSubjectType(
                               widget.subject.subjectTypeEnum,
                             ),
                             fontStyle: FontStyle.italic,
@@ -179,27 +180,5 @@ class _ScheduleItemNormalState extends State<ScheduleItemNormal>
         ),
       ],
     );
-  }
-
-  Color getSurfaceColor(ThemeData theme) {
-    final extraColors = theme.extension<UnnMobileColors>()!;
-    if (DateTime.now().isAfter(
-          widget.subject.dateTimeRange.start
-              .subtract(const Duration(minutes: 10)),
-        ) &&
-        DateTime.now().isBefore(widget.subject.dateTimeRange.end)) {
-      return extraColors.scheduleSubjectHighlight!;
-    }
-
-    if (widget.even) {
-      return theme.colorScheme.surfaceContainerHighest;
-    } else {
-      return theme.colorScheme.surface;
-    }
-  }
-
-  Color getColorOfSubjectType(ThemeData theme, SubjectType subjectType) {
-    final extraColors = theme.extension<UnnMobileColors>()!;
-    return extraColors.subjectTypeHighlight![subjectType] ?? theme.primaryColor;
   }
 }

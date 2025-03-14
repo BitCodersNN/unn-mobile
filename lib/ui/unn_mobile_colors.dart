@@ -97,3 +97,31 @@ class UnnMobileColors extends ThemeExtension<UnnMobileColors> {
     );
   }
 }
+
+extension ThemeDataExtension on ThemeData {
+  Color getColorOfSubjectType(SubjectType subjectType) {
+    final extraColors = extension<UnnMobileColors>()!;
+    return extraColors.subjectTypeHighlight![subjectType] ?? primaryColor;
+  }
+
+  Color getTimeBasedSurfaceColor(
+    DateTimeRange dateTimeRange, {
+    bool isEven = false,
+  }) {
+    final extraColors = extension<UnnMobileColors>()!;
+    if (DateTime.now().isAfter(
+          dateTimeRange.start.subtract(const Duration(minutes: 10)),
+        ) &&
+        DateTime.now().isBefore(dateTimeRange.end)) {
+      return extraColors.scheduleSubjectHighlight!;
+    }
+
+    if (isEven) {
+      return colorScheme.surfaceContainerHighest;
+    } else {
+      return colorScheme.surface;
+    }
+  }
+
+  UnnMobileColors? get unnMobileColors => extension<UnnMobileColors>();
+}
