@@ -65,4 +65,7 @@ class ApiPath {
 
   /// Для получения расписание онлайн-занятий
   static const String webinars = 'ajax/get/webinars.php';
+
+  /// Для получения чатов
+  static const String dialog = 'rest/im.recent.list.json';
 }
