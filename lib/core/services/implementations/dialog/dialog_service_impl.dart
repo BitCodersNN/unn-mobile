@@ -6,12 +6,13 @@ import 'package:unn_mobile/core/misc/dio_interceptor/response_data_type.dart';
 import 'package:unn_mobile/core/misc/dio_options_factory/options_with_timeout_and_expected_type_factory.dart';
 import 'package:unn_mobile/core/models/dialog/dialog_query_parameter.dart';
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
+import 'package:unn_mobile/core/services/interfaces/dialog/dialog_service.dart';
 
 class _DataKeys {
   static const String sessid = 'sessid';
 }
 
-class DialogServiceImpl {
+class DialogServiceImpl implements DialogService {
   final LoggerService _loggerService;
   final ApiHelper _apiHelper;
 
@@ -20,6 +21,7 @@ class DialogServiceImpl {
     this._apiHelper,
   );
 
+  @override
   Future<List?> dialog({
     dialogQueryParameter = const DialogQueryParameter(
       limit: 5,
@@ -46,6 +48,7 @@ class DialogServiceImpl {
       return null;
     }
 
-    return null;  # TODO;
+    return null;
+    #TODO;
   }
 }

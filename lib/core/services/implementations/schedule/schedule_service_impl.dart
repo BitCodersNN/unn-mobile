@@ -6,7 +6,8 @@ import 'package:unn_mobile/core/misc/json_iterable_parser.dart';
 import 'package:unn_mobile/core/models/schedule/schedule_filter.dart';
 import 'package:unn_mobile/core/models/schedule/subject.dart';
 import 'package:unn_mobile/core/services/implementations/dialog/dialog_service_impl.dart';
-import 'package:unn_mobile/core/services/implementations/dialog/message_service_impl.dart';
+import 'package:unn_mobile/core/services/implementations/dialog/message/message_fetcher_service_impl.dart';
+import 'package:unn_mobile/core/services/implementations/dialog/message/message_sender_service_impl.dart';
 import 'package:unn_mobile/core/services/interfaces/schedule/schedule_service.dart';
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
 
@@ -30,8 +31,8 @@ class ScheduleServiceImpl implements ScheduleService {
     final path =
         '${ApiPath.schedule}${scheduleFilter.idType.name}/${scheduleFilter.id}';
     
-    final ds = MessageServiceImpl(_loggerService, _apiHelper);
-    final y = await ds.message(chatId: 1180143, limit: 2);
+    final ds = MessageSenderServiceImpl(_loggerService, _apiHelper);
+    final y = await ds.send(dialogId: 'chat1162820', text: 'test');
     Response response;
     try {
       response = await _apiHelper.get(
