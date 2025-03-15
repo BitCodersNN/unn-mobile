@@ -21,6 +21,7 @@ class SourceItemView extends StatelessWidget {
               padding:
                   const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
               child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Expanded(
                     child: Column(
@@ -35,6 +36,16 @@ class SourceItemView extends StatelessWidget {
                         else if (model.isFile)
                           Text('Файл: ${model.fileName}'),
                       ],
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: SizedBox(
+                      width: 24,
+                      height: 24,
+                      child: model.isBusy
+                          ? const CircularProgressIndicator()
+                          : null,
                     ),
                   ),
                   if (model.isFile)
