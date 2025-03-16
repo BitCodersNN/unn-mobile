@@ -6,7 +6,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/misc/app_open_tracker.dart';
-import 'package:unn_mobile/core/viewmodels/auth_page_view_model.dart';
+import 'package:unn_mobile/core/viewmodels/auth_page/auth_page_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
 import 'package:unn_mobile/ui/router.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';

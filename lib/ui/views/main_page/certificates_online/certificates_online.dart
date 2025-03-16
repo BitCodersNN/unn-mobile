@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:mime/mime.dart';
 import 'package:unn_mobile/core/misc/file_helpers/file_functions.dart';
-import 'package:unn_mobile/core/viewmodels/certificate_item_view_model.dart';
-import 'package:unn_mobile/core/viewmodels/certificates_view_model.dart';
+import 'package:unn_mobile/core/viewmodels/main_page/certificates_online/certificate_item_view_model.dart';
+import 'package:unn_mobile/core/viewmodels/main_page/certificates_online/certificates_view_model.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
 
 class OnlineCertificatesScreenView extends StatefulWidget {

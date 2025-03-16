@@ -10,8 +10,8 @@ import 'package:unn_mobile/core/services/interfaces/distance_learning/distance_c
 import 'package:unn_mobile/core/services/interfaces/distance_learning/distance_learning_downloader_service.dart';
 import 'package:unn_mobile/core/services/interfaces/distance_learning/webinar_service.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
-import 'package:unn_mobile/core/viewmodels/source_course_view_model.dart';
-import 'package:unn_mobile/core/viewmodels/source_webinar_view_model.dart';
+import 'package:unn_mobile/core/viewmodels/main_page/source/source_course_view_model.dart';
+import 'package:unn_mobile/core/viewmodels/main_page/source/source_webinar_view_model.dart';
 
 class _ErrorTexts {
   static const failedAuth = 'Не удалось авторизоваться';

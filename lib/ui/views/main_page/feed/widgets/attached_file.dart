@@ -6,7 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:path/path.dart' as path;
 import 'package:unn_mobile/core/misc/app_settings.dart';
-import 'package:unn_mobile/core/viewmodels/attached_file_view_model.dart';
+import 'package:unn_mobile/core/viewmodels/main_page/feed/attached_file_view_model.dart';
 import 'package:unn_mobile/ui/unn_mobile_colors.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
 import 'package:unn_mobile/ui/widgets/shimmer.dart';

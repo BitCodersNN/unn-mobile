@@ -5,7 +5,7 @@ import 'package:unn_mobile/core/constants/date_pattern.dart';
 import 'package:unn_mobile/core/misc/date_time_utilities/date_time_extensions.dart';
 import 'package:unn_mobile/core/misc/html_widget_callbacks.dart';
 import 'package:unn_mobile/core/models/schedule/subject.dart';
-import 'package:unn_mobile/core/viewmodels/source_webinar_view_model.dart';
+import 'package:unn_mobile/core/viewmodels/main_page/source/source_webinar_view_model.dart';
 import 'package:unn_mobile/ui/unn_mobile_colors.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
 

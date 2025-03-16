@@ -104,23 +104,23 @@ import 'package:unn_mobile/core/services/interfaces/schedule/schedule_search_his
 import 'package:unn_mobile/core/services/interfaces/common/search_id_on_portal_service.dart';
 import 'package:unn_mobile/core/services/interfaces/common/storage_service.dart';
 import 'package:unn_mobile/core/providers/interfaces/profile/user_data_provider.dart';
-import 'package:unn_mobile/core/viewmodels/auth_page_view_model.dart';
-import 'package:unn_mobile/core/viewmodels/certificate_item_view_model.dart';
-import 'package:unn_mobile/core/viewmodels/certificates_view_model.dart';
+import 'package:unn_mobile/core/viewmodels/auth_page/auth_page_view_model.dart';
+import 'package:unn_mobile/core/viewmodels/main_page/certificates_online/certificate_item_view_model.dart';
+import 'package:unn_mobile/core/viewmodels/main_page/certificates_online/certificates_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/factories/attached_file_view_model_factory.dart';
 import 'package:unn_mobile/core/viewmodels/factories/feed_comment_view_model_factory.dart';
 import 'package:unn_mobile/core/viewmodels/factories/feed_post_view_model_factory.dart';
 import 'package:unn_mobile/core/viewmodels/factories/main_page_routes_view_models_factory.dart';
 import 'package:unn_mobile/core/viewmodels/factories/profile_view_model_factory.dart';
 import 'package:unn_mobile/core/viewmodels/factories/reaction_view_model_factory.dart';
-import 'package:unn_mobile/core/viewmodels/feed_screen_view_model.dart';
-import 'package:unn_mobile/core/viewmodels/grades_screen_view_model.dart';
-import 'package:unn_mobile/core/viewmodels/loading_page_view_model.dart';
-import 'package:unn_mobile/core/viewmodels/main_page_view_model.dart';
-import 'package:unn_mobile/core/viewmodels/schedule_screen_view_model.dart';
-import 'package:unn_mobile/core/viewmodels/schedule_tab_view_model.dart';
-import 'package:unn_mobile/core/viewmodels/settings_screen_view_model.dart';
-import 'package:unn_mobile/core/viewmodels/source_page_view_model.dart';
+import 'package:unn_mobile/core/viewmodels/main_page/feed/feed_screen_view_model.dart';
+import 'package:unn_mobile/core/viewmodels/main_page/grades/grades_screen_view_model.dart';
+import 'package:unn_mobile/core/viewmodels/loading_page/loading_page_view_model.dart';
+import 'package:unn_mobile/core/viewmodels/main_page/main_page_view_model.dart';
+import 'package:unn_mobile/core/viewmodels/main_page/schedule/schedule_screen_view_model.dart';
+import 'package:unn_mobile/core/viewmodels/main_page/schedule/schedule_tab_view_model.dart';
+import 'package:unn_mobile/core/viewmodels/main_page/settings/settings_screen_view_model.dart';
+import 'package:unn_mobile/core/viewmodels/main_page/source/source_page_view_model.dart';
 
 void registerDependencies() {
   final injector = Injector.appInstance;

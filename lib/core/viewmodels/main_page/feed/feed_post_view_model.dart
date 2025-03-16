@@ -8,13 +8,13 @@ import 'package:unn_mobile/core/services/interfaces/feed/featured_blog_post_acti
 import 'package:unn_mobile/core/services/interfaces/feed/featured_blog_post_action/pinning_blog_post_service.dart';
 import 'package:unn_mobile/core/providers/interfaces/feed/last_feed_load_date_time_provider.dart';
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
-import 'package:unn_mobile/core/viewmodels/attached_file_view_model.dart';
+import 'package:unn_mobile/core/viewmodels/main_page/feed/attached_file_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/factories/feed_post_view_model_factory.dart';
-import 'package:unn_mobile/core/viewmodels/feed_comment_view_model.dart';
-import 'package:unn_mobile/core/viewmodels/feed_screen_view_model.dart';
-import 'package:unn_mobile/core/viewmodels/profile_view_model.dart';
-import 'package:unn_mobile/core/viewmodels/reaction_view_model.dart';
+import 'package:unn_mobile/core/viewmodels/main_page/feed/feed_comment_view_model.dart';
+import 'package:unn_mobile/core/viewmodels/main_page/feed/feed_screen_view_model.dart';
+import 'package:unn_mobile/core/viewmodels/main_page/common/profile_view_model.dart';
+import 'package:unn_mobile/core/viewmodels/main_page/feed/reaction_view_model.dart';
 
 class FeedPostViewModel extends BaseViewModel {
   final BlogPostService _postsService;

@@ -7,7 +7,7 @@ import 'package:unn_mobile/core/misc/date_time_utilities/date_time_ranges.dart';
 import 'package:unn_mobile/core/models/schedule/schedule_filter.dart';
 import 'package:unn_mobile/core/models/schedule/subject.dart';
 import 'package:unn_mobile/core/services/interfaces/schedule/export_schedule_service.dart';
-import 'package:unn_mobile/core/viewmodels/schedule_tab_view_model.dart';
+import 'package:unn_mobile/core/viewmodels/main_page/schedule/schedule_tab_view_model.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
 import 'package:unn_mobile/ui/views/main_page/schedule/widgets/schedule_item_normal.dart';
 import 'package:unn_mobile/ui/views/main_page/schedule/widgets/schedule_search_suggestion_item_view.dart';

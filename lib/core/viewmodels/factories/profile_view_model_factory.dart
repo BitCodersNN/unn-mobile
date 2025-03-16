@@ -4,7 +4,7 @@ import 'package:unn_mobile/core/services/interfaces/profile/profile_service.dart
 import 'package:unn_mobile/core/services/interfaces/profile/profile_of_current_user_service.dart';
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
 import 'package:unn_mobile/core/viewmodels/factories/cached_view_model_factory_base.dart';
-import 'package:unn_mobile/core/viewmodels/profile_view_model.dart';
+import 'package:unn_mobile/core/viewmodels/main_page/common/profile_view_model.dart';
 
 typedef ProfileCacheKey = int;
 

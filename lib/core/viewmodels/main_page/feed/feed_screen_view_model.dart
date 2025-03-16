@@ -6,8 +6,8 @@ import 'package:unn_mobile/core/services/interfaces/feed/blog_post_receivers/reg
 import 'package:unn_mobile/core/providers/interfaces/feed/blog_post_provider.dart';
 import 'package:unn_mobile/core/providers/interfaces/feed/last_feed_load_date_time_provider.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
-import 'package:unn_mobile/core/viewmodels/feed_post_view_model.dart';
-import 'package:unn_mobile/core/viewmodels/main_page_route_view_model.dart';
+import 'package:unn_mobile/core/viewmodels/main_page/feed/feed_post_view_model.dart';
+import 'package:unn_mobile/core/viewmodels/main_page/main_page_route_view_model.dart';
 
 class FeedScreenViewModel extends BaseViewModel
     implements MainPageRouteViewModel {
