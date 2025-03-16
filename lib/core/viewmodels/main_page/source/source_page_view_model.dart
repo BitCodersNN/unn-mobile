@@ -1,20 +1,20 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:unn_mobile/core/misc/authorisation/authorisation_request_result.dart';
+import 'package:unn_mobile/core/misc/authorisation/refresh_session_and_retrieve_data.dart';
 import 'package:unn_mobile/core/models/distance_learning/semester.dart';
 import 'package:unn_mobile/core/providers/interfaces/authorisation/auth_data_provider.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation/source_authorisation_service.dart';
 import 'package:unn_mobile/core/services/interfaces/distance_learning/distance_course_semester_service.dart';
 import 'package:unn_mobile/core/services/interfaces/distance_learning/distance_course_service.dart';
 import 'package:unn_mobile/core/services/interfaces/distance_learning/distance_learning_downloader_service.dart';
+import 'package:unn_mobile/core/services/interfaces/distance_learning/session_checker_service.dart';
 import 'package:unn_mobile/core/services/interfaces/distance_learning/webinar_service.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/source/source_course_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/source/source_webinar_view_model.dart';
 
 class _ErrorTexts {
-  static const failedAuth = 'Не удалось авторизоваться';
   static const failedLoad = 'Не удалось загрузить';
 }
 
@@ -25,6 +25,7 @@ class SourcePageViewModel extends BaseViewModel {
   final SourceAuthorisationService _sourceAuthorisationService;
   final WebinarService _webinarService;
   final DistanceLearningDownloaderService _downloader;
+  final SessionCheckerService _sessionChecker;
 
   final Map<Semester, Iterable<SourceCourseViewModel>> _materialsMap = {};
   final Map<Semester, Map<DateTime, List<SourceWebinarViewModel>>>
@@ -45,6 +46,7 @@ class SourcePageViewModel extends BaseViewModel {
     this._sourceAuthorisationService,
     this._downloader,
     this._webinarService,
+    this._sessionChecker,
   );
 
   List<Semester> _semesters = [];
@@ -68,15 +70,13 @@ class SourcePageViewModel extends BaseViewModel {
 
   FutureOr<void> _init() async {
     resetAllErrors();
-    final data = await _authDataProvider.getData();
-    final authRes =
-        await _sourceAuthorisationService.auth(data.login, data.password);
-    if (authRes != AuthRequestResult.success) {
-      setAllErrors(_ErrorTexts.failedAuth);
-      return;
-    }
 
-    final semesters = await _semesterService.getSemesters();
+    final semesters = await refreshSessionAndRetrieveData(
+      _sessionChecker,
+      _sourceAuthorisationService,
+      _authDataProvider,
+      _semesterService.getSemesters,
+    );
     semesters?.sort(
       (a, b) {
         return a.year == b.year
@@ -106,16 +106,24 @@ class SourcePageViewModel extends BaseViewModel {
       return;
     }
     resetAllErrors();
-    final courses =
-        await _courseService.getDistanceCourses(semester: currentSemester!);
+    final courses = await refreshSessionAndRetrieveData(
+      _sessionChecker,
+      _sourceAuthorisationService,
+      _authDataProvider,
+      () async => _courseService.getDistanceCourses(semester: currentSemester!),
+    );
     _materialsMap[currentSemester!] =
         courses?.map((c) => SourceCourseViewModel(c, _downloader)) ?? [];
     if (courses == null) {
       setMaterialsError(_ErrorTexts.failedLoad);
     }
 
-    final webinars =
-        await _webinarService.getWebinars(semester: currentSemester!);
+    final webinars = await refreshSessionAndRetrieveData(
+      _sessionChecker,
+      _sourceAuthorisationService,
+      _authDataProvider,
+      () async => await _webinarService.getWebinars(semester: currentSemester!),
+    );
     final groupedWebinars = <DateTime, List<SourceWebinarViewModel>>{};
 
     if (webinars == null) {

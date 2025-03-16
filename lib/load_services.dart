@@ -25,6 +25,7 @@ import 'package:unn_mobile/core/services/implementations/common/message_ignore_s
 import 'package:unn_mobile/core/services/implementations/distance_learning/distance_course_semester_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/distance_learning/distance_course_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/distance_learning/distance_learning_downloader_service_impl.dart';
+import 'package:unn_mobile/core/services/implementations/distance_learning/session_checker_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/distance_learning/webinar_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/schedule/export_schedule_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/feed/blog_post_receivers/blog_post_service_impl.dart';
@@ -69,6 +70,7 @@ import 'package:unn_mobile/core/services/interfaces/common/message_ignore_servic
 import 'package:unn_mobile/core/services/interfaces/distance_learning/distance_course_semester_service.dart';
 import 'package:unn_mobile/core/services/interfaces/distance_learning/distance_course_service.dart';
 import 'package:unn_mobile/core/services/interfaces/distance_learning/distance_learning_downloader_service.dart';
+import 'package:unn_mobile/core/services/interfaces/distance_learning/session_checker_service.dart';
 import 'package:unn_mobile/core/services/interfaces/distance_learning/webinar_service.dart';
 import 'package:unn_mobile/core/services/interfaces/schedule/export_schedule_service.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/blog_post_receivers/blog_post_service.dart';
@@ -479,6 +481,13 @@ void registerDependencies() {
   injector.registerSingleton<MessageIgnoreService>(
     () => MessageIgnoreServiceImpl(get<MessageIgnoredKeysProvider>()),
   );
+
+  injector.registerSingleton<SessionCheckerService>(
+    () => SessionCheckerServiceImpl(
+      get<LoggerService>(),
+      getApiHelper(HostType.unnSource),
+    ),
+  );
   //
   // Factories
   //
@@ -593,6 +602,7 @@ void registerDependencies() {
       get<SourceAuthorisationService>(),
       get<DistanceLearningDownloaderService>(),
       get<WebinarService>(),
+      get<SessionCheckerService>(),
     ),
   );
 }

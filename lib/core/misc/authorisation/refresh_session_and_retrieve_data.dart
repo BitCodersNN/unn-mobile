@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:unn_mobile/core/providers/interfaces/authorisation/auth_data_provider.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation/authorisation_service.dart';
 import 'package:unn_mobile/core/services/interfaces/distance_learning/session_checker_service.dart';
@@ -20,11 +22,11 @@ import 'package:unn_mobile/core/services/interfaces/distance_learning/session_ch
 ///   - [Future<T?>]: Результат выполнения функции [function], если сессия успешно обновлена.
 ///   - `null`, если сессия неактивна и не удалось выполнить авторизацию,
 ///     либо если состояние сессии неизвестно.
-Future<T?> refreshSessionAndRetrieveData<T>(
+FutureOr<T?> refreshSessionAndRetrieveData<T>(
   SessionCheckerService sessionCheckerService,
   AuthorisationService authorisationService,
   AuthDataProvider authDataProvider,
-  Function function,
+  FutureOr<T?> Function() function,
 ) async {
   final isSessionAlive = await sessionCheckerService.isSessionAlive();
   if (isSessionAlive == null) {
@@ -35,5 +37,5 @@ Future<T?> refreshSessionAndRetrieveData<T>(
     await authorisationService.auth(authData.login, authData.password);
   }
 
-  return function();
+  return await function();
 }
