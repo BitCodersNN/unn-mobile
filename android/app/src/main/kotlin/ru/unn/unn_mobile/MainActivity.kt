@@ -2,13 +2,12 @@ package ru.unn.unn_mobile
 
 import android.content.Intent
 import android.net.Uri
-import android.os.Handler
-import android.os.Looper
 import androidx.annotation.NonNull
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodChannel
+import kotlinx.coroutines.*
 
 const val FILE_PICKER_REQUEST = 1
 
@@ -116,32 +115,33 @@ class MainActivity : FlutterActivity() {
     }
 
     object FilePickerHandler : EventChannel.StreamHandler {
-        private val handler = Handler(Looper.getMainLooper())
         private var eventSink: EventChannel.EventSink? = null
+        private val scope = CoroutineScope(Dispatchers.Main)
+        private var job: Job? = null
 
         override fun onListen(
-            p0: Any?,
+            argument: Any?,
             sink: EventChannel.EventSink,
         ) {
             eventSink = sink
-            val delay: Long = 100
-            val runnable: Runnable =
-                object : Runnable {
-                    override fun run() {
+            val checkDelay: Long = 100
+
+            job =
+                scope.launch {
+                    while (eventSink != null) {
                         if (pickedFileUri != null) {
                             val uri = pickedFileUri?.uri
                             pickedFileUri = null
                             eventSink?.success(uri?.toString())
-                        } else if (eventSink != null) {
-                            handler.postDelayed(this, delay)
                         }
+                        delay(checkDelay)
                     }
                 }
-            handler.post(runnable)
         }
 
         override fun onCancel(p0: Any?) {
             eventSink = null
+            job?.cancel()
         }
     }
 
