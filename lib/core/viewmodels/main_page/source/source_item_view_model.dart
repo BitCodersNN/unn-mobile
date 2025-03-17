@@ -10,7 +10,7 @@ import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
 
 class SourceItemViewModel extends BaseViewModel {
   final SizeConverter _sizeConverter = SizeConverter();
-  void Function(File file)? onFileDownloaded;
+  FutureOr<void> Function(File file)? onFileDownloaded;
 
   final DistanceLearningDownloaderService _downloader;
   final DistanceMaterialData _material;
@@ -50,7 +50,7 @@ class SourceItemViewModel extends BaseViewModel {
       downloadUrl: _fileData!.downloadUrl,
     );
     if (file != null) {
-      onFileDownloaded?.call(file);
+      await onFileDownloaded?.call(file);
     }
   }
 }

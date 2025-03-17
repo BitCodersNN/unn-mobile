@@ -13,15 +13,14 @@ class MessageIgnoreServiceImpl implements MessageIgnoreService {
     if (keys.contains(sanitizedKey)) {
       return;
     }
-    keys.add(sanitizedKey);
 
+    keys.add(sanitizedKey);
     _messageIgnoredKeysProvider.saveData(keys);
   }
 
   @override
   Future<bool> isMessageIgnored(String key) async {
     final sanitizedKey = _sanitizeKey(key);
-
     final keys = await _messageIgnoredKeysProvider.getData();
 
     return keys.contains(sanitizedKey);

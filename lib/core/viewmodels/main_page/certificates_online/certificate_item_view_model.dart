@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:unn_mobile/core/constants/date_pattern.dart';
@@ -32,8 +33,8 @@ class CertificateItemViewModel extends BaseViewModel {
       'с ${_practiceOrder?.practiceDateTimeRange.start.format(DatePattern.ddmmyyyy)} '
       'по ${_practiceOrder?.practiceDateTimeRange.end.format(DatePattern.ddmmyyyy)}';
 
-  void Function(File file)? onSigDownloaded;
-  void Function(File file)? onCertificateDownloaded;
+  FutureOr<void> Function(File file)? onSigDownloaded;
+  FutureOr<void> Function(File file)? onCertificateDownloaded;
 
   set isViewExpanded(bool value) {
     _isViewExpanded = value;
@@ -87,22 +88,31 @@ class CertificateItemViewModel extends BaseViewModel {
         );
       });
 
-  Future<void> download() async => await busyCallAsync(() async {
-        final file = await _downloadFile(_certificate?.certificatePath);
-        if (file == null) {
-          return;
-        }
+  Future<void> download() async => await busyCallAsync(
+        () async => await downloadAndHandleFile(
+          _certificate?.certificatePath,
+          onCertificateDownloaded,
+        ),
+      );
 
-        onCertificateDownloaded?.call(file);
-      });
+  Future<void> downloadSig() async => await busyCallAsync(
+        () async => await downloadAndHandleFile(
+          _certificate?.certificateSigPath,
+          onSigDownloaded,
+        ),
+      );
 
-  Future<void> downloadSig() async => await busyCallAsync(() async {
-        final file = await _downloadFile(_certificate!.certificateSigPath);
-        if (file == null) {
-          return;
-        }
-        onSigDownloaded?.call(file);
-      });
+  Future<void> downloadAndHandleFile(
+    String? filePath,
+    FutureOr<void> Function(File file)? onFileDownloaded,
+  ) async {
+    final file = await _downloadFile(filePath);
+    if (file == null) {
+      return;
+    }
+    await onFileDownloaded?.call(file);
+    return;
+  }
 
   Future<File?> _downloadFile(String? path) async {
     if (path == null) {

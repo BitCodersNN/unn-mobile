@@ -71,27 +71,27 @@ Future<void> showMessage(
 }) async {
   final MessageIgnoreService messageIgnoreService =
       Injector.appInstance.get<MessageIgnoreService>();
-  if (messageKey != null) {
-    if (await messageIgnoreService.isMessageIgnored(messageKey)) {
-      return;
-    }
+  if (messageKey != null &&
+      await messageIgnoreService.isMessageIgnored(messageKey)) {
+    return;
   }
-  if (context.mounted) {
-    final ignoredNow = await showDialog(
-      context: context,
-      builder: (context) {
-        return MessageDialog(
-          message: Text(
-            text,
-            textAlign: TextAlign.center,
-          ),
-          messageKey: messageKey ?? '',
-          canBeIgnored: messageKey != null,
-        );
-      },
-    );
-    if (messageKey != null && ignoredNow) {
-      messageIgnoreService.addIgnoreMessageKey(messageKey);
-    }
+  if (!context.mounted) {
+    return;
+  }
+  final ignoredNow = await showDialog(
+    context: context,
+    builder: (context) {
+      return MessageDialog(
+        message: Text(
+          text,
+          textAlign: TextAlign.center,
+        ),
+        messageKey: messageKey ?? '',
+        canBeIgnored: messageKey != null,
+      );
+    },
+  );
+  if (messageKey != null && ignoredNow) {
+    await messageIgnoreService.addIgnoreMessageKey(messageKey);
   }
 }

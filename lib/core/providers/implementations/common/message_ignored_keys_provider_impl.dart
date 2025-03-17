@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:unn_mobile/core/providers/interfaces/common/message_ignored_keys_provider.dart';
 import 'package:unn_mobile/core/services/interfaces/common/storage_service.dart';
 
@@ -7,12 +9,13 @@ class MessageIgnoredKeysProviderImpl implements MessageIgnoredKeysProvider {
 
   MessageIgnoredKeysProviderImpl(this._storage);
   @override
-  Future<List<String>> getData() async {
-    if (!(await isContained())) {
-      return [];
+  Future<Set<String>> getData() async {
+    if (!await isContained()) {
+      return HashSet();
     }
 
-    return (await _storage.read(key: _storageKey))?.split(';') ?? [];
+    final storedData = await _storage.read(key: _storageKey);
+    return HashSet.from(storedData?.split(';') ?? []);
   }
 
   @override
@@ -21,7 +24,7 @@ class MessageIgnoredKeysProviderImpl implements MessageIgnoredKeysProvider {
   }
 
   @override
-  Future<void> saveData(List<String> data) async {
+  Future<void> saveData(Set<String> data) async {
     await _storage.write(key: _storageKey, value: data.join(';'));
   }
 }

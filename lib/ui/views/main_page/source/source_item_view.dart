@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
-import 'package:mime/mime.dart';
-import 'package:unn_mobile/core/misc/file_helpers/file_functions.dart';
 import 'package:unn_mobile/core/misc/html_widget_callbacks.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/source/source_item_view_model.dart';
+import 'package:unn_mobile/ui/functions.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
 
 class SourceItemView extends StatelessWidget {
@@ -64,16 +63,8 @@ class SourceItemView extends StatelessWidget {
       },
       onModelReady: (p0) {
         if (model.isFile) {
-          model.onFileDownloaded = (file) {
-            final mimeType = lookupMimeType(file.path);
-            if (mimeType != null) {
-              viewFile(file.path, mimeType);
-            }
-            ScaffoldMessenger.maybeOf(context)?.showSnackBar(
-              const SnackBar(
-                content: Text('Файл сохранён'),
-              ),
-            );
+          model.onFileDownloaded = (file) async {
+            await viewFileAndShowMessage(context, file, 'Файл сохранён');
           };
         }
       },

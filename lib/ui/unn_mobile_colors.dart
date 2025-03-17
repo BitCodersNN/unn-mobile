@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:unn_mobile/core/misc/date_time_utilities/date_time_extensions.dart';
 import 'package:unn_mobile/core/models/schedule/subject.dart';
 
 class UnnMobileColors extends ThemeExtension<UnnMobileColors> {
@@ -109,18 +110,14 @@ extension ThemeDataExtension on ThemeData {
     bool isEven = false,
   }) {
     final extraColors = extension<UnnMobileColors>()!;
-    if (DateTime.now().isAfter(
-          dateTimeRange.start.subtract(const Duration(minutes: 10)),
-        ) &&
-        DateTime.now().isBefore(dateTimeRange.end)) {
+    if (DateTime.now().isBetween(
+      dateTimeRange.start.subtract(const Duration(minutes: 10)),
+      dateTimeRange.end,
+    )) {
       return extraColors.scheduleSubjectHighlight!;
     }
 
-    if (isEven) {
-      return colorScheme.surfaceContainerHighest;
-    } else {
-      return colorScheme.surface;
-    }
+    return isEven ? colorScheme.surfaceContainerHighest : colorScheme.surface;
   }
 
   UnnMobileColors? get unnMobileColors => extension<UnnMobileColors>();

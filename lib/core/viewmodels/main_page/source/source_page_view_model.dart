@@ -94,8 +94,7 @@ class SourcePageViewModel extends BaseViewModel {
 
   FutureOr<void> refresh() => busyCallAsync(() async {
         if (_currentSemester == null) {
-          await _init();
-          return;
+          return await _init();
         }
         await _initCurrentSemester();
       });
@@ -131,10 +130,10 @@ class SourcePageViewModel extends BaseViewModel {
       return;
     }
 
-    for (final w in webinars) {
-      final date = DateUtils.dateOnly(w.dateTimeRange.start);
+    for (final webinar in webinars) {
+      final date = DateUtils.dateOnly(webinar.dateTimeRange.start);
       final list = groupedWebinars[date] ?? [];
-      list.add(SourceWebinarViewModel(w));
+      list.add(SourceWebinarViewModel(webinar));
       groupedWebinars[date] = list;
     }
 
