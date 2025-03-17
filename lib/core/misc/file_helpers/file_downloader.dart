@@ -121,25 +121,6 @@ class FileDownloader {
     await ContentResolver.writeContent(location, response.data);
 
     return File(location);
-    /*
-    
-    String? path;
-    try {
-      path = await FlutterFileDialog.saveFileToDirectory(
-        directory: location,
-        data: response.data,
-        fileName: shortenedFileName,
-        mimeType: mimeType,
-        replace: true,
-      );
-    } catch (error, stackTrace) {
-      _loggerService.log('Exception: $error\nStackTrace: $stackTrace');
-      return null;
-    }
-    if (path == null) {
-      return null;
-    }
-    return File(path);*/
   }
 
   Future<Response?> _getFileResponse(
