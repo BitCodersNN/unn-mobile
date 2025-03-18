@@ -11,6 +11,7 @@ import 'package:unn_mobile/ui/views/main_page/grades/grades.dart';
 import 'package:unn_mobile/ui/views/main_page/schedule/schedule.dart';
 import 'package:unn_mobile/ui/views/main_page/settings/settings.dart';
 import 'package:unn_mobile/ui/views/main_page/donations/donations.dart';
+import 'package:unn_mobile/ui/views/main_page/source/source.dart';
 
 class MainPageRouteData {
   final IconData selectedIcon;
@@ -110,8 +111,10 @@ class MainPageRouting {
       Icons.menu_book_outlined,
       'Материалы',
       '/source',
-      builder: (_, __) => const Placeholder(),
-      isDisabled: true,
+      builder: (_, __) => const SourcePageView(
+        routeIndex: 3,
+      ),
+      isDisabled: false,
       userTypes: [],
     ),
   ];

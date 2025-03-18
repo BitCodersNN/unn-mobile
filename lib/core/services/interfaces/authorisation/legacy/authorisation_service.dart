@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:unn_mobile/core/misc/custom_errors/auth_exceptions.dart';
 
-enum AuthRequestResult {
+enum AuthRequestResultLegacy {
   success,
   noInternet,
   wrongCredentials,
@@ -20,7 +20,7 @@ abstract interface class AuthorizationService extends Listenable {
   ///   3. [Exception] - если возникло непредвиденное исключение
   ///
   /// Возвращает результат авторизаци
-  Future<AuthRequestResult> auth(String login, String password);
+  Future<AuthRequestResultLegacy> auth(String login, String password);
 
   void logout();
   bool get isAuthorised;

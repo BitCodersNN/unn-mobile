@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:unn_mobile/core/misc/date_time_utilities/date_time_extensions.dart';
 import 'package:unn_mobile/core/models/schedule/subject.dart';
 
 class UnnMobileColors extends ThemeExtension<UnnMobileColors> {
@@ -96,4 +97,28 @@ class UnnMobileColors extends ThemeExtension<UnnMobileColors> {
       ),
     );
   }
+}
+
+extension ThemeDataExtension on ThemeData {
+  Color getColorOfSubjectType(SubjectType subjectType) {
+    final extraColors = extension<UnnMobileColors>()!;
+    return extraColors.subjectTypeHighlight![subjectType] ?? primaryColor;
+  }
+
+  Color getTimeBasedSurfaceColor(
+    DateTimeRange dateTimeRange, {
+    bool isEven = false,
+  }) {
+    final extraColors = extension<UnnMobileColors>()!;
+    if (DateTime.now().isBetween(
+      dateTimeRange.start.subtract(const Duration(minutes: 10)),
+      dateTimeRange.end,
+    )) {
+      return extraColors.scheduleSubjectHighlight!;
+    }
+
+    return isEven ? colorScheme.surfaceContainerHighest : colorScheme.surface;
+  }
+
+  UnnMobileColors? get unnMobileColors => extension<UnnMobileColors>();
 }

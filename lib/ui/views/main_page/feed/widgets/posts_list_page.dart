@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:unn_mobile/core/viewmodels/feed_post_view_model.dart';
-import 'package:unn_mobile/core/viewmodels/feed_screen_view_model.dart';
+import 'package:unn_mobile/core/viewmodels/main_page/feed/feed_post_view_model.dart';
+import 'package:unn_mobile/core/viewmodels/main_page/feed/feed_screen_view_model.dart';
 import 'package:unn_mobile/ui/builders/online_status_builder.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/widgets/feed_post.dart';
 

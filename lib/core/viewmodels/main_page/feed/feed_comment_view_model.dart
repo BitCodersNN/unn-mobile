@@ -2,11 +2,11 @@ import 'package:html_unescape/html_unescape.dart';
 import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/models/feed/blog_post_comment.dart';
 import 'package:unn_mobile/core/models/feed/blog_post_comment_data.dart';
-import 'package:unn_mobile/core/viewmodels/attached_file_view_model.dart';
+import 'package:unn_mobile/core/viewmodels/main_page/feed/attached_file_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/factories/feed_comment_view_model_factory.dart';
-import 'package:unn_mobile/core/viewmodels/profile_view_model.dart';
-import 'package:unn_mobile/core/viewmodels/reaction_view_model.dart';
+import 'package:unn_mobile/core/viewmodels/main_page/common/profile_view_model.dart';
+import 'package:unn_mobile/core/viewmodels/main_page/feed/reaction_view_model.dart';
 
 class FeedCommentViewModel extends BaseViewModel {
   final HtmlUnescape _unescaper = HtmlUnescape();

@@ -1,4 +1,5 @@
 import 'package:unn_mobile/core/models/distance_learning/semester.dart';
+import 'package:unn_mobile/core/models/distance_learning/webinar.dart';
 
 abstract interface class WebinarService {
   /// Получает список вебинаров для указанного семестра.
@@ -15,7 +16,7 @@ abstract interface class WebinarService {
   ///   от первых 6 символов перед декодированием JSON.
   /// - Парсинг данных выполняется с использованием функции [parseJsonList]
   ///   и метода [Webinar.fromJson].
-  Future<List?> getWebinars({
+  Future<List<Webinar>?> getWebinars({
     required Semester semester,
   });
 }

@@ -65,7 +65,10 @@ final mainRouter = GoRouter(
           AppSettings.initialPage < MainPageRouting.activeNavbarRoutes.length
               ? AppSettings.initialPage
               : 0;
-      return MainPageRouting.navbarRoutes[pageIndex].pageRoute;
+      return MainPageRouting.navbarRoutes
+          .where((r) => !r.isDisabled)
+          .toList()[pageIndex]
+          .pageRoute;
     }
     return null;
   },

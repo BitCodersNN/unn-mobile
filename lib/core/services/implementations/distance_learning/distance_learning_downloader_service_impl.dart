@@ -26,6 +26,7 @@ class DistanceLearningDownloaderServiceImpl
       fileName,
       downloadUrl: downloadUrl,
       force: force,
+      pickLocation: true,
     );
   }
 }
