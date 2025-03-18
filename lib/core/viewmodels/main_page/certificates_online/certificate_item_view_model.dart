@@ -89,20 +89,20 @@ class CertificateItemViewModel extends BaseViewModel {
       });
 
   Future<void> download() async => await busyCallAsync(
-        () async => await downloadAndHandleFile(
+        () async => await _downloadAndHandleFile(
           _certificate?.certificatePath,
           onCertificateDownloaded,
         ),
       );
 
   Future<void> downloadSig() async => await busyCallAsync(
-        () async => await downloadAndHandleFile(
+        () async => await _downloadAndHandleFile(
           _certificate?.certificateSigPath,
           onSigDownloaded,
         ),
       );
 
-  Future<void> downloadAndHandleFile(
+  Future<void> _downloadAndHandleFile(
     String? filePath,
     FutureOr<void> Function(File file)? onFileDownloaded,
   ) async {
