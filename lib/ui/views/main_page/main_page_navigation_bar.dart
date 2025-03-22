@@ -21,7 +21,7 @@ class MainPageNavigationBar extends StatelessWidget {
       children: [
         Container(
           height: 0.3,
-          color: Colors.grey.withOpacity(0.5),
+          color: Colors.grey.withValues(alpha: 0.5),
         ),
         NavigationBar(
           destinations: _getNavbarDestinations(
