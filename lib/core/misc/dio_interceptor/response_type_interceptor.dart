@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:unn_mobile/core/misc/custom_errors/response_type_exception.dart';
 import 'package:unn_mobile/core/misc/dio_interceptor/response_data_type.dart';
@@ -29,9 +31,15 @@ class ResponseTypeInterceptor extends Interceptor {
         .extra[ResponseTypeInterceptorKey.expectedType] as ResponseDataType?;
     final checker = _typeCheckers[expectedType];
 
-    if (checker != null) {
-      checker(response.data);
+    if (checker == null) {
+      super.onResponse(response, handler);
+      return;
     }
+
+    if (expectedType != ResponseDataType.string && response.data is String) {
+      response.data = jsonDecode(response.data);
+    }
+    checker(response.data);
 
     super.onResponse(response, handler);
   }

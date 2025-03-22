@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:dio/dio.dart';
 import 'package:unn_mobile/core/constants/api/path.dart';
 import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
@@ -33,7 +31,7 @@ class BlogPostServiceImpl implements BlogPostService {
         },
         options: OptionsWithTimeoutAndExpectedTypeFactory.options(
           30,
-          ResponseDataType.string,
+          ResponseDataType.list,
         ),
       );
     } catch (error, stackTrace) {
@@ -41,6 +39,6 @@ class BlogPostServiceImpl implements BlogPostService {
       return null;
     }
 
-    return BlogPost.fromJson(jsonDecode(response.data).first);
+    return BlogPost.fromJson(response.data.first);
   }
 }
