@@ -19,8 +19,7 @@ extension ColorParser on Color {
   }
 
   /// Prefixes a hash sign if [leadingHashSign] is set to `true` (default is `true`).
-  String toHex({bool leadingHashSign = true}) => 
-      '${leadingHashSign ? '#' : ''}'
+  String toHex({bool leadingHashSign = true}) => '${leadingHashSign ? '#' : ''}'
       '${a.toInt().toRadixString(16)}'
       '${r.toInt().toRadixString(16).padLeft(2, '0')}'
       '${g.toInt().toRadixString(16).padLeft(2, '0')}'
