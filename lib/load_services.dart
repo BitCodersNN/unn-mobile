@@ -133,7 +133,7 @@ void registerDependencies() {
 
   ApiHelper getPlatformSpecificHelper //
       <TWeb extends ApiHelper, TDefault extends ApiHelper>() {
-    return true ? get<TWeb>() : get<TDefault>();
+    return kIsWeb ? get<TWeb>() : get<TDefault>();
   }
 
   final apiHelperFactories = {

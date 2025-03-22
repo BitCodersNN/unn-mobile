@@ -1,12 +1,9 @@
-import 'dart:convert';
-
 import 'package:dio/dio.dart';
 import 'package:unn_mobile/core/constants/api/path.dart';
 import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/misc/custom_errors/response_type_exception.dart';
 import 'package:unn_mobile/core/misc/dio_interceptor/response_data_type.dart';
 import 'package:unn_mobile/core/misc/dio_options_factory/options_for_distance_course_factory.dart';
-import 'package:unn_mobile/core/misc/dio_options_factory/options_with_timeout_and_expected_type_factory.dart';
 import 'package:unn_mobile/core/misc/json_iterable_parser.dart';
 import 'package:unn_mobile/core/models/distance_learning/distance_course.dart';
 import 'package:unn_mobile/core/models/distance_learning/semester.dart';
