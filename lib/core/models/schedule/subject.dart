@@ -1,35 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:unn_mobile/core/constants/date_pattern.dart';
+import 'package:unn_mobile/core/misc/date_time_utilities/date_time_extensions.dart';
 import 'package:unn_mobile/core/misc/date_time_utilities/date_time_parser.dart';
-
-class _AbbreviatedNamesOfSubjectTypes {
-  static const String lecture = 'лекци';
-  static const String practice = 'практик';
-  static const String seminar = 'семинарск';
-  static const String lab = 'лабораторн';
-  static const String exam = 'экзамен';
-  static const String credit = 'зачёт';
-  static const String consult = 'консультаци';
-}
-
-class Address {
-  final String auditorium;
-  final String building;
-
-  Address({
-    required this.auditorium,
-    required this.building,
-  });
-}
-
-enum SubjectType {
-  unknown,
-  lecture,
-  practice,
-  lab,
-  exam,
-  consult,
-}
+import 'package:unn_mobile/core/models/schedule/address.dart';
+import 'package:unn_mobile/core/models/schedule/subject_type.dart';
 
 class _SubjectJsonKeys {
   static const String discipline = 'discipline';
@@ -62,33 +36,11 @@ class Subject {
 
   SubjectType get subjectTypeEnum {
     final subjectTypeLowerCase = subjectType.toLowerCase();
-
-    if (subjectTypeLowerCase.contains(_AbbreviatedNamesOfSubjectTypes.exam) ||
-        subjectTypeLowerCase.contains(_AbbreviatedNamesOfSubjectTypes.credit)) {
-      return SubjectType.exam;
+    for (final entry in typeMapping.entries) {
+      if (subjectTypeLowerCase.contains(entry.key)) {
+        return entry.value;
+      }
     }
-
-    if (subjectTypeLowerCase
-        .contains(_AbbreviatedNamesOfSubjectTypes.consult)) {
-      return SubjectType.consult;
-    }
-
-    if (subjectTypeLowerCase
-        .contains(_AbbreviatedNamesOfSubjectTypes.lecture)) {
-      return SubjectType.lecture;
-    }
-
-    if (subjectTypeLowerCase
-            .contains(_AbbreviatedNamesOfSubjectTypes.practice) ||
-        (subjectTypeLowerCase
-            .contains(_AbbreviatedNamesOfSubjectTypes.seminar))) {
-      return SubjectType.practice;
-    }
-
-    if (subjectTypeLowerCase.contains(_AbbreviatedNamesOfSubjectTypes.lab)) {
-      return SubjectType.lab;
-    }
-
     return SubjectType.unknown;
   }
 
@@ -127,28 +79,24 @@ class Subject {
     );
   }
 
-  Map<String, dynamic> toJson() {
-    return {
-      _SubjectJsonKeys.date: dateTimeRange.start.toString(),
-      _SubjectJsonKeys.beginLesson: _formatTime(dateTimeRange.start),
-      _SubjectJsonKeys.endLesson: _formatTime(dateTimeRange.end),
-      _SubjectJsonKeys.discipline: name,
-      _SubjectJsonKeys.kindOfWork: subjectType,
-      _SubjectJsonKeys.auditorium: address.auditorium,
-      _SubjectJsonKeys.building: address.building,
-      _SubjectJsonKeys.stream: groups.join('|'),
-      _SubjectJsonKeys.lecturer: lecturer,
-    };
-  }
+  Map<String, dynamic> toJson() => {
+        _SubjectJsonKeys.date:
+            dateTimeRange.start.format(DatePattern.yyyymmddDash),
+        _SubjectJsonKeys.beginLesson:
+            dateTimeRange.start.format(DatePattern.hhmm),
+        _SubjectJsonKeys.endLesson: dateTimeRange.end.format(DatePattern.hhmm),
+        _SubjectJsonKeys.discipline: name,
+        _SubjectJsonKeys.kindOfWork: subjectType,
+        _SubjectJsonKeys.auditorium: address.auditorium,
+        _SubjectJsonKeys.building: address.building,
+        _SubjectJsonKeys.stream: groups.join('|'),
+        _SubjectJsonKeys.lecturer: lecturer,
+      };
 
   static DateTime _parseDateTime(String date, String time) {
     return DateTimeParser.parse(
       '$date $time',
       DatePattern.ymmddhm,
     );
-  }
-
-  String _formatTime(DateTime dateTime) {
-    return '${dateTime.hour}:${dateTime.minute}';
   }
 }
