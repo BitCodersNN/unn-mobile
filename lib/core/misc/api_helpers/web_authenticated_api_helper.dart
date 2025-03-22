@@ -26,6 +26,7 @@ abstract class WebAuthenticatedApiHelper extends AuthenticatedApiHelper {
   WebAuthenticatedApiHelper({
     required host,
     required authorizationService,
+    List<Interceptor> interceptors = const [],
     ProtocolType protocol = ProtocolType.https,
   })  : _baseUrl = '${protocol.name}://$host/',
         super(
@@ -33,6 +34,7 @@ abstract class WebAuthenticatedApiHelper extends AuthenticatedApiHelper {
           options: createBaseOptions(
             host: HostWithBasePath.redirect,
           ),
+          interceptors: interceptors,
         ) {
     onAuthChanged();
   }

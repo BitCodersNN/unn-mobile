@@ -11,7 +11,11 @@ class ApiHelper implements GetApiHelper, PostApiHelper, ApiOptionsHelper {
 
   ApiHelper({
     required BaseOptions options,
+    List<Interceptor> interceptors = const [],
   }) : dio = Dio(options) {
+    if (interceptors.isNotEmpty) {
+      dio.interceptors.addAll(interceptors);
+    }
     dio.interceptors.add(ResponseTypeInterceptor());
   }
 
