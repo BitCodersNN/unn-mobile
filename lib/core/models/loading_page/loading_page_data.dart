@@ -129,14 +129,14 @@ class LoadingPageModel {
           _dateTimeRangeToUseOn?.end.toString().substring(5, 10),
       _LoadingPageModelJsonKeys.title: {
         _LoadingPageModelJsonKeys.text: _title,
-        _LoadingPageModelJsonKeys.color: _titleStyle.color!.value.toString(),
+        _LoadingPageModelJsonKeys.color: _titleStyle.color!.toARGB32.toString(),
         _LoadingPageModelJsonKeys.fontSize: _titleStyle.fontSize.toString(),
       },
       if (_description != null)
         _LoadingPageModelJsonKeys.description: {
           _LoadingPageModelJsonKeys.text: _description,
           _LoadingPageModelJsonKeys.color:
-              _descriptionStyle?.color!.value.toString(),
+              _descriptionStyle?.color!.toARGB32.toString(),
           _LoadingPageModelJsonKeys.fontSize:
               _descriptionStyle?.fontSize.toString(),
         },
