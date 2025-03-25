@@ -261,7 +261,7 @@ class _FeedPostState extends State<FeedPost> {
                                 vertical: 6,
                               ).copyWith(right: 8),
                               decoration: BoxDecoration(
-                                color: idkWhatColor.withOpacity(0.1),
+                                color: idkWhatColor.withValues(alpha: 0.1),
                                 borderRadius: BorderRadius.circular(20),
                               ),
                               child: Row(
@@ -441,8 +441,8 @@ class _ReactionButton extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
         color: reactionToPost == null
-            ? buttonColor.withOpacity(0.1)
-            : theme.colorScheme.inversePrimary.withOpacity(0.5),
+            ? buttonColor.withValues(alpha: 0.1)
+            : theme.colorScheme.inversePrimary.withValues(alpha: 0.5),
         borderRadius: BorderRadius.circular(20),
       ),
       child: Row(
