@@ -7,22 +7,12 @@ enum SubjectType {
   consult,
 }
 
-class _AbbreviatedNamesOfSubjectTypes {
-  static const String lecture = 'лекци';
-  static const String practice = 'практик';
-  static const String seminar = 'семинарск';
-  static const String lab = 'лабораторн';
-  static const String exam = 'экзамен';
-  static const String credit = 'зачёт';
-  static const String consult = 'консультаци';
-}
-
 const typeMapping = {
-  _AbbreviatedNamesOfSubjectTypes.exam: SubjectType.exam,
-  _AbbreviatedNamesOfSubjectTypes.credit: SubjectType.exam,
-  _AbbreviatedNamesOfSubjectTypes.consult: SubjectType.consult,
-  _AbbreviatedNamesOfSubjectTypes.lecture: SubjectType.lecture,
-  _AbbreviatedNamesOfSubjectTypes.practice: SubjectType.practice,
-  _AbbreviatedNamesOfSubjectTypes.seminar: SubjectType.practice,
-  _AbbreviatedNamesOfSubjectTypes.lab: SubjectType.lab,
+  'экзамен': SubjectType.exam,
+  'зачёт': SubjectType.exam,
+  'консультаци': SubjectType.consult,
+  'лекци': SubjectType.lecture,
+  'практик': SubjectType.practice,
+  'семинарск': SubjectType.practice,
+  'лабораторн': SubjectType.lab,
 };
