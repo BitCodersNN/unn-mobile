@@ -36,9 +36,10 @@ class ResponseTypeInterceptor extends Interceptor {
       return;
     }
 
-    if (expectedType != ResponseDataType.string && response.data is String) {
+    if (jsonParsableTypes.contains(expectedType) && response.data is String) {
       response.data = jsonDecode(response.data);
     }
+
     checker(response.data);
 
     super.onResponse(response, handler);
