@@ -28,7 +28,7 @@ jobs:
       # - uses: dart-lang/setup-dart@v1
       - uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.24.1'
+          flutter-version: '3.29.2'
           channel: 'stable'
       - name: get firebase config
         uses: mobiledevops/secret-to-file-action@v1
