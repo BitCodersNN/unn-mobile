@@ -53,6 +53,7 @@ dependencies:
   flutter_widget_from_html: ^0.15.3
   mime: ^2.0.0
   content_resolver: ^0.3.2
+  html: ^0.15.5
 
 dev_dependencies:
   flutter_test:

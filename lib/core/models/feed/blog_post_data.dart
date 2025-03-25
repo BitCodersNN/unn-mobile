@@ -1,6 +1,7 @@
 import 'package:unn_mobile/core/constants/date_pattern.dart';
 import 'package:unn_mobile/core/misc/date_time_utilities/date_time_extensions.dart';
 import 'package:unn_mobile/core/misc/date_time_utilities/date_time_parser.dart';
+import 'package:unn_mobile/core/misc/extract_and_clean_images.dart';
 
 class _BlogPostDataBitrixJsonKeys {
   static const String id = 'ID';
@@ -31,6 +32,7 @@ class BlogPostData {
   final int authorBitrixId;
   final String title;
   final String detailText;
+  final List<String>? imageUrls;
   final DateTime datePublish;
   final int numberOfComments;
   final List<int>? files;
@@ -43,6 +45,7 @@ class BlogPostData {
     required this.authorBitrixId,
     required this.title,
     required this.detailText,
+    this.imageUrls,
     required this.datePublish,
     required this.numberOfComments,
     this.files,
@@ -51,6 +54,8 @@ class BlogPostData {
   });
 
   factory BlogPostData.fromJson(Map<String, Object?> jsonMap) {
+    final fullText = jsonMap[_BlogPostDataJsonKeys.fulltext] as String;
+    final result = extractAndCleanImages(fullText);
     return BlogPostData._(
       id: int.parse(
         jsonMap[_BlogPostDataJsonKeys.id] as String,
@@ -61,7 +66,8 @@ class BlogPostData {
             as Map<String, Object?>)[_BlogPostDataJsonKeys.id] as String,
       ),
       title: jsonMap[_BlogPostDataJsonKeys.title] as String,
-      detailText: jsonMap[_BlogPostDataJsonKeys.fulltext] as String,
+      detailText: result[ExtractAndCleanImagesMapKey.cleanedText],
+      imageUrls: result[ExtractAndCleanImagesMapKey.imageUrls],
       datePublish: DateTimeParser.parse(
         jsonMap[_BlogPostDataJsonKeys.time] as String,
         DatePattern.ddmmyyyyhhmmss,
@@ -83,7 +89,7 @@ class BlogPostData {
           _BlogPostDataJsonKeys.id: authorBitrixId.toString(),
         },
         _BlogPostDataJsonKeys.title: title,
-        _BlogPostDataJsonKeys.fulltext: detailText,
+        _BlogPostDataJsonKeys.fulltext: restoreMessage(detailText, imageUrls),
         _BlogPostDataJsonKeys.time:
             datePublish.format(DatePattern.ddmmyyyyhhmmss),
         _BlogPostDataJsonKeys.commentsNum: numberOfComments.toString(),

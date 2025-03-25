@@ -1,3 +1,5 @@
+import 'package:unn_mobile/core/misc/extract_and_clean_images.dart';
+
 class _BlogPostCommentDataBitrixJsonKeys {
   static const String id = 'id';
   static const String dateTime = 'dateTime';
@@ -21,6 +23,7 @@ class BlogPostCommentData {
   final int authorBitrixId;
   final String dateTime;
   final String message;
+  final List<String>? imageUrls;
   final List<int> attachedFiles;
   final String keySigned;
 
@@ -29,27 +32,32 @@ class BlogPostCommentData {
     required this.authorBitrixId,
     required this.dateTime,
     required this.message,
+    this.imageUrls,
     required this.keySigned,
     this.attachedFiles = const [],
   });
 
-  factory BlogPostCommentData.fromJson(Map<String, Object?> jsonMap) =>
-      BlogPostCommentData(
-        id: int.parse(
-          jsonMap[_BlogPostCommentDataJsonKeys.id] as String,
-        ),
-        authorBitrixId: int.parse(
-          (jsonMap[_BlogPostCommentDataJsonKeys.author]
-              as Map)[_BlogPostCommentDataJsonKeys.id] as String,
-        ),
-        dateTime: jsonMap[_BlogPostCommentDataJsonKeys.time] as String,
-        message: jsonMap[_BlogPostCommentDataJsonKeys.text] as String,
-        keySigned: jsonMap[_BlogPostCommentDataJsonKeys.keysigned] as String,
-        attachedFiles:
-            (jsonMap[_BlogPostCommentDataJsonKeys.attach] as List<dynamic>)
-                .map((element) => element.toString().hashCode)
-                .toList(),
-      );
+  factory BlogPostCommentData.fromJson(Map<String, Object?> jsonMap) {
+    final text = jsonMap[_BlogPostCommentDataJsonKeys.text] as String;
+    final result = extractAndCleanImages(text);
+    return BlogPostCommentData(
+      id: int.parse(
+        jsonMap[_BlogPostCommentDataJsonKeys.id] as String,
+      ),
+      authorBitrixId: int.parse(
+        (jsonMap[_BlogPostCommentDataJsonKeys.author]
+            as Map)[_BlogPostCommentDataJsonKeys.id] as String,
+      ),
+      dateTime: jsonMap[_BlogPostCommentDataJsonKeys.time] as String,
+      message: result[ExtractAndCleanImagesMapKey.cleanedText],
+      imageUrls: result[ExtractAndCleanImagesMapKey.imageUrls],
+      keySigned: jsonMap[_BlogPostCommentDataJsonKeys.keysigned] as String,
+      attachedFiles:
+          (jsonMap[_BlogPostCommentDataJsonKeys.attach] as List<dynamic>)
+              .map((element) => element.toString().hashCode)
+              .toList(),
+    );
+  }
 
   Map<String, dynamic> toJson() => {
         _BlogPostCommentDataJsonKeys.id: id.toString(),
@@ -57,7 +65,7 @@ class BlogPostCommentData {
           _BlogPostCommentDataJsonKeys.id: authorBitrixId.toString(),
         },
         _BlogPostCommentDataJsonKeys.time: dateTime,
-        _BlogPostCommentDataJsonKeys.text: message,
+        _BlogPostCommentDataJsonKeys.text: restoreMessage(message, imageUrls),
         _BlogPostCommentDataJsonKeys.keysigned: keySigned,
         _BlogPostCommentDataJsonKeys.attach:
             attachedFiles.map((hashCode) => hashCode.toString()).toList(),
