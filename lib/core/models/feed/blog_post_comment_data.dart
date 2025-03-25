@@ -1,4 +1,4 @@
-import 'package:unn_mobile/core/misc/extract_and_clean_images.dart';
+import 'package:unn_mobile/core/misc/html_utils/html_image_utils.dart';
 
 class _BlogPostCommentDataBitrixJsonKeys {
   static const String id = 'id';
@@ -39,7 +39,7 @@ class BlogPostCommentData {
 
   factory BlogPostCommentData.fromJson(Map<String, Object?> jsonMap) {
     final text = jsonMap[_BlogPostCommentDataJsonKeys.text] as String;
-    final result = extractAndCleanImages(text);
+    final result = extractImagesAndCleanHtmlText(text);
     return BlogPostCommentData(
       id: int.parse(
         jsonMap[_BlogPostCommentDataJsonKeys.id] as String,
@@ -49,8 +49,8 @@ class BlogPostCommentData {
             as Map)[_BlogPostCommentDataJsonKeys.id] as String,
       ),
       dateTime: jsonMap[_BlogPostCommentDataJsonKeys.time] as String,
-      message: result[ExtractAndCleanImagesMapKey.cleanedText],
-      imageUrls: result[ExtractAndCleanImagesMapKey.imageUrls],
+      message: result[ExtractImagesAndCleanHtmlTextMapKey.cleanedText],
+      imageUrls: result[ExtractImagesAndCleanHtmlTextMapKey.imageUrls],
       keySigned: jsonMap[_BlogPostCommentDataJsonKeys.keysigned] as String,
       attachedFiles:
           (jsonMap[_BlogPostCommentDataJsonKeys.attach] as List<dynamic>)
@@ -65,7 +65,7 @@ class BlogPostCommentData {
           _BlogPostCommentDataJsonKeys.id: authorBitrixId.toString(),
         },
         _BlogPostCommentDataJsonKeys.time: dateTime,
-        _BlogPostCommentDataJsonKeys.text: restoreMessage(message, imageUrls),
+        _BlogPostCommentDataJsonKeys.text: restoreHtmlText(message, imageUrls),
         _BlogPostCommentDataJsonKeys.keysigned: keySigned,
         _BlogPostCommentDataJsonKeys.attach:
             attachedFiles.map((hashCode) => hashCode.toString()).toList(),

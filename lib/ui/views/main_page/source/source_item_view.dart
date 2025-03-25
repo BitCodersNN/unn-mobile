@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
-import 'package:unn_mobile/core/misc/html_widget_callbacks.dart';
+import 'package:unn_mobile/core/misc/html_utils/html_widget_callbacks.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/source/source_item_view_model.dart';
 import 'package:unn_mobile/ui/functions.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';

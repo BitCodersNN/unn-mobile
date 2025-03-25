@@ -1,7 +1,7 @@
 import 'package:unn_mobile/core/constants/date_pattern.dart';
 import 'package:unn_mobile/core/misc/date_time_utilities/date_time_extensions.dart';
 import 'package:unn_mobile/core/misc/date_time_utilities/date_time_parser.dart';
-import 'package:unn_mobile/core/misc/extract_and_clean_images.dart';
+import 'package:unn_mobile/core/misc/html_utils/html_image_utils.dart';
 
 class _BlogPostDataBitrixJsonKeys {
   static const String id = 'ID';
@@ -55,7 +55,7 @@ class BlogPostData {
 
   factory BlogPostData.fromJson(Map<String, Object?> jsonMap) {
     final fullText = jsonMap[_BlogPostDataJsonKeys.fulltext] as String;
-    final result = extractAndCleanImages(fullText);
+    final result = extractImagesAndCleanHtmlText(fullText);
     return BlogPostData._(
       id: int.parse(
         jsonMap[_BlogPostDataJsonKeys.id] as String,
@@ -66,8 +66,8 @@ class BlogPostData {
             as Map<String, Object?>)[_BlogPostDataJsonKeys.id] as String,
       ),
       title: jsonMap[_BlogPostDataJsonKeys.title] as String,
-      detailText: result[ExtractAndCleanImagesMapKey.cleanedText],
-      imageUrls: result[ExtractAndCleanImagesMapKey.imageUrls],
+      detailText: result[ExtractImagesAndCleanHtmlTextMapKey.cleanedText],
+      imageUrls: result[ExtractImagesAndCleanHtmlTextMapKey.imageUrls],
       datePublish: DateTimeParser.parse(
         jsonMap[_BlogPostDataJsonKeys.time] as String,
         DatePattern.ddmmyyyyhhmmss,
@@ -89,7 +89,7 @@ class BlogPostData {
           _BlogPostDataJsonKeys.id: authorBitrixId.toString(),
         },
         _BlogPostDataJsonKeys.title: title,
-        _BlogPostDataJsonKeys.fulltext: restoreMessage(detailText, imageUrls),
+        _BlogPostDataJsonKeys.fulltext: restoreHtmlText(detailText, imageUrls),
         _BlogPostDataJsonKeys.time:
             datePublish.format(DatePattern.ddmmyyyyhhmmss),
         _BlogPostDataJsonKeys.commentsNum: numberOfComments.toString(),

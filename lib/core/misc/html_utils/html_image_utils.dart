@@ -1,12 +1,12 @@
 import 'package:html/parser.dart' as parser;
 
-class ExtractAndCleanImagesMapKey {
+class ExtractImagesAndCleanHtmlTextMapKey {
   static const String cleanedText = 'cleanedText';
   static const String imageUrls = 'imageUrls';
 }
 
-Map<String, dynamic> extractAndCleanImages(String message) {
-  final document = parser.parse(message);
+Map<String, dynamic> extractImagesAndCleanHtmlText(String htmlText) {
+  final document = parser.parse(htmlText);
   final imgTags = document.getElementsByTagName('img');
   final imageUrls = imgTags.map((img) => img.attributes['src']!).toList();
 
@@ -17,14 +17,14 @@ Map<String, dynamic> extractAndCleanImages(String message) {
   final cleanedMessage = document.body?.text ?? '';
 
   return {
-    ExtractAndCleanImagesMapKey.cleanedText: cleanedMessage,
-    ExtractAndCleanImagesMapKey.imageUrls:
+    ExtractImagesAndCleanHtmlTextMapKey.cleanedText: cleanedMessage,
+    ExtractImagesAndCleanHtmlTextMapKey.imageUrls:
         imageUrls.isNotEmpty ? imageUrls : null,
   };
 }
 
-String restoreMessage(
-  String cleanedText,
+String restoreHtmlText(
+  String cleanedHtmlText,
   List<String>? imageUrls, {
   String additionalAttributes = 'style="max-height:500px;" alt="Image"',
 }) {
@@ -35,5 +35,5 @@ String restoreMessage(
     restoredImages += '<img src="$url" $additionalAttributes>\n';
   }
 
-  return '$cleanedText\n$restoredImages';
+  return '$cleanedHtmlText\n$restoredImages';
 }
