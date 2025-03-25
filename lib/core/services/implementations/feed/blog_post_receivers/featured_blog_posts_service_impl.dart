@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:dio/dio.dart';
 import 'package:unn_mobile/core/constants/api/path.dart';
 import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
@@ -27,7 +25,7 @@ class FeaturedBlogPostsServiceImpl implements FeaturedBlogPostsService {
         path: ApiPath.featuredBlogPostWithLoadedInfo,
         options: OptionsWithTimeoutAndExpectedTypeFactory.options(
           30,
-          ResponseDataType.string,
+          ResponseDataType.list,
         ),
       );
     } catch (error, stackTrace) {
@@ -35,7 +33,7 @@ class FeaturedBlogPostsServiceImpl implements FeaturedBlogPostsService {
       return null;
     }
 
-    final blogPosts = _parseBlogPostsFromJsonList(jsonDecode(response.data));
+    final blogPosts = _parseBlogPostsFromJsonList(response.data);
 
     return blogPosts;
   }

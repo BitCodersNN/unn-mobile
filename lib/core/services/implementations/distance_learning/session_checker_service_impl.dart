@@ -28,6 +28,8 @@ class SessionCheckerServiceImpl implements SessionCheckerService {
       return null;
     }
 
-    return bool.tryParse(response.data.substring(6));
+    return response.data is String
+        ? bool.tryParse(response.data as String)
+        : response.data;
   }
 }
