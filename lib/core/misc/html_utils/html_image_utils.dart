@@ -1,3 +1,4 @@
+import 'package:html/dom.dart' as dom;
 import 'package:html/parser.dart' as parser;
 
 class ExtractImagesAndCleanHtmlTextMapKey {
@@ -6,21 +7,38 @@ class ExtractImagesAndCleanHtmlTextMapKey {
 }
 
 Map<String, dynamic> extractImagesAndCleanHtmlText(String htmlText) {
-  final document = parser.parse(htmlText);
-  final imgTags = document.getElementsByTagName('img');
-  final imageUrls = imgTags.map((img) => img.attributes['src']!).toList();
+  final document = _parseHtmlSafely(htmlText);
+  final body = document?.body;
 
-  for (final img in imgTags) {
+  if (body == null) {
+    return _buildResult(htmlText, null);
+  }
+
+  final nodes = body.nodes.toList();
+  final trailingImages = <dom.Element>[];
+  final imageUrls = <String>[];
+
+  for (final node in nodes.reversed) {
+    if (node is! dom.Element || node.localName != 'img') {
+      if (node is dom.Text && node.text.trim().isEmpty) continue;
+      break;
+    }
+
+    final imageSource = node.attributes['src']?.trim();
+    if (imageSource == null || imageSource.isEmpty) continue;
+
+    trailingImages.add(node);
+    imageUrls.add(imageSource);
+  }
+
+  for (final img in trailingImages) {
     img.remove();
   }
 
-  final cleanedMessage = document.body?.text ?? '';
-
-  return {
-    ExtractImagesAndCleanHtmlTextMapKey.cleanedText: cleanedMessage,
-    ExtractImagesAndCleanHtmlTextMapKey.imageUrls:
-        imageUrls.isNotEmpty ? imageUrls : null,
-  };
+  return _buildResult(
+    body.innerHtml,
+    imageUrls.isNotEmpty ? imageUrls.reversed.toList() : null,
+  );
 }
 
 String restoreHtmlText(
@@ -29,11 +47,30 @@ String restoreHtmlText(
   String additionalAttributes = 'style="max-height:500px;" alt="Image"',
 }) {
   imageUrls ??= [];
-  String restoredImages = '';
+  final buffer = StringBuffer();
 
-  for (final url in imageUrls) {
-    restoredImages += '<img src="$url" $additionalAttributes>\n';
+  if (imageUrls.isNotEmpty) {
+    buffer.write('\n');
   }
 
-  return '$cleanedHtmlText\n$restoredImages';
+  for (final url in imageUrls) {
+    buffer.write('<img src="$url" $additionalAttributes>\n');
+  }
+
+  return '$cleanedHtmlText${buffer.toString()}';
+}
+
+dom.Document? _parseHtmlSafely(String htmlText) {
+  try {
+    return parser.parse(htmlText);
+  } catch (e) {
+    return null;
+  }
+}
+
+Map<String, dynamic> _buildResult(String cleanedText, List<String>? imageUrls) {
+  return {
+    ExtractImagesAndCleanHtmlTextMapKey.cleanedText: cleanedText,
+    ExtractImagesAndCleanHtmlTextMapKey.imageUrls: imageUrls,
+  };
 }
