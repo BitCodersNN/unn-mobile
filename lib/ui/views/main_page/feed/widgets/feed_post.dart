@@ -5,14 +5,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:go_router/go_router.dart';
-import 'package:injector/injector.dart';
 import 'package:intl/intl.dart';
 import 'package:unn_mobile/core/misc/app_settings.dart';
+import 'package:unn_mobile/core/misc/html_widget_callbacks.dart';
 import 'package:unn_mobile/core/models/feed/rating_list.dart';
-import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
-import 'package:unn_mobile/core/viewmodels/feed_post_view_model.dart';
-import 'package:unn_mobile/core/viewmodels/profile_view_model.dart';
-import 'package:unn_mobile/core/viewmodels/reaction_view_model.dart';
+import 'package:unn_mobile/core/viewmodels/main_page/feed/feed_post_view_model.dart';
+import 'package:unn_mobile/core/viewmodels/main_page/common/profile_view_model.dart';
+import 'package:unn_mobile/core/viewmodels/main_page/feed/reaction_view_model.dart';
 import 'package:unn_mobile/ui/unn_mobile_colors.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/functions/reactions_window.dart';
@@ -20,7 +19,6 @@ import 'package:unn_mobile/ui/views/main_page/feed/widgets/attached_file.dart';
 import 'package:unn_mobile/ui/views/main_page/main_page_routing.dart';
 import 'package:unn_mobile/ui/widgets/shimmer.dart';
 import 'package:unn_mobile/ui/widgets/shimmer_loading.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 const idkWhatColor = Color(0xFF989EA9);
 
@@ -40,14 +38,7 @@ class FeedPost extends StatefulWidget {
   static Widget htmlWidget(String text, BuildContext context) {
     return HtmlWidget(
       text,
-      onTapUrl: (url) async {
-        if (!await launchUrl(Uri.parse(url))) {
-          Injector.appInstance
-              .get<LoggerService>()
-              .log('Could not launch url $url');
-        }
-        return true;
-      },
+      onTapUrl: htmlWidgetOnTapUrl,
       onTapImage: (imageMetadata) async {
         await showDialog(
           context: context,
@@ -270,7 +261,7 @@ class _FeedPostState extends State<FeedPost> {
                                 vertical: 6,
                               ).copyWith(right: 8),
                               decoration: BoxDecoration(
-                                color: idkWhatColor.withOpacity(0.1),
+                                color: idkWhatColor.withValues(alpha: 0.1),
                                 borderRadius: BorderRadius.circular(20),
                               ),
                               child: Row(
@@ -450,8 +441,8 @@ class _ReactionButton extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
         color: reactionToPost == null
-            ? buttonColor.withOpacity(0.1)
-            : theme.colorScheme.inversePrimary.withOpacity(0.5),
+            ? buttonColor.withValues(alpha: 0.1)
+            : theme.colorScheme.inversePrimary.withValues(alpha: 0.5),
         borderRadius: BorderRadius.circular(20),
       ),
       child: Row(

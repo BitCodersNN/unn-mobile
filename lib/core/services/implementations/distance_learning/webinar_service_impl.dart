@@ -1,8 +1,8 @@
-import 'dart:convert';
-
 import 'package:dio/dio.dart';
 import 'package:unn_mobile/core/constants/api/path.dart';
 import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
+import 'package:unn_mobile/core/misc/dio_interceptor/response_data_type.dart';
+import 'package:unn_mobile/core/misc/dio_options_factory/options_for_distance_course_factory.dart';
 import 'package:unn_mobile/core/misc/json_iterable_parser.dart';
 import 'package:unn_mobile/core/models/distance_learning/semester.dart';
 import 'package:unn_mobile/core/models/distance_learning/webinar.dart';
@@ -24,7 +24,7 @@ class WebinarServiceImpl implements WebinarService {
   );
 
   @override
-  Future<List?> getWebinars({
+  Future<List<Webinar>?> getWebinars({
     required Semester semester,
   }) async {
     Response response;
@@ -35,8 +35,9 @@ class WebinarServiceImpl implements WebinarService {
           _QueryParamNames.semester: semester.semester,
           _QueryParamNames.year: semester.year,
         },
-        options: Options(
-          responseType: ResponseType.plain,
+        options: OptionsForDistanceCourseFactory.options(
+          10,
+          ResponseDataType.list,
         ),
       );
     } catch (exception, stackTrace) {
@@ -44,14 +45,8 @@ class WebinarServiceImpl implements WebinarService {
       return null;
     }
 
-    final jsonMap = jsonDecode(response.data.substring(6));
-
-    if (jsonMap is! List) {
-      return null;
-    }
-
     return parseJsonIterable<Webinar>(
-      jsonMap,
+      response.data,
       Webinar.fromJson,
       _loggerService,
     );

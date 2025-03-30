@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:unn_mobile/core/viewmodels/certificate_item_view_model.dart';
-import 'package:unn_mobile/core/viewmodels/certificates_view_model.dart';
+import 'package:unn_mobile/core/viewmodels/main_page/certificates_online/certificate_item_view_model.dart';
+import 'package:unn_mobile/core/viewmodels/main_page/certificates_online/certificates_view_model.dart';
+import 'package:unn_mobile/ui/functions.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
 
 class OnlineCertificatesScreenView extends StatefulWidget {
@@ -250,14 +251,18 @@ class _OnlineCertificatesScreenViewState
       },
       model: viewModel,
       onModelReady: (model) {
-        model.onSigDownloaded = () {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Подпись загружена успешно')),
+        model.onSigDownloaded = (file) async {
+          await viewFileAndShowMessage(
+            context,
+            file,
+            'Подпись загружена успешно',
           );
         };
-        model.onCertificateDownloaded = () {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Файл загружен успешно')),
+        model.onCertificateDownloaded = (file) async {
+          await viewFileAndShowMessage(
+            context,
+            file,
+            'Файл загружен успешно',
           );
         };
       },

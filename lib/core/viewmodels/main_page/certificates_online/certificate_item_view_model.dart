@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:unn_mobile/core/constants/date_pattern.dart';
@@ -32,8 +33,8 @@ class CertificateItemViewModel extends BaseViewModel {
       'с ${_practiceOrder?.practiceDateTimeRange.start.format(DatePattern.ddmmyyyy)} '
       'по ${_practiceOrder?.practiceDateTimeRange.end.format(DatePattern.ddmmyyyy)}';
 
-  void Function()? onSigDownloaded;
-  void Function()? onCertificateDownloaded;
+  FutureOr<void> Function(File file)? onSigDownloaded;
+  FutureOr<void> Function(File file)? onCertificateDownloaded;
 
   set isViewExpanded(bool value) {
     _isViewExpanded = value;
@@ -87,20 +88,31 @@ class CertificateItemViewModel extends BaseViewModel {
         );
       });
 
-  Future<void> download() async => await busyCallAsync(() async {
-        if (await _downloadFile(_certificate?.certificatePath) == null) {
-          return;
-        }
+  Future<void> download() async => await busyCallAsync(
+        () async => await _downloadAndHandleFile(
+          _certificate?.certificatePath,
+          onCertificateDownloaded,
+        ),
+      );
 
-        onCertificateDownloaded?.call();
-      });
+  Future<void> downloadSig() async => await busyCallAsync(
+        () async => await _downloadAndHandleFile(
+          _certificate?.certificateSigPath,
+          onSigDownloaded,
+        ),
+      );
 
-  Future<void> downloadSig() async => await busyCallAsync(() async {
-        if (await _downloadFile(_certificate!.certificateSigPath) == null) {
-          return;
-        }
-        onSigDownloaded?.call();
-      });
+  Future<void> _downloadAndHandleFile(
+    String? filePath,
+    FutureOr<void> Function(File file)? onFileDownloaded,
+  ) async {
+    final file = await _downloadFile(filePath);
+    if (file == null) {
+      return;
+    }
+    await onFileDownloaded?.call(file);
+    return;
+  }
 
   Future<File?> _downloadFile(String? path) async {
     if (path == null) {

@@ -11,6 +11,7 @@ abstract class AuthenticatedApiHelper extends ApiHelper {
   AuthenticatedApiHelper(
     this.authorizationService, {
     required super.options,
+    super.interceptors,
   }) {
     authorizationService.addListener(onAuthChanged);
   }

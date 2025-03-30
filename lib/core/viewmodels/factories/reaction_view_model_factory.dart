@@ -4,7 +4,7 @@ import 'package:unn_mobile/core/services/interfaces/feed/legacy/getting_rating_l
 import 'package:unn_mobile/core/services/interfaces/feed/legacy/getting_vote_key_signed.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/reaction_service.dart';
 import 'package:unn_mobile/core/viewmodels/factories/cached_view_model_factory_base.dart';
-import 'package:unn_mobile/core/viewmodels/reaction_view_model.dart';
+import 'package:unn_mobile/core/viewmodels/main_page/feed/reaction_view_model.dart';
 
 typedef ReactionCacheKey = int;
 

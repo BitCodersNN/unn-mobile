@@ -1,8 +1,9 @@
-import 'dart:convert';
-
 import 'package:dio/dio.dart';
 import 'package:unn_mobile/core/constants/api/path.dart';
 import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
+import 'package:unn_mobile/core/misc/custom_errors/response_type_exception.dart';
+import 'package:unn_mobile/core/misc/dio_interceptor/response_data_type.dart';
+import 'package:unn_mobile/core/misc/dio_options_factory/options_for_distance_course_factory.dart';
 import 'package:unn_mobile/core/misc/json_iterable_parser.dart';
 import 'package:unn_mobile/core/models/distance_learning/distance_course.dart';
 import 'package:unn_mobile/core/models/distance_learning/semester.dart';
@@ -35,22 +36,25 @@ class DistanceCourseServiceImpl implements DistanceCourseService {
           _QueryParamNames.semester: semester.semester,
           _QueryParamNames.year: semester.year,
         },
-        options: Options(
-          responseType: ResponseType.plain,
+        options: OptionsForDistanceCourseFactory.options(
+          10,
+          ResponseDataType.jsonMap,
         ),
       );
     } catch (exception, stackTrace) {
+      if (exception is DioException &&
+          exception.error is ResponseTypeException) {
+        final responseTypeException = exception.error as ResponseTypeException;
+        if (responseTypeException.actualType == List<dynamic>) {
+          return [];
+        }
+      }
       _loggerService.logError(exception, stackTrace);
-      return null;
-    }
-    final jsonMap = jsonDecode(response.data.substring(6));
-
-    if (jsonMap is List) {
       return null;
     }
 
     return parseJsonIterable<DistanceCourse>(
-      jsonMap.values,
+      response.data.values,
       _processCourse,
       _loggerService,
     );

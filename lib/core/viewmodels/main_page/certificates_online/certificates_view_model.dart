@@ -3,7 +3,7 @@ import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/models/certificate/certificates.dart';
 import 'package:unn_mobile/core/services/interfaces/certificate/certificates_service.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
-import 'package:unn_mobile/core/viewmodels/certificate_item_view_model.dart';
+import 'package:unn_mobile/core/viewmodels/main_page/certificates_online/certificate_item_view_model.dart';
 
 class CertificatesViewModel extends BaseViewModel {
   final CertificatesService _certificatesService;

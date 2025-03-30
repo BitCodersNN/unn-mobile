@@ -1,6 +1,6 @@
 import 'dart:io';
+import 'package:content_resolver/content_resolver.dart';
 import 'package:dio/dio.dart';
-import 'package:flutter_file_dialog/flutter_file_dialog.dart';
 import 'package:mime/mime.dart';
 import 'package:unn_mobile/core/constants/api/protocol_type.dart';
 import 'package:unn_mobile/core/constants/regular_expressions.dart';
@@ -49,7 +49,7 @@ class FileDownloader {
     bool force = false,
     bool pickLocation = false,
   }) async {
-    if (pickLocation && await FlutterFileDialog.isPickDirectorySupported()) {
+    if (pickLocation && Platform.isAndroid) {
       return await _downloadToUserSelectedDirectory(downloadUrl, fileName);
     }
     return await _downloadToDefaultDirectory(
@@ -100,7 +100,17 @@ class FileDownloader {
     String? downloadUrl,
     String fileName,
   ) async {
-    final location = await FlutterFileDialog.pickDirectory();
+    final shortenedFileName = shortenFileName(fileName);
+    final mimeType = lookupMimeType(shortenedFileName) ?? '*/*';
+    String? location;
+    try {
+      location = await openFilePicker(shortenedFileName, mimeType);
+    } catch (error, stack) {
+      _loggerService.log(
+        'Could not get location for file: $error;\n'
+        'stack: $stack',
+      );
+    }
     if (location == null) {
       return null;
     }
@@ -108,26 +118,9 @@ class FileDownloader {
     if (response == null) {
       return null;
     }
+    await ContentResolver.writeContent(location, response.data);
 
-    final shortenedFileName = shortenFileName(fileName);
-    final mimeType = lookupMimeType(shortenedFileName);
-    String? path;
-    try {
-      path = await FlutterFileDialog.saveFileToDirectory(
-        directory: location,
-        data: response.data,
-        fileName: shortenedFileName,
-        mimeType: mimeType,
-        replace: true,
-      );
-    } catch (error, stackTrace) {
-      _loggerService.log('Exception: $error\nStackTrace: $stackTrace');
-      return null;
-    }
-    if (path == null) {
-      return null;
-    }
-    return File(path);
+    return File(location);
   }
 
   Future<Response?> _getFileResponse(

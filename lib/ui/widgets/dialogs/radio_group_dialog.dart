@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 class RadioGroupDialog extends StatefulWidget {
   final List<Widget> radioLabels;
+  final int initialIndex;
   final Widget? label;
   final Widget okButtonChild;
   final Widget cancelButtonChild;
@@ -11,6 +12,7 @@ class RadioGroupDialog extends StatefulWidget {
     this.label,
     this.okButtonChild = const Text('OK'),
     this.cancelButtonChild = const Text('Отмена'),
+    this.initialIndex = 0,
   });
 
   @override
@@ -19,6 +21,13 @@ class RadioGroupDialog extends StatefulWidget {
 
 class _RadioGroupDialogState extends State<RadioGroupDialog> {
   int? selectedValue = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    selectedValue = widget.initialIndex;
+  }
+
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
