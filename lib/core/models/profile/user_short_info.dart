@@ -1,22 +1,50 @@
 import 'package:unn_mobile/core/constants/api/host.dart';
 import 'package:unn_mobile/core/constants/api/protocol_type.dart';
 
-class _UserInfoBitrixJsonKeys {
-  static const String id = 'USER_ID';
-  static const String fullname = 'FULL_NAME';
-  static const String photoSrc = 'PHOTO_SRC';
+abstract class _UserInfoKeys {
+  String get id;
+  String get fullname;
+  String get photoSrc;
 }
 
-class _UserInfoJsonKeys {
-  static const String id = 'id';
-  static const String fullname = 'fio';
-  static const String photoSrc = 'avatar';
+class _DefaultUserInfoKeys implements _UserInfoKeys {
+  const _DefaultUserInfoKeys();
+  @override
+  String get id => 'id';
+  @override
+  String get fullname => 'fio';
+  @override
+  String get photoSrc => 'avatar';
 }
 
-class _UserInfoJsonImportantBlogPostKeys {
-  static const String id = 'ID';
-  static const String fullname = 'FULL_NAME';
-  static const String photoSrc = 'PHOTO_SRC';
+class _BitrixUserInfoKeys implements _UserInfoKeys {
+  const _BitrixUserInfoKeys();
+  @override
+  String get id => 'USER_ID';
+  @override
+  String get fullname => 'FULL_NAME';
+  @override
+  String get photoSrc => 'PHOTO_SRC';
+}
+
+class _BlogPostUserInfoKeys implements _UserInfoKeys {
+  const _BlogPostUserInfoKeys();
+  @override
+  String get id => 'ID';
+  @override
+  String get fullname => 'FULL_NAME';
+  @override
+  String get photoSrc => 'PHOTO_SRC';
+}
+
+class _MessageUserInfoKeys implements _UserInfoKeys {
+  const _MessageUserInfoKeys();
+  @override
+  String get id => 'id';
+  @override
+  String get fullname => 'name';
+  @override
+  String get photoSrc => 'avatar';
 }
 
 class UserShortInfo {
@@ -30,48 +58,60 @@ class UserShortInfo {
     this.photoSrc,
   );
 
-  factory UserShortInfo.fromJson(Map<String, Object?> jsonMap) {
-    final id = jsonMap[_UserInfoJsonKeys.id];
-    final userId = id is int ? id : (id is String ? int.tryParse(id) : null);
-    return UserShortInfo(
-      userId,
-      jsonMap[_UserInfoJsonKeys.fullname] as String,
-      jsonMap[_UserInfoJsonKeys.photoSrc] as String?,
+  factory UserShortInfo._fromJsonWithKeys(
+    Map<String, dynamic> json,
+    _UserInfoKeys keys, {
+    String? photoBaseUrl,
+  }) {
+    final id = json[keys.id];
+    final parsedId = id is int ? id : (id is String ? int.tryParse(id) : null);
+
+    final fullname = json[keys.fullname] as String;
+
+    String? photoSrc = json[keys.photoSrc] as String?;
+    if (photoSrc != null && photoSrc.isNotEmpty && photoBaseUrl != null) {
+      photoSrc = '$photoBaseUrl$photoSrc';
+    }
+
+    return UserShortInfo(parsedId, fullname, photoSrc);
+  }
+
+  Map<String, dynamic> toJson() {
+    const jsonKeys = _DefaultUserInfoKeys();
+
+    return {
+      jsonKeys.id: bitrixId.toString(),
+      jsonKeys.fullname: fullname,
+      jsonKeys.photoSrc: photoSrc,
+    };
+  }
+
+  factory UserShortInfo.fromJson(Map<String, dynamic> json) {
+    return UserShortInfo._fromJsonWithKeys(
+      json,
+      const _DefaultUserInfoKeys(),
     );
   }
 
-  Map<String, dynamic> toJson() => {
-        _UserInfoJsonKeys.id: bitrixId.toString(),
-        _UserInfoJsonKeys.fullname: fullname,
-        _UserInfoJsonKeys.photoSrc: photoSrc,
-      };
-
-  factory UserShortInfo.fromJsonImportantBlogPost(
-    Map<String, Object?> jsonMap,
-  ) {
-    final id = int.tryParse(
-      jsonMap[_UserInfoJsonImportantBlogPostKeys.id] as String,
-    );
-    final fullname =
-        jsonMap[_UserInfoJsonImportantBlogPostKeys.fullname] as String;
-    final photoSrc =
-        jsonMap[_UserInfoJsonImportantBlogPostKeys.photoSrc] as String?;
-
-    final String? resolvedPhotoSrc = photoSrc?.isNotEmpty == true
-        ? '${ProtocolType.https.name}://${Host.unn}${photoSrc!}'
-        : null;
-
-    return UserShortInfo(
-      id,
-      fullname,
-      resolvedPhotoSrc,
+  factory UserShortInfo.fromBitrixJson(Map<String, dynamic> json) {
+    return UserShortInfo._fromJsonWithKeys(
+      json,
+      const _BitrixUserInfoKeys(),
     );
   }
 
-  factory UserShortInfo.fromBitrixJson(Map<String, Object?> jsonMap) =>
-      UserShortInfo(
-        int.tryParse(jsonMap[_UserInfoBitrixJsonKeys.id] as String),
-        jsonMap[_UserInfoBitrixJsonKeys.fullname] as String,
-        jsonMap[_UserInfoBitrixJsonKeys.photoSrc] as String?,
-      );
+  factory UserShortInfo.fromJsonImportantBlogPost(Map<String, dynamic> json) {
+    return UserShortInfo._fromJsonWithKeys(
+      json,
+      const _BlogPostUserInfoKeys(),
+      photoBaseUrl: '${ProtocolType.https}://${Host.unn}',
+    );
+  }
+
+  factory UserShortInfo.fromMessageJson(Map<String, dynamic> json) {
+    return UserShortInfo._fromJsonWithKeys(
+      json,
+      const _MessageUserInfoKeys(),
+    );
+  }
 }

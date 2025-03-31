@@ -66,9 +66,13 @@ class ApiPath {
   /// Для получения расписание онлайн-занятий
   static const String webinars = 'ajax/get/webinars.php';
 
+  /// Для проверки активности сессии
+  static const String session = 'ajax/get/check_session.php';
+
   /// Для получения чатов
   static const String dialog = 'rest/im.recent.list.json';
 
-  /// Для проверки активности сессии
-  static const String session = 'ajax/get/check_session.php';
+  /// Для получения реакций на сообщении в чате
+  static const String messageReactions =
+      'rest/im.v2.Chat.Message.Reaction.tail.json';
 }

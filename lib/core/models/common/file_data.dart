@@ -1,14 +1,44 @@
-class _FileDataBitrixJsonKeys {
-  static const String id = 'ID';
-  static const String name = 'NAME';
-  static const String size = 'SIZE';
-  static const String downloadUrl = 'DOWNLOAD_URL';
+abstract class _FileDataKeys {
+  String get id;
+  String get name;
+  String get size;
+  String get downloadUrl;
 }
 
-class _FileDataJsonKeys {
-  static const String name = 'name';
-  static const String size = 'size';
-  static const String href = 'href';
+class _DefaultFileDataKeys implements _FileDataKeys {
+  const _DefaultFileDataKeys();
+  @override
+  String get id => 'id';
+  @override
+  String get name => 'name';
+  @override
+  String get size => 'size';
+  @override
+  String get downloadUrl => 'href';
+}
+
+class _BitrixFileDataKeys implements _FileDataKeys {
+  const _BitrixFileDataKeys();
+  @override
+  String get id => 'ID';
+  @override
+  String get name => 'NAME';
+  @override
+  String get size => 'SIZE';
+  @override
+  String get downloadUrl => 'DOWNLOAD_URL';
+}
+
+class _MessageFileDataKeys implements _FileDataKeys {
+  const _MessageFileDataKeys();
+  @override
+  String get id => 'id';
+  @override
+  String get name => 'name';
+  @override
+  String get size => 'size';
+  @override
+  String get downloadUrl => 'urlDownload';
 }
 
 class FileData {
@@ -24,32 +54,52 @@ class FileData {
     required this.downloadUrl,
   });
 
-  factory FileData.fromJson(Map<String, Object?> jsonMap) {
-    final fileName = jsonMap[_FileDataJsonKeys.name] as String;
+  factory FileData._fromJsonWithKeys(
+    Map<String, dynamic> json,
+    _FileDataKeys keys, {
+    bool generateIdFromName = false,
+  }) {
+    final id = generateIdFromName
+        ? (json[keys.name] as String).hashCode
+        : int.parse(json[keys.id] as String);
+
     return FileData(
-      id: fileName.hashCode,
-      name: fileName,
-      sizeInBytes: int.parse(
-        jsonMap[_FileDataJsonKeys.size] as String,
-      ),
-      downloadUrl: jsonMap[_FileDataJsonKeys.href] as String,
+      id: id,
+      name: json[keys.name] as String,
+      sizeInBytes: int.parse(json[keys.size] as String),
+      downloadUrl: json[keys.downloadUrl] as String,
     );
   }
 
-  Map<String, dynamic> toJson() => {
-        _FileDataJsonKeys.name: name,
-        _FileDataJsonKeys.size: sizeInBytes.toString(),
-        _FileDataJsonKeys.href: downloadUrl,
-      };
-
-  factory FileData.fromBitrixJson(Map<String, Object?> jsonMap) {
-    return FileData(
-      id: int.parse(jsonMap[_FileDataBitrixJsonKeys.id] as String),
-      name: jsonMap[_FileDataBitrixJsonKeys.name] as String,
-      sizeInBytes: int.parse(
-        jsonMap[_FileDataBitrixJsonKeys.size] as String,
-      ),
-      downloadUrl: jsonMap[_FileDataBitrixJsonKeys.downloadUrl] as String,
+  factory FileData.fromJson(Map<String, dynamic> json) {
+    return FileData._fromJsonWithKeys(
+      json,
+      const _DefaultFileDataKeys(),
+      generateIdFromName: true,
     );
+  }
+
+  factory FileData.fromBitrixJson(Map<String, dynamic> json) {
+    return FileData._fromJsonWithKeys(
+      json,
+      const _BitrixFileDataKeys(),
+    );
+  }
+
+  factory FileData.fromMessageJson(Map<String, dynamic> json) {
+    return FileData._fromJsonWithKeys(
+      json,
+      const _MessageFileDataKeys(),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    const jsonKeys = _DefaultFileDataKeys();
+    return {
+      jsonKeys.id: id.toString(),
+      jsonKeys.name: name,
+      jsonKeys.size: sizeInBytes.toString(),
+      jsonKeys.downloadUrl: downloadUrl,
+    };
   }
 }

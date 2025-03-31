@@ -4,6 +4,9 @@ import 'package:unn_mobile/core/constants/api/path.dart';
 import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/misc/dio_interceptor/response_data_type.dart';
 import 'package:unn_mobile/core/misc/dio_options_factory/options_with_timeout_and_expected_type_factory.dart';
+import 'package:unn_mobile/core/misc/user/user_id_mapping.dart';
+import 'package:unn_mobile/core/models/dialog/message.dart';
+import 'package:unn_mobile/core/services/implementations/dialog/message/message_reaction_service_impl.dart';
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
 import 'package:unn_mobile/core/services/interfaces/dialog/message/message_fetcher_service.dart';
 
@@ -19,16 +22,18 @@ class _DataValue {
 }
 
 class MessageFetcherServiceImpl implements MessageFetcherService {
+  final MessageReactionServiceImpl _messageReactionServiceImpl;
   final LoggerService _loggerService;
   final ApiHelper _apiHelper;
 
   MessageFetcherServiceImpl(
+    this._messageReactionServiceImpl,
     this._loggerService,
     this._apiHelper,
   );
 
   @override
-  Future<List?> fetch({
+  Future<List<Message>?> fetch({
     required int chatId,
     int limit = 25,
     int? lastMessageId,
@@ -41,7 +46,30 @@ class MessageFetcherServiceImpl implements MessageFetcherService {
       return null;
     }
 
-    #TODO;
+    final data = response.data['data'] as Map<String, dynamic>;
+    final messagesJson = data['messages'] as List;
+    final usersJson = data['users'] as List;
+
+    final List<Message> messages = [];
+
+    final usersById = buildUserMap(usersJson);
+
+    for (final message in messagesJson) {
+      final authorId = message['author_id'];
+      final author = usersById[authorId];
+      final Map<String, dynamic> jsonMap = {
+        'id': message['id'],
+        'author': author,
+        'ratingList': await _messageReactionServiceImpl.fetch(message['id']),
+        'fileData': null,
+        'text': message['text'],
+        'uuid': message['uuid'],
+      };
+
+      messages.add(Message.fromJson(jsonMap));
+    }
+
+    return messages;
   }
 
   Future<Response?> _fetchFirstMessages(

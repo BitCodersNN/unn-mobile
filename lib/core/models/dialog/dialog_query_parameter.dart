@@ -28,7 +28,8 @@ class DialogQueryParameter {
 
   Map<String, Object?> toJson() => {
         _DialogQueryParameterJsonKeys.limit: limit,
-        _DialogQueryParameterJsonKeys.lastMessageDate: lastMessageDate?.toIso8601String(),
+        _DialogQueryParameterJsonKeys.lastMessageDate:
+            lastMessageDate?.toIso8601String(),
         _DialogQueryParameterJsonKeys.skipOpenlines: skipOpenlines
             ? _DialogQueryParameterJsonValue.y
             : _DialogQueryParameterJsonValue.n,

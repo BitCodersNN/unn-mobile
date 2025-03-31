@@ -7,6 +7,7 @@ import 'package:unn_mobile/core/models/schedule/schedule_filter.dart';
 import 'package:unn_mobile/core/models/schedule/subject.dart';
 import 'package:unn_mobile/core/services/implementations/dialog/dialog_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/dialog/message/message_fetcher_service_impl.dart';
+import 'package:unn_mobile/core/services/implementations/dialog/message/message_reaction_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/dialog/message/message_sender_service_impl.dart';
 import 'package:unn_mobile/core/services/interfaces/schedule/schedule_service.dart';
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
@@ -30,9 +31,12 @@ class ScheduleServiceImpl implements ScheduleService {
   Future<List<Subject>?> getSchedule(ScheduleFilter scheduleFilter) async {
     final path =
         '${ApiPath.schedule}${scheduleFilter.idType.name}/${scheduleFilter.id}';
-    
-    final ds = MessageSenderServiceImpl(_loggerService, _apiHelper);
-    final y = await ds.send(dialogId: 'chat1162820', text: 'test');
+
+    final pp = MessageReactionServiceImpl(_loggerService, _apiHelper);
+    final ds = MessageFetcherServiceImpl(pp, _loggerService, _apiHelper);
+    // final y = await ds.send(dialogId: 'chat1162820', text: 'test');
+    final y = await ds.fetch(chatId: 1180143);
+
     Response response;
     try {
       response = await _apiHelper.get(
