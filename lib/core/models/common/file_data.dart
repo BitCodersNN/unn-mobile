@@ -61,12 +61,18 @@ class FileData {
   }) {
     final id = generateIdFromName
         ? (json[keys.name] as String).hashCode
-        : int.parse(json[keys.id] as String);
+        : json[keys.id] is int
+            ? json[keys.id]
+            : int.parse(json[keys.id] as String);
+            
+    final size = json[keys.size] is String
+        ? int.parse(json[keys.size] as String)
+        : (json[keys.size] as int);
 
     return FileData(
       id: id,
       name: json[keys.name] as String,
-      sizeInBytes: int.parse(json[keys.size] as String),
+      sizeInBytes: size,
       downloadUrl: json[keys.downloadUrl] as String,
     );
   }

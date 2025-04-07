@@ -5,7 +5,9 @@ import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/misc/dio_interceptor/response_data_type.dart';
 import 'package:unn_mobile/core/misc/dio_options_factory/options_with_timeout_and_expected_type_factory.dart';
 import 'package:unn_mobile/core/misc/user/user_id_mapping.dart';
-import 'package:unn_mobile/core/models/dialog/message.dart';
+import 'package:unn_mobile/core/models/dialog/message/message.dart';
+import 'package:unn_mobile/core/models/dialog/message/message_status.dart';
+import 'package:unn_mobile/core/models/dialog/message/message_with_pagination.dart';
 import 'package:unn_mobile/core/services/implementations/dialog/message/message_reaction_service_impl.dart';
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
 import 'package:unn_mobile/core/services/interfaces/dialog/message/message_fetcher_service.dart';
@@ -33,7 +35,7 @@ class MessageFetcherServiceImpl implements MessageFetcherService {
   );
 
   @override
-  Future<List<Message>?> fetch({
+  Future<MessageWithPagination?> fetch({
     required int chatId,
     int limit = 25,
     int? lastMessageId,
@@ -49,27 +51,56 @@ class MessageFetcherServiceImpl implements MessageFetcherService {
     final data = response.data['data'] as Map<String, dynamic>;
     final messagesJson = data['messages'] as List;
     final usersJson = data['users'] as List;
+    final filesJson = data['files'] as List;
 
     final List<Message> messages = [];
 
-    final usersById = buildUserMap(usersJson);
+    final usersById = buildObjectByIdrMap(usersJson);
+    final filesById = buildObjectByIdrMap(filesJson);
 
     for (final message in messagesJson) {
       final authorId = message['author_id'];
-      final author = usersById[authorId];
+      dynamic params = message['params'];
+      MessageStatus messageStatus = MessageStatus.normal;
+      if (params is List) {
+        params = <String, dynamic>{};
+      }
+      if (message['isSystem']) {
+        messageStatus = MessageStatus.system;
+      } else if ((message['replaces'] as List).isNotEmpty) {
+        messageStatus = MessageStatus.edited;
+      } else if (params['IS_DELETED'] == 'Y') {
+        messageStatus = MessageStatus.deleted;
+      }
+
+      final List filesJson = [];
+      final fileIds = params['FILE_ID'] as List? ?? [];
+       for (final fileId in fileIds) {
+        filesJson.add(filesById[int.parse(fileId)]);
+       }
+
+      final notify = params['NOTIFY'] == 'N' ? false : true;
+
       final Map<String, dynamic> jsonMap = {
         'id': message['id'],
-        'author': author,
+        'author': usersById[authorId],
         'ratingList': await _messageReactionServiceImpl.fetch(message['id']),
-        'fileData': null,
+        'files': filesJson,
         'text': message['text'],
         'uuid': message['uuid'],
+        'messageStatus': messageStatus,
+        'viewedByOthers': message['viewedByOthers'],
+        'notify': notify,
       };
 
       messages.add(Message.fromJson(jsonMap));
     }
 
-    return messages;
+    return MessageWithPagination(
+      messages: messages,
+      hasPrevPage: data['hasPrevPage'],
+      hasNextPage: data['hasNextPage'],
+    );
   }
 
   Future<Response?> _fetchFirstMessages(

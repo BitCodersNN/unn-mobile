@@ -39,7 +39,7 @@ class MessageReactionServiceImpl implements MessageReactionService {
       return null;
     }
 
-    final usersById = buildUserMap(response.data['result']['users']);
+    final usersById = buildObjectByIdrMap(response.data['result']['users']);
 
     final List<Map<String, dynamic>> users = [];
     for (final reaction in response.data['result']['reactions']) {
