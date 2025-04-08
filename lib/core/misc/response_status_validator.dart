@@ -4,10 +4,9 @@ class _ResponseDataJsonKeys {
   static const String status = 'status';
   static const String errors = 'errors';
   static const String error = 'error';
-  static const String message = 'message';
 }
 
-class FeedResponseValidator {
+class ResponseStatusValidator {
   static bool validate(
     Map<String, dynamic> responseData,
     LoggerService loggerService,
@@ -15,9 +14,7 @@ class FeedResponseValidator {
     final status = responseData[_ResponseDataJsonKeys.status];
 
     if (status == _ResponseDataJsonKeys.error) {
-      final error = responseData[_ResponseDataJsonKeys.errors][0];
-      final errorMessage = error[_ResponseDataJsonKeys.message];
-      loggerService.log(errorMessage);
+      loggerService.log(responseData[_ResponseDataJsonKeys.errors]);
       return false;
     }
 

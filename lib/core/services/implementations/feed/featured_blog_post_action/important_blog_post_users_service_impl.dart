@@ -2,7 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:unn_mobile/core/constants/api/ajax_action.dart';
 import 'package:unn_mobile/core/constants/api/path.dart';
 import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
-import 'package:unn_mobile/core/misc/blog_post_response_validator.dart';
+import 'package:unn_mobile/core/misc/response_status_validator.dart';
 import 'package:unn_mobile/core/misc/dio_interceptor/response_data_type.dart';
 import 'package:unn_mobile/core/misc/dio_options_factory/options_with_timeout_and_expected_type_factory.dart';
 import 'package:unn_mobile/core/misc/json_iterable_parser.dart';
@@ -99,7 +99,7 @@ class ImportantBlogPostUsersServiceImpl
       return null;
     }
 
-    if (!FeedResponseValidator.validate(response.data, _loggerService)) {
+    if (!ResponseStatusValidator.validate(response.data, _loggerService)) {
       return null;
     }
 

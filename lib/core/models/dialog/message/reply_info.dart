@@ -1,5 +1,8 @@
 import 'package:unn_mobile/core/models/dialog/message/message_short_info.dart';
 
+class ReplyInfoJsonKeys {
+  static const String replyMessage = 'replyMessage';
+}
 class ReplyInfo {
   final MessageShortInfo replyMessage;
 
@@ -8,6 +11,6 @@ class ReplyInfo {
   });
 
   factory ReplyInfo.fromJson(Map<String, dynamic> jsonMap) => ReplyInfo(
-        replyMessage: MessageShortInfo.fromJson(jsonMap['replyMessage']),
+        replyMessage: MessageShortInfo.fromJson(jsonMap[ReplyInfoJsonKeys.replyMessage]),
       );
 }

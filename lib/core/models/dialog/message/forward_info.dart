@@ -1,5 +1,10 @@
 import 'package:unn_mobile/core/models/profile/user_short_info.dart';
 
+class ForwardInfoJsonKeys {
+  static const String forwardId = 'forwardId';
+  static const String forwardAuthor = 'forwardAuthor';
+}
+
 class ForwardInfo {
   final String forwardChatId;
   final int forwardMessageId;
@@ -12,10 +17,13 @@ class ForwardInfo {
   });
 
   factory ForwardInfo.fromJson(Map<String, dynamic> jsonMap) => ForwardInfo(
-        forwardChatId: jsonMap['forwardId'].split('/')[0],
-        forwardMessageId: int.parse(jsonMap['forwardId'].split('/')[1]),
-        forwardAuthor: jsonMap['forwardAuthor'] != null
-            ? UserShortInfo.fromMessageJson(jsonMap['forwardAuthor'])
+        forwardChatId: jsonMap[ForwardInfoJsonKeys.forwardId].split('/')[0],
+        forwardMessageId:
+            int.parse(jsonMap[ForwardInfoJsonKeys.forwardId].split('/')[1]),
+        forwardAuthor: jsonMap[ForwardInfoJsonKeys.forwardAuthor] != null
+            ? UserShortInfo.fromMessageJson(
+                jsonMap[ForwardInfoJsonKeys.forwardAuthor],
+              )
             : null,
       );
 }

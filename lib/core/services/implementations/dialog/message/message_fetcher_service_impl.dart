@@ -5,12 +5,15 @@ import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/misc/dio_interceptor/response_data_type.dart';
 import 'package:unn_mobile/core/misc/dio_options_factory/options_with_timeout_and_expected_type_factory.dart';
 import 'package:unn_mobile/core/misc/user/user_id_mapping.dart';
+import 'package:unn_mobile/core/models/dialog/message/forward_info.dart';
 import 'package:unn_mobile/core/models/dialog/message/message.dart';
+import 'package:unn_mobile/core/models/dialog/message/message_short_info.dart';
 import 'package:unn_mobile/core/models/dialog/message/message_status.dart';
 import 'package:unn_mobile/core/models/dialog/message/message_with_forward.dart';
 import 'package:unn_mobile/core/models/dialog/message/message_with_forward_and_reply.dart';
 import 'package:unn_mobile/core/models/dialog/message/message_with_pagination.dart';
 import 'package:unn_mobile/core/models/dialog/message/message_with_reply.dart';
+import 'package:unn_mobile/core/models/dialog/message/reply_info.dart';
 import 'package:unn_mobile/core/services/implementations/dialog/message/message_reaction_service_impl.dart';
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
 import 'package:unn_mobile/core/services/interfaces/dialog/message/message_fetcher_service.dart';
@@ -24,6 +27,23 @@ class _DataKeys {
 
 class _DataValue {
   static const String orderId = 'DESC';
+}
+
+class _JsonKeys {
+  static const String data = 'data';
+  static const String messages = 'messages';
+  static const String users = 'users';
+  static const String additionalMessages = 'additionalMessages';
+  static const String params = 'params';
+  static const String fileId = 'FILE_ID';
+  static const String notify = 'NOTIFY';
+  static const String replyId = 'REPLY_ID';
+  static const String forward = 'forward';
+  static const String isSystem = 'isSystem';
+  static const String isDeleted = 'IS_DELETED';
+  static const String replaces = 'replaces';
+  static const String authorId = 'author_id';
+  static const String userId = 'userId';
 }
 
 class MessageFetcherServiceImpl implements MessageFetcherService {
@@ -49,75 +69,95 @@ class MessageFetcherServiceImpl implements MessageFetcherService {
 
     if (response == null) return null;
 
-    final data = response.data['data'] as Map<String, dynamic>;
-    final messagesJson = data['messages'] as List;
-    final usersJson = data['users'] as List;
-    final filesJson = data['files'] as List;
-
-    final usersById = buildObjectByIdrMap(usersJson);
-    final filesById = buildObjectByIdrMap(filesJson);
-    final additionalMessages = buildObjectByIdrMap(data['additionalMessages']);
-
-    final List<Message> messages = [];
-
-    for (final message in messagesJson) {
-      final authorId = message['author_id'];
-      final params = _processMessageParams(message['params']);
-      final messageStatus = _determineMessageStatus(message, params);
-
-      final files = _processFiles(params['FILE_ID'], filesById);
-      final notify = params['NOTIFY'] != 'N';
-
-      final jsonMap = {
-        'id': message['id'],
-        'author': usersById[authorId],
-        'ratingList': await _messageReactionServiceImpl.fetch(message['id']),
-        'files': files,
-        'text': message['text'],
-        'uuid': message['uuid'],
-        'messageStatus': messageStatus,
-        'viewedByOthers': message['viewedByOthers'],
-        'notify': notify,
-      };
-
-      final replyId = int.tryParse(params['REPLY_ID'] ?? '');
-      final hasReply = additionalMessages.containsKey(replyId);
-      final hasForward = message['forward'] != null;
-
-      if (hasReply && hasForward) {
-        jsonMap.addAll(
-          _processReplyAndForward(
-            additionalMessages,
-            replyId,
-            message,
-            usersById,
-            filesById,
-          ),
-        );
-        messages.add(MessageWithForwardAndReply.fromJson(jsonMap));
-      } else if (hasReply) {
-        jsonMap.addAll(
-          _processReply(
-            additionalMessages,
-            replyId,
-            usersById,
-            filesById,
-          ),
-        );
-        messages.add(MessageWithReply.fromJson(jsonMap));
-      } else if (hasForward) {
-        jsonMap.addAll(_processForward(message, usersById));
-        messages.add(MessageWithForward.fromJson(jsonMap));
-      } else {
-        messages.add(Message.fromJson(jsonMap));
-      }
-    }
+    final data = response.data[_JsonKeys.data] as Map<String, dynamic>;
+    final messages = await _processMessagesData(data);
 
     return MessageWithPagination(
       messages: messages,
-      hasPrevPage: data['hasPrevPage'],
-      hasNextPage: data['hasNextPage'],
+      hasPrevPage: data[MessageWithPaginationJsonKeys.hasPrevPage],
+      hasNextPage: data[MessageWithPaginationJsonKeys.hasNextPage],
     );
+  }
+
+  Future<List<Message>> _processMessagesData(Map<String, dynamic> data) async {
+    final messagesJson = data[_JsonKeys.messages] as List;
+    final usersJson = data[_JsonKeys.users] as List;
+    final filesJson = data[MessageShortInfoJsonKeys.files] as List;
+
+    final usersById = buildObjectByIdrMap(usersJson);
+    final filesById = buildObjectByIdrMap(filesJson);
+    final additionalMessagesById =
+        buildObjectByIdrMap(data[_JsonKeys.additionalMessages]);
+
+    final messages = <Message>[];
+
+    for (final message in messagesJson) {
+      final processedMessage = await _processSingleMessage(
+        message,
+        usersById,
+        filesById,
+        additionalMessagesById,
+      );
+      messages.add(processedMessage);
+    }
+
+    return messages;
+  }
+
+  Future<Message> _processSingleMessage(
+    Map<String, dynamic> message,
+    Map<int, dynamic> usersById,
+    Map<int, dynamic> filesById,
+    Map<int, dynamic> additionalMessagesById,
+  ) async {
+    final params = _processMessageParams(message[_JsonKeys.params]);
+    final messageStatus = _determineMessageStatus(message, params);
+    final files = _processFiles(params[_JsonKeys.fileId], filesById);
+    final notify = params[_JsonKeys.notify] != 'N';
+
+    final jsonMap = {
+      ..._proccessMessageShortInfo(message, usersById, files),
+      MessageJsonKeys.ratingList: await _messageReactionServiceImpl.fetch(
+        message[MessageShortInfoJsonKeys.id],
+      ),
+      MessageJsonKeys.messageStatus: messageStatus,
+      MessageJsonKeys.viewedByOthers: message[MessageJsonKeys.viewedByOthers],
+      MessageJsonKeys.notify: notify,
+    };
+
+    final replyId = int.tryParse(params[_JsonKeys.replyId] ?? '');
+    final hasReply = additionalMessagesById.containsKey(replyId);
+    final hasForward = message[_JsonKeys.forward] != null;
+
+    if (hasReply && hasForward) {
+      final processedData = _processReplyAndForward(
+        additionalMessagesById,
+        replyId,
+        message,
+        usersById,
+        filesById,
+      );
+      return MessageWithForwardAndReply.fromJson(
+        {...jsonMap, ...processedData},
+      );
+    }
+
+    if (hasReply) {
+      final processedData = _processReply(
+        additionalMessagesById,
+        replyId,
+        usersById,
+        filesById,
+      );
+      return MessageWithReply.fromJson({...jsonMap, ...processedData});
+    }
+
+    if (hasForward) {
+      final processedData = _processForward(message, usersById);
+      return MessageWithForward.fromJson({...jsonMap, ...processedData});
+    }
+
+    return Message.fromJson(jsonMap);
   }
 
   Map<String, dynamic> _processMessageParams(dynamic rawParams) {
@@ -128,13 +168,17 @@ class MessageFetcherServiceImpl implements MessageFetcherService {
   }
 
   MessageStatus _determineMessageStatus(
-      Map<String, dynamic> message, Map<String, dynamic> params) {
-    if (message['isSystem']) {
+    Map<String, dynamic> message,
+    Map<String, dynamic> params,
+  ) {
+    if (message[_JsonKeys.isSystem] == true) {
       return MessageStatus.system;
-    } else if ((message['replaces'] as List).isNotEmpty) {
-      return MessageStatus.edited;
-    } else if (params['IS_DELETED'] == 'Y') {
+    }
+    if (params[_JsonKeys.isDeleted] == 'Y') {
       return MessageStatus.deleted;
+    }
+    if ((message[_JsonKeys.replaces] as List).isNotEmpty) {
+      return MessageStatus.edited;
     }
     return MessageStatus.normal;
   }
@@ -145,86 +189,98 @@ class MessageFetcherServiceImpl implements MessageFetcherService {
   }
 
   Map<String, dynamic> _processReplyAndForward(
-    Map<int, dynamic> additionalMessages,
+    Map<int, dynamic> additionalMessagesById,
     int? replyId,
     Map<String, dynamic> message,
     Map<int, dynamic> usersById,
     Map<int, dynamic> filesById,
-  ) {
-    final replyMessage = _processReply(
-      additionalMessages,
-      replyId,
-      usersById,
-      filesById,
-    );
-
-    return {
-      ...replyMessage,
-      'forwardId': message['forward']['id'],
-      'forwardAuthor': usersById[message['forward']['userId']],
-    };
-  }
+  ) =>
+      {
+        ..._processReply(
+          additionalMessagesById,
+          replyId,
+          usersById,
+          filesById,
+        ),
+        ..._processForward(
+          message,
+          usersById,
+        ),
+      };
 
   Map<String, dynamic> _processReply(
-    Map<int, dynamic> additionalMessages,
+    Map<int, dynamic> additionalMessagesById,
     int? replyId,
     Map<int, dynamic> usersById,
     Map<int, dynamic> filesById,
   ) {
     final additionalMessagesJson =
-        additionalMessages[replyId] as Map<String, dynamic>;
+        additionalMessagesById[replyId] as Map<String, dynamic>;
     final replyFiles =
-        _processFiles(additionalMessagesJson['FILE_ID'], filesById);
+        _processFiles(additionalMessagesJson[_JsonKeys.fileId], filesById);
 
     return {
-      'replyMessage': {
-        'id': additionalMessagesJson['id'],
-        'author': usersById[additionalMessagesJson['author_id']],
-        'files': replyFiles,
-        'text': additionalMessagesJson['text'],
-        'uuid': additionalMessagesJson['uuid'],
-      },
+      ReplyInfoJsonKeys.replyMessage: _proccessMessageShortInfo(
+        additionalMessagesJson,
+        usersById,
+        replyFiles,
+      ),
     };
   }
+
+  Map<String, dynamic> _proccessMessageShortInfo(
+    Map<String, dynamic> messagesJson,
+    Map<int, dynamic> usersById,
+    List<dynamic> replyFiles,
+  ) =>
+      {
+        MessageShortInfoJsonKeys.id: messagesJson[MessageShortInfoJsonKeys.id],
+        MessageShortInfoJsonKeys.author:
+            usersById[messagesJson[_JsonKeys.authorId]],
+        MessageShortInfoJsonKeys.files: replyFiles,
+        MessageShortInfoJsonKeys.text:
+            messagesJson[MessageShortInfoJsonKeys.text],
+        MessageShortInfoJsonKeys.uuid:
+            messagesJson[MessageShortInfoJsonKeys.uuid],
+      };
 
   Map<String, dynamic> _processForward(
     Map<String, dynamic> message,
     Map<int, dynamic> usersById,
-  ) {
-    return {
-      'forwardId': message['forward']['id'],
-      'forwardAuthor': usersById[message['forward']['userId']],
-    };
-  }
+  ) =>
+      {
+        ForwardInfoJsonKeys.forwardId: message[_JsonKeys.forward]
+            [MessageShortInfoJsonKeys.id],
+        ForwardInfoJsonKeys.forwardAuthor:
+            usersById[message[_JsonKeys.forward][_JsonKeys.userId]],
+      };
 
   Future<Response?> _fetchFirstMessages(
     int chatId,
     int limit,
-  ) async {
-    return _fetchMessagesFromApi(
-      action: AjaxActionStrings.fetchFirstMessage,
-      data: {
-        _DataKeys.chatId: chatId,
-        _DataKeys.limit: limit,
-      },
-    );
-  }
+  ) async =>
+      _fetchMessagesFromApi(
+        action: AjaxActionStrings.fetchFirstMessage,
+        data: {
+          _DataKeys.chatId: chatId,
+          _DataKeys.limit: limit,
+        },
+      );
 
   Future<Response?> _fetchMessages(
     int chatId,
     int lastMessageId,
     int limit,
-  ) async {
-    return _fetchMessagesFromApi(
-      action: AjaxActionStrings.fetchMessage,
-      data: {
-        _DataKeys.chatId: chatId,
-        _DataKeys.limit: limit,
-        _DataKeys.lastId: lastMessageId,
-        _DataKeys.orderId: _DataValue.orderId,
-      },
-    );
-  }
+  ) async =>
+      _fetchMessagesFromApi(
+        action: AjaxActionStrings.fetchMessage,
+        data: {
+          _DataKeys.chatId: chatId,
+          _DataKeys.limit: limit,
+          _DataKeys.lastId: lastMessageId,
+          _DataKeys.orderId: _DataValue.orderId,
+        },
+      );
 
   Future<Response?> _fetchMessagesFromApi({
     required String action,

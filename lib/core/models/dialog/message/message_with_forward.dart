@@ -1,6 +1,5 @@
 import 'package:unn_mobile/core/models/dialog/message/forward_info.dart';
 import 'package:unn_mobile/core/models/dialog/message/message.dart';
-import 'package:unn_mobile/core/models/dialog/message/message_short_info.dart';
 
 class MessageWithForward extends Message {
   final ForwardInfo forwardInfo;
@@ -9,13 +8,7 @@ class MessageWithForward extends Message {
     required Message message,
     required this.forwardInfo,
   }) : super(
-          messageShortInfo: MessageShortInfo(
-            messageId: message.messageId,
-            author: message.author,
-            file: message.file,
-            text: message.text,
-            uuid: message.uuid,
-          ),
+          messageShortInfo: message,
           ratingList: message.ratingList,
           messageStatus: message.messageStatus,
           viewedByOthers: message.viewedByOthers,
