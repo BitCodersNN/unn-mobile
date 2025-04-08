@@ -7,7 +7,10 @@ import 'package:unn_mobile/core/misc/dio_options_factory/options_with_timeout_an
 import 'package:unn_mobile/core/misc/user/user_id_mapping.dart';
 import 'package:unn_mobile/core/models/dialog/message/message.dart';
 import 'package:unn_mobile/core/models/dialog/message/message_status.dart';
+import 'package:unn_mobile/core/models/dialog/message/message_with_forward.dart';
+import 'package:unn_mobile/core/models/dialog/message/message_with_forward_and_reply.dart';
 import 'package:unn_mobile/core/models/dialog/message/message_with_pagination.dart';
+import 'package:unn_mobile/core/models/dialog/message/message_with_reply.dart';
 import 'package:unn_mobile/core/services/implementations/dialog/message/message_reaction_service_impl.dart';
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
 import 'package:unn_mobile/core/services/interfaces/dialog/message/message_fetcher_service.dart';
@@ -44,48 +47,32 @@ class MessageFetcherServiceImpl implements MessageFetcherService {
         ? await _fetchFirstMessages(chatId, limit)
         : await _fetchMessages(chatId, lastMessageId, limit);
 
-    if (response == null) {
-      return null;
-    }
+    if (response == null) return null;
 
     final data = response.data['data'] as Map<String, dynamic>;
     final messagesJson = data['messages'] as List;
     final usersJson = data['users'] as List;
     final filesJson = data['files'] as List;
 
-    final List<Message> messages = [];
-
     final usersById = buildObjectByIdrMap(usersJson);
     final filesById = buildObjectByIdrMap(filesJson);
+    final additionalMessages = buildObjectByIdrMap(data['additionalMessages']);
+
+    final List<Message> messages = [];
 
     for (final message in messagesJson) {
       final authorId = message['author_id'];
-      dynamic params = message['params'];
-      MessageStatus messageStatus = MessageStatus.normal;
-      if (params is List) {
-        params = <String, dynamic>{};
-      }
-      if (message['isSystem']) {
-        messageStatus = MessageStatus.system;
-      } else if ((message['replaces'] as List).isNotEmpty) {
-        messageStatus = MessageStatus.edited;
-      } else if (params['IS_DELETED'] == 'Y') {
-        messageStatus = MessageStatus.deleted;
-      }
+      final params = _processMessageParams(message['params']);
+      final messageStatus = _determineMessageStatus(message, params);
 
-      final List filesJson = [];
-      final fileIds = params['FILE_ID'] as List? ?? [];
-       for (final fileId in fileIds) {
-        filesJson.add(filesById[int.parse(fileId)]);
-       }
+      final files = _processFiles(params['FILE_ID'], filesById);
+      final notify = params['NOTIFY'] != 'N';
 
-      final notify = params['NOTIFY'] == 'N' ? false : true;
-
-      final Map<String, dynamic> jsonMap = {
+      final jsonMap = {
         'id': message['id'],
         'author': usersById[authorId],
         'ratingList': await _messageReactionServiceImpl.fetch(message['id']),
-        'files': filesJson,
+        'files': files,
         'text': message['text'],
         'uuid': message['uuid'],
         'messageStatus': messageStatus,
@@ -93,7 +80,37 @@ class MessageFetcherServiceImpl implements MessageFetcherService {
         'notify': notify,
       };
 
-      messages.add(Message.fromJson(jsonMap));
+      final replyId = int.tryParse(params['REPLY_ID'] ?? '');
+      final hasReply = additionalMessages.containsKey(replyId);
+      final hasForward = message['forward'] != null;
+
+      if (hasReply && hasForward) {
+        jsonMap.addAll(
+          _processReplyAndForward(
+            additionalMessages,
+            replyId,
+            message,
+            usersById,
+            filesById,
+          ),
+        );
+        messages.add(MessageWithForwardAndReply.fromJson(jsonMap));
+      } else if (hasReply) {
+        jsonMap.addAll(
+          _processReply(
+            additionalMessages,
+            replyId,
+            usersById,
+            filesById,
+          ),
+        );
+        messages.add(MessageWithReply.fromJson(jsonMap));
+      } else if (hasForward) {
+        jsonMap.addAll(_processForward(message, usersById));
+        messages.add(MessageWithForward.fromJson(jsonMap));
+      } else {
+        messages.add(Message.fromJson(jsonMap));
+      }
     }
 
     return MessageWithPagination(
@@ -101,6 +118,83 @@ class MessageFetcherServiceImpl implements MessageFetcherService {
       hasPrevPage: data['hasPrevPage'],
       hasNextPage: data['hasNextPage'],
     );
+  }
+
+  Map<String, dynamic> _processMessageParams(dynamic rawParams) {
+    if (rawParams is List) {
+      return <String, dynamic>{};
+    }
+    return rawParams as Map<String, dynamic>;
+  }
+
+  MessageStatus _determineMessageStatus(
+      Map<String, dynamic> message, Map<String, dynamic> params) {
+    if (message['isSystem']) {
+      return MessageStatus.system;
+    } else if ((message['replaces'] as List).isNotEmpty) {
+      return MessageStatus.edited;
+    } else if (params['IS_DELETED'] == 'Y') {
+      return MessageStatus.deleted;
+    }
+    return MessageStatus.normal;
+  }
+
+  List<dynamic> _processFiles(List? rawFileIds, Map<int, dynamic> filesById) {
+    final fileIds = rawFileIds ?? [];
+    return fileIds.map((fileId) => filesById[int.parse(fileId)]).toList();
+  }
+
+  Map<String, dynamic> _processReplyAndForward(
+    Map<int, dynamic> additionalMessages,
+    int? replyId,
+    Map<String, dynamic> message,
+    Map<int, dynamic> usersById,
+    Map<int, dynamic> filesById,
+  ) {
+    final replyMessage = _processReply(
+      additionalMessages,
+      replyId,
+      usersById,
+      filesById,
+    );
+
+    return {
+      ...replyMessage,
+      'forwardId': message['forward']['id'],
+      'forwardAuthor': usersById[message['forward']['userId']],
+    };
+  }
+
+  Map<String, dynamic> _processReply(
+    Map<int, dynamic> additionalMessages,
+    int? replyId,
+    Map<int, dynamic> usersById,
+    Map<int, dynamic> filesById,
+  ) {
+    final additionalMessagesJson =
+        additionalMessages[replyId] as Map<String, dynamic>;
+    final replyFiles =
+        _processFiles(additionalMessagesJson['FILE_ID'], filesById);
+
+    return {
+      'replyMessage': {
+        'id': additionalMessagesJson['id'],
+        'author': usersById[additionalMessagesJson['author_id']],
+        'files': replyFiles,
+        'text': additionalMessagesJson['text'],
+        'uuid': additionalMessagesJson['uuid'],
+      },
+    };
+  }
+
+  Map<String, dynamic> _processForward(
+    Map<String, dynamic> message,
+    Map<int, dynamic> usersById,
+  ) {
+    return {
+      'forwardId': message['forward']['id'],
+      'forwardAuthor': usersById[message['forward']['userId']],
+    };
   }
 
   Future<Response?> _fetchFirstMessages(

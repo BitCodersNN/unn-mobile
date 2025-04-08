@@ -1,13 +1,16 @@
 import 'package:unn_mobile/core/models/dialog/message/forward_info.dart';
 import 'package:unn_mobile/core/models/dialog/message/message.dart';
 import 'package:unn_mobile/core/models/dialog/message/message_short_info.dart';
+import 'package:unn_mobile/core/models/dialog/message/reply_info.dart';
 
-class MessageWithForward extends Message {
+class MessageWithForwardAndReply extends Message {
   final ForwardInfo forwardInfo;
+  final ReplyInfo replyMessage;
 
-  MessageWithForward({
+  MessageWithForwardAndReply({
     required Message message,
     required this.forwardInfo,
+    required this.replyMessage,
   }) : super(
           messageShortInfo: MessageShortInfo(
             messageId: message.messageId,
@@ -22,9 +25,10 @@ class MessageWithForward extends Message {
           notify: message.notify,
         );
 
-  factory MessageWithForward.fromJson(Map<String, dynamic> jsonMap) =>
-      MessageWithForward(
+  factory MessageWithForwardAndReply.fromJson(Map<String, dynamic> jsonMap) =>
+      MessageWithForwardAndReply(
         message: Message.fromJson(jsonMap),
         forwardInfo: ForwardInfo.fromJson(jsonMap),
+        replyMessage: ReplyInfo.fromJson(jsonMap),
       );
 }
