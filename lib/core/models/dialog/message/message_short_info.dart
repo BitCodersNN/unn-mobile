@@ -1,3 +1,4 @@
+import 'package:unn_mobile/core/misc/json/json_key_format.dart';
 import 'package:unn_mobile/core/models/common/file_data.dart';
 import 'package:unn_mobile/core/models/profile/user_short_info.dart';
 
@@ -12,14 +13,14 @@ class MessageShortInfoJsonKeys {
 class MessageShortInfo {
   final int messageId;
   final UserShortInfo? author;
-  final List<FileData> file;
+  final List<FileData> files;
   final String text;
   final String? uuid;
 
   MessageShortInfo({
     required this.messageId,
     required this.author,
-    required this.file,
+    required this.files,
     required this.text,
     required this.uuid,
   });
@@ -39,9 +40,26 @@ class MessageShortInfo {
               jsonMap[MessageShortInfoJsonKeys.author],
             )
           : null,
-      file: files,
+      files: files,
       text: jsonMap[MessageShortInfoJsonKeys.text],
       uuid: jsonMap[MessageShortInfoJsonKeys.uuid],
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    final List<Map<String, dynamic>> filesJson = [];
+    for (final file in files) {
+      filesJson.add(file.toJson(format: JsonKeyFormat.message));
+    }
+
+    return {
+      MessageShortInfoJsonKeys.id: messageId,
+      if (author != null)
+        MessageShortInfoJsonKeys.author:
+            author!.toJson(format: JsonKeyFormat.message),
+      MessageShortInfoJsonKeys.files: filesJson,
+      MessageShortInfoJsonKeys.text: text,
+      MessageShortInfoJsonKeys.uuid: uuid,
+    };
   }
 }

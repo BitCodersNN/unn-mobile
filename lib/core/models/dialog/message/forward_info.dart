@@ -1,3 +1,4 @@
+import 'package:unn_mobile/core/misc/json/json_key_format.dart';
 import 'package:unn_mobile/core/models/profile/user_short_info.dart';
 
 class ForwardInfoJsonKeys {
@@ -26,4 +27,11 @@ class ForwardInfo {
               )
             : null,
       );
+
+  Map<String, dynamic> toJson() => {
+        ForwardInfoJsonKeys.forwardId: '$forwardChatId/$forwardMessageId',
+        if (forwardAuthor != null)
+          ForwardInfoJsonKeys.forwardAuthor:
+              forwardAuthor!.toJson(format: JsonKeyFormat.message),
+      };
 }

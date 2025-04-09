@@ -1,7 +1,11 @@
+import 'package:flutter/material.dart';
 import 'package:unn_mobile/core/constants/api/host.dart';
 import 'package:unn_mobile/core/constants/api/protocol_type.dart';
+import 'package:unn_mobile/core/misc/json/json_key.dart';
+import 'package:unn_mobile/core/misc/json/json_key_format.dart';
+import 'package:unn_mobile/core/misc/json/json_serializable.dart';
 
-abstract class _UserInfoKeys {
+abstract class _UserInfoKeys extends JsonKeys {
   String get id;
   String get fullname;
   String get photoSrc;
@@ -47,7 +51,7 @@ class _MessageUserInfoKeys implements _UserInfoKeys {
   String get photoSrc => 'avatar';
 }
 
-class UserShortInfo {
+class UserShortInfo extends JsonSerializable {
   final int? bitrixId;
   final String fullname;
   final String? photoSrc;
@@ -74,16 +78,6 @@ class UserShortInfo {
     }
 
     return UserShortInfo(parsedId, fullname, photoSrc);
-  }
-
-  Map<String, dynamic> toJson() {
-    const jsonKeys = _DefaultUserInfoKeys();
-
-    return {
-      jsonKeys.id: bitrixId.toString(),
-      jsonKeys.fullname: fullname,
-      jsonKeys.photoSrc: photoSrc,
-    };
   }
 
   factory UserShortInfo.fromJson(Map<String, dynamic> json) {
@@ -113,5 +107,25 @@ class UserShortInfo {
       json,
       const _MessageUserInfoKeys(),
     );
+  }
+
+  @protected
+  @override
+  Map<JsonKeyFormat, JsonKeys> get formatToKeys => const {
+        JsonKeyFormat.standard: _DefaultUserInfoKeys(),
+        JsonKeyFormat.bitrix: _BitrixUserInfoKeys(),
+        JsonKeyFormat.blogPost: _BlogPostUserInfoKeys(),
+        JsonKeyFormat.message: _MessageUserInfoKeys(),
+      };
+
+  @protected
+  @override
+  Map<String, dynamic> buildJsonMap(JsonKeys jsonKeys) {
+    jsonKeys as _UserInfoKeys;
+    return {
+      jsonKeys.id: bitrixId.toString(),
+      jsonKeys.fullname: fullname,
+      jsonKeys.photoSrc: photoSrc,
+    };
   }
 }

@@ -20,4 +20,10 @@ class MessageWithForward extends Message {
         message: Message.fromJson(jsonMap),
         forwardInfo: ForwardInfo.fromJson(jsonMap),
       );
+
+  @override
+  Map<String, dynamic> toJson() => {
+        ...super.toJson(),
+        ...forwardInfo.toJson(),
+      };
 }

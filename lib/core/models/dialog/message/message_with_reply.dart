@@ -12,7 +12,7 @@ class MessageWithReply extends Message {
           messageShortInfo: MessageShortInfo(
             messageId: message.messageId,
             author: message.author,
-            file: message.file,
+            files: message.files,
             text: message.text,
             uuid: message.uuid,
           ),
@@ -27,4 +27,10 @@ class MessageWithReply extends Message {
         message: Message.fromJson(jsonMap),
         replyMessage: ReplyInfo.fromJson(jsonMap),
       );
+
+  @override
+  Map<String, dynamic> toJson() => {
+        ...super.toJson(),
+        ...replyMessage.toJson(),
+      };
 }

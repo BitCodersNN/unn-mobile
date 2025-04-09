@@ -1,4 +1,9 @@
-abstract class _FileDataKeys {
+import 'package:flutter/foundation.dart';
+import 'package:unn_mobile/core/misc/json/json_key.dart';
+import 'package:unn_mobile/core/misc/json/json_key_format.dart';
+import 'package:unn_mobile/core/misc/json/json_serializable.dart';
+
+abstract class _FileDataKeys extends JsonKeys {
   String get id;
   String get name;
   String get size;
@@ -41,7 +46,7 @@ class _MessageFileDataKeys implements _FileDataKeys {
   String get downloadUrl => 'urlDownload';
 }
 
-class FileData {
+class FileData extends JsonSerializable {
   final int id;
   final String name;
   final int sizeInBytes;
@@ -64,7 +69,7 @@ class FileData {
         : json[keys.id] is int
             ? json[keys.id]
             : int.parse(json[keys.id] as String);
-            
+
     final size = json[keys.size] is String
         ? int.parse(json[keys.size] as String)
         : (json[keys.size] as int);
@@ -99,8 +104,18 @@ class FileData {
     );
   }
 
-  Map<String, dynamic> toJson() {
-    const jsonKeys = _DefaultFileDataKeys();
+  @protected
+  @override
+  Map<JsonKeyFormat, JsonKeys> get formatToKeys => const {
+        JsonKeyFormat.standard: _DefaultFileDataKeys(),
+        JsonKeyFormat.bitrix: _BitrixFileDataKeys(),
+        JsonKeyFormat.message: _MessageFileDataKeys(),
+      };
+
+  @protected
+  @override
+  Map<String, dynamic> buildJsonMap(JsonKeys jsonKeys) {
+    jsonKeys as _FileDataKeys;
     return {
       jsonKeys.id: id.toString(),
       jsonKeys.name: name,

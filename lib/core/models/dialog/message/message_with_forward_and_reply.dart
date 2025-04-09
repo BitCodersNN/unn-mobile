@@ -24,4 +24,11 @@ class MessageWithForwardAndReply extends Message {
         forwardInfo: ForwardInfo.fromJson(jsonMap),
         replyMessage: ReplyInfo.fromJson(jsonMap),
       );
+
+  @override
+  Map<String, dynamic> toJson() => {
+        ...super.toJson(),
+        'forward_info': forwardInfo.toJson(),
+        'reply_message': replyMessage.toJson(),
+      };
 }

@@ -3,6 +3,7 @@ import 'package:unn_mobile/core/constants/api/path.dart';
 import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/misc/dio_options_factory/options_with_expected_type_factory.dart';
 import 'package:unn_mobile/core/misc/json_iterable_parser.dart';
+import 'package:unn_mobile/core/models/common/file_data.dart';
 import 'package:unn_mobile/core/models/schedule/schedule_filter.dart';
 import 'package:unn_mobile/core/models/schedule/subject.dart';
 import 'package:unn_mobile/core/services/implementations/dialog/message/message_fetcher_service_impl.dart';
@@ -32,10 +33,9 @@ class ScheduleServiceImpl implements ScheduleService {
         '${ApiPath.schedule}${scheduleFilter.idType.name}/${scheduleFilter.id}';
 
     final pp = MessageReactionServiceImpl(_loggerService, _apiHelper);
-    final ds = MessageSenderServiceImpl(_loggerService, _apiHelper);
-    final y = await ds.send(dialogId: 'chat1162820', text: 'test');
-    // final y = await ds.fetch(chatId: 946764); // 1180143
-
+    final ds = MessageFetcherServiceImpl(pp, _loggerService, _apiHelper);
+    // final y = await ds.send(dialogId: 'chat1162820', text: 'test');
+    final y = await ds.fetch(chatId: 1180143); // 946764
     Response response;
     try {
       response = await _apiHelper.get(

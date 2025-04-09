@@ -24,7 +24,7 @@ class Message extends MessageShortInfo {
   }) : super(
           messageId: messageShortInfo.messageId,
           author: messageShortInfo.author,
-          file: messageShortInfo.file,
+          files: messageShortInfo.files,
           text: messageShortInfo.text,
           uuid: messageShortInfo.uuid,
         );
@@ -36,4 +36,13 @@ class Message extends MessageShortInfo {
         viewedByOthers: jsonMap[MessageJsonKeys.viewedByOthers],
         notify: jsonMap[MessageJsonKeys.notify],
       );
+
+  @override
+  Map<String, dynamic> toJson() => {
+        ...super.toJson(),
+        MessageJsonKeys.ratingList: ratingList,
+        MessageJsonKeys.messageStatus: messageStatus,
+        MessageJsonKeys.viewedByOthers: viewedByOthers,
+        MessageJsonKeys.notify: notify,
+      };
 }
