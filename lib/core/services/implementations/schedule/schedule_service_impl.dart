@@ -36,6 +36,12 @@ class ScheduleServiceImpl implements ScheduleService {
     final ds = MessageFetcherServiceImpl(pp, _loggerService, _apiHelper);
     // final y = await ds.send(dialogId: 'chat1162820', text: 'test');
     final y = await ds.fetch(chatId: 1180143); // 946764
+
+    final test = [];
+    for(final x in y!.messages) {
+      test.add(x.toJson());
+    }
+    
     Response response;
     try {
       response = await _apiHelper.get(

@@ -51,7 +51,12 @@ class _MessageUserInfoKeys implements _UserInfoKeys {
   String get photoSrc => 'avatar';
 }
 
-class UserShortInfo extends JsonSerializable {
+class UserShortInfo
+    with
+        MultiFormatJsonSerializable,
+        BitrixJsonSerializable,
+        BlogPostJsonSerializable,
+        MessageJsonSerializable {
   final int? bitrixId;
   final String fullname;
   final String? photoSrc;
@@ -111,7 +116,7 @@ class UserShortInfo extends JsonSerializable {
 
   @protected
   @override
-  Map<JsonKeyFormat, JsonKeys> get formatToKeys => const {
+  Map<JsonKeyFormat, JsonKeys> get availableFormats => const {
         JsonKeyFormat.standard: _DefaultUserInfoKeys(),
         JsonKeyFormat.bitrix: _BitrixUserInfoKeys(),
         JsonKeyFormat.blogPost: _BlogPostUserInfoKeys(),

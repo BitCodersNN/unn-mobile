@@ -62,13 +62,17 @@ class MessageReactionServiceImpl implements MessageReactionService {
 
   @override
   Future<UserShortInfo?> addReaction(
-      ReactionType reactionType, String voteKeySigned) {
+    ReactionType reactionType,
+    String voteKeySigned,
+  ) {
     // TODO: implement addReaction
     throw UnimplementedError();
   }
 
   @override
-  Future<bool> removeReaction(String voteKeySigned) {
+  Future<bool> removeReaction(
+    String voteKeySigned,
+  ) {
     // TODO: implement removeReaction
     throw UnimplementedError();
   }

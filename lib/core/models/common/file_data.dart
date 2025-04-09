@@ -46,7 +46,11 @@ class _MessageFileDataKeys implements _FileDataKeys {
   String get downloadUrl => 'urlDownload';
 }
 
-class FileData extends JsonSerializable {
+class FileData
+    with
+        MultiFormatJsonSerializable,
+        BitrixJsonSerializable,
+        MessageJsonSerializable {
   final int id;
   final String name;
   final int sizeInBytes;
@@ -106,7 +110,7 @@ class FileData extends JsonSerializable {
 
   @protected
   @override
-  Map<JsonKeyFormat, JsonKeys> get formatToKeys => const {
+  Map<JsonKeyFormat, JsonKeys> get availableFormats => const {
         JsonKeyFormat.standard: _DefaultFileDataKeys(),
         JsonKeyFormat.bitrix: _BitrixFileDataKeys(),
         JsonKeyFormat.message: _MessageFileDataKeys(),
@@ -114,13 +118,13 @@ class FileData extends JsonSerializable {
 
   @protected
   @override
-  Map<String, dynamic> buildJsonMap(JsonKeys jsonKeys) {
-    jsonKeys as _FileDataKeys;
+  Map<String, dynamic> buildJsonMap(JsonKeys keys) {
+    keys as _FileDataKeys;
     return {
-      jsonKeys.id: id.toString(),
-      jsonKeys.name: name,
-      jsonKeys.size: sizeInBytes.toString(),
-      jsonKeys.downloadUrl: downloadUrl,
+      keys.id: id.toString(),
+      keys.name: name,
+      keys.size: sizeInBytes.toString(),
+      keys.downloadUrl: downloadUrl,
     };
   }
 }

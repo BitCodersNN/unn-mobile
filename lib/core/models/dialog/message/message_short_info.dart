@@ -1,4 +1,3 @@
-import 'package:unn_mobile/core/misc/json/json_key_format.dart';
 import 'package:unn_mobile/core/models/common/file_data.dart';
 import 'package:unn_mobile/core/models/profile/user_short_info.dart';
 
@@ -49,14 +48,13 @@ class MessageShortInfo {
   Map<String, dynamic> toJson() {
     final List<Map<String, dynamic>> filesJson = [];
     for (final file in files) {
-      filesJson.add(file.toJson(format: JsonKeyFormat.message));
+      filesJson.add(file.toMessageJson());
     }
 
     return {
       MessageShortInfoJsonKeys.id: messageId,
       if (author != null)
-        MessageShortInfoJsonKeys.author:
-            author!.toJson(format: JsonKeyFormat.message),
+        MessageShortInfoJsonKeys.author: author!.toMessageJson(),
       MessageShortInfoJsonKeys.files: filesJson,
       MessageShortInfoJsonKeys.text: text,
       MessageShortInfoJsonKeys.uuid: uuid,
