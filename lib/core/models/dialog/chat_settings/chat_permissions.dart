@@ -1,4 +1,4 @@
-import 'package:unn_mobile/core/models/dialog/user_role.dart';
+import 'package:unn_mobile/core/models/dialog/enum/user_role.dart';
 
 class ChatPermissions {
   final UserRole canPost;
