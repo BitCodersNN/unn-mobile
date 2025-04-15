@@ -27,6 +27,7 @@ class Message extends MessageShortInfo {
           files: messageShortInfo.files,
           text: messageShortInfo.text,
           uuid: messageShortInfo.uuid,
+          dateTime: messageShortInfo.dateTime,
         );
 
   factory Message.fromJson(Map<String, dynamic> jsonMap) => Message(

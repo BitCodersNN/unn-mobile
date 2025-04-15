@@ -7,6 +7,7 @@ class MessageShortInfoJsonKeys {
   static const String author = 'author';
   static const String text = 'text';
   static const String uuid = 'uuid';
+  static const String date = 'date';
 }
 
 class MessageShortInfo {
@@ -15,6 +16,7 @@ class MessageShortInfo {
   final List<FileData> files;
   final String text;
   final String? uuid;
+  final DateTime dateTime;
 
   MessageShortInfo({
     required this.messageId,
@@ -22,6 +24,7 @@ class MessageShortInfo {
     required this.files,
     required this.text,
     required this.uuid,
+    required this.dateTime,
   });
 
   factory MessageShortInfo.fromJson(Map<String, dynamic> jsonMap) {
@@ -42,6 +45,7 @@ class MessageShortInfo {
       files: files,
       text: jsonMap[MessageShortInfoJsonKeys.text],
       uuid: jsonMap[MessageShortInfoJsonKeys.uuid],
+      dateTime: DateTime.parse(jsonMap[MessageShortInfoJsonKeys.date]),
     );
   }
 
@@ -58,6 +62,7 @@ class MessageShortInfo {
       MessageShortInfoJsonKeys.files: filesJson,
       MessageShortInfoJsonKeys.text: text,
       MessageShortInfoJsonKeys.uuid: uuid,
+      MessageShortInfoJsonKeys.date: dateTime.toIso8601String()
     };
   }
 }

@@ -15,6 +15,7 @@ class MessageWithReply extends Message {
             files: message.files,
             text: message.text,
             uuid: message.uuid,
+            dateTime: message.dateTime,
           ),
           ratingList: message.ratingList,
           messageStatus: message.messageStatus,
