@@ -1,3 +1,15 @@
+class _ChatRestrictionsJsonKeys {
+  static const String avatar = 'avatar';
+  static const String rename = 'rename';
+  static const String extend = 'extend';
+  static const String call = 'call';
+  static const String mute = 'mute';
+  static const String leave = 'leave';
+  static const String leaveOwner = 'leave_owner';
+  static const String send = 'send';
+  static const String userList = 'user_list';
+}
+
 class ChatRestrictions {
   final bool avatar;
   final bool rename;
@@ -23,14 +35,26 @@ class ChatRestrictions {
 
   factory ChatRestrictions.fromJson(Map<String, dynamic> json) =>
       ChatRestrictions(
-        avatar: json['avatar'],
-        rename: json['rename'],
-        extend: json['extend'],
-        call: json['call'],
-        mute: json['mute'],
-        leave: json['leave'],
-        leaveOwner: json['leave_owner'],
-        send: json['send'],
-        userList: json['user_list'],
+        avatar: json[_ChatRestrictionsJsonKeys.avatar],
+        rename: json[_ChatRestrictionsJsonKeys.rename],
+        extend: json[_ChatRestrictionsJsonKeys.extend],
+        call: json[_ChatRestrictionsJsonKeys.call],
+        mute: json[_ChatRestrictionsJsonKeys.mute],
+        leave: json[_ChatRestrictionsJsonKeys.leave],
+        leaveOwner: json[_ChatRestrictionsJsonKeys.leaveOwner],
+        send: json[_ChatRestrictionsJsonKeys.send],
+        userList: json[_ChatRestrictionsJsonKeys.userList],
       );
+
+  Map<String, dynamic> toJson() => {
+        _ChatRestrictionsJsonKeys.avatar: avatar,
+        _ChatRestrictionsJsonKeys.rename: rename,
+        _ChatRestrictionsJsonKeys.extend: extend,
+        _ChatRestrictionsJsonKeys.call: call,
+        _ChatRestrictionsJsonKeys.mute: mute,
+        _ChatRestrictionsJsonKeys.leave: leave,
+        _ChatRestrictionsJsonKeys.leaveOwner: leaveOwner,
+        _ChatRestrictionsJsonKeys.send: send,
+        _ChatRestrictionsJsonKeys.userList: userList,
+      };
 }

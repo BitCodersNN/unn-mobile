@@ -1,5 +1,10 @@
 import 'package:unn_mobile/core/models/dialog/dialog.dart';
 
+class _UserDialogJsonKeys {
+  static const String id = 'id';
+  static const String type = 'type';
+}
+
 final class UserDialog extends Dialog {
   final int id;
 
@@ -20,7 +25,14 @@ final class UserDialog extends Dialog {
       previewMessage: dialog.previewMessage,
       lastMessageStatus: dialog.lastMessageStatus,
       pinned: dialog.pinned,
-      id: json['id'],
+      id: json[_UserDialogJsonKeys.id],
     );
   }
+
+  @override
+  Map<String, dynamic> toJson() => {
+        ...super.toJson(),
+        _UserDialogJsonKeys.id: id,
+        _UserDialogJsonKeys.type: 'user',
+      };
 }

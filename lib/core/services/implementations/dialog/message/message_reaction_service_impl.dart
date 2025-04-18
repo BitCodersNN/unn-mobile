@@ -65,7 +65,7 @@ class MessageReactionServiceImpl implements MessageReactionService {
     ReactionType reactionType,
     String voteKeySigned,
   ) {
-    // TODO: implement addReaction
+    #TODO;
     throw UnimplementedError();
   }
 
@@ -73,7 +73,7 @@ class MessageReactionServiceImpl implements MessageReactionService {
   Future<bool> removeReaction(
     String voteKeySigned,
   ) {
-    // TODO: implement removeReaction
+    #TODO;
     throw UnimplementedError();
   }
 }

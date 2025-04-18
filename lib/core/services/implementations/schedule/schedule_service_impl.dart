@@ -3,14 +3,10 @@ import 'package:unn_mobile/core/constants/api/path.dart';
 import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/misc/dio_options_factory/options_with_expected_type_factory.dart';
 import 'package:unn_mobile/core/misc/json_iterable_parser.dart';
-import 'package:unn_mobile/core/models/common/file_data.dart';
 import 'package:unn_mobile/core/models/dialog/dialog_query_parameter.dart';
 import 'package:unn_mobile/core/models/schedule/schedule_filter.dart';
 import 'package:unn_mobile/core/models/schedule/subject.dart';
 import 'package:unn_mobile/core/services/implementations/dialog/dialog_service_impl.dart';
-import 'package:unn_mobile/core/services/implementations/dialog/message/message_fetcher_service_impl.dart';
-import 'package:unn_mobile/core/services/implementations/dialog/message/message_reaction_service_impl.dart';
-import 'package:unn_mobile/core/services/implementations/dialog/message/message_sender_service_impl.dart';
 import 'package:unn_mobile/core/services/interfaces/schedule/schedule_service.dart';
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
 
@@ -33,13 +29,6 @@ class ScheduleServiceImpl implements ScheduleService {
   Future<List<Subject>?> getSchedule(ScheduleFilter scheduleFilter) async {
     final path =
         '${ApiPath.schedule}${scheduleFilter.idType.name}/${scheduleFilter.id}';
-
-    final pp = DialogServiceImpl(_loggerService, _apiHelper);
-    final y = await pp.dialog(
-        dialogQueryParameter: const DialogQueryParameter(limit: 50)); // 946764
-    // final mm = MessageReactionServiceImpl(_loggerService, _apiHelper);
-    // final gg = MessageFetcherServiceImpl(mm, _loggerService, _apiHelper);
-    // final yy = await gg.fetch(chatId: 1180143);
 
     Response response;
     try {

@@ -4,6 +4,7 @@ import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/misc/api_helpers/authenticated_api_helper.dart';
 import 'package:unn_mobile/core/misc/dio_interceptor/response_data_type.dart';
 import 'package:unn_mobile/core/misc/dio_options_factory/options_with_timeout_and_expected_type_factory.dart';
+import 'package:unn_mobile/core/misc/json_iterable_parser.dart';
 import 'package:unn_mobile/core/misc/objects_with_pagination.dart';
 import 'package:unn_mobile/core/models/dialog/dialog.dart';
 import 'package:unn_mobile/core/models/dialog/dialog_query_parameter.dart';
@@ -16,6 +17,14 @@ class _DataKeys {
   static const String sessid = 'sessid';
 }
 
+class _ResponseJsonKeys {
+  static const String result = 'result';
+  static const String items = 'items';
+  static const String type = 'type';
+  static const String chat = 'chat';
+  static const String user = 'user';
+}
+
 class DialogServiceImpl implements DialogService {
   final LoggerService _loggerService;
   final ApiHelper _apiHelper;
@@ -26,7 +35,7 @@ class DialogServiceImpl implements DialogService {
   );
 
   @override
-  Future<PartialResult?> dialog({
+  Future<PartialResult<Dialog>?> dialog({
     dialogQueryParameter = const DialogQueryParameter(
       limit: 5,
     ),
@@ -52,22 +61,26 @@ class DialogServiceImpl implements DialogService {
       return null;
     }
 
-    final dialogs = <Dialog>[];
-    for (final dialog in response.data['result']['items']) {
-      if (dialog['type'] == 'chat') {
-        dialogs.add(GroupDialog.fromJson(dialog));
-      } else if (dialog['type'] == 'user') {
-        dialogs.add(UserDialog.fromJson(dialog));
-      } else {
-        _loggerService.log(
-          'Unknown dialog type: ${dialog['type']}',
-        );
-      }
-    }
+    final dialogs = parseJsonIterable<Dialog>(
+      response.data[_ResponseJsonKeys.result][_ResponseJsonKeys.items],
+      (json) {
+        final type = json[_ResponseJsonKeys.type] as String;
+        switch (type) {
+          case _ResponseJsonKeys.chat:
+            return GroupDialog.fromJson(json);
+          case _ResponseJsonKeys.user:
+            return UserDialog.fromJson(json);
+          default:
+            throw FormatException('Unknown dialog type: $type');
+        }
+      },
+      _loggerService,
+    );
 
     return PartialResult(
       items: dialogs,
-      hasMore: response.data['result'][PartialResultJsonKeys.hasMore],
+      hasMore: response.data[_ResponseJsonKeys.result]
+          [PartialResultJsonKeys.hasMore],
     );
   }
 }
