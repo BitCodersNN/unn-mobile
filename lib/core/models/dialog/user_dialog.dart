@@ -1,6 +1,6 @@
 import 'package:unn_mobile/core/models/dialog/dialog.dart';
 
-class UserDialog extends Dialog {
+final class UserDialog extends Dialog {
   final int id;
 
   UserDialog({
@@ -11,4 +11,16 @@ class UserDialog extends Dialog {
     required super.pinned,
     required this.id,
   });
+
+  factory UserDialog.fromJson(Map<String, dynamic> json) {
+    final dialog = Dialog.fromJson(json);
+    return UserDialog(
+      chatId: dialog.chatId,
+      title: dialog.title,
+      previewMessage: dialog.previewMessage,
+      lastMessageStatus: dialog.lastMessageStatus,
+      pinned: dialog.pinned,
+      id: json['id'],
+    );
+  }
 }

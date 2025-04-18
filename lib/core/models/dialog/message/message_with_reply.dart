@@ -12,13 +12,13 @@ class MessageWithReply extends Message {
           messageShortInfo: MessageShortInfo(
             messageId: message.messageId,
             author: message.author,
-            files: message.files,
             text: message.text,
             uuid: message.uuid,
             dateTime: message.dateTime,
           ),
           ratingList: message.ratingList,
           messageStatus: message.messageStatus,
+          files: message.files,
           viewedByOthers: message.viewedByOthers,
           notify: message.notify,
         );

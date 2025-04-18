@@ -8,10 +8,10 @@ import 'package:unn_mobile/core/misc/user/user_id_mapping.dart';
 import 'package:unn_mobile/core/models/dialog/message/forward_info.dart';
 import 'package:unn_mobile/core/models/dialog/message/message.dart';
 import 'package:unn_mobile/core/models/dialog/message/message_short_info.dart';
-import 'package:unn_mobile/core/models/dialog/message/message_status.dart';
+import 'package:unn_mobile/core/models/dialog/message/enum/message_state.dart';
 import 'package:unn_mobile/core/models/dialog/message/message_with_forward.dart';
 import 'package:unn_mobile/core/models/dialog/message/message_with_forward_and_reply.dart';
-import 'package:unn_mobile/core/models/dialog/message/message_with_pagination.dart';
+import 'package:unn_mobile/core/misc/objects_with_pagination.dart';
 import 'package:unn_mobile/core/models/dialog/message/message_with_reply.dart';
 import 'package:unn_mobile/core/models/dialog/message/reply_info.dart';
 import 'package:unn_mobile/core/services/implementations/dialog/message/message_reaction_service_impl.dart';
@@ -58,7 +58,7 @@ class MessageFetcherServiceImpl implements MessageFetcherService {
   );
 
   @override
-  Future<MessageWithPagination?> fetch({
+  Future<PaginatedResult?> fetch({
     required int chatId,
     int limit = 25,
     int? lastMessageId,
@@ -72,17 +72,17 @@ class MessageFetcherServiceImpl implements MessageFetcherService {
     final data = response.data[_JsonKeys.data] as Map<String, dynamic>;
     final messages = await _processMessagesData(data);
 
-    return MessageWithPagination(
-      messages: messages,
-      hasPrevPage: data[MessageWithPaginationJsonKeys.hasPrevPage],
-      hasNextPage: data[MessageWithPaginationJsonKeys.hasNextPage],
+    return PaginatedResult(
+      items: messages,
+      hasPreviousPage: data[PaginatedResultJsonKeys.hasPrevPage],
+      hasNextPage: data[PaginatedResultJsonKeys.hasNextPage],
     );
   }
 
   Future<List<Message>> _processMessagesData(Map<String, dynamic> data) async {
     final messagesJson = data[_JsonKeys.messages] as List;
     final usersJson = data[_JsonKeys.users] as List;
-    final filesJson = data[MessageShortInfoJsonKeys.files] as List;
+    final filesJson = data[MessageJsonKeys.files] as List;
 
     final usersById = buildObjectByIdrMap(usersJson);
     final filesById = buildObjectByIdrMap(filesJson);
@@ -114,13 +114,13 @@ class MessageFetcherServiceImpl implements MessageFetcherService {
     final messageStatus = _determineMessageStatus(message, params);
     final files = _processFiles(params[_JsonKeys.fileId], filesById);
     final notify = params[_JsonKeys.notify] != 'N';
-
     final jsonMap = {
-      ..._proccessMessageShortInfo(message, usersById, files),
+      ..._proccessMessageShortInfo(message, usersById),
       MessageJsonKeys.ratingList: await _messageReactionServiceImpl.fetch(
         message[MessageShortInfoJsonKeys.id],
       ),
       MessageJsonKeys.messageStatus: messageStatus,
+      MessageJsonKeys.files: files,
       MessageJsonKeys.viewedByOthers: message[MessageJsonKeys.viewedByOthers],
       MessageJsonKeys.notify: notify,
     };
@@ -167,20 +167,20 @@ class MessageFetcherServiceImpl implements MessageFetcherService {
     return rawParams as Map<String, dynamic>;
   }
 
-  MessageStatus _determineMessageStatus(
+  MessageState _determineMessageStatus(
     Map<String, dynamic> message,
     Map<String, dynamic> params,
   ) {
     if (message[_JsonKeys.isSystem] == true) {
-      return MessageStatus.system;
+      return MessageState.system;
     }
     if (params[_JsonKeys.isDeleted] == 'Y') {
-      return MessageStatus.deleted;
+      return MessageState.deleted;
     }
     if ((message[_JsonKeys.replaces] as List).isNotEmpty) {
-      return MessageStatus.edited;
+      return MessageState.edited;
     }
-    return MessageStatus.normal;
+    return MessageState.normal;
   }
 
   List<dynamic> _processFiles(List? rawFileIds, Map<int, dynamic> filesById) {
@@ -216,14 +216,11 @@ class MessageFetcherServiceImpl implements MessageFetcherService {
   ) {
     final additionalMessagesJson =
         additionalMessagesById[replyId] as Map<String, dynamic>;
-    final replyFiles =
-        _processFiles(additionalMessagesJson[_JsonKeys.fileId], filesById);
 
     return {
       ReplyInfoJsonKeys.replyMessage: _proccessMessageShortInfo(
         additionalMessagesJson,
         usersById,
-        replyFiles,
       ),
     };
   }
@@ -231,17 +228,17 @@ class MessageFetcherServiceImpl implements MessageFetcherService {
   Map<String, dynamic> _proccessMessageShortInfo(
     Map<String, dynamic> messagesJson,
     Map<int, dynamic> usersById,
-    List<dynamic> replyFiles,
   ) =>
       {
         MessageShortInfoJsonKeys.id: messagesJson[MessageShortInfoJsonKeys.id],
         MessageShortInfoJsonKeys.author:
             usersById[messagesJson[_JsonKeys.authorId]],
-        MessageShortInfoJsonKeys.files: replyFiles,
         MessageShortInfoJsonKeys.text:
             messagesJson[MessageShortInfoJsonKeys.text],
         MessageShortInfoJsonKeys.uuid:
             messagesJson[MessageShortInfoJsonKeys.uuid],
+        MessageShortInfoJsonKeys.date:
+            messagesJson[MessageShortInfoJsonKeys.date],
       };
 
   Map<String, dynamic> _processForward(

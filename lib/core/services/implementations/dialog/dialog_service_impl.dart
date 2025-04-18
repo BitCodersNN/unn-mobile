@@ -4,8 +4,11 @@ import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/misc/api_helpers/authenticated_api_helper.dart';
 import 'package:unn_mobile/core/misc/dio_interceptor/response_data_type.dart';
 import 'package:unn_mobile/core/misc/dio_options_factory/options_with_timeout_and_expected_type_factory.dart';
+import 'package:unn_mobile/core/misc/objects_with_pagination.dart';
 import 'package:unn_mobile/core/models/dialog/dialog.dart';
 import 'package:unn_mobile/core/models/dialog/dialog_query_parameter.dart';
+import 'package:unn_mobile/core/models/dialog/group_dialog.dart';
+import 'package:unn_mobile/core/models/dialog/user_dialog.dart';
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
 import 'package:unn_mobile/core/services/interfaces/dialog/dialog_service.dart';
 
@@ -23,7 +26,7 @@ class DialogServiceImpl implements DialogService {
   );
 
   @override
-  Future<List<Dialog>?> dialog({
+  Future<PartialResult?> dialog({
     dialogQueryParameter = const DialogQueryParameter(
       limit: 5,
     ),
@@ -49,7 +52,22 @@ class DialogServiceImpl implements DialogService {
       return null;
     }
 
-    return null;
-    #TODO;
+    final dialogs = <Dialog>[];
+    for (final dialog in response.data['result']['items']) {
+      if (dialog['type'] == 'chat') {
+        dialogs.add(GroupDialog.fromJson(dialog));
+      } else if (dialog['type'] == 'user') {
+        dialogs.add(UserDialog.fromJson(dialog));
+      } else {
+        _loggerService.log(
+          'Unknown dialog type: ${dialog['type']}',
+        );
+      }
+    }
+
+    return PartialResult(
+      items: dialogs,
+      hasMore: response.data['result'][PartialResultJsonKeys.hasMore],
+    );
   }
 }

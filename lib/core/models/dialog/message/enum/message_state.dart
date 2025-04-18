@@ -1,4 +1,4 @@
-enum MessageStatus {
+enum MessageState {
   normal,
   system,
   deleted,

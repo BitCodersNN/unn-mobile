@@ -58,7 +58,7 @@ class UserShortInfo
         BlogPostJsonSerializable,
         MessageJsonSerializable {
   final int? bitrixId;
-  final String fullname;
+  final String? fullname;
   final String? photoSrc;
 
   UserShortInfo(
@@ -75,7 +75,7 @@ class UserShortInfo
     final id = json[keys.id];
     final parsedId = id is int ? id : (id is String ? int.tryParse(id) : null);
 
-    final fullname = json[keys.fullname] as String;
+    final fullname = json[keys.fullname] as String?;
 
     String? photoSrc = json[keys.photoSrc] as String?;
     if (photoSrc != null && photoSrc.isNotEmpty && photoBaseUrl != null) {

@@ -20,4 +20,17 @@ class ChatRestrictions {
     this.send = true,
     this.userList = true,
   });
+
+  factory ChatRestrictions.fromJson(Map<String, dynamic> json) =>
+      ChatRestrictions(
+        avatar: json['avatar'],
+        rename: json['rename'],
+        extend: json['extend'],
+        call: json['call'],
+        mute: json['mute'],
+        leave: json['leave'],
+        leaveOwner: json['leave_owner'],
+        send: json['send'],
+        userList: json['user_list'],
+      );
 }

@@ -11,6 +11,7 @@ class MessageWithForward extends Message {
           messageShortInfo: message,
           ratingList: message.ratingList,
           messageStatus: message.messageStatus,
+          files: message.files,
           viewedByOthers: message.viewedByOthers,
           notify: message.notify,
         );

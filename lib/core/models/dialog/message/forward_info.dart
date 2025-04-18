@@ -30,7 +30,6 @@ class ForwardInfo {
   Map<String, dynamic> toJson() => {
         ForwardInfoJsonKeys.forwardId: '$forwardChatId/$forwardMessageId',
         if (forwardAuthor != null)
-          ForwardInfoJsonKeys.forwardAuthor:
-              forwardAuthor!.toMessageJson(),
+          ForwardInfoJsonKeys.forwardAuthor: forwardAuthor!.toMessageJson(),
       };
 }
