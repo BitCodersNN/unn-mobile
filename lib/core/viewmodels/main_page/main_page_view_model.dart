@@ -1,5 +1,5 @@
 import 'package:injector/injector.dart';
-import 'package:unn_mobile/core/misc/current_user_sync_storage.dart';
+import 'package:unn_mobile/core/misc/user/current_user_sync_storage.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/factories/main_page_routes_view_models_factory.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/main_page_route_view_model.dart';

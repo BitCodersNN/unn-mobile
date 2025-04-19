@@ -4,7 +4,7 @@ import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/misc/api_helpers/authenticated_api_helper.dart';
 import 'package:unn_mobile/core/misc/dio_interceptor/response_data_type.dart';
 import 'package:unn_mobile/core/misc/dio_options_factory/options_with_timeout_and_expected_type_factory.dart';
-import 'package:unn_mobile/core/misc/json_iterable_parser.dart';
+import 'package:unn_mobile/core/misc/json/json_iterable_parser.dart';
 import 'package:unn_mobile/core/misc/objects_with_pagination.dart';
 import 'package:unn_mobile/core/models/dialog/dialog.dart';
 import 'package:unn_mobile/core/models/dialog/dialog_query_parameter.dart';

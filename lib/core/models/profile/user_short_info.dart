@@ -73,8 +73,11 @@ class UserShortInfo
     String? photoBaseUrl,
   }) {
     final id = json[keys.id];
-    final parsedId = id is int ? id : (id is String ? int.tryParse(id) : null);
-
+    final parsedId = switch (id) {
+      final int idValue => idValue,
+      final String idString => int.tryParse(idString),
+      _ => null,
+    };
     final fullname = json[keys.fullname] as String?;
 
     String? photoSrc = json[keys.photoSrc] as String?;

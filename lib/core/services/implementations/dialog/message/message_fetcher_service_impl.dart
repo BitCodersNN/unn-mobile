@@ -4,7 +4,7 @@ import 'package:unn_mobile/core/constants/api/path.dart';
 import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/misc/dio_interceptor/response_data_type.dart';
 import 'package:unn_mobile/core/misc/dio_options_factory/options_with_timeout_and_expected_type_factory.dart';
-import 'package:unn_mobile/core/misc/user/user_id_mapping.dart';
+import 'package:unn_mobile/core/misc/build_object_by_Id_map.dart';
 import 'package:unn_mobile/core/models/dialog/message/forward_info.dart';
 import 'package:unn_mobile/core/models/dialog/message/message.dart';
 import 'package:unn_mobile/core/models/dialog/message/message_short_info.dart';
@@ -84,10 +84,10 @@ class MessageFetcherServiceImpl implements MessageFetcherService {
     final usersJson = data[_JsonKeys.users] as List;
     final filesJson = data[MessageJsonKeys.files] as List;
 
-    final usersById = buildObjectByIdrMap(usersJson);
-    final filesById = buildObjectByIdrMap(filesJson);
+    final usersById = buildObjectByIdMap(usersJson);
+    final filesById = buildObjectByIdMap(filesJson);
     final additionalMessagesById =
-        buildObjectByIdrMap(data[_JsonKeys.additionalMessages]);
+        buildObjectByIdMap(data[_JsonKeys.additionalMessages]);
 
     final messages = <Message>[];
 

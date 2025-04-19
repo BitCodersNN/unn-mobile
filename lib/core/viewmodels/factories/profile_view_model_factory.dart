@@ -1,5 +1,5 @@
 import 'package:flutter/foundation.dart';
-import 'package:unn_mobile/core/misc/current_user_sync_storage.dart';
+import 'package:unn_mobile/core/misc/user/current_user_sync_storage.dart';
 import 'package:unn_mobile/core/services/interfaces/profile/profile_service.dart';
 import 'package:unn_mobile/core/services/interfaces/profile/profile_of_current_user_service.dart';
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';

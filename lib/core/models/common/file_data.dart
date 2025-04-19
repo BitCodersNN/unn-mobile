@@ -68,15 +68,20 @@ class FileData
     _FileDataKeys keys, {
     bool generateIdFromName = false,
   }) {
-    final id = generateIdFromName
-        ? (json[keys.name] as String).hashCode
-        : json[keys.id] is int
-            ? json[keys.id]
-            : int.parse(json[keys.id] as String);
+    final id = switch (generateIdFromName) {
+      true => (json[keys.name] as String).hashCode,
+      false => switch (json[keys.id]) {
+          final int idValue => idValue,
+          final String idString => int.parse(idString),
+          _ => throw const FormatException('Invalid ID format in JSON'),
+        },
+    };
 
-    final size = json[keys.size] is String
-        ? int.parse(json[keys.size] as String)
-        : (json[keys.size] as int);
+    final size = switch (json[keys.size]) {
+      final String sizeString => int.parse(sizeString),
+      final int sizeInt => sizeInt,
+      _ => throw const FormatException('Invalid size format in JSON'),
+    };
 
     return FileData(
       id: id,

@@ -4,7 +4,7 @@ import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/misc/api_helpers/authenticated_api_helper.dart';
 import 'package:unn_mobile/core/misc/dio_interceptor/response_data_type.dart';
 import 'package:unn_mobile/core/misc/dio_options_factory/options_with_timeout_and_expected_type_factory.dart';
-import 'package:unn_mobile/core/misc/user/user_id_mapping.dart';
+import 'package:unn_mobile/core/misc/build_object_by_Id_map.dart';
 import 'package:unn_mobile/core/models/feed/rating_list.dart';
 import 'package:unn_mobile/core/models/profile/user_short_info.dart';
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
@@ -39,7 +39,7 @@ class MessageReactionServiceImpl implements MessageReactionService {
       return null;
     }
 
-    final usersById = buildObjectByIdrMap(response.data['result']['users']);
+    final usersById = buildObjectByIdMap(response.data['result']['users']);
 
     final List<Map<String, dynamic>> users = [];
     for (final reaction in response.data['result']['reactions']) {

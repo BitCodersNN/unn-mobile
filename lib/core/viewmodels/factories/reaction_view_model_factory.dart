@@ -1,5 +1,5 @@
 import 'package:flutter/foundation.dart';
-import 'package:unn_mobile/core/misc/current_user_sync_storage.dart';
+import 'package:unn_mobile/core/misc/user/current_user_sync_storage.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/legacy/getting_rating_list.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/legacy/getting_vote_key_signed.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/reaction_service.dart';
