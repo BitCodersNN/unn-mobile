@@ -4,7 +4,9 @@ import 'package:unn_mobile/core/constants/api/path.dart';
 import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/misc/dio_interceptor/response_data_type.dart';
 import 'package:unn_mobile/core/misc/dio_options_factory/options_with_timeout_and_expected_type_factory.dart';
+import 'package:unn_mobile/core/misc/json/json_iterable_parser.dart';
 import 'package:unn_mobile/core/misc/object_by_id_map.dart';
+import 'package:unn_mobile/core/misc/response_status_validator.dart';
 import 'package:unn_mobile/core/models/dialog/message/forward_info.dart';
 import 'package:unn_mobile/core/models/dialog/message/message.dart';
 import 'package:unn_mobile/core/models/dialog/message/message_short_info.dart';
@@ -14,6 +16,7 @@ import 'package:unn_mobile/core/models/dialog/message/message_with_forward_and_r
 import 'package:unn_mobile/core/misc/objects_with_pagination.dart';
 import 'package:unn_mobile/core/models/dialog/message/message_with_reply.dart';
 import 'package:unn_mobile/core/models/dialog/message/reply_info.dart';
+import 'package:unn_mobile/core/models/feed/rating_list.dart';
 import 'package:unn_mobile/core/services/implementations/dialog/message/message_reaction_service_impl.dart';
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
 import 'package:unn_mobile/core/services/interfaces/dialog/message/message_fetcher_service.dart';
@@ -32,6 +35,8 @@ class _DataValue {
 class _JsonKeys {
   static const String data = 'data';
   static const String messages = 'messages';
+  static const String messageId = 'messageId';
+  static const String reactions = 'reactions';
   static const String users = 'users';
   static const String additionalMessages = 'additionalMessages';
   static const String params = 'params';
@@ -68,6 +73,9 @@ class MessageFetcherServiceImpl implements MessageFetcherService {
         : await _fetchMessages(chatId, lastMessageId, limit);
 
     if (response == null) return null;
+    if (!ResponseStatusValidator.validate(response.data, _loggerService)) {
+      return null;
+    }
 
     final data = response.data[_JsonKeys.data] as Map<String, dynamic>;
     final messages = await _processMessagesData(data);
@@ -83,25 +91,28 @@ class MessageFetcherServiceImpl implements MessageFetcherService {
     final messagesJson = data[_JsonKeys.messages] as List;
     final usersJson = data[_JsonKeys.users] as List;
     final filesJson = data[MessageJsonKeys.files] as List;
+    final reactionsJson = data[_JsonKeys.reactions] as List;
 
     final usersById = buildObjectByIdMap(usersJson);
     final filesById = buildObjectByIdMap(filesJson);
-    final additionalMessagesById =
-        buildObjectByIdMap(data[_JsonKeys.additionalMessages]);
+    final additionalMessagesById = buildObjectByIdMap(
+      data[_JsonKeys.additionalMessages],
+    );
+    final messageIdsWithReactions = reactionsJson
+        .map<int>((msg) => msg[_JsonKeys.messageId] as int)
+        .toSet();
 
-    final messages = <Message>[];
-
-    for (final message in messagesJson) {
-      final processedMessage = await _processSingleMessage(
+    return await parseJsonIterableAsync<Message>(
+      messagesJson,
+      (message) async => await _processSingleMessage(
         message,
         usersById,
         filesById,
         additionalMessagesById,
-      );
-      messages.add(processedMessage);
-    }
-
-    return messages;
+        messageIdsWithReactions,
+      ),
+      _loggerService,
+    );
   }
 
   Future<Message> _processSingleMessage(
@@ -109,20 +120,26 @@ class MessageFetcherServiceImpl implements MessageFetcherService {
     Map<int, dynamic> usersById,
     Map<int, dynamic> filesById,
     Map<int, dynamic> additionalMessagesById,
+    Set<int> messageIdsWithReactions,
   ) async {
     final params = _processMessageParams(message[_JsonKeys.params]);
+    final messageId = message[MessageShortInfoJsonKeys.id];
     final messageStatus = _determineMessageStatus(message, params);
     final files = _processFiles(params[_JsonKeys.fileId], filesById);
     final notify = params[_JsonKeys.notify] != 'N';
+    final hasReactions = messageIdsWithReactions.contains(
+      messageId,
+    );
+
     final jsonMap = {
       ..._proccessMessageShortInfo(message, usersById),
-      MessageJsonKeys.ratingList: await _messageReactionServiceImpl.fetch(
-        message[MessageShortInfoJsonKeys.id],
-      ),
       MessageJsonKeys.messageStatus: messageStatus,
       MessageJsonKeys.files: files,
       MessageJsonKeys.viewedByOthers: message[MessageJsonKeys.viewedByOthers],
       MessageJsonKeys.notify: notify,
+      MessageJsonKeys.ratingList: hasReactions
+          ? await _messageReactionServiceImpl.fetch(messageId)
+          : RatingList(),
     };
 
     final replyId = int.tryParse(params[_JsonKeys.replyId] ?? '');

@@ -14,7 +14,7 @@ class ResponseStatusValidator {
     final status = responseData[_ResponseDataJsonKeys.status];
 
     if (status == _ResponseDataJsonKeys.error) {
-      loggerService.log(responseData[_ResponseDataJsonKeys.errors]);
+      loggerService.log(responseData[_ResponseDataJsonKeys.errors].toString());
       return false;
     }
 

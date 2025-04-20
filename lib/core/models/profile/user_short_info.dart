@@ -11,8 +11,8 @@ abstract class _UserInfoKeys extends JsonKeys {
   String get photoSrc;
 }
 
-class _DefaultUserInfoKeys implements _UserInfoKeys {
-  const _DefaultUserInfoKeys();
+class DefaultUserInfoKeys implements _UserInfoKeys {
+  const DefaultUserInfoKeys();
   @override
   String get id => 'id';
   @override
@@ -91,7 +91,7 @@ class UserShortInfo
   factory UserShortInfo.fromJson(Map<String, dynamic> json) {
     return UserShortInfo._fromJsonWithKeys(
       json,
-      const _DefaultUserInfoKeys(),
+      const DefaultUserInfoKeys(),
     );
   }
 
@@ -120,7 +120,7 @@ class UserShortInfo
   @protected
   @override
   Map<JsonKeyFormat, JsonKeys> get availableFormats => const {
-        JsonKeyFormat.standard: _DefaultUserInfoKeys(),
+        JsonKeyFormat.standard: DefaultUserInfoKeys(),
         JsonKeyFormat.bitrix: _BitrixUserInfoKeys(),
         JsonKeyFormat.blogPost: _BlogPostUserInfoKeys(),
         JsonKeyFormat.message: _MessageUserInfoKeys(),

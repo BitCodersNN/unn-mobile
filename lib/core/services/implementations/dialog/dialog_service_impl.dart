@@ -35,7 +35,7 @@ class DialogServiceImpl implements DialogService {
   );
 
   @override
-  Future<PartialResult<Dialog>?> dialog({
+  Future<PartialResult<Dialog>?> getDialogs({
     dialogQueryParameter = const DialogQueryParameter(
       limit: 5,
     ),
