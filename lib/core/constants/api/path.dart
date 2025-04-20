@@ -68,4 +68,11 @@ class ApiPath {
 
   /// Для проверки активности сессии
   static const String session = 'ajax/get/check_session.php';
+
+  /// Для получения чатов
+  static const String dialog = 'rest/im.recent.list.json';
+
+  /// Для получения реакций на сообщении в чате
+  static const String messageReactions =
+      'rest/im.v2.Chat.Message.Reaction.tail.json';
 }

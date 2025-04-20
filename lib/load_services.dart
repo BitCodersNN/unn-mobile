@@ -11,7 +11,7 @@ import 'package:unn_mobile/core/misc/api_helpers/final/web_unn_mobile_api_helper
 import 'package:unn_mobile/core/misc/api_helpers/final/web_unn_portal_api_helper.dart';
 import 'package:unn_mobile/core/misc/api_helpers/final/web_unn_source_api_helper.dart';
 import 'package:unn_mobile/core/misc/app_open_tracker.dart';
-import 'package:unn_mobile/core/misc/current_user_sync_storage.dart';
+import 'package:unn_mobile/core/misc/user/current_user_sync_storage.dart';
 import 'package:unn_mobile/core/models/feed/blog_post_type.dart';
 import 'package:unn_mobile/core/models/common/online_status_data.dart';
 import 'package:unn_mobile/core/providers/implementations/authorisation/authorisation_data_provider_impl.dart';
