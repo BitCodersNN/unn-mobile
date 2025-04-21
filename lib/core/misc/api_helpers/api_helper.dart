@@ -24,11 +24,13 @@ class ApiHelper implements GetApiHelper, PostApiHelper, ApiOptionsHelper {
     required String path,
     Map<String, dynamic>? queryParameters,
     Options? options,
+    ProgressCallback? onReceiveProgress,
   }) async {
     return await dio.get(
       path,
       queryParameters: queryParameters,
       options: options,
+      onReceiveProgress: onReceiveProgress,
     );
   }
 
@@ -38,6 +40,7 @@ class ApiHelper implements GetApiHelper, PostApiHelper, ApiOptionsHelper {
     Map<String, dynamic>? data,
     Map<String, dynamic>? queryParameters,
     Options? options,
+    ProgressCallback? onReceiveProgress,
   }) async {
     return await dio.post(
       path,

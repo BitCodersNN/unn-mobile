@@ -57,12 +57,14 @@ abstract class WebAuthenticatedApiHelper extends AuthenticatedApiHelper {
     required String path,
     Map<String, dynamic>? queryParameters,
     Options? options,
+    ProgressCallback? onReceiveProgress,
   }) async {
     return await _request(
       httpMethod: HttpMethod.get,
       path: path,
       queryParameters: queryParameters,
       options: options,
+      onReceiveProgress: onReceiveProgress,
     );
   }
 
@@ -72,6 +74,7 @@ abstract class WebAuthenticatedApiHelper extends AuthenticatedApiHelper {
     dynamic data,
     Map<String, dynamic>? queryParameters,
     Options? options,
+    ProgressCallback? onReceiveProgress,
   }) async {
     return await _request(
       httpMethod: HttpMethod.post,
@@ -79,6 +82,7 @@ abstract class WebAuthenticatedApiHelper extends AuthenticatedApiHelper {
       body: data,
       queryParameters: queryParameters,
       options: options,
+      onReceiveProgress: onReceiveProgress,
     );
   }
 
@@ -88,6 +92,7 @@ abstract class WebAuthenticatedApiHelper extends AuthenticatedApiHelper {
     Map<String, dynamic>? body,
     Map<String, dynamic>? queryParameters,
     Options? options,
+    ProgressCallback? onReceiveProgress,
   }) async {
     final response = await super.post(
       path: '',
@@ -99,6 +104,7 @@ abstract class WebAuthenticatedApiHelper extends AuthenticatedApiHelper {
         options,
       ),
       options: options,
+      onReceiveProgress: onReceiveProgress,
     );
 
     try {
