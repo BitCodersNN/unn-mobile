@@ -1,4 +1,4 @@
-import 'package:unn_mobile/core/misc/enum_to_string.dart';
+import 'package:unn_mobile/core/misc/enum_from_string.dart';
 import 'package:unn_mobile/core/models/dialog/enum/message_status.dart';
 import 'package:unn_mobile/core/models/dialog/message/message_short_info.dart';
 
