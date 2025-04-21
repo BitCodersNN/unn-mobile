@@ -13,7 +13,8 @@ class _DataKeys {
   static const String reaction = 'reaction';
 }
 
-class MessageReactionMutatorServiceImpl implements MessageReactionMutatorService {
+class MessageReactionMutatorServiceImpl
+    implements MessageReactionMutatorService {
   final LoggerService _loggerService;
   final ApiHelper _apiHelper;
 

@@ -26,7 +26,8 @@ class _JsonKeys {
   static const String avatar = 'avatar';
 }
 
-class MessageReactionFetcherServiceImpl implements MessageReactionFetcherService {
+class MessageReactionFetcherServiceImpl
+    implements MessageReactionFetcherService {
   final LoggerService _loggerService;
   final ApiHelper _apiHelper;
 
