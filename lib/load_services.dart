@@ -26,6 +26,7 @@ import 'package:unn_mobile/core/services/implementations/certificate/certificate
 import 'package:unn_mobile/core/services/implementations/common/message_ignore_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/dialog/dialog_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/dialog/message/message_fetcher_service_impl.dart';
+import 'package:unn_mobile/core/services/implementations/dialog/message/message_remover_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/dialog/message/message_sender_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/dialog/message/message_updater_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/dialog/message/reaction/message_reaction_fetcher_service_impl.dart';
@@ -78,6 +79,7 @@ import 'package:unn_mobile/core/services/interfaces/certificate/certificate_down
 import 'package:unn_mobile/core/services/interfaces/common/message_ignore_service.dart';
 import 'package:unn_mobile/core/services/interfaces/dialog/dialog_service.dart';
 import 'package:unn_mobile/core/services/interfaces/dialog/message/message_fetcher_service.dart';
+import 'package:unn_mobile/core/services/interfaces/dialog/message/message_remover_service.dart';
 import 'package:unn_mobile/core/services/interfaces/dialog/message/message_sender_service.dart';
 import 'package:unn_mobile/core/services/interfaces/dialog/message/message_updater_service.dart';
 import 'package:unn_mobile/core/services/interfaces/dialog/message/reaction/message_reaction_fetcher_service.dart';
@@ -541,6 +543,13 @@ void registerDependencies() {
     ),
   );
 
+  injector.registerSingleton<MessageRemoverService>(
+    () => MessageRemoverServiceImpl(
+      get<LoggerService>(),
+      getApiHelper(HostType.unnPortal),
+    ),
+  );
+
   injector.registerSingleton<DialogService>(
     () => DialogServiceImpl(
       get<LoggerService>(),
@@ -564,6 +573,7 @@ void registerDependencies() {
       get<MessageFetcherService>(),
       get<MessageSenderService>(),
       get<MessageUpdaterService>(),
+      get<MessageRemoverService>(),
     ),
   );
 

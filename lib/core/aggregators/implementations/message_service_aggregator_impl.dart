@@ -1,5 +1,6 @@
 import 'package:unn_mobile/core/misc/objects_with_pagination.dart';
 import 'package:unn_mobile/core/services/interfaces/dialog/message/message_fetcher_service.dart';
+import 'package:unn_mobile/core/services/interfaces/dialog/message/message_remover_service.dart';
 import 'package:unn_mobile/core/services/interfaces/dialog/message/message_sender_service.dart';
 import 'package:unn_mobile/core/aggregators/intefaces/message_service_aggregator.dart';
 import 'package:unn_mobile/core/services/interfaces/dialog/message/message_updater_service.dart';
@@ -8,11 +9,13 @@ class MessageServiceAggregatorImpl implements MessageServiceAggregator {
   final MessageFetcherService _fetcherService;
   final MessageSenderService _senderService;
   final MessageUpdaterService _updaterService;
+  final MessageRemoverService _removerService;
 
   MessageServiceAggregatorImpl(
     this._fetcherService,
     this._senderService,
     this._updaterService,
+    this._removerService,
   );
 
   @override
@@ -46,4 +49,8 @@ class MessageServiceAggregatorImpl implements MessageServiceAggregator {
         messageId: messageId,
         text: text,
       );
+
+  @override
+  Future<bool> remove({required int messageId}) =>
+      _removerService.remove(messageId: messageId);
 }
