@@ -1,7 +1,7 @@
 import 'package:unn_mobile/core/misc/objects_with_pagination.dart';
 import 'package:unn_mobile/core/services/interfaces/dialog/message/message_fetcher_service.dart';
 import 'package:unn_mobile/core/services/interfaces/dialog/message/message_sender_service.dart';
-import 'package:unn_mobile/core/services/interfaces/dialog/message/message_service_aggregator.dart';
+import 'package:unn_mobile/core/aggregators/intefaces/message_service_aggregator.dart';
 import 'package:unn_mobile/core/services/interfaces/dialog/message/message_updater_service.dart';
 
 class MessageServiceAggregatorImpl implements MessageServiceAggregator {

@@ -56,8 +56,6 @@ class MessageSenderServiceImpl implements MessageSenderService {
       return null;
     }
 
-    ResponseStatusValidator.validate(response.data, _loggerService);
-
     if (!ResponseStatusValidator.validate(response.data, _loggerService)) {
       return null;
     }

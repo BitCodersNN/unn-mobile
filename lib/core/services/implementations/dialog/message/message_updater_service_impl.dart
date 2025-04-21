@@ -14,7 +14,7 @@ class _DataKeys {
 }
 
 class _JsonKeys {
-  static const String data = 'id';
+  static const String data = 'data';
 }
 
 class MessageUpdaterServiceImpl implements MessageUpdaterService {
@@ -51,8 +51,6 @@ class MessageUpdaterServiceImpl implements MessageUpdaterService {
       _loggerService.logError(exception, stackTrace);
       return false;
     }
-
-    ResponseStatusValidator.validate(response.data, _loggerService);
 
     if (!ResponseStatusValidator.validate(response.data, _loggerService)) {
       return false;
