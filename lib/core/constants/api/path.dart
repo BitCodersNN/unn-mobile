@@ -83,4 +83,13 @@ class ApiPath {
   /// Для удаления реакции на сообщение в чате
   static const String messageReactionsDelete =
       'rest/im.v2.Chat.Message.Reaction.delete.json';
+
+  /// Для получения id папки чата
+  static const String diskFolder = 'rest/im.disk.folder.get.json';
+
+  /// Для загрузки файла
+  static const String uploadfile = 'rest/disk.folder.uploadfile';
+
+  /// Для отправки файла в чате
+  static const String fileCommit = 'rest/im.disk.file.commit.json';
 }
