@@ -40,4 +40,7 @@ class AjaxActionStrings {
 
   /// Для отправки сообщения в чат
   static const String sendMessage = 'im.v2.Chat.Message.send';
+
+  /// Для обновления сообщения в чате
+  static const String updateMessage = 'im.v2.Chat.Message.update';
 }
