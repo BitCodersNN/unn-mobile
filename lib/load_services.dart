@@ -22,6 +22,12 @@ import 'package:unn_mobile/core/services/implementations/authorisation/unn_autho
 import 'package:unn_mobile/core/services/implementations/authorisation/unn_authorisation_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/certificate/certificate_downloader_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/common/message_ignore_service_impl.dart';
+import 'package:unn_mobile/core/services/implementations/dialog/dialog_service_impl.dart';
+import 'package:unn_mobile/core/services/implementations/dialog/message/message_fetcher_service_impl.dart';
+import 'package:unn_mobile/core/services/implementations/dialog/message/message_sender_service_impl.dart';
+import 'package:unn_mobile/core/services/implementations/dialog/message/reaction/message_reaction_fetcher_service_impl.dart';
+import 'package:unn_mobile/core/services/implementations/dialog/message/reaction/message_reaction_mutator_service_impl.dart';
+import 'package:unn_mobile/core/services/implementations/dialog/message/reaction/message_reaction_service_aggregator_impl.dart';
 import 'package:unn_mobile/core/services/implementations/distance_learning/distance_course_semester_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/distance_learning/distance_course_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/distance_learning/distance_learning_downloader_service_impl.dart';
@@ -67,6 +73,12 @@ import 'package:unn_mobile/core/services/interfaces/authorisation/source_authori
 import 'package:unn_mobile/core/services/interfaces/authorisation/unn_authorisation_service.dart';
 import 'package:unn_mobile/core/services/interfaces/certificate/certificate_downloader_service.dart';
 import 'package:unn_mobile/core/services/interfaces/common/message_ignore_service.dart';
+import 'package:unn_mobile/core/services/interfaces/dialog/dialog_service.dart';
+import 'package:unn_mobile/core/services/interfaces/dialog/message/message_fetcher_service.dart';
+import 'package:unn_mobile/core/services/interfaces/dialog/message/message_sender_service.dart';
+import 'package:unn_mobile/core/services/interfaces/dialog/message/reaction/message_reaction_fetcher_service.dart';
+import 'package:unn_mobile/core/services/interfaces/dialog/message/reaction/message_reaction_mutator_service.dart';
+import 'package:unn_mobile/core/services/interfaces/dialog/message/reaction/message_reaction_service_aggregator.dart';
 import 'package:unn_mobile/core/services/interfaces/distance_learning/distance_course_semester_service.dart';
 import 'package:unn_mobile/core/services/interfaces/distance_learning/distance_course_service.dart';
 import 'package:unn_mobile/core/services/interfaces/distance_learning/distance_learning_downloader_service.dart';
@@ -488,6 +500,50 @@ void registerDependencies() {
       getApiHelper(HostType.unnSource),
     ),
   );
+
+  injector.registerSingleton<MessageReactionFetcherServiceImpl>(
+    () => MessageReactionFetcherServiceImpl(
+      get<LoggerService>(),
+      getApiHelper(HostType.unnPortal),
+    ),
+  );
+
+  injector.registerSingleton<MessageReactionMutatorService>(
+    () => MessageReactionMutatorServiceImpl(
+      get<LoggerService>(),
+      getApiHelper(HostType.unnPortal),
+    ),
+  );
+
+  injector.registerSingleton<MessageReactionServiceAggregator>(
+    () => MessageReactionServiceAggregatorImpl(
+      get<MessageReactionFetcherService>(),
+      get<MessageReactionMutatorService>(),
+    ),
+  );
+
+  injector.registerSingleton<MessageFetcherService>(
+    () => MessageFetcherServiceImpl(
+      get<MessageReactionServiceAggregator>(),
+      get<LoggerService>(),
+      getApiHelper(HostType.unnPortal),
+    ),
+  );
+
+  injector.registerSingleton<MessageSenderService>(
+    () => MessageSenderServiceImpl(
+      get<LoggerService>(),
+      getApiHelper(HostType.unnPortal),
+    ),
+  );
+
+  injector.registerSingleton<DialogService>(
+    () => DialogServiceImpl(
+      get<LoggerService>(),
+      getApiHelper(HostType.unnPortal),
+    ),
+  );
+
   //
   // Factories
   //
