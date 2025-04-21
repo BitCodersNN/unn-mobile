@@ -4,6 +4,7 @@ import 'package:unn_mobile/core/misc/objects_with_pagination.dart';
 import 'package:unn_mobile/core/models/common/file_data.dart';
 import 'package:unn_mobile/core/services/interfaces/dialog/message/message_fetcher_service.dart';
 import 'package:unn_mobile/core/services/interfaces/dialog/message/message_file_sender_service.dart';
+import 'package:unn_mobile/core/services/interfaces/dialog/message/message_reader_service.dart';
 import 'package:unn_mobile/core/services/interfaces/dialog/message/message_remover_service.dart';
 import 'package:unn_mobile/core/services/interfaces/dialog/message/message_sender_service.dart';
 import 'package:unn_mobile/core/aggregators/intefaces/message_service_aggregator.dart';
@@ -15,6 +16,7 @@ class MessageServiceAggregatorImpl implements MessageServiceAggregator {
   final MessageUpdaterService _updaterService;
   final MessageRemoverService _removerService;
   final MessageFileSenderService _fileSenderService;
+  final MessageReaderService _readerService;
 
   MessageServiceAggregatorImpl(
     this._fetcherService,
@@ -22,6 +24,7 @@ class MessageServiceAggregatorImpl implements MessageServiceAggregator {
     this._updaterService,
     this._removerService,
     this._fileSenderService,
+    this._readerService,
   );
 
   @override
@@ -82,5 +85,22 @@ class MessageServiceAggregatorImpl implements MessageServiceAggregator {
         chatId: chatId,
         files: files,
         text: text,
+      );
+
+  @override
+  Future<bool> readMessage({required int chatId, required int messageId}) =>
+      _readerService.readMessage(
+        chatId: chatId,
+        messageId: messageId,
+      );
+
+  @override
+  Future<bool> readMessages({
+    required int chatId,
+    required List<int> messageIds,
+  }) =>
+      _readerService.readMessages(
+        chatId: chatId,
+        messageIds: messageIds,
       );
 }

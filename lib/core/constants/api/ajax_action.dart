@@ -46,4 +46,7 @@ class AjaxActionStrings {
 
   /// Для удаления сообщения в чате
   static const String removeMessage = 'im.v2.Chat.Message.delete';
+
+  /// Прочитать сообщение в чате
+  static const String readMessage = 'im.v2.Chat.Message.read';
 }
