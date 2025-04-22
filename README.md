@@ -1,47 +1,138 @@
-# unn-mobile
+<div align="center">
+<img src="https://github.com/BitCodersNN/unn-mobile/blob/develop/assets/images/icon.png" width="256" hspace="10" vspace="10">
+<h1>Мобильное приложение ННГУ</h1>
+<a href="https://github.com/BitCodersNN/unn-mobile/releases/latest">
+    <img alt="Скачать на GitHub"
+        height="60"
+        src="https://upload.wikimedia.org/wikipedia/commons/9/91/Octicons-mark-github.svg" />
+</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="https://rustore.ru/app/your_app_id">
+    <img alt="Скачать на RuStore"
+        height="60"
+        src="https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcRaCYxbePTN_YLRz6e0gippnl0QTn8XVGJB5kTfR25pzrzCWzkHTX8Gm_TZp0ZoQBTjHgQrcM08qHKHpuv_FcxZ4p64ndlfnRTo5tHczg" />
+</a>
+</div>
 
-[![deploy-develop-android](https://github.com/BitCodersNN/unn-mobile/actions/workflows/deploy-develop.yml/badge.svg?branch=develop&event=push)](https://github.com/BitCodersNN/unn-mobile/actions/workflows/deploy-develop.yml)
+## Оглавление
 
-Мобильное приложение для Портала ННГУ.
+- [Описание приложения](#описание-приложения)
+- [Возможности приложения](#возможности-приложения)
+- [Установка](#установка)
+- [Инструкция по сборке](#инструкция-по-сборке)
+  - [Настройка окружения](#настройка-окружения)
+  - [Сборка](#сборка)
+- [Политика конфиденциальности](#политика-конфиденциальности)
+- [Связь с разработчиками](#связь-с-разработчиками)
+- [Лицензия](#лицензия)
+---
 
-## Сборка:
+## Описание приложения
 
-1. Установить Flutter (https://docs.flutter.dev/get-started/install)
-2. Создать проект Firebase здесь: https://console.firebase.google.com/
-3. Установить Firebase CLI (https://firebase.google.com/docs/cli#setup_update_cli)
-4. Из консоли выполнить команду
+Мобильное приложение для студентов, преподавателей и сотрудников Нижегородского государственного университета им. Н.И. Лобачевского.
 
-       firebase login 
 
-   и, когда будет предложено, авторизоваться с аккаунтом, на котором был создан Firebase проект
+## Возможности приложения
 
-5. Выполнить команду
+Приложение предоставляет удобный доступ к:
 
-       dart pub global activate flutterfire_cli
+- **Расписание занятий**:
+  - Просмотр расписания по группе, ФИО или преподавателю.
+  - Экспорт расписания в календарь.
 
-6. Клонировать репозиторий/скачать исходный код
+- **Живая лента**:
+  - Чтение постов и комментариев к ним.
+  - Оставление реакций на публикации.
+  - Закрепление постов.
+  - Важные посты.
 
-7. Открыть консоль в директории проекта и выполнить команду
+- **Материалы для дистанционного обучения**:
+  - Доступ к учебным материалам за все семестры.
 
-       flutterfire configure
+- **Ссылки на онлайн-занятия**:
+  - Достпу к ссылкам на онлайн занятия и коментариям к ним.
 
-   При этом выбрать созданный Firebase проект и среди платформ выбрать Android и/или iOS (переключаться на стрелки и выбирать на пробел)
+- **Зачётная книжка**:
+  - Просмотр зачётной книжки за все семстры.
 
-8. Выполнить сборку командой (для Android)
+- **Справки онлайн**:
+  - Получение справок и электронной цифровой подписи (ЭЦП).
 
-       flutter build apk
+### В разработке
 
-   Или запустить командой
+- **Чаты**: Ведется работа над внедрением функционала для общения внутри приложения.
 
-       flutter run
+---
 
-## Ссылки
-__Miro__: https://miro.com/app/board/uXjVMhhZqaI=/?share_link_id=813655495124
+## Установка
 
-__Figma__: https://www.figma.com/files/team/1289287843362006340
+Вы можете установить приложение одним из следующих способов:
 
-__Описание API unn portal__: https://docs.google.com/document/d/1TW5mN2lKgCdOU0FreRcORsDTKo-ugmR1IkjlNW5yGbo/edit?usp=sharing
+1. **Из официальных магазинов**:
+   - Скачайте приложение [RuStore](https://www.rustore.ru/catalog/app/ru.unn.unn_mobile).
 
-__Схемы корпусов__: https://disk.yandex.ru/d/rvrDhVg5IIkdkg
+2. **Установка APK/IPA**:
+   - Для самостоятельной установки скачайте [APK](https://github.com/BitCodersNN/unn-mobile/releases) (для Android) или [IPA](https://github.com/BitCodersNN/unn-mobile/releases) (для iOS) файлы.
+   - Инструкция по установке IPA доступна в нашем [Telegram-канале](https://t.me/unn_mobile/25).
 
-__Кодстайл Dart__: https://dart.dev/effective-dart/style
+---
+
+## Инструкция по сборке
+
+Если вы хотите собрать приложение самостоятельно, выполните следующие шаги:
+
+### Предварительные требования
+
+1. Установите [Flutter SDK](https://docs.flutter.dev/get-started/install).
+2. Создайте проект в [Firebase Console](https://console.firebase.google.com/).
+3. Установите [Firebase CLI](https://firebase.google.com/docs/cli#setup_update_cli).
+
+### Настройка окружения
+
+1. Авторизуйтесь в Firebase CLI:
+   ```bash
+   firebase login
+   ```
+   Используйте учетную запись, на которой был создан Firebase проект.
+2. Активируйте flutterfire_cli
+   ```bash
+   dart pub global activate flutterfire_cli
+   ```
+3. Клонируйте репозиторий
+   ```bash
+   git clone https://github.com/BitCodersNN/unn-mobile.git
+   cd unn-mobile
+   ```
+4. Настройте Firebase для проекта:
+   ```bash
+   flutterfire configure
+   ```
+   Выберите созданный Firebase проект и платформы (Android и/или iOS).
+ 
+### Сборка
+Для Android:
+```bash
+flutter build apk
+```
+Для запуска на устройстве:
+```bash
+flutter run
+```
+
+## Политика конфиденциальности
+
+Мы заботимся о вашей конфиденциальности. Подробную информацию о том, как мы собираем, используем и защищаем ваши данные, вы можете найти в нашей [Политике конфиденциальности](https://github.com/BitCodersNN/unn-mobile/wiki/Privacy-Policy).
+
+---
+
+## Связь с разработчиками
+
+Если у вас есть вопросы, предложения или вы хотите помочь в разработке, свяжитесь с нами:
+
+- [**Telegram**](https://t.me/unn_mobile)
+
+Присоединяйтесь к нашему сообществу и помогайте делать приложение лучше!
+
+---
+
+### Лицензия
