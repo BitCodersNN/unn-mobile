@@ -7,7 +7,7 @@
         src="https://upload.wikimedia.org/wikipedia/commons/9/91/Octicons-mark-github.svg" />
 </a>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<a href="https://rustore.ru/app/your_app_id">
+<a href="https://www.rustore.ru/catalog/app/ru.unn.unn_mobile">
     <img alt="Скачать на RuStore"
         height="60"
         src="https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcRaCYxbePTN_YLRz6e0gippnl0QTn8XVGJB5kTfR25pzrzCWzkHTX8Gm_TZp0ZoQBTjHgQrcM08qHKHpuv_FcxZ4p64ndlfnRTo5tHczg" />
@@ -18,6 +18,7 @@
 
 - [Описание приложения](#описание-приложения)
 - [Возможности приложения](#возможности-приложения)
+- [Статистика и отзывы](#cтатистика-и-отзывы)
 - [Установка](#установка)
 - [Инструкция по сборке](#инструкция-по-сборке)
   - [Настройка окружения](#настройка-окружения)
@@ -62,6 +63,16 @@
 ### В разработке
 
 - **Чаты**: Ведется работа над внедрением функционала для общения внутри приложения.
+
+---
+
+## Статистика и отзывы
+
+Наше приложение активно используется студентами, преподавателями и сотрудниками ННГУ.
+
+- **RuStore**: более 1000 скачиваний, 27 отзывов, средняя оценка 4.6 ⭐.
+
+Больше отзывов и оценок можно найти в [RuStore](https://www.rustore.ru/catalog/app/ru.unn.unn_mobile).
 
 ---
 
