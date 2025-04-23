@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright 2025 BitCodersNN
+
 const Map<String, Map<String, Object>> certificateTypesInfo = {
   'spravka': {
     'name': 'Справка об обучении',

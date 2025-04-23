@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright 2025 BitCodersNN
+
 class _RegularExpressionSource {
   static const keySigned = r"keySigned: '.*',";
   static const commentIdAndMessage = r"top\.text\d+ = text(\d+) = '([^']*)'";

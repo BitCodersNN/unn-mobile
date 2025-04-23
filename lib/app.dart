@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright 2025 BitCodersNN
+
 import 'package:flutter/material.dart';
 import 'package:unn_mobile/core/models/schedule/subject_type.dart';
 import 'package:unn_mobile/ui/router.dart';

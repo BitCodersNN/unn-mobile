@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright 2025 BitCodersNN
+
 import 'package:unn_mobile/core/misc/html_utils/html_image_utils.dart';
 
 class _BlogPostCommentDataBitrixJsonKeys {
