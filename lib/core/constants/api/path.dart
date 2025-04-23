@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright 2025 BitCodersNN
+
 class ApiPath {
   /// Для доступа к репозиторию с загрузочными экранами
   static const String gitRepository = 'BitCodersNN/unn-mobile.loading-screen';

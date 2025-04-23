@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright 2025 BitCodersNN
+
 class Host {
   /// Доменное имя gitHub
   static const String gitHub = 'raw.githubusercontent.com';

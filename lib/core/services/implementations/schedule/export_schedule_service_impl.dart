@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright 2025 BitCodersNN
+
 import 'package:device_calendar/device_calendar.dart';
 import 'package:dio/dio.dart';
 import 'package:icalendar_parser/icalendar_parser.dart';

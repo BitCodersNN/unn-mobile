@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright 2025 BitCodersNN
+
 import 'package:dio/dio.dart';
 
 class SourceUnnInterceptor extends Interceptor {

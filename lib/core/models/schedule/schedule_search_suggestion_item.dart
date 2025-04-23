@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright 2025 BitCodersNN
+
 class _ScheduleSearchSuggestionJsonKeys {
   static const String id = 'id';
   static const String label = 'label';
