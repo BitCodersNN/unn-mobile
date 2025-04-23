@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright 2025 BitCodersNN
+
 import 'package:unn_mobile/core/models/dialog/chat_settings/calendar_chat_setting.dart';
 import 'package:unn_mobile/core/models/dialog/chat_settings/chat_setting.dart';
 import 'package:unn_mobile/core/models/dialog/chat_settings/sonnet_group_chat_setting.dart';

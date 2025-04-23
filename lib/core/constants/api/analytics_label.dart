@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright 2025 BitCodersNN
+
 class AnalyticsLabel {
   /// QueryParams для указания analyticsLabel[b24statAction]
   static const String b24statAction = 'analyticsLabel[b24statAction]';

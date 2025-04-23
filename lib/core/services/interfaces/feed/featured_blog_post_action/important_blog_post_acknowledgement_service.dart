@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright 2025 BitCodersNN
+
 abstract interface class ImportantBlogPostAcknowledgementService {
   /// Позволяет отметить пост с указанным идентификатором как прочитанный.
   ///
