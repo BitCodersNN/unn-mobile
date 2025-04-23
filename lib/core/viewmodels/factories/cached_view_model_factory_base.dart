@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright 2025 BitCodersNN
+
 import 'package:flutter/foundation.dart';
 import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/misc/lru_cache.dart';

@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright 2025 BitCodersNN
+
 import 'package:unn_mobile/core/models/authorisation/auth_data.dart';
 import 'package:unn_mobile/core/providers/interfaces/data_provider.dart';
 

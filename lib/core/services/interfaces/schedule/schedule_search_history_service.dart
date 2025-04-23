@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright 2025 BitCodersNN
+
 import 'dart:async';
 
 import 'package:unn_mobile/core/models/schedule/schedule_filter.dart';

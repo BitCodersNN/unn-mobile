@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright 2025 BitCodersNN
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:event/event.dart';
 import 'package:extended_image/extended_image.dart';

@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright 2025 BitCodersNN
+
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:unn_mobile/core/misc/api_helpers/interfaces/api_options_helper.dart';
@@ -24,11 +27,13 @@ class ApiHelper implements GetApiHelper, PostApiHelper, ApiOptionsHelper {
     required String path,
     Map<String, dynamic>? queryParameters,
     Options? options,
+    ProgressCallback? onReceiveProgress,
   }) async {
     return await dio.get(
       path,
       queryParameters: queryParameters,
       options: options,
+      onReceiveProgress: onReceiveProgress,
     );
   }
 
@@ -38,6 +43,7 @@ class ApiHelper implements GetApiHelper, PostApiHelper, ApiOptionsHelper {
     Map<String, dynamic>? data,
     Map<String, dynamic>? queryParameters,
     Options? options,
+    ProgressCallback? onReceiveProgress,
   }) async {
     return await dio.post(
       path,

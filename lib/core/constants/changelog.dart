@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright 2025 BitCodersNN
+
 const String changelogString = //
     '''Версия 0.4.0:
 - Добавлена вкладка "Материалы"
