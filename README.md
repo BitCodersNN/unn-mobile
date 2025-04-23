@@ -1,17 +1,6 @@
 <div align="center">
 <img src="https://github.com/BitCodersNN/unn-mobile/blob/develop/assets/images/icon.png" width="256" hspace="10" vspace="10">
 <h1>Мобильное приложение ННГУ</h1>
-<a href="https://github.com/BitCodersNN/unn-mobile/releases/latest">
-    <img alt="Скачать на GitHub"
-        height="60"
-        src="https://upload.wikimedia.org/wikipedia/commons/9/91/Octicons-mark-github.svg" />
-</a>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<a href="https://www.rustore.ru/catalog/app/ru.unn.unn_mobile">
-    <img alt="Скачать на RuStore"
-        height="60"
-        src="https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcRaCYxbePTN_YLRz6e0gippnl0QTn8XVGJB5kTfR25pzrzCWzkHTX8Gm_TZp0ZoQBTjHgQrcM08qHKHpuv_FcxZ4p64ndlfnRTo5tHczg" />
-</a>
 </div>
 
 ## Оглавление
@@ -26,17 +15,16 @@
 - [Политика конфиденциальности](#политика-конфиденциальности)
 - [Дополнительная информация (Wiki)](#дополнительная-информация-wiki)
 - [Связь с разработчиками](#связь-с-разработчиками)
-- [Лицензия](#лицензия)
 ---
 
 ## Описание приложения
 
-Мобильное приложение для студентов, преподавателей и сотрудников Нижегородского государственного университета им. Н.И. Лобачевского.
+Мобильное приложение для студентов, преподавателей и сотрудников Нижегородского государственного университета им. Н.И. Лобачевского было разработано студентами группы 3821Б1ПР1 в рамках квалификационной работы с целью повышения удобства использования портала университета с мобильных устройств. Проект решает главную проблему: неоптимизированность портала под мобильные устройства.
 
 
 ## Возможности приложения
 
-Приложение предоставляет удобный доступ к:
+### Приложение предоставляет удобный доступ к:
 
 - **Расписание занятий**:
   - Просмотр расписания по группе, ФИО или преподавателю.
@@ -72,7 +60,7 @@
 
 - **RuStore**: более 1000 скачиваний, 27 отзывов, средняя оценка 4.6 ⭐.
 
-Больше отзывов и оценок можно найти в [RuStore](https://www.rustore.ru/catalog/app/ru.unn.unn_mobile).
+Отзывы и оценки можно найти в [RuStore](https://www.rustore.ru/catalog/app/ru.unn.unn_mobile).
 
 ---
 
@@ -84,7 +72,7 @@
    - Скачайте приложение [RuStore](https://www.rustore.ru/catalog/app/ru.unn.unn_mobile).
 
 2. **Установка APK/IPA**:
-   - Для самостоятельной установки скачайте [APK](https://github.com/BitCodersNN/unn-mobile/releases) (для Android) или [IPA](https://github.com/BitCodersNN/unn-mobile/releases) (для iOS) файлы.
+   - Для самостоятельной установки скачайте .APK файл (для Android) или .IPA (для iOS) [здесь](https://github.com/BitCodersNN/unn-mobile/releases).
    - Инструкция по установке IPA доступна в нашем [Telegram-канале](https://t.me/unn_mobile/25).
 
 ---
@@ -152,5 +140,3 @@ flutter run
 Присоединяйтесь к нашему сообществу и помогайте делать приложение лучше!
 
 ---
-
-### Лицензия
