@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright 2025 BitCodersNN
+
 class AjaxActionStrings {
   /// QueryParams для указания action
   static const String actionKey = 'action';

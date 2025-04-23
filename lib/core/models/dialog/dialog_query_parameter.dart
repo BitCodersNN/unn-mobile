@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright 2025 BitCodersNN
+
 class _DialogQueryParameterJsonKeys {
   static const String limit = 'LIMIT';
   static const String skipOpenlines = 'SKIP_OPENLINES';

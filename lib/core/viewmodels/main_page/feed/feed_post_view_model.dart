@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright 2025 BitCodersNN
+
 import 'package:event/event.dart';
 import 'package:html_unescape/html_unescape.dart';
 import 'package:injector/injector.dart';

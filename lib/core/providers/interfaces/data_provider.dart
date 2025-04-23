@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright 2025 BitCodersNN
+
 abstract interface class DataProvider<T> {
   /// Получает данные из хранилища
   ///
