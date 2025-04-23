@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright 2025 BitCodersNN
+
 class ResponseTypeException implements Exception {
   final String message;
   final Type expectedType;

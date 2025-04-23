@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright 2025 BitCodersNN
+
 abstract interface class PinningBlogPostService {
   /// Позволяет закрепить пост с указанным идентификатором.
   ///
