@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright 2025 BitCodersNN
+
 import 'dart:io';
 
 import 'package:unn_mobile/core/misc/objects_with_pagination.dart';
