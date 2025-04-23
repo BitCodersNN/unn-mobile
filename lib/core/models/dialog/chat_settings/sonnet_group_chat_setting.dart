@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright 2025 BitCodersNN
+
 import 'package:unn_mobile/core/models/dialog/chat_settings/irregular_chat_setting.dart';
 import 'package:unn_mobile/core/models/dialog/group_dialog.dart';
 

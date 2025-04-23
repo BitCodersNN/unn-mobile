@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright 2025 BitCodersNN
+
 import 'dart:collection';
 
 import 'package:unn_mobile/core/providers/interfaces/common/message_ignored_keys_provider.dart';

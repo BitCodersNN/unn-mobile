@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright 2025 BitCodersNN
+
 import 'package:flutter/material.dart';
 import 'package:unn_mobile/core/misc/date_time_utilities/date_time_extensions.dart';
 import 'package:unn_mobile/core/models/loading_page/loading_page_data.dart';

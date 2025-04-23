@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright 2025 BitCodersNN
+
 import 'package:unn_mobile/core/models/common/file_data.dart';
 
 abstract interface class FileDataService {

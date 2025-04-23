@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright 2025 BitCodersNN
+
 class PaginatedResultJsonKeys {
   static const String hasPrevPage = 'hasPrevPage';
   static const String hasNextPage = 'hasNextPage';
