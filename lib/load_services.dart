@@ -3,6 +3,9 @@
 
 import 'package:flutter/foundation.dart';
 import 'package:injector/injector.dart';
+import 'package:unn_mobile/core/aggregators/implementations/message_service_aggregator_impl.dart';
+import 'package:unn_mobile/core/aggregators/intefaces/message_reaction_service_aggregator.dart';
+import 'package:unn_mobile/core/aggregators/intefaces/message_service_aggregator.dart';
 import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/misc/api_helpers/final/host_type.dart';
 import 'package:unn_mobile/core/misc/api_helpers/final/github_api_helper.dart';
@@ -28,9 +31,10 @@ import 'package:unn_mobile/core/services/implementations/common/message_ignore_s
 import 'package:unn_mobile/core/services/implementations/dialog/dialog_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/dialog/message/message_fetcher_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/dialog/message/message_sender_service_impl.dart';
+import 'package:unn_mobile/core/services/implementations/dialog/message/message_updater_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/dialog/message/reaction/message_reaction_fetcher_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/dialog/message/reaction/message_reaction_mutator_service_impl.dart';
-import 'package:unn_mobile/core/services/implementations/dialog/message/reaction/message_reaction_service_aggregator_impl.dart';
+import 'package:unn_mobile/core/aggregators/implementations/message_reaction_service_aggregator_impl.dart';
 import 'package:unn_mobile/core/services/implementations/distance_learning/distance_course_semester_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/distance_learning/distance_course_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/distance_learning/distance_learning_downloader_service_impl.dart';
@@ -79,9 +83,9 @@ import 'package:unn_mobile/core/services/interfaces/common/message_ignore_servic
 import 'package:unn_mobile/core/services/interfaces/dialog/dialog_service.dart';
 import 'package:unn_mobile/core/services/interfaces/dialog/message/message_fetcher_service.dart';
 import 'package:unn_mobile/core/services/interfaces/dialog/message/message_sender_service.dart';
+import 'package:unn_mobile/core/services/interfaces/dialog/message/message_updater_service.dart';
 import 'package:unn_mobile/core/services/interfaces/dialog/message/reaction/message_reaction_fetcher_service.dart';
 import 'package:unn_mobile/core/services/interfaces/dialog/message/reaction/message_reaction_mutator_service.dart';
-import 'package:unn_mobile/core/services/interfaces/dialog/message/reaction/message_reaction_service_aggregator.dart';
 import 'package:unn_mobile/core/services/interfaces/distance_learning/distance_course_semester_service.dart';
 import 'package:unn_mobile/core/services/interfaces/distance_learning/distance_course_service.dart';
 import 'package:unn_mobile/core/services/interfaces/distance_learning/distance_learning_downloader_service.dart';
@@ -518,13 +522,6 @@ void registerDependencies() {
     ),
   );
 
-  injector.registerSingleton<MessageReactionServiceAggregator>(
-    () => MessageReactionServiceAggregatorImpl(
-      get<MessageReactionFetcherService>(),
-      get<MessageReactionMutatorService>(),
-    ),
-  );
-
   injector.registerSingleton<MessageFetcherService>(
     () => MessageFetcherServiceImpl(
       get<MessageReactionServiceAggregator>(),
@@ -540,10 +537,36 @@ void registerDependencies() {
     ),
   );
 
+  injector.registerSingleton<MessageUpdaterService>(
+    () => MessageUpdaterServiceImpl(
+      get<LoggerService>(),
+      getApiHelper(HostType.unnPortal),
+    ),
+  );
+
   injector.registerSingleton<DialogService>(
     () => DialogServiceImpl(
       get<LoggerService>(),
       getApiHelper(HostType.unnPortal),
+    ),
+  );
+
+  //
+  // Aggregators
+  //
+
+  injector.registerSingleton<MessageReactionServiceAggregator>(
+    () => MessageReactionServiceAggregatorImpl(
+      get<MessageReactionFetcherService>(),
+      get<MessageReactionMutatorService>(),
+    ),
+  );
+
+  injector.registerSingleton<MessageServiceAggregator>(
+    () => MessageServiceAggregatorImpl(
+      get<MessageFetcherService>(),
+      get<MessageSenderService>(),
+      get<MessageUpdaterService>(),
     ),
   );
 
