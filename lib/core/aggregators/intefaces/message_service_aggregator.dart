@@ -10,5 +10,5 @@ abstract interface class MessageServiceAggregator
     implements
         MessageFetcherService,
         MessageSenderService,
-        MessageUpdaterService,
-        MessageRemoverService {}
+        MessageRemoverService,
+        MessageUpdaterService {}

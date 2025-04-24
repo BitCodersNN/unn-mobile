@@ -1,0 +1,45 @@
+name: Add License Header to Files
+run-name: "Adding License Header to Files"
+
+on: 
+  pull_request:
+    branches: [ "develop" ]
+permissions:
+  contents: write
+
+jobs:
+  run-python-script:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.ref }}
+          token: ${{ secrets.UNN_MOBILE_AUTO_KEY }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.13'
+
+      - name: Install dependencies
+        run: python -m pip install --upgrade pip
+
+      - name: Run Python script
+        run: python file_header_script.py || exit 1
+
+      - name: Check for changes
+        id: changes
+        run: |
+          git diff --quiet || echo "changes=true" >> $GITHUB_OUTPUT
+
+      - name: Commit and push changes
+        if: steps.changes.outputs.changes == 'true'
+        run: |
+          git config --global user.name "UNN MOBILE runner"
+          git config --global user.email "unnmobile@mail.ru"
+          git add .
+          git commit -m "Add license headers to files"
+          git push
