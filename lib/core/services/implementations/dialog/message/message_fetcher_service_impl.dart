@@ -22,7 +22,6 @@ import 'package:unn_mobile/core/models/dialog/message/reply_info.dart';
 import 'package:unn_mobile/core/models/feed/rating_list.dart';
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
 import 'package:unn_mobile/core/services/interfaces/dialog/message/message_fetcher_service.dart';
-import 'package:unn_mobile/core/aggregators/intefaces/message_reaction_service_aggregator.dart';
 
 class _DataKeys {
   static const String chatId = 'chatId';

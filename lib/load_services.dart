@@ -4,6 +4,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/aggregators/implementations/message_service_aggregator_impl.dart';
+import 'package:unn_mobile/core/aggregators/intefaces/message_reaction_service_aggregator.dart';
 import 'package:unn_mobile/core/aggregators/intefaces/message_service_aggregator.dart';
 import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/misc/api_helpers/final/host_type.dart';
@@ -85,7 +86,6 @@ import 'package:unn_mobile/core/services/interfaces/dialog/message/message_sende
 import 'package:unn_mobile/core/services/interfaces/dialog/message/message_updater_service.dart';
 import 'package:unn_mobile/core/services/interfaces/dialog/message/reaction/message_reaction_fetcher_service.dart';
 import 'package:unn_mobile/core/services/interfaces/dialog/message/reaction/message_reaction_mutator_service.dart';
-import 'package:unn_mobile/core/aggregators/intefaces/message_reaction_service_aggregator.dart';
 import 'package:unn_mobile/core/services/interfaces/distance_learning/distance_course_semester_service.dart';
 import 'package:unn_mobile/core/services/interfaces/distance_learning/distance_course_service.dart';
 import 'package:unn_mobile/core/services/interfaces/distance_learning/distance_learning_downloader_service.dart';
