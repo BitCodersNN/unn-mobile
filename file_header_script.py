@@ -1,9 +1,11 @@
 import os
 import re
 from typing import Final
+from datetime import datetime
 
-LICENSE_HEADER: Final[str] = """// SPDX-License-Identifier: Apache-2.0
-// Copyright 2025 BitCodersNN
+
+LICENSE_HEADER: Final[str] = f"""// SPDX-License-Identifier: Apache-2.0
+// Copyright {datetime.now().year} BitCodersNN
 
 """
 IGNORED_DIRECTORIES: Final[set[str]] = set()
