@@ -12,7 +12,7 @@ import 'package:unn_mobile/core/misc/object_by_id_map.dart';
 import 'package:unn_mobile/core/models/feed/rating_list.dart';
 import 'package:unn_mobile/core/models/profile/user_short_info.dart';
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
-import 'package:unn_mobile/core/services/interfaces/dialog/message/message_reaction_service.dart';
+import 'package:unn_mobile/core/services/interfaces/dialog/message/reaction/message_reaction_fetcher_service.dart';
 
 class _DataKeys {
   static const String sessid = 'sessid';
@@ -29,11 +29,12 @@ class _JsonKeys {
   static const String avatar = 'avatar';
 }
 
-class MessageReactionServiceImpl implements MessageReactionService {
+class MessageReactionFetcherServiceImpl
+    implements MessageReactionFetcherService {
   final LoggerService _loggerService;
   final ApiHelper _apiHelper;
 
-  MessageReactionServiceImpl(
+  MessageReactionFetcherServiceImpl(
     this._loggerService,
     this._apiHelper,
   );
@@ -82,22 +83,5 @@ class MessageReactionServiceImpl implements MessageReactionService {
         _JsonKeys.users: users,
       },
     );
-  }
-
-  @override
-  Future<UserShortInfo?> addReaction(
-    ReactionType reactionType,
-    String voteKeySigned,
-  ) {
-    #TODO;
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<bool> removeReaction(
-    String voteKeySigned,
-  ) {
-    #TODO;
-    throw UnimplementedError();
   }
 }

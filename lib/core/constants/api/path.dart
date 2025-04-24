@@ -78,4 +78,12 @@ class ApiPath {
   /// Для получения реакций на сообщении в чате
   static const String messageReactions =
       'rest/im.v2.Chat.Message.Reaction.tail.json';
+
+  /// Для добавления реакции на сообщение в чате
+  static const String messageReactionsAdd =
+      'rest/im.v2.Chat.Message.Reaction.add.json';
+
+  /// Для удаления реакции на сообщение в чате
+  static const String messageReactionsDelete =
+      'rest/im.v2.Chat.Message.Reaction.delete.json';
 }

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2025 BitCodersNN
 
-import 'package:unn_mobile/core/misc/enum_to_string.dart';
+import 'package:unn_mobile/core/misc/enum_from_string.dart';
 import 'package:unn_mobile/core/models/dialog/chat_settings/chat_permissions.dart';
 import 'package:unn_mobile/core/models/dialog/chat_settings/chat_restrictions.dart';
 import 'package:unn_mobile/core/models/dialog/enum/user_role.dart';
