@@ -40,9 +40,10 @@ class ApiHelper implements GetApiHelper, PostApiHelper, ApiOptionsHelper {
   @override
   Future<Response> post({
     required String path,
-    Map<String, dynamic>? data,
+    Object? data,
     Map<String, dynamic>? queryParameters,
     Options? options,
+    ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
     return await dio.post(
