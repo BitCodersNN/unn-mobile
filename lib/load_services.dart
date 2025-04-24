@@ -30,6 +30,7 @@ import 'package:unn_mobile/core/services/implementations/common/message_ignore_s
 import 'package:unn_mobile/core/services/implementations/dialog/dialog_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/dialog/message/message_fetcher_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/dialog/message/message_file_sender_service_impl.dart';
+import 'package:unn_mobile/core/services/implementations/dialog/message/message_reader_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/dialog/message/message_remover_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/dialog/message/message_sender_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/dialog/message/message_updater_service_impl.dart';
@@ -84,6 +85,7 @@ import 'package:unn_mobile/core/services/interfaces/common/message_ignore_servic
 import 'package:unn_mobile/core/services/interfaces/dialog/dialog_service.dart';
 import 'package:unn_mobile/core/services/interfaces/dialog/message/message_fetcher_service.dart';
 import 'package:unn_mobile/core/services/interfaces/dialog/message/message_file_sender_service.dart';
+import 'package:unn_mobile/core/services/interfaces/dialog/message/message_reader_service.dart';
 import 'package:unn_mobile/core/services/interfaces/dialog/message/message_remover_service.dart';
 import 'package:unn_mobile/core/services/interfaces/dialog/message/message_sender_service.dart';
 import 'package:unn_mobile/core/services/interfaces/dialog/message/message_updater_service.dart';
@@ -562,6 +564,13 @@ void registerDependencies() {
     ),
   );
 
+  injector.registerSingleton<MessageReaderService>(
+    () => MessageReaderServiceImpl(
+      get<LoggerService>(),
+      getApiHelper(HostType.unnPortal),
+    ),
+  );
+
   injector.registerSingleton<DialogService>(
     () => DialogServiceImpl(
       get<LoggerService>(),
@@ -587,6 +596,7 @@ void registerDependencies() {
       get<MessageUpdaterService>(),
       get<MessageRemoverService>(),
       get<MessageFileSenderService>(),
+      get<MessageReaderService>(),
     ),
   );
 
