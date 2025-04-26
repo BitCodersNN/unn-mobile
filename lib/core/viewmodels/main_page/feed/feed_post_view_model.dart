@@ -29,6 +29,7 @@ class FeedPostViewModel extends BaseViewModel {
   final HtmlUnescape _unescaper = HtmlUnescape();
 
   final List<AttachedFileViewModel> attachedFileViewModels = [];
+  Iterable<String> get attachedImages => blogData.imageUrls ?? [];
 
   final onError = Event();
 

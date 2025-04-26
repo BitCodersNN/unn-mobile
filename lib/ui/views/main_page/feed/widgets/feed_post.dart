@@ -2,10 +2,12 @@
 // Copyright 2025 BitCodersNN
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:carousel_slider_plus/carousel_slider_plus.dart';
 import 'package:event/event.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_layout_grid/flutter_layout_grid.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
@@ -150,6 +152,14 @@ class FeedPost extends StatefulWidget {
 }
 
 class _FeedPostState extends State<FeedPost> {
+  late CarouselSliderController _carouselController;
+
+  @override
+  void initState() {
+    super.initState();
+    _carouselController = CarouselSliderController();
+  }
+
   void onPostRefreshError(EventArgs e) {
     const snackBar = SnackBar(
       content: Text('Не удалось обновить пост'),
@@ -228,6 +238,10 @@ class _FeedPostState extends State<FeedPost> {
                           )
                         else
                           const SizedBox(height: 16.0),
+                        if (model.attachedImages.isNotEmpty)
+                          AttachedImages(
+                            model: model,
+                          ),
                         for (final file in model.attachedFileViewModels)
                           AttachedFile(viewModel: file),
                         if (!widget.showingComments)
@@ -309,6 +323,112 @@ class _FeedPostState extends State<FeedPost> {
       return unnMobileColors.importantPostHighlight;
     }
     return theme.colorScheme.surface;
+  }
+}
+
+class AttachedImages extends StatefulWidget {
+  const AttachedImages({
+    super.key,
+    required this.model,
+  });
+
+  final FeedPostViewModel model;
+
+  @override
+  State<AttachedImages> createState() => _AttachedImagesState();
+}
+
+class _AttachedImagesState extends State<AttachedImages> {
+  var _attachedImageIndex = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    if (widget.model.attachedImages.length == 1) {
+      return image(0);
+    } else {
+      return LayoutGrid(
+        columnSizes: [1.fr, 1.fr],
+        rowSizes: [1.fr, 1.fr],
+        children: [
+          for (final (i, _) in widget.model.attachedImages.indexed) image(i),
+        ],
+      );
+    }
+  }
+
+  Widget image(int index) {
+    return GestureDetector(
+      onTap: () async {
+        await showDialog(
+          context: context,
+          builder: (context) {
+            return ExtendedImageSlidePage(
+              slideAxis: SlideAxis.vertical,
+              child: ImagesCarousel(
+                viewModel: widget.model,
+                imageModel: index,
+              ),
+            );
+          },
+        );
+      },
+      child: CachedNetworkImage(
+        imageUrl: widget.model.attachedImages.skip(index).first,
+      ),
+    );
+  }
+}
+
+class ImagesCarousel extends StatefulWidget {
+  final FeedPostViewModel viewModel;
+  final int imageModel;
+  const ImagesCarousel({
+    super.key,
+    required this.viewModel,
+    this.imageModel = 0,
+  });
+
+  @override
+  State<ImagesCarousel> createState() => _ImagesCarouselState();
+}
+
+class _ImagesCarouselState extends State<ImagesCarousel> {
+  int imageIndex = 0;
+  @override
+  Widget build(BuildContext context) {
+    return CarouselSlider(
+      options: CarouselOptions(
+        scrollPhysics: const BouncingScrollPhysics(),
+        enableInfiniteScroll: false,
+        disableCenter: true,
+        padEnds: true,
+        viewportFraction: 1.0,
+      ),
+      items: [
+        for (final image in widget.viewModel.attachedImages)
+          ExtendedImage(
+            enableLoadState: true,
+            mode: ExtendedImageMode.gesture,
+            initGestureConfigHandler: (state) {
+              return GestureConfig(
+                minScale: 0.9,
+                animationMinScale: 0.7,
+                maxScale: 3.0,
+                animationMaxScale: 3.5,
+                speed: 1.0,
+                inertialSpeed: 100.0,
+                initialScale: 1.0,
+                inPageView: false,
+                initialAlignment: InitialAlignment.center,
+              );
+            },
+            image: CachedNetworkImageProvider(
+              image,
+            ),
+            enableSlideOutPage: true,
+          ),
+      ],
+    );
   }
 }
 
