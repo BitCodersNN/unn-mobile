@@ -140,6 +140,7 @@ import 'package:unn_mobile/core/viewmodels/factories/feed_post_view_model_factor
 import 'package:unn_mobile/core/viewmodels/factories/main_page_routes_view_models_factory.dart';
 import 'package:unn_mobile/core/viewmodels/factories/profile_view_model_factory.dart';
 import 'package:unn_mobile/core/viewmodels/factories/reaction_view_model_factory.dart';
+import 'package:unn_mobile/core/viewmodels/main_page/chat/chat_screen_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/feed/feed_screen_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/grades/grades_screen_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/loading_page/loading_page_view_model.dart';
@@ -715,6 +716,11 @@ void registerDependencies() {
       get<DistanceLearningDownloaderService>(),
       get<WebinarService>(),
       get<SessionCheckerService>(),
+    ),
+  );
+  injector.registerDependency(
+    () => ChatScreenViewModel(
+      get<DialogService>(),
     ),
   );
 }
