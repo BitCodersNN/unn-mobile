@@ -57,7 +57,6 @@ dependencies:
   html: ^0.15.5
   flutter_file_dialog: ^3.0.2
   carousel_slider_plus: ^7.1.0
-  flutter_layout_grid: ^2.0.8
 
 dev_dependencies:
   flutter_test:
