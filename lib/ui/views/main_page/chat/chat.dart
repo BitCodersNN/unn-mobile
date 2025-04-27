@@ -124,56 +124,34 @@ class DialogInfo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return GestureDetector(
-      onTap: () async {},
-      child: Container(
-        padding: const EdgeInsets.all(8.0),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            CircleAvatar(
-              radius: MediaQuery.of(context).textScaler.scale(26.0),
-              foregroundImage: dialog.avatarUrl.isNotEmpty
-                  ? CachedNetworkImageProvider(dialog.avatarUrl)
-                  : null,
-              child: dialog.avatarUrl.isEmpty
-                  ? Text(
-                      generateInitials(dialog.title.split(' ')),
-                      style: theme.textTheme.headlineSmall!.copyWith(
-                        color: theme.colorScheme.onSurface,
-                      ),
-                    )
-                  : null,
-            ),
-            const SizedBox(
-              width: 12.0,
-            ),
-            Expanded(
-              child: IntrinsicHeight(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      dialog.title,
-                      style: theme.textTheme.titleMedium,
-                      softWrap: false,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    Expanded(
-                      child: Text(
-                        _unescaper.convert(dialog.previewMessage.text),
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 1,
-                      ),
-                    ),
-                  ],
+    return ListTile(
+      leading: CircleAvatar(
+        radius: MediaQuery.of(context).textScaler.scale(26.0),
+        foregroundImage: dialog.avatarUrl.isNotEmpty
+            ? CachedNetworkImageProvider(dialog.avatarUrl)
+            : null,
+        child: dialog.avatarUrl.isEmpty
+            ? Text(
+                generateInitials(dialog.title.split(' ')),
+                style: theme.textTheme.headlineSmall!.copyWith(
+                  color: theme.colorScheme.onSurface,
                 ),
-              ),
-            ),
-          ],
-        ),
+              )
+            : null,
       ),
+      title: Text(
+        dialog.title,
+        overflow: TextOverflow.ellipsis,
+        maxLines: 1,
+      ),
+      subtitle: Text(
+        _unescaper.convert(dialog.previewMessage.text),
+        overflow: TextOverflow.ellipsis,
+        maxLines: 2,
+      ),
+      enableFeedback: true,
+      visualDensity: VisualDensity.adaptivePlatformDensity,
+      onTap: () {},
     );
   }
 }
