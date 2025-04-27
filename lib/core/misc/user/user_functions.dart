@@ -11,20 +11,8 @@ String getUserInitials(UserData? userData) {
   final String name = userData?.fullname.name ?? '';
   final String surname = userData?.fullname.surname ?? '';
   final String lastname = userData?.fullname.lastname ?? '';
-  String initials = '';
-  if (name != '') {
-    initials += name[0];
-  }
-  if (surname != '') {
-    initials += surname[0];
-  }
-  if (initials.length < 2 && lastname != '') {
-    initials += lastname[0];
-  }
-  if (initials == '') {
-    initials = '?';
-  }
-  return initials;
+
+  return generateInitials([name, lastname, surname]);
 }
 
 ImageProvider<Object>? getUserAvatar(UserData? userData) {
@@ -41,4 +29,15 @@ ImageProvider<Object>? getUserAvatar(UserData? userData) {
         : CachedNetworkImageProvider(employeeProfile.fullUrlPhoto!);
   }
   return userAvatar;
+}
+
+String generateInitials(List<String> names) {
+  final nonEmpty = names.where((n) => n.isNotEmpty);
+  if (nonEmpty.isEmpty) {
+    return '?';
+  }
+  if (nonEmpty.length == 1) {
+    return nonEmpty.first[0].toUpperCase();
+  }
+  return '${nonEmpty.first[0]}${nonEmpty.last[0]}'.toUpperCase();
 }

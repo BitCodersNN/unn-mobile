@@ -1,8 +1,12 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2025 BitCodersNN
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:html_unescape/html_unescape.dart';
 import 'package:injector/injector.dart';
+import 'package:unn_mobile/core/misc/user/user_functions.dart';
+import 'package:unn_mobile/core/models/dialog/dialog.dart' as d;
 import 'package:unn_mobile/core/viewmodels/factories/main_page_routes_view_models_factory.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/chat/chat_screen_view_model.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
@@ -40,7 +44,7 @@ class _ChatScreenViewState extends State<ChatScreenView> {
           ),
           body: Builder(
             builder: (context) {
-              if (model.isBusy) {
+              if (model.isBusy && model.dialogs.isEmpty) {
                 return const Center(
                   child: SizedBox(
                     width: 40,
@@ -49,22 +53,51 @@ class _ChatScreenViewState extends State<ChatScreenView> {
                   ),
                 );
               }
-              if (model.hasError) {
-                return const Center(
-                  child: Text('Ошибка'),
+              if (model.hasError && model.dialogs.isEmpty) {
+                return Center(
+                  child: Column(
+                    children: [
+                      const Text('Не удалось загрузить'),
+                      TextButton(
+                        onPressed: () {
+                          model.init();
+                        },
+                        child: const Text('Повторить загрузку'),
+                      ),
+                    ],
+                  ),
                 );
               }
-              return ListView(
-                children: [
-                  for (final d in model.dialogs) Text(d.title),
-                  if (model.hasMoreDialogs)
-                    TextButton(
-                      onPressed: () async {
-                        await model.loadMore();
-                      },
-                      child: const Text('больше'),
-                    ),
-                ],
+              return NotificationListener<ScrollEndNotification>(
+                onNotification: (e) {
+                  if (e.metrics.maxScrollExtent - e.metrics.pixels < 20.0 &&
+                      model.hasMoreDialogs) {
+                    model.loadMore();
+                  }
+                  return true;
+                },
+                child: RefreshIndicator(
+                  onRefresh: () async => await model.init(),
+                  child: ListView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    children: [
+                      for (final (dialog) in model.dialogs)
+                        DialogInfo(
+                          dialog: dialog,
+                          chatsModel: model,
+                        ),
+                      if (model.hasError) const Text('Не удалось загрузить'),
+                      if (model.isBusy)
+                        const Center(
+                          child: SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
               );
             },
           ),
@@ -72,6 +105,75 @@ class _ChatScreenViewState extends State<ChatScreenView> {
       },
       model: viewModel,
       onModelReady: (model) => model.init(),
+    );
+  }
+}
+
+class DialogInfo extends StatelessWidget {
+  DialogInfo({
+    super.key,
+    required this.dialog,
+    required this.chatsModel,
+  });
+
+  final d.Dialog dialog;
+  final HtmlUnescape _unescaper = HtmlUnescape();
+
+  final ChatScreenViewModel chatsModel;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return GestureDetector(
+      onTap: () async {},
+      child: Container(
+        padding: const EdgeInsets.all(8.0),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            CircleAvatar(
+              radius: MediaQuery.of(context).textScaler.scale(26.0),
+              foregroundImage: dialog.avatarUrl.isNotEmpty
+                  ? CachedNetworkImageProvider(dialog.avatarUrl)
+                  : null,
+              child: dialog.avatarUrl.isEmpty
+                  ? Text(
+                      generateInitials(dialog.title.split(' ')),
+                      style: theme.textTheme.headlineSmall!.copyWith(
+                        color: theme.colorScheme.onSurface,
+                      ),
+                    )
+                  : null,
+            ),
+            const SizedBox(
+              width: 12.0,
+            ),
+            Expanded(
+              child: IntrinsicHeight(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      dialog.title,
+                      style: theme.textTheme.titleMedium,
+                      softWrap: false,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    Expanded(
+                      child: Text(
+                        _unescaper.convert(dialog.previewMessage.text),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

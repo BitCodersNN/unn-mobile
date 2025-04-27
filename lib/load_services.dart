@@ -721,6 +721,7 @@ void registerDependencies() {
   injector.registerDependency(
     () => ChatScreenViewModel(
       get<DialogService>(),
+      get<CurrentUserSyncStorage>(),
     ),
   );
 }
