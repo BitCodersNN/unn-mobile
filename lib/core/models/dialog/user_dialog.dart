@@ -14,6 +14,7 @@ final class UserDialog extends Dialog {
   UserDialog({
     required super.chatId,
     required super.title,
+    required super.avatarUrl,
     required super.previewMessage,
     required super.lastMessageStatus,
     required super.pinned,
@@ -25,6 +26,7 @@ final class UserDialog extends Dialog {
     return UserDialog(
       chatId: dialog.chatId,
       title: dialog.title,
+      avatarUrl: dialog.avatarUrl,
       previewMessage: dialog.previewMessage,
       lastMessageStatus: dialog.lastMessageStatus,
       pinned: dialog.pinned,

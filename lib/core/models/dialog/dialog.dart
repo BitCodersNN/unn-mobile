@@ -8,6 +8,8 @@ import 'package:unn_mobile/core/models/dialog/message/message_short_info.dart';
 class _DialogJsonKeys {
   static const String chatId = 'chat_id';
   static const String title = 'title';
+  static const String avatar = 'avatar';
+  static const String url = 'url';
   static const String message = 'message';
   static const String user = 'user';
   static const String pinned = 'pinned';
@@ -20,6 +22,7 @@ class _DialogJsonKeys {
 base class Dialog {
   final int chatId;
   final String title;
+  final String avatarUrl;
   final MessageShortInfo previewMessage;
   final MessageStatus lastMessageStatus;
   final bool pinned;
@@ -27,6 +30,7 @@ base class Dialog {
   Dialog({
     required this.chatId,
     required this.title,
+    required this.avatarUrl,
     required this.previewMessage,
     required this.lastMessageStatus,
     required this.pinned,
@@ -43,6 +47,7 @@ base class Dialog {
     return Dialog(
       chatId: jsonMap[_DialogJsonKeys.chatId],
       title: jsonMap[_DialogJsonKeys.title],
+      avatarUrl: jsonMap[_DialogJsonKeys.avatar][_DialogJsonKeys.url],
       previewMessage: MessageShortInfo.fromJson({
         ...messageMap,
         MessageShortInfoJsonKeys.author: jsonMap[_DialogJsonKeys.user],
@@ -61,6 +66,9 @@ base class Dialog {
     return {
       _DialogJsonKeys.chatId: chatId,
       _DialogJsonKeys.title: title,
+      _DialogJsonKeys.avatar: {
+        _DialogJsonKeys.url: avatarUrl,
+      },
       _DialogJsonKeys.message: {
         ...messageMap,
         _DialogJsonKeys.status: lastMessageStatus.toString().split('.').last,
