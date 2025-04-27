@@ -21,6 +21,7 @@ final class GroupDialog extends Dialog {
   GroupDialog({
     required super.chatId,
     required super.title,
+    required super.avatarUrl,
     required super.previewMessage,
     required super.lastMessageStatus,
     required super.pinned,
@@ -34,6 +35,7 @@ final class GroupDialog extends Dialog {
     return GroupDialog(
       chatId: dialog.chatId,
       title: dialog.title,
+      avatarUrl: dialog.avatarUrl,
       previewMessage: dialog.previewMessage,
       lastMessageStatus: dialog.lastMessageStatus,
       pinned: dialog.pinned,

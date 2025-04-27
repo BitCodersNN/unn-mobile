@@ -47,7 +47,7 @@ class DialogServiceImpl implements DialogService {
     try {
       response = await _apiHelper.post(
         path: ApiPath.dialog,
-        data: Map.from(dialogQueryParameter.toJson())
+        data: dialogQueryParameter.toJson()
           ..addAll(
             {
               _DataKeys.sessid:
