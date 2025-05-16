@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2025 BitCodersNN
 
+import 'dart:async';
+
 import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/misc/authorisation/authorisation_request_result.dart';
 import 'package:unn_mobile/core/models/common/online_status_data.dart';
@@ -11,7 +13,10 @@ import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
 /// Получает данные или от функции, требующей доступ к серверу, или от функции, использующей локальное хранилище
 ///
 /// Возвращает данные полученные от [online], если есть интернет и сервер работает, иначе возвращает [offline]
-Future<T?> tryLoginAndRetrieveData<T>(Function online, Function offline) async {
+Future<T?> tryLoginAndRetrieveData<T>(
+  FutureOr<T?> Function() online,
+  FutureOr<T?> Function() offline,
+) async {
   final LoggerService loggerService = Injector.appInstance.get<LoggerService>();
   final UnnAuthorisationService authorisationService =
       Injector.appInstance.get<UnnAuthorisationService>();

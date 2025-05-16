@@ -59,61 +59,133 @@ class ChatInside extends StatelessWidget {
               ],
             ),
           ),
-          body: Builder(
-            builder: (context) {
-              if (model.isBusy && model.messages.isEmpty) {
-                return const Center(
-                  child: SizedBox(
-                    height: 40,
-                    width: 40,
-                    child: CircularProgressIndicator(),
-                  ),
-                );
-              }
-              return NotificationListener<ScrollEndNotification>(
-                onNotification: (notification) {
-                  final metrics = notification.metrics;
-                  if (metrics.maxScrollExtent - metrics.pixels < 100) {
-                    model.loadMoreMessages();
-                  }
-                  return true;
-                },
-                child: ListView(
-                  reverse: true,
-                  children: [
-                    for (final messageDateGroup in model.messages) ...[
-                      for (final messageGroup in messageDateGroup)
-                        MessageGroup(
-                          currentUserId: model.currentUserId,
-                          messages: messageGroup,
-                        ),
-                      Align(
-                        child: Container(
-                          alignment: Alignment.center,
-                          child: Text(
-                            messageDateGroup.firstOrNull?.firstOrNull?.dateTime
-                                    .format(DatePattern.dMMMM) ??
-                                'Нет даты (?)',
-                          ),
-                        ),
-                      ),
-                    ],
-                    if (model.isBusy)
-                      const Center(
+          body: Column(
+            children: [
+              Expanded(
+                child: Builder(
+                  builder: (context) {
+                    if (model.isBusy && model.messages.isEmpty) {
+                      return const Center(
                         child: SizedBox(
-                          width: 20,
-                          height: 20,
+                          height: 40,
+                          width: 40,
                           child: CircularProgressIndicator(),
                         ),
+                      );
+                    }
+                    return NotificationListener<ScrollEndNotification>(
+                      onNotification: (notification) {
+                        final metrics = notification.metrics;
+                        if (metrics.maxScrollExtent - metrics.pixels < 100) {
+                          model.loadMoreMessages();
+                        }
+                        return true;
+                      },
+                      child: ListView(
+                        reverse: true,
+                        children: [
+                          for (final messageDateGroup in model.messages) ...[
+                            for (final messageGroup in messageDateGroup)
+                              MessageGroup(
+                                currentUserId: model.currentUserId,
+                                messages: messageGroup,
+                              ),
+                            Align(
+                              child: Container(
+                                alignment: Alignment.center,
+                                child: Text(
+                                  messageDateGroup
+                                          .firstOrNull?.firstOrNull?.dateTime
+                                          .format(DatePattern.dMMMM) ??
+                                      'Нет даты (?)',
+                                ),
+                              ),
+                            ),
+                          ],
+                          if (model.isBusy)
+                            const Center(
+                              child: SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(),
+                              ),
+                            ),
+                        ],
                       ),
-                  ],
+                    );
+                  },
                 ),
-              );
-            },
+              ),
+              const Divider(),
+              SendField(
+                model: model,
+              ),
+            ],
           ),
         );
       },
       onModelReady: (model) => model.init(chatId),
+    );
+  }
+}
+
+class SendField extends StatefulWidget {
+  const SendField({
+    super.key,
+    required this.model,
+  });
+
+  final ChatInsideViewModel model;
+
+  @override
+  State<SendField> createState() => _SendFieldState();
+}
+
+class _SendFieldState extends State<SendField> {
+  late TextEditingController _textController;
+  @override
+  void initState() {
+    super.initState();
+    _textController = TextEditingController();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Row(
+      children: [
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.all(8.0).copyWith(top: 0),
+            child: TextField(
+              controller: _textController,
+              autocorrect: true,
+              enableSuggestions: true,
+              enabled: !widget.model.isBusy,
+              decoration: const InputDecoration(hintText: 'Текст сообщения'),
+            ),
+          ),
+        ),
+        IconButton(
+          onPressed: widget.model.isBusy
+              ? null //
+              : () async {
+                  final text = _textController.text;
+                  if (text.isEmpty) {
+                    return;
+                  }
+                  _textController.text = '';
+                  if (!await widget.model.sendMessage(text)) {
+                    _textController.text = text;
+                  }
+                },
+          color: theme.primaryColorDark,
+          disabledColor: theme.disabledColor,
+          icon: const Icon(
+            Icons.send,
+          ),
+        ),
+      ],
     );
   }
 }

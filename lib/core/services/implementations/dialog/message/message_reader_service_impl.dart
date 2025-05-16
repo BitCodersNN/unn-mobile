@@ -40,7 +40,7 @@ class MessageReaderServiceImpl implements MessageReaderService {
   @override
   Future<bool> readMessages({
     required int chatId,
-    required List<int> messageIds,
+    required Iterable<int> messageIds,
   }) async {
     Response response;
     try {
@@ -69,15 +69,15 @@ class MessageReaderServiceImpl implements MessageReaderService {
 
   Map<String, dynamic> _prepareRequestData(
     int chatId,
-    List<int> messageIds,
+    Iterable<int> messageIds,
   ) {
     final requestData = {
       _DataKeys.chatId: chatId,
       _DataKeys.actionUuid: const Uuid().v4(),
     };
 
-    for (int i = 0; i < messageIds.length; i++) {
-      requestData['${_DataKeys.ids}[$i]'] = messageIds[i];
+    for (final (i, messageId) in messageIds.indexed) {
+      requestData['${_DataKeys.ids}[$i]'] = messageId;
     }
 
     return requestData;

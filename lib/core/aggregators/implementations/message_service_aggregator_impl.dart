@@ -137,7 +137,7 @@ class MessageServiceAggregatorImpl implements MessageServiceAggregator {
   @override
   Future<bool> readMessages({
     required int chatId,
-    required List<int> messageIds,
+    required Iterable<int> messageIds,
   }) =>
       _readerService.readMessages(
         chatId: chatId,

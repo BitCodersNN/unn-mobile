@@ -51,6 +51,18 @@ class BaseViewModel extends ChangeNotifier {
     }
   }
 
+  FutureOr<T?> typedBusyCallAsync<T>(FutureOr<T> Function() task) async {
+    if (isBusy) {
+      return null;
+    }
+    try {
+      setState(ViewState.busy);
+      return await task();
+    } finally {
+      setState(ViewState.idle);
+    }
+  }
+
   FutureOr<void> changeState(FutureOr<void> Function() task) async {
     try {
       await task();
