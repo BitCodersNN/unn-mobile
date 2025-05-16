@@ -98,9 +98,10 @@ class MessageFetcherServiceImpl implements MessageFetcherService {
 
     final usersById = buildObjectByIdMap(usersJson);
     final filesById = buildObjectByIdMap(filesJson);
-    final additionalMessagesById = buildObjectByIdMap(
-      data[_JsonKeys.additionalMessages],
-    );
+    final messagesById = {
+      ...buildObjectByIdMap(data[_JsonKeys.additionalMessages]),
+      ...buildObjectByIdMap(data[_JsonKeys.messages]),
+    };
     final messageIdsWithReactions = reactionsJson
         .map<int>((msg) => msg[_JsonKeys.messageId] as int)
         .toSet();
@@ -111,7 +112,7 @@ class MessageFetcherServiceImpl implements MessageFetcherService {
         message,
         usersById,
         filesById,
-        additionalMessagesById,
+        messagesById,
         messageIdsWithReactions,
       ),
       _loggerService,
@@ -122,7 +123,7 @@ class MessageFetcherServiceImpl implements MessageFetcherService {
     Map<String, dynamic> message,
     Map<int, dynamic> usersById,
     Map<int, dynamic> filesById,
-    Map<int, dynamic> additionalMessagesById,
+    Map<int, dynamic> messagesById,
     Set<int> messageIdsWithReactions,
   ) async {
     final params = _processMessageParams(message[_JsonKeys.params]);
@@ -146,12 +147,12 @@ class MessageFetcherServiceImpl implements MessageFetcherService {
     };
 
     final replyId = int.tryParse(params[_JsonKeys.replyId] ?? '');
-    final hasReply = additionalMessagesById.containsKey(replyId);
+    final hasReply = messagesById.containsKey(replyId);
     final hasForward = message[_JsonKeys.forward] != null;
 
     if (hasReply && hasForward) {
       final processedData = _processReplyAndForward(
-        additionalMessagesById,
+        messagesById,
         replyId,
         message,
         usersById,
@@ -164,7 +165,7 @@ class MessageFetcherServiceImpl implements MessageFetcherService {
 
     if (hasReply) {
       final processedData = _processReply(
-        additionalMessagesById,
+        messagesById,
         replyId,
         usersById,
         filesById,
@@ -209,7 +210,7 @@ class MessageFetcherServiceImpl implements MessageFetcherService {
   }
 
   Map<String, dynamic> _processReplyAndForward(
-    Map<int, dynamic> additionalMessagesById,
+    Map<int, dynamic> messagesById,
     int? replyId,
     Map<String, dynamic> message,
     Map<int, dynamic> usersById,
@@ -217,7 +218,7 @@ class MessageFetcherServiceImpl implements MessageFetcherService {
   ) =>
       {
         ..._processReply(
-          additionalMessagesById,
+          messagesById,
           replyId,
           usersById,
           filesById,
@@ -229,19 +230,21 @@ class MessageFetcherServiceImpl implements MessageFetcherService {
       };
 
   Map<String, dynamic> _processReply(
-    Map<int, dynamic> additionalMessagesById,
+    Map<int, dynamic> messagesById,
     int? replyId,
     Map<int, dynamic> usersById,
     Map<int, dynamic> filesById,
   ) {
-    final additionalMessagesJson =
-        additionalMessagesById[replyId] as Map<String, dynamic>;
+    final messagesJson = messagesById[replyId] as Map<String, dynamic>;
+    final params = _processMessageParams(messagesJson[_JsonKeys.params]);
+    final messageStatus = _determineMessageStatus(messagesJson, params);
 
     return {
       ReplyInfoJsonKeys.replyMessage: _proccessMessageShortInfo(
-        additionalMessagesJson,
+        messagesJson,
         usersById,
       ),
+      ReplyInfoJsonKeys.replyMessageStatus: messageStatus,
     };
   }
 
