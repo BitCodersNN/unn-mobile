@@ -5,6 +5,7 @@ import 'dart:io';
 
 import 'package:unn_mobile/core/misc/objects_with_pagination.dart';
 import 'package:unn_mobile/core/models/common/file_data.dart';
+import 'package:unn_mobile/core/models/dialog/message/message.dart';
 import 'package:unn_mobile/core/services/interfaces/dialog/message/message_fetcher_service.dart';
 import 'package:unn_mobile/core/services/interfaces/dialog/message/message_file_sender_service.dart';
 import 'package:unn_mobile/core/services/interfaces/dialog/message/message_reader_service.dart';
@@ -31,7 +32,7 @@ class MessageServiceAggregatorImpl implements MessageServiceAggregator {
   );
 
   @override
-  Future<PaginatedResult?> fetch({
+  Future<PaginatedResult<Message>?> fetch({
     required int chatId,
     int limit = 25,
     int? lastMessageId,

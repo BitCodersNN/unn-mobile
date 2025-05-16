@@ -2,6 +2,7 @@
 // Copyright 2025 BitCodersNN
 
 import 'package:unn_mobile/core/misc/objects_with_pagination.dart';
+import 'package:unn_mobile/core/models/dialog/message/message.dart';
 
 abstract interface class MessageFetcherService {
   /// Получает пагинированный список сообщений из чата.
@@ -19,7 +20,7 @@ abstract interface class MessageFetcherService {
   ///
   /// В случае ошибки:
   ///   - Возвращает `null`
-  Future<PaginatedResult?> fetch({
+  Future<PaginatedResult<Message>?> fetch({
     required int chatId,
     int limit,
     int? lastMessageId,

@@ -3,6 +3,7 @@
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:html_unescape/html_unescape.dart';
 import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/misc/user/user_functions.dart';
@@ -151,7 +152,10 @@ class DialogInfo extends StatelessWidget {
       ),
       enableFeedback: true,
       visualDensity: VisualDensity.adaptivePlatformDensity,
-      onTap: () {},
+      onTap: () async {
+        GoRouter.of(context)
+            .go('${GoRouter.of(context).state?.path}/${dialog.chatId}');
+      },
     );
   }
 }
