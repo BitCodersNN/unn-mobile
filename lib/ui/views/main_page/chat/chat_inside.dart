@@ -451,7 +451,10 @@ class MessageWidget extends StatelessWidget {
   Widget buildMessageWithReply(BuildContext context, MessageWithReply msg) {
     return Column(
       children: [
-        buildReplyMessage(context, msg.replyMessage),
+        buildReplyMessage(
+          context,
+          msg.replyMessage,
+        ),
         buildMessage(context, msg),
       ],
     );
@@ -465,11 +468,10 @@ class MessageWidget extends StatelessWidget {
     const maxLength = 40;
     final theme = Theme.of(context);
     var msgText = replyMessage.replyMessage.text;
-    final isSystem = replyMessage.replyMessage.author == null;
+    final isSystem = replyMessage.messageStatus == MessageState.system;
     if (isSystem) {
       msgText = msgText.split(_systemMessageSeparator).lastOrNull ?? '';
-    }
-    if (msgText.length > maxLength && !showFullText) {
+    } else if (msgText.length > maxLength && !showFullText) {
       msgText = '${msgText.substring(0, maxLength)}...';
     }
     return IntrinsicHeight(
