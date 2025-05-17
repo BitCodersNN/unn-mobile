@@ -154,7 +154,7 @@ class DialogInfo extends StatelessWidget {
       visualDensity: VisualDensity.adaptivePlatformDensity,
       onTap: () async {
         GoRouter.of(context)
-            .go('${GoRouter.of(context).state?.path}/${dialog.chatId}');
+            .go('${GoRouter.of(context).state.path}/${dialog.chatId}');
       },
     );
   }
