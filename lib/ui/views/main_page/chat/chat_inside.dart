@@ -24,6 +24,18 @@ class ChatInside extends StatelessWidget {
         final avatarUrl = model.dialog?.avatarUrl;
         final dialogTitle = model.dialog?.title;
         return Scaffold(
+          bottomNavigationBar: SendField(model: model),
+          floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
+          floatingActionButton: FloatingActionButton(
+            onPressed: () async {
+              await model.init(chatId);
+            },
+            child: model.isBusy
+                ? const CircularProgressIndicator()
+                : const Icon(
+                    Icons.refresh,
+                  ),
+          ),
           appBar: AppBar(
             automaticallyImplyLeading: false,
             title: Row(
@@ -50,68 +62,57 @@ class ChatInside extends StatelessWidget {
               ],
             ),
           ),
-          body: Column(
-            children: [
-              Expanded(
-                child: Builder(
-                  builder: (context) {
-                    if (model.isBusy && model.messages.isEmpty) {
-                      return const Center(
+          body: Builder(
+            builder: (context) {
+              if (model.isBusy && model.messages.isEmpty) {
+                return const Center(
+                  child: SizedBox(
+                    height: 40,
+                    width: 40,
+                    child: CircularProgressIndicator(),
+                  ),
+                );
+              }
+              return NotificationListener<ScrollEndNotification>(
+                onNotification: (notification) {
+                  final metrics = notification.metrics;
+                  if (metrics.maxScrollExtent - metrics.pixels < 100) {
+                    model.loadMoreMessages();
+                  }
+                  return true;
+                },
+                child: ListView(
+                  reverse: true,
+                  children: [
+                    for (final messageDateGroup in model.messages) ...[
+                      for (final messageGroup in messageDateGroup)
+                        MessageGroup(
+                          currentUserId: model.currentUserId,
+                          messages: messageGroup,
+                        ),
+                      Align(
+                        child: Container(
+                          alignment: Alignment.center,
+                          child: Text(
+                            messageDateGroup.firstOrNull?.firstOrNull?.dateTime
+                                    .format(DatePattern.dMMMM) ??
+                                'Нет даты (?)',
+                          ),
+                        ),
+                      ),
+                    ],
+                    if (model.isBusy)
+                      const Center(
                         child: SizedBox(
-                          height: 40,
-                          width: 40,
+                          width: 20,
+                          height: 20,
                           child: CircularProgressIndicator(),
                         ),
-                      );
-                    }
-                    return NotificationListener<ScrollEndNotification>(
-                      onNotification: (notification) {
-                        final metrics = notification.metrics;
-                        if (metrics.maxScrollExtent - metrics.pixels < 100) {
-                          model.loadMoreMessages();
-                        }
-                        return true;
-                      },
-                      child: ListView(
-                        reverse: true,
-                        children: [
-                          for (final messageDateGroup in model.messages) ...[
-                            for (final messageGroup in messageDateGroup)
-                              MessageGroup(
-                                currentUserId: model.currentUserId,
-                                messages: messageGroup,
-                              ),
-                            Align(
-                              child: Container(
-                                alignment: Alignment.center,
-                                child: Text(
-                                  messageDateGroup
-                                          .firstOrNull?.firstOrNull?.dateTime
-                                          .format(DatePattern.dMMMM) ??
-                                      'Нет даты (?)',
-                                ),
-                              ),
-                            ),
-                          ],
-                          if (model.isBusy)
-                            const Center(
-                              child: SizedBox(
-                                width: 20,
-                                height: 20,
-                                child: CircularProgressIndicator(),
-                              ),
-                            ),
-                        ],
                       ),
-                    );
-                  },
+                  ],
                 ),
-              ),
-              const Divider(),
-              SendField(
-                model: model,
-              ),
-            ],
+              );
+            },
           ),
         );
       },

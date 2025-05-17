@@ -2,6 +2,7 @@
 // Copyright 2025 BitCodersNN
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bbcode/flutter_bbcode.dart';
 import 'package:go_router/go_router.dart';
 import 'package:unn_mobile/core/constants/date_pattern.dart';
@@ -85,12 +86,13 @@ class MessageGroup extends StatelessWidget {
         spacing: 8.0,
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          SizedBox(
-            width: scaledAvatarWidth,
-            child: leftAvatar
-                ? Avatar(avatarUrl: avatarUrl, dialogTitle: name)
-                : null,
-          ),
+          if (leftAvatar)
+            SizedBox(
+              width: scaledAvatarWidth,
+              child: leftAvatar
+                  ? Avatar(avatarUrl: avatarUrl, dialogTitle: name)
+                  : null,
+            ),
           Expanded(
             child: Column(
               verticalDirection: VerticalDirection.up,
@@ -100,10 +102,12 @@ class MessageGroup extends StatelessWidget {
               children: [
                 for (final message in messages.take(messages.length - 1)) //
                   MessageWidget(
+                    key: ValueKey(message.messageId),
                     message: message,
                     fromCurrentUser: !leftAvatar,
                   ),
                 MessageWidget(
+                  key: ValueKey(messages.last.messageId),
                   message: messages.last,
                   fromCurrentUser: !leftAvatar,
                   displayAuthor: leftAvatar,
@@ -111,12 +115,13 @@ class MessageGroup extends StatelessWidget {
               ],
             ),
           ),
-          SizedBox(
-            width: scaledAvatarWidth,
-            child: !leftAvatar
-                ? Avatar(avatarUrl: avatarUrl, dialogTitle: name)
-                : null,
-          ),
+          if (!leftAvatar)
+            SizedBox(
+              width: scaledAvatarWidth,
+              child: !leftAvatar
+                  ? Avatar(avatarUrl: avatarUrl, dialogTitle: name)
+                  : null,
+            ),
         ],
       ),
     );
@@ -142,6 +147,7 @@ class MessageWidget extends StatelessWidget {
       model: MessageReactionViewModel.cached(message.messageId),
       builder: (context, model, _) {
         return PopupMenuButton<String>(
+          position: PopupMenuPosition.under,
           itemBuilder: (context) => [
             PopupMenuItem(
               enabled: false,
@@ -173,7 +179,26 @@ class MessageWidget extends StatelessWidget {
                 ),
               ),
             ),
+            const PopupMenuItem(
+              value: 'copy',
+              child: Text('Скопировать текст'),
+            ),
+            const PopupMenuItem(
+              value: 'reply',
+              child: Text('Ответить'),
+            ),
+            const PopupMenuItem(
+              value: 'forward',
+              child: Text('Переслать'),
+            ),
           ],
+          onSelected: (value) async {
+            switch (value) {
+              case 'copy':
+                await Clipboard.setData(ClipboardData(text: message.text));
+                break;
+            }
+          },
           child: Row(
             children: [
               Expanded(
@@ -188,7 +213,7 @@ class MessageWidget extends StatelessWidget {
                             : Alignment.centerLeft,
                         child: ConstrainedBox(
                           constraints: BoxConstraints(
-                            maxWidth: constraints.maxWidth * 0.9,
+                            maxWidth: constraints.maxWidth * 0.75,
                           ),
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
@@ -310,7 +335,7 @@ class MessageWidget extends StatelessWidget {
             alignment: Alignment.centerLeft,
             child: BBCodeText(
               data: msgText ?? '',
-              stylesheet: getBBStyleSheet(),
+              stylesheet: getBBStyleSheet().copyWith(selectableText: false),
             ),
           ),
           const SizedBox(
@@ -374,7 +399,7 @@ class MessageWidget extends StatelessWidget {
                   ),
                 BBCodeText(
                   data: msgText,
-                  stylesheet: getBBStyleSheet(),
+                  stylesheet: getBBStyleSheet().copyWith(selectableText: false),
                 ),
               ],
             ),
