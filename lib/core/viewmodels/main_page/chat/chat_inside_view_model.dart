@@ -2,6 +2,7 @@
 // Copyright 2025 BitCodersNN
 
 import 'dart:async';
+import 'dart:math';
 
 import 'package:unn_mobile/core/aggregators/intefaces/message_service_aggregator.dart';
 import 'package:unn_mobile/core/misc/authorisation/try_login_and_retrieve_data.dart';
@@ -42,6 +43,9 @@ class ChatInsideViewModel extends BaseViewModel {
   bool get hasMessagesBefore => _hasMessagesBefore;
   bool get hasMessagesAfter => _hasMessagesAfter;
 
+  bool refreshLoopStopFlag = false;
+  bool refreshLoopRunning = false;
+
   Iterable<Iterable<Iterable<Message>>> get messages => _messages;
 
   ChatInsideViewModel(
@@ -52,6 +56,26 @@ class ChatInsideViewModel extends BaseViewModel {
 
   FutureOr<void> init(int chatId) async {
     await busyCallAsync(() => _init(chatId));
+  }
+
+  Future<void> refreshLoop({bool checkStartConditions = true}) async {
+    if (checkStartConditions) {
+      if (refreshLoopRunning) {
+        return;
+      }
+      refreshLoopRunning = true;
+    }
+
+    if (refreshLoopStopFlag) {
+      return;
+    }
+    await Future.delayed(const Duration(seconds: 5));
+
+    await getNewMessages();
+
+    notifyListeners();
+
+    await refreshLoop(checkStartConditions: false);
   }
 
   FutureOr<void> _init(int chatId) async {
@@ -78,6 +102,8 @@ class ChatInsideViewModel extends BaseViewModel {
     _messages.addAll(_partitionMessages(messages.items.reversed));
     _hasMessagesBefore = messages.hasPreviousPage;
     _hasMessagesAfter = messages.hasNextPage;
+
+    refreshLoop();
   }
 
   Future<void> _readMessages(
@@ -175,19 +201,15 @@ class ChatInsideViewModel extends BaseViewModel {
           ),
           () => null,
         );
-        final newMessages = await getNewMessages();
-        _unpartitionedMessages.insertAll(0, newMessages);
-
-        _messages.clear();
-        _messages.addAll(_partitionMessages(_unpartitionedMessages));
+        await getNewMessages();
 
         return result != null;
       }) ??
       false;
 
-  FutureOr<Iterable<Message>> getNewMessages() async {
+  FutureOr<void> getNewMessages() async {
     if (_dialog == null) {
-      return [];
+      return;
     }
 
     final messages = await tryLoginAndRetrieveData<PaginatedResult<Message>>(
@@ -196,12 +218,25 @@ class ChatInsideViewModel extends BaseViewModel {
     );
     if (messages == null) {
       _hasError = true;
-      return [];
+      return;
     }
     await _readMessages(_dialog!.chatId, messages);
 
-    return messages.items.reversed.takeWhile(
-      (m) => m.messageId != _unpartitionedMessages.firstOrNull?.messageId,
+    final messagesToRemove = messages.items.length -
+        messages.items.reversed
+            .takeWhile(
+              (m) =>
+                  m.messageId != _unpartitionedMessages.firstOrNull?.messageId,
+            )
+            .length;
+
+    _unpartitionedMessages.removeRange(
+      0,
+      max(messagesToRemove, _unpartitionedMessages.length),
     );
+    _unpartitionedMessages.insertAll(0, messages.items.reversed);
+
+    _messages.clear();
+    _messages.addAll(_partitionMessages(_unpartitionedMessages));
   }
 }

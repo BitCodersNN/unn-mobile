@@ -102,7 +102,12 @@ class MessageGroup extends StatelessWidget {
               children: [
                 for (final message in messages.take(messages.length - 1)) //
                   MessageWidget(
-                    key: ValueKey(message.messageId),
+                    key: ValueKey(
+                      (
+                        message.messageId,
+                        message.ratingList?.getTotalNumberOfReactions() ?? 0,
+                      ),
+                    ),
                     message: message,
                     fromCurrentUser: !leftAvatar,
                   ),
@@ -147,7 +152,7 @@ class MessageWidget extends StatelessWidget {
       model: MessageReactionViewModel.cached(message.messageId),
       builder: (context, model, _) {
         return PopupMenuButton<String>(
-          position: PopupMenuPosition.under,
+          position: PopupMenuPosition.over,
           itemBuilder: (context) => [
             PopupMenuItem(
               enabled: false,
@@ -182,14 +187,6 @@ class MessageWidget extends StatelessWidget {
             const PopupMenuItem(
               value: 'copy',
               child: Text('Скопировать текст'),
-            ),
-            const PopupMenuItem(
-              value: 'reply',
-              child: Text('Ответить'),
-            ),
-            const PopupMenuItem(
-              value: 'forward',
-              child: Text('Переслать'),
             ),
           ],
           onSelected: (value) async {

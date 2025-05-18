@@ -29,6 +29,10 @@ class _SendFieldState extends State<SendField> {
     final theme = Theme.of(context);
     return Row(
       children: [
+        IconButton(
+          onPressed: () {},
+          icon: const Icon(Icons.attach_file),
+        ),
         Expanded(
           child: Padding(
             padding: const EdgeInsets.all(8.0).copyWith(top: 0),

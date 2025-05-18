@@ -26,18 +26,21 @@ class ChatInside extends StatelessWidget {
         return Scaffold(
           bottomNavigationBar: SendField(model: model),
           floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
-          floatingActionButton: FloatingActionButton(
-            onPressed: () async {
-              await model.init(chatId);
-            },
-            child: model.isBusy
-                ? const CircularProgressIndicator()
-                : const Icon(
-                    Icons.refresh,
-                  ),
-          ),
           appBar: AppBar(
             automaticallyImplyLeading: false,
+            actions: [
+              model.isBusy
+                  ? const Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: CircularProgressIndicator(),
+                    )
+                  : IconButton(
+                      onPressed: () async {
+                        await model.init(chatId);
+                      },
+                      icon: const Icon(Icons.refresh),
+                    ),
+            ],
             title: Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
@@ -117,6 +120,9 @@ class ChatInside extends StatelessWidget {
         );
       },
       onModelReady: (model) => model.init(chatId),
+      onDispose: (model) {
+        model.refreshLoopStopFlag = true;
+      },
     );
   }
 }
