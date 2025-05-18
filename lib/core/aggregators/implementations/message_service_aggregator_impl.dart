@@ -53,6 +53,42 @@ class MessageServiceAggregatorImpl implements MessageServiceAggregator {
       );
 
   @override
+  Future<int?> reply({
+    required String dialogId,
+    required String text,
+    required int replyMessageId,
+  }) =>
+      _senderService.reply(
+        dialogId: dialogId,
+        text: text,
+        replyMessageId: replyMessageId,
+      );
+
+  @override
+  Future<int?> forward({
+    required String dialogId,
+    required String text,
+    required int forwardMessageId,
+  }) =>
+      _senderService.forward(
+        dialogId: dialogId,
+        text: text,
+        forwardMessageId: forwardMessageId,
+      );
+
+  @override
+  Future<int?> forwardMultiple({
+    required String dialogId,
+    required String text,
+    required List<int> forwardMessageIds,
+  }) =>
+      _senderService.forwardMultiple(
+        dialogId: dialogId,
+        text: text,
+        forwardMessageIds: forwardMessageIds,
+      );
+
+  @override
   Future<bool> update({
     required int messageId,
     required String text,

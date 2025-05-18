@@ -16,6 +16,8 @@ class _DataKeys {
   static const String dialogId = 'dialogId';
   static const String message = 'fields[message]';
   static const String templateId = 'fields[templateId]';
+  static const String replyId = 'fields[replyId]';
+  static String get forwardId => 'fields[forwardIds][${const Uuid().v4()}]';
 }
 
 class _JsonKeys {
@@ -36,19 +38,72 @@ class MessageSenderServiceImpl implements MessageSenderService {
   Future<int?> send({
     required String dialogId,
     required String text,
+  }) => _sendMessage(
+      dialogId: dialogId,
+      text: text,
+    );
+
+  @override
+  Future<int?> reply({
+    required String dialogId,
+    required String text,
+    required int replyMessageId,
+  }) => _sendMessage(
+      dialogId: dialogId,
+      text: text,
+      replyMessageId: replyMessageId,
+    );
+
+  @override
+  Future<int?> forward({
+    required String dialogId,
+    required String text,
+    required int forwardMessageId,
+  }) => forwardMultiple(
+      dialogId: dialogId,
+      text: text,
+      forwardMessageIds: [forwardMessageId],
+    );
+
+  @override
+  Future<int?> forwardMultiple({
+    required String dialogId,
+    required String text,
+    required List<int> forwardMessageIds,
+  }) => _sendMessage(
+      dialogId: dialogId,
+      text: text,
+      forwardMessageIds: forwardMessageIds,
+    );
+
+  Future<int?> _sendMessage({
+    required String dialogId,
+    required String text,
+    int? replyMessageId,
+    List<int>? forwardMessageIds,
   }) async {
     Response response;
+    final data = {
+      _DataKeys.dialogId: dialogId,
+      _DataKeys.message: text,
+      _DataKeys.templateId: const Uuid().v4(),
+    };
+
+    if (replyMessageId != null) {
+      data[_DataKeys.replyId] = replyMessageId.toString();
+    }
+
+    forwardMessageIds?.forEach(
+      (id) => data[_DataKeys.forwardId] = id.toString(),
+    );
+
     try {
       response = await _apiHelper.post(
         path: ApiPath.ajax,
         queryParameters: {
           AjaxActionStrings.actionKey: AjaxActionStrings.sendMessage,
         },
-        data: {
-          _DataKeys.dialogId: dialogId,
-          _DataKeys.message: text,
-          _DataKeys.templateId: const Uuid().v4(),
-        },
+        data: data,
         options: OptionsWithTimeoutAndExpectedTypeFactory.options(
           10,
           ResponseDataType.jsonMap,
