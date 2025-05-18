@@ -8,6 +8,8 @@ import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodChannel
 import kotlinx.coroutines.*
 import androidx.core.net.toUri
+import androidx.activity.result.contract.ActivityResultContracts.PickMultipleVisualMedia
+import androidx.activity.result.PickVisualMediaRequest
 
 const val FILE_PICKER_REQUEST = 1
 
@@ -84,12 +86,26 @@ class MainActivity : FlutterActivity() {
                     }
                 }
                 "pickUploadFiles" -> {
-                    openUploadFilePicker()
+                    val fromGallery = call.argument<Boolean>("gallery") ?: false
+                    if (fromGallery) {
+                        openGalleryFilePicker()
+                    }
+                    else {
+                        openUploadFilePicker()
+                    }
                     result.success(0)
                 }
                 else -> result.notImplemented()
             }
         }
+    }
+
+    private fun openGalleryFilePicker() {
+        startActivityForResult(
+            PickMultipleVisualMedia(5).createIntent(
+                context, 
+                PickVisualMediaRequest.Builder().build()), 
+            UPLOAD_FILE_PICKER_REQUEST)
     }
 
     private fun openUploadFilePicker() {

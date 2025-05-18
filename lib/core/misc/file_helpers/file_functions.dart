@@ -28,9 +28,9 @@ Future<String?> openFilePicker(String fileName, String mimeType) async {
   return location;
 }
 
-Future<Iterable<String>?> openUploadFilePicker() async {
+Future<Iterable<String>?> openUploadFilePicker(bool gallery) async {
   if (Platform.isAndroid) {
-    await _fileChannel.invokeMethod('pickUploadFiles');
+    await _fileChannel.invokeMethod('pickUploadFiles', {'gallery': gallery});
     const pickerEvents = EventChannel('ru.unn.unn_mobile/file_events');
     final pickerStream = pickerEvents.receiveBroadcastStream();
     final locations = await pickerStream.first as List<Object?>?;
@@ -38,8 +38,10 @@ Future<Iterable<String>?> openUploadFilePicker() async {
       (l) => l as String,
     );
   } else {
-    const params = OpenFileDialogParams(
-      dialogType: OpenFileDialogType.document,
+    final params = OpenFileDialogParams(
+      dialogType: gallery //
+          ? OpenFileDialogType.image //
+          : OpenFileDialogType.document,
       sourceType: SourceType.photoLibrary,
       copyFileToCacheDir: true,
     );
