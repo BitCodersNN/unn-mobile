@@ -49,7 +49,7 @@ class MessageFileSenderServiceImpl implements MessageFileSenderService {
   Future<FileData?> sendFile({
     required int chatId,
     required File file,
-    required String text,
+    String? text,
   }) async {
     return (await sendFiles(chatId: chatId, files: [file], text: text))?.first;
   }
@@ -58,7 +58,7 @@ class MessageFileSenderServiceImpl implements MessageFileSenderService {
   Future<List<FileData>?> sendFiles({
     required int chatId,
     required List<File> files,
-    required String text,
+    String? text,
   }) async {
     final folderId = await _getFolder(chatId);
     if (folderId == null) return null;
@@ -145,13 +145,13 @@ class MessageFileSenderServiceImpl implements MessageFileSenderService {
 
   Map<String, dynamic> _prepareRequestData(
     int chatId,
-    String text,
+    String? text,
     List<FileData> successfulFiles,
   ) {
     final requestData = {
       _DataKeys.sessid: (_apiHelper as AuthenticatedApiHelper).sessionId,
       _DataKeys.chatId: chatId,
-      _DataKeys.message: text,
+      if (text != null) _DataKeys.message: text,
       _DataKeys.templateId: const Uuid().v4(),
       _DataKeys.asFile: 'Y',
     };

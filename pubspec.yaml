@@ -55,6 +55,7 @@ dependencies:
   uuid: ^4.5.1
   content_resolver: ^0.3.2
   html: ^0.15.5
+  flutter_file_dialog: ^3.0.2
 
 dev_dependencies:
   flutter_test:

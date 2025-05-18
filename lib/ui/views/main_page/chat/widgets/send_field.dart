@@ -2,6 +2,7 @@
 // Copyright 2025 BitCodersNN
 
 import 'package:flutter/material.dart';
+import 'package:unn_mobile/core/misc/file_helpers/file_functions.dart';
 import 'package:unn_mobile/core/models/dialog/message/reply_info.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/chat/chat_inside_view_model.dart';
 import 'package:unn_mobile/ui/views/main_page/chat/widgets/message.dart';
@@ -56,7 +57,18 @@ class _SendFieldState extends State<SendField> {
         Row(
           children: [
             IconButton(
-              onPressed: () {},
+              onPressed: () async {
+                final files = await openUploadFilePicker();
+
+                if (files == null) {
+                  return;
+                }
+                final text = _textController.text;
+                await widget.model.sendFiles(
+                  files,
+                  text: text.isEmpty ? null : text,
+                );
+              },
               icon: const Icon(Icons.attach_file),
             ),
             Expanded(

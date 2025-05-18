@@ -2,13 +2,17 @@
 // Copyright 2025 BitCodersNN
 
 import 'dart:async';
+import 'dart:io';
 import 'dart:math';
 
+import 'package:content_resolver/content_resolver.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:unn_mobile/core/aggregators/intefaces/message_service_aggregator.dart';
 import 'package:unn_mobile/core/misc/authorisation/try_login_and_retrieve_data.dart';
 import 'package:unn_mobile/core/misc/date_time_utilities/date_time_extensions.dart';
 import 'package:unn_mobile/core/misc/objects_with_pagination.dart';
 import 'package:unn_mobile/core/misc/user/current_user_sync_storage.dart';
+import 'package:unn_mobile/core/models/common/file_data.dart';
 import 'package:unn_mobile/core/models/dialog/dialog.dart';
 import 'package:unn_mobile/core/models/dialog/group_dialog.dart';
 import 'package:unn_mobile/core/models/dialog/message/enum/message_state.dart';
@@ -17,6 +21,7 @@ import 'package:unn_mobile/core/models/dialog/user_dialog.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/factories/main_page_routes_view_models_factory.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/chat/chat_screen_view_model.dart';
+import 'package:path/path.dart' as p;
 
 class ChatInsideViewModel extends BaseViewModel {
   final MainPageRoutesViewModelsFactory _routesViewModelFactory;
@@ -188,40 +193,66 @@ class ChatInsideViewModel extends BaseViewModel {
     return partitions;
   }
 
-  FutureOr<bool> sendMessage(String text) async =>
+  FutureOr<bool> _sendMessageWrapper<T>(
+    FutureOr<T?> Function() sendFunction,
+  ) async =>
       await typedBusyCallAsync<bool>(() async {
-        if (text.isEmpty) {
-          return false;
-        }
         if (_dialog == null) {
           return false;
         }
 
-        final dialogId = switch (_dialog) {
-          final UserDialog userDialog => userDialog.id.toString(),
-          final GroupDialog groupDialog => groupDialog.id,
-          _ => '',
-        };
-
-        final result = await tryLoginAndRetrieveData<int>(
-          () async => _replyMessage == null
-              ? await _messagesAggregator.send(
-                  dialogId: dialogId,
-                  text: text,
-                )
-              : await _messagesAggregator.reply(
-                  dialogId: dialogId,
-                  text: text,
-                  replyMessageId: _replyMessage!.messageId,
-                ),
+        final result = await tryLoginAndRetrieveData<T>(
+          sendFunction,
           () => null,
         );
+
         await getNewMessages();
         replyMessage = null;
 
         return result != null;
       }) ??
       false;
+
+  FutureOr<bool> sendMessage(String text) async =>
+      await _sendMessageWrapper<int>(() async {
+        final dialogId = switch (_dialog) {
+          final UserDialog userDialog => userDialog.id.toString(),
+          final GroupDialog groupDialog => groupDialog.id,
+          _ => '',
+        };
+        return _replyMessage == null
+            ? await _messagesAggregator.send(
+                dialogId: dialogId,
+                text: text,
+              )
+            : await _messagesAggregator.reply(
+                dialogId: dialogId,
+                text: text,
+                replyMessageId: _replyMessage!.messageId,
+              );
+      });
+
+  FutureOr<bool> sendFiles(Iterable<String> uris, {String? text}) async =>
+      _sendMessageWrapper<List<FileData>>(() async {
+        final List<String> paths = [];
+        if (Platform.isAndroid) {
+          final tempDir =
+              (await (await getApplicationCacheDirectory()).createTemp()).path;
+          for (final uri in uris) {
+            final r = await ContentResolver.resolveContentMetadata(uri);
+            final name = p.basename(r.fileName ?? 'null.txt');
+            await ContentResolver.resolveContentToFile(uri, '$tempDir/$name');
+            paths.add('$tempDir/$name');
+          }
+        } else {
+          paths.addAll(uris);
+        }
+        return await _messagesAggregator.sendFiles(
+          chatId: _dialog!.chatId,
+          files: paths.map((e) => File(e)).toList(),
+          text: text,
+        );
+      });
 
   FutureOr<void> getNewMessages() async {
     if (_dialog == null) {

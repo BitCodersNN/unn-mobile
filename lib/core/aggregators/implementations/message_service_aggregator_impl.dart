@@ -107,7 +107,7 @@ class MessageServiceAggregatorImpl implements MessageServiceAggregator {
   Future<FileData?> sendFile({
     required int chatId,
     required File file,
-    required String text,
+    String? text,
   }) =>
       _fileSenderService.sendFile(
         chatId: chatId,
@@ -119,7 +119,7 @@ class MessageServiceAggregatorImpl implements MessageServiceAggregator {
   Future<List<FileData>?> sendFiles({
     required int chatId,
     required List<File> files,
-    required String text,
+    String? text,
   }) =>
       _fileSenderService.sendFiles(
         chatId: chatId,
