@@ -48,7 +48,7 @@ class GradeBookServiceImpl implements GradeBookService {
             data,
             MarkBySubject.fromJson,
             _loggerService,
-          ) as List<MarkBySubject>;
+          );
         }
       }
     }

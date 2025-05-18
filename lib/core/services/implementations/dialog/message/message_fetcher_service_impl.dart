@@ -106,7 +106,7 @@ class MessageFetcherServiceImpl implements MessageFetcherService {
         .map<int>((msg) => msg[_JsonKeys.messageId] as int)
         .toSet();
 
-    return await parseJsonIterable<Message>(
+    return await parseJsonIterableAsync<Message>(
       messagesJson,
       (message) async => await _processSingleMessage(
         message,

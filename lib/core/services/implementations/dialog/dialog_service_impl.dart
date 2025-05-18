@@ -81,7 +81,7 @@ class DialogServiceImpl implements DialogService {
     );
 
     return PartialResult(
-      items: dialogs as List<Dialog>,
+      items: dialogs,
       hasMore: response.data[_ResponseJsonKeys.result]
           [PartialResultJsonKeys.hasMore],
     );
