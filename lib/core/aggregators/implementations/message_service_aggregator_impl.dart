@@ -67,7 +67,7 @@ class MessageServiceAggregatorImpl implements MessageServiceAggregator {
   @override
   Future<int?> forward({
     required String dialogId,
-    required String text,
+    required String? text,
     required int forwardMessageId,
   }) =>
       _senderService.forward(
@@ -79,7 +79,7 @@ class MessageServiceAggregatorImpl implements MessageServiceAggregator {
   @override
   Future<int?> forwardMultiple({
     required String dialogId,
-    required String text,
+    required String? text,
     required List<int> forwardMessageIds,
   }) =>
       _senderService.forwardMultiple(

@@ -44,7 +44,7 @@ abstract interface class MessageSenderService {
   ///   - `null` в случае возникновения ошибки или неуспешного статуса ответа
   Future<int?> forward({
     required String dialogId,
-    required String text,
+    required String? text,
     required int forwardMessageId,
   });
 
@@ -60,7 +60,7 @@ abstract interface class MessageSenderService {
   ///   - `null` в случае возникновения ошибки или неуспешного статуса ответа
   Future<int?> forwardMultiple({
     required String dialogId,
-    required String text,
+    required String? text,
     required List<int> forwardMessageIds,
   });
 }
