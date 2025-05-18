@@ -66,7 +66,7 @@ class MessageFetcherServiceImpl implements MessageFetcherService {
   );
 
   @override
-  Future<PaginatedResult?> fetch({
+  Future<PaginatedResult<Message>?> fetch({
     required int chatId,
     int limit = 25,
     int? lastMessageId,
