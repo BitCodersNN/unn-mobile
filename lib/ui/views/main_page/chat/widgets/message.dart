@@ -16,6 +16,7 @@ import 'package:unn_mobile/core/models/dialog/message/message_with_forward_and_r
 import 'package:unn_mobile/core/models/dialog/message/message_with_reply.dart';
 import 'package:unn_mobile/core/models/dialog/message/reply_info.dart';
 import 'package:unn_mobile/core/models/feed/rating_list.dart';
+import 'package:unn_mobile/core/viewmodels/main_page/chat/chat_inside_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/chat/message_reaction_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/feed/attached_file_view_model.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
@@ -29,6 +30,7 @@ const _systemMessageSeparator =
 class MessageGroup extends StatelessWidget {
   final int? currentUserId;
   final Iterable<Message> messages;
+  final ChatInsideViewModel chatModel;
   int? get authorId => messages.firstOrNull?.author?.bitrixId;
   String? get avatarUrl => messages.firstOrNull?.author?.photoSrc;
   String? get name => messages.firstOrNull?.author?.fullname;
@@ -37,6 +39,7 @@ class MessageGroup extends StatelessWidget {
     super.key,
     required this.currentUserId,
     required this.messages,
+    required this.chatModel,
   });
 
   @override
@@ -44,7 +47,6 @@ class MessageGroup extends StatelessWidget {
     final theme = Theme.of(context);
     final leftAvatar = authorId != currentUserId || authorId == null;
     final scaledAvatarWidth = MediaQuery.of(context).textScaler.scale(50.0);
-
     if (messages.firstOrNull?.messageStatus == MessageState.system) {
       final msgText = messages.firstOrNull?.text
           .split(
@@ -110,12 +112,14 @@ class MessageGroup extends StatelessWidget {
                     ),
                     message: message,
                     fromCurrentUser: !leftAvatar,
+                    chatModel: chatModel,
                   ),
                 MessageWidget(
                   key: ValueKey(messages.last.messageId),
                   message: messages.last,
                   fromCurrentUser: !leftAvatar,
                   displayAuthor: leftAvatar,
+                  chatModel: chatModel,
                 ),
               ],
             ),
@@ -137,10 +141,12 @@ class MessageWidget extends StatelessWidget {
   final Message message;
   final bool fromCurrentUser;
   final bool displayAuthor;
+  final ChatInsideViewModel chatModel;
   const MessageWidget({
     super.key,
     required this.message,
     required this.fromCurrentUser,
+    required this.chatModel,
     this.displayAuthor = false,
   });
 
@@ -188,11 +194,18 @@ class MessageWidget extends StatelessWidget {
               value: 'copy',
               child: Text('Скопировать текст'),
             ),
+            const PopupMenuItem(
+              value: 'reply',
+              child: Text('ответить'),
+            ),
           ],
           onSelected: (value) async {
             switch (value) {
               case 'copy':
                 await Clipboard.setData(ClipboardData(text: message.text));
+                break;
+              case 'reply':
+                chatModel.replyMessage = message;
                 break;
             }
           },
@@ -286,7 +299,7 @@ class MessageWidget extends StatelessWidget {
     );
   }
 
-  Widget _messageAuthorHeader(BuildContext context, String? fullname) {
+  static Widget _messageAuthorHeader(BuildContext context, String? fullname) {
     final theme = Theme.of(context);
     return Align(
       alignment: Alignment.centerLeft,
@@ -313,7 +326,7 @@ class MessageWidget extends StatelessWidget {
     };
   }
 
-  Widget buildMessage(
+  static Widget buildMessage(
     BuildContext context,
     Message msg, {
     bool isSystem = false,
@@ -348,7 +361,10 @@ class MessageWidget extends StatelessWidget {
     );
   }
 
-  Widget buildMessageWithReply(BuildContext context, MessageWithReply msg) {
+  static Widget buildMessageWithReply(
+    BuildContext context,
+    MessageWithReply msg,
+  ) {
     return Column(
       children: [
         buildReplyMessage(
@@ -360,7 +376,7 @@ class MessageWidget extends StatelessWidget {
     );
   }
 
-  Widget buildReplyMessage(
+  static Widget buildReplyMessage(
     BuildContext context,
     ReplyInfo replyMessage, {
     bool showFullText = false,
@@ -388,6 +404,7 @@ class MessageWidget extends StatelessWidget {
           ),
           Expanded(
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 if (!isSystem)
                   _messageAuthorHeader(
@@ -406,7 +423,10 @@ class MessageWidget extends StatelessWidget {
     );
   }
 
-  Widget buildMessageWithForward(BuildContext context, MessageWithForward msg) {
+  static Widget buildMessageWithForward(
+    BuildContext context,
+    MessageWithForward msg,
+  ) {
     if (msg.forwardInfo.forwardAuthor == null) {}
     final isSystem = msg.forwardInfo.forwardAuthor == null;
     return Column(
@@ -425,7 +445,7 @@ class MessageWidget extends StatelessWidget {
     );
   }
 
-  Widget _forwardMessageHeader(
+  static Widget _forwardMessageHeader(
     BuildContext context,
     ForwardInfo? forwardInfo,
     bool isSystem,
@@ -445,7 +465,7 @@ class MessageWidget extends StatelessWidget {
     );
   }
 
-  Widget buildMessageWithForwardAndReply(
+  static Widget buildMessageWithForwardAndReply(
     BuildContext context,
     MessageWithForwardAndReply msg,
   ) {

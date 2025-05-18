@@ -92,6 +92,7 @@ class ChatInside extends StatelessWidget {
                         MessageGroup(
                           currentUserId: model.currentUserId,
                           messages: messageGroup,
+                          chatModel: model,
                         ),
                       Align(
                         child: Container(

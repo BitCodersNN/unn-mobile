@@ -46,6 +46,15 @@ class ChatInsideViewModel extends BaseViewModel {
   bool refreshLoopStopFlag = false;
   bool refreshLoopRunning = false;
 
+  Message? get replyMessage => _replyMessage;
+
+  set replyMessage(Message? replyMessage) {
+    _replyMessage = replyMessage;
+    notifyListeners();
+  }
+
+  Message? _replyMessage;
+
   Iterable<Iterable<Iterable<Message>>> get messages => _messages;
 
   ChatInsideViewModel(
@@ -195,13 +204,20 @@ class ChatInsideViewModel extends BaseViewModel {
         };
 
         final result = await tryLoginAndRetrieveData<int>(
-          () async => await _messagesAggregator.send(
-            dialogId: dialogId,
-            text: text,
-          ),
+          () async => _replyMessage == null
+              ? await _messagesAggregator.send(
+                  dialogId: dialogId,
+                  text: text,
+                )
+              : await _messagesAggregator.reply(
+                  dialogId: dialogId,
+                  text: text,
+                  replyMessageId: _replyMessage!.messageId,
+                ),
           () => null,
         );
         await getNewMessages();
+        replyMessage = null;
 
         return result != null;
       }) ??
