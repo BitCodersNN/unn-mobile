@@ -6,6 +6,7 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:content_resolver/content_resolver.dart';
+import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:unn_mobile/core/aggregators/intefaces/message_service_aggregator.dart';
 import 'package:unn_mobile/core/misc/authorisation/try_login_and_retrieve_data.dart';
@@ -21,35 +22,44 @@ import 'package:unn_mobile/core/models/dialog/user_dialog.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/factories/main_page_routes_view_models_factory.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/chat/chat_screen_view_model.dart';
-import 'package:path/path.dart' as p;
 
 class ChatInsideViewModel extends BaseViewModel {
   final MainPageRoutesViewModelsFactory _routesViewModelFactory;
   final MessageServiceAggregator _messagesAggregator;
   final CurrentUserSyncStorage _currentUserSyncStorage;
 
-  int? get currentUserId => _currentUserSyncStorage.currentUserData?.bitrixId;
-
   Dialog? _dialog;
 
   bool _hasError = false;
-
-  bool get hasError => _hasError;
-
-  Dialog? get dialog => _dialog;
 
   final List<List<List<Message>>> _messages = [];
 
   final List<Message> _unpartitionedMessages = [];
 
   bool _hasMessagesBefore = false;
+
   bool _hasMessagesAfter = false;
 
-  bool get hasMessagesBefore => _hasMessagesBefore;
+  bool refreshLoopStopFlag = false;
+
+  bool refreshLoopRunning = false;
+  Message? _replyMessage;
+
+  ChatInsideViewModel(
+    this._routesViewModelFactory,
+    this._messagesAggregator,
+    this._currentUserSyncStorage,
+  );
+  int? get currentUserId => _currentUserSyncStorage.currentUserData?.bitrixId;
+
+  Dialog? get dialog => _dialog;
+  bool get hasError => _hasError;
+
   bool get hasMessagesAfter => _hasMessagesAfter;
 
-  bool refreshLoopStopFlag = false;
-  bool refreshLoopRunning = false;
+  bool get hasMessagesBefore => _hasMessagesBefore;
+
+  Iterable<Iterable<Iterable<Message>>> get messages => _messages;
 
   Message? get replyMessage => _replyMessage;
 
@@ -58,19 +68,68 @@ class ChatInsideViewModel extends BaseViewModel {
     notifyListeners();
   }
 
-  Message? _replyMessage;
+  FutureOr<void> getNewMessages() async {
+    if (_dialog == null) {
+      return;
+    }
 
-  Iterable<Iterable<Iterable<Message>>> get messages => _messages;
+    final messages = await tryLoginAndRetrieveData<PaginatedResult<Message>>(
+      () async => await _messagesAggregator.fetch(chatId: _dialog!.chatId),
+      () => null,
+    );
+    if (messages == null) {
+      _hasError = true;
+      return;
+    }
+    await _readMessages(_dialog!.chatId, messages);
 
-  ChatInsideViewModel(
-    this._routesViewModelFactory,
-    this._messagesAggregator,
-    this._currentUserSyncStorage,
-  );
+    final messagesToRemove = messages.items.length -
+        messages.items.reversed
+            .takeWhile(
+              (m) =>
+                  m.messageId != _unpartitionedMessages.firstOrNull?.messageId,
+            )
+            .length;
+
+    _unpartitionedMessages.removeRange(
+      0,
+      max(messagesToRemove, _unpartitionedMessages.length),
+    );
+    _unpartitionedMessages.insertAll(0, messages.items.reversed);
+
+    _messages.clear();
+    _messages.addAll(_partitionMessages(_unpartitionedMessages));
+  }
 
   FutureOr<void> init(int chatId) async {
     await busyCallAsync(() => _init(chatId));
   }
+
+  FutureOr<void> loadMoreMessages() async => await busyCallAsync(() async {
+        if (_dialog == null) {
+          return;
+        }
+        if (!_hasMessagesBefore) {
+          return;
+        }
+        final messages =
+            await tryLoginAndRetrieveData<PaginatedResult<Message>?>(
+          () async => await _messagesAggregator.fetch(
+            chatId: _dialog!.chatId,
+            lastMessageId: _unpartitionedMessages.last.messageId,
+          ),
+          () => null,
+        );
+        if (messages == null) {
+          _hasError = true;
+          return;
+        }
+        await _readMessages(_dialog!.chatId, messages);
+        _unpartitionedMessages.addAll(messages.items);
+        _messages.clear();
+        _messages.addAll(_partitionMessages(_unpartitionedMessages));
+        _hasMessagesBefore = messages.hasPreviousPage;
+      });
 
   Future<void> refreshLoop({bool checkStartConditions = true}) async {
     if (checkStartConditions) {
@@ -91,6 +150,47 @@ class ChatInsideViewModel extends BaseViewModel {
 
     await refreshLoop(checkStartConditions: false);
   }
+
+  FutureOr<bool> sendFiles(Iterable<String> uris, {String? text}) async =>
+      _sendMessageWrapper<List<FileData>>(() async {
+        final List<String> paths = [];
+        if (Platform.isAndroid) {
+          final tempDir =
+              (await (await getApplicationCacheDirectory()).createTemp()).path;
+          for (final uri in uris) {
+            final r = await ContentResolver.resolveContentMetadata(uri);
+            final name = p.basename(r.fileName ?? 'null.txt');
+            await ContentResolver.resolveContentToFile(uri, '$tempDir/$name');
+            paths.add('$tempDir/$name');
+          }
+        } else {
+          paths.addAll(uris);
+        }
+        return await _messagesAggregator.sendFiles(
+          chatId: _dialog!.chatId,
+          files: paths.map((e) => File(e)).toList(),
+          text: text,
+        );
+      });
+
+  FutureOr<bool> sendMessage(String text) async =>
+      await _sendMessageWrapper<int>(() async {
+        final dialogId = switch (_dialog) {
+          final UserDialog userDialog => userDialog.id.toString(),
+          final GroupDialog groupDialog => groupDialog.id,
+          _ => '',
+        };
+        return _replyMessage == null
+            ? await _messagesAggregator.send(
+                dialogId: dialogId,
+                text: text,
+              )
+            : await _messagesAggregator.reply(
+                dialogId: dialogId,
+                text: text,
+                replyMessageId: _replyMessage!.messageId,
+              );
+      });
 
   FutureOr<void> _init(int chatId) async {
     _hasError = false;
@@ -119,42 +219,6 @@ class ChatInsideViewModel extends BaseViewModel {
 
     refreshLoop();
   }
-
-  Future<void> _readMessages(
-    int chatId,
-    PaginatedResult<Message> messages,
-  ) async {
-    await _messagesAggregator.readMessages(
-      chatId: chatId,
-      messageIds: messages.items.map((m) => m.messageId),
-    );
-  }
-
-  FutureOr<void> loadMoreMessages() async => await busyCallAsync(() async {
-        if (_dialog == null) {
-          return;
-        }
-        if (!_hasMessagesBefore) {
-          return;
-        }
-        final messages =
-            await tryLoginAndRetrieveData<PaginatedResult<Message>?>(
-          () async => await _messagesAggregator.fetch(
-            chatId: _dialog!.chatId,
-            lastMessageId: _unpartitionedMessages.last.messageId,
-          ),
-          () => null,
-        );
-        if (messages == null) {
-          _hasError = true;
-          return;
-        }
-        await _readMessages(_dialog!.chatId, messages);
-        _unpartitionedMessages.addAll(messages.items);
-        _messages.clear();
-        _messages.addAll(_partitionMessages(_unpartitionedMessages));
-        _hasMessagesBefore = messages.hasPreviousPage;
-      });
 
   List<List<List<Message>>> _partitionMessages(Iterable<Message> messages) {
     const maxTimeDifference = 5;
@@ -193,6 +257,16 @@ class ChatInsideViewModel extends BaseViewModel {
     return partitions;
   }
 
+  Future<void> _readMessages(
+    int chatId,
+    PaginatedResult<Message> messages,
+  ) async {
+    await _messagesAggregator.readMessages(
+      chatId: chatId,
+      messageIds: messages.items.map((m) => m.messageId),
+    );
+  }
+
   FutureOr<bool> _sendMessageWrapper<T>(
     FutureOr<T?> Function() sendFunction,
   ) async =>
@@ -212,78 +286,4 @@ class ChatInsideViewModel extends BaseViewModel {
         return result != null;
       }) ??
       false;
-
-  FutureOr<bool> sendMessage(String text) async =>
-      await _sendMessageWrapper<int>(() async {
-        final dialogId = switch (_dialog) {
-          final UserDialog userDialog => userDialog.id.toString(),
-          final GroupDialog groupDialog => groupDialog.id,
-          _ => '',
-        };
-        return _replyMessage == null
-            ? await _messagesAggregator.send(
-                dialogId: dialogId,
-                text: text,
-              )
-            : await _messagesAggregator.reply(
-                dialogId: dialogId,
-                text: text,
-                replyMessageId: _replyMessage!.messageId,
-              );
-      });
-
-  FutureOr<bool> sendFiles(Iterable<String> uris, {String? text}) async =>
-      _sendMessageWrapper<List<FileData>>(() async {
-        final List<String> paths = [];
-        if (Platform.isAndroid) {
-          final tempDir =
-              (await (await getApplicationCacheDirectory()).createTemp()).path;
-          for (final uri in uris) {
-            final r = await ContentResolver.resolveContentMetadata(uri);
-            final name = p.basename(r.fileName ?? 'null.txt');
-            await ContentResolver.resolveContentToFile(uri, '$tempDir/$name');
-            paths.add('$tempDir/$name');
-          }
-        } else {
-          paths.addAll(uris);
-        }
-        return await _messagesAggregator.sendFiles(
-          chatId: _dialog!.chatId,
-          files: paths.map((e) => File(e)).toList(),
-          text: text,
-        );
-      });
-
-  FutureOr<void> getNewMessages() async {
-    if (_dialog == null) {
-      return;
-    }
-
-    final messages = await tryLoginAndRetrieveData<PaginatedResult<Message>>(
-      () async => await _messagesAggregator.fetch(chatId: _dialog!.chatId),
-      () => null,
-    );
-    if (messages == null) {
-      _hasError = true;
-      return;
-    }
-    await _readMessages(_dialog!.chatId, messages);
-
-    final messagesToRemove = messages.items.length -
-        messages.items.reversed
-            .takeWhile(
-              (m) =>
-                  m.messageId != _unpartitionedMessages.firstOrNull?.messageId,
-            )
-            .length;
-
-    _unpartitionedMessages.removeRange(
-      0,
-      max(messagesToRemove, _unpartitionedMessages.length),
-    );
-    _unpartitionedMessages.insertAll(0, messages.items.reversed);
-
-    _messages.clear();
-    _messages.addAll(_partitionMessages(_unpartitionedMessages));
-  }
 }

@@ -12,25 +12,28 @@ import 'package:unn_mobile/core/services/interfaces/dialog/dialog_service.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
 
 class ChatScreenViewModel extends BaseViewModel {
-  final DialogService _dialogService;
-  final CurrentUserSyncStorage _currentUserSyncStorage;
-
-  int? _currentUserId;
-
-  int? get currentUserId => _currentUserId;
-
   static const dialogLimit = 30;
-  ChatScreenViewModel(this._dialogService, this._currentUserSyncStorage);
+  static const maxRetryAttempts = 5;
+
+  final DialogService _dialogService;
+
+  final CurrentUserSyncStorage _currentUserSyncStorage;
 
   final List<Dialog> _dialogs = [];
 
-  Iterable<Dialog> get dialogs => _dialogs;
+  int? _currentUserId;
 
   bool _hasError = false;
 
-  bool get hasError => _hasError;
-
   bool _hasMoreDialogs = false;
+
+  ChatScreenViewModel(this._dialogService, this._currentUserSyncStorage);
+
+  int? get currentUserId => _currentUserId;
+
+  Iterable<Dialog> get dialogs => _dialogs;
+
+  bool get hasError => _hasError;
 
   bool get hasMoreDialogs => _hasMoreDialogs;
 
@@ -38,8 +41,27 @@ class ChatScreenViewModel extends BaseViewModel {
     await busyCallAsync(() => _init(0));
   }
 
+  FutureOr<void> loadMore() async => busyCallAsync(() async {
+        _hasError = false;
+        final dialogItems =
+            await tryLoginAndRetrieveData<PartialResult<Dialog>>(
+          () async => await _dialogService.getDialogs(
+            dialogQueryParameter: DialogQueryParameter(
+              limit: dialogLimit,
+              lastMessageDate: _dialogs.last.previewMessage.dateTime,
+            ),
+          ),
+          () => null,
+        );
+        if (dialogItems == null) {
+          return;
+        }
+        _dialogs.addAll(dialogItems.items);
+        _hasMoreDialogs = dialogItems.hasMore;
+      });
+
   FutureOr<void> _init(int failedAttempts) async {
-    if (failedAttempts == 5) {
+    if (failedAttempts == maxRetryAttempts) {
       _hasError = true;
       return;
     }
@@ -62,23 +84,4 @@ class ChatScreenViewModel extends BaseViewModel {
 
     _currentUserId = _currentUserSyncStorage.currentUserData?.bitrixId;
   }
-
-  FutureOr<void> loadMore() async => busyCallAsync(() async {
-        _hasError = false;
-        final dialogItems =
-            await tryLoginAndRetrieveData<PartialResult<Dialog>>(
-          () async => await _dialogService.getDialogs(
-            dialogQueryParameter: DialogQueryParameter(
-              limit: dialogLimit,
-              lastMessageDate: _dialogs.last.previewMessage.dateTime,
-            ),
-          ),
-          () => null,
-        );
-        if (dialogItems == null) {
-          return;
-        }
-        _dialogs.addAll(dialogItems.items);
-        _hasMoreDialogs = dialogItems.hasMore;
-      });
 }

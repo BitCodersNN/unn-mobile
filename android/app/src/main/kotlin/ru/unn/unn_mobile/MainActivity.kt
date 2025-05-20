@@ -36,9 +36,7 @@ class MainActivity : FlutterActivity() {
         var pickedUploadUris: Container<List<Uri>>? = null
     }
 
-    override fun configureFlutterEngine(
-        flutterEngine: FlutterEngine,
-    ) {
+    override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
         EventChannel(
             flutterEngine.dartExecutor.binaryMessenger,
@@ -89,8 +87,7 @@ class MainActivity : FlutterActivity() {
                     val fromGallery = call.argument<Boolean>("gallery") ?: false
                     if (fromGallery) {
                         openGalleryFilePicker()
-                    }
-                    else {
+                    } else {
                         openUploadFilePicker()
                     }
                     result.success(0)
@@ -103,17 +100,20 @@ class MainActivity : FlutterActivity() {
     private fun openGalleryFilePicker() {
         startActivityForResult(
             PickMultipleVisualMedia(5).createIntent(
-                context, 
-                PickVisualMediaRequest.Builder().build()), 
-            UPLOAD_FILE_PICKER_REQUEST)
+                context,
+                PickVisualMediaRequest.Builder().build(),
+            ),
+            UPLOAD_FILE_PICKER_REQUEST,
+        )
     }
 
     private fun openUploadFilePicker() {
-        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
-            addCategory(Intent.CATEGORY_OPENABLE)
-            type = "*/*"
-            putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
-        }
+        val intent =
+            Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+                addCategory(Intent.CATEGORY_OPENABLE)
+                type = "*/*"
+                putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
+            }
         startActivityForResult(intent, UPLOAD_FILE_PICKER_REQUEST)
     }
 
@@ -141,10 +141,12 @@ class MainActivity : FlutterActivity() {
             FILE_PICKER_REQUEST ->
                 pickedFileUri = Container(data?.data)
             UPLOAD_FILE_PICKER_REQUEST -> {
-                val uris : MutableList<Uri?> = MutableList(data?.clipData?.itemCount ?: 0
-                ) { i ->
-                    data?.clipData?.getItemAt(i)?.uri
-                }
+                val uris: MutableList<Uri?> =
+                    MutableList(
+                        data?.clipData?.itemCount ?: 0,
+                    ) { i ->
+                        data?.clipData?.getItemAt(i)?.uri
+                    }
                 if (data != null && data.data != null) {
                     uris.add(data.data)
                 }
@@ -176,7 +178,7 @@ class MainActivity : FlutterActivity() {
                         if (pickedUploadUris != null) {
                             val uris = pickedUploadUris?.data
                             pickedUploadUris = null
-                            eventSink?.success(uris?.map({u -> u.toString() }))
+                            eventSink?.success(uris?.map({ u -> u.toString() }))
                         }
                         delay(checkDelay)
                     }
