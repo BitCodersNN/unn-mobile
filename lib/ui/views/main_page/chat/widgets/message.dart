@@ -20,122 +20,11 @@ import 'package:unn_mobile/core/viewmodels/main_page/chat/chat_inside_view_model
 import 'package:unn_mobile/core/viewmodels/main_page/chat/message_reaction_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/feed/attached_file_view_model.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
-import 'package:unn_mobile/ui/views/main_page/chat/chat_inside.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/widgets/attached_file.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/widgets/reaction_bubble.dart';
 
-const _systemMessageSeparator =
+const systemMessageSeparator =
     '------------------------------------------------------\n';
-
-class MessageGroup extends StatelessWidget {
-  final int? currentUserId;
-  final Iterable<Message> messages;
-  final ChatInsideViewModel chatModel;
-  int? get authorId => messages.firstOrNull?.author?.bitrixId;
-  String? get avatarUrl => messages.firstOrNull?.author?.photoSrc;
-  String? get name => messages.firstOrNull?.author?.fullname;
-
-  const MessageGroup({
-    super.key,
-    required this.currentUserId,
-    required this.messages,
-    required this.chatModel,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final leftAvatar = authorId != currentUserId || authorId == null;
-    final scaledAvatarWidth = MediaQuery.of(context).textScaler.scale(50.0);
-    if (messages.firstOrNull?.messageStatus == MessageState.system) {
-      final msgText = messages.firstOrNull?.text
-          .split(
-            _systemMessageSeparator,
-          )
-          .lastOrNull;
-      return Center(
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            return ConstrainedBox(
-              constraints: BoxConstraints(
-                maxWidth: constraints.maxWidth * 0.7,
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(4.0),
-                child: IntrinsicWidth(
-                  child: Container(
-                    padding: const EdgeInsets.all(8.0),
-                    decoration: BoxDecoration(
-                      color: theme.hoverColor,
-                      borderRadius: BorderRadius.circular(8.0),
-                    ),
-                    child: BBCodeText(
-                      data: '[CENTER]${msgText ?? ''}[/CENTER]',
-                      stylesheet: getBBStyleSheet(),
-                    ),
-                  ),
-                ),
-              ),
-            );
-          },
-        ),
-      );
-    }
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 8.0),
-      child: Row(
-        spacing: 8.0,
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          SizedBox(
-            width: scaledAvatarWidth,
-            child: leftAvatar
-                ? Avatar(avatarUrl: avatarUrl, dialogTitle: name)
-                : null,
-          ),
-          Expanded(
-            child: Column(
-              verticalDirection: VerticalDirection.up,
-              crossAxisAlignment: leftAvatar
-                  ? CrossAxisAlignment.start
-                  : CrossAxisAlignment.end,
-              children: [
-                ...messages.take(messages.length - 1).map(
-                      (message) => MessageWidget(
-                        key: ValueKey(
-                          (
-                            message.messageId,
-                            message.ratingList?.getTotalNumberOfReactions() ??
-                                0,
-                          ),
-                        ),
-                        message: message,
-                        fromCurrentUser: !leftAvatar,
-                        chatModel: chatModel,
-                      ),
-                    ),
-                MessageWidget(
-                  key: ValueKey(messages.last.messageId),
-                  message: messages.last,
-                  fromCurrentUser: !leftAvatar,
-                  displayAuthor: leftAvatar,
-                  chatModel: chatModel,
-                ),
-              ],
-            ),
-          ),
-          SizedBox(
-            width: scaledAvatarWidth,
-            child: !leftAvatar
-                ? Avatar(avatarUrl: avatarUrl, dialogTitle: name)
-                : null,
-          ),
-        ],
-      ),
-    );
-  }
-}
 
 class MessageWidget extends StatefulWidget {
   final Message message;
@@ -164,7 +53,7 @@ class MessageWidget extends StatefulWidget {
     var msgText = replyMessage.replyMessage.text;
     final isSystem = replyMessage.messageStatus == MessageState.system;
     if (isSystem) {
-      msgText = msgText.split(_systemMessageSeparator).lastOrNull ?? '';
+      msgText = msgText.split(systemMessageSeparator).lastOrNull ?? '';
     } else if (msgText.length > maxLength && !showFullText) {
       msgText = '${msgText.substring(0, maxLength)}...';
     }
@@ -219,7 +108,7 @@ class MessageWidget extends StatefulWidget {
     final msgText = isSystem
         ? msg.text
             .split(
-              _systemMessageSeparator,
+              systemMessageSeparator,
             )
             .lastOrNull
         : msg.text;
@@ -491,7 +380,9 @@ class _MessageWidgetState extends State<MessageWidget> {
                                   const SizedBox(height: 4.0),
                                 ],
                                 MessageWidget._buildContent(
-                                    context, widget.message),
+                                  context,
+                                  widget.message,
+                                ),
                                 Align(
                                   alignment: Alignment.centerRight,
                                   child: Text(
