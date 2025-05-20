@@ -39,17 +39,7 @@ Future<Iterable<String>?> openUploadFilePicker(bool gallery) async {
           (l) => l as String,
         ) ??
         [];
-    final cacheDir = await getApplicationCacheDirectory();
-    final tempDir = await cacheDir.createTemp();
-    final List<String> paths = [];
-    for (final uri in uriStrings) {
-      final r = await ContentResolver.resolveContentMetadata(uri);
-      final name = p.basename(r.fileName ?? 'null.txt');
-      final filePath = '${tempDir.path}/$name';
-      await ContentResolver.resolveContentToFile(uri, filePath);
-      paths.add(filePath);
-    }
-    return paths;
+    return await resolveAndroidContentUris(uriStrings);
   } else {
     final FilePickerResult? result = await FilePicker.platform.pickFiles(
       type: gallery ? FileType.image : FileType.any,
@@ -58,6 +48,22 @@ Future<Iterable<String>?> openUploadFilePicker(bool gallery) async {
     if (result == null) return [];
     return result.paths.where((path) => path != null).cast<String>().toList();
   }
+}
+
+Future<List<String>> resolveAndroidContentUris(
+  Iterable<String> uriStrings,
+) async {
+  final cacheDir = await getApplicationCacheDirectory();
+  final tempDir = await cacheDir.createTemp();
+  final List<String> paths = [];
+  for (final uri in uriStrings) {
+    final r = await ContentResolver.resolveContentMetadata(uri);
+    final name = p.basename(r.fileName ?? 'null.txt');
+    final filePath = '${tempDir.path}/$name';
+    await ContentResolver.resolveContentToFile(uri, filePath);
+    paths.add(filePath);
+  }
+  return paths;
 }
 
 Future<void> viewFile(String uri, String mimeType) async {
