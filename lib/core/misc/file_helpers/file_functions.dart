@@ -35,10 +35,7 @@ Future<Iterable<String>?> openUploadFilePicker(bool gallery) async {
     const pickerEvents = EventChannel('ru.unn.unn_mobile/file_events');
     final pickerStream = pickerEvents.receiveBroadcastStream();
     final locations = await pickerStream.first as List<Object?>?;
-    final uriStrings = locations?.map(
-          (l) => l as String,
-        ) ??
-        [];
+    final uriStrings = locations?.cast<String>() ?? [];
     return await resolveAndroidContentUris(uriStrings);
   } else {
     final FilePickerResult? result = await FilePicker.platform.pickFiles(
@@ -46,7 +43,7 @@ Future<Iterable<String>?> openUploadFilePicker(bool gallery) async {
       allowMultiple: true,
     );
     if (result == null) return [];
-    return result.paths.where((path) => path != null).cast<String>().toList();
+    return result.paths.nonNulls.cast<String>().toList();
   }
 }
 
