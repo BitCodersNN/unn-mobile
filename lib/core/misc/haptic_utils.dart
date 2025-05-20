@@ -6,6 +6,7 @@ enum HapticIntensity {
   light,
   medium,
   heavy,
+  vibrate,
 }
 
 final _hapticHandlers = {
@@ -13,6 +14,7 @@ final _hapticHandlers = {
   HapticIntensity.light: () => HapticFeedback.lightImpact(),
   HapticIntensity.medium: () => HapticFeedback.mediumImpact(),
   HapticIntensity.heavy: () => HapticFeedback.heavyImpact(),
+  HapticIntensity.vibrate: () => HapticFeedback.vibrate(),
 };
 
 void triggerHaptic(HapticIntensity intensity) {

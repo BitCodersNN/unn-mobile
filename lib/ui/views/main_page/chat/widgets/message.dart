@@ -359,6 +359,7 @@ class _MessageWidgetState extends State<MessageWidget> {
 
   void _showContextMenu() {
     setState(() => _isHighlighted = true);
+    triggerHaptic(HapticIntensity.vibrate);
 
     final renderBox = context.findRenderObject() as RenderBox;
     final offset = renderBox.localToGlobal(Offset.zero);
