@@ -65,21 +65,28 @@ class AboutScreenView extends StatelessWidget {
                   const Divider(),
                 ],
               ),
-              HtmlWidget(
-                'По всем вопросам можно обращаться: <a href="https://t.me/unn_mobile">t.me/unn_mobile</a>',
-                textStyle: const TextStyle(
-                  color: Color(0xFF717A84),
-                  fontFamily: 'Inter',
-                  fontSize: 13,
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: HtmlWidget(
+                  '''
+              <p>Приложение распространяется под лицензией <a href="https://github.com/BitCodersNN/unn-mobile?tab=Apache-2.0-1-ov-file">Apache 2.0</a>
+              <p>Код приложения доступен <a href="https://github.com/BitCodersNN/unn-mobile">на нашем GitHub</a></p>
+              <p>По всем вопросам можно обращаться: <a href="https://t.me/unn_mobile">t.me/unn_mobile</a></p>
+              ''',
+                  textStyle: const TextStyle(
+                    color: Color(0xFF717A84),
+                    fontFamily: 'Inter',
+                    fontSize: 13,
+                  ),
+                  onTapUrl: (url) async {
+                    if (!await launchUrl(Uri.parse(url))) {
+                      Injector.appInstance
+                          .get<LoggerService>()
+                          .log('Could not launch url $url');
+                    }
+                    return true;
+                  },
                 ),
-                onTapUrl: (url) async {
-                  if (!await launchUrl(Uri.parse(url))) {
-                    Injector.appInstance
-                        .get<LoggerService>()
-                        .log('Could not launch url $url');
-                  }
-                  return true;
-                },
               ),
             ],
           ),
