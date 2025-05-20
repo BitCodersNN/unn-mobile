@@ -19,7 +19,7 @@ abstract interface class MessageFileSenderService {
   Future<FileData?> sendFile({
     required int chatId,
     required File file,
-    required String text,
+    String? text,
   });
 
   /// Отправляет несколько файлов в указанный чат с возможностью добавить текстовое сообщение.
@@ -35,6 +35,6 @@ abstract interface class MessageFileSenderService {
   Future<List<FileData>?> sendFiles({
     required int chatId,
     required List<File> files,
-    required String text,
+    String? text,
   });
 }

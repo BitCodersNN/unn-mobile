@@ -85,7 +85,7 @@ class MessageFetcherServiceImpl implements MessageFetcherService {
 
     return PaginatedResult(
       items: messages,
-      hasPreviousPage: data[PaginatedResultJsonKeys.hasPrevPage],
+      hasPreviousPage: data[PaginatedResultJsonKeys.hasPrevPage] ?? false,
       hasNextPage: data[PaginatedResultJsonKeys.hasNextPage],
     );
   }

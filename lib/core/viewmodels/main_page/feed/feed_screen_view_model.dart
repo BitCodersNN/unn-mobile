@@ -2,6 +2,7 @@
 // Copyright 2025 BitCodersNN
 
 import 'dart:async';
+import 'package:unn_mobile/core/misc/authorisation/try_login_and_retrieve_data.dart';
 import 'package:unn_mobile/core/models/feed/blog_post.dart';
 import 'package:unn_mobile/core/models/feed/blog_post_type.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/blog_post_receivers/featured_blog_post_service.dart';
@@ -86,9 +87,12 @@ class FeedScreenViewModel extends BaseViewModel
           return;
         }
         loadingMore = true;
-        final freshPosts = await _regularBlogPostsService.getRegularBlogPosts(
-          pageNumber: _nextPage,
-          postsPerPage: postsPerPage,
+        final freshPosts = await tryLoginAndRetrieveData<List<BlogPost>?>(
+          () async => await _regularBlogPostsService.getRegularBlogPosts(
+            pageNumber: _nextPage,
+            postsPerPage: postsPerPage,
+          ),
+          () => null,
         );
         if (freshPosts == null) {
           failedToLoad = true;
@@ -107,8 +111,11 @@ class FeedScreenViewModel extends BaseViewModel
 
         await refreshFeatured();
 
-        final freshPosts = await _regularBlogPostsService.getRegularBlogPosts(
-          postsPerPage: postsPerPage,
+        final freshPosts = await tryLoginAndRetrieveData<List<BlogPost>>(
+          () async => await _regularBlogPostsService.getRegularBlogPosts(
+            postsPerPage: postsPerPage,
+          ),
+          () => null,
         );
         if (freshPosts == null) {
           loadingMore = false;
@@ -128,7 +135,10 @@ class FeedScreenViewModel extends BaseViewModel
 
   Future<void> refreshFeatured() async => changeState(() async {
         final featuredPosts =
-            await _featuredBlogPostsService.getFeaturedBlogPosts();
+            await tryLoginAndRetrieveData<Map<BlogPostType, List<BlogPost>>>(
+          () async => await _featuredBlogPostsService.getFeaturedBlogPosts(),
+          () => null,
+        );
         pinnedPosts.clear();
         _addPostsToList(pinnedPosts, featuredPosts?[BlogPostType.pinned]);
         announcements.clear();

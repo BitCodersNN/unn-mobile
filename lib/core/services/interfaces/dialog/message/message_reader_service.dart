@@ -9,6 +9,6 @@ abstract interface class MessageReaderService {
 
   Future<bool> readMessages({
     required int chatId,
-    required List<int> messageIds,
+    required Iterable<int> messageIds,
   });
 }

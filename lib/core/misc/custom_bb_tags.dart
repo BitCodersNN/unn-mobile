@@ -11,6 +11,18 @@ import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
 import 'package:unn_mobile/ui/widgets/spoiler_display.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+class ContextTag extends StyleTag {
+  ContextTag() : super('context');
+
+  @override
+  TextStyle transformStyle(
+    TextStyle oldStyle,
+    Map<String, String>? attributes,
+  ) {
+    return oldStyle;
+  }
+}
+
 class PTag extends StyleTag {
   PTag() : super('p');
 
@@ -385,6 +397,7 @@ BBStylesheet getBBStyleSheet() {
       .addTag(TRTag())
       .addTag(TDTag())
       .addTag(UserTag())
+      .addTag(ContextTag())
       .replaceTag(ColorTag())
       .replaceTag(ImgTag())
       .replaceTag(SpoilerTag());

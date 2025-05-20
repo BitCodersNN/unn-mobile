@@ -6,6 +6,8 @@ import 'package:go_router/go_router.dart';
 import 'package:unn_mobile/core/models/profile/student_data.dart';
 import 'package:unn_mobile/ui/views/main_page/about/about.dart';
 import 'package:unn_mobile/ui/views/main_page/certificates_online/certificates_online.dart';
+import 'package:unn_mobile/ui/views/main_page/chat/chat.dart';
+import 'package:unn_mobile/ui/views/main_page/chat/chat_inside.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/feed.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/widgets/announcements_page.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/widgets/comments_page.dart';
@@ -71,8 +73,6 @@ final MainPageRouteData announcementsRoute = MainPageRouteData(
   builder: (_, __) => const AnnouncementsPage(),
 );
 
-int _navbarIndex = 0; // I hate myself
-
 class MainPageRouting {
   static final List<MainPageRouteData> navbarRoutes = [
     MainPageRouteData(
@@ -80,8 +80,8 @@ class MainPageRouting {
       Icons.star_border,
       'Лента',
       '/feed',
-      builder: (_, __) => FeedScreenView(
-        routeIndex: _navbarIndex++,
+      builder: (_, __) => const FeedScreenView(
+        routeIndex: 0,
       ),
       userTypes: [],
       subroutes: [
@@ -95,18 +95,34 @@ class MainPageRouting {
       Icons.calendar_month_outlined,
       'Расписание',
       '/schedule',
-      builder: (_, __) => ScheduleScreenView(
-        routeIndex: _navbarIndex++,
+      builder: (_, __) => const ScheduleScreenView(
+        routeIndex: 1,
       ),
       userTypes: [],
     ),
     MainPageRouteData(
-      Icons.map,
-      Icons.map_outlined,
-      'Карта',
-      '/map',
-      builder: (_, __) => const Placeholder(),
-      isDisabled: true,
+      Icons.chat,
+      Icons.chat_bubble_outline,
+      'Сообщения',
+      '/chats',
+      builder: (_, __) => const ChatScreenView(
+        routeIndex: 2,
+      ),
+      subroutes: [
+        MainPageRouteData(
+          Icons.chat,
+          Icons.chat,
+          'Чат',
+          ':chatId',
+          builder: (_, state) {
+            return ChatInside(
+              chatId: int.tryParse(state.pathParameters['chatId'] ?? '0') ?? 0,
+            );
+          },
+          userTypes: [],
+        ),
+      ],
+      isDisabled: false,
       userTypes: [],
     ),
     MainPageRouteData(

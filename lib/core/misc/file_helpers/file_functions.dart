@@ -5,6 +5,7 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_file_dialog/flutter_file_dialog.dart';
 import 'package:injector/injector.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:path_provider/path_provider.dart';
@@ -25,6 +26,28 @@ Future<String?> openFilePicker(String fileName, String mimeType) async {
   final pickerStream = pickerEvents.receiveBroadcastStream();
   final location = await pickerStream.first as String?;
   return location;
+}
+
+Future<Iterable<String>?> openUploadFilePicker(bool gallery) async {
+  if (Platform.isAndroid) {
+    await _fileChannel.invokeMethod('pickUploadFiles', {'gallery': gallery});
+    const pickerEvents = EventChannel('ru.unn.unn_mobile/file_events');
+    final pickerStream = pickerEvents.receiveBroadcastStream();
+    final locations = await pickerStream.first as List<Object?>?;
+    return locations?.map(
+      (l) => l as String,
+    );
+  } else {
+    final params = OpenFileDialogParams(
+      dialogType: gallery //
+          ? OpenFileDialogType.image //
+          : OpenFileDialogType.document,
+      sourceType: SourceType.photoLibrary,
+      copyFileToCacheDir: true,
+    );
+    final filePath = await FlutterFileDialog.pickFile(params: params);
+    return filePath == null ? [] : [filePath];
+  }
 }
 
 Future<void> viewFile(String uri, String mimeType) async {

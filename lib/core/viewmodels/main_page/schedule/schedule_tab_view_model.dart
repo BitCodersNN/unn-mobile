@@ -134,7 +134,7 @@ class ScheduleTabViewModel extends BaseViewModel {
       () async => <ScheduleSearchSuggestionItem>[],
     );
 
-    return suggestions;
+    return suggestions!;
   }
 
   Future<void> incrementWeek() async {

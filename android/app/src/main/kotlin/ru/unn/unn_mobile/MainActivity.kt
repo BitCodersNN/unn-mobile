@@ -2,14 +2,18 @@ package ru.unn.unn_mobile
 
 import android.content.Intent
 import android.net.Uri
-import androidx.annotation.NonNull
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodChannel
 import kotlinx.coroutines.*
+import androidx.core.net.toUri
+import androidx.activity.result.contract.ActivityResultContracts.PickMultipleVisualMedia
+import androidx.activity.result.PickVisualMediaRequest
 
 const val FILE_PICKER_REQUEST = 1
+
+const val UPLOAD_FILE_PICKER_REQUEST = 2
 
 const val FILE_CHANNEL = "ru.unn.unn_mobile/files"
 
@@ -20,19 +24,19 @@ const val ARGUMENT_ERROR = "ARGUMENT_ERROR"
 const val EXECUTION_ERROR = "EXECUTION_ERROR"
 
 class MainActivity : FlutterActivity() {
-    class UriContainer(
-        uri: Uri?,
+    class Container<T>(
+        obj: T?,
     ) {
-        val uri: Uri? = uri
+        val data: T? = obj
     }
 
     companion object {
-        var pickedFileUri: UriContainer? = null
+        var pickedFileUri: Container<Uri>? = null
+
+        var pickedUploadUris: Container<List<Uri>>? = null
     }
 
-    override fun configureFlutterEngine(
-        @NonNull flutterEngine: FlutterEngine,
-    ) {
+    override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
         EventChannel(
             flutterEngine.dartExecutor.binaryMessenger,
@@ -69,23 +73,48 @@ class MainActivity : FlutterActivity() {
                         )
                         return@methodCallback
                     }
-                    // Будет UB при некорректном URI :) Я хз как это отлавливать
-                    // Будем надеяться, что Android предоставляет только хорошие uri
-                    // через их API, а я правильно их использую
-                    // ведь здесь уже приложение по-настоящему крашнуться может
-                    // Правда следующий try-catch может нас спасти :)
-                    val uri = Uri.parse(uriString)
+
+                    val uri = uriString.toUri()
 
                     try {
                         viewFileFromUri(uri, mimeType)
                         result.success(0)
                     } catch (e: Exception) {
-                        result.error(EXECUTION_ERROR, "Exception happened: " + e.toString(), null)
+                        result.error(EXECUTION_ERROR, "Exception happened: $e", null)
                     }
+                }
+                "pickUploadFiles" -> {
+                    val fromGallery = call.argument<Boolean>("gallery") ?: false
+                    if (fromGallery) {
+                        openGalleryFilePicker()
+                    } else {
+                        openUploadFilePicker()
+                    }
+                    result.success(0)
                 }
                 else -> result.notImplemented()
             }
         }
+    }
+
+    private fun openGalleryFilePicker() {
+        startActivityForResult(
+            PickMultipleVisualMedia(5).createIntent(
+                context,
+                PickVisualMediaRequest.Builder().build(),
+            ),
+            UPLOAD_FILE_PICKER_REQUEST,
+        )
+    }
+
+    private fun openUploadFilePicker() {
+        val intent =
+            Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+                addCategory(Intent.CATEGORY_OPENABLE)
+                type = "*/*"
+                putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
+            }
+        startActivityForResult(intent, UPLOAD_FILE_PICKER_REQUEST)
     }
 
     private fun selectExternalStorageFolder(
@@ -110,7 +139,19 @@ class MainActivity : FlutterActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         when (requestCode) {
             FILE_PICKER_REQUEST ->
-                pickedFileUri = UriContainer(data?.data)
+                pickedFileUri = Container(data?.data)
+            UPLOAD_FILE_PICKER_REQUEST -> {
+                val uris: MutableList<Uri?> =
+                    MutableList(
+                        data?.clipData?.itemCount ?: 0,
+                    ) { i ->
+                        data?.clipData?.getItemAt(i)?.uri
+                    }
+                if (data != null && data.data != null) {
+                    uris.add(data.data)
+                }
+                pickedUploadUris = Container(uris.filterNotNull())
+            }
         }
     }
 
@@ -130,9 +171,14 @@ class MainActivity : FlutterActivity() {
                 scope.launch {
                     while (eventSink != null) {
                         if (pickedFileUri != null) {
-                            val uri = pickedFileUri?.uri
+                            val uri = pickedFileUri?.data
                             pickedFileUri = null
                             eventSink?.success(uri?.toString())
+                        }
+                        if (pickedUploadUris != null) {
+                            val uris = pickedUploadUris?.data
+                            pickedUploadUris = null
+                            eventSink?.success(uris?.map({ u -> u.toString() }))
                         }
                         delay(checkDelay)
                     }

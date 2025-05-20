@@ -132,6 +132,7 @@ import 'package:unn_mobile/core/services/interfaces/common/search_id_on_portal_s
 import 'package:unn_mobile/core/services/interfaces/common/storage_service.dart';
 import 'package:unn_mobile/core/providers/interfaces/profile/user_data_provider.dart';
 import 'package:unn_mobile/core/viewmodels/auth_page/auth_page_view_model.dart';
+import 'package:unn_mobile/core/viewmodels/factories/message_reaction_view_model_factory.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/certificates_online/certificate_item_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/certificates_online/certificates_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/factories/attached_file_view_model_factory.dart';
@@ -140,6 +141,8 @@ import 'package:unn_mobile/core/viewmodels/factories/feed_post_view_model_factor
 import 'package:unn_mobile/core/viewmodels/factories/main_page_routes_view_models_factory.dart';
 import 'package:unn_mobile/core/viewmodels/factories/profile_view_model_factory.dart';
 import 'package:unn_mobile/core/viewmodels/factories/reaction_view_model_factory.dart';
+import 'package:unn_mobile/core/viewmodels/main_page/chat/chat_inside_view_model.dart';
+import 'package:unn_mobile/core/viewmodels/main_page/chat/chat_screen_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/feed/feed_screen_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/grades/grades_screen_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/loading_page/loading_page_view_model.dart';
@@ -514,7 +517,7 @@ void registerDependencies() {
     ),
   );
 
-  injector.registerSingleton<MessageReactionFetcherServiceImpl>(
+  injector.registerSingleton<MessageReactionFetcherService>(
     () => MessageReactionFetcherServiceImpl(
       get<LoggerService>(),
       getApiHelper(HostType.unnPortal),
@@ -614,6 +617,9 @@ void registerDependencies() {
 
   injector.registerSingleton<ReactionViewModelFactory>(
     () => ReactionViewModelFactory(),
+  );
+  injector.registerSingleton<MessageReactionViewModelFactory>(
+    () => MessageReactionViewModelFactory(),
   );
 
   injector.registerSingleton<FeedPostViewModelFactory>(
@@ -715,6 +721,19 @@ void registerDependencies() {
       get<DistanceLearningDownloaderService>(),
       get<WebinarService>(),
       get<SessionCheckerService>(),
+    ),
+  );
+  injector.registerDependency(
+    () => ChatScreenViewModel(
+      get<DialogService>(),
+      get<CurrentUserSyncStorage>(),
+    ),
+  );
+  injector.registerDependency(
+    () => ChatInsideViewModel(
+      get<MainPageRoutesViewModelsFactory>(),
+      get<MessageServiceAggregator>(),
+      get<CurrentUserSyncStorage>(),
     ),
   );
 }
