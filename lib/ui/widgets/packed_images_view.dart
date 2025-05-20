@@ -26,16 +26,7 @@ class PackedImagesView extends StatelessWidget {
       2 => Row(
           children: children.indexed
               .map(
-                (e) => Expanded(
-                  flex: 1,
-                  child: Padding(
-                    padding: const EdgeInsets.all(1.0),
-                    child: GestureDetector(
-                      onTap: () async => await onChildTap?.call(e.$1),
-                      child: FittedBox(fit: BoxFit.cover, child: e.$2),
-                    ),
-                  ),
-                ),
+                (e) => _buildGridItem(e.$1, e.$2),
               )
               .toList(),
         ),
@@ -58,18 +49,7 @@ class PackedImagesView extends StatelessWidget {
                 child: Row(
                   children: children.indexed
                       .skip(1)
-                      .map(
-                        (e) => Expanded(
-                          flex: 1,
-                          child: Padding(
-                            padding: const EdgeInsets.all(1.0),
-                            child: GestureDetector(
-                              onTap: () async => await onChildTap?.call(e.$1),
-                              child: FittedBox(fit: BoxFit.cover, child: e.$2),
-                            ),
-                          ),
-                        ),
-                      )
+                      .map((e) => _buildGridItem(e.$1, e.$2))
                       .toList(),
                 ),
               ),
@@ -94,21 +74,10 @@ class PackedImagesView extends StatelessWidget {
                 height: 110.0,
                 child: Row(
                   children: [
-                    ...children.indexed.skip(1).take(2).map(
-                          (e) => Expanded(
-                            flex: 1,
-                            child: Padding(
-                              padding: const EdgeInsets.all(1.0),
-                              child: GestureDetector(
-                                onTap: () async => await onChildTap?.call(e.$1),
-                                child: FittedBox(
-                                  fit: BoxFit.cover,
-                                  child: e.$2,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
+                    ...children.indexed
+                        .skip(1)
+                        .take(2)
+                        .map((e) => _buildGridItem(e.$1, e.$2)),
                     Expanded(
                       flex: 1,
                       child: Padding(
@@ -160,5 +129,18 @@ class PackedImagesView extends StatelessWidget {
           ],
         ),
     };
+  }
+
+  Expanded _buildGridItem(int index, Widget child) {
+    return Expanded(
+      flex: 1,
+      child: Padding(
+        padding: const EdgeInsets.all(1.0),
+        child: GestureDetector(
+          onTap: () async => await onChildTap?.call(index),
+          child: FittedBox(fit: BoxFit.cover, child: child),
+        ),
+      ),
+    );
   }
 }
