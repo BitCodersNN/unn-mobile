@@ -42,7 +42,7 @@ Future<Iterable<String>?> openUploadFilePicker(bool gallery) async {
     return await resolveAndroidContentUris(uriStrings);
   } else {
     final FilePickerResult? result = await FilePicker.platform.pickFiles(
-      type: gallery ? FileType.image : FileType.any,
+      type: gallery ? FileType.media : FileType.any,
       allowMultiple: true,
     );
     if (result == null) return [];
