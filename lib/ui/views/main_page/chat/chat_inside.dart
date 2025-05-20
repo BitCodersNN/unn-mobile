@@ -9,7 +9,7 @@ import 'package:unn_mobile/core/misc/date_time_utilities/date_time_extensions.da
 import 'package:unn_mobile/core/misc/user/user_functions.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/chat/chat_inside_view_model.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
-import 'package:unn_mobile/ui/views/main_page/chat/widgets/message.dart';
+import 'package:unn_mobile/ui/views/main_page/chat/widgets/message_group.dart';
 import 'package:unn_mobile/ui/views/main_page/chat/widgets/send_field.dart';
 
 class ChatInside extends StatelessWidget {
@@ -146,12 +146,18 @@ class Avatar extends StatelessWidget {
           ? CachedNetworkImageProvider(avatarUrl!)
           : null,
       child: avatarUrl?.isEmpty ?? true
-          ? Text(
-              generateInitials(
-                dialogTitle?.split(' ') ?? [],
-              ),
-              style: theme.textTheme.headlineSmall!.copyWith(
-                color: theme.colorScheme.onSurface,
+          ? FittedBox(
+              fit: BoxFit.cover,
+              child: Padding(
+                padding: const EdgeInsets.all(2.0),
+                child: Text(
+                  generateInitials(
+                    dialogTitle?.split(' ') ?? [],
+                  ),
+                  style: theme.textTheme.headlineSmall!.copyWith(
+                    color: theme.colorScheme.onSurface,
+                  ),
+                ),
               ),
             )
           : null,

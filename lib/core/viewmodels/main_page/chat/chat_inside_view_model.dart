@@ -5,9 +5,6 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:math';
 
-import 'package:content_resolver/content_resolver.dart';
-import 'package:path/path.dart' as p;
-import 'package:path_provider/path_provider.dart';
 import 'package:unn_mobile/core/aggregators/intefaces/message_service_aggregator.dart';
 import 'package:unn_mobile/core/misc/authorisation/try_login_and_retrieve_data.dart';
 import 'package:unn_mobile/core/misc/date_time_utilities/date_time_extensions.dart';
@@ -93,7 +90,7 @@ class ChatInsideViewModel extends BaseViewModel {
 
     _unpartitionedMessages.removeRange(
       0,
-      max(messagesToRemove, _unpartitionedMessages.length),
+      min(messagesToRemove, _unpartitionedMessages.length),
     );
     _unpartitionedMessages.insertAll(0, messages.items.reversed);
 
@@ -155,23 +152,9 @@ class ChatInsideViewModel extends BaseViewModel {
 
   FutureOr<bool> sendFiles(Iterable<String> uris, {String? text}) async =>
       _sendMessageWrapper<List<FileData>>(() async {
-        final List<String> paths = [];
-        if (Platform.isAndroid) {
-          final cacheDir = await getApplicationCacheDirectory();
-          final tempDir = await cacheDir.createTemp();
-          for (final uri in uris) {
-            final r = await ContentResolver.resolveContentMetadata(uri);
-            final name = p.basename(r.fileName ?? 'null.txt');
-            final filePath = '${tempDir.path}/$name';
-            await ContentResolver.resolveContentToFile(uri, filePath);
-            paths.add(filePath);
-          }
-        } else {
-          paths.addAll(uris);
-        }
         return await _messagesAggregator.sendFiles(
           chatId: _dialog!.chatId,
-          files: paths.map((e) => File(e)).toList(),
+          files: uris.map((e) => File(e)).toList(),
           text: text,
         );
       });

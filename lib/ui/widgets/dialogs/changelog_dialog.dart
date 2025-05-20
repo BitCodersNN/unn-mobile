@@ -18,9 +18,12 @@ class ChangelogDialog extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Flexible(
+          Flexible(
             child: SingleChildScrollView(
-              child: Text(changelogString),
+              child: BBCodeText(
+                data: changelogString,
+                stylesheet: getBBStyleSheet(),
+              ),
             ),
           ),
           const Divider(),

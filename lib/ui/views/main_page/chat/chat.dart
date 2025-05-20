@@ -132,10 +132,16 @@ class DialogInfo extends StatelessWidget {
             ? CachedNetworkImageProvider(dialog.avatarUrl)
             : null,
         child: dialog.avatarUrl.isEmpty
-            ? Text(
-                generateInitials(dialog.title.split(' ')),
-                style: theme.textTheme.headlineSmall!.copyWith(
-                  color: theme.colorScheme.onSurface,
+            ? FittedBox(
+                fit: BoxFit.cover,
+                child: Padding(
+                  padding: const EdgeInsets.all(4.0),
+                  child: Text(
+                    generateInitials(dialog.title.split(' ')),
+                    style: theme.textTheme.headlineSmall!.copyWith(
+                      color: theme.colorScheme.onSurface,
+                    ),
+                  ),
                 ),
               )
             : null,

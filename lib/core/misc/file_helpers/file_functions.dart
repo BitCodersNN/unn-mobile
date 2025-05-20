@@ -3,9 +3,10 @@
 
 import 'dart:io';
 
+import 'package:content_resolver/content_resolver.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_file_dialog/flutter_file_dialog.dart';
 import 'package:injector/injector.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:path_provider/path_provider.dart';
@@ -34,20 +35,32 @@ Future<Iterable<String>?> openUploadFilePicker(bool gallery) async {
     const pickerEvents = EventChannel('ru.unn.unn_mobile/file_events');
     final pickerStream = pickerEvents.receiveBroadcastStream();
     final locations = await pickerStream.first as List<Object?>?;
-    return locations?.map(
-      (l) => l as String,
-    );
+    final uriStrings = locations?.cast<String>() ?? [];
+    return await resolveAndroidContentUris(uriStrings);
   } else {
-    final params = OpenFileDialogParams(
-      dialogType: gallery //
-          ? OpenFileDialogType.image //
-          : OpenFileDialogType.document,
-      sourceType: SourceType.photoLibrary,
-      copyFileToCacheDir: true,
+    final FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: gallery ? FileType.media : FileType.any,
+      allowMultiple: true,
     );
-    final filePath = await FlutterFileDialog.pickFile(params: params);
-    return filePath == null ? [] : [filePath];
+    if (result == null) return [];
+    return result.paths.nonNulls.cast<String>().toList();
   }
+}
+
+Future<List<String>> resolveAndroidContentUris(
+  Iterable<String> uriStrings,
+) async {
+  final cacheDir = await getApplicationCacheDirectory();
+  final tempDir = await cacheDir.createTemp();
+  final List<String> paths = [];
+  for (final uri in uriStrings) {
+    final r = await ContentResolver.resolveContentMetadata(uri);
+    final name = p.basename(r.fileName ?? 'null.txt');
+    final filePath = '${tempDir.path}/$name';
+    await ContentResolver.resolveContentToFile(uri, filePath);
+    paths.add(filePath);
+  }
+  return paths;
 }
 
 Future<void> viewFile(String uri, String mimeType) async {

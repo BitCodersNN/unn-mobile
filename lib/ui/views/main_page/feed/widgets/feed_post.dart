@@ -6,7 +6,6 @@ import 'package:carousel_slider_plus/carousel_slider_plus.dart';
 import 'package:event/event.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:go_router/go_router.dart';
 import 'package:html/parser.dart';
@@ -14,7 +13,7 @@ import 'package:html_unescape/html_unescape.dart';
 import 'package:intl/intl.dart';
 import 'package:mime/mime.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:unn_mobile/core/misc/app_settings.dart';
+import 'package:unn_mobile/core/misc/haptic_utils.dart';
 import 'package:unn_mobile/core/misc/html_utils/html_widget_callbacks.dart';
 import 'package:unn_mobile/core/models/feed/rating_list.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/feed/feed_post_view_model.dart';
@@ -593,15 +592,11 @@ class _ReactionButton extends StatelessWidget {
       builder: (context, viewModel, _) {
         return GestureDetector(
           onTap: () {
-            if (AppSettings.vibrationEnabled) {
-              HapticFeedback.selectionClick();
-            }
+            triggerHaptic(HapticIntensity.selection);
             viewModel.toggleLike();
           },
           onLongPress: () {
-            if (AppSettings.vibrationEnabled) {
-              HapticFeedback.mediumImpact();
-            }
+            triggerHaptic(HapticIntensity.medium);
             showReactionChoicePanel(context, viewModel);
           },
           child: _reactionButton(
