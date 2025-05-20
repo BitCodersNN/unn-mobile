@@ -154,83 +154,6 @@ class MessageWidget extends StatefulWidget {
   @override
   State<MessageWidget> createState() => _MessageWidgetState();
 
-  static Widget _messageAuthorHeader(BuildContext context, String? fullname) {
-    final theme = Theme.of(context);
-    return Align(
-      alignment: Alignment.centerLeft,
-      child: Text(
-        fullname ?? '??',
-        style: theme.textTheme.bodySmall?.copyWith(
-          fontWeight: FontWeight.w700,
-          fontSize: 13,
-          color: theme.primaryColorDark,
-        ),
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-      ),
-    );
-  }
-
-  Widget buildContent(BuildContext context, Message message) {
-    return switch (message) {
-      final MessageWithForward msg => buildMessageWithForward(context, msg),
-      final MessageWithReply msg => buildMessageWithReply(context, msg),
-      final MessageWithForwardAndReply msg =>
-        buildMessageWithForwardAndReply(context, msg),
-      final Message msg => buildMessage(context, msg),
-    };
-  }
-
-  static Widget buildMessage(
-    BuildContext context,
-    Message msg, {
-    bool isSystem = false,
-  }) {
-    final msgText = isSystem
-        ? msg.text
-            .split(
-              _systemMessageSeparator,
-            )
-            .lastOrNull
-        : msg.text;
-    return Column(
-      children: [
-        if (msgText?.isNotEmpty ?? false) ...[
-          Align(
-            alignment: Alignment.centerLeft,
-            child: BBCodeText(
-              data: msgText ?? '',
-              stylesheet: getBBStyleSheet().copyWith(selectableText: false),
-            ),
-          ),
-          const SizedBox(
-            height: 4.0,
-          ),
-        ],
-        for (final file in msg.files)
-          AttachedFile(
-            viewModel: AttachedFileViewModel.cached(file.id)
-              ..initFromFileData(file),
-          ),
-      ],
-    );
-  }
-
-  static Widget buildMessageWithReply(
-    BuildContext context,
-    MessageWithReply msg,
-  ) {
-    return Column(
-      children: [
-        buildReplyMessage(
-          context,
-          msg.replyMessage,
-        ),
-        buildMessage(context, msg),
-      ],
-    );
-  }
-
   static Widget buildReplyMessage(
     BuildContext context,
     ReplyInfo replyMessage, {
@@ -278,7 +201,67 @@ class MessageWidget extends StatefulWidget {
     );
   }
 
-  static Widget buildMessageWithForward(
+  static Widget _buildContent(BuildContext context, Message message) {
+    return switch (message) {
+      final MessageWithForward msg => _buildMessageWithForward(context, msg),
+      final MessageWithReply msg => _buildMessageWithReply(context, msg),
+      final MessageWithForwardAndReply msg =>
+        _buildMessageWithForwardAndReply(context, msg),
+      final Message msg => _buildMessage(context, msg),
+    };
+  }
+
+  static Widget _buildMessage(
+    BuildContext context,
+    Message msg, {
+    bool isSystem = false,
+  }) {
+    final msgText = isSystem
+        ? msg.text
+            .split(
+              _systemMessageSeparator,
+            )
+            .lastOrNull
+        : msg.text;
+    return Column(
+      children: [
+        if (msgText?.isNotEmpty ?? false) ...[
+          Align(
+            alignment: Alignment.centerLeft,
+            child: BBCodeText(
+              data: msgText ?? '',
+              stylesheet: getBBStyleSheet().copyWith(selectableText: false),
+            ),
+          ),
+          const SizedBox(
+            height: 4.0,
+          ),
+        ],
+        for (final file in msg.files)
+          AttachedFile(
+            viewModel: AttachedFileViewModel.cached(file.id)
+              ..initFromFileData(file),
+          ),
+      ],
+    );
+  }
+
+  static Widget _buildMessageWithReply(
+    BuildContext context,
+    MessageWithReply msg,
+  ) {
+    return Column(
+      children: [
+        buildReplyMessage(
+          context,
+          msg.replyMessage,
+        ),
+        _buildMessage(context, msg),
+      ],
+    );
+  }
+
+  static Widget _buildMessageWithForward(
     BuildContext context,
     MessageWithForward msg,
   ) {
@@ -291,12 +274,43 @@ class MessageWidget extends StatefulWidget {
           msg.forwardInfo,
           isSystem,
         ),
-        buildMessage(
+        _buildMessage(
           context,
           msg,
           isSystem: isSystem,
         ),
       ],
+    );
+  }
+
+  static Widget _buildMessageWithForwardAndReply(
+    BuildContext context,
+    MessageWithForwardAndReply msg,
+  ) {
+    return Column(
+      spacing: 2.0,
+      children: [
+        _forwardMessageHeader(context, msg.forwardInfo, false),
+        buildReplyMessage(context, msg.replyMessage, showFullText: true),
+        _buildMessage(context, msg),
+      ],
+    );
+  }
+
+  static Widget _messageAuthorHeader(BuildContext context, String? fullname) {
+    final theme = Theme.of(context);
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: Text(
+        fullname ?? '??',
+        style: theme.textTheme.bodySmall?.copyWith(
+          fontWeight: FontWeight.w700,
+          fontSize: 13,
+          color: theme.primaryColorDark,
+        ),
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+      ),
     );
   }
 
@@ -317,20 +331,6 @@ class MessageWidget extends StatefulWidget {
         ),
         softWrap: true,
       ),
-    );
-  }
-
-  static Widget buildMessageWithForwardAndReply(
-    BuildContext context,
-    MessageWithForwardAndReply msg,
-  ) {
-    return Column(
-      spacing: 2.0,
-      children: [
-        _forwardMessageHeader(context, msg.forwardInfo, false),
-        buildReplyMessage(context, msg.replyMessage, showFullText: true),
-        buildMessage(context, msg),
-      ],
     );
   }
 }
@@ -490,7 +490,8 @@ class _MessageWidgetState extends State<MessageWidget> {
                                   ),
                                   const SizedBox(height: 4.0),
                                 ],
-                                _buildContent(context),
+                                MessageWidget._buildContent(
+                                    context, widget.message),
                                 Align(
                                   alignment: Alignment.centerRight,
                                   child: Text(
@@ -519,18 +520,6 @@ class _MessageWidgetState extends State<MessageWidget> {
         const Expanded(flex: 0, child: SizedBox()),
       ],
     );
-  }
-
-  Widget _buildContent(BuildContext context) {
-    return switch (widget.message) {
-      final MessageWithForward msg =>
-        MessageWidget.buildMessageWithForward(context, msg),
-      final MessageWithReply msg =>
-        MessageWidget.buildMessageWithReply(context, msg),
-      final MessageWithForwardAndReply msg =>
-        MessageWidget.buildMessageWithForwardAndReply(context, msg),
-      final Message msg => MessageWidget.buildMessage(context, msg),
-    };
   }
 }
 
