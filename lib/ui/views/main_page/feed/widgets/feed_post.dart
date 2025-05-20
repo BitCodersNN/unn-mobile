@@ -374,20 +374,27 @@ class _FeedPostState extends State<FeedPost> {
                                     xFiles.add(XFile(file.path));
                                   }
                                 }
-                                for (final imageUrl in model.attachedImages) {
-                                  final data =
-                                      await http.get(Uri.parse(imageUrl));
-                                  final mimeType =
-                                      data.headers['Content-Type'] ??
-                                          lookupMimeType(p.basename(imageUrl));
 
-                                  xFiles.add(
-                                    XFile.fromData(
-                                      data.bodyBytes,
-                                      mimeType: mimeType,
-                                    ),
-                                  );
-                                }
+                                final images = await Future.wait(
+                                  model.attachedImages.map(
+                                    (imageUrl) async {
+                                      final data =
+                                          await http.get(Uri.parse(imageUrl));
+                                      final mimeType = data
+                                              .headers['Content-Type'] ??
+                                          lookupMimeType(p.basename(imageUrl));
+                                      if (data.statusCode != 200) {
+                                        return null;
+                                      }
+                                      return XFile.fromData(
+                                        data.bodyBytes,
+                                        mimeType: mimeType,
+                                      );
+                                    },
+                                  ),
+                                );
+
+                                xFiles.addAll(images.nonNulls);
 
                                 final htmlDoc = parse(
                                   HtmlUnescape().convert(model.postText),
@@ -398,7 +405,9 @@ class _FeedPostState extends State<FeedPost> {
                                 await SharePlus.instance.share(
                                   ShareParams(
                                     files: xFiles.isEmpty ? null : xFiles,
-                                    text: parsedString,
+                                    text: parsedString?.isEmpty ?? true
+                                        ? null
+                                        : parsedString,
                                   ),
                                 );
                               },
