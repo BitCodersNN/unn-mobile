@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2025 BitCodersNN
 
+import 'dart:async';
+
 import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/misc/user/current_user_sync_storage.dart';
 import 'package:unn_mobile/core/misc/user/user_functions.dart';
@@ -14,6 +16,7 @@ import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/factories/profile_view_model_factory.dart';
 
 class ProfileViewModel extends BaseViewModel {
+  static const maxRetryAttempts = 5;
   final ProfileOfCurrentUserService _getCurrentUserService;
   final CurrentUserSyncStorage _currentUserSyncStorage;
   final ProfileService _getProfileService;
@@ -66,6 +69,7 @@ class ProfileViewModel extends BaseViewModel {
     bool loadCurrentUser = false,
     bool loadFromPost = false,
     bool setBusy = true,
+    int retryAttempt = 0,
   }) {
     assert((userId != null) || loadCurrentUser);
     if (force || _loadedData == null) {
@@ -81,7 +85,20 @@ class ProfileViewModel extends BaseViewModel {
         };
       }).catchError((error, stack) {
         _loggerService.logError(error, stack);
-        _hasError = true;
+        if (retryAttempt < maxRetryAttempts) {
+          init(
+            force: force,
+            userId: userId,
+            loadCurrentUser: loadCurrentUser,
+            loadFromPost: loadFromPost,
+            setBusy: setBusy,
+            retryAttempt: retryAttempt + 1,
+          );
+          return;
+        }
+        if (_loadedData == null) {
+          _hasError = true;
+        }
       }).whenComplete(() {
         _isLoading = false;
         notifyListeners();
