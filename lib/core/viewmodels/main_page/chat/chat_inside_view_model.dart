@@ -90,7 +90,7 @@ class ChatInsideViewModel extends BaseViewModel {
 
     _unpartitionedMessages.removeRange(
       0,
-      max(messagesToRemove, _unpartitionedMessages.length),
+      min(messagesToRemove, _unpartitionedMessages.length),
     );
     _unpartitionedMessages.insertAll(0, messages.items.reversed);
 

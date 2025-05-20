@@ -142,7 +142,7 @@ class MessageWidget extends StatefulWidget {
   final bool fromCurrentUser;
   final bool displayAuthor;
   final ChatInsideViewModel chatModel;
-  
+
   const MessageWidget({
     super.key,
     required this.message,
@@ -347,17 +347,7 @@ class _MessageWidgetState extends State<MessageWidget> {
       builder: (context, model, _) {
         return GestureDetector(
           onLongPress: _showContextMenu,
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 200),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(8),
-              color: _isHighlighted
-                  ? theme.colorScheme.surfaceContainerHighest.withAlpha(0x4D)
-                  : Colors.transparent,
-            ),
-            padding: const EdgeInsets.symmetric(horizontal: 4),
-            child: _buildMessageContent(context, model, theme),
-          ),
+          child: _buildMessageContent(context, model, theme),
         );
       },
       onModelReady: (model) => model.init(
@@ -473,12 +463,18 @@ class _MessageWidgetState extends State<MessageWidget> {
                           ? CrossAxisAlignment.end
                           : CrossAxisAlignment.start,
                       children: [
-                        Container(
+                        AnimatedContainer(
+                          duration: Duration(
+                            milliseconds: _isHighlighted ? 300 : 600,
+                          ),
+                          curve: Curves.decelerate,
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(8.0),
-                            color: widget.fromCurrentUser
-                                ? theme.colorScheme.surfaceDim
-                                : theme.colorScheme.surfaceContainer,
+                            color: _isHighlighted
+                                ? theme.colorScheme.secondaryFixed
+                                : widget.fromCurrentUser
+                                    ? theme.colorScheme.surfaceDim
+                                    : theme.colorScheme.surfaceContainer,
                           ),
                           padding:
                               const EdgeInsets.all(8.0).copyWith(bottom: 0.0),
@@ -528,7 +524,8 @@ class _MessageWidgetState extends State<MessageWidget> {
     return switch (widget.message) {
       final MessageWithForward msg =>
         MessageWidget.buildMessageWithForward(context, msg),
-      final MessageWithReply msg => MessageWidget.buildMessageWithReply(context, msg),
+      final MessageWithReply msg =>
+        MessageWidget.buildMessageWithReply(context, msg),
       final MessageWithForwardAndReply msg =>
         MessageWidget.buildMessageWithForwardAndReply(context, msg),
       final Message msg => MessageWidget.buildMessage(context, msg),
@@ -566,25 +563,6 @@ class MessageReactionView extends StatelessWidget {
                   text: model.getReactionCount(reaction).toString(),
                 ),
               ),
-          // if (model.canAddReaction)
-          //   IconButton.filledTonal(
-          //     padding: const EdgeInsets.all(0),
-          //     constraints: BoxConstraints.tightFor(
-          //       height: scaledAddButtonSize,
-          //       width: scaledAddButtonSize,
-          //     ),
-          //     onPressed: () {
-          //       showReactionChoicePanel(context, model);
-          //     },
-          //     icon: Icon(
-          //       Icons.add,
-          //       size: MediaQuery.of(context)
-          //           .textScaler
-          //           .clamp(maxScaleFactor: 1.3)
-          //           .scale(16),
-          //     ),
-          //   ),
-          //
         ],
       ),
     );

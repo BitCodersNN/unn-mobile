@@ -146,12 +146,18 @@ class Avatar extends StatelessWidget {
           ? CachedNetworkImageProvider(avatarUrl!)
           : null,
       child: avatarUrl?.isEmpty ?? true
-          ? Text(
-              generateInitials(
-                dialogTitle?.split(' ') ?? [],
-              ),
-              style: theme.textTheme.headlineSmall!.copyWith(
-                color: theme.colorScheme.onSurface,
+          ? FittedBox(
+              fit: BoxFit.cover,
+              child: Padding(
+                padding: const EdgeInsets.all(2.0),
+                child: Text(
+                  generateInitials(
+                    dialogTitle?.split(' ') ?? [],
+                  ),
+                  style: theme.textTheme.headlineSmall!.copyWith(
+                    color: theme.colorScheme.onSurface,
+                  ),
+                ),
               ),
             )
           : null,
