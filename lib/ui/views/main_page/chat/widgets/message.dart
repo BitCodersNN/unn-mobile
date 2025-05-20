@@ -89,13 +89,12 @@ class MessageGroup extends StatelessWidget {
         spacing: 8.0,
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          if (leftAvatar)
-            SizedBox(
-              width: scaledAvatarWidth,
-              child: leftAvatar
-                  ? Avatar(avatarUrl: avatarUrl, dialogTitle: name)
-                  : null,
-            ),
+          SizedBox(
+            width: scaledAvatarWidth,
+            child: leftAvatar
+                ? Avatar(avatarUrl: avatarUrl, dialogTitle: name)
+                : null,
+          ),
           Expanded(
             child: Column(
               verticalDirection: VerticalDirection.up,
@@ -103,18 +102,20 @@ class MessageGroup extends StatelessWidget {
                   ? CrossAxisAlignment.start
                   : CrossAxisAlignment.end,
               children: [
-                for (final message in messages.take(messages.length - 1)) //
-                  MessageWidget(
-                    key: ValueKey(
-                      (
-                        message.messageId,
-                        message.ratingList?.getTotalNumberOfReactions() ?? 0,
+                ...messages.take(messages.length - 1).map(
+                      (message) => MessageWidget(
+                        key: ValueKey(
+                          (
+                            message.messageId,
+                            message.ratingList?.getTotalNumberOfReactions() ??
+                                0,
+                          ),
+                        ),
+                        message: message,
+                        fromCurrentUser: !leftAvatar,
+                        chatModel: chatModel,
                       ),
                     ),
-                    message: message,
-                    fromCurrentUser: !leftAvatar,
-                    chatModel: chatModel,
-                  ),
                 MessageWidget(
                   key: ValueKey(messages.last.messageId),
                   message: messages.last,
@@ -125,13 +126,12 @@ class MessageGroup extends StatelessWidget {
               ],
             ),
           ),
-          if (!leftAvatar)
-            SizedBox(
-              width: scaledAvatarWidth,
-              child: !leftAvatar
-                  ? Avatar(avatarUrl: avatarUrl, dialogTitle: name)
-                  : null,
-            ),
+          SizedBox(
+            width: scaledAvatarWidth,
+            child: !leftAvatar
+                ? Avatar(avatarUrl: avatarUrl, dialogTitle: name)
+                : null,
+          ),
         ],
       ),
     );
@@ -225,7 +225,7 @@ class MessageWidget extends StatelessWidget {
                             : Alignment.centerLeft,
                         child: ConstrainedBox(
                           constraints: BoxConstraints(
-                            maxWidth: constraints.maxWidth * 0.75,
+                            maxWidth: constraints.maxWidth * 0.9,
                           ),
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
