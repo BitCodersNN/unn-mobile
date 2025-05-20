@@ -16,6 +16,7 @@ import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/factories/profile_view_model_factory.dart';
 
 class ProfileViewModel extends BaseViewModel {
+  static const maxRetryAttempts = 5;
   final ProfileOfCurrentUserService _getCurrentUserService;
   final CurrentUserSyncStorage _currentUserSyncStorage;
   final ProfileService _getProfileService;
@@ -84,7 +85,7 @@ class ProfileViewModel extends BaseViewModel {
         };
       }).catchError((error, stack) {
         _loggerService.logError(error, stack);
-        if (retryAttempt < 5) {
+        if (retryAttempt < maxRetryAttempts) {
           init(
             force: force,
             userId: userId,
