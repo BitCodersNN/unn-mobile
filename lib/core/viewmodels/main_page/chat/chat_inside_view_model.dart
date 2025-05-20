@@ -97,8 +97,9 @@ class ChatInsideViewModel extends BaseViewModel {
     );
     _unpartitionedMessages.insertAll(0, messages.items.reversed);
 
-    _messages.clear();
-    _messages.addAll(_partitionMessages(_unpartitionedMessages));
+    _messages
+      ..clear()
+      ..addAll(_partitionMessages(_unpartitionedMessages));
   }
 
   FutureOr<void> init(int chatId) async {
@@ -126,8 +127,9 @@ class ChatInsideViewModel extends BaseViewModel {
         }
         await _readMessages(_dialog!.chatId, messages);
         _unpartitionedMessages.addAll(messages.items);
-        _messages.clear();
-        _messages.addAll(_partitionMessages(_unpartitionedMessages));
+        _messages
+          ..clear()
+          ..addAll(_partitionMessages(_unpartitionedMessages));
         _hasMessagesBefore = messages.hasPreviousPage;
       });
 
@@ -155,13 +157,14 @@ class ChatInsideViewModel extends BaseViewModel {
       _sendMessageWrapper<List<FileData>>(() async {
         final List<String> paths = [];
         if (Platform.isAndroid) {
-          final tempDir =
-              (await (await getApplicationCacheDirectory()).createTemp()).path;
+          final cacheDir = await getApplicationCacheDirectory();
+          final tempDir = await cacheDir.createTemp();
           for (final uri in uris) {
             final r = await ContentResolver.resolveContentMetadata(uri);
             final name = p.basename(r.fileName ?? 'null.txt');
-            await ContentResolver.resolveContentToFile(uri, '$tempDir/$name');
-            paths.add('$tempDir/$name');
+            final filePath = '${tempDir.path}/$name';
+            await ContentResolver.resolveContentToFile(uri, filePath);
+            paths.add(filePath);
           }
         } else {
           paths.addAll(uris);
@@ -230,13 +233,11 @@ class ChatInsideViewModel extends BaseViewModel {
 
       final lastMessageAuthorId = lastMessage?.author?.bitrixId ?? -2;
       final messageAuthorId = message.author?.bitrixId;
-      final timeDifference = //
-          lastMessage //
-                  ?.dateTime //
-                  .difference(message.dateTime) //
-                  .inMinutes
-                  .abs() ??
-              maxTimeDifference; // черт побери этот автоформат >:(
+      final timeDifference = lastMessage?.dateTime //
+              .difference(message.dateTime)
+              .inMinutes
+              .abs() ??
+          maxTimeDifference;
       if (!(lastMessage?.dateTime.isSameDate(message.dateTime) ?? false)) {
         partitions.add(
           [

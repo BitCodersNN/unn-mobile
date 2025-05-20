@@ -111,7 +111,7 @@ class FeedScreenViewModel extends BaseViewModel
 
         await refreshFeatured();
 
-        final freshPosts = await tryLoginAndRetrieveData(
+        final freshPosts = await tryLoginAndRetrieveData<List<BlogPost>>(
           () async => await _regularBlogPostsService.getRegularBlogPosts(
             postsPerPage: postsPerPage,
           ),
@@ -134,7 +134,8 @@ class FeedScreenViewModel extends BaseViewModel
       });
 
   Future<void> refreshFeatured() async => changeState(() async {
-        final featuredPosts = await tryLoginAndRetrieveData(
+        final featuredPosts =
+            await tryLoginAndRetrieveData<Map<BlogPostType, List<BlogPost>>>(
           () async => await _featuredBlogPostsService.getFeaturedBlogPosts(),
           () => null,
         );
