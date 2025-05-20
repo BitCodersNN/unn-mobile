@@ -3,9 +3,9 @@
 
 import 'dart:io';
 
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_file_dialog/flutter_file_dialog.dart';
 import 'package:injector/injector.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:path_provider/path_provider.dart';
@@ -38,15 +38,12 @@ Future<Iterable<String>?> openUploadFilePicker(bool gallery) async {
       (l) => l as String,
     );
   } else {
-    final params = OpenFileDialogParams(
-      dialogType: gallery //
-          ? OpenFileDialogType.image //
-          : OpenFileDialogType.document,
-      sourceType: SourceType.photoLibrary,
-      copyFileToCacheDir: true,
+    final FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: gallery ? FileType.image : FileType.any,
+      allowMultiple: true,
     );
-    final filePath = await FlutterFileDialog.pickFile(params: params);
-    return filePath == null ? [] : [filePath];
+    if (result == null) return [];
+    return result.paths.where((path) => path != null).cast<String>().toList();
   }
 }
 

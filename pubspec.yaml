@@ -59,6 +59,7 @@ dependencies:
   carousel_slider_plus: ^7.1.0
   share_plus: ^11.0.0
   http: ^1.4.0
+  file_picker: ^10.1.9
 
 dev_dependencies:
   flutter_test:

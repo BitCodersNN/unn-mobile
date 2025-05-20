@@ -8,6 +8,7 @@ import 'package:go_router/go_router.dart';
 import 'package:unn_mobile/core/constants/date_pattern.dart';
 import 'package:unn_mobile/core/misc/custom_bb_tags.dart';
 import 'package:unn_mobile/core/misc/date_time_utilities/date_time_extensions.dart';
+import 'package:unn_mobile/core/misc/haptic_utils.dart';
 import 'package:unn_mobile/core/models/dialog/message/enum/message_state.dart';
 import 'package:unn_mobile/core/models/dialog/message/forward_info.dart';
 import 'package:unn_mobile/core/models/dialog/message/message.dart';
@@ -158,7 +159,7 @@ class MessageWidget extends StatelessWidget {
       model: MessageReactionViewModel.cached(message.messageId),
       builder: (context, model, _) {
         return PopupMenuButton<String>(
-          position: PopupMenuPosition.over,
+          position: PopupMenuPosition.under,
           itemBuilder: (context) => [
             PopupMenuItem(
               enabled: false,
@@ -171,6 +172,7 @@ class MessageWidget extends StatelessWidget {
                       for (final reaction in ReactionType.values)
                         GestureDetector(
                           onTap: () {
+                            triggerHaptic(HapticIntensity.selection);
                             if (model.currentReaction != reaction) {
                               model.toggleReaction(reaction);
                             }
@@ -196,7 +198,7 @@ class MessageWidget extends StatelessWidget {
             ),
             const PopupMenuItem(
               value: 'reply',
-              child: Text('ответить'),
+              child: Text('Ответить'),
             ),
           ],
           onSelected: (value) async {
@@ -503,6 +505,7 @@ class MessageReactionView extends StatelessWidget {
                 child: ReactionBubble(
                   isSelected: model.currentReaction == reaction,
                   onPressed: () {
+                    triggerHaptic(HapticIntensity.selection);
                     model.toggleReaction(reaction);
                   },
                   icon: Image.asset(reaction.assetName),
