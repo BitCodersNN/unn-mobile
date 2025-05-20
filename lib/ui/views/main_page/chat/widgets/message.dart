@@ -4,7 +4,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bbcode/flutter_bbcode.dart';
-import 'package:go_router/go_router.dart';
 import 'package:unn_mobile/core/constants/date_pattern.dart';
 import 'package:unn_mobile/core/misc/custom_bb_tags.dart';
 import 'package:unn_mobile/core/misc/date_time_utilities/date_time_extensions.dart';
@@ -138,11 +137,12 @@ class MessageGroup extends StatelessWidget {
   }
 }
 
-class MessageWidget extends StatelessWidget {
+class MessageWidget extends StatefulWidget {
   final Message message;
   final bool fromCurrentUser;
   final bool displayAuthor;
   final ChatInsideViewModel chatModel;
+  
   const MessageWidget({
     super.key,
     required this.message,
@@ -152,154 +152,7 @@ class MessageWidget extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return BaseView<MessageReactionViewModel>(
-      model: MessageReactionViewModel.cached(message.messageId),
-      builder: (context, model, _) {
-        return PopupMenuButton<String>(
-          position: PopupMenuPosition.under,
-          itemBuilder: (context) => [
-            PopupMenuItem(
-              enabled: false,
-              child: Scrollbar(
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      for (final reaction in ReactionType.values)
-                        GestureDetector(
-                          onTap: () {
-                            triggerHaptic(HapticIntensity.selection);
-                            if (model.currentReaction != reaction) {
-                              model.toggleReaction(reaction);
-                            }
-                            GoRouter.of(context).pop();
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.all(4.0),
-                            child: CircleAvatar(
-                              radius: 16,
-                              backgroundImage: AssetImage(reaction.assetName),
-                            ),
-                          ),
-                        ),
-                      const SizedBox(width: 5),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            const PopupMenuItem(
-              value: 'copy',
-              child: Text('Скопировать текст'),
-            ),
-            const PopupMenuItem(
-              value: 'reply',
-              child: Text('Ответить'),
-            ),
-          ],
-          onSelected: (value) async {
-            switch (value) {
-              case 'copy':
-                await Clipboard.setData(ClipboardData(text: message.text));
-                break;
-              case 'reply':
-                chatModel.replyMessage = message;
-                break;
-            }
-          },
-          child: Row(
-            children: [
-              Expanded(
-                flex: 1,
-                child: LayoutBuilder(
-                  builder: (context, constraints) {
-                    return Padding(
-                      padding: const EdgeInsets.only(bottom: 4.0),
-                      child: Align(
-                        alignment: fromCurrentUser
-                            ? Alignment.centerRight
-                            : Alignment.centerLeft,
-                        child: ConstrainedBox(
-                          constraints: BoxConstraints(
-                            maxWidth: constraints.maxWidth * 0.9,
-                          ),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            crossAxisAlignment: fromCurrentUser
-                                ? CrossAxisAlignment.end
-                                : CrossAxisAlignment.start,
-                            children: [
-                              Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(8.0),
-                                  color: fromCurrentUser
-                                      ? theme.colorScheme.surfaceDim //
-                                      : theme.colorScheme.surfaceContainer,
-                                ),
-                                padding: const EdgeInsets.all(8.0)
-                                    .copyWith(bottom: 0.0),
-                                child: IntrinsicWidth(
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      if (displayAuthor) //
-                                        ...[
-                                        _messageAuthorHeader(
-                                          context,
-                                          message.author?.fullname,
-                                        ),
-                                        const SizedBox(
-                                          height: 4.0,
-                                        ),
-                                      ],
-                                      buildContent(context, message),
-                                      Align(
-                                        alignment: Alignment.centerRight,
-                                        child: Text(
-                                          message.dateTime
-                                              .toLocal()
-                                              .format(DatePattern.hhmm),
-                                          style: theme.textTheme.bodySmall,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              ConstrainedBox(
-                                constraints: const BoxConstraints(
-                                  maxHeight: 100,
-                                ),
-                                child: MessageReactionView(
-                                  model: model,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ),
-              Expanded(
-                flex: 0,
-                child: Container(),
-              ),
-            ],
-          ),
-        );
-      },
-      onModelReady: (model) => model.init(
-        message.messageId,
-        message.ratingList,
-      ),
-    );
-  }
+  State<MessageWidget> createState() => _MessageWidgetState();
 
   static Widget _messageAuthorHeader(BuildContext context, String? fullname) {
     final theme = Theme.of(context);
@@ -479,6 +332,207 @@ class MessageWidget extends StatelessWidget {
         buildMessage(context, msg),
       ],
     );
+  }
+}
+
+class _MessageWidgetState extends State<MessageWidget> {
+  bool _isHighlighted = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return BaseView<MessageReactionViewModel>(
+      model: MessageReactionViewModel.cached(widget.message.messageId),
+      builder: (context, model, _) {
+        return GestureDetector(
+          onLongPress: _showContextMenu,
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(8),
+              color: _isHighlighted
+                  ? theme.colorScheme.surfaceContainerHighest.withAlpha(0x4D)
+                  : Colors.transparent,
+            ),
+            padding: const EdgeInsets.symmetric(horizontal: 4),
+            child: _buildMessageContent(context, model, theme),
+          ),
+        );
+      },
+      onModelReady: (model) => model.init(
+        widget.message.messageId,
+        widget.message.ratingList,
+      ),
+    );
+  }
+
+  void _showContextMenu() {
+    setState(() => _isHighlighted = true);
+
+    final renderBox = context.findRenderObject() as RenderBox;
+    final offset = renderBox.localToGlobal(Offset.zero);
+
+    showMenu<String>(
+      context: context,
+      position: RelativeRect.fromLTRB(
+        offset.dx,
+        offset.dy + renderBox.size.height,
+        offset.dx + renderBox.size.width,
+        offset.dy + renderBox.size.height + 1,
+      ),
+      items: _buildMenuItems(),
+    ).then((value) {
+      setState(() => _isHighlighted = false);
+      _handleMenuSelection(value);
+    });
+  }
+
+  List<PopupMenuEntry<String>> _buildMenuItems() {
+    return [
+      PopupMenuItem(
+        enabled: false,
+        child: Scrollbar(
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: ReactionType.values
+                  .map(
+                    (reaction) => GestureDetector(
+                      onTap: () => _handleReactionTap(reaction),
+                      child: Padding(
+                        padding: const EdgeInsets.all(4.0),
+                        child: CircleAvatar(
+                          radius: 16,
+                          backgroundImage: AssetImage(reaction.assetName),
+                        ),
+                      ),
+                    ),
+                  )
+                  .toList(),
+            ),
+          ),
+        ),
+      ),
+      const PopupMenuItem(
+        value: 'copy',
+        child: Text('Скопировать текст'),
+      ),
+      const PopupMenuItem(
+        value: 'reply',
+        child: Text('Ответить'),
+      ),
+    ];
+  }
+
+  void _handleReactionTap(ReactionType reaction) {
+    final model = MessageReactionViewModel.cached(widget.message.messageId);
+    if (model.currentReaction != reaction) {
+      model.toggleReaction(reaction);
+    }
+    Navigator.pop(context);
+  }
+
+  void _handleMenuSelection(String? value) async {
+    if (value == null) return;
+
+    switch (value) {
+      case 'copy':
+        await Clipboard.setData(ClipboardData(text: widget.message.text));
+        break;
+      case 'reply':
+        widget.chatModel.replyMessage = widget.message;
+        break;
+    }
+  }
+
+  Widget _buildMessageContent(
+    BuildContext context,
+    MessageReactionViewModel model,
+    ThemeData theme,
+  ) {
+    return Row(
+      children: [
+        Expanded(
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 4.0),
+                child: Align(
+                  alignment: widget.fromCurrentUser
+                      ? Alignment.centerRight
+                      : Alignment.centerLeft,
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      maxWidth: constraints.maxWidth * 0.9,
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: widget.fromCurrentUser
+                          ? CrossAxisAlignment.end
+                          : CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8.0),
+                            color: widget.fromCurrentUser
+                                ? theme.colorScheme.surfaceDim
+                                : theme.colorScheme.surfaceContainer,
+                          ),
+                          padding:
+                              const EdgeInsets.all(8.0).copyWith(bottom: 0.0),
+                          child: IntrinsicWidth(
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                if (widget.displayAuthor) ...[
+                                  MessageWidget._messageAuthorHeader(
+                                    context,
+                                    widget.message.author?.fullname,
+                                  ),
+                                  const SizedBox(height: 4.0),
+                                ],
+                                _buildContent(context),
+                                Align(
+                                  alignment: Alignment.centerRight,
+                                  child: Text(
+                                    widget.message.dateTime
+                                        .toLocal()
+                                        .format(DatePattern.hhmm),
+                                    style: theme.textTheme.bodySmall,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        ConstrainedBox(
+                          constraints: const BoxConstraints(maxHeight: 100),
+                          child: MessageReactionView(model: model),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+        const Expanded(flex: 0, child: SizedBox()),
+      ],
+    );
+  }
+
+  Widget _buildContent(BuildContext context) {
+    return switch (widget.message) {
+      final MessageWithForward msg =>
+        MessageWidget.buildMessageWithForward(context, msg),
+      final MessageWithReply msg => MessageWidget.buildMessageWithReply(context, msg),
+      final MessageWithForwardAndReply msg =>
+        MessageWidget.buildMessageWithForwardAndReply(context, msg),
+      final Message msg => MessageWidget.buildMessage(context, msg),
+    };
   }
 }
 
