@@ -9,7 +9,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:go_router/go_router.dart';
+import 'package:html/parser.dart';
+import 'package:html_unescape/html_unescape.dart';
 import 'package:intl/intl.dart';
+import 'package:mime/mime.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:unn_mobile/core/misc/app_settings.dart';
 import 'package:unn_mobile/core/misc/html_utils/html_widget_callbacks.dart';
 import 'package:unn_mobile/core/models/feed/rating_list.dart';
@@ -24,6 +28,8 @@ import 'package:unn_mobile/ui/views/main_page/main_page_routing.dart';
 import 'package:unn_mobile/ui/widgets/packed_images_view.dart';
 import 'package:unn_mobile/ui/widgets/shimmer.dart';
 import 'package:unn_mobile/ui/widgets/shimmer_loading.dart';
+import 'package:http/http.dart' as http;
+import 'package:path/path.dart' as p;
 
 const idkWhatColor = Color(0xFF989EA9);
 
@@ -322,12 +328,12 @@ class _FeedPostState extends State<FeedPost> {
                           ),
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.center,
+                          spacing: 12.0,
                           children: [
                             _ReactionButton(
                               model.reactionViewModel,
                               !widget.showingComments,
                             ),
-                            const SizedBox(width: 12),
                             Container(
                               padding: const EdgeInsets.symmetric(
                                 horizontal: 12,
@@ -355,6 +361,48 @@ class _FeedPostState extends State<FeedPost> {
                                   ),
                                 ],
                               ),
+                            ),
+                            Expanded(child: Container()),
+                            IconButton(
+                              onPressed: () async {
+                                final List<XFile> xFiles = [];
+
+                                for (final fileViewModel
+                                    in model.attachedFileViewModels) {
+                                  final file = await fileViewModel.getFile();
+                                  if (file != null && file.existsSync()) {
+                                    xFiles.add(XFile(file.path));
+                                  }
+                                }
+                                for (final imageUrl in model.attachedImages) {
+                                  final data =
+                                      await http.get(Uri.parse(imageUrl));
+                                  final mimeType =
+                                      data.headers['Content-Type'] ??
+                                          lookupMimeType(p.basename(imageUrl));
+
+                                  xFiles.add(
+                                    XFile.fromData(
+                                      data.bodyBytes,
+                                      mimeType: mimeType,
+                                    ),
+                                  );
+                                }
+
+                                final htmlDoc = parse(
+                                  HtmlUnescape().convert(model.postText),
+                                );
+                                final parsedString = parse(htmlDoc.body?.text)
+                                    .documentElement
+                                    ?.text;
+                                await SharePlus.instance.share(
+                                  ShareParams(
+                                    files: xFiles.isEmpty ? null : xFiles,
+                                    text: parsedString,
+                                  ),
+                                );
+                              },
+                              icon: const Icon(Icons.share),
                             ),
                           ],
                         ),
