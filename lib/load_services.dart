@@ -286,6 +286,7 @@ void registerDependencies() {
   injector.registerSingleton<LoadingPageProvider>(
     () => LoadingPageProviderImpl(
       get<StorageService>(),
+      get<LoggerService>(),
     ),
   );
   injector.registerSingleton<AuthDataProvider>(
