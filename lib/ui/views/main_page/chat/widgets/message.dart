@@ -248,7 +248,7 @@ class _MessageWidgetState extends State<MessageWidget> {
 
   void _showContextMenu() {
     setState(() => _isHighlighted = true);
-    triggerHaptic(HapticIntensity.vibrate);
+    triggerHaptic(HapticIntensity.medium);
 
     final renderBox = context.findRenderObject() as RenderBox;
     final offset = renderBox.localToGlobal(Offset.zero);
@@ -308,6 +308,7 @@ class _MessageWidgetState extends State<MessageWidget> {
 
   void _handleReactionTap(ReactionType reaction) {
     final model = MessageReactionViewModel.cached(widget.message.messageId);
+    triggerHaptic(HapticIntensity.selection);
     if (model.currentReaction != reaction) {
       model.toggleReaction(reaction);
     }
