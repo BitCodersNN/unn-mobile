@@ -3,8 +3,10 @@
 
 import 'dart:convert';
 
+import 'package:unn_mobile/core/misc/json/json_iterable_parser.dart';
 import 'package:unn_mobile/core/models/loading_page/loading_page_data.dart';
 import 'package:unn_mobile/core/providers/interfaces/loading_page/loading_page_provider.dart';
+import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
 import 'package:unn_mobile/core/services/interfaces/common/storage_service.dart';
 
 class _LoadingPageProviderKeys {
@@ -13,8 +15,9 @@ class _LoadingPageProviderKeys {
 
 class LoadingPageProviderImpl implements LoadingPageProvider {
   final StorageService _storage;
+  final LoggerService _loggerService;
 
-  LoadingPageProviderImpl(this._storage);
+  LoadingPageProviderImpl(this._storage, this._loggerService);
 
   @override
   Future<List<LoadingPageModel>?> getData() async {
@@ -28,11 +31,11 @@ class LoadingPageProviderImpl implements LoadingPageProvider {
       ))!,
     );
 
-    final List<LoadingPageModel> loadingPages = [];
-
-    for (final jsonMap in jsonList) {
-      loadingPages.add(LoadingPageModel.fromJson(jsonMap));
-    }
+    final loadingPages = parseJsonIterable<LoadingPageModel>(
+      jsonList,
+      LoadingPageModel.fromJson,
+      _loggerService,
+    );
 
     return loadingPages;
   }

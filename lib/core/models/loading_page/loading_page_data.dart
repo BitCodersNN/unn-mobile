@@ -2,6 +2,7 @@
 // Copyright 2025 BitCodersNN
 
 import 'package:flutter/material.dart';
+import 'package:unn_mobile/core/misc/hex_color.dart';
 
 class _LoadingPageModelJsonKeys {
   static const String logoPath = 'logo_path';
@@ -123,26 +124,23 @@ class LoadingPageModel {
     return titleStyle;
   }
 
-  Map<String, dynamic> toJson() {
-    return {
-      _LoadingPageModelJsonKeys.logoPath: _imagePath,
-      _LoadingPageModelJsonKeys.startDate:
-          _dateTimeRangeToUseOn?.start.toString().substring(5, 10),
-      _LoadingPageModelJsonKeys.endDate:
-          _dateTimeRangeToUseOn?.end.toString().substring(5, 10),
-      _LoadingPageModelJsonKeys.title: {
-        _LoadingPageModelJsonKeys.text: _title,
-        _LoadingPageModelJsonKeys.color: _titleStyle.color!.toARGB32.toString(),
-        _LoadingPageModelJsonKeys.fontSize: _titleStyle.fontSize.toString(),
-      },
-      if (_description != null)
-        _LoadingPageModelJsonKeys.description: {
-          _LoadingPageModelJsonKeys.text: _description,
-          _LoadingPageModelJsonKeys.color:
-              _descriptionStyle?.color!.toARGB32.toString(),
-          _LoadingPageModelJsonKeys.fontSize:
-              _descriptionStyle?.fontSize.toString(),
+  Map<String, dynamic> toJson() => {
+        _LoadingPageModelJsonKeys.logoPath: _imagePath,
+        _LoadingPageModelJsonKeys.startDate:
+            _dateTimeRangeToUseOn?.start.toString().substring(5, 10),
+        _LoadingPageModelJsonKeys.endDate:
+            _dateTimeRangeToUseOn?.end.toString().substring(5, 10),
+        _LoadingPageModelJsonKeys.title: {
+          _LoadingPageModelJsonKeys.text: _title,
+          _LoadingPageModelJsonKeys.color: _titleStyle.color!.toARGB(),
+          _LoadingPageModelJsonKeys.fontSize: _titleStyle.fontSize.toString(),
         },
-    };
-  }
+        if (_description != null)
+          _LoadingPageModelJsonKeys.description: {
+            _LoadingPageModelJsonKeys.text: _description,
+            _LoadingPageModelJsonKeys.color: _descriptionStyle?.color!.toARGB(),
+            _LoadingPageModelJsonKeys.fontSize:
+                _descriptionStyle?.fontSize.toString(),
+          },
+      };
 }
