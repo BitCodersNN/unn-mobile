@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:html_unescape/html_unescape.dart';
 import 'package:injector/injector.dart';
-import 'package:intl/intl.dart';
+import 'package:unn_mobile/core/constants/date_pattern.dart';
 import 'package:unn_mobile/core/misc/date_time_utilities/date_time_extensions.dart';
 import 'package:unn_mobile/core/misc/user/user_functions.dart';
 import 'package:unn_mobile/core/models/dialog/dialog.dart' as d;
@@ -128,20 +128,13 @@ class DialogInfo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final now = DateTime.now();
     final previewMessage = dialog.previewMessage;
 
     String formatDateLabel(DateTime date) {
-      if (date.isSameDate(now)) {
-        return DateFormat('HH:mm').format(date);
+      if (date.isSameDate(DateTime.now())) {
+        return date.format(DatePattern.hhmm);
       }
-      return date.format('E');
-    }
-
-    Widget? unreadBadge;
-    if (dialog.unreadMessagesCount > 0) {
-      final String unreadCount = dialog.formatUnreadCount;
-      unreadBadge = UnreadBadge(unreadCount: unreadCount);
+      return date.format(DatePattern.e);
     }
 
     return ListTile(
@@ -174,17 +167,19 @@ class DialogInfo extends StatelessWidget {
               style: theme.textTheme.titleMedium,
             ),
           ),
-          const SizedBox(width: 8),
-          Text(
-            formatDateLabel(previewMessage.dateTime),
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: theme.hintColor,
+          Padding(
+            padding: const EdgeInsets.only(left: 8, right: 2),
+            child: Text(
+              formatDateLabel(previewMessage.dateTime),
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.hintColor,
+              ),
             ),
           ),
         ],
       ),
       subtitle: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           Expanded(
             child: Text(
@@ -194,10 +189,10 @@ class DialogInfo extends StatelessWidget {
               style: theme.textTheme.bodyMedium,
             ),
           ),
-          if (unreadBadge != null)
+          if (dialog.unreadMessagesCount > 0)
             Padding(
-              padding: const EdgeInsets.only(left: 4, top: 2),
-              child: unreadBadge,
+              padding: const EdgeInsets.only(left: 8, bottom: 2),
+              child: UnreadBadge(unreadCount: dialog.formatUnreadCount),
             ),
         ],
       ),
