@@ -110,21 +110,23 @@ class ProfileViewModel extends BaseViewModel {
     if (_loadedData != null && !force) {
       return;
     }
+    final splitName = info.fullname?.split(' ');
     _loadedData = UserData(
       info.bitrixId ?? 0,
       null,
-      Fullname(info.fullname, null, null),
+      Fullname(
+        splitName?[1],
+        [
+          splitName?.first,
+          ...splitName?.sublist(2, splitName.length - 1) ?? [],
+        ].join(' '),
+        splitName?.last,
+      ),
       null,
       null,
       '',
       info.photoSrc,
       null,
-    );
-    init(
-      force: true,
-      userId: info.bitrixId ?? 0,
-      loadFromPost: true,
-      setBusy: false,
     );
   }
 
