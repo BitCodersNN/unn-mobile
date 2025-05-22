@@ -6,11 +6,14 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:html_unescape/html_unescape.dart';
 import 'package:injector/injector.dart';
+import 'package:intl/intl.dart';
+import 'package:unn_mobile/core/misc/date_time_utilities/date_time_extensions.dart';
 import 'package:unn_mobile/core/misc/user/user_functions.dart';
 import 'package:unn_mobile/core/models/dialog/dialog.dart' as d;
 import 'package:unn_mobile/core/viewmodels/factories/main_page_routes_view_models_factory.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/chat/chat_screen_view_model.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
+import 'package:unn_mobile/ui/views/main_page/chat/widgets/unread_badge.dart';
 
 class ChatScreenView extends StatefulWidget {
   const ChatScreenView({super.key, this.routeIndex = 2});
@@ -125,6 +128,22 @@ class DialogInfo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final now = DateTime.now();
+    final previewMessage = dialog.previewMessage;
+
+    String formatDateLabel(DateTime date) {
+      if (date.isSameDate(now)) {
+        return DateFormat('HH:mm').format(date);
+      }
+      return date.getShortDayOfWeek();
+    }
+
+    Widget? unreadBadge;
+    if (dialog.unreadMessagesCount > 0) {
+      final String unreadCount = dialog.formatUnreadCount;
+      unreadBadge = UnreadBadge(unreadCount: unreadCount);
+    }
+
     return ListTile(
       leading: CircleAvatar(
         radius: MediaQuery.of(context).textScaler.scale(26.0),
@@ -146,15 +165,41 @@ class DialogInfo extends StatelessWidget {
               )
             : null,
       ),
-      title: Text(
-        dialog.title,
-        overflow: TextOverflow.ellipsis,
-        maxLines: 1,
+      title: Row(
+        children: [
+          Expanded(
+            child: Text(
+              dialog.title,
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.titleMedium,
+            ),
+          ),
+          const SizedBox(width: 8),
+          Text(
+            formatDateLabel(previewMessage.dateTime),
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: theme.hintColor,
+            ),
+          ),
+        ],
       ),
-      subtitle: Text(
-        _unescaper.convert(dialog.previewMessage.text),
-        overflow: TextOverflow.ellipsis,
-        maxLines: 2,
+      subtitle: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(
+            child: Text(
+              _unescaper.convert(previewMessage.text),
+              overflow: TextOverflow.ellipsis,
+              maxLines: 2,
+              style: theme.textTheme.bodyMedium,
+            ),
+          ),
+          if (unreadBadge != null)
+            Padding(
+              padding: const EdgeInsets.only(left: 4, top: 2),
+              child: unreadBadge,
+            ),
+        ],
       ),
       enableFeedback: true,
       visualDensity: VisualDensity.adaptivePlatformDensity,

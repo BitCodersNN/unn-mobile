@@ -17,6 +17,7 @@ class _DialogJsonKeys {
   static const String name = 'name';
   static const String text = 'text';
   static const String status = 'status';
+  static const String counter = 'counter';
 }
 
 base class Dialog {
@@ -25,7 +26,13 @@ base class Dialog {
   final String avatarUrl;
   final MessageShortInfo previewMessage;
   final MessageStatus lastMessageStatus;
+  final int unreadMessagesCount;
   final bool pinned;
+
+  String get formatUnreadCount {
+    if (unreadMessagesCount < 1000) return '$unreadMessagesCount';
+    return '${(unreadMessagesCount / 1000.0).toStringAsFixed(1)}k';
+  }
 
   Dialog({
     required this.chatId,
@@ -33,6 +40,7 @@ base class Dialog {
     required this.avatarUrl,
     required this.previewMessage,
     required this.lastMessageStatus,
+    required this.unreadMessagesCount,
     required this.pinned,
   });
 
@@ -56,6 +64,7 @@ base class Dialog {
         MessageStatus.values,
         messageMap[_DialogJsonKeys.status],
       ),
+      unreadMessagesCount: jsonMap[_DialogJsonKeys.counter],
       pinned: jsonMap[_DialogJsonKeys.pinned],
     );
   }
@@ -73,6 +82,7 @@ base class Dialog {
         ...messageMap,
         _DialogJsonKeys.status: lastMessageStatus.toString().split('.').last,
       },
+      _DialogJsonKeys.counter: unreadMessagesCount,
       _DialogJsonKeys.user: messageMap[MessageShortInfoJsonKeys.author],
       _DialogJsonKeys.pinned: pinned,
     };

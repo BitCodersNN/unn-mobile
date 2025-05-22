@@ -29,4 +29,9 @@ extension DateTimeExtensions on DateTime {
   bool isBetween(DateTime start, DateTime end) {
     return isAfter(start) && isBefore(end);
   }
+
+  String getShortDayOfWeek() {
+    const List<String> days = ['пн', 'вт', 'ср', 'чт', 'пт', 'сб', 'вс'];
+    return days[weekday - 1];
+  }
 }
