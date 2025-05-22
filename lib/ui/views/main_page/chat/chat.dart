@@ -135,7 +135,7 @@ class DialogInfo extends StatelessWidget {
       if (date.isSameDate(now)) {
         return DateFormat('HH:mm').format(date);
       }
-      return date.getShortDayOfWeek();
+      return date.format('E');
     }
 
     Widget? unreadBadge;
