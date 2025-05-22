@@ -25,6 +25,8 @@ class ChatInsideViewModel extends BaseViewModel {
   final MessageServiceAggregator _messagesAggregator;
   final CurrentUserSyncStorage _currentUserSyncStorage;
 
+  ChatScreenViewModel? _dialogsViewModel;
+
   Dialog? _dialog;
 
   bool _hasError = false;
@@ -78,7 +80,7 @@ class ChatInsideViewModel extends BaseViewModel {
       _hasError = true;
       return;
     }
-    await _readMessages(_dialog!.chatId, messages);
+    await _readMessages(_dialog!.chatId, messages.items);
 
     final messagesToRemove = messages.items.length -
         messages.items.reversed
@@ -88,6 +90,14 @@ class ChatInsideViewModel extends BaseViewModel {
             )
             .length;
 
+    if (refreshLoopRunning && !refreshLoopStopFlag) {
+      await _dialogsViewModel!.init();
+
+      _dialog = _dialogsViewModel!.dialogs
+          .firstWhere((d) => d.chatId == _dialog!.chatId);
+
+      _dialogsViewModel!.notifyListeners();
+    }
     _unpartitionedMessages.removeRange(
       0,
       min(messagesToRemove, _unpartitionedMessages.length),
@@ -122,7 +132,7 @@ class ChatInsideViewModel extends BaseViewModel {
           _hasError = true;
           return;
         }
-        await _readMessages(_dialog!.chatId, messages);
+        await _readMessages(_dialog!.chatId, messages.items);
         _unpartitionedMessages.addAll(messages.items);
         _messages
           ..clear()
@@ -183,10 +193,9 @@ class ChatInsideViewModel extends BaseViewModel {
     _hasMessagesBefore = false;
     _hasMessagesAfter = false;
     _messages.clear();
-    _dialog = _routesViewModelFactory
-        .getViewModelByType<ChatScreenViewModel>()!
-        .dialogs
-        .firstWhere((d) => d.chatId == chatId);
+    _dialogsViewModel =
+        _routesViewModelFactory.getViewModelByType<ChatScreenViewModel>();
+    _dialog = _dialogsViewModel!.dialogs.firstWhere((d) => d.chatId == chatId);
 
     final messages = await tryLoginAndRetrieveData<PaginatedResult<Message>>(
       () async => await _messagesAggregator.fetch(chatId: chatId),
@@ -196,7 +205,7 @@ class ChatInsideViewModel extends BaseViewModel {
       _hasError = true;
       return;
     }
-    await _readMessages(chatId, messages);
+    await _readMessages(chatId, messages.items);
 
     _unpartitionedMessages.addAll(messages.items.reversed);
     _messages.addAll(_partitionMessages(messages.items.reversed));
@@ -243,11 +252,11 @@ class ChatInsideViewModel extends BaseViewModel {
 
   Future<void> _readMessages(
     int chatId,
-    PaginatedResult<Message> messages,
+    List<Message> messages,
   ) async {
     await _messagesAggregator.readMessages(
       chatId: chatId,
-      messageIds: messages.items.map((m) => m.messageId),
+      messageIds: messages.map((m) => m.messageId),
     );
   }
 
