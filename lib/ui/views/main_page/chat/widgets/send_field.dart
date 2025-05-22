@@ -109,6 +109,7 @@ class _SendFieldState extends State<SendField> {
                 padding: const EdgeInsets.all(8.0).copyWith(top: 0),
                 child: TextField(
                   controller: _textController,
+                  maxLines: null,
                   autocorrect: true,
                   enableSuggestions: true,
                   enabled: !widget.model.isBusy,
