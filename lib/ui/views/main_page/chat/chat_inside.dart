@@ -88,12 +88,27 @@ class ChatInside extends StatelessWidget {
                   reverse: true,
                   children: [
                     for (final messageDateGroup in model.messages) ...[
-                      for (final messageGroup in messageDateGroup)
+                      for (final messageGroup in messageDateGroup) ...[
+                        if (messageGroup
+                            .any((m) => m.messageId == model.lastReadMessageId))
+                          Padding(
+                            padding:
+                                const EdgeInsets.only(top: 6.0, bottom: 10.0),
+                            child: Container(
+                              padding: const EdgeInsets.all(2.0),
+                              color: Colors.grey.shade300,
+                              child: const Align(
+                                alignment: Alignment.center,
+                                child: Text('Новые сообщения'),
+                              ),
+                            ),
+                          ),
                         MessageGroup(
                           currentUserId: model.currentUserId,
                           messages: messageGroup,
                           chatModel: model,
                         ),
+                      ],
                       Align(
                         child: Container(
                           alignment: Alignment.center,
