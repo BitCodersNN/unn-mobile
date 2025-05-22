@@ -19,10 +19,35 @@ class ChatInside extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    bool hasScrolledOnce = false;
+
     return BaseView<ChatInsideViewModel>(
       builder: (context, model, child) {
+        final scrollController = ScrollController();
+        final newMessagesKey = GlobalKey();
+
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (!hasScrolledOnce &&
+              model.dialog != null &&
+              model.dialog!.unreadMessagesCount > 0 &&
+              scrollController.hasClients) {
+            scrollController.jumpTo(scrollController.position.maxScrollExtent);
+            final renderBox =
+                newMessagesKey.currentContext?.findRenderObject() as RenderBox?;
+            if (renderBox != null) {
+              // scrollController.position.ensureVisible(
+              //   renderBox,
+              //   alignment: 0.8,
+              //   duration: Duration.zero,
+              // );
+              hasScrolledOnce = true;
+            }
+          }
+        });
+
         final avatarUrl = model.dialog?.avatarUrl;
         final dialogTitle = model.dialog?.title;
+
         return Scaffold(
           bottomNavigationBar: SendField(model: model),
           floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
@@ -79,12 +104,14 @@ class ChatInside extends StatelessWidget {
               return NotificationListener<ScrollEndNotification>(
                 onNotification: (notification) {
                   final metrics = notification.metrics;
-                  if (metrics.maxScrollExtent - metrics.pixels < 100) {
+                  if (metrics.maxScrollExtent - metrics.pixels < 100 &&
+                      hasScrolledOnce) {
                     model.loadMoreMessages();
                   }
                   return true;
                 },
                 child: ListView(
+                  controller: scrollController,
                   reverse: true,
                   children: [
                     for (final messageDateGroup in model.messages) ...[
@@ -92,6 +119,7 @@ class ChatInside extends StatelessWidget {
                         if (messageGroup
                             .any((m) => m.messageId == model.lastReadMessageId))
                           Padding(
+                            key: newMessagesKey,
                             padding:
                                 const EdgeInsets.only(top: 6.0, bottom: 10.0),
                             child: Container(
