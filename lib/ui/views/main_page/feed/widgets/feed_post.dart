@@ -24,6 +24,7 @@ import 'package:unn_mobile/ui/views/base_view.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/functions/reactions_window.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/widgets/attached_file.dart';
 import 'package:unn_mobile/ui/views/main_page/main_page_routing.dart';
+import 'package:unn_mobile/ui/widgets/height_limiter.dart';
 import 'package:unn_mobile/ui/widgets/packed_images_view.dart';
 import 'package:unn_mobile/ui/widgets/shimmer.dart';
 import 'package:unn_mobile/ui/widgets/shimmer_loading.dart';
@@ -35,17 +36,22 @@ const idkWhatColor = Color(0xFF989EA9);
 class FeedPost extends StatefulWidget {
   final FeedPostViewModel post;
   final bool showingComments;
+  final bool isCollapsed;
 
   const FeedPost({
     super.key,
     required this.post,
     required this.showingComments,
+    this.isCollapsed = true,
   });
 
   @override
   State<FeedPost> createState() => _FeedPostState();
 
-  static Widget htmlWidget(String text, BuildContext context) {
+  static Widget htmlWidget(
+    String text,
+    BuildContext context,
+  ) {
     return HtmlWidget(
       text,
       onTapUrl: htmlWidgetOnTapUrl,
@@ -157,8 +163,10 @@ class FeedPost extends StatefulWidget {
 }
 
 class _FeedPostState extends State<FeedPost> {
+  bool isCollapsed = true;
   @override
   void initState() {
+    isCollapsed = widget.isCollapsed;
     super.initState();
   }
 
@@ -232,7 +240,52 @@ class _FeedPostState extends State<FeedPost> {
                           ],
                         ),
                         const SizedBox(height: 16.0),
-                        FeedPost.htmlWidget(model.postText, context),
+                        if (isCollapsed)
+                          HeightLimiter(
+                            maxHeight: 180,
+                            fadeEffectHeight: 40,
+                            child: FeedPost.htmlWidget(model.postText, context),
+                            overflowIndicatorBuilder: (context) {
+                              return Container(
+                                height: 150,
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    begin: Alignment.bottomCenter,
+                                    end: Alignment.topCenter,
+                                    colors: [
+                                      Colors.white.withAlpha(255),
+                                      Colors.white.withAlpha(0),
+                                    ],
+                                    stops: const [
+                                      0.2,
+                                      1.0,
+                                    ],
+                                  ),
+                                ),
+                                child: Align(
+                                  alignment: Alignment.bottomCenter,
+                                  child: Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      const Expanded(child: Divider()),
+                                      TextButton(
+                                        onPressed: () {
+                                          setState(() {
+                                            isCollapsed = false;
+                                          });
+                                        },
+                                        child: const Text('Развернуть'),
+                                      ),
+                                      const Expanded(child: Divider()),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },
+                          )
+                        else
+                          FeedPost.htmlWidget(model.postText, context),
                         PackedImagesView(
                           onChildTap: (index) async {
                             OverlayEntry createOverlay(int index) =>
