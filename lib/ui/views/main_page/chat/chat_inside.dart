@@ -24,10 +24,9 @@ class ChatInside extends StatefulWidget {
 class _ChatInsideState extends State<ChatInside> {
   final scrollController = ScrollController();
   final newMessagesKey = GlobalKey();
+  bool hasScrolledOnce = false;
   @override
   Widget build(BuildContext context) {
-    bool hasScrolledOnce = false;
-
     return BaseView<ChatInsideViewModel>(
       builder: (context, model, child) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -108,8 +107,7 @@ class _ChatInsideState extends State<ChatInside> {
               return NotificationListener<ScrollEndNotification>(
                 onNotification: (notification) {
                   final metrics = notification.metrics;
-                  if (metrics.maxScrollExtent - metrics.pixels < 100 &&
-                      hasScrolledOnce) {
+                  if (metrics.maxScrollExtent - metrics.pixels < 100) {
                     model.loadMoreMessages();
                   }
                   return true;
@@ -125,19 +123,7 @@ class _ChatInsideState extends State<ChatInside> {
                           if (messageGroup.any(
                             (m) => m.messageId == model.lastReadMessageId,
                           ))
-                            Padding(
-                              key: newMessagesKey,
-                              padding:
-                                  const EdgeInsets.only(top: 6.0, bottom: 10.0),
-                              child: Container(
-                                padding: const EdgeInsets.all(2.0),
-                                color: Colors.grey.shade300,
-                                child: const Align(
-                                  alignment: Alignment.center,
-                                  child: Text('Новые сообщения'),
-                                ),
-                              ),
-                            ),
+                            _buildNewMessagesText(),
                           MessageGroup(
                             currentUserId: model.currentUserId,
                             messages: messageGroup,
@@ -156,6 +142,8 @@ class _ChatInsideState extends State<ChatInside> {
                           ),
                         ),
                       ],
+                      if (model.lastReadMessageId == null)
+                        _buildNewMessagesText(),
                       if (model.isBusy)
                         const Center(
                           child: SizedBox(
@@ -178,6 +166,21 @@ class _ChatInsideState extends State<ChatInside> {
       onDispose: (model) {
         model.refreshLoopStopFlag = true;
       },
+    );
+  }
+
+  Widget _buildNewMessagesText() {
+    return Padding(
+      key: newMessagesKey,
+      padding: const EdgeInsets.only(top: 6.0, bottom: 10.0),
+      child: Container(
+        padding: const EdgeInsets.all(2.0),
+        color: Colors.grey.shade300,
+        child: const Align(
+          alignment: Alignment.center,
+          child: Text('Новые сообщения'),
+        ),
+      ),
     );
   }
 }
