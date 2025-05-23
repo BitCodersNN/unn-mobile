@@ -63,16 +63,18 @@ class PostsListPage extends StatelessWidget {
                         ),
                       );
                     }
-                    return ListView.builder(
+                    return SingleChildScrollView(
                       physics: const AlwaysScrollableScrollPhysics(),
-                      itemCount: postsList.length,
-                      itemBuilder: (context, index) {
-                        return FeedPost(
-                          key: ObjectKey(postsList[index]),
-                          post: postsList[index],
-                          showingComments: false,
-                        );
-                      },
+                      child: Column(
+                        children: [
+                          for (final post in postsList)
+                            FeedPost(
+                              key: ValueKey(post),
+                              post: post,
+                              showingComments: false,
+                            ),
+                        ],
+                      ),
                     );
                   },
                 ),

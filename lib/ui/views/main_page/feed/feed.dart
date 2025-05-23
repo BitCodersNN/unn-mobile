@@ -157,9 +157,9 @@ class FeedScreenViewState extends State<FeedScreenView>
                                   const Color(0xFF696969),
                                   const Color(0xFFFFFFFF),
                                 ),
-                              SliverList(
-                                delegate: SliverChildListDelegate(
-                                  [
+                              SliverToBoxAdapter(
+                                child: Column(
+                                  children: [
                                     if (model.loadingMore && online)
                                       const SizedBox(
                                         width: double.infinity,
@@ -182,6 +182,23 @@ class FeedScreenViewState extends State<FeedScreenView>
                                         key: ObjectKey(post),
                                         post: post,
                                         showingComments: false,
+                                      ),
+                                    if (model.loadingMore &&
+                                        online &&
+                                        model.posts.isNotEmpty)
+                                      const SizedBox(
+                                        width: double.infinity,
+                                        child: Center(
+                                          child: Padding(
+                                            padding: EdgeInsets.all(8.0),
+                                            child: SizedBox(
+                                              width: 24,
+                                              height: 24,
+                                              child:
+                                                  CircularProgressIndicator(),
+                                            ),
+                                          ),
+                                        ),
                                       ),
                                   ],
                                 ),
