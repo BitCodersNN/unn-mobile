@@ -4,8 +4,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
-// copied from https://stackoverflow.com/a/65393578/14116050
-
 typedef OnWidgetSizeChange = void Function(Size size);
 
 class HeightLimiter extends StatefulWidget {
