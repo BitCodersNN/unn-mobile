@@ -179,6 +179,7 @@ class _FeedPostState extends State<FeedPost> {
 
   Widget buildPostContent(FeedPostViewModel model) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         FeedPost.htmlWidget(model.postText, context),
         PackedImagesView(
@@ -236,7 +237,7 @@ class _FeedPostState extends State<FeedPost> {
           children: model.attachedImages
               .map(
                 (e) => CachedNetworkImage(
-                  imageUrl: e,
+                  imageUrl: e.startsWith('/') ? 'https://portal.unn.ru$e' : e,
                 ),
               )
               .toList(),
