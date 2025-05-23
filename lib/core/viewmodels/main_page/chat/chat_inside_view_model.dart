@@ -31,6 +31,10 @@ class ChatInsideViewModel extends BaseViewModel {
 
   bool _hasError = false;
 
+  int? _lastReadMessageId;
+
+  int? get lastReadMessageId => _lastReadMessageId;
+
   final List<List<List<Message>>> _messages = [];
 
   final List<Message> _unpartitionedMessages = [];
@@ -137,7 +141,7 @@ class ChatInsideViewModel extends BaseViewModel {
         _messages
           ..clear()
           ..addAll(_partitionMessages(_unpartitionedMessages));
-        _hasMessagesBefore = messages.hasPreviousPage;
+        _hasMessagesBefore = messages.hasNextPage;
       });
 
   Future<void> refreshLoop({bool checkStartConditions = true}) async {
@@ -217,8 +221,9 @@ class ChatInsideViewModel extends BaseViewModel {
 
   List<List<List<Message>>> _partitionMessages(Iterable<Message> messages) {
     const maxTimeDifference = 5;
+    final unreadMessagesCount = _dialog?.unreadMessagesCount ?? 0;
     final List<List<List<Message>>> partitions = [];
-    for (final message in messages) {
+    for (final (index, message) in messages.indexed) {
       final lastDatePartition = partitions.lastOrNull;
       final lastPartititon = lastDatePartition?.lastOrNull;
       final lastMessage = lastPartititon?.lastOrNull;
@@ -230,6 +235,9 @@ class ChatInsideViewModel extends BaseViewModel {
               .inMinutes
               .abs() ??
           maxTimeDifference;
+      if (index == unreadMessagesCount) {
+        _lastReadMessageId = index == 0 ? null : message.messageId;
+      }
       if (!(lastMessage?.dateTime.isSameDate(message.dateTime) ?? false)) {
         partitions.add(
           [
@@ -240,10 +248,12 @@ class ChatInsideViewModel extends BaseViewModel {
       }
       if (lastMessageAuthorId == messageAuthorId &&
           timeDifference < maxTimeDifference &&
-          message.messageStatus != MessageState.system) {
+          message.messageStatus != MessageState.system &&
+          index != unreadMessagesCount) {
         lastPartititon?.add(message);
         continue;
       }
+
       lastDatePartition?.add([message]);
     }
 

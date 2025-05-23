@@ -38,6 +38,7 @@ class CommentsPage extends StatelessWidget {
                         FeedPost(
                           post: post,
                           showingComments: true,
+                          isCollapsed: false,
                         ),
                         Padding(
                           padding: const EdgeInsets.only(top: 16, bottom: 8),

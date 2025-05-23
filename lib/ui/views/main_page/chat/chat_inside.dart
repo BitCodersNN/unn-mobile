@@ -12,17 +12,46 @@ import 'package:unn_mobile/ui/views/base_view.dart';
 import 'package:unn_mobile/ui/views/main_page/chat/widgets/message_group.dart';
 import 'package:unn_mobile/ui/views/main_page/chat/widgets/send_field.dart';
 
-class ChatInside extends StatelessWidget {
+class ChatInside extends StatefulWidget {
   const ChatInside({super.key, required this.chatId});
 
   final int chatId;
 
   @override
+  State<ChatInside> createState() => _ChatInsideState();
+}
+
+class _ChatInsideState extends State<ChatInside> {
+  final scrollController = ScrollController();
+  final newMessagesKey = GlobalKey();
+  @override
   Widget build(BuildContext context) {
+    bool hasScrolledOnce = false;
+
     return BaseView<ChatInsideViewModel>(
       builder: (context, model, child) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (!hasScrolledOnce &&
+              model.dialog != null &&
+              model.dialog!.unreadMessagesCount > 0 &&
+              scrollController.hasClients) {
+            final renderBox =
+                newMessagesKey.currentContext?.findRenderObject() as RenderBox?;
+            if (renderBox != null) {
+              scrollController.position.ensureVisible(
+                renderBox,
+                alignment: 0.8,
+                duration: Duration.zero,
+              );
+              hasScrolledOnce = true;
+            }
+            model.notifyListeners();
+          }
+        });
+
         final avatarUrl = model.dialog?.avatarUrl;
         final dialogTitle = model.dialog?.title;
+
         return Scaffold(
           bottomNavigationBar: SendField(model: model),
           floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
@@ -36,7 +65,7 @@ class ChatInside extends StatelessWidget {
                     )
                   : IconButton(
                       onPressed: () async {
-                        await model.init(chatId);
+                        await model.init(widget.chatId);
                       },
                       icon: const Icon(Icons.refresh),
                     ),
@@ -79,48 +108,73 @@ class ChatInside extends StatelessWidget {
               return NotificationListener<ScrollEndNotification>(
                 onNotification: (notification) {
                   final metrics = notification.metrics;
-                  if (metrics.maxScrollExtent - metrics.pixels < 100) {
+                  if (metrics.maxScrollExtent - metrics.pixels < 100 &&
+                      hasScrolledOnce) {
                     model.loadMoreMessages();
                   }
                   return true;
                 },
-                child: ListView(
+                child: SingleChildScrollView(
+                  controller: scrollController,
                   reverse: true,
-                  children: [
-                    for (final messageDateGroup in model.messages) ...[
-                      for (final messageGroup in messageDateGroup)
-                        MessageGroup(
-                          currentUserId: model.currentUserId,
-                          messages: messageGroup,
-                          chatModel: model,
-                        ),
-                      Align(
-                        child: Container(
-                          alignment: Alignment.center,
-                          child: Text(
-                            messageDateGroup.firstOrNull?.firstOrNull?.dateTime
-                                    .format(DatePattern.dMMMM) ??
-                                'Нет даты (?)',
+                  child: Column(
+                    verticalDirection: VerticalDirection.up,
+                    children: [
+                      for (final messageDateGroup in model.messages) ...[
+                        for (final messageGroup in messageDateGroup) ...[
+                          if (messageGroup.any(
+                            (m) => m.messageId == model.lastReadMessageId,
+                          ))
+                            Padding(
+                              key: newMessagesKey,
+                              padding:
+                                  const EdgeInsets.only(top: 6.0, bottom: 10.0),
+                              child: Container(
+                                padding: const EdgeInsets.all(2.0),
+                                color: Colors.grey.shade300,
+                                child: const Align(
+                                  alignment: Alignment.center,
+                                  child: Text('Новые сообщения'),
+                                ),
+                              ),
+                            ),
+                          MessageGroup(
+                            currentUserId: model.currentUserId,
+                            messages: messageGroup,
+                            chatModel: model,
+                          ),
+                        ],
+                        Align(
+                          child: Container(
+                            alignment: Alignment.center,
+                            child: Text(
+                              messageDateGroup
+                                      .firstOrNull?.firstOrNull?.dateTime
+                                      .format(DatePattern.dMMMM) ??
+                                  'Нет даты (?)',
+                            ),
                           ),
                         ),
-                      ),
-                    ],
-                    if (model.isBusy)
-                      const Center(
-                        child: SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(),
+                      ],
+                      if (model.isBusy)
+                        const Center(
+                          child: SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(),
+                          ),
                         ),
-                      ),
-                  ],
+                    ],
+                  ),
                 ),
               );
             },
           ),
         );
       },
-      onModelReady: (model) => model.init(chatId),
+      onModelReady: (model) {
+        model.init(widget.chatId);
+      },
       onDispose: (model) {
         model.refreshLoopStopFlag = true;
       },
