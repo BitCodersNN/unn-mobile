@@ -177,6 +177,74 @@ class _FeedPostState extends State<FeedPost> {
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 
+  Widget buildPostContent(FeedPostViewModel model) {
+    return Column(
+      children: [
+        FeedPost.htmlWidget(model.postText, context),
+        PackedImagesView(
+          onChildTap: (index) async {
+            OverlayEntry createOverlay(int index) => OverlayEntry(
+                  builder: (context) {
+                    return SafeArea(
+                      child: Align(
+                        alignment: Alignment.topCenter,
+                        child: Material(
+                          color: Colors.transparent,
+                          child: Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: const BoxDecoration(
+                              color: Colors.transparent,
+                            ),
+                            child: Text(
+                              '${index + 1} из ${model.attachedImages.length}',
+                              style: const TextStyle(
+                                color: Colors.black,
+                                fontSize: 24,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                );
+
+            var overlay = createOverlay(index);
+            await showDialog(
+              context: context,
+              builder: (context) {
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  Overlay.of(context, rootOverlay: true).insert(overlay);
+                });
+
+                return ExtendedImageSlidePage(
+                  slideAxis: SlideAxis.vertical,
+                  child: ImagesCarousel(
+                    viewModel: model,
+                    imageModel: index,
+                    onPageChanged: (index) {
+                      overlay.remove();
+                      overlay = createOverlay(index);
+                      Overlay.of(context).insert(overlay);
+                    },
+                  ),
+                );
+              },
+            );
+            overlay.remove();
+          },
+          children: model.attachedImages
+              .map(
+                (e) => CachedNetworkImage(
+                  imageUrl: e,
+                ),
+              )
+              .toList(),
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -242,9 +310,9 @@ class _FeedPostState extends State<FeedPost> {
                         const SizedBox(height: 16.0),
                         if (isCollapsed)
                           HeightLimiter(
-                            maxHeight: 180,
+                            maxHeight: 240,
                             fadeEffectHeight: 40,
-                            child: FeedPost.htmlWidget(model.postText, context),
+                            child: buildPostContent(model),
                             overflowIndicatorBuilder: (context) {
                               return Container(
                                 height: 150,
@@ -285,70 +353,7 @@ class _FeedPostState extends State<FeedPost> {
                             },
                           )
                         else
-                          FeedPost.htmlWidget(model.postText, context),
-                        PackedImagesView(
-                          onChildTap: (index) async {
-                            OverlayEntry createOverlay(int index) =>
-                                OverlayEntry(
-                                  builder: (context) {
-                                    return SafeArea(
-                                      child: Align(
-                                        alignment: Alignment.topCenter,
-                                        child: Material(
-                                          color: Colors.transparent,
-                                          child: Container(
-                                            padding: const EdgeInsets.all(12),
-                                            decoration: const BoxDecoration(
-                                              color: Colors.transparent,
-                                            ),
-                                            child: Text(
-                                              '${index + 1} из ${model.attachedImages.length}',
-                                              style: const TextStyle(
-                                                color: Colors.black,
-                                                fontSize: 24,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                );
-
-                            var overlay = createOverlay(index);
-                            await showDialog(
-                              context: context,
-                              builder: (context) {
-                                WidgetsBinding.instance
-                                    .addPostFrameCallback((_) {
-                                  Overlay.of(context, rootOverlay: true)
-                                      .insert(overlay);
-                                });
-
-                                return ExtendedImageSlidePage(
-                                  slideAxis: SlideAxis.vertical,
-                                  child: ImagesCarousel(
-                                    viewModel: model,
-                                    imageModel: index,
-                                    onPageChanged: (index) {
-                                      overlay.remove();
-                                      overlay = createOverlay(index);
-                                      Overlay.of(context).insert(overlay);
-                                    },
-                                  ),
-                                );
-                              },
-                            );
-                            overlay.remove();
-                          },
-                          children: model.attachedImages
-                              .map(
-                                (e) => CachedNetworkImage(
-                                  imageUrl: e,
-                                ),
-                              )
-                              .toList(),
-                        ),
+                          buildPostContent(model),
                         if (model.isAnnouncement)
                           FilledButton(
                             onPressed: model.markReadIfImportant,
