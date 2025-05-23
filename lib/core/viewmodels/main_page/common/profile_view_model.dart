@@ -111,23 +111,37 @@ class ProfileViewModel extends BaseViewModel {
       return;
     }
     final splitName = info.fullname?.split(' ');
+
     _loadedData = UserData(
       info.bitrixId ?? 0,
       null,
-      Fullname(
-        splitName?[1],
-        [
-          splitName?.first,
-          ...splitName?.sublist(2, splitName.length - 1) ?? [],
-        ].join(' '),
-        splitName?.last,
-      ),
+      _generateFullname(splitName ?? []),
       null,
       null,
       '',
       info.photoSrc,
       null,
     );
+  }
+
+  Fullname _generateFullname(List<String> splitName) {
+    switch (splitName.length) {
+      case 0:
+        return Fullname(null, null, null);
+      case 1:
+        return Fullname(splitName.first, null, null);
+      case 2:
+        return Fullname(splitName.first, splitName.last, null);
+      default:
+        return Fullname(
+          splitName[1],
+          [
+            splitName.first,
+            ...splitName.sublist(2, splitName.length - 1),
+          ].join(' '),
+          splitName.last,
+        );
+    }
   }
 
   Future<UserData?> _getCurrentUser() async {
