@@ -45,6 +45,8 @@ class ChatInsideViewModel extends BaseViewModel {
 
   bool refreshLoopStopFlag = false;
 
+  bool _isInitializing = false;
+
   bool refreshLoopRunning = false;
   Message? _replyMessage;
 
@@ -114,11 +116,19 @@ class ChatInsideViewModel extends BaseViewModel {
   }
 
   FutureOr<void> init(int chatId) async {
-    await busyCallAsync(() => _init(chatId));
+    _isInitializing = true;
+    try {
+      await busyCallAsync(() => _init(chatId));
+    } finally {
+      _isInitializing = false;
+    }
   }
 
   FutureOr<void> loadMoreMessages() async => await busyCallAsync(() async {
         if (_dialog == null) {
+          return;
+        }
+        if (_isInitializing) {
           return;
         }
         if (!_hasMessagesBefore) {
@@ -156,11 +166,11 @@ class ChatInsideViewModel extends BaseViewModel {
       return;
     }
     await Future.delayed(const Duration(seconds: 5));
+    if (!_isInitializing) {
+      await getNewMessages();
 
-    await getNewMessages();
-
-    notifyListeners();
-
+      notifyListeners();
+    }
     await refreshLoop(checkStartConditions: false);
   }
 
@@ -197,6 +207,7 @@ class ChatInsideViewModel extends BaseViewModel {
     _hasMessagesBefore = false;
     _hasMessagesAfter = false;
     _messages.clear();
+    _unpartitionedMessages.clear();
     _dialogsViewModel =
         _routesViewModelFactory.getViewModelByType<ChatScreenViewModel>();
     _dialog = _dialogsViewModel!.dialogs.firstWhere((d) => d.chatId == chatId);
