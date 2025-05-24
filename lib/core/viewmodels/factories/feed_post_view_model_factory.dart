@@ -13,7 +13,7 @@ typedef FeedPostCacheKey = int;
 
 class FeedPostViewModelFactory
     extends CachedViewModelFactoryBase<FeedPostCacheKey, FeedPostViewModel> {
-  FeedPostViewModelFactory() : super(100);
+  FeedPostViewModelFactory() : super(5);
 
   @override
   FeedPostViewModel createViewModel(key) {
