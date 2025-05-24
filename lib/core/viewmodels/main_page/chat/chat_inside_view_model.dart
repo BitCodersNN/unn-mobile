@@ -256,7 +256,7 @@ class ChatInsideViewModel extends BaseViewModel {
 
       lastDatePartition?.add([message]);
     }
-
+    _lastReadMessageId ??= -1;
     return partitions;
   }
 

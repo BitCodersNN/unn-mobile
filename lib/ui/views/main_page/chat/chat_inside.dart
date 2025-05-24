@@ -123,7 +123,7 @@ class _ChatInsideState extends State<ChatInside> {
                           if (messageGroup.any(
                             (m) => m.messageId == model.lastReadMessageId,
                           ))
-                            _buildNewMessagesText(),
+                            _buildNewMessagesBar(),
                           MessageGroup(
                             currentUserId: model.currentUserId,
                             messages: messageGroup,
@@ -143,7 +143,7 @@ class _ChatInsideState extends State<ChatInside> {
                         ),
                       ],
                       if (model.lastReadMessageId == null)
-                        _buildNewMessagesText(),
+                        _buildNewMessagesBar(),
                       if (model.isBusy)
                         const Center(
                           child: SizedBox(
@@ -169,7 +169,7 @@ class _ChatInsideState extends State<ChatInside> {
     );
   }
 
-  Widget _buildNewMessagesText() {
+  Widget _buildNewMessagesBar() {
     return Padding(
       key: newMessagesKey,
       padding: const EdgeInsets.only(top: 6.0, bottom: 10.0),
@@ -178,7 +178,7 @@ class _ChatInsideState extends State<ChatInside> {
         color: Colors.grey.shade300,
         child: const Align(
           alignment: Alignment.center,
-          child: Text('Новые сообщения'),
+          child: Text('Непрочитанные сообщения'),
         ),
       ),
     );
