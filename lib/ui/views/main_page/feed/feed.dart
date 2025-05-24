@@ -109,8 +109,8 @@ class FeedScreenViewState extends State<FeedScreenView>
                         child: RefreshIndicator(
                           onRefresh: model.reload,
                           child: CustomScrollView(
-                            physics: const AlwaysScrollableScrollPhysics(),
                             controller: _scrollController,
+                            physics: const AlwaysScrollableScrollPhysics(),
                             slivers: [
                               if (model.pinnedPosts.isNotEmpty)
                                 SliverAppBar(
@@ -158,62 +158,46 @@ class FeedScreenViewState extends State<FeedScreenView>
                                   const Color(0xFFFFFFFF),
                                 ),
                               SliverToBoxAdapter(
-                                child: Column(
-                                  children: [
-                                    if (model.loadingMore && online)
-                                      const SizedBox(
-                                        width: double.infinity,
-                                        child: Center(
-                                          child: Padding(
-                                            padding: EdgeInsets.all(8.0),
-                                            child: SizedBox(
-                                              width: 24,
-                                              height: 24,
-                                              child:
-                                                  CircularProgressIndicator(),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    for (final post in online
-                                        ? model.posts
-                                        : model.offlinePosts)
-                                      FeedPost(
-                                        key: ObjectKey(post),
-                                        post: post,
-                                        showingComments: false,
-                                      ),
-                                    if (model.loadingMore &&
-                                        online &&
-                                        model.posts.isNotEmpty)
-                                      const SizedBox(
-                                        width: double.infinity,
-                                        child: Center(
-                                          child: Padding(
-                                            padding: EdgeInsets.all(8.0),
-                                            child: SizedBox(
-                                              width: 24,
-                                              height: 24,
-                                              child:
-                                                  CircularProgressIndicator(),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                  ],
+                                child: ListView.builder(
+                                  shrinkWrap: true,
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  itemCount: model.posts.length,
+                                  itemBuilder: (context, index) {
+                                    final post = model.posts[index];
+                                    return FeedPost(
+                                      key: ObjectKey(post),
+                                      post: post,
+                                      showingComments: false,
+                                    );
+                                  },
                                 ),
                               ),
+                              if (model.loadingMore &&
+                                  online &&
+                                  model.posts.isNotEmpty)
+                                const SliverToBoxAdapter(
+                                  child: Padding(
+                                    padding: EdgeInsets.all(8.0),
+                                    child: Center(
+                                      child: SizedBox(
+                                        width: 24,
+                                        height: 24,
+                                        child: CircularProgressIndicator(),
+                                      ),
+                                    ),
+                                  ),
+                                ),
                             ],
                           ),
                         ),
                         onNotification: (scrollEnd) {
-                          if (!online) {
-                            return false;
-                          }
+                          if (!online) return false;
                           final metrics = scrollEnd.metrics;
-                          if (metrics.maxScrollExtent - metrics.pixels < 300) {
+
+                          if (metrics.pixels >= metrics.maxScrollExtent - 300) {
                             model.loadMorePosts();
                           }
+
                           return true;
                         },
                       ),
