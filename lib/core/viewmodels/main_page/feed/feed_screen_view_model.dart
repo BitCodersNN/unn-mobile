@@ -22,14 +22,17 @@ class FeedScreenViewModel extends BaseViewModel
   final RegularBlogPostsService _regularBlogPostsService;
   final FeaturedBlogPostsService _featuredBlogPostsService;
 
-  final List<FeedPostViewModel> posts = [];
   final List<FeedPostViewModel> offlinePosts = [];
   final List<FeedPostViewModel> pinnedPosts = [];
   final List<FeedPostViewModel> announcements = [];
 
-  bool _failedToLoad = false;
-  int _nextPage = 1;
+  final List<FeedPostViewModel> _totalPosts = [];
 
+  int _currentPage = 0;
+  bool _failedToLoad = false;
+
+  List<FeedPostViewModel> get posts =>
+      _totalPosts.take(postsPerPage * _currentPage).toList();
   bool get failedToLoad => _failedToLoad;
   bool get loadingMore => _loadingMore;
 
@@ -89,7 +92,7 @@ class FeedScreenViewModel extends BaseViewModel
         loadingMore = true;
         final freshPosts = await tryLoginAndRetrieveData<List<BlogPost>?>(
           () async => await _regularBlogPostsService.getRegularBlogPosts(
-            pageNumber: _nextPage,
+            pageNumber: _currentPage + 1,
             postsPerPage: postsPerPage,
           ),
           () => null,
@@ -99,9 +102,9 @@ class FeedScreenViewModel extends BaseViewModel
           loadingMore = false;
           return;
         }
-        _addPostsToList(posts, freshPosts);
+        _addPostsToList(_totalPosts, freshPosts);
         failedToLoad = false;
-        _nextPage++;
+        _currentPage++;
         loadingMore = false;
       });
 
@@ -124,13 +127,13 @@ class FeedScreenViewModel extends BaseViewModel
         }
         _blogPostProvider.saveData(freshPosts);
         offlinePosts.clear();
-        posts.clear();
+        _totalPosts.clear();
 
-        _addPostsToList(posts, freshPosts);
+        _addPostsToList(_totalPosts, freshPosts);
 
-        offlinePosts.addAll(posts);
+        offlinePosts.addAll(_totalPosts);
         loadingMore = false;
-        _nextPage = 2;
+        _currentPage = 1;
       });
 
   Future<void> refreshFeatured() async => changeState(() async {
