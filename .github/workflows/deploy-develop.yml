@@ -58,8 +58,8 @@ jobs:
           flutterfire configure -t $firebase_token -y -p unn-mobile-1 --platforms=android --android-package-name=ru.unn.unn_mobile
       - name: build
         env:
-          JAVA_OPTS: -Xmx2048M
-        run: flutter build apk
+          JAVA_OPTS: -Xmx2560M
+        run: flutter build apk -v
       - name: deploy
         env:
           firebase_token: ${{ secrets.FIREBASE_TOKEN }}
