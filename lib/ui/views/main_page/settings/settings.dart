@@ -3,6 +3,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:unn_mobile/core/misc/app_version.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/settings/settings_screen_view_model.dart';
 import 'package:unn_mobile/ui/router.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
@@ -18,76 +19,103 @@ class SettingsScreenView extends StatelessWidget {
       appBar: AppBar(title: const Text('Настройки')),
       body: BaseView<SettingsScreenViewModel>(
         builder: (context, model, _) {
-          return SingleChildScrollView(
-            child: Column(
-              children: [
-                ...ListTile.divideTiles(
-                  context: context,
-                  tiles: [
-                    SwitchListTile.adaptive(
-                      title: const Text('Вибрация'),
-                      value: model.vibrationEnabled,
-                      onChanged: (bool value) {
-                        model.vibrationEnabled = value;
-                      },
-                    ),
-                    ListTile(
-                      title: const Text('Начальный экран'),
-                      trailing: Text(model.initialScreenName),
-                      onTap: () async {
-                        await _showScreenChoiceModal(context, model);
-                      },
-                    ),
-                    ListTile(
-                      title: const Text('Очистить кэш'),
-                      onTap: () async {
-                        await model.clearCache();
-                        if (context.mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Кэш очищен'),
-                            ),
-                          );
-                        }
-                      },
-                    ),
-                    ListTile(
-                      title: const Text('Выйти из аккаунта'),
-                      onTap: () async {
-                        await showDialog(
-                          context: context,
-                          builder: (context) => AlertDialog.adaptive(
-                            title: const Text('Выйти из аккаунта?'),
-                            actions: [
-                              AdaptiveDialogAction(
-                                onPressed: () async {
-                                  await model.logout();
-                                  if (context.mounted) {
-                                    GoRouter.of(context).go(loadingPageRoute);
-                                  }
-                                },
-                                child: Text(
-                                  'Выйти',
-                                  style:
-                                      TextStyle(color: theme.colorScheme.error),
+          return Column(
+            children: [
+              SingleChildScrollView(
+                child: Column(
+                  children: [
+                    ...ListTile.divideTiles(
+                      context: context,
+                      tiles: [
+                        SwitchListTile.adaptive(
+                          title: const Text('Вибрация'),
+                          value: model.vibrationEnabled,
+                          onChanged: (bool value) {
+                            model.vibrationEnabled = value;
+                          },
+                        ),
+                        ListTile(
+                          title: const Text('Начальный экран'),
+                          trailing: Text(model.initialScreenName),
+                          onTap: () async {
+                            await _showScreenChoiceModal(context, model);
+                          },
+                        ),
+                        ListTile(
+                          title: const Text('Очистить кэш'),
+                          onTap: () async {
+                            await model.clearCache();
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Кэш очищен'),
                                 ),
+                              );
+                            }
+                          },
+                        ),
+                        ListTile(
+                          title: const Text('Выйти из аккаунта'),
+                          onTap: () async {
+                            await showDialog(
+                              context: context,
+                              builder: (context) => AlertDialog.adaptive(
+                                title: const Text('Выйти из аккаунта?'),
+                                actions: [
+                                  AdaptiveDialogAction(
+                                    onPressed: () async {
+                                      await model.logout();
+                                      if (context.mounted) {
+                                        GoRouter.of(context)
+                                            .go(loadingPageRoute);
+                                      }
+                                    },
+                                    child: Text(
+                                      'Выйти',
+                                      style: TextStyle(
+                                        color: theme.colorScheme.error,
+                                      ),
+                                    ),
+                                  ),
+                                  AdaptiveDialogAction(
+                                    onPressed: () {
+                                      GoRouter.of(context).pop();
+                                    },
+                                    child: const Text('Отмена'),
+                                  ),
+                                ],
                               ),
-                              AdaptiveDialogAction(
-                                onPressed: () {
-                                  GoRouter.of(context).pop();
-                                },
-                                child: const Text('Отмена'),
-                              ),
-                            ],
-                          ),
-                        );
-                      },
-                      textColor: theme.colorScheme.error,
+                            );
+                          },
+                          textColor: theme.colorScheme.error,
+                        ),
+                      ],
                     ),
                   ],
                 ),
-              ],
-            ),
+              ),
+              Expanded(
+                child: Container(),
+              ),
+              Align(
+                alignment: Alignment.center,
+                child: FutureBuilder(
+                  future: getAppVersion(),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      return Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          'Версия приложения: ${snapshot.data}',
+                          style: theme.textTheme.bodySmall,
+                        ),
+                      );
+                    }
+                    return Container();
+                  },
+                ),
+              ),
+            ],
           );
         },
       ),
