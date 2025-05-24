@@ -28,7 +28,7 @@ jobs:
           ref: develop
       - uses: flutter-actions/setup-flutter@v3.6
         with:
-          version: '3.24.0'
+          version: '3.29.2'
           channel: 'stable'
       - name: load certificate
         uses: mobiledevops/secret-to-file-action@v1
@@ -54,7 +54,7 @@ jobs:
         env: 
           firebase_token: ${{ secrets.FIREBASE_TOKEN }}
         run: |
-          dart pub global activate flutterfire_cli 1.0.1-dev.4
+          dart pub global activate flutterfire_cli 1.2.0
           flutterfire configure -t $firebase_token -y -p unn-mobile-1 --platforms=android --android-package-name=ru.unn.unn_mobile
       - name: build
         run: flutter build appbundle
