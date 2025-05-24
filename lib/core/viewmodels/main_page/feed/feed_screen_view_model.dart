@@ -90,21 +90,19 @@ class FeedScreenViewModel extends BaseViewModel
           return;
         }
         loadingMore = true;
-        if (_totalPosts.length <= _currentPage * postsPerPage) {
-          final freshPosts = await tryLoginAndRetrieveData<List<BlogPost>?>(
-            () async => await _regularBlogPostsService.getRegularBlogPosts(
-              pageNumber: _currentPage + 1,
-              postsPerPage: postsPerPage,
-            ),
-            () => null,
-          );
-          if (freshPosts == null) {
-            failedToLoad = true;
-            loadingMore = false;
-            return;
-          }
-          _addPostsToList(_totalPosts, freshPosts);
+        final freshPosts = await tryLoginAndRetrieveData<List<BlogPost>?>(
+          () async => await _regularBlogPostsService.getRegularBlogPosts(
+            pageNumber: _currentPage + 1,
+            postsPerPage: postsPerPage,
+          ),
+          () => null,
+        );
+        if (freshPosts == null) {
+          failedToLoad = true;
+          loadingMore = false;
+          return;
         }
+        _addPostsToList(_totalPosts, freshPosts);
         failedToLoad = false;
         _currentPage++;
         loadingMore = false;
