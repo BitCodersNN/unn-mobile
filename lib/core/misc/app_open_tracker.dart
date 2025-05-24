@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2025 BitCodersNN
 
-import 'package:package_info_plus/package_info_plus.dart';
+import 'package:unn_mobile/core/misc/app_version.dart';
 import 'package:unn_mobile/core/services/interfaces/common/storage_service.dart';
 
 class _AppOpenTrackerProviderKeys {
@@ -17,7 +17,7 @@ class AppOpenTracker {
   String? get lastVisitedVersion => _lastVisitedVersion;
 
   Future<bool> isFirstTimeOpenOnVersion() async {
-    final appVersion = await _getAppVersion();
+    final appVersion = await getAppVersion();
 
     _lastVisitedVersion ??= await _storage.read(
       key: _AppOpenTrackerProviderKeys._firstAppOpen,
@@ -32,10 +32,5 @@ class AppOpenTracker {
       );
     }
     return isFirstAppOpenForVersion;
-  }
-
-  Future<String> _getAppVersion() async {
-    final packageInfo = await PackageInfo.fromPlatform();
-    return packageInfo.version;
   }
 }
