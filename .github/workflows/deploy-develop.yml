@@ -57,10 +57,10 @@ jobs:
           dart pub global activate flutterfire_cli 1.2.0
           flutterfire configure -t $firebase_token -y -p unn-mobile-1 --platforms=android --android-package-name=ru.unn.unn_mobile
       - name: build
-        run: flutter build appbundle
+        run: flutter build apk
       - name: deploy
         env:
           firebase_token: ${{ secrets.FIREBASE_TOKEN }}
           app_id: ${{ secrets.FIREBASE_A_APP_ID }}
         run: |
-          firebase --debug --project unn-mobile-1 --token $firebase_token appdistribution:distribute --groups "testers" --app "$app_id" --release-notes "$(git log -1 --pretty=%B)" "build/app/outputs/bundle/release/app-release.aab"
+          firebase --debug --project unn-mobile-1 --token $firebase_token appdistribution:distribute --groups "testers" --app "$app_id" --release-notes "$(git log -1 --pretty=%B)" "build/app/outputs/flutter-apk/app-release.apk"
