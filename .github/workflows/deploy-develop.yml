@@ -57,6 +57,8 @@ jobs:
           dart pub global activate flutterfire_cli 1.2.0
           flutterfire configure -t $firebase_token -y -p unn-mobile-1 --platforms=android --android-package-name=ru.unn.unn_mobile
       - name: build
+        env:
+          JAVA_OPTS: -Xmx2048M
         run: flutter build apk
       - name: deploy
         env:
