@@ -10,7 +10,7 @@ typedef MessageReactionCacheKey = int;
 
 class MessageReactionViewModelFactory extends CachedViewModelFactoryBase<
     MessageReactionCacheKey, MessageReactionViewModel> {
-  MessageReactionViewModelFactory() : super(100);
+  MessageReactionViewModelFactory() : super(3);
 
   @override
   MessageReactionViewModel createViewModel(MessageReactionCacheKey key) {

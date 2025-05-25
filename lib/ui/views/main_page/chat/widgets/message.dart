@@ -235,7 +235,7 @@ class _MessageWidgetState extends State<MessageWidget> {
       model: MessageReactionViewModel.cached(widget.message.messageId),
       builder: (context, model, _) {
         return GestureDetector(
-          onLongPress: _showContextMenu,
+          onLongPress: () => _showContextMenu(model),
           child: _buildMessageContent(context, model, theme),
         );
       },
@@ -246,7 +246,7 @@ class _MessageWidgetState extends State<MessageWidget> {
     );
   }
 
-  void _showContextMenu() {
+  void _showContextMenu(MessageReactionViewModel model) {
     setState(() => _isHighlighted = true);
     triggerHaptic(HapticIntensity.medium);
 
@@ -261,14 +261,14 @@ class _MessageWidgetState extends State<MessageWidget> {
         offset.dx + renderBox.size.width,
         offset.dy + renderBox.size.height + 1,
       ),
-      items: _buildMenuItems(),
+      items: _buildMenuItems(model),
     ).then((value) {
       setState(() => _isHighlighted = false);
       _handleMenuSelection(value);
     });
   }
 
-  List<PopupMenuEntry<String>> _buildMenuItems() {
+  List<PopupMenuEntry<String>> _buildMenuItems(MessageReactionViewModel model) {
     return [
       PopupMenuItem(
         enabled: false,
@@ -280,7 +280,7 @@ class _MessageWidgetState extends State<MessageWidget> {
               children: ReactionType.values
                   .map(
                     (reaction) => GestureDetector(
-                      onTap: () => _handleReactionTap(reaction),
+                      onTap: () => _handleReactionTap(reaction, model),
                       child: Padding(
                         padding: const EdgeInsets.all(4.0),
                         child: CircleAvatar(
@@ -306,8 +306,10 @@ class _MessageWidgetState extends State<MessageWidget> {
     ];
   }
 
-  void _handleReactionTap(ReactionType reaction) {
-    final model = MessageReactionViewModel.cached(widget.message.messageId);
+  void _handleReactionTap(
+    ReactionType reaction,
+    MessageReactionViewModel model,
+  ) {
     triggerHaptic(HapticIntensity.selection);
     if (model.currentReaction != reaction) {
       model.toggleReaction(reaction);
