@@ -1,6 +1,9 @@
 <div align="center">
-<img src="https://github.com/BitCodersNN/unn-mobile/blob/develop/assets/images/icon.png" width="256" hspace="10" vspace="10">
-<h1>Мобильное приложение ННГУ</h1>
+
+![icon](https://raw.githubusercontent.com/BitCodersNN/unn-mobile/d098e6b2ed10257d3814d0dab45a2b77382b8bf0/assets/images/icon.png)
+
+# Мобильное приложение ННГУ
+
 </div>
 
 ## Оглавление
