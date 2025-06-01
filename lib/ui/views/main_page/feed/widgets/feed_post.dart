@@ -10,12 +10,14 @@ import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:go_router/go_router.dart';
 import 'package:html/parser.dart';
 import 'package:html_unescape/html_unescape.dart';
+import 'package:injector/injector.dart';
 import 'package:intl/intl.dart';
 import 'package:mime/mime.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:unn_mobile/core/misc/haptic_utils.dart';
 import 'package:unn_mobile/core/misc/html_utils/html_widget_callbacks.dart';
 import 'package:unn_mobile/core/models/feed/rating_list.dart';
+import 'package:unn_mobile/core/viewmodels/factories/feed_post_view_model_factory.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/feed/feed_post_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/common/profile_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/feed/reaction_view_model.dart';
@@ -259,6 +261,9 @@ class _FeedPostState extends State<FeedPost> {
             if (widget.showingComments) {
               return;
             }
+            Injector.appInstance
+                .get<FeedPostViewModelFactory>()
+                .putInCache(model.blogData.id, model);
             FeedPost._openPostCommentsPage(context, model);
           },
           child: Shimmer(

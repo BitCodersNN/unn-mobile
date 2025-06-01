@@ -16,6 +16,10 @@ abstract class CachedViewModelFactoryBase<TKey,
   T getService<T>({String dependencyName = ''}) =>
       Injector.appInstance.get<T>(dependencyName: dependencyName);
 
+  void putInCache(TKey key, TViewModel viewModel) {
+    _cache.save(key, viewModel);
+  }
+
   TViewModel getViewModel(TKey key) {
     TViewModel? viewmodel = _cache.get(key);
     viewmodel ??= createViewModel(key);
