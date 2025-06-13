@@ -9,7 +9,11 @@ class ExtractImagesAndCleanHtmlTextMapKey {
   static const String imageUrls = 'imageUrls';
 }
 
-Map<String, dynamic> extractImagesAndCleanHtmlText(String htmlText) {
+Map<String, dynamic> extractImagesAndCleanHtmlText(
+  String htmlText, {
+  int minWidth = 32,
+  int minHeight = 32,
+}) {
   final document = _parseHtmlSafely(htmlText);
   final body = document?.body;
 
@@ -22,10 +26,22 @@ Map<String, dynamic> extractImagesAndCleanHtmlText(String htmlText) {
   final imageUrls = <String>[];
 
   for (final node in nodes.reversed) {
+    if (node is dom.Text && node.text.trim().isEmpty) {
+      continue;
+    }
+
     if (node is! dom.Element || node.localName != 'img') {
-      if (node is dom.Text && node.text.trim().isEmpty) continue;
       break;
     }
+
+    final widthStr = node.attributes['width'];
+    final heightStr = node.attributes['height'];
+
+    final width = widthStr == null ? null : int.tryParse(widthStr);
+    final height = heightStr == null ? null : int.tryParse(heightStr);
+
+    if (width != null && width < minWidth) continue;
+    if (height != null && height < minHeight) continue;
 
     final imageSource = node.attributes['src']?.trim();
     if (imageSource == null || imageSource.isEmpty) continue;
