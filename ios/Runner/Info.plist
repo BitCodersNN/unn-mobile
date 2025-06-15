@@ -51,5 +51,11 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+
+    <!-- Permission options for the `calendar` group -->
+    <key>NSCalendarsUsageDescription</key>
+    <string>Calendars</string>
+    <key>NSCalendarsWriteOnlyAccessUsageDescription</key>
+    <string>Calendar full access</string>
 </dict>
 </plist>
