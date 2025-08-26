@@ -67,10 +67,8 @@ class ExportScheduleServiceImpl implements ExportScheduleService {
       }
     }
 
-    final iCalendarData = ICalendar.fromString(
-      response.data,
-    ).data;
-    iCalendarData.removeAt(0);
+    final iCalendarData =
+        ICalendar.fromString(response.data).data.skip(1).toList();
 
     final status = await _permissionHandler
         .checkPermissionStatus(Permission.calendarFullAccess);

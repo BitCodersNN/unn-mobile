@@ -76,12 +76,18 @@ class DateTimeRanges {
 
   static DateTimeRange untilEndOfSemester() {
     final now = DateTime.now();
+    final currentYear = now.year;
+
     DateTime endOfSemester;
-    if (DateTime.february <= now.month && now.month < DateTime.september) {
-      endOfSemester = DateTime(now.year, DateTime.july, 15);
+
+    if (now.month >= DateTime.february && now.month <= DateTime.august) {
+      endOfSemester = DateTime(currentYear, DateTime.september, 1)
+          .subtract(const Duration(milliseconds: 1));
     } else {
-      endOfSemester = DateTime(now.year + 1, DateTime.february, 1);
+      endOfSemester = DateTime(currentYear + 1, DateTime.february, 1)
+          .subtract(const Duration(milliseconds: 1));
     }
+
     return DateTimeRange(start: now, end: endOfSemester);
   }
 }
