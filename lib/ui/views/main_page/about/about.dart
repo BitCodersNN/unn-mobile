@@ -13,10 +13,10 @@ class AboutScreenView extends StatelessWidget {
   final List<_AuthorProfile> _authors = [
     _AuthorProfile.create('Крисеев Михаил Алексеевич', 'mikhail.png'),
     _AuthorProfile.create('Юрин Андрей Юрьевич', 'andrew.png'),
-    _AuthorProfile.create('Соколова Дарья Владимировна', 'darya.png'),
   ];
 
   final List<_AuthorProfile> _pastAuthors = [
+    _AuthorProfile.create('Соколова Дарья Владимировна', 'darya.png'),
     _AuthorProfile.create('Ванюшкин Дмитрий Игоревич', 'dmitry.png'),
     _AuthorProfile.create(
       'Паймухин Виталий Евгеньевич',
