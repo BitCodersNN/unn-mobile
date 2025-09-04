@@ -35,6 +35,7 @@ class SearchIdOnPortalServiceImpl implements SearchIdOnPortalService {
     this._apiHelper,
   );
 
+  @Deprecated('unn portal больше не поддерживает "ruzapi/studentinfo/"')
   Future<String?> _getIdOfLoggedInStudent(String uns) async {
     Response response;
     try {
@@ -60,11 +61,16 @@ class SearchIdOnPortalServiceImpl implements SearchIdOnPortalService {
     }
 
     if (userData is StudentData) {
-      final id = await _getIdOfLoggedInStudent(userData.login!.substring(1));
-      if (id == null) {
-        return null;
-      }
-      return IdForSchedule(IdType.student, id);
+      final userIds =
+          await findIdOnPortal(userData.fullname.toString(), IdType.student);
+          
+      final userInfo = userIds
+          ?.where((item) => item.description == userData.eduGroup)
+          .firstOrNull;
+          
+      return userInfo != null
+          ? IdForSchedule(IdType.student, userInfo.id)
+          : null;
     }
 
     return null;
