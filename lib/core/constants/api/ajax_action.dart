@@ -54,8 +54,11 @@ class AjaxActionStrings {
   static const String readMessage = 'im.v2.Chat.Message.read';
 
   /// Для поиска диалогов
-  static const String dialogSearch = 'ui.entityselector.doSearch';
+  static const String searchDialog = 'ui.entityselector.doSearch';
 
   /// Для загрузки ранее запрошенных диалогов
-  static const String dialogLoad = 'ui.entityselector.load';
+  static const String loadDialog = 'ui.entityselector.load';
+
+  /// Для сохранения диолога в истории поиска
+  static const String saveDialog = 'ui.entityselector.saveRecentItems';
 }
