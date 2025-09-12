@@ -4,6 +4,7 @@
 import 'package:dio/dio.dart';
 import 'package:unn_mobile/core/constants/api/ajax_action.dart';
 import 'package:unn_mobile/core/constants/api/path.dart';
+import 'package:unn_mobile/core/constants/api/request_payload.dart';
 import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/misc/dio_interceptor/response_data_type.dart';
 import 'package:unn_mobile/core/misc/dio_options_factory/options_with_timeout_and_expected_type_factory.dart';
@@ -30,24 +31,6 @@ class _ResponseJsonKeys {
   static const String user = 'im-user';
 }
 
-const _dialogContent = {
-  'id': 'im-chat-search',
-  'context': 'IM_CHAT_SEARCH',
-  'entities': [
-    {
-      'id': 'im-recent-v2',
-      'dynamicLoad': true,
-      'dynamicSearch': true,
-      'options': {
-        'withChatByUsers': false,
-        'exclude': [],
-      },
-    }
-  ],
-  'clearUnavailableItems': false,
-  'presentedItems': [],
-};
-
 class DialogSearchServiceImpl implements DialogSearchService {
   final LoggerService _loggerService;
   final ApiHelper _apiHelper;
@@ -58,28 +41,42 @@ class DialogSearchServiceImpl implements DialogSearchService {
   );
 
   @override
-  Future<List<PreviewDialog>?> search(String query) async {
-    Response response;
-    try {
-      response = await _apiHelper.post(
-        path: ApiPath.ajax,
-        queryParameters: {
+  Future<List<PreviewDialog>?> getHistory() async => _fetchDialogs(
+        {
+          AjaxActionStrings.actionKey: AjaxActionStrings.dialogLoad,
+        },
+      );
+
+  @override
+  Future<List<PreviewDialog>?> search(String query) async => _fetchDialogs(
+        {
           AjaxActionStrings.actionKey: AjaxActionStrings.dialogSearch,
         },
         data: {
-          _DataKeys.dialog: _dialogContent,
           _DataKeys.searchQuery: {
             _DataKeys.query: query.toLowerCase(),
             _DataKeys.queryWords: query.toLowerCase().split(' '),
           },
         },
+      );
+
+  Future<List<PreviewDialog>?> _fetchDialogs(
+    Map<String, dynamic> queryParameters, {
+    Map<String, dynamic>? data,
+  }) async {
+    Response response;
+    try {
+      response = await _apiHelper.post(
+        path: ApiPath.ajax,
+        queryParameters: queryParameters,
+        data: {
+          _DataKeys.dialog: RequestPayload.dialog,
+          ...?data,
+        },
         options: OptionsWithTimeoutAndExpectedTypeFactory.options(
           10,
           ResponseDataType.jsonMap,
-        ).copyWith(
-          headers: {
-            Headers.contentTypeHeader: Headers.jsonContentType,
-          },
+          contentTypeHeader: Headers.jsonContentType,
         ),
       );
     } catch (exception, stackTrace) {

@@ -50,8 +50,12 @@ class AjaxActionStrings {
   /// Для удаления сообщения в чате
   static const String removeMessage = 'im.v2.Chat.Message.delete';
 
-  /// Прочитать сообщение в чате
+  /// Для прочтения сообщений в чате
   static const String readMessage = 'im.v2.Chat.Message.read';
 
+  /// Для поиска диалогов
   static const String dialogSearch = 'ui.entityselector.doSearch';
+
+  /// Для загрузки ранее запрошенных диалогов
+  static const String dialogLoad = 'ui.entityselector.load';
 }
