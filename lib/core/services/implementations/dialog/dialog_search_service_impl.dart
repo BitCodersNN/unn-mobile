@@ -1,0 +1,102 @@
+import 'package:dio/dio.dart';
+import 'package:unn_mobile/core/constants/api/ajax_action.dart';
+import 'package:unn_mobile/core/constants/api/path.dart';
+import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
+import 'package:unn_mobile/core/misc/dio_interceptor/response_data_type.dart';
+import 'package:unn_mobile/core/misc/dio_options_factory/options_with_timeout_and_expected_type_factory.dart';
+import 'package:unn_mobile/core/misc/json/json_iterable_parser.dart';
+import 'package:unn_mobile/core/models/dialog/preview_dialog.dart';
+import 'package:unn_mobile/core/models/dialog/preview_group_dialog.dart';
+import 'package:unn_mobile/core/models/dialog/preview_user_dialog.dart';
+import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
+
+class _DataKeys {
+  static const String dialog = 'dialog';
+  static const String searchQuery = 'searchQuery';
+  static const String query = 'query';
+  static const String queryWords = 'queryWords';
+}
+
+class _ResponseJsonKeys {
+  static const String data = 'data';
+  static const String dialog = 'dialog';
+  static const String items = 'items';
+  static const String entityType = 'entityType';
+  static const String chat = 'im-chat';
+  static const String user = 'im-user';
+}
+
+const _dialogContent = {
+  'id': 'im-chat-search',
+  'context': 'IM_CHAT_SEARCH',
+  'entities': [
+    {
+      'id': 'im-recent-v2',
+      'dynamicLoad': true,
+      'dynamicSearch': true,
+      'options': {
+        'withChatByUsers': false,
+        'exclude': [],
+      },
+    }
+  ],
+  'clearUnavailableItems': false,
+  'presentedItems': [],
+};
+
+class DialogSearchServiceImpl {
+  final LoggerService _loggerService;
+  final ApiHelper _apiHelper;
+
+  DialogSearchServiceImpl(
+    this._loggerService,
+    this._apiHelper,
+  );
+
+  Future<List<PreviewDialog>?> search(String query) async {
+    Response response;
+    try {
+      response = await _apiHelper.post(
+        path: ApiPath.ajax,
+        queryParameters: {
+          AjaxActionStrings.actionKey: AjaxActionStrings.dialogSearch,
+        },
+        data: {
+          _DataKeys.dialog: _dialogContent,
+          _DataKeys.searchQuery: {
+            _DataKeys.query: query.toLowerCase(),
+            _DataKeys.queryWords: query.toLowerCase().split(' '),
+          },
+        },
+        options: OptionsWithTimeoutAndExpectedTypeFactory.options(
+          10,
+          ResponseDataType.jsonMap,
+        ).copyWith(
+          headers: {
+            Headers.contentTypeHeader: Headers.jsonContentType,
+          },
+        ),
+      );
+    } catch (exception, stackTrace) {
+      _loggerService.logError(exception, stackTrace);
+      return null;
+    }
+
+    return parseJsonIterable<PreviewDialog>(
+      response.data[_ResponseJsonKeys.data][_ResponseJsonKeys.dialog]
+          [_ResponseJsonKeys.items],
+      (json) {
+        final type = json[_ResponseJsonKeys.entityType] as String;
+        switch (type) {
+          case _ResponseJsonKeys.chat:
+            return PreviewGroupDialog.fromJson(json);
+          case _ResponseJsonKeys.user:
+            return PreviewUserDialog.fromJson(json);
+          default:
+            throw FormatException('Unknown dialog type: $type');
+        }
+      },
+      _loggerService,
+    );
+  }
+}

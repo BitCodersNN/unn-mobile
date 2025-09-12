@@ -2,6 +2,7 @@
 // Copyright 2025 BitCodersNN
 
 import 'package:unn_mobile/core/misc/enum_from_string.dart';
+import 'package:unn_mobile/core/models/dialog/base_dialog_info.dart';
 import 'package:unn_mobile/core/models/dialog/enum/message_status.dart';
 import 'package:unn_mobile/core/models/dialog/message/message_short_info.dart';
 
@@ -20,10 +21,7 @@ class _DialogJsonKeys {
   static const String counter = 'counter';
 }
 
-base class Dialog {
-  final int chatId;
-  final String title;
-  final String avatarUrl;
+class Dialog extends BaseDialogInfo {
   final MessageShortInfo previewMessage;
   final MessageStatus lastMessageStatus;
   final int unreadMessagesCount;
@@ -35,9 +33,9 @@ base class Dialog {
   }
 
   Dialog({
-    required this.chatId,
-    required this.title,
-    required this.avatarUrl,
+    required super.chatId,
+    required super.title,
+    required super.avatarUrl,
     required this.previewMessage,
     required this.lastMessageStatus,
     required this.unreadMessagesCount,

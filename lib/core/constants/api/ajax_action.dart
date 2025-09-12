@@ -52,4 +52,6 @@ class AjaxActionStrings {
 
   /// Прочитать сообщение в чате
   static const String readMessage = 'im.v2.Chat.Message.read';
+
+  static const String dialogSearch = 'ui.entityselector.doSearch';
 }
