@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright 2025 BitCodersNN
+
 class RequestPayload {
   static const Map dialog = {
     'id': 'im-chat-search',
