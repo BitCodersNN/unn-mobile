@@ -12,6 +12,7 @@ import 'package:unn_mobile/core/models/dialog/preview_dialog.dart';
 import 'package:unn_mobile/core/models/dialog/preview_group_dialog.dart';
 import 'package:unn_mobile/core/models/dialog/preview_user_dialog.dart';
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
+import 'package:unn_mobile/core/services/interfaces/dialog/dialog_search_service.dart';
 
 class _DataKeys {
   static const String dialog = 'dialog';
@@ -47,7 +48,7 @@ const _dialogContent = {
   'presentedItems': [],
 };
 
-class DialogSearchServiceImpl {
+class DialogSearchServiceImpl implements DialogSearchService {
   final LoggerService _loggerService;
   final ApiHelper _apiHelper;
 
@@ -56,6 +57,7 @@ class DialogSearchServiceImpl {
     this._apiHelper,
   );
 
+  @override
   Future<List<PreviewDialog>?> search(String query) async {
     Response response;
     try {
