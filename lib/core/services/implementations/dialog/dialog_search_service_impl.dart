@@ -4,7 +4,7 @@
 import 'package:dio/dio.dart';
 import 'package:unn_mobile/core/constants/api/ajax_action.dart';
 import 'package:unn_mobile/core/constants/api/path.dart';
-import 'package:unn_mobile/core/constants/api/request_payload.dart';
+import 'package:unn_mobile/core/constants/api/request_payloads.dart';
 import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/misc/dio_interceptor/response_data_type.dart';
 import 'package:unn_mobile/core/misc/dio_options_factory/options_with_timeout_and_expected_type_factory.dart';
@@ -72,7 +72,7 @@ class DialogSearchServiceImpl implements DialogSearchService {
         AjaxActionStrings.actionKey: AjaxActionStrings.saveDialog,
       },
       data: {
-        _DataKeys.dialog: RequestPayload.dialog,
+        _DataKeys.dialog: RequestPayloads.dialog,
         _DataKeys.recentItems: dialogIds
             .map(
               (id) => {
@@ -124,7 +124,7 @@ class DialogSearchServiceImpl implements DialogSearchService {
         path: ApiPath.ajax,
         queryParameters: queryParameters,
         data: {
-          _DataKeys.dialog: RequestPayload.dialog,
+          _DataKeys.dialog: RequestPayloads.dialog,
           ...?data,
         },
         options: OptionsWithTimeoutAndExpectedTypeFactory.options(
