@@ -1,5 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2025 BitCodersNN
+
+// SPDX-License-Identifier: Apache-2.0
+// Copyright 2025 BitCodersNN
 /// Класс, содержащий константы, описывающие структуру запросов к разным API
 class RequestPayloads {
   /// Константа, описывающая структуру запроса для поиска и управления диалогами.
