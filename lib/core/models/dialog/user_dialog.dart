@@ -6,10 +6,13 @@ import 'package:unn_mobile/core/models/dialog/dialog.dart';
 class _UserDialogJsonKeys {
   static const String id = 'id';
   static const String type = 'type';
+  static const String user = 'user';
+  static const String lastActivityDate = 'last_activity_date';
 }
 
 final class UserDialog extends Dialog {
   final int id;
+  final DateTime? lastActivityAt;
 
   UserDialog({
     required super.chatId,
@@ -20,6 +23,7 @@ final class UserDialog extends Dialog {
     required super.lastMessageStatus,
     required super.pinned,
     required this.id,
+    required this.lastActivityAt,
   });
 
   factory UserDialog.fromJson(Map<String, dynamic> json) {
@@ -33,6 +37,9 @@ final class UserDialog extends Dialog {
       lastMessageStatus: dialog.lastMessageStatus,
       pinned: dialog.pinned,
       id: json[_UserDialogJsonKeys.id],
+      lastActivityAt: DateTime.tryParse(
+        json[_UserDialogJsonKeys.user][_UserDialogJsonKeys.lastActivityDate],
+      ),
     );
   }
 
@@ -40,6 +47,10 @@ final class UserDialog extends Dialog {
   Map<String, dynamic> toJson() => {
         ...super.toJson(),
         _UserDialogJsonKeys.id: id,
-        _UserDialogJsonKeys.type: 'user',
+        _UserDialogJsonKeys.type: _UserDialogJsonKeys.user,
+        _UserDialogJsonKeys.user: {
+          _UserDialogJsonKeys.lastActivityDate:
+              lastActivityAt?.toIso8601String(),
+        },
       };
 }

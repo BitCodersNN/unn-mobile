@@ -27,6 +27,7 @@ import 'package:unn_mobile/core/services/implementations/authorisation/unn_autho
 import 'package:unn_mobile/core/services/implementations/authorisation/unn_authorisation_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/certificate/certificate_downloader_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/common/message_ignore_service_impl.dart';
+import 'package:unn_mobile/core/services/implementations/dialog/dialog_search_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/dialog/dialog_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/dialog/message/message_fetcher_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/dialog/message/message_file_sender_service_impl.dart';
@@ -82,6 +83,7 @@ import 'package:unn_mobile/core/services/interfaces/authorisation/source_authori
 import 'package:unn_mobile/core/services/interfaces/authorisation/unn_authorisation_service.dart';
 import 'package:unn_mobile/core/services/interfaces/certificate/certificate_downloader_service.dart';
 import 'package:unn_mobile/core/services/interfaces/common/message_ignore_service.dart';
+import 'package:unn_mobile/core/services/interfaces/dialog/dialog_search_service.dart';
 import 'package:unn_mobile/core/services/interfaces/dialog/dialog_service.dart';
 import 'package:unn_mobile/core/services/interfaces/dialog/message/message_fetcher_service.dart';
 import 'package:unn_mobile/core/services/interfaces/dialog/message/message_file_sender_service.dart';
@@ -577,6 +579,13 @@ void registerDependencies() {
 
   injector.registerSingleton<DialogService>(
     () => DialogServiceImpl(
+      get<LoggerService>(),
+      getApiHelper(HostType.unnPortal),
+    ),
+  );
+
+  injector.registerSingleton<DialogSearchService>(
+    () => DialogSearchServiceImpl(
       get<LoggerService>(),
       getApiHelper(HostType.unnPortal),
     ),
