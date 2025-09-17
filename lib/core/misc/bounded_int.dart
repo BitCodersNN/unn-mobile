@@ -2,22 +2,20 @@
 // Copyright 2025 BitCodersNN
 
 class BoundedInt {
-  final int _value;
-  final int _min;
-  final int _max;
+  final int value;
+  final int min;
+  final int max;
 
   /// Создаёт экземпляр с проверкой, что [value] находится в диапазоне [min]..[max].
   /// [paramName] — имя параметра для сообщения об ошибке (по умолчанию 'value').
   /// [errorMessage] — кастомное сообщение об ошибке (если null — будет сгенерировано автоматически).
   BoundedInt({
     required int value,
-    required int min,
-    required int max,
+    required this.min,
+    required this.max,
     String paramName = 'value',
     String? errorMessage,
-  })  : _min = min,
-        _max = max,
-        _value = _validate(
+  })  : value = _validate(
           value,
           min,
           max,
@@ -37,22 +35,4 @@ class BoundedInt {
     }
     return value;
   }
-
-  int get value => _value;
-
-  int get min => _min;
-  int get max => _max;
-
-  @override
-  String toString() => 'BoundedInt($value)';
-
-  @override
-  bool operator ==(Object other) =>
-      other is BoundedInt &&
-      other.value == value &&
-      other.min == min &&
-      other.max == max;
-
-  @override
-  int get hashCode => Object.hash(value, min, max);
 }
