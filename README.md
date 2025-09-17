@@ -93,7 +93,10 @@
 
 ### Предварительные требования
 
-1. Установите [Flutter SDK](https://docs.flutter.dev/get-started/install).
+1. Установите [Flutter SDK](https://docs.flutter.dev/get-started/install). 
+
+> Проект использует версию Flutter `3.29.2`. Если при выполнении сборки с использованием самой последней версии возникнут ошибки компиляции - [переключитесь на используемую в проекте версию](https://docs.flutter.dev/install/upgrade#switch-to-a-specific-flutter-version).
+
 2. Создайте проект в [Firebase Console](https://console.firebase.google.com/).
 3. Установите [Firebase CLI](https://firebase.google.com/docs/cli#setup_update_cli).
 
