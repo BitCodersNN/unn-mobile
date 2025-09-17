@@ -20,6 +20,7 @@ class ProfileOfCurrentUserServiceImpl implements ProfileOfCurrentUserService {
     this._loggerService,
     this._apiHelper,
   );
+
   @override
   Future<UserData?> getProfileOfCurrentUser() async {
     Response response;

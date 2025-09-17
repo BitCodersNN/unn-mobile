@@ -59,24 +59,22 @@ class StudentData extends UserData {
   String get eduGroup => _eduGroup;
   String? get eduSpecialization => _eduSpecialization;
 
-  factory StudentData.fromJson(Map<String, Object?> jsonMap) {
-    return StudentData(
-      UserData.fromJson(jsonMap),
-      jsonMap[_StudentDataJsonKeys.eduForm] as String,
-      jsonMap[_StudentDataJsonKeys.eduStatus] as String,
-      jsonMap[_StudentDataJsonKeys.eduCourse] as int,
-      jsonMap[_StudentDataJsonKeys.eduYear] as int,
-      jsonMap[_StudentDataJsonKeys.eduLevel] as String,
-      (jsonMap[_StudentDataJsonKeys.faculty]
-          as Map<String, Object?>)[_StudentDataJsonKeys.title] as String,
-      (jsonMap[_StudentDataJsonKeys.eduDirection]
-          as Map<String, Object?>)[_StudentDataJsonKeys.title] as String,
-      (jsonMap[_StudentDataJsonKeys.eduGroup]
-          as Map<String, Object?>)[_StudentDataJsonKeys.title] as String,
-      (jsonMap[_StudentDataJsonKeys.eduSpecialization]
-          as Map<String, Object?>?)?[_StudentDataJsonKeys.title] as String?,
-    );
-  }
+  factory StudentData.fromJson(Map<String, Object?> jsonMap) => StudentData(
+        UserData.fromJson(jsonMap),
+        jsonMap[_StudentDataJsonKeys.eduForm] as String,
+        jsonMap[_StudentDataJsonKeys.eduStatus] as String,
+        jsonMap[_StudentDataJsonKeys.eduCourse] as int,
+        jsonMap[_StudentDataJsonKeys.eduYear] as int,
+        jsonMap[_StudentDataJsonKeys.eduLevel] as String,
+        (jsonMap[_StudentDataJsonKeys.faculty]
+            as Map<String, Object?>)[_StudentDataJsonKeys.title] as String,
+        (jsonMap[_StudentDataJsonKeys.eduDirection]
+            as Map<String, Object?>)[_StudentDataJsonKeys.title] as String,
+        (jsonMap[_StudentDataJsonKeys.eduGroup]
+            as Map<String, Object?>)[_StudentDataJsonKeys.title] as String,
+        (jsonMap[_StudentDataJsonKeys.eduSpecialization]
+            as Map<String, Object?>?)?[_StudentDataJsonKeys.title] as String?,
+      );
 
   @override
   Map<String, dynamic> toJson() {
