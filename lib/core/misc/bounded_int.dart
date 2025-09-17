@@ -15,7 +15,7 @@ class BoundedInt {
     required this.max,
     String paramName = 'value',
     String? errorMessage,
-  })  : value = _validate(
+  }) : value = _validate(
           value,
           min,
           max,
