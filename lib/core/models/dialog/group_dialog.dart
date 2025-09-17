@@ -52,7 +52,7 @@ final class GroupDialog extends Dialog {
       ...super.toJson(),
       GroupDialogJsonKeys.id: id,
       GroupDialogJsonKeys.chat: chatSetting.toJson(),
-      GroupDialogJsonKeys.type: 'chat',
+      GroupDialogJsonKeys.type: GroupDialogJsonKeys.chat,
     };
   }
 
