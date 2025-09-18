@@ -2,7 +2,7 @@
 // Copyright 2025 BitCodersNN
 
 import 'package:unn_mobile/core/misc/bounded_int.dart';
-import 'package:unn_mobile/core/misc/case_converter.dart';
+import 'package:unn_mobile/core/misc/camel_case_converter.dart';
 
 class _FilterNames {
   static const String global = 'global';
@@ -34,7 +34,7 @@ class SearchFilter {
           fullname: fullname,
           eduLevel: eduLevel?.name,
           eduCourse: eduCourse?.value,
-          eduForm: eduForm != null ? camelToKebab(eduForm.name) : null,
+          eduForm: eduForm?.name.toKebabCase(),
           eduYear: eduYear?.value,
         );
 

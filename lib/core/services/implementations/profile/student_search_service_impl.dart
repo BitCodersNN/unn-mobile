@@ -4,7 +4,7 @@
 import 'package:dio/dio.dart';
 import 'package:unn_mobile/core/constants/api/path.dart';
 import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
-import 'package:unn_mobile/core/misc/case_converter.dart';
+import 'package:unn_mobile/core/misc/camel_case_converter.dart';
 import 'package:unn_mobile/core/misc/json/json_iterable_parser.dart';
 import 'package:unn_mobile/core/misc/objects_with_pagination.dart';
 import 'package:unn_mobile/core/models/profile/preview_student.dart';
@@ -53,7 +53,7 @@ class StudentSearchServiceImpl implements StudentSearchService {
           _DataKeys.first: ordinalNumberFirst,
           _DataKeys.rows: count,
           _DataKeys.globalFilter: searchFilter.globalFilter,
-          _DataKeys.sortField: camelToSnake(sortField.name),
+          _DataKeys.sortField: sortField.name.toSnakeCase(),
           _DataKeys.sortOrder: reverse ? 1 : 0,
         },
       );
