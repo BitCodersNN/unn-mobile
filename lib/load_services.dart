@@ -43,6 +43,7 @@ import 'package:unn_mobile/core/services/implementations/distance_learning/dista
 import 'package:unn_mobile/core/services/implementations/distance_learning/distance_learning_downloader_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/distance_learning/session_checker_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/distance_learning/webinar_service_impl.dart';
+import 'package:unn_mobile/core/services/implementations/profile/search_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/schedule/export_schedule_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/feed/blog_post_receivers/blog_post_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/feed/blog_post_receivers/featured_blog_posts_service_impl.dart';
@@ -99,6 +100,7 @@ import 'package:unn_mobile/core/services/interfaces/distance_learning/distance_c
 import 'package:unn_mobile/core/services/interfaces/distance_learning/distance_learning_downloader_service.dart';
 import 'package:unn_mobile/core/services/interfaces/distance_learning/session_checker_service.dart';
 import 'package:unn_mobile/core/services/interfaces/distance_learning/webinar_service.dart';
+import 'package:unn_mobile/core/services/interfaces/profile/search_service.dart';
 import 'package:unn_mobile/core/services/interfaces/schedule/export_schedule_service.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/blog_post_receivers/blog_post_service.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/blog_post_receivers/featured_blog_post_service.dart';
@@ -586,6 +588,13 @@ void registerDependencies() {
 
   injector.registerSingleton<DialogSearchService>(
     () => DialogSearchServiceImpl(
+      get<LoggerService>(),
+      getApiHelper(HostType.unnPortal),
+    ),
+  );
+
+  injector.registerSingleton<SearchService>(
+    () => SearchServiceImpl(
       get<LoggerService>(),
       getApiHelper(HostType.unnPortal),
     ),

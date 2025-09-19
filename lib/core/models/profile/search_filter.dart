@@ -71,6 +71,10 @@ class SearchFilter {
   String? get globalFilter => filters[_FilterNames.global]['value'];
 }
 
+class EmployeeSearchFilter extends SearchFilter {
+  EmployeeSearchFilter({super.globalFilter});
+}
+
 class EduCourse extends BoundedInt {
   EduCourse(int value)
       : super(

@@ -18,7 +18,7 @@ class PreviewStudent {
       '${ProtocolType.https.name}://${Host.unn}';
 
   final int userId;
-  final String? fullname;
+  final String fullname;
   final String? photoSrc;
   final String eduForm;
   final int eduCourse;
