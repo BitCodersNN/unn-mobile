@@ -36,7 +36,7 @@ class DistanceCourseSemesterServiceImpl
       return null;
     }
 
-    final matches = RegularExpressions.distanceCourseSemesterExp.allMatches(
+    final matches = RegularExpressions.distanceCourseSemesterRegExp.allMatches(
       response.data,
     );
 

@@ -42,6 +42,12 @@ class ApiPath {
   /// Для получения профиля текущего пользователя
   static const String currentProfile = 'bitrix/vuz/api/profile/current';
 
+  /// Для поиска стучдентов
+  static const String students = 'bitrix/vuz/api/profiles/students';
+
+  /// Для поиска преподавателей
+  static const String employees = 'bitrix/vuz/api/user/search/employee';
+
   /// Для получения id студента по логину
   static const String studentInfo = 'ruzapi/studentinfo/';
 

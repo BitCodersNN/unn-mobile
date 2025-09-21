@@ -15,6 +15,7 @@ class _RegularExpressionSource {
   static const phpsessid = r'PHPSESSID=([^;]+)';
   static const distanceCourseSemester =
       r'selectedYear == (\d{4}) && selectedSemester == (\d)';
+  static const upperCaseLetters = r'[A-Z]';
 }
 
 class RegularExpressions {
@@ -50,7 +51,11 @@ class RegularExpressions {
     _RegularExpressionSource.phpsessid,
   );
 
-  static final distanceCourseSemesterExp = RegExp(
+  static final distanceCourseSemesterRegExp = RegExp(
     _RegularExpressionSource.distanceCourseSemester,
+  );
+
+  static final uppercaseLettersRegExp = RegExp(
+    _RegularExpressionSource.upperCaseLetters,
   );
 }

@@ -31,3 +31,13 @@ class PartialResult<T> {
     required this.hasMore,
   });
 }
+
+class ResultWithTotal<T> {
+  final List<T> items;
+  final int total;
+
+  const ResultWithTotal({
+    required this.items,
+    required this.total,
+  });
+}
