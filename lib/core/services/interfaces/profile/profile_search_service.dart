@@ -7,7 +7,7 @@ import 'package:unn_mobile/core/models/profile/preview_student.dart';
 import 'package:unn_mobile/core/models/profile/search_filter.dart';
 import 'package:unn_mobile/core/models/profile/sort_field.dart';
 
-abstract interface class SearchService {
+abstract interface class ProfileSearchService {
   /// Возвращает список предварительных данных студентов на основе заданных критериев поиска и пагинации.
   ///
   /// Возвращает [ResultWithTotal<PreviewStudent>?], содержащий:

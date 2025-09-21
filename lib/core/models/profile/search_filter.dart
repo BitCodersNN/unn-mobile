@@ -4,6 +4,19 @@
 import 'package:unn_mobile/core/misc/bounded_int.dart';
 import 'package:unn_mobile/core/misc/camel_case_converter.dart';
 
+const Map<EduLevel, String> _displayNames = {
+  EduLevel.graduateStudent: 'Аспирант',
+  EduLevel.basicLevel: 'Базовый уровень',
+  EduLevel.bachelor: 'Бакалавр',
+  EduLevel.master: 'Магистр',
+  EduLevel.residency: 'Ординатура',
+  EduLevel.professionalDevelopment: 'Повышение квалификации',
+  EduLevel.increasedLevel: 'Повышенный уровень',
+  EduLevel.preparatoryDepartment: 'Подготовительное отделение',
+  EduLevel.specialist: 'Специалист',
+  EduLevel.spo: 'СПО',
+};
+
 class _FilterNames {
   static const String global = 'global';
   static const String fullname = 'fullname';
@@ -53,17 +66,19 @@ class SearchFilter {
       },
     };
 
-    void addFilter(String key, dynamic value) {
+    final conditions = [
+      (_FilterNames.fullname, fullname),
+      (_FilterNames.eduLevel, eduLevel),
+      (_FilterNames.eduCourse, eduCourse),
+      (_FilterNames.eduForm, eduForm),
+      (_FilterNames.eduYear, eduYear),
+    ];
+
+    for (final (key, value) in conditions) {
       if (value != null) {
         filters[key] = {_MatchMode.key: _MatchMode.any, 'value': value};
       }
     }
-
-    addFilter(_FilterNames.fullname, fullname);
-    addFilter(_FilterNames.eduLevel, eduLevel);
-    addFilter(_FilterNames.eduCourse, eduCourse);
-    addFilter(_FilterNames.eduForm, eduForm);
-    addFilter(_FilterNames.eduYear, eduYear);
 
     return filters;
   }
@@ -126,16 +141,3 @@ enum EduForm {
   distance,
   partTime,
 }
-
-const Map<EduLevel, String> _displayNames = {
-  EduLevel.graduateStudent: 'Аспирант',
-  EduLevel.basicLevel: 'Базовый уровень',
-  EduLevel.bachelor: 'Бакалавр',
-  EduLevel.master: 'Магистр',
-  EduLevel.residency: 'Ординатура',
-  EduLevel.professionalDevelopment: 'Повышение квалификации',
-  EduLevel.increasedLevel: 'Повышенный уровень',
-  EduLevel.preparatoryDepartment: 'Подготовительное отделение',
-  EduLevel.specialist: 'Специалист',
-  EduLevel.spo: 'СПО',
-};

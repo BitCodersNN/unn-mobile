@@ -12,7 +12,7 @@ import 'package:unn_mobile/core/models/profile/preview_student.dart';
 import 'package:unn_mobile/core/models/profile/search_filter.dart';
 import 'package:unn_mobile/core/models/profile/sort_field.dart';
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
-import 'package:unn_mobile/core/services/interfaces/profile/search_service.dart';
+import 'package:unn_mobile/core/services/interfaces/profile/profile_search_service.dart';
 
 class _DataKeys {
   static const String filters = 'filters';
@@ -28,11 +28,11 @@ class _ResponseJsonKeys {
   static const String total = 'total';
 }
 
-class SearchServiceImpl implements SearchService {
+class ProfileSearchServiceImpl implements ProfileSearchService {
   final LoggerService _loggerService;
   final ApiHelper _apiHelper;
 
-  SearchServiceImpl(
+  ProfileSearchServiceImpl(
     this._loggerService,
     this._apiHelper,
   );

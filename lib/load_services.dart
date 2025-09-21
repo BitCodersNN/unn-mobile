@@ -43,7 +43,7 @@ import 'package:unn_mobile/core/services/implementations/distance_learning/dista
 import 'package:unn_mobile/core/services/implementations/distance_learning/distance_learning_downloader_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/distance_learning/session_checker_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/distance_learning/webinar_service_impl.dart';
-import 'package:unn_mobile/core/services/implementations/profile/search_service_impl.dart';
+import 'package:unn_mobile/core/services/implementations/profile/profile_search_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/schedule/export_schedule_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/feed/blog_post_receivers/blog_post_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/feed/blog_post_receivers/featured_blog_posts_service_impl.dart';
@@ -593,8 +593,8 @@ void registerDependencies() {
     ),
   );
 
-  injector.registerSingleton<SearchService>(
-    () => SearchServiceImpl(
+  injector.registerSingleton<ProfileSearchService>(
+    () => ProfileSearchServiceImpl(
       get<LoggerService>(),
       getApiHelper(HostType.unnPortal),
     ),
