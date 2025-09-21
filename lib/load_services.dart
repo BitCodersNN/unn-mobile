@@ -100,7 +100,7 @@ import 'package:unn_mobile/core/services/interfaces/distance_learning/distance_c
 import 'package:unn_mobile/core/services/interfaces/distance_learning/distance_learning_downloader_service.dart';
 import 'package:unn_mobile/core/services/interfaces/distance_learning/session_checker_service.dart';
 import 'package:unn_mobile/core/services/interfaces/distance_learning/webinar_service.dart';
-import 'package:unn_mobile/core/services/interfaces/profile/search_service.dart';
+import 'package:unn_mobile/core/services/interfaces/profile/profile_search_service.dart';
 import 'package:unn_mobile/core/services/interfaces/schedule/export_schedule_service.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/blog_post_receivers/blog_post_service.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/blog_post_receivers/featured_blog_post_service.dart';
