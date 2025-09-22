@@ -31,6 +31,7 @@ class StudentData extends UserData {
     required super.bitrixId,
     required super.fullname,
     required super.photoSrc,
+    required super.userId,
     required super.login,
     required super.email,
     required super.phone,
@@ -59,6 +60,7 @@ class StudentData extends UserData {
     required this.eduGroup,
     this.eduSpecialization,
   }) : super(
+          userId: userData.userId,
           bitrixId: userData.bitrixId,
           login: userData.login,
           fullname: userData.fullname,

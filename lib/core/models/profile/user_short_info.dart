@@ -59,7 +59,7 @@ class _ProfileUserInfoKeys implements _UserInfoKeys {
   @override
   String get fullname => 'fullname';
   @override
-  String get id => 'id';
+  String get id => 'bitrix_id';
   @override
   String get photoSrc => 'photo';
   String get orig => 'orig';

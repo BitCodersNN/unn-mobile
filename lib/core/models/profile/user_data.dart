@@ -4,6 +4,7 @@
 import 'package:unn_mobile/core/models/profile/user_short_info.dart';
 
 class _UserDataJsonKeys {
+  static const String id = 'id';
   static const String user = 'user';
   static const String login = 'login';
   static const String email = 'email';
@@ -13,6 +14,7 @@ class _UserDataJsonKeys {
 }
 
 class UserData extends UserShortInfo {
+  final int userId;
   final String? login;
   final String? email;
   final String? phone;
@@ -23,6 +25,7 @@ class UserData extends UserShortInfo {
     required super.bitrixId,
     required super.fullname,
     required super.photoSrc,
+    required this.userId,
     required this.login,
     required this.email,
     required this.phone,
@@ -32,6 +35,7 @@ class UserData extends UserShortInfo {
 
   UserData.withUserShortInfo({
     required UserShortInfo userShortInfo,
+    required this.userId,
     this.login,
     this.email,
     this.phone,
@@ -47,6 +51,7 @@ class UserData extends UserShortInfo {
     final userJsonMap = jsonMap[_UserDataJsonKeys.user] as Map<String, Object?>;
     return UserData.withUserShortInfo(
       userShortInfo: UserShortInfo.fromProfileJson(userJsonMap),
+      userId: userJsonMap[_UserDataJsonKeys.id] as int,
       login: userJsonMap[_UserDataJsonKeys.login] as String?,
       email: userJsonMap[_UserDataJsonKeys.email] as String?,
       phone: userJsonMap[_UserDataJsonKeys.phone] as String?,
@@ -59,6 +64,7 @@ class UserData extends UserShortInfo {
   Map<String, dynamic> toJson() => {
         _UserDataJsonKeys.user: {
           ...super.toProfileJson(),
+          _UserDataJsonKeys.id: userId,
           _UserDataJsonKeys.login: login,
           _UserDataJsonKeys.email: email,
           _UserDataJsonKeys.phone: phone,

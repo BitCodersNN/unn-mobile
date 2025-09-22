@@ -114,6 +114,7 @@ class ProfileViewModel extends BaseViewModel {
 
     _loadedData = UserData.withUserShortInfo(
       userShortInfo: info,
+      userId: 0,
       sex: '',
     );
   }
