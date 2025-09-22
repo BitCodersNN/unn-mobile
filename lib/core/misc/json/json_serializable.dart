@@ -19,6 +19,11 @@ mixin MessageJsonSerializable on MultiFormatJsonSerializable {
       _toJsonForFormat(JsonKeyFormat.message);
 }
 
+mixin ProfileJsonSerializable on MultiFormatJsonSerializable {
+  Map<String, dynamic> toProfileJson() =>
+      _toJsonForFormat(JsonKeyFormat.message);
+}
+
 mixin MultiFormatJsonSerializable {
   Map<JsonKeyFormat, JsonKeys> get availableFormats;
 

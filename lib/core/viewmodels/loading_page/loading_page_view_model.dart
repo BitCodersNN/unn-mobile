@@ -152,9 +152,9 @@ class LoadingPageViewModel extends BaseViewModel {
 
     await _typeOfCurrentUser.updateCurrentUserInfo();
     if (_typeOfCurrentUser.currentUserData != null &&
-        _typeOfCurrentUser.currentUserData!.fullUrlPhoto != null) {
+        _typeOfCurrentUser.currentUserData!.photoSrc != null) {
       DefaultCacheManager().downloadFile(
-        _typeOfCurrentUser.currentUserData!.fullUrlPhoto!,
+        _typeOfCurrentUser.currentUserData!.photoSrc!,
       );
     }
   }

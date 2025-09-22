@@ -15,62 +15,73 @@ class _EmployeeDataJsonKeys {
 }
 
 class EmployeeData extends UserData {
-  final String _syncID;
-  final String _jobType;
-  final String _jobTitle;
-  final String _department;
-  final String? _manager;
+  final String syncID;
+  final String jobType;
+  final String jobTitle;
+  final String department;
+  final String? manager;
 
-  EmployeeData(
-    UserData userData,
-    this._syncID,
-    this._jobType,
-    this._jobTitle,
-    this._department,
-    this._manager,
-  ) : super(
-          userData.bitrixId,
-          userData.login,
-          userData.fullname,
-          userData.email,
-          userData.phone,
-          userData.sex,
-          userData.urlPhoto,
-          userData.notes,
+  EmployeeData({
+    required super.bitrixId,
+    required super.fullname,
+    required super.photoSrc,
+    required super.login,
+    required super.email,
+    required super.phone,
+    required super.sex,
+    required super.notes,
+    required this.syncID,
+    required this.jobType,
+    required this.jobTitle,
+    required this.department,
+    required this.manager,
+  });
+
+  EmployeeData.withUserData({
+    required UserData userData,
+    required this.syncID,
+    required this.jobType,
+    required this.jobTitle,
+    required this.department,
+    this.manager,
+  }) : super(
+          bitrixId: userData.bitrixId,
+          login: userData.login,
+          fullname: userData.fullname,
+          email: userData.email,
+          phone: userData.phone,
+          sex: userData.sex,
+          photoSrc: userData.photoSrc,
+          notes: userData.notes,
         );
 
-  String get syncID => _syncID;
-  String get jobType => _jobType;
-  String get jobTitle => _jobTitle;
-  String get department => _department;
-  String? get manager => _manager;
-
-  factory EmployeeData.fromJson(Map<String, Object?> jsonMap) {
-    return EmployeeData(
-      UserData.fromJson(jsonMap),
-      (jsonMap[_EmployeeDataJsonKeys.user]
-          as Map<String, Object?>)[_EmployeeDataJsonKeys.syncID] as String,
-      jsonMap[_EmployeeDataJsonKeys.jobType] as String,
-      jsonMap[_EmployeeDataJsonKeys.jobTitle] as String,
-      (jsonMap[_EmployeeDataJsonKeys.department]
-          as Map<String, Object?>)[_EmployeeDataJsonKeys.title] as String,
-      (jsonMap[_EmployeeDataJsonKeys.manager]
-          as Map<String, Object?>?)?[_EmployeeDataJsonKeys.fullname] as String?,
-    );
-  }
+  factory EmployeeData.fromJson(Map<String, Object?> jsonMap) =>
+      EmployeeData.withUserData(
+        userData: UserData.fromJson(jsonMap),
+        syncID: (jsonMap[_EmployeeDataJsonKeys.user]
+            as Map<String, Object?>)[_EmployeeDataJsonKeys.syncID] as String,
+        jobType: jsonMap[_EmployeeDataJsonKeys.jobType] as String,
+        jobTitle: jsonMap[_EmployeeDataJsonKeys.jobTitle] as String,
+        department: (jsonMap[_EmployeeDataJsonKeys.department]
+            as Map<String, Object?>)[_EmployeeDataJsonKeys.title] as String,
+        manager: (jsonMap[_EmployeeDataJsonKeys.manager]
+                as Map<String, Object?>?)?[_EmployeeDataJsonKeys.fullname]
+            as String?,
+      );
 
   @override
-  Map<String, dynamic> toJson() {
-    final json = super.toJson();
-    json[_EmployeeDataJsonKeys.user][_EmployeeDataJsonKeys.syncID] = _syncID;
-    json[_EmployeeDataJsonKeys.jobType] = _jobType;
-    json[_EmployeeDataJsonKeys.jobTitle] = _jobTitle;
-    json[_EmployeeDataJsonKeys.department] ??= {};
-    json[_EmployeeDataJsonKeys.department][_EmployeeDataJsonKeys.title] =
-        _department;
-    json[_EmployeeDataJsonKeys.manager] ??= {};
-    json[_EmployeeDataJsonKeys.manager][_EmployeeDataJsonKeys.fullname] =
-        _manager;
-    return json;
-  }
+  Map<String, dynamic> toJson() => {
+        _EmployeeDataJsonKeys.user: {
+          ...super.toJson()[_EmployeeDataJsonKeys.user],
+          _EmployeeDataJsonKeys.syncID: syncID,
+        },
+        _EmployeeDataJsonKeys.jobType: jobType,
+        _EmployeeDataJsonKeys.jobTitle: jobTitle,
+        _EmployeeDataJsonKeys.department: {
+          _EmployeeDataJsonKeys.title: department,
+        },
+        _EmployeeDataJsonKeys.manager: {
+          _EmployeeDataJsonKeys.fullname: manager,
+        },
+      };
 }

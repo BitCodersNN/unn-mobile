@@ -67,7 +67,7 @@ class MessageReactionViewModel extends ReactionViewModelBase {
       // Добавляем временно, чтобы сразу показать действие
       ratingList?.addReactions(
         reaction,
-        [UserShortInfo(profileId, '', '')],
+        [UserShortInfo(bitrixId: profileId)],
       );
       notifyListeners();
       await _reactionServiceAggregator.addReaction(
