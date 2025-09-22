@@ -35,7 +35,7 @@ abstract interface class ProfileService {
 
   /// Получает профиль по id [UserDialog]
   ///
-  /// [dialogId]: id автора поста
+  /// [dialogId]: id диалога с пользователем
   ///
   /// Возвращает [StudentData] или [EmployeeData] - наследников [UserData] или null, если:
   ///   1. [getProfileByBitrixId] вернул null

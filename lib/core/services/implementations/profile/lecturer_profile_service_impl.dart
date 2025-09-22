@@ -6,10 +6,11 @@ import 'package:unn_mobile/core/models/profile/lecturer_search_result.dart';
 import 'package:unn_mobile/core/models/profile/preview_employee.dart';
 import 'package:unn_mobile/core/models/profile/search_filter.dart';
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
+import 'package:unn_mobile/core/services/interfaces/profile/lecturer_profile_service.dart';
 import 'package:unn_mobile/core/services/interfaces/profile/profile_search_service.dart';
 import 'package:unn_mobile/core/services/interfaces/profile/profile_service.dart';
 
-class LecturerProfileServiceImpl {
+class LecturerProfileServiceImpl implements LecturerProfileService {
   final LoggerService _loggerService;
   final ProfileSearchService _profileSearchService;
   final ProfileService _profileService;
@@ -20,6 +21,7 @@ class LecturerProfileServiceImpl {
     this._profileService,
   );
 
+  @override
   Future<LecturerSearchResult> getProfile(
     String fullname,
     String syncId,
