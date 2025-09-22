@@ -6,16 +6,6 @@ import 'package:unn_mobile/core/models/profile/student_data.dart';
 import 'package:unn_mobile/core/models/profile/employee_data.dart';
 
 abstract interface class ProfileService {
-  /// Получает id профиля по id автора поста
-  ///
-  /// [authorId]: id автора поста
-  ///
-  /// Возвращает [int] или null, если:
-  ///   1. Не вышло получить ответ от портала
-  ///   2. statusCode не равен 200
-  ///   3. Не вышло декодировать ответ
-  Future<int?> getProfileIdByBitrixID({required int bitrixID});
-
   /// Получает профиль по id
   ///
   /// [userId]: id пользователя, по которому получается профиль
@@ -26,12 +16,28 @@ abstract interface class ProfileService {
   ///   3. Не вышло декодировать ответ
   Future<UserData?> getProfile({required int userId});
 
-  /// Получает профиль по id автора поста
+  /// Получает профиль по bitrixId
   ///
-  /// [authorId]: id автора поста
+  /// [bitrixId]: bitrixId пользователя, по которому сначала определяется userId, а затем запрашивается профиль
+  ///
+  /// Возвращает [StudentData] или [EmployeeData] — наследников [UserData], или null, если:
+  ///   1. Не удалось получить userId по bitrixId (ошибка API, отсутствие id в ответе)
+  ///   2. Не вышло получить профиль по найденному userId (ошибка API, некорректный ответ, ошибка декодирования)
+  Future<UserData?> getProfileByBitrixId(int bitrixId);
+
+  /// Получает профиль по id автора поста или комменатрия
+  ///
+  /// [authorId]: id автора поста или комментария
   ///
   /// Возвращает [StudentData] или [EmployeeData] - наследников [UserData] или null, если:
-  ///   1. [getProfileIdByBitrixID] вернул null
-  ///   2. [getProfile] вернул null
-  Future<UserData?> getProfileByAuthorIdFromPost({required int authorId});
+  ///   1. [getProfileByBitrixId] вернул null
+  Future<UserData?> getProfileByAuthorId({required int authorId});
+
+  /// Получает профиль по id [UserDialog]
+  ///
+  /// [dialogId]: id автора поста
+  ///
+  /// Возвращает [StudentData] или [EmployeeData] - наследников [UserData] или null, если:
+  ///   1. [getProfileByBitrixId] вернул null
+  Future<UserData?> getProfileByDialogId({required int dialogId});
 }

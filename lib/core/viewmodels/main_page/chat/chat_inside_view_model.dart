@@ -186,8 +186,8 @@ class ChatInsideViewModel extends BaseViewModel {
   FutureOr<bool> sendMessage(String text) async =>
       await _sendMessageWrapper<int>(() async {
         final dialogId = switch (_dialog) {
-          final UserDialog userDialog => userDialog.id.toString(),
-          final GroupDialog groupDialog => groupDialog.id,
+          final UserDialog userDialog => userDialog.dialogId.toString(),
+          final GroupDialog groupDialog => groupDialog.dialogId,
           _ => '',
         };
         return _replyMessage == null

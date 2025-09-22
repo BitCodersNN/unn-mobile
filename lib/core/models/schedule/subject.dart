@@ -15,6 +15,7 @@ class _SubjectJsonKeys {
   static const String building = 'building';
   static const String stream = 'stream';
   static const String lecturer = 'lecturer';
+  static const String lecturerUID = 'lecturerUID';
   static const String beginLesson = 'beginLesson';
   static const String endLesson = 'endLesson';
   static const String date = 'date';
@@ -26,6 +27,7 @@ class Subject {
   final Address address;
   final List<String> groups;
   final String lecturer;
+  final String syncId;
   final DateTimeRange dateTimeRange;
 
   Subject({
@@ -34,6 +36,7 @@ class Subject {
     required this.address,
     required this.groups,
     required this.lecturer,
+    required this.syncId,
     required this.dateTimeRange,
   });
 
@@ -48,23 +51,17 @@ class Subject {
   }
 
   factory Subject.fromJson(Map<String, dynamic> jsonMap) {
-    final String date = jsonMap[_SubjectJsonKeys.date] as String? ?? '';
+    final String date = _getString(jsonMap, _SubjectJsonKeys.date);
     final String beginLesson =
-        jsonMap[_SubjectJsonKeys.beginLesson] as String? ?? '';
-    final String endLesson =
-        jsonMap[_SubjectJsonKeys.endLesson] as String? ?? '';
-
-    final String discipline =
-        jsonMap[_SubjectJsonKeys.discipline] as String? ?? '';
-
-    final String kindOfWork =
-        jsonMap[_SubjectJsonKeys.kindOfWork] as String? ?? '';
-    final String auditorium =
-        jsonMap[_SubjectJsonKeys.auditorium] as String? ?? '';
-    final String building = jsonMap[_SubjectJsonKeys.building] as String? ?? '';
-    final String streamString =
-        jsonMap[_SubjectJsonKeys.stream] as String? ?? '';
-    final String lecturer = jsonMap[_SubjectJsonKeys.lecturer] as String? ?? '';
+        _getString(jsonMap, _SubjectJsonKeys.beginLesson);
+    final String endLesson = _getString(jsonMap, _SubjectJsonKeys.endLesson);
+    final String discipline = _getString(jsonMap, _SubjectJsonKeys.discipline);
+    final String kindOfWork = _getString(jsonMap, _SubjectJsonKeys.kindOfWork);
+    final String auditorium = _getString(jsonMap, _SubjectJsonKeys.auditorium);
+    final String building = _getString(jsonMap, _SubjectJsonKeys.building);
+    final String streamString = _getString(jsonMap, _SubjectJsonKeys.stream);
+    final String lecturer = _getString(jsonMap, _SubjectJsonKeys.lecturer);
+    final String syncId = _getString(jsonMap, _SubjectJsonKeys.lecturerUID);
 
     return Subject(
       name: discipline,
@@ -75,6 +72,7 @@ class Subject {
       ),
       groups: streamString.split('|'),
       lecturer: lecturer,
+      syncId: syncId,
       dateTimeRange: DateTimeRange(
         start: _parseDateTime(date, beginLesson),
         end: _parseDateTime(date, endLesson),
@@ -94,6 +92,7 @@ class Subject {
         _SubjectJsonKeys.building: address.building,
         _SubjectJsonKeys.stream: groups.join('|'),
         _SubjectJsonKeys.lecturer: lecturer,
+        _SubjectJsonKeys.lecturerUID: syncId,
       };
 
   static DateTime _parseDateTime(String date, String time) {
@@ -102,4 +101,7 @@ class Subject {
       DatePattern.ymmddhm,
     );
   }
+
+  static String _getString(Map<String, dynamic> jsonMap, String key) =>
+      jsonMap[key] as String? ?? '';
 }
