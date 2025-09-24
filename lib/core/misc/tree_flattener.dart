@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright 2025 BitCodersNN
+
 /// Преобразует вложенный JSON-объект в плоский список узлов.
 ///
 /// [json] — исходный JSON как Map<String, dynamic>.
