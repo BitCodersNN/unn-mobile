@@ -3,8 +3,8 @@
 
 import 'dart:convert';
 
-import 'package:unn_mobile/core/models/profile/employee_data.dart';
-import 'package:unn_mobile/core/models/profile/student_data.dart';
+import 'package:unn_mobile/core/models/profile/employee/employee_data.dart';
+import 'package:unn_mobile/core/models/profile/student/student_data.dart';
 import 'package:unn_mobile/core/models/profile/user_data.dart';
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
 import 'package:unn_mobile/core/services/interfaces/common/storage_service.dart';
@@ -46,7 +46,7 @@ class UserDataProviderImpl implements UserDataProvider {
           ),
         );
       } else if (userType == _employee) {
-        userData = EmployeeData.fromJson(
+        userData = EmployeeData.fromCurrentProfileJson(
           jsonDecode(
             userInfo!,
           ),

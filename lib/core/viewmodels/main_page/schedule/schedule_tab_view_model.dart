@@ -10,7 +10,7 @@ import 'package:unn_mobile/core/misc/authorisation/try_login_and_retrieve_data.d
 import 'package:unn_mobile/core/models/common/online_status_data.dart';
 import 'package:unn_mobile/core/models/schedule/schedule_filter.dart';
 import 'package:unn_mobile/core/models/schedule/schedule_search_suggestion_item.dart';
-import 'package:unn_mobile/core/models/profile/student_data.dart';
+import 'package:unn_mobile/core/models/profile/student/student_data.dart';
 import 'package:unn_mobile/core/models/schedule/subject.dart';
 import 'package:unn_mobile/core/services/interfaces/schedule/export_schedule_service.dart';
 import 'package:unn_mobile/core/services/interfaces/profile/profile_of_current_user_service.dart';
@@ -301,7 +301,7 @@ class ScheduleTabViewModel extends BaseViewModel {
 
       if (value is StudentData) {
         final groupId = await _searchIdOnPortalService.findIdOnPortal(
-          value.eduGroup,
+          value.baseEduInfo.eduGroup,
           IdType.group,
         );
         _filter = ScheduleFilter(

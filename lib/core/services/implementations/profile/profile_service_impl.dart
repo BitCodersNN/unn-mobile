@@ -8,8 +8,8 @@ import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/misc/dio_interceptor/response_type_interceptor.dart';
 import 'package:unn_mobile/core/misc/dio_options_factory/options_with_expected_type_factory.dart';
 import 'package:unn_mobile/core/misc/dio_interceptor/response_data_type.dart';
-import 'package:unn_mobile/core/models/profile/employee_data.dart';
-import 'package:unn_mobile/core/models/profile/student_data.dart';
+import 'package:unn_mobile/core/models/profile/employee/employee_data.dart';
+import 'package:unn_mobile/core/models/profile/student/student_data.dart';
 import 'package:unn_mobile/core/models/profile/user_data.dart';
 import 'package:unn_mobile/core/services/interfaces/profile/profile_service.dart';
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
@@ -71,21 +71,16 @@ class ProfileServiceImpl implements ProfileService {
       return null;
     }
 
-    final profileJsonMap = response.data[ProfilesStrings.profilesKey][0];
-    final userType = profileJsonMap[ProfilesStrings.type];
-
-    // Костыль, т.к. на сайте есть небольшой процент профилей, отличающихся от остальных
-    if (profileJsonMap[ProfilesStrings.user] == null) {
-      profileJsonMap[ProfilesStrings.user] = response.data;
-    }
+    final userType = response.data[ProfilesStrings.type] ??
+        response.data[ProfilesStrings.profilesKey][0][ProfilesStrings.type];
 
     UserData? userData;
     try {
       userData = (userType == ProfilesStrings.student)
-          ? StudentData.fromJson(profileJsonMap)
+          ? StudentData.fromJson(response.data)
           : userType == ProfilesStrings.employee
-              ? EmployeeData.fromJson(profileJsonMap)
-              : UserData.fromJson(profileJsonMap);
+              ? EmployeeData.fromJson(response.data)
+              : UserData.fromJson(response.data);
     } catch (error, stackTrace) {
       _loggerService.logError(
         error,

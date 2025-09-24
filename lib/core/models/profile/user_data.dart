@@ -47,8 +47,9 @@ class UserData extends UserShortInfo {
           photoSrc: userShortInfo.photoSrc,
         );
 
-  factory UserData.fromJson(Map<String, Object?> jsonMap) {
-    final userJsonMap = jsonMap[_UserDataJsonKeys.user] as Map<String, Object?>;
+  factory UserData.fromJson(Map<String, Object?> json) {
+    final userJsonMap =
+        (json[_UserDataJsonKeys.user] ?? json) as Map<String, Object?>;
     return UserData.withUserShortInfo(
       userShortInfo: UserShortInfo.fromProfileJson(userJsonMap),
       userId: userJsonMap[_UserDataJsonKeys.id] as int,
