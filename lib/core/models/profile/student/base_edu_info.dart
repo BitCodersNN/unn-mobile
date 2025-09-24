@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright 2025 BitCodersNN
+
 class _BaseEduInfoJsonKeys {
   static const String eduForm = 'edu_form';
   static const String eduCourse = 'edu_course';
