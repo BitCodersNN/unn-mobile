@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:unn_mobile/core/constants/date_pattern.dart';
 import 'package:unn_mobile/core/misc/date_time_utilities/date_time_extensions.dart';
 import 'package:unn_mobile/core/misc/date_time_utilities/date_time_parser.dart';
+import 'package:unn_mobile/core/misc/json/json_utils.dart';
 import 'package:unn_mobile/core/models/schedule/address.dart';
 import 'package:unn_mobile/core/models/schedule/subject_type.dart';
 
@@ -51,17 +52,16 @@ class Subject {
   }
 
   factory Subject.fromJson(Map<String, dynamic> jsonMap) {
-    final String date = _getString(jsonMap, _SubjectJsonKeys.date);
-    final String beginLesson =
-        _getString(jsonMap, _SubjectJsonKeys.beginLesson);
-    final String endLesson = _getString(jsonMap, _SubjectJsonKeys.endLesson);
-    final String discipline = _getString(jsonMap, _SubjectJsonKeys.discipline);
-    final String kindOfWork = _getString(jsonMap, _SubjectJsonKeys.kindOfWork);
-    final String auditorium = _getString(jsonMap, _SubjectJsonKeys.auditorium);
-    final String building = _getString(jsonMap, _SubjectJsonKeys.building);
-    final String streamString = _getString(jsonMap, _SubjectJsonKeys.stream);
-    final String lecturer = _getString(jsonMap, _SubjectJsonKeys.lecturer);
-    final String syncId = _getString(jsonMap, _SubjectJsonKeys.lecturerUID);
+    final String date = getString(jsonMap, _SubjectJsonKeys.date);
+    final String beginLesson = getString(jsonMap, _SubjectJsonKeys.beginLesson);
+    final String endLesson = getString(jsonMap, _SubjectJsonKeys.endLesson);
+    final String discipline = getString(jsonMap, _SubjectJsonKeys.discipline);
+    final String kindOfWork = getString(jsonMap, _SubjectJsonKeys.kindOfWork);
+    final String auditorium = getString(jsonMap, _SubjectJsonKeys.auditorium);
+    final String building = getString(jsonMap, _SubjectJsonKeys.building);
+    final String streamString = getString(jsonMap, _SubjectJsonKeys.stream);
+    final String lecturer = getString(jsonMap, _SubjectJsonKeys.lecturer);
+    final String syncId = getString(jsonMap, _SubjectJsonKeys.lecturerUID);
 
     return Subject(
       name: discipline,
@@ -101,7 +101,4 @@ class Subject {
       DatePattern.ymmddhm,
     );
   }
-
-  static String _getString(Map<String, dynamic> jsonMap, String key) =>
-      jsonMap[key] as String? ?? '';
 }
