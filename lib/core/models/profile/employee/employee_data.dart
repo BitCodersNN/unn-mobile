@@ -4,6 +4,12 @@
 import 'package:unn_mobile/core/models/profile/employee/employee_profile.dart';
 import 'package:unn_mobile/core/models/profile/user_data.dart';
 
+class _EmployeeDataJsonKeys {
+  static const String profiles = 'profiles';
+  static const String user = 'user';
+  static const String syncId = 'sync_id';
+}
+
 class EmployeeData extends UserData {
   final String syncId;
   final List<EmployeeProfile> profiles;
@@ -40,10 +46,13 @@ class EmployeeData extends UserData {
 
   factory EmployeeData.fromJson(Map<String, Object?> json) =>
       EmployeeData.withUserData(
-        userData:
-            UserData.fromJson((json['profiles'] as List)[0]['user'] ?? json),
-        syncId: json['sync_id'] as String,
-        profiles: (json['profiles'] as List)
+        userData: UserData.fromJson(
+          (json[_EmployeeDataJsonKeys.profiles] as List)[0]
+                  [_EmployeeDataJsonKeys.user] ??
+              json,
+        ),
+        syncId: json[_EmployeeDataJsonKeys.syncId] as String,
+        profiles: (json[_EmployeeDataJsonKeys.profiles] as List)
             .map(
               (item) => EmployeeProfile.fromJson(item as Map<String, dynamic>),
             )
@@ -53,7 +62,7 @@ class EmployeeData extends UserData {
   factory EmployeeData.fromCurrentProfileJson(Map<String, Object?> json) =>
       EmployeeData.withUserData(
         userData: UserData.fromJson(json),
-        syncId: json['sync_id'] as String,
+        syncId: json[_EmployeeDataJsonKeys.syncId] as String,
         profiles: [EmployeeProfile.fromJson(json)],
       );
 }

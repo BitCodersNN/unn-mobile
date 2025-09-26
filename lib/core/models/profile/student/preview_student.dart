@@ -4,6 +4,10 @@
 import 'package:unn_mobile/core/models/profile/student/base_edu_info.dart';
 import 'package:unn_mobile/core/models/profile/user_short_info.dart';
 
+class _PreviewStudentJsonKeys {
+  static const String userId = 'user_id';
+}
+
 class PreviewStudent extends UserShortInfo {
   final int userId;
   final BaseEduInfo baseEduInfo;
@@ -29,7 +33,7 @@ class PreviewStudent extends UserShortInfo {
   factory PreviewStudent.fromJson(Map<String, Object?> json) =>
       PreviewStudent.withUserShortInfo(
         userShortInfo: UserShortInfo.fromProfileJson(json),
-        userId: json['user_id'] as int,
+        userId: json[_PreviewStudentJsonKeys.userId] as int,
         baseEduInfo: BaseEduInfo.previewStudentfromJson(json),
       );
 }

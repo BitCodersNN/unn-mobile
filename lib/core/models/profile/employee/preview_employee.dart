@@ -4,6 +4,11 @@
 import 'package:unn_mobile/core/models/profile/employee/base_employee_profile.dart';
 import 'package:unn_mobile/core/models/profile/user_short_info.dart';
 
+class _PreviewEmployeeJsonKeys {
+  static const String id = 'id';
+  static const String profiles = 'profiles';
+}
+
 class PreviewEmployee extends UserShortInfo {
   final int userId;
   final List<BaeEmployeeProfile> profiles;
@@ -28,9 +33,9 @@ class PreviewEmployee extends UserShortInfo {
 
   factory PreviewEmployee.fromJson(Map<String, Object?> json) =>
       PreviewEmployee.withUserShortInfo(
-        userId: json['id'] as int,
+        userId: json[_PreviewEmployeeJsonKeys.id] as int,
         userShortInfo: UserShortInfo.fromProfileJson(json),
-        profiles: (json['profiles'] as List)
+        profiles: (json[_PreviewEmployeeJsonKeys.profiles] as List)
             .map(
               (item) =>
                   BaeEmployeeProfile.fromJson(item as Map<String, dynamic>),

@@ -4,6 +4,11 @@
 import 'package:unn_mobile/core/models/profile/employee/base_employee_profile.dart';
 import 'package:unn_mobile/core/models/profile/user_short_info.dart';
 
+class _EmployeeProfileJsonKeys {
+  static const String jobType = 'job_type';
+  static const String manager = 'manager';
+}
+
 class EmployeeProfile {
   final BaeEmployeeProfile previewEmployeeProfile;
   final String jobType;
@@ -18,9 +23,9 @@ class EmployeeProfile {
   factory EmployeeProfile.fromJson(Map<String, Object?> json) =>
       EmployeeProfile(
         previewEmployeeProfile: BaeEmployeeProfile.fromProfileJson(json),
-        jobType: json['job_type'] as String,
+        jobType: json[_EmployeeProfileJsonKeys.jobType] as String,
         manager: UserShortInfo.fromProfileJson(
-          json['manager'] as Map<String, dynamic>,
+          json[_EmployeeProfileJsonKeys.manager] as Map<String, dynamic>,
         ),
       );
 }
