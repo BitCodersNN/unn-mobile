@@ -45,9 +45,9 @@ class ProfileServiceImpl implements ProfileService {
     UserData? userData;
     try {
       userData = switch (userType) {
-        ProfilesStrings.student => StudentData.fromJson(profileJsonMap),
-        ProfilesStrings.employee => EmployeeData.fromJson(profileJsonMap),
-        _ => UserData.fromJson(profileJsonMap),
+        ProfilesStrings.student => StudentData.fromJson(response.data),
+        ProfilesStrings.employee => EmployeeData.fromJson(response.data),
+        _ => UserData.fromJson(response.data),
       };
     } catch (error, stackTrace) {
       _loggerService.logError(

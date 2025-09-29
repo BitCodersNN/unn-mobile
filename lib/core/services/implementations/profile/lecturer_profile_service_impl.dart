@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2025 BitCodersNN
 
-import 'package:unn_mobile/core/models/profile/employee_data.dart';
+import 'package:unn_mobile/core/models/profile/employee/employee_data.dart';
+import 'package:unn_mobile/core/models/profile/employee/preview_employee.dart';
 import 'package:unn_mobile/core/models/profile/lecturer_search_result.dart';
-import 'package:unn_mobile/core/models/profile/preview_employee.dart';
 import 'package:unn_mobile/core/models/profile/search_filter.dart';
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
 import 'package:unn_mobile/core/services/interfaces/profile/lecturer_profile_service.dart';
@@ -84,7 +84,7 @@ class LecturerProfileServiceImpl implements LecturerProfileService {
         return LecturerSearchResult.error();
       }
 
-      if (employeeProfile.syncID == syncId) {
+      if (employeeProfile.syncId == syncId) {
         return LecturerSearchResult.found(employeeProfile);
       }
     }
