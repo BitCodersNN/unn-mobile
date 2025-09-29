@@ -43,6 +43,7 @@ import 'package:unn_mobile/core/services/implementations/distance_learning/dista
 import 'package:unn_mobile/core/services/implementations/distance_learning/distance_learning_downloader_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/distance_learning/session_checker_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/distance_learning/webinar_service_impl.dart';
+import 'package:unn_mobile/core/services/implementations/profile/lecturer_profile_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/profile/profile_search_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/schedule/export_schedule_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/feed/blog_post_receivers/blog_post_service_impl.dart';
@@ -100,6 +101,7 @@ import 'package:unn_mobile/core/services/interfaces/distance_learning/distance_c
 import 'package:unn_mobile/core/services/interfaces/distance_learning/distance_learning_downloader_service.dart';
 import 'package:unn_mobile/core/services/interfaces/distance_learning/session_checker_service.dart';
 import 'package:unn_mobile/core/services/interfaces/distance_learning/webinar_service.dart';
+import 'package:unn_mobile/core/services/interfaces/profile/lecturer_profile_service.dart';
 import 'package:unn_mobile/core/services/interfaces/profile/profile_search_service.dart';
 import 'package:unn_mobile/core/services/interfaces/schedule/export_schedule_service.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/blog_post_receivers/blog_post_service.dart';
@@ -597,6 +599,14 @@ void registerDependencies() {
     () => ProfileSearchServiceImpl(
       get<LoggerService>(),
       getApiHelper(HostType.unnPortal),
+    ),
+  );
+
+  injector.registerSingleton<LecturerProfileService>(
+    () => LecturerProfileServiceImpl(
+      get<LoggerService>(),
+      get<ProfileSearchService>(),
+      get<ProfileService>(),
     ),
   );
 

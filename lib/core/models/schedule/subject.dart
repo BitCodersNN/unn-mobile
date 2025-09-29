@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:unn_mobile/core/constants/date_pattern.dart';
 import 'package:unn_mobile/core/misc/date_time_utilities/date_time_extensions.dart';
 import 'package:unn_mobile/core/misc/date_time_utilities/date_time_parser.dart';
+import 'package:unn_mobile/core/misc/json/json_utils.dart';
 import 'package:unn_mobile/core/models/schedule/address.dart';
 import 'package:unn_mobile/core/models/schedule/subject_type.dart';
 
@@ -15,6 +16,7 @@ class _SubjectJsonKeys {
   static const String building = 'building';
   static const String stream = 'stream';
   static const String lecturer = 'lecturer';
+  static const String lecturerUID = 'lecturerUID';
   static const String beginLesson = 'beginLesson';
   static const String endLesson = 'endLesson';
   static const String date = 'date';
@@ -26,6 +28,7 @@ class Subject {
   final Address address;
   final List<String> groups;
   final String lecturer;
+  final String syncId;
   final DateTimeRange dateTimeRange;
 
   Subject({
@@ -34,6 +37,7 @@ class Subject {
     required this.address,
     required this.groups,
     required this.lecturer,
+    required this.syncId,
     required this.dateTimeRange,
   });
 
@@ -48,23 +52,25 @@ class Subject {
   }
 
   factory Subject.fromJson(Map<String, dynamic> jsonMap) {
-    final String date = jsonMap[_SubjectJsonKeys.date] as String? ?? '';
+    final String date = getStringFromJson(jsonMap, _SubjectJsonKeys.date);
     final String beginLesson =
-        jsonMap[_SubjectJsonKeys.beginLesson] as String? ?? '';
+        getStringFromJson(jsonMap, _SubjectJsonKeys.beginLesson);
     final String endLesson =
-        jsonMap[_SubjectJsonKeys.endLesson] as String? ?? '';
-
+        getStringFromJson(jsonMap, _SubjectJsonKeys.endLesson);
     final String discipline =
-        jsonMap[_SubjectJsonKeys.discipline] as String? ?? '';
-
+        getStringFromJson(jsonMap, _SubjectJsonKeys.discipline);
     final String kindOfWork =
-        jsonMap[_SubjectJsonKeys.kindOfWork] as String? ?? '';
+        getStringFromJson(jsonMap, _SubjectJsonKeys.kindOfWork);
     final String auditorium =
-        jsonMap[_SubjectJsonKeys.auditorium] as String? ?? '';
-    final String building = jsonMap[_SubjectJsonKeys.building] as String? ?? '';
+        getStringFromJson(jsonMap, _SubjectJsonKeys.auditorium);
+    final String building =
+        getStringFromJson(jsonMap, _SubjectJsonKeys.building);
     final String streamString =
-        jsonMap[_SubjectJsonKeys.stream] as String? ?? '';
-    final String lecturer = jsonMap[_SubjectJsonKeys.lecturer] as String? ?? '';
+        getStringFromJson(jsonMap, _SubjectJsonKeys.stream);
+    final String lecturer =
+        getStringFromJson(jsonMap, _SubjectJsonKeys.lecturer);
+    final String syncId =
+        getStringFromJson(jsonMap, _SubjectJsonKeys.lecturerUID);
 
     return Subject(
       name: discipline,
@@ -75,6 +81,7 @@ class Subject {
       ),
       groups: streamString.split('|'),
       lecturer: lecturer,
+      syncId: syncId,
       dateTimeRange: DateTimeRange(
         start: _parseDateTime(date, beginLesson),
         end: _parseDateTime(date, endLesson),
@@ -94,6 +101,7 @@ class Subject {
         _SubjectJsonKeys.building: address.building,
         _SubjectJsonKeys.stream: groups.join('|'),
         _SubjectJsonKeys.lecturer: lecturer,
+        _SubjectJsonKeys.lecturerUID: syncId,
       };
 
   static DateTime _parseDateTime(String date, String time) {

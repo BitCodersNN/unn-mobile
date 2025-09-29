@@ -15,7 +15,7 @@ class GroupDialogJsonKeys {
 }
 
 final class GroupDialog extends Dialog {
-  final String id;
+  final String dialogId;
   final ChatSetting chatSetting;
 
   GroupDialog({
@@ -26,7 +26,7 @@ final class GroupDialog extends Dialog {
     required super.unreadMessagesCount,
     required super.lastMessageStatus,
     required super.pinned,
-    required this.id,
+    required this.dialogId,
     required this.chatSetting,
   });
 
@@ -41,7 +41,7 @@ final class GroupDialog extends Dialog {
       unreadMessagesCount: dialog.unreadMessagesCount,
       lastMessageStatus: dialog.lastMessageStatus,
       pinned: dialog.pinned,
-      id: json[GroupDialogJsonKeys.id],
+      dialogId: json[GroupDialogJsonKeys.id],
       chatSetting: _parseChatSetting(json[GroupDialogJsonKeys.chat]),
     );
   }
@@ -50,7 +50,7 @@ final class GroupDialog extends Dialog {
   Map<String, dynamic> toJson() {
     return {
       ...super.toJson(),
-      GroupDialogJsonKeys.id: id,
+      GroupDialogJsonKeys.id: dialogId,
       GroupDialogJsonKeys.chat: chatSetting.toJson(),
       GroupDialogJsonKeys.type: GroupDialogJsonKeys.chat,
     };

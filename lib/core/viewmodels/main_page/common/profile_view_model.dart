@@ -151,7 +151,7 @@ class ProfileViewModel extends BaseViewModel {
 
   Future<UserData?> _getProfile(int userId, bool loadFromPost) async {
     return loadFromPost
-        ? await _getProfileService.getProfileByAuthorIdFromPost(
+        ? await _getProfileService.getProfileByAuthorId(
             authorId: userId,
           )
         : await _getProfileService.getProfile(
