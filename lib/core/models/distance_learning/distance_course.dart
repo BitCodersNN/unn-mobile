@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2025 BitCodersNN
 
+import 'package:unn_mobile/core/misc/json/json_utils.dart';
 import 'package:unn_mobile/core/models/distance_learning/distance_file_data.dart';
 import 'package:unn_mobile/core/models/distance_learning/distance_link_data.dart';
 import 'package:unn_mobile/core/models/distance_learning/distance_material_data.dart';
@@ -52,10 +53,10 @@ class DistanceCourse {
       };
 
   static List<DistanceMaterialData> _parseMaterials(
-    Map<String, Object?> jsonMap,
+    Map<String, Object?> json,
   ) {
-    final files = jsonMap[DistanceCourseJsonKeys.files] as List<dynamic>? ?? [];
-    final links = jsonMap[DistanceCourseJsonKeys.links] as List<dynamic>? ?? [];
+    final files = getListFromJson(json, DistanceCourseJsonKeys.files);
+    final links = getListFromJson(json, DistanceCourseJsonKeys.links);
 
     final fileDataList = files
         .map((materialJson) => DistanceFileData.fromJson(materialJson))

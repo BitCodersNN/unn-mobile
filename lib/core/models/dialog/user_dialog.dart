@@ -11,7 +11,7 @@ class _UserDialogJsonKeys {
 }
 
 final class UserDialog extends Dialog {
-  final int id;
+  final int dialogId;
   final DateTime? lastActivityAt;
 
   UserDialog({
@@ -22,7 +22,7 @@ final class UserDialog extends Dialog {
     required super.unreadMessagesCount,
     required super.lastMessageStatus,
     required super.pinned,
-    required this.id,
+    required this.dialogId,
     required this.lastActivityAt,
   });
 
@@ -36,7 +36,7 @@ final class UserDialog extends Dialog {
       unreadMessagesCount: dialog.unreadMessagesCount,
       lastMessageStatus: dialog.lastMessageStatus,
       pinned: dialog.pinned,
-      id: json[_UserDialogJsonKeys.id],
+      dialogId: json[_UserDialogJsonKeys.id],
       lastActivityAt: DateTime.tryParse(
         json[_UserDialogJsonKeys.user][_UserDialogJsonKeys.lastActivityDate],
       ),
@@ -46,7 +46,7 @@ final class UserDialog extends Dialog {
   @override
   Map<String, dynamic> toJson() => {
         ...super.toJson(),
-        _UserDialogJsonKeys.id: id,
+        _UserDialogJsonKeys.id: dialogId,
         _UserDialogJsonKeys.type: _UserDialogJsonKeys.user,
         _UserDialogJsonKeys.user: {
           _UserDialogJsonKeys.lastActivityDate:

@@ -27,9 +27,57 @@ class ProfileServiceImpl implements ProfileService {
   );
 
   @override
-  Future<int?> getProfileIdByBitrixID({required int bitrixID}) async {
+  Future<UserData?> getProfile({required int userId}) async {
+    Response response;
+    try {
+      response = await _apiHelper.get(
+        path: ApiPath.user + userId.toString(),
+        options: OptionsWithExpectedTypeFactory.jsonMap,
+      );
+    } catch (error, stackTrace) {
+      _loggerService.logError(error, stackTrace);
+      return null;
+    }
+
+    final userType = response.data[ProfilesStrings.type] ??
+        response.data[ProfilesStrings.profilesKey][0][ProfilesStrings.type];
+
+    UserData? userData;
+    try {
+      userData = switch (userType) {
+        ProfilesStrings.student => StudentData.fromJson(profileJsonMap),
+        ProfilesStrings.employee => EmployeeData.fromJson(profileJsonMap),
+        _ => UserData.fromJson(profileJsonMap),
+      };
+    } catch (error, stackTrace) {
+      _loggerService.logError(
+        error,
+        stackTrace,
+        information: [response.data.toString()],
+      );
+    }
+
+    return userData;
+  }
+
+  @override
+  Future<UserData?> getProfileByBitrixId(int bitrixId) async {
+    final userId = await _getUserIdByBitrixId(bitrixId: bitrixId);
+    if (userId == null) return null;
+    return getProfile(userId: userId);
+  }
+
+  @override
+  Future<UserData?> getProfileByAuthorId({required int authorId}) =>
+      getProfileByBitrixId(authorId);
+
+  @override
+  Future<UserData?> getProfileByDialogId({required int dialogId}) =>
+      getProfileByBitrixId(dialogId);
+
+  Future<int?> _getUserIdByBitrixId({required int bitrixId}) async {
     final path =
-        ApiPath.user + _pathSecondPartForGettingId + bitrixID.toString();
+        ApiPath.user + _pathSecondPartForGettingId + bitrixId.toString();
 
     Response response;
     try {
@@ -54,52 +102,5 @@ class ProfileServiceImpl implements ProfileService {
     }
 
     return id;
-  }
-
-  @override
-  Future<UserData?> getProfile({required int userId}) async {
-    final path = ApiPath.user + userId.toString();
-
-    Response response;
-    try {
-      response = await _apiHelper.get(
-        path: path,
-        options: OptionsWithExpectedTypeFactory.jsonMap,
-      );
-    } catch (error, stackTrace) {
-      _loggerService.logError(error, stackTrace);
-      return null;
-    }
-
-    final userType = response.data[ProfilesStrings.type] ??
-        response.data[ProfilesStrings.profilesKey][0][ProfilesStrings.type];
-
-    UserData? userData;
-    try {
-      userData = (userType == ProfilesStrings.student)
-          ? StudentData.fromJson(response.data)
-          : userType == ProfilesStrings.employee
-              ? EmployeeData.fromJson(response.data)
-              : UserData.fromJson(response.data);
-    } catch (error, stackTrace) {
-      _loggerService.logError(
-        error,
-        stackTrace,
-        information: [response.data.toString()],
-      );
-    }
-
-    return userData;
-  }
-
-  @override
-  Future<UserData?> getProfileByAuthorIdFromPost({
-    required int authorId,
-  }) async {
-    final userId = await getProfileIdByBitrixID(bitrixID: authorId);
-    if (userId == null) {
-      return null;
-    }
-    return await getProfile(userId: userId);
   }
 }
