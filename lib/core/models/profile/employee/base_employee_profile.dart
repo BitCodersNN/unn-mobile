@@ -25,30 +25,47 @@ class BaeEmployeeProfile {
     required this.departments,
   });
 
+  Map<String, dynamic> toJson() => {
+        _BaeEmployeeProfileJsonKeys.id: id,
+        _BaeEmployeeProfileJsonKeys.departmentId: departmentId?.toString(),
+        _BaeEmployeeProfileJsonKeys.jobTitle: jobTitle,
+        _BaeEmployeeProfileJsonKeys.department:
+            departments.map((department) => department.toJson()).toList(),
+      };
+
   factory BaeEmployeeProfile.fromJson(Map<String, Object?> json) =>
       BaeEmployeeProfile(
         id: json[_BaeEmployeeProfileJsonKeys.id] as int,
-        departmentId: int.tryParse(
-          json[_BaeEmployeeProfileJsonKeys.departmentId] as String,
-        ),
+        departmentId: json[_BaeEmployeeProfileJsonKeys.departmentId] != null
+            ? int.tryParse(
+                json[_BaeEmployeeProfileJsonKeys.departmentId] as String,
+              )
+            : null,
         jobTitle: json[_BaeEmployeeProfileJsonKeys.jobTitle] as String,
-        departments: (json[_BaeEmployeeProfileJsonKeys.department] as List)
-            .map((item) => Department.fromJson(item as Map<String, dynamic>))
-            .toList(),
+        departments: _parseDepartments(
+          json[_BaeEmployeeProfileJsonKeys.department],
+        ),
       );
 
-  factory BaeEmployeeProfile.fromProfileJson(Map<String, Object?> json) =>
-      BaeEmployeeProfile(
-        id: json[_BaeEmployeeProfileJsonKeys.id] as int,
-        departmentId: int.tryParse(
-          json[_BaeEmployeeProfileJsonKeys.departmentId] as String,
-        ),
-        jobTitle: json[_BaeEmployeeProfileJsonKeys.jobTitle] as String,
-        departments: (flattenTree(
-          json: json[_BaeEmployeeProfileJsonKeys.department]
-              as Map<String, dynamic>,
-          rootKey: _BaeEmployeeProfileJsonKeys.department,
-          childKey: _BaeEmployeeProfileJsonKeys.child,
-        )).map((item) => Department.fromJson(item)).toList(),
-      );
+  static List<Department> _parseDepartments(dynamic departmentJson) {
+    if (departmentJson == null) {
+      return [];
+    }
+
+    Iterable<Map<String, dynamic>> departmentMaps;
+
+    if (departmentJson is List) {
+      departmentMaps = departmentJson.whereType<Map<String, dynamic>>();
+    } else if (departmentJson is Map<String, dynamic>) {
+      departmentMaps = flattenTree(
+        json: departmentJson,
+        rootKey: _BaeEmployeeProfileJsonKeys.department,
+        childKey: _BaeEmployeeProfileJsonKeys.child,
+      ).whereType<Map<String, dynamic>>();
+    } else {
+      return [];
+    }
+
+    return departmentMaps.map(Department.fromJson).toList();
+  }
 }

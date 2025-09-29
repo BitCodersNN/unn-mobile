@@ -50,6 +50,16 @@ class BaseEduInfo {
         },
       };
 
+  Map<String, dynamic> toPreviewStudentJson() => {
+        _BaseEduInfoJsonKeys.eduForm: eduForm,
+        _BaseEduInfoJsonKeys.eduCourse: eduCourse,
+        _BaseEduInfoJsonKeys.eduLevel: eduLevel,
+        _BaseEduInfoJsonKeys.department: faculty,
+        _BaseEduInfoJsonKeys.eduDirection: eduDirection,
+        _BaseEduInfoJsonKeys.eduGroup: eduGroup,
+        _BaseEduInfoJsonKeys.eduSpecialization: eduSpecialization,
+      };
+
   factory BaseEduInfo.fromJson(Map<String, Object?> jsonMap) => BaseEduInfo(
         eduForm: jsonMap[_BaseEduInfoJsonKeys.eduForm] as String,
         eduCourse: jsonMap[_BaseEduInfoJsonKeys.eduCourse] as int,

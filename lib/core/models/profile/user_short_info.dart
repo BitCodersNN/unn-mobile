@@ -169,7 +169,7 @@ class UserShortInfo
   Map<String, dynamic> buildJsonMap(JsonKeys jsonKeys) {
     jsonKeys as _UserInfoKeys;
     return {
-      jsonKeys.id: bitrixId.toString(),
+      jsonKeys.id: bitrixId?.toString(),
       jsonKeys.fullname: fullname,
       jsonKeys.photoSrc: photoSrc,
     };

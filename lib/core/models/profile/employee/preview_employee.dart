@@ -42,4 +42,12 @@ class PreviewEmployee extends UserShortInfo {
             )
             .toList(),
       );
+
+  @override
+  Map<String, dynamic> toJson() => {
+        ...super.toProfileJson(),
+        _PreviewEmployeeJsonKeys.id: userId,
+        _PreviewEmployeeJsonKeys.profiles:
+            profiles.map((profile) => profile.toJson()).toList(),
+      };
 }

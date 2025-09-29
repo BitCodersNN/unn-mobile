@@ -44,6 +44,14 @@ class EmployeeData extends UserData {
           notes: userData.notes,
         );
 
+  @override
+  Map<String, dynamic> toJson() => {
+        ...super.toJson(),
+        _EmployeeDataJsonKeys.syncId: syncId,
+        _EmployeeDataJsonKeys.profiles:
+            profiles.map((profile) => profile.toJson()).toList(),
+      };
+
   factory EmployeeData.fromJson(Map<String, Object?> json) =>
       EmployeeData.withUserData(
         userData: UserData.fromJson(

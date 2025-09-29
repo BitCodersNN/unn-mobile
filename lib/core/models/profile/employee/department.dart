@@ -23,4 +23,10 @@ class Department {
         title: json[_DepartmentJsonKeys.title] as String,
         shortTitle: json[_DepartmentJsonKeys.shortTitle] as String,
       );
+
+  Map<String, dynamic> toJson() => {
+        _DepartmentJsonKeys.id: id,
+        _DepartmentJsonKeys.title: title,
+        _DepartmentJsonKeys.shortTitle: shortTitle,
+      };
 }

@@ -21,7 +21,7 @@ mixin MessageJsonSerializable on MultiFormatJsonSerializable {
 
 mixin ProfileJsonSerializable on MultiFormatJsonSerializable {
   Map<String, dynamic> toProfileJson() =>
-      _toJsonForFormat(JsonKeyFormat.message);
+      _toJsonForFormat(JsonKeyFormat.profile);
 }
 
 mixin MultiFormatJsonSerializable {

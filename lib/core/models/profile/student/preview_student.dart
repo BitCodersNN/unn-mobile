@@ -36,4 +36,11 @@ class PreviewStudent extends UserShortInfo {
         userId: json[_PreviewStudentJsonKeys.userId] as int,
         baseEduInfo: BaseEduInfo.previewStudentfromJson(json),
       );
+
+  @override
+  Map<String, dynamic> toJson() => {
+        ...super.toProfileJson(),
+        _PreviewStudentJsonKeys.userId: userId,
+        ...baseEduInfo.toPreviewStudentJson(),
+      };
 }

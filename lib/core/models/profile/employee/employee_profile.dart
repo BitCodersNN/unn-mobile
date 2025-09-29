@@ -20,9 +20,15 @@ class EmployeeProfile {
     this.manager,
   });
 
+  Map<String, dynamic> toJson() => {
+        ...previewEmployeeProfile.toJson(),
+        _EmployeeProfileJsonKeys.jobType: jobType,
+        _EmployeeProfileJsonKeys.manager: manager?.toProfileJson(),
+      };
+
   factory EmployeeProfile.fromJson(Map<String, Object?> json) =>
       EmployeeProfile(
-        previewEmployeeProfile: BaeEmployeeProfile.fromProfileJson(json),
+        previewEmployeeProfile: BaeEmployeeProfile.fromJson(json),
         jobType: json[_EmployeeProfileJsonKeys.jobType] as String,
         manager: UserShortInfo.fromProfileJson(
           json[_EmployeeProfileJsonKeys.manager] as Map<String, dynamic>,
