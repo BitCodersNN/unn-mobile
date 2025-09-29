@@ -13,10 +13,10 @@ T getValue<T>(Map<String, dynamic> json, String key, T defaultValue) {
   return defaultValue;
 }
 
-/// Безопасно извлекает строковое значение из карты [json] по указанному [key].
+/// Безопасно извлекает строковое значение из [json] по указанному ключу [key].
 ///
-/// Если [key] отсутствует в карте, значение по ключу равно `null` или не является
-/// строкой ([String]), функция возвращает пустую строку (`''`).
+/// Если [key] отсутствует, либо значение по нему равно `null` или не является
+/// строкой ([String]), функция возвращает пустую строку.
 String getString(Map<String, dynamic> json, String key) =>
     getValue(json, key, '');
 
