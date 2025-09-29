@@ -52,16 +52,25 @@ class Subject {
   }
 
   factory Subject.fromJson(Map<String, dynamic> jsonMap) {
-    final String date = getString(jsonMap, _SubjectJsonKeys.date);
-    final String beginLesson = getString(jsonMap, _SubjectJsonKeys.beginLesson);
-    final String endLesson = getString(jsonMap, _SubjectJsonKeys.endLesson);
-    final String discipline = getString(jsonMap, _SubjectJsonKeys.discipline);
-    final String kindOfWork = getString(jsonMap, _SubjectJsonKeys.kindOfWork);
-    final String auditorium = getString(jsonMap, _SubjectJsonKeys.auditorium);
-    final String building = getString(jsonMap, _SubjectJsonKeys.building);
-    final String streamString = getString(jsonMap, _SubjectJsonKeys.stream);
-    final String lecturer = getString(jsonMap, _SubjectJsonKeys.lecturer);
-    final String syncId = getString(jsonMap, _SubjectJsonKeys.lecturerUID);
+    final String date = getStringFromJson(jsonMap, _SubjectJsonKeys.date);
+    final String beginLesson =
+        getStringFromJson(jsonMap, _SubjectJsonKeys.beginLesson);
+    final String endLesson =
+        getStringFromJson(jsonMap, _SubjectJsonKeys.endLesson);
+    final String discipline =
+        getStringFromJson(jsonMap, _SubjectJsonKeys.discipline);
+    final String kindOfWork =
+        getStringFromJson(jsonMap, _SubjectJsonKeys.kindOfWork);
+    final String auditorium =
+        getStringFromJson(jsonMap, _SubjectJsonKeys.auditorium);
+    final String building =
+        getStringFromJson(jsonMap, _SubjectJsonKeys.building);
+    final String streamString =
+        getStringFromJson(jsonMap, _SubjectJsonKeys.stream);
+    final String lecturer =
+        getStringFromJson(jsonMap, _SubjectJsonKeys.lecturer);
+    final String syncId =
+        getStringFromJson(jsonMap, _SubjectJsonKeys.lecturerUID);
 
     return Subject(
       name: discipline,

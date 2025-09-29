@@ -55,8 +55,8 @@ class DistanceCourse {
   static List<DistanceMaterialData> _parseMaterials(
     Map<String, Object?> json,
   ) {
-    final files = getList(json, DistanceCourseJsonKeys.files);
-    final links = getList(json, DistanceCourseJsonKeys.links);
+    final files = getListFromJson(json, DistanceCourseJsonKeys.files);
+    final links = getListFromJson(json, DistanceCourseJsonKeys.links);
 
     final fileDataList = files
         .map((materialJson) => DistanceFileData.fromJson(materialJson))

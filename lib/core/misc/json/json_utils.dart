@@ -5,7 +5,7 @@
 ///
 /// Если ключ отсутствует, либо значение по нему `null` или не может быть приведено к типу [T],
 /// возвращается [defaultValue].
-T getValue<T>(Map<String, dynamic> json, String key, T defaultValue) {
+T getValueFromJson<T>(Map<String, dynamic> json, String key, T defaultValue) {
   final value = json[key];
   if (value is T) {
     return value;
@@ -17,11 +17,12 @@ T getValue<T>(Map<String, dynamic> json, String key, T defaultValue) {
 ///
 /// Если [key] отсутствует, либо значение по нему равно `null` или не является
 /// строкой ([String]), функция возвращает пустую строку.
-String getString(Map<String, dynamic> json, String key) =>
-    getValue(json, key, '');
+String getStringFromJson(Map<String, dynamic> json, String key) =>
+    getValueFromJson(json, key, '');
 
 /// Безопасно извлекает значение из карты [json] по указанному [key] как список.
 ///
 /// Если ключ [key] отсутствует, значение равно `null` или не является списком
 /// ([List]), метод возвращает пустой список (`[]`).
-List getList(Map<String, dynamic> json, String key) => getValue(json, key, []);
+List getListFromJson(Map<String, dynamic> json, String key) =>
+    getValueFromJson(json, key, []);
