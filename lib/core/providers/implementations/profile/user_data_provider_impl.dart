@@ -38,25 +38,19 @@ class UserDataProviderImpl implements UserDataProvider {
       key: _UserDataProvideKeys._userDataKey,
     );
 
+    final decodedJson = jsonDecode(userInfo!);
+
     try {
-      if (userType == _student) {
-        userData = StudentData.fromJson(
-          jsonDecode(
-            userInfo!,
-          ),
-        );
-      } else if (userType == _employee) {
-        userData = EmployeeData.fromCurrentProfileJson(
-          jsonDecode(
-            userInfo!,
-          ),
-        );
-      }
+      userData = switch (userType) {
+        _student => StudentData.fromJson(decodedJson),
+        _employee => EmployeeData.fromCurrentProfileJson(decodedJson),
+        _ => UserData.fromJson(decodedJson),
+      };
     } catch (e, stackTrace) {
       _loggerService.logError(
         e,
         stackTrace,
-        information: [userInfo!],
+        information: [userInfo],
       );
     }
 

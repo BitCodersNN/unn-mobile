@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2025 BitCodersNN
 
-import 'package:unn_mobile/core/misc/tree_flattener.dart';
+import 'package:unn_mobile/core/misc/json/tree_flattener.dart';
 import 'package:unn_mobile/core/models/profile/employee/department.dart';
 
 class _BaeEmployeeProfileJsonKeys {

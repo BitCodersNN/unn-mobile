@@ -23,17 +23,16 @@ List<Map<String, dynamic>> flattenTree({
     Map<String, dynamic> outputNode;
 
     if (fieldsToKeep != null) {
-      outputNode = {};
-      for (final field in fieldsToKeep) {
-        if (node.containsKey(field)) {
-          outputNode[field] = node[field];
-        }
-      }
+      outputNode = {
+        for (final field in fieldsToKeep)
+          if (node.containsKey(field)) field: node[field],
+      };
     } else {
-      outputNode = Map<String, dynamic>.from(node);
-      if (!includeChildField) {
-        outputNode.remove(childKey);
-      }
+      outputNode = {
+        for (final entry in node.entries)
+          if (includeChildField || entry.key != childKey)
+            entry.key: entry.value,
+      };
     }
 
     result.add(outputNode);

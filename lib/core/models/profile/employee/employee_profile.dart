@@ -30,8 +30,10 @@ class EmployeeProfile {
       EmployeeProfile(
         previewEmployeeProfile: BaeEmployeeProfile.fromJson(json),
         jobType: json[_EmployeeProfileJsonKeys.jobType] as String,
-        manager: UserShortInfo.fromProfileJson(
-          json[_EmployeeProfileJsonKeys.manager] as Map<String, dynamic>,
-        ),
+        manager: json[_EmployeeProfileJsonKeys.manager] != null
+            ? UserShortInfo.fromProfileJson(
+                json[_EmployeeProfileJsonKeys.manager] as Map<String, dynamic>,
+              )
+            : null,
       );
 }
