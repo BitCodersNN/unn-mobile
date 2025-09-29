@@ -22,7 +22,7 @@ String getStringFromJson(Map<String, dynamic> json, String key) =>
 
 /// Безопасно извлекает значение из карты [json] по указанному [key] как список.
 ///
-/// Если ключ [key] отсутствует, значение равно `null` или не является списком
-/// ([List]), метод возвращает пустой список (`[]`).
+/// Если [key] отсутствует, либо значение по нему равно `null` или не является
+/// списком ([List]), метод возвращает пустой список (`[]`).
 List getListFromJson(Map<String, dynamic> json, String key) =>
     getValueFromJson(json, key, []);
