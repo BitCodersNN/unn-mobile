@@ -33,47 +33,51 @@ class AboutScreenView extends StatelessWidget {
                       children: [
                         if (!model.initialized)
                           const Center(child: CircularProgressIndicator())
-                        else
-                          Padding(
-                            padding: const EdgeInsets.only(top: 15),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Center(
-                                  child: Text(
-                                    'Команда разработчиков',
-                                    textAlign: TextAlign.center,
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .headlineSmall
-                                        ?.copyWith(color: Colors.black),
+                        else ...[
+                          if (model.authors.isNotEmpty)
+                            Padding(
+                              padding: const EdgeInsets.only(top: 15),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Center(
+                                    child: Text(
+                                      'Команда разработчиков',
+                                      textAlign: TextAlign.center,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .headlineSmall
+                                          ?.copyWith(color: Colors.black),
+                                    ),
                                   ),
-                                ),
-                                ...model.authors.map(
+                                  ...model.authors.map(
+                                    (author) => _AuthorProfileWidget(author),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          if (model.pastAuthors.isNotEmpty) ...[
+                            const Divider(),
+                            ExpansionTile(
+                              shape: const Border(),
+                              title: Text(
+                                'Прошлые участники',
+                                textAlign: TextAlign.left,
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .headlineSmall
+                                    ?.copyWith(color: Colors.black),
+                              ),
+                              dense: true,
+                              children: [
+                                ...model.pastAuthors.map(
                                   (author) => _AuthorProfileWidget(author),
                                 ),
-                                const Divider(),
-                                ExpansionTile(
-                                  shape: const Border(),
-                                  title: Text(
-                                    'Прошлые участники',
-                                    textAlign: TextAlign.left,
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .headlineSmall
-                                        ?.copyWith(color: Colors.black),
-                                  ),
-                                  dense: true,
-                                  children: [
-                                    ...model.pastAuthors.map(
-                                      (author) => _AuthorProfileWidget(author),
-                                    ),
-                                  ],
-                                ),
-                                const Divider(),
                               ],
                             ),
-                          ),
+                            const Divider(),
+                          ],
+                        ],
                         Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: HtmlWidget(
