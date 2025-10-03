@@ -11,8 +11,8 @@ class AboutViewModel extends BaseViewModel {
 
   Map<String, List<Author>>? _authors;
 
-  List<Author>? get authors => _authors?[AuthorsConfigKeys.authors];
-  List<Author>? get pastAuthor => _authors?[AuthorsConfigKeys.pastAuthors];
+  List<Author> get authors => _authors?[AuthorsConfigKeys.authors] ?? [];
+  List<Author> get pastAuthors => _authors?[AuthorsConfigKeys.pastAuthors] ?? [];
 
   AboutViewModel(
     this.authorsConfigService,

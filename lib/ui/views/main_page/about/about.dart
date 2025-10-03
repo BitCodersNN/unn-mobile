@@ -19,75 +19,90 @@ class AboutScreenView extends StatelessWidget {
     return BaseView<AboutViewModel>(
       onModelReady: (model) => model.init(),
       builder: (context, model, child) {
-        if (!model.initialized) {
-          return const Scaffold(
-            body: Center(child: CircularProgressIndicator()),
-          );
-        }
         return Scaffold(
           appBar: AppBar(title: const Text('О нас')),
-          body: SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.only(top: 15, bottom: 100),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text(
-                    'Команда разработчиков',
-                    textAlign: TextAlign.left,
-                    style: Theme.of(context)
-                        .textTheme
-                        .headlineSmall
-                        ?.copyWith(color: Colors.black),
-                  ),
-                  ...model.authors!.map(
-                    (author) => _AuthorProfileWidget(author),
-                  ),
-                  const Divider(),
-                  ExpansionTile(
-                    shape: const Border(),
-                    title: Text(
-                      'Прошлые участники',
-                      textAlign: TextAlign.left,
-                      style: Theme.of(context)
-                          .textTheme
-                          .headlineSmall
-                          ?.copyWith(color: Colors.black),
-                    ),
-                    dense: true,
-                    children: [
-                      ...model.pastAuthor!.map(
-                        (author) => _AuthorProfileWidget(author),
-                      ),
-                    ],
-                  ),
-                  const Divider(),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: HtmlWidget(
-                      '''
+          body: LayoutBuilder(
+            builder: (context, constraints) {
+              return SingleChildScrollView(
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                  child: IntrinsicHeight(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        if (!model.initialized)
+                          const Center(child: CircularProgressIndicator())
+                        else
+                          Padding(
+                            padding: const EdgeInsets.only(top: 15),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Center(
+                                  child: Text(
+                                    'Команда разработчиков',
+                                    textAlign: TextAlign.center,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .headlineSmall
+                                        ?.copyWith(color: Colors.black),
+                                  ),
+                                ),
+                                ...model.authors.map(
+                                  (author) => _AuthorProfileWidget(author),
+                                ),
+                                const Divider(),
+                                ExpansionTile(
+                                  shape: const Border(),
+                                  title: Text(
+                                    'Прошлые участники',
+                                    textAlign: TextAlign.left,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .headlineSmall
+                                        ?.copyWith(color: Colors.black),
+                                  ),
+                                  dense: true,
+                                  children: [
+                                    ...model.pastAuthors.map(
+                                      (author) => _AuthorProfileWidget(author),
+                                    ),
+                                  ],
+                                ),
+                                const Divider(),
+                              ],
+                            ),
+                          ),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: HtmlWidget(
+                            '''
                       <p>Приложение распространяется под лицензией <a href="https://github.com/BitCodersNN/unn-mobile?tab=Apache-2.0-1-ov-file">Apache 2.0</a></p>
                       <p>Код приложения доступен <a href="https://github.com/BitCodersNN/unn-mobile">на нашем GitHub</a></p>
                       <p>По всем вопросам можно обращаться: <a href="https://t.me/unn_mobile">t.me/unn_mobile</a></p>
                       ''',
-                      textStyle: const TextStyle(
-                        color: Color(0xFF717A84),
-                        fontFamily: 'Inter',
-                        fontSize: 13,
-                      ),
-                      onTapUrl: (url) async {
-                        if (!await launchUrl(Uri.parse(url))) {
-                          Injector.appInstance
-                              .get<LoggerService>()
-                              .log('Could not launch url $url');
-                        }
-                        return true;
-                      },
+                            textStyle: const TextStyle(
+                              color: Color(0xFF717A84),
+                              fontFamily: 'Inter',
+                              fontSize: 13,
+                            ),
+                            onTapUrl: (url) async {
+                              if (!await launchUrl(Uri.parse(url))) {
+                                Injector.appInstance
+                                    .get<LoggerService>()
+                                    .log('Could not launch url $url');
+                              }
+                              return true;
+                            },
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                ],
-              ),
-            ),
+                ),
+              );
+            },
           ),
         );
       },
