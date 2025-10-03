@@ -5,7 +5,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:unn_mobile/core/constants/api/host.dart';
 import 'package:unn_mobile/core/constants/api/path.dart';
-import 'package:unn_mobile/core/constants/session_identifier_strings.dart';
+import 'package:unn_mobile/core/constants/string_keys/session_identifier_keys.dart';
 import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/misc/api_helpers/base_options_factory.dart';
 import 'package:unn_mobile/core/misc/authorisation/authorisation_request_result.dart';
@@ -33,7 +33,7 @@ class SourceAuthorisationServiceImpl extends ChangeNotifier
 
   @override
   Map<String, dynamic>? get headers => {
-        'Cookie': '${SessionIdentifierStrings.sessionIdCookieKey}=$sessionId',
+        'Cookie': '${SessionIdentifierKeys.sessionIdCookieKey}=$sessionId',
       };
 
   SourceAuthorisationServiceImpl(

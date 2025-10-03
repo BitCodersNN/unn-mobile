@@ -2,8 +2,14 @@
 // Copyright 2025 BitCodersNN
 
 class ApiPath {
-  /// Для доступа к репозиторию с загрузочными экранами
-  static const String gitRepository = 'BitCodersNN/unn-mobile.loading-screen';
+  /// Для доступа к репозиторию с assets
+  static const String gitRepository = 'BitCodersNN/unn-mobile.assets';
+
+  /// Для доступа к загрузочным экранам
+  static const String loadingScreen = 'develop/loading_screen';
+
+  /// Для доступа к авторам приложения
+  static const String authors = 'develop/authors';
 
   /// Для авторизация
   static const String auth = 'auth/';

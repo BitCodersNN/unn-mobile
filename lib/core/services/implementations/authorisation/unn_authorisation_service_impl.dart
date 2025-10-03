@@ -5,7 +5,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:unn_mobile/core/constants/api/host.dart';
 import 'package:unn_mobile/core/constants/api/path.dart';
-import 'package:unn_mobile/core/constants/session_identifier_strings.dart';
+import 'package:unn_mobile/core/constants/string_keys/session_identifier_keys.dart';
 import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/misc/api_helpers/base_options_factory.dart';
 import 'package:unn_mobile/core/misc/authorisation/authorisation_request_result.dart';
@@ -32,16 +32,15 @@ class UnnAuthorisationServiceImpl extends ChangeNotifier
   bool get isAuthorised => _isAuthorised;
 
   @override
-  String? get csrf => _headers?[SessionIdentifierStrings.csrf];
+  String? get csrf => _headers?[SessionIdentifierKeys.csrf];
 
   @override
-  String? get sessionId =>
-      _headers?[SessionIdentifierStrings.sessionIdCookieKey];
+  String? get sessionId => _headers?[SessionIdentifierKeys.sessionIdCookieKey];
 
   @override
   Map<String, dynamic>? get headers => {
-        SessionIdentifierStrings.csrfToken: csrf,
-        'Cookie': '${SessionIdentifierStrings.sessionIdCookieKey}=$sessionId',
+        SessionIdentifierKeys.csrfToken: csrf,
+        'Cookie': '${SessionIdentifierKeys.sessionIdCookieKey}=$sessionId',
       };
 
   @override
