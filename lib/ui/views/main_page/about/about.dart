@@ -29,62 +29,74 @@ class AboutScreenView extends StatelessWidget {
                   child: IntrinsicHeight(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         if (!model.initialized)
-                          const Center(child: CircularProgressIndicator())
-                        else ...[
-                          if (model.authors.isNotEmpty)
-                            Padding(
-                              padding: const EdgeInsets.only(top: 15),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Center(
-                                    child: Text(
-                                      'Команда разработчиков',
-                                      textAlign: TextAlign.center,
+                          const Expanded(
+                            child: Center(child: CircularProgressIndicator()),
+                          )
+                        else
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                if (model.authors.isNotEmpty)
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 15),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Center(
+                                          child: Text(
+                                            'Команда разработчиков',
+                                            textAlign: TextAlign.center,
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .headlineSmall
+                                                ?.copyWith(color: Colors.black),
+                                          ),
+                                        ),
+                                        ...model.authors.map(
+                                          (author) =>
+                                              _AuthorProfileWidget(author),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                if (model.pastAuthors.isNotEmpty) ...[
+                                  const Divider(),
+                                  ExpansionTile(
+                                    shape: const Border(),
+                                    title: Text(
+                                      'Прошлые участники',
+                                      textAlign: TextAlign.left,
                                       style: Theme.of(context)
                                           .textTheme
                                           .headlineSmall
                                           ?.copyWith(color: Colors.black),
                                     ),
+                                    dense: true,
+                                    children: [
+                                      ...model.pastAuthors.map(
+                                        (author) =>
+                                            _AuthorProfileWidget(author),
+                                      ),
+                                    ],
                                   ),
-                                  ...model.authors.map(
-                                    (author) => _AuthorProfileWidget(author),
-                                  ),
+                                  const Divider(),
+                                  Expanded(child: Container()),
                                 ],
-                              ),
-                            ),
-                          if (model.pastAuthors.isNotEmpty) ...[
-                            const Divider(),
-                            ExpansionTile(
-                              shape: const Border(),
-                              title: Text(
-                                'Прошлые участники',
-                                textAlign: TextAlign.left,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .headlineSmall
-                                    ?.copyWith(color: Colors.black),
-                              ),
-                              dense: true,
-                              children: [
-                                ...model.pastAuthors.map(
-                                  (author) => _AuthorProfileWidget(author),
-                                ),
+                                const Spacer(),
                               ],
                             ),
-                            const Divider(),
-                          ],
-                        ],
+                          ),
                         Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: HtmlWidget(
                             '''
-                      <p>Приложение распространяется под лицензией <a href="https://github.com/BitCodersNN/unn-mobile?tab=Apache-2.0-1-ov-file">Apache 2.0</a></p>
+                      <center><p>Приложение распространяется под лицензией <a href="https://github.com/BitCodersNN/unn-mobile?tab=Apache-2.0-1-ov-file">Apache 2.0</a></p>
                       <p>Код приложения доступен <a href="https://github.com/BitCodersNN/unn-mobile">на нашем GitHub</a></p>
-                      <p>По всем вопросам можно обращаться: <a href="https://t.me/unn_mobile">t.me/unn_mobile</a></p>
+                      <p>По всем вопросам можно обращаться: <a href="https://t.me/unn_mobile">t.me/unn_mobile</a></p></center>
                       ''',
                             textStyle: const TextStyle(
                               color: Color(0xFF717A84),
