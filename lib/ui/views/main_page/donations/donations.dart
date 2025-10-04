@@ -2,7 +2,8 @@
 // Copyright 2025 BitCodersNN
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart' show rootBundle;
+import 'package:unn_mobile/core/constants/api/path.dart';
+import 'package:unn_mobile/core/constants/api/protocol_type.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:webview_flutter_android/webview_flutter_android.dart';
 
@@ -17,19 +18,19 @@ class _DonationsScreenViewState extends State<DonationsScreenView> {
   late final WebViewController controller;
   String htmlContent = '';
 
-  Future<void> loadHtmlFromAssets() async {
-    htmlContent = await rootBundle.loadString('assets/html/donation.html');
-    setState(() {});
-  }
-
   @override
   void initState() {
     super.initState();
-    loadHtmlFromAssets();
 
     controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..enableZoom(false);
+      ..enableZoom(false)
+      ..loadRequest(
+        Uri.parse(
+          '${ProtocolType.https.name}://${ApiPath.donation}',
+        ),
+      );
+
     if (controller.platform is AndroidWebViewController) {
       final androidController = controller.platform as AndroidWebViewController;
       androidController.setTextZoom(100);
@@ -42,13 +43,9 @@ class _DonationsScreenViewState extends State<DonationsScreenView> {
       appBar: AppBar(
         title: const Text('Поддержать'),
       ),
-      body: htmlContent.isEmpty
-          ? const Center(child: CircularProgressIndicator())
-          : WebViewWidget(
-              controller: controller
-                ..loadHtmlString(htmlContent)
-                ..setBackgroundColor(const Color(0xFFF9FAFF)),
-            ),
+      body: WebViewWidget(
+        controller: controller..setBackgroundColor(const Color(0xFFF9FAFF)),
+      ),
     );
   }
 }
