@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2025 BitCodersNN
 
-class SessionIdentifierStrings {
+class SessionIdentifierKeys {
   static const String sessionIdCookieKey = 'PHPSESSID';
   static const String sessid = 'sessid';
   static const String csrf = 'csrf';

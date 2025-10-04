@@ -17,16 +17,14 @@ class LogoDownloaderServiceImpl implements LogoDownloaderService {
           loggerService,
           apiHelper,
           downloadFolderName: 'logos',
-          basePath: '${ApiPath.gitRepository}/main',
+          basePath: '${ApiPath.gitRepository}/${ApiPath.loadingScreen}',
         );
 
   @override
-  Future<File?> downloadFile(String fileName) async {
-    return _fileDownloader.downloadFile(fileName);
-  }
+  Future<File?> downloadFile(String fileName) async =>
+      _fileDownloader.downloadFile(fileName);
 
   @override
-  Future<List<File>?> downloadFiles({required List<String> fileNames}) {
-    return _fileDownloader.downloadFiles(fileNames);
-  }
+  Future<List<File>?> downloadFiles({required List<String> fileNames}) async =>
+      _fileDownloader.downloadFiles(fileNames);
 }

@@ -64,6 +64,7 @@ class LoadingPageViewModel extends BaseViewModel {
   }
 
   Future<void> initLoadingPages() async {
+    _loadingPageConfigService.getLoadingPages();
     final loadingPages = await _loadingPageProvider.getData();
 
     if (loadingPages == null) {

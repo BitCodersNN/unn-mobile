@@ -7,7 +7,7 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:unn_mobile/core/constants/api/ajax_action.dart';
 import 'package:unn_mobile/core/constants/api/path.dart';
-import 'package:unn_mobile/core/constants/session_identifier_strings.dart';
+import 'package:unn_mobile/core/constants/string_keys/session_identifier_keys.dart';
 import 'package:unn_mobile/core/misc/authorisation/authorisation_request_result.dart';
 import 'package:unn_mobile/core/misc/custom_errors/auth_exceptions.dart';
 import 'package:unn_mobile/core/misc/api_helpers/legacy/http_helper.dart';
@@ -46,8 +46,7 @@ class LegacyAuthorizationServiceImpl extends ChangeNotifier
 
     final sessionCookie = authResponse.cookies
         .where(
-          (cookie) =>
-              cookie.name == SessionIdentifierStrings.sessionIdCookieKey,
+          (cookie) => cookie.name == SessionIdentifierKeys.sessionIdCookieKey,
         )
         .firstOrNull;
 
@@ -67,7 +66,7 @@ class LegacyAuthorizationServiceImpl extends ChangeNotifier
     }
 
     final csrfValue = csrfResponse.headers.value(
-      SessionIdentifierStrings.newCsrf,
+      SessionIdentifierKeys.newCsrf,
     );
 
     if (csrfValue == null) {
@@ -123,7 +122,7 @@ class LegacyAuthorizationServiceImpl extends ChangeNotifier
     final requestSender = HttpRequestSender(
       path: ApiPath.ajax,
       queryParams: {AjaxActionStrings.actionKey: AjaxActionStrings.getNextPage},
-      cookies: {SessionIdentifierStrings.sessionIdCookieKey: session},
+      cookies: {SessionIdentifierKeys.sessionIdCookieKey: session},
     );
 
     return await requestSender.get(timeoutSeconds: 15);

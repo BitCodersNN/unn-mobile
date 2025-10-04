@@ -68,8 +68,10 @@ class _MainPageState extends State<MainPage> {
                         final selectedBarIndex = widget.shell.currentIndex;
                         final currentPageRoute = MainPageRouting
                             .navbarRoutes[selectedBarIndex].pageRoute;
-                        final destinationSubroute =
-                            model.routes[value].pageRoute;
+                        final destinationSubroute = model.routes
+                            .where((r) => model.isOnline || !r.onlineOnly)
+                            .elementAt(value)
+                            .pageRoute;
                         GoRouter.of(context).go(
                           '$currentPageRoute/$drawerRoutePrefix/$destinationSubroute',
                         );
