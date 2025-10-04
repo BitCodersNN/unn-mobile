@@ -705,6 +705,7 @@ void registerDependencies() {
   injector.registerDependency(
     () => MainPageViewModel(
       get<CurrentUserSyncStorage>(),
+      get<OnlineStatusData>(),
     ),
   );
   injector.registerDependency(
