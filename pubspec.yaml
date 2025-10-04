@@ -74,7 +74,6 @@ flutter:
     - assets/images/
     - assets/images/reactions/
     - assets/ca/
-    - assets/html/
 
 
   fonts:
