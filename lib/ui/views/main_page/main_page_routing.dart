@@ -177,7 +177,7 @@ class MainPageRouting {
       Icons.info_outline,
       'О нас',
       'about',
-      builder: (_, __) => AboutScreenView(),
+      builder: (_, __) => const AboutScreenView(),
       userTypes: [],
     ),
   ];

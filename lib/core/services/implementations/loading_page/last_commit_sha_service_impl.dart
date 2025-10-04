@@ -9,7 +9,8 @@ import 'package:unn_mobile/core/services/interfaces/loading_page/last_commit_sha
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
 
 class LastCommitShaServiceImpl implements LastCommitShaService {
-  final _path = 'repos/${ApiPath.gitRepository}/commits/main?per_page=1';
+  final _path =
+      'repos/${ApiPath.gitRepository}/commits/develop?path={file_path}&paths=loading_screen&per_page=1';
   final LoggerService _loggerService;
   final ApiHelper _apiHelper;
 

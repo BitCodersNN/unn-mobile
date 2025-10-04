@@ -22,6 +22,7 @@ import 'package:unn_mobile/core/models/common/online_status_data.dart';
 import 'package:unn_mobile/core/providers/implementations/authorisation/authorisation_data_provider_impl.dart';
 import 'package:unn_mobile/core/providers/implementations/common/message_ignored_keys_provider_impl.dart';
 import 'package:unn_mobile/core/providers/interfaces/common/message_ignored_keys_provider.dart';
+import 'package:unn_mobile/core/services/implementations/about/authors_config_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/authorisation/source_authorisation_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/authorisation/unn_authorisation_refresh_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/authorisation/unn_authorisation_service_impl.dart';
@@ -80,6 +81,7 @@ import 'package:unn_mobile/core/services/implementations/common/search_id_on_por
 import 'package:unn_mobile/core/services/implementations/common/storage_service_impl.dart';
 import 'package:unn_mobile/core/providers/implementations/profile/user_data_provider_impl.dart';
 import 'package:unn_mobile/core/providers/interfaces/authorisation/auth_data_provider.dart';
+import 'package:unn_mobile/core/services/interfaces/about/authors_config_service.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation/authorisation_refresh_service.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation/source_authorisation_service.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation/unn_authorisation_service.dart';
@@ -139,6 +141,7 @@ import 'package:unn_mobile/core/services/interfaces/common/storage_service.dart'
 import 'package:unn_mobile/core/providers/interfaces/profile/user_data_provider.dart';
 import 'package:unn_mobile/core/viewmodels/auth_page/auth_page_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/factories/message_reaction_view_model_factory.dart';
+import 'package:unn_mobile/core/viewmodels/main_page/about/about_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/certificates_online/certificate_item_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/certificates_online/certificates_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/factories/attached_file_view_model_factory.dart';
@@ -277,6 +280,14 @@ void registerDependencies() {
       injector.get<GitHubRawApiHelper>(),
     ),
   );
+
+  injector.registerSingleton<AuthorsConfigService>(
+    () => AuthorsConfigServiceImpl(
+      get<LoggerService>(),
+      getApiHelper(HostType.githubRaw),
+    ),
+  );
+
   injector.registerSingleton<FeedFileDownloaderService>(
     () => FeedFileDownloaderServiceImpl(
       get<LoggerService>(),
@@ -764,6 +775,12 @@ void registerDependencies() {
       get<MainPageRoutesViewModelsFactory>(),
       get<MessageServiceAggregator>(),
       get<CurrentUserSyncStorage>(),
+    ),
+  );
+
+  injector.registerDependency(
+    () => AboutViewModel(
+      get<AuthorsConfigService>(),
     ),
   );
 }

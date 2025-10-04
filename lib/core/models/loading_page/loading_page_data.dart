@@ -24,57 +24,33 @@ class LoadingPageModel {
 
   static const defaultTitle = 'УНИВЕРСИТЕТ \n ЛОБАЧЕВСКОГО';
 
-  final String _imagePath;
-  final DateTimeRange? _dateTimeRangeToUseOn;
-  final String _title;
-  final TextStyle _titleStyle;
-  final String? _description;
-  final TextStyle? _descriptionStyle;
+  final String imagePath;
+  final DateTimeRange? dateTimeRangeToUseOn;
+  final String title;
+  final TextStyle titleStyle;
+  final String? description;
+  final TextStyle? descriptionStyle;
 
   LoadingPageModel({
-    required String imagePath,
-    DateTimeRange? dateTimeRangeToUseOn,
-    String title = defaultTitle,
-    TextStyle titleStyle = defaultTextStyle,
-    String? description,
-    TextStyle? descriptionStyle,
-  })  : _imagePath = imagePath,
-        _dateTimeRangeToUseOn = dateTimeRangeToUseOn,
-        _title = title,
-        _titleStyle = titleStyle,
-        _description = description,
-        _descriptionStyle = descriptionStyle;
-
-  String get title => _title;
-  String get imagePath => _imagePath;
-  DateTimeRange? get dateTimeRangeToUseOn => _dateTimeRangeToUseOn;
-  String? get description => _description;
-  TextStyle get titleStyle => _titleStyle;
-  TextStyle? get descriptionStyle => _descriptionStyle;
+    required this.imagePath,
+    this.dateTimeRangeToUseOn,
+    this.title = defaultTitle,
+    this.titleStyle = defaultTextStyle,
+    this.description,
+    this.descriptionStyle,
+  });
 
   factory LoadingPageModel.fromJson(Map<String, dynamic> json) {
-    final String imagePath = json[_LoadingPageModelJsonKeys.logoPath];
-
-    final DateTimeRange? dateTimeRange = _getDateTimeRangeFromJson(json);
-
     final titleJson = json[_LoadingPageModelJsonKeys.title];
-    final String title =
-        titleJson?[_LoadingPageModelJsonKeys.text] ?? defaultTitle;
-    final titleStyle = _getTextStyleFromJson(titleJson) ?? defaultTextStyle;
-
     final descriptionJson = json[_LoadingPageModelJsonKeys.description];
-    final String? description =
-        descriptionJson?[_LoadingPageModelJsonKeys.text];
-
-    final descriptionStyle = _getTextStyleFromJson(descriptionJson);
 
     return LoadingPageModel(
-      imagePath: imagePath,
-      dateTimeRangeToUseOn: dateTimeRange,
-      title: title,
-      titleStyle: titleStyle,
-      description: description,
-      descriptionStyle: descriptionStyle,
+      imagePath: json[_LoadingPageModelJsonKeys.logoPath],
+      dateTimeRangeToUseOn: _getDateTimeRangeFromJson(json),
+      title: titleJson?[_LoadingPageModelJsonKeys.text] ?? defaultTitle,
+      titleStyle: _getTextStyleFromJson(titleJson) ?? defaultTextStyle,
+      description: descriptionJson?[_LoadingPageModelJsonKeys.text],
+      descriptionStyle: _getTextStyleFromJson(descriptionJson),
     );
   }
 
@@ -125,22 +101,22 @@ class LoadingPageModel {
   }
 
   Map<String, dynamic> toJson() => {
-        _LoadingPageModelJsonKeys.logoPath: _imagePath,
+        _LoadingPageModelJsonKeys.logoPath: imagePath,
         _LoadingPageModelJsonKeys.startDate:
-            _dateTimeRangeToUseOn?.start.toString().substring(5, 10),
+            dateTimeRangeToUseOn?.start.toString().substring(5, 10),
         _LoadingPageModelJsonKeys.endDate:
-            _dateTimeRangeToUseOn?.end.toString().substring(5, 10),
+            dateTimeRangeToUseOn?.end.toString().substring(5, 10),
         _LoadingPageModelJsonKeys.title: {
-          _LoadingPageModelJsonKeys.text: _title,
-          _LoadingPageModelJsonKeys.color: _titleStyle.color!.toARGB(),
-          _LoadingPageModelJsonKeys.fontSize: _titleStyle.fontSize.toString(),
+          _LoadingPageModelJsonKeys.text: title,
+          _LoadingPageModelJsonKeys.color: titleStyle.color!.toARGB(),
+          _LoadingPageModelJsonKeys.fontSize: titleStyle.fontSize.toString(),
         },
-        if (_description != null)
+        if (description != null)
           _LoadingPageModelJsonKeys.description: {
-            _LoadingPageModelJsonKeys.text: _description,
-            _LoadingPageModelJsonKeys.color: _descriptionStyle?.color!.toARGB(),
+            _LoadingPageModelJsonKeys.text: description,
+            _LoadingPageModelJsonKeys.color: descriptionStyle?.color!.toARGB(),
             _LoadingPageModelJsonKeys.fontSize:
-                _descriptionStyle?.fontSize.toString(),
+                descriptionStyle?.fontSize.toString(),
           },
       };
 }

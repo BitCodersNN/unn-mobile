@@ -2,7 +2,7 @@
 // Copyright 2025 BitCodersNN
 
 import 'package:injector/injector.dart';
-import 'package:unn_mobile/core/constants/app_settings_keys.dart';
+import 'package:unn_mobile/core/constants/string_keys/app_settings_keys.dart';
 import 'package:unn_mobile/core/services/interfaces/common/storage_service.dart';
 
 class AppSettings {

@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:unn_mobile/core/constants/api/host_with_base_path.dart';
 import 'package:unn_mobile/core/constants/api/protocol_type.dart';
 import 'package:unn_mobile/core/constants/regular_expressions.dart';
-import 'package:unn_mobile/core/constants/session_identifier_strings.dart';
+import 'package:unn_mobile/core/constants/string_keys/session_identifier_keys.dart';
 import 'package:unn_mobile/core/misc/api_helpers/authenticated_api_helper.dart';
 import 'package:unn_mobile/core/misc/api_helpers/base_options_factory.dart';
 import 'package:unn_mobile/core/misc/api_helpers/http_methods.dart';
@@ -144,7 +144,7 @@ abstract class WebAuthenticatedApiHelper extends AuthenticatedApiHelper {
   ) {
     final cleanedCookieString = _buildCookieString(options);
     final contentType = options?.contentType ?? dio.options.contentType;
-    final csrf = dio.options.headers[SessionIdentifierStrings.csrfToken] ?? '';
+    final csrf = dio.options.headers[SessionIdentifierKeys.csrfToken] ?? '';
     final myParams = jsonEncode({...?body, ...?queryParameters});
 
     return {

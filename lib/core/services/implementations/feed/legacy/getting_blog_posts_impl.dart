@@ -3,7 +3,7 @@
 
 import 'package:dio/dio.dart';
 import 'package:unn_mobile/core/constants/api/path.dart';
-import 'package:unn_mobile/core/constants/session_identifier_strings.dart';
+import 'package:unn_mobile/core/constants/string_keys/session_identifier_keys.dart';
 import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/models/feed/blog_post_data.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation/unn_authorisation_service.dart';
@@ -37,7 +37,7 @@ class GettingBlogPostsImpl implements GettingBlogPosts {
       response = await _apiHelper.get(
         path: ApiPath.blogPostGet,
         queryParameters: {
-          SessionIdentifierStrings.sessid: _authorizationService.csrf ?? '',
+          SessionIdentifierKeys.sessid: _authorizationService.csrf ?? '',
           _QueryParamNames.start:
               (_numberOfPostsPerPage * pageNumber).toString(),
           _QueryParamNames._postId: postId.toString(),
