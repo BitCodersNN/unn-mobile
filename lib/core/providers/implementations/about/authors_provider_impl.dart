@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright 2025 BitCodersNN
+
 import 'dart:convert';
 
 import 'package:unn_mobile/core/constants/string_keys/authors_config_keys.dart';

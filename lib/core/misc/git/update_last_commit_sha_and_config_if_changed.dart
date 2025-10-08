@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright 2025 BitCodersNN
+
 import 'package:unn_mobile/core/misc/git/git_folder.dart';
 import 'package:unn_mobile/core/providers/interfaces/common/last_commit_sha_provider.dart';
 import 'package:unn_mobile/core/services/interfaces/common/last_commit_sha_service.dart';
