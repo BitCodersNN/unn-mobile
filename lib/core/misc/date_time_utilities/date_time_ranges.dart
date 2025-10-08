@@ -2,6 +2,7 @@
 // Copyright 2025 BitCodersNN
 
 import 'package:flutter/material.dart';
+import 'package:unn_mobile/core/constants/academic_year.dart';
 
 class DateTimeRanges {
   static DateTimeRange currentWeek() {
@@ -35,15 +36,11 @@ class DateTimeRanges {
 
   static DateTimeRange currentSemester() {
     final now = DateTime.now();
-    DateTime startOfSemester, endOfSemester;
     if (DateTime.february <= now.month && now.month < DateTime.september) {
-      startOfSemester = DateTime(now.year, DateTime.february, 1);
-      endOfSemester = DateTime(now.year, DateTime.july, 15);
+      return AcademicYear.secondSemester(now.year);
     } else {
-      startOfSemester = DateTime(now.year, DateTime.september, 1);
-      endOfSemester = DateTime(now.year + 1, DateTime.february, 1);
+      return AcademicYear.firstSemester(now.year);
     }
-    return DateTimeRange(start: startOfSemester, end: endOfSemester);
   }
 
   static DateTimeRange untilEndOfWeek() {
