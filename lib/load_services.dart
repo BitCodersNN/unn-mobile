@@ -19,9 +19,15 @@ import 'package:unn_mobile/core/misc/app_open_tracker.dart';
 import 'package:unn_mobile/core/misc/user/current_user_sync_storage.dart';
 import 'package:unn_mobile/core/models/feed/blog_post_type.dart';
 import 'package:unn_mobile/core/models/common/online_status_data.dart';
+import 'package:unn_mobile/core/providers/implementations/about/authors_provider_impl.dart';
+import 'package:unn_mobile/core/providers/implementations/about/last_commit_sha_authors_provider_impl.dart';
 import 'package:unn_mobile/core/providers/implementations/authorisation/authorisation_data_provider_impl.dart';
 import 'package:unn_mobile/core/providers/implementations/common/message_ignored_keys_provider_impl.dart';
+import 'package:unn_mobile/core/providers/implementations/loading_page/last_commit_sha_loading_page_provider_impl.dart';
+import 'package:unn_mobile/core/providers/interfaces/about/authors_provider.dart';
+import 'package:unn_mobile/core/providers/interfaces/about/last_commit_sha_authors_provider.dart';
 import 'package:unn_mobile/core/providers/interfaces/common/message_ignored_keys_provider.dart';
+import 'package:unn_mobile/core/providers/interfaces/loading_page/last_commit_sha_loading_page_provider.dart';
 import 'package:unn_mobile/core/services/implementations/about/authors_config_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/authorisation/source_authorisation_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/authorisation/unn_authorisation_refresh_service_impl.dart';
@@ -66,8 +72,7 @@ import 'package:unn_mobile/core/services/implementations/feed/legacy/getting_rat
 import 'package:unn_mobile/core/services/implementations/schedule/schedule_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/feed/legacy/getting_vote_key_signed_impl.dart';
 import 'package:unn_mobile/core/providers/implementations/feed/last_feed_load_date_time_provider_impl.dart';
-import 'package:unn_mobile/core/services/implementations/loading_page/last_commit_sha_service_impl.dart';
-import 'package:unn_mobile/core/providers/implementations/loading_page/last_commit_sha_provider_impl.dart';
+import 'package:unn_mobile/core/services/implementations/common/last_commit_sha_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/loading_page/loading_page_config_service_impl.dart';
 import 'package:unn_mobile/core/providers/implementations/loading_page/loading_page_provider_impl.dart';
 import 'package:unn_mobile/core/services/implementations/loading_page/logo_downloader_service_impl.dart';
@@ -124,8 +129,7 @@ import 'package:unn_mobile/core/services/interfaces/feed/legacy/getting_rating_l
 import 'package:unn_mobile/core/services/interfaces/schedule/schedule_service.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/legacy/getting_vote_key_signed.dart';
 import 'package:unn_mobile/core/providers/interfaces/feed/last_feed_load_date_time_provider.dart';
-import 'package:unn_mobile/core/services/interfaces/loading_page/last_commit_sha_service.dart';
-import 'package:unn_mobile/core/providers/interfaces/loading_page/last_commit_sha_provider.dart';
+import 'package:unn_mobile/core/services/interfaces/common/last_commit_sha_service.dart';
 import 'package:unn_mobile/core/services/interfaces/loading_page/loading_page_config_service.dart';
 import 'package:unn_mobile/core/providers/interfaces/loading_page/loading_page_provider.dart';
 import 'package:unn_mobile/core/services/interfaces/loading_page/logo_downloader_service.dart';
@@ -288,6 +292,18 @@ void registerDependencies() {
     ),
   );
 
+  injector.registerSingleton<LastCommitShaAuthorsProvider>(
+    () => LastCommitShaAuthorsProviderImpl(
+      get<StorageService>(),
+    ),
+  );
+  injector.registerSingleton<AuthorsProvider>(
+    () => AuthorsProviderImpl(
+      get<StorageService>(),
+      get<LoggerService>(),
+    ),
+  );
+
   injector.registerSingleton<FeedFileDownloaderService>(
     () => FeedFileDownloaderServiceImpl(
       get<LoggerService>(),
@@ -295,8 +311,8 @@ void registerDependencies() {
     ),
   );
 
-  injector.registerSingleton<LastCommitShaProvider>(
-    () => LastCommitShaProviderImpl(
+  injector.registerSingleton<LastCommitShaLoadingPageProvider>(
+    () => LastCommitShaLoadingPageProviderImpl(
       get<StorageService>(),
     ),
   );
@@ -687,7 +703,7 @@ void registerDependencies() {
       get<LastCommitShaService>(),
       get<LoadingPageConfigService>(),
       get<LogoDownloaderService>(),
-      get<LastCommitShaProvider>(),
+      get<LastCommitShaLoadingPageProvider>(),
       get<LoadingPageProvider>(),
       get<CurrentUserSyncStorage>(),
       get<ProfileOfCurrentUserService>(),
@@ -781,6 +797,9 @@ void registerDependencies() {
   injector.registerDependency(
     () => AboutViewModel(
       get<AuthorsConfigService>(),
+      get<AuthorsProvider>(),
+      get<LastCommitShaService>(),
+      get<LastCommitShaAuthorsProvider>(),
     ),
   );
 }
