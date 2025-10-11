@@ -2,11 +2,8 @@
 // Copyright 2025 BitCodersNN
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:carousel_slider_plus/carousel_slider_plus.dart';
 import 'package:event/event.dart';
-import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:go_router/go_router.dart';
 import 'package:html/parser.dart';
 import 'package:html_unescape/html_unescape.dart';
@@ -15,7 +12,6 @@ import 'package:intl/intl.dart';
 import 'package:mime/mime.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:unn_mobile/core/misc/haptic_utils.dart';
-import 'package:unn_mobile/core/misc/html_utils/html_widget_callbacks.dart';
 import 'package:unn_mobile/core/models/feed/rating_list.dart';
 import 'package:unn_mobile/core/viewmodels/factories/feed_post_view_model_factory.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/feed/feed_post_view_model.dart';
@@ -25,9 +21,10 @@ import 'package:unn_mobile/ui/unn_mobile_colors.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/functions/reactions_window.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/widgets/attached_file.dart';
+import 'package:unn_mobile/ui/views/main_page/feed/widgets/packed_post_images.dart';
+import 'package:unn_mobile/ui/views/main_page/feed/widgets/post_html_widget.dart';
 import 'package:unn_mobile/ui/views/main_page/main_page_routing.dart';
 import 'package:unn_mobile/ui/widgets/height_limiter.dart';
-import 'package:unn_mobile/ui/widgets/packed_images_view.dart';
 import 'package:unn_mobile/ui/widgets/shimmer.dart';
 import 'package:unn_mobile/ui/widgets/shimmer_loading.dart';
 import 'package:http/http.dart' as http;
@@ -49,119 +46,6 @@ class FeedPost extends StatefulWidget {
 
   @override
   State<FeedPost> createState() => _FeedPostState();
-
-  static Widget htmlWidget(
-    String text,
-    BuildContext context,
-  ) {
-    return HtmlWidget(
-      text,
-      onTapUrl: htmlWidgetOnTapUrl,
-      onTapImage: (imageMetadata) async {
-        await showDialog(
-          context: context,
-          builder: (context) {
-            return ExtendedImageSlidePage(
-              slideAxis: SlideAxis.vertical,
-              child: ExtendedImage(
-                enableLoadState: true,
-                mode: ExtendedImageMode.gesture,
-                initGestureConfigHandler: (state) {
-                  return GestureConfig(
-                    minScale: 0.9,
-                    animationMinScale: 0.7,
-                    maxScale: 3.0,
-                    animationMaxScale: 3.5,
-                    speed: 1.0,
-                    inertialSpeed: 100.0,
-                    initialScale: 1.0,
-                    inPageView: false,
-                    initialAlignment: InitialAlignment.center,
-                  );
-                },
-                image: CachedNetworkImageProvider(
-                  imageMetadata.sources.first.url,
-                ),
-                enableSlideOutPage: true,
-              ),
-            );
-          },
-        );
-      },
-    );
-  }
-
-  static Widget _reactionCounterWithIcons(
-    ReactionViewModel model,
-    double reactionsSize,
-    Color background,
-  ) {
-    return BaseView<ReactionViewModel>(
-      model: model,
-      builder: (context, model, _) {
-        return Expanded(
-          child: Container(
-            padding: const EdgeInsets.only(
-              top: 6,
-              bottom: 6,
-              right: 8,
-              left: 12,
-            ),
-            child: Builder(
-              builder: (context) {
-                int i = 0;
-                return SizedBox(
-                  height: reactionsSize,
-                  child: Stack(
-                    alignment: Alignment.centerLeft,
-                    children: [
-                      for (final smallReactionEntry in model.reactionList)
-                        Positioned(
-                          left: reactionsSize / 2 * i++,
-                          child: ClipOval(
-                            child: Container(
-                              width: reactionsSize,
-                              height: reactionsSize,
-                              color: const Color(0x69c6d9f9),
-                              child: Image.asset(
-                                smallReactionEntry.assetName,
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                          ),
-                        ),
-                      Positioned(
-                        left: reactionsSize * (i - 1) / 2 + reactionsSize + 8,
-                        child: Text(
-                          '${model.reactionCount > 0 ? model.reactionCount : ''}',
-                          style: TextStyle(
-                            fontSize: 13.0,
-                            fontStyle: FontStyle.italic,
-                            fontWeight: FontWeight.w400,
-                            color: background,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              },
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  static void _openPostCommentsPage(
-    BuildContext context,
-    FeedPostViewModel post,
-  ) async {
-    GoRouter.of(context).go(
-      '${GoRouter.of(context).routeInformationProvider.value.uri.path}/'
-      '${postCommentsRoute.pageRoute.replaceAll(':postId', post.blogData.id.toString())}',
-    );
-  }
 }
 
 class _FeedPostState extends State<FeedPost> {
@@ -170,82 +54,6 @@ class _FeedPostState extends State<FeedPost> {
   void initState() {
     isCollapsed = widget.isCollapsed;
     super.initState();
-  }
-
-  void onPostRefreshError(EventArgs e) {
-    const snackBar = SnackBar(
-      content: Text('Не удалось обновить пост'),
-    );
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
-  }
-
-  Widget buildPostContent(FeedPostViewModel model) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        FeedPost.htmlWidget(model.postText, context),
-        PackedImagesView(
-          onChildTap: (index) async {
-            OverlayEntry createOverlay(int index) => OverlayEntry(
-                  builder: (context) {
-                    return SafeArea(
-                      child: Align(
-                        alignment: Alignment.topCenter,
-                        child: Material(
-                          color: Colors.transparent,
-                          child: Container(
-                            padding: const EdgeInsets.all(12),
-                            decoration: const BoxDecoration(
-                              color: Colors.transparent,
-                            ),
-                            child: Text(
-                              '${index + 1} из ${model.attachedImages.length}',
-                              style: const TextStyle(
-                                color: Colors.black,
-                                fontSize: 24,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                );
-
-            var overlay = createOverlay(index);
-            await showDialog(
-              context: context,
-              builder: (context) {
-                WidgetsBinding.instance.addPostFrameCallback((_) {
-                  Overlay.of(context, rootOverlay: true).insert(overlay);
-                });
-
-                return ExtendedImageSlidePage(
-                  slideAxis: SlideAxis.vertical,
-                  child: ImagesCarousel(
-                    viewModel: model,
-                    imageModel: index,
-                    onPageChanged: (index) {
-                      overlay.remove();
-                      overlay = createOverlay(index);
-                      Overlay.of(context).insert(overlay);
-                    },
-                  ),
-                );
-              },
-            );
-            overlay.remove();
-          },
-          children: model.attachedImages
-              .map(
-                (e) => CachedNetworkImage(
-                  imageUrl: e.startsWith('/') ? 'https://portal.unn.ru$e' : e,
-                ),
-              )
-              .toList(),
-        ),
-      ],
-    );
   }
 
   @override
@@ -264,7 +72,7 @@ class _FeedPostState extends State<FeedPost> {
             Injector.appInstance
                 .get<FeedPostViewModelFactory>()
                 .putInCache(model.blogData.id, model);
-            FeedPost._openPostCommentsPage(context, model);
+            _openPostCommentsPage(context, model);
           },
           child: Shimmer(
             child: AnimatedContainer(
@@ -272,7 +80,7 @@ class _FeedPostState extends State<FeedPost> {
               margin: const EdgeInsets.only(top: 12),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(0.0),
-                color: getPostColor(context, model),
+                color: _getPostColor(context, model),
                 boxShadow: const [
                   BoxShadow(
                     offset: Offset(0, 0),
@@ -318,7 +126,7 @@ class _FeedPostState extends State<FeedPost> {
                           HeightLimiter(
                             maxHeight: 240,
                             fadeEffectHeight: 40,
-                            child: buildPostContent(model),
+                            child: _buildPostContent(model),
                             overflowIndicatorBuilder: (context) {
                               return Container(
                                 height: 150,
@@ -359,7 +167,7 @@ class _FeedPostState extends State<FeedPost> {
                             },
                           )
                         else
-                          buildPostContent(model),
+                          _buildPostContent(model),
                         if (model.isAnnouncement)
                           FilledButton(
                             onPressed: model.markReadIfImportant,
@@ -382,10 +190,10 @@ class _FeedPostState extends State<FeedPost> {
                         if (widget.showingComments)
                           Row(
                             children: [
-                              FeedPost._reactionCounterWithIcons(
-                                model.reactionViewModel,
-                                reactionsSize,
-                                idkWhatColor,
+                              _ReactionCounterWithIcons(
+                                model: model.reactionViewModel,
+                                reactionsSize: reactionsSize,
+                                background: idkWhatColor,
                               ),
                             ],
                           ),
@@ -487,12 +295,22 @@ class _FeedPostState extends State<FeedPost> {
           ),
         );
       },
-      onModelReady: (p0) => p0.onError.subscribe(onPostRefreshError),
-      onDispose: (p0) => p0.onError.unsubscribe(onPostRefreshError),
+      onModelReady: (p0) => p0.onError.subscribe(_onPostRefreshError),
+      onDispose: (p0) => p0.onError.unsubscribe(_onPostRefreshError),
     );
   }
 
-  Color? getPostColor(BuildContext context, FeedPostViewModel model) {
+  static void _openPostCommentsPage(
+    BuildContext context,
+    FeedPostViewModel post,
+  ) async {
+    GoRouter.of(context).go(
+      '${GoRouter.of(context).routeInformationProvider.value.uri.path}/'
+      '${postCommentsRoute.pageRoute.replaceAll(':postId', post.blogData.id.toString())}',
+    );
+  }
+
+  Color? _getPostColor(BuildContext context, FeedPostViewModel model) {
     final theme = Theme.of(context);
     final unnMobileColors = theme.extension<UnnMobileColors>()!;
     if (model.isAnnouncement) {
@@ -500,60 +318,20 @@ class _FeedPostState extends State<FeedPost> {
     }
     return theme.colorScheme.surface;
   }
-}
 
-class ImagesCarousel extends StatefulWidget {
-  final FeedPostViewModel viewModel;
-  final int imageModel;
-  final void Function(int index)? onPageChanged;
+  void _onPostRefreshError(EventArgs e) {
+    const snackBar = SnackBar(
+      content: Text('Не удалось обновить пост'),
+    );
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
 
-  const ImagesCarousel({
-    super.key,
-    required this.viewModel,
-    this.imageModel = 0,
-    this.onPageChanged,
-  });
-
-  @override
-  State<ImagesCarousel> createState() => _ImagesCarouselState();
-}
-
-class _ImagesCarouselState extends State<ImagesCarousel> {
-  @override
-  Widget build(BuildContext context) {
-    return CarouselSlider(
-      options: CarouselOptions(
-        scrollPhysics: const BouncingScrollPhysics(),
-        enableInfiniteScroll: false,
-        disableCenter: true,
-        padEnds: true,
-        viewportFraction: 1.0,
-        initialPage: widget.imageModel,
-        onPageChanged: (index, reason) => widget.onPageChanged?.call(index),
-      ),
-      items: [
-        for (final image in widget.viewModel.attachedImages)
-          ExtendedImage(
-            enableLoadState: true,
-            mode: ExtendedImageMode.gesture,
-            initGestureConfigHandler: (state) {
-              return GestureConfig(
-                minScale: 0.9,
-                animationMinScale: 0.7,
-                maxScale: 3.0,
-                animationMaxScale: 3.5,
-                speed: 1.0,
-                inertialSpeed: 100.0,
-                initialScale: 1.0,
-                inPageView: false,
-                initialAlignment: InitialAlignment.center,
-              );
-            },
-            image: CachedNetworkImageProvider(
-              image,
-            ),
-            enableSlideOutPage: true,
-          ),
+  Widget _buildPostContent(FeedPostViewModel model) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        PostHtmlWidget(text: model.postText),
+        PackedPostImages(attachedImages: model.attachedImages),
       ],
     );
   }
@@ -637,6 +415,77 @@ class _PostHeader extends StatelessWidget {
               ),
             ),
           ],
+        );
+      },
+    );
+  }
+}
+
+class _ReactionCounterWithIcons extends StatelessWidget {
+  const _ReactionCounterWithIcons({
+    required this.model,
+    required this.reactionsSize,
+    required this.background,
+  });
+
+  final ReactionViewModel model;
+  final double reactionsSize;
+  final Color background;
+
+  @override
+  Widget build(BuildContext context) {
+    return BaseView<ReactionViewModel>(
+      model: model,
+      builder: (context, model, _) {
+        return Expanded(
+          child: Container(
+            padding: const EdgeInsets.only(
+              top: 6,
+              bottom: 6,
+              right: 8,
+              left: 12,
+            ),
+            child: Builder(
+              builder: (context) {
+                int i = 0;
+                return SizedBox(
+                  height: reactionsSize,
+                  child: Stack(
+                    alignment: Alignment.centerLeft,
+                    children: [
+                      for (final smallReactionEntry in model.reactionList)
+                        Positioned(
+                          left: reactionsSize / 2 * i++,
+                          child: ClipOval(
+                            child: Container(
+                              width: reactionsSize,
+                              height: reactionsSize,
+                              color: const Color(0x69c6d9f9),
+                              child: Image.asset(
+                                smallReactionEntry.assetName,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          ),
+                        ),
+                      Positioned(
+                        left: reactionsSize * (i - 1) / 2 + reactionsSize + 8,
+                        child: Text(
+                          '${model.reactionCount > 0 ? model.reactionCount : ''}',
+                          style: TextStyle(
+                            fontSize: 13.0,
+                            fontStyle: FontStyle.italic,
+                            fontWeight: FontWeight.w400,
+                            color: background,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+          ),
         );
       },
     );
