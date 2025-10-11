@@ -80,18 +80,12 @@ class SourcePageViewModel extends BaseViewModel {
       _authDataProvider,
       _semesterService.getSemesters,
     );
-    semesters?.sort(
-      (a, b) {
-        return a.year == b.year
-            ? a.semester.compareTo(b.semester)
-            : a.year.compareTo(b.year);
-      },
-    );
+    semesters?.sort((a, b) => a.compareTo(b));
     _semesters = semesters ?? [];
-    _currentSemester = //
-        _semesters.isNotEmpty
-            ? _semesters.length - 1 //
-            : null;
+
+    final index = _semesters.indexWhere((s) => s.contains(DateTime.now()));
+    _currentSemester = index == -1 ? null : index;
+
     await _initCurrentSemester();
   }
 

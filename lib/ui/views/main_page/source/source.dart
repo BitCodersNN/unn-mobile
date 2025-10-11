@@ -70,12 +70,7 @@ class SourcePageView extends StatelessWidget {
                                       initialIndex:
                                           model.currentSemesterIndex ?? 0,
                                       radioLabels: model.semesters
-                                          .map(
-                                            (s) => Text(
-                                              '${s.semester} семестр, '
-                                              '${s.year} год',
-                                            ),
-                                          )
+                                          .map((s) => Text(s.toString()))
                                           .toList(),
                                     );
                                   },

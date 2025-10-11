@@ -53,18 +53,25 @@ class DistanceCourseSemesterServiceImpl
   }
 
   List<Semester> _parseSemesters(Iterable<RegExpMatch> matches) {
-    return matches.map((match) {
-      final year = int.tryParse(match.group(1) ?? '');
-      final semester = int.tryParse(match.group(2) ?? '');
+    return matches
+        .map((match) {
+          final yearStr = match.group(1);
+          final semesterStr = match.group(2);
 
-      if (year == null || semester == null) {
-        throw FormatException('Invalid year or semester in match: $match');
-      }
+          final year = int.tryParse(yearStr ?? '');
+          final semester = int.tryParse(semesterStr ?? '');
 
-      return Semester(
-        year: year,
-        semester: semester,
-      );
-    }).toList();
+          if (year == null || semester == null) {
+            throw FormatException('Invalid year or semester in match: $match');
+          }
+
+          try {
+            return Semester(year: year, semester: semester);
+          } on ArgumentError {
+            return null;
+          }
+        })
+        .whereType<Semester>()
+        .toList();
   }
 }
