@@ -135,8 +135,10 @@ class _FeedPostState extends State<FeedPost> {
                                     begin: Alignment.bottomCenter,
                                     end: Alignment.topCenter,
                                     colors: [
-                                      Colors.white.withAlpha(255),
-                                      Colors.white.withAlpha(0),
+                                      _getPostColor(context, model)
+                                          .withAlpha(255),
+                                      _getPostColor(context, model)
+                                          .withAlpha(0),
                                     ],
                                     stops: const [
                                       0.2,
@@ -310,11 +312,11 @@ class _FeedPostState extends State<FeedPost> {
     );
   }
 
-  Color? _getPostColor(BuildContext context, FeedPostViewModel model) {
+  Color _getPostColor(BuildContext context, FeedPostViewModel model) {
     final theme = Theme.of(context);
     final unnMobileColors = theme.extension<UnnMobileColors>()!;
     if (model.isAnnouncement) {
-      return unnMobileColors.importantPostHighlight;
+      return unnMobileColors.importantPostHighlight!;
     }
     return theme.colorScheme.surface;
   }
