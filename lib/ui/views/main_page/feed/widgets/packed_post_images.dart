@@ -19,55 +19,59 @@ class PackedPostImages extends StatelessWidget {
   Widget build(BuildContext context) {
     return PackedImagesView(
       onChildTap: (index) async {
-        OverlayEntry createOverlay(int index) => OverlayEntry(
-              builder: (context) {
-                return SafeArea(
-                  child: Align(
-                    alignment: Alignment.topCenter,
-                    child: Material(
-                      color: Colors.transparent,
-                      child: Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: const BoxDecoration(
-                          color: Colors.transparent,
-                        ),
-                        child: Text(
-                          '${index + 1} из ${attachedImages.length}',
-                          style: const TextStyle(
-                            color: Colors.black,
-                            fontSize: 24,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                );
-              },
-            );
-
-        var overlay = createOverlay(index);
         await showDialog(
           context: context,
-          builder: (context) {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              Overlay.of(context, rootOverlay: true).insert(overlay);
-            });
-
-            return ExtendedImageSlidePage(
-              slideAxis: SlideAxis.vertical,
-              child: ImagesCarousel(
-                attachedImages: attachedImages,
-                imageModel: index,
-                onPageChanged: (index) {
-                  overlay.remove();
-                  overlay = createOverlay(index);
-                  Overlay.of(context).insert(overlay);
-                },
-              ),
-            );
-          },
+          builder: (context) => _ImagesCarouselDialog(attachedImages, index),
         );
-        overlay.remove();
+        // OverlayEntry createOverlay(int index) => OverlayEntry(
+        //       builder: (context) {
+        //         return SafeArea(
+        //           child: Align(
+        //             alignment: Alignment.topCenter,
+        //             child: Material(
+        //               color: Colors.transparent,
+        //               child: Container(
+        //                 padding: const EdgeInsets.all(12),
+        //                 decoration: const BoxDecoration(
+        //                   color: Colors.transparent,
+        //                 ),
+        //                 child: Text(
+        //                   '${index + 1} из ${attachedImages.length}',
+        //                   style: const TextStyle(
+        //                     color: Colors.black,
+        //                     fontSize: 24,
+        //                   ),
+        //                 ),
+        //               ),
+        //             ),
+        //           ),
+        //         );
+        //       },
+        //     );
+
+        // var overlay = createOverlay(index);
+        // await showDialog(
+        //   context: context,
+        //   builder: (context) {
+        //     WidgetsBinding.instance.addPostFrameCallback((_) {
+        //       Overlay.of(context, rootOverlay: true).insert(overlay);
+        //     });
+
+        //     return ExtendedImageSlidePage(
+        //       slideAxis: SlideAxis.vertical,
+        //       child: ImagesCarousel(
+        //         attachedImages: attachedImages,
+        //         imageModel: index,
+        //         onPageChanged: (index) {
+        //           overlay.remove();
+        //           overlay = createOverlay(index);
+        //           Overlay.of(context).insert(overlay);
+        //         },
+        //       ),
+        //     );
+        //   },
+        // );
+        // overlay.remove();
       },
       children: attachedImages
           .map(
@@ -76,6 +80,124 @@ class PackedPostImages extends StatelessWidget {
             ),
           )
           .toList(),
+    );
+  }
+}
+
+class _ImagesCarouselDialog extends StatefulWidget {
+  const _ImagesCarouselDialog(this.attachedImages, this.initialIndex);
+
+  final Iterable<String> attachedImages;
+  final int initialIndex;
+
+  @override
+  State<_ImagesCarouselDialog> createState() => _ImagesCarouselDialogState();
+}
+
+class _ImagesCarouselDialogState extends State<_ImagesCarouselDialog> {
+  OverlayEntry? _overlay;
+  GlobalKey<_ImagesCarouselDialogOverlayState>? _overlayKey;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      updateOverlay(widget.initialIndex);
+    });
+  }
+
+  void updateOverlay(int index) {
+    _overlay?.remove();
+    _overlayKey = GlobalKey();
+
+    _overlay = OverlayEntry(
+      builder: (context) {
+        return _ImagesCarouselDialogOverlay(
+          key: _overlayKey,
+          length: widget.attachedImages.length,
+          initialIndex: widget.initialIndex,
+        );
+      },
+    );
+    Overlay.of(context, rootOverlay: true).insert(_overlay!);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ExtendedImageSlidePage(
+      slideAxis: SlideAxis.vertical,
+      child: ImagesCarousel(
+        attachedImages: widget.attachedImages,
+        imageModel: widget.initialIndex,
+        onPageChanged: (index) {
+          _overlayKey?.currentState?.updateIndex(index);
+        },
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _overlay?.remove();
+    super.dispose();
+  }
+}
+
+class _ImagesCarouselDialogOverlay extends StatefulWidget {
+  const _ImagesCarouselDialogOverlay({
+    super.key,
+    required this.length,
+    required this.initialIndex,
+  });
+
+  final int length;
+  final int initialIndex;
+
+  @override
+  State<_ImagesCarouselDialogOverlay> createState() =>
+      _ImagesCarouselDialogOverlayState();
+}
+
+class _ImagesCarouselDialogOverlayState
+    extends State<_ImagesCarouselDialogOverlay> {
+  int index = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    index = widget.initialIndex;
+  }
+
+  void updateIndex(int newIndex) {
+    if (index < widget.length) {
+      setState(() {
+        index = newIndex;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: Align(
+        alignment: Alignment.topCenter,
+        child: Material(
+          color: Colors.transparent,
+          child: Container(
+            padding: const EdgeInsets.all(12),
+            decoration: const BoxDecoration(
+              color: Colors.transparent,
+            ),
+            child: Text(
+              '${index + 1} из ${widget.length}',
+              style: const TextStyle(
+                color: Colors.black,
+                fontSize: 24,
+              ),
+            ),
+          ),
+        ),
+      ),
     );
   }
 }
