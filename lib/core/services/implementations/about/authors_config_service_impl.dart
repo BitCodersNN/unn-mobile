@@ -4,7 +4,7 @@
 import 'package:unn_mobile/core/constants/api/path.dart';
 import 'package:unn_mobile/core/constants/string_keys/authors_config_keys.dart';
 import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
-import 'package:unn_mobile/core/misc/git_config_loader.dart';
+import 'package:unn_mobile/core/misc/git/git_config_loader.dart';
 import 'package:unn_mobile/core/misc/json/json_iterable_parser.dart';
 import 'package:unn_mobile/core/models/about/author.dart';
 import 'package:unn_mobile/core/services/interfaces/about/authors_config_service.dart';

@@ -4,13 +4,13 @@
 import 'package:dio/dio.dart';
 import 'package:unn_mobile/core/constants/api/path.dart';
 import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
+import 'package:unn_mobile/core/misc/camel_case_converter.dart';
 import 'package:unn_mobile/core/misc/dio_options_factory/options_with_expected_type_factory.dart';
-import 'package:unn_mobile/core/services/interfaces/loading_page/last_commit_sha_service.dart';
+import 'package:unn_mobile/core/misc/git/git_folder.dart';
+import 'package:unn_mobile/core/services/interfaces/common/last_commit_sha_service.dart';
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
 
 class LastCommitShaServiceImpl implements LastCommitShaService {
-  final _path =
-      'repos/${ApiPath.gitRepository}/commits/develop?path={file_path}&paths=loading_screen&per_page=1';
   final LoggerService _loggerService;
   final ApiHelper _apiHelper;
 
@@ -20,11 +20,13 @@ class LastCommitShaServiceImpl implements LastCommitShaService {
   );
 
   @override
-  Future<String?> getSha() async {
+  Future<String?> getSha({
+    required GitPath gitPath,
+  }) async {
     Response response;
     try {
       response = await _apiHelper.get(
-        path: _path,
+        path: _path(gitPath.name.toSnakeCase()),
         options: OptionsWithExpectedTypeFactory.jsonMap,
       );
     } catch (error, stackTrace) {
@@ -32,13 +34,14 @@ class LastCommitShaServiceImpl implements LastCommitShaService {
       return null;
     }
 
-    String sha;
     try {
-      sha = response.data['sha'];
+      return response.data['sha'];
     } catch (error, stackTrace) {
       _loggerService.log('Exception: $error\nStackTrace: $stackTrace');
       return null;
     }
-    return sha;
   }
+
+  String _path(String filePath) =>
+      'repos/${ApiPath.gitRepository}/commits/develop?path={file_path}&paths=$filePath&per_page=1';
 }

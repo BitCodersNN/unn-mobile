@@ -9,13 +9,15 @@ import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:go_router/go_router.dart';
 import 'package:unn_mobile/core/misc/app_open_tracker.dart';
 import 'package:unn_mobile/core/misc/authorisation/authorisation_request_result.dart';
+import 'package:unn_mobile/core/misc/git/git_folder.dart';
+import 'package:unn_mobile/core/misc/git/update_last_commit_sha_and_config_if_changed.dart';
 import 'package:unn_mobile/core/misc/user/current_user_sync_storage.dart';
 import 'package:unn_mobile/core/misc/date_time_utilities/date_time_extensions.dart';
 import 'package:unn_mobile/core/models/loading_page/loading_page_data.dart';
+import 'package:unn_mobile/core/providers/interfaces/loading_page/last_commit_sha_loading_page_provider.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation/authorisation_refresh_service.dart';
 import 'package:unn_mobile/core/services/interfaces/profile/profile_of_current_user_service.dart';
-import 'package:unn_mobile/core/services/interfaces/loading_page/last_commit_sha_service.dart';
-import 'package:unn_mobile/core/providers/interfaces/loading_page/last_commit_sha_provider.dart';
+import 'package:unn_mobile/core/services/interfaces/common/last_commit_sha_service.dart';
 import 'package:unn_mobile/core/services/interfaces/loading_page/loading_page_config_service.dart';
 import 'package:unn_mobile/core/providers/interfaces/loading_page/loading_page_provider.dart';
 import 'package:unn_mobile/core/services/interfaces/loading_page/logo_downloader_service.dart';
@@ -30,7 +32,7 @@ class LoadingPageViewModel extends BaseViewModel {
   final LastCommitShaService _lastCommitShaService;
   final LoadingPageConfigService _loadingPageConfigService;
   final LogoDownloaderService _logoDownloaderService;
-  final LastCommitShaProvider _lastCommitShaProvider;
+  final LastCommitShaLoadingPageProvider _lastCommitShaProvider;
   final LoadingPageProvider _loadingPageProvider;
   final CurrentUserSyncStorage _typeOfCurrentUser;
   final ProfileOfCurrentUserService _gettingProfileOfCurrentUser;
@@ -112,17 +114,12 @@ class LoadingPageViewModel extends BaseViewModel {
     AuthRequestResult? authRequestResult;
     late _TypeScreen typeScreen;
 
-    final [shaFromService, shaFromProvider] = await Future.wait([
-      _lastCommitShaService.getSha(),
-      _lastCommitShaProvider.getData(),
-    ]);
-
-    if (shaFromProvider == null || shaFromService != shaFromProvider) {
-      Future.wait([
-        _saveLoadingPagesConfigFromGit(),
-        _lastCommitShaProvider.saveData(shaFromService),
-      ]);
-    }
+    updateLastCommitShaAndConfigIfChanged(
+      lastCommitShaProvider: _lastCommitShaProvider,
+      lastCommitShaService: _lastCommitShaService,
+      gitPath: GitPath.loadingScreen,
+      saveConfig: _saveLoadingPagesConfigFromGit,
+    );
 
     try {
       authRequestResult = await _initializingApplicationService.refreshLogin();
