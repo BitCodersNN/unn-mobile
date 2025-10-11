@@ -1,17 +1,19 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2025 BitCodersNN
 
-import 'package:unn_mobile/core/providers/interfaces/loading_page/last_commit_sha_provider.dart';
+import 'package:unn_mobile/core/misc/camel_case_converter.dart';
+import 'package:unn_mobile/core/misc/git/git_folder.dart';
+import 'package:unn_mobile/core/providers/interfaces/common/last_commit_sha_provider.dart';
 import 'package:unn_mobile/core/services/interfaces/common/storage_service.dart';
-
-class _LastCommitShaKeys {
-  static const shaKey = 'sha_key';
-}
 
 class LastCommitShaProviderImpl implements LastCommitShaProvider {
   final StorageService _storage;
+  final GitPath gitPath;
 
-  LastCommitShaProviderImpl(this._storage);
+  LastCommitShaProviderImpl(
+    this._storage, {
+    required this.gitPath,
+  });
 
   @override
   Future<String?> getData() async {
@@ -20,7 +22,7 @@ class LastCommitShaProviderImpl implements LastCommitShaProvider {
     }
 
     final sha = await _storage.read(
-      key: _LastCommitShaKeys.shaKey,
+      key: _key,
     );
 
     return sha;
@@ -33,7 +35,7 @@ class LastCommitShaProviderImpl implements LastCommitShaProvider {
     }
 
     await _storage.write(
-      key: _LastCommitShaKeys.shaKey,
+      key: _key,
       value: sha,
     );
   }
@@ -41,7 +43,9 @@ class LastCommitShaProviderImpl implements LastCommitShaProvider {
   @override
   Future<bool> isContained() async {
     return await _storage.containsKey(
-      key: _LastCommitShaKeys.shaKey,
+      key: _key,
     );
   }
+
+  String get _key => '${gitPath.name.toSnakeCase()}_sha_key';
 }
