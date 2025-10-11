@@ -82,7 +82,7 @@ class _RadioGroupDialogState extends State<RadioGroupDialog> {
                       });
                     }
                   },
-                  contentPadding: EdgeInsets.zero,
+                  contentPadding: const EdgeInsets.only(right: 32.0),
                   dense: true,
                 ),
               ),

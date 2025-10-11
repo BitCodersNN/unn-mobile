@@ -18,6 +18,9 @@ class Semester {
   int get semester => _semester.value;
   int get year => _year.value;
 
+  String get academicYear =>
+      semester == 1 ? '$year–${year + 1}' : '${year - 1}–$year';
+
   Semester({
     required int semester,
     required int year,
@@ -49,6 +52,9 @@ class Semester {
         SemesterJsonKeys.semester: semester.toString(),
         SemesterJsonKeys.year: year.toString(),
       };
+
+  @override
+  String toString() => '$academicYear год, $semester семестр';
 }
 
 extension SemesterComparable on Semester {
@@ -56,7 +62,7 @@ extension SemesterComparable on Semester {
     if (year != other.year) {
       return year.compareTo(other.year);
     }
-    return semester.compareTo(other.semester);
+    return other.semester.compareTo(semester);
   }
 }
 
