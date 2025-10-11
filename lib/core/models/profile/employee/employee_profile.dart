@@ -10,7 +10,7 @@ class _EmployeeProfileJsonKeys {
 }
 
 class EmployeeProfile {
-  final BaeEmployeeProfile previewEmployeeProfile;
+  final BaseEmployeeProfile previewEmployeeProfile;
   final String jobType;
   final UserShortInfo? manager;
 
@@ -28,7 +28,7 @@ class EmployeeProfile {
 
   factory EmployeeProfile.fromJson(Map<String, Object?> json) =>
       EmployeeProfile(
-        previewEmployeeProfile: BaeEmployeeProfile.fromJson(json),
+        previewEmployeeProfile: BaseEmployeeProfile.fromJson(json),
         jobType: json[_EmployeeProfileJsonKeys.jobType] as String,
         manager: json[_EmployeeProfileJsonKeys.manager] != null
             ? UserShortInfo.fromProfileJson(

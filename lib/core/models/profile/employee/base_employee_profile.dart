@@ -4,7 +4,7 @@
 import 'package:unn_mobile/core/misc/json/tree_flattener.dart';
 import 'package:unn_mobile/core/models/profile/employee/department.dart';
 
-class _BaeEmployeeProfileJsonKeys {
+class _BaseEmployeeProfileJsonKeys {
   static const String id = 'id';
   static const String departmentId = 'department_id';
   static const String jobTitle = 'job_title';
@@ -12,13 +12,13 @@ class _BaeEmployeeProfileJsonKeys {
   static const String child = 'child';
 }
 
-class BaeEmployeeProfile {
+class BaseEmployeeProfile {
   final int id;
   final int? departmentId;
   final String jobTitle;
   final List<Department> departments;
 
-  BaeEmployeeProfile({
+  BaseEmployeeProfile({
     required this.id,
     required this.departmentId,
     required this.jobTitle,
@@ -26,24 +26,24 @@ class BaeEmployeeProfile {
   });
 
   Map<String, dynamic> toJson() => {
-        _BaeEmployeeProfileJsonKeys.id: id,
-        _BaeEmployeeProfileJsonKeys.departmentId: departmentId?.toString(),
-        _BaeEmployeeProfileJsonKeys.jobTitle: jobTitle,
-        _BaeEmployeeProfileJsonKeys.department:
+        _BaseEmployeeProfileJsonKeys.id: id,
+        _BaseEmployeeProfileJsonKeys.departmentId: departmentId?.toString(),
+        _BaseEmployeeProfileJsonKeys.jobTitle: jobTitle,
+        _BaseEmployeeProfileJsonKeys.department:
             departments.map((department) => department.toJson()).toList(),
       };
 
-  factory BaeEmployeeProfile.fromJson(Map<String, Object?> json) =>
-      BaeEmployeeProfile(
-        id: json[_BaeEmployeeProfileJsonKeys.id] as int,
-        departmentId: json[_BaeEmployeeProfileJsonKeys.departmentId] != null
+  factory BaseEmployeeProfile.fromJson(Map<String, Object?> json) =>
+      BaseEmployeeProfile(
+        id: json[_BaseEmployeeProfileJsonKeys.id] as int,
+        departmentId: json[_BaseEmployeeProfileJsonKeys.departmentId] != null
             ? int.tryParse(
-                json[_BaeEmployeeProfileJsonKeys.departmentId] as String,
+                json[_BaseEmployeeProfileJsonKeys.departmentId] as String,
               )
             : null,
-        jobTitle: json[_BaeEmployeeProfileJsonKeys.jobTitle] as String,
+        jobTitle: json[_BaseEmployeeProfileJsonKeys.jobTitle] as String,
         departments: _parseDepartments(
-          json[_BaeEmployeeProfileJsonKeys.department],
+          json[_BaseEmployeeProfileJsonKeys.department],
         ),
       );
 
@@ -59,8 +59,8 @@ class BaeEmployeeProfile {
     } else if (departmentJson is Map<String, dynamic>) {
       departmentMaps = flattenTree(
         json: departmentJson,
-        rootKey: _BaeEmployeeProfileJsonKeys.department,
-        childKey: _BaeEmployeeProfileJsonKeys.child,
+        rootKey: _BaseEmployeeProfileJsonKeys.department,
+        childKey: _BaseEmployeeProfileJsonKeys.child,
       ).whereType<Map<String, dynamic>>();
     } else {
       return [];

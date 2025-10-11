@@ -11,11 +11,11 @@ class _PreviewEmployeeJsonKeys {
 
 class PreviewEmployee extends UserShortInfo {
   final int userId;
-  final List<BaeEmployeeProfile> profiles;
+  final List<BaseEmployeeProfile> profiles;
 
   PreviewEmployee({
-    required this.userId,
     super.bitrixId,
+    required this.userId,
     required super.fullname,
     required super.photoSrc,
     required this.profiles,
@@ -38,7 +38,7 @@ class PreviewEmployee extends UserShortInfo {
         profiles: (json[_PreviewEmployeeJsonKeys.profiles] as List)
             .map(
               (item) =>
-                  BaeEmployeeProfile.fromJson(item as Map<String, dynamic>),
+                  BaseEmployeeProfile.fromJson(item as Map<String, dynamic>),
             )
             .toList(),
       );
