@@ -6,10 +6,10 @@ import 'package:unn_mobile/core/constants/api/path.dart';
 import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/misc/dio_options_factory/options_with_expected_type_factory.dart';
 import 'package:unn_mobile/core/misc/json/json_iterable_parser.dart';
-import 'package:unn_mobile/core/models/profile/employee_data.dart';
+import 'package:unn_mobile/core/models/profile/employee/employee_data.dart';
 import 'package:unn_mobile/core/models/schedule/schedule_search_suggestion_item.dart';
 import 'package:unn_mobile/core/models/schedule/schedule_filter.dart';
-import 'package:unn_mobile/core/models/profile/student_data.dart';
+import 'package:unn_mobile/core/models/profile/student/student_data.dart';
 import 'package:unn_mobile/core/services/interfaces/profile/profile_of_current_user_service.dart';
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
 import 'package:unn_mobile/core/services/interfaces/common/search_id_on_portal_service.dart';
@@ -58,7 +58,7 @@ class SearchIdOnPortalServiceImpl implements SearchIdOnPortalService {
         await _gettingProfileOfCurrentUser.getProfileOfCurrentUser();
 
     if (userData is EmployeeData) {
-      return IdForSchedule(IdType.person, userData.syncID);
+      return IdForSchedule(IdType.person, userData.syncId);
     }
 
     if (userData is StudentData) {
@@ -66,7 +66,7 @@ class SearchIdOnPortalServiceImpl implements SearchIdOnPortalService {
           await findIdOnPortal(userData.fullname.toString(), IdType.student);
 
       final userInfo = userIds
-          ?.where((item) => item.description == userData.eduGroup)
+          ?.where((item) => item.description == userData.baseEduInfo.eduGroup)
           .firstOrNull;
 
       return userInfo != null

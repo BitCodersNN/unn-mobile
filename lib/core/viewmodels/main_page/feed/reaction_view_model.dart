@@ -100,7 +100,7 @@ class ReactionViewModel extends ReactionViewModelBase {
       // Добавляем временно, чтобы сразу показать действие
       ratingList?.addReactions(
         reaction,
-        [UserShortInfo(profileId, '', '')],
+        [UserShortInfo(bitrixId: profileId)],
       );
       notifyListeners();
       final reactionUserInfo = await _reactionManager.addReaction(

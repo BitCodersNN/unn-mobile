@@ -18,9 +18,6 @@ import 'package:unn_mobile/core/services/interfaces/feed/reaction_service.dart';
 class _KeysForReactionManagerJsonConverter {
   static const String data = 'data';
   static const String userData = 'user_data';
-  static const String nameFromatted = 'NAME_FORMATTED';
-  static const String photo = 'PERSONAL_PHOTO';
-  static const String src = 'SRC';
 }
 
 class ReactionServiceImpl implements ReactionService {
@@ -102,13 +99,6 @@ class ReactionServiceImpl implements ReactionService {
       return null;
     }
 
-    final userData = _currentUserSync.currentUserData;
-    final photoSrc = jsonMap[_KeysForReactionManagerJsonConverter.photo]
-        [_KeysForReactionManagerJsonConverter.src];
-    return UserShortInfo(
-      userData!.bitrixId,
-      jsonMap[_KeysForReactionManagerJsonConverter.nameFromatted],
-      photoSrc != false ? photoSrc : null,
-    );
+    return _currentUserSync.currentUserData as UserShortInfo;
   }
 }

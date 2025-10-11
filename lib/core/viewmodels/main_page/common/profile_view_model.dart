@@ -6,7 +6,7 @@ import 'dart:async';
 import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/misc/user/current_user_sync_storage.dart';
 import 'package:unn_mobile/core/misc/user/user_functions.dart';
-import 'package:unn_mobile/core/models/profile/student_data.dart';
+import 'package:unn_mobile/core/models/profile/student/student_data.dart';
 import 'package:unn_mobile/core/models/profile/user_data.dart';
 import 'package:unn_mobile/core/models/profile/user_short_info.dart';
 import 'package:unn_mobile/core/services/interfaces/profile/profile_service.dart';
@@ -47,7 +47,7 @@ class ProfileViewModel extends BaseViewModel {
         .get<ProfileViewModelFactory>()
         .getCurrentUserViewModel();
   }
-  String? get avatarUrl => _loadedData?.fullUrlPhoto;
+  String? get avatarUrl => _loadedData?.photoSrc;
 
   String get description => _description ?? '';
 
@@ -55,11 +55,12 @@ class ProfileViewModel extends BaseViewModel {
       _loadedData?.fullname.toString() ?? //
       'Не удалось загрузить';
 
-  bool get hasAvatar => _loadedData?.fullUrlPhoto != null;
+  bool get hasAvatar => _loadedData?.photoSrc != null;
 
   bool get hasError => _hasError;
 
-  String get initials => getUserInitials(_loadedData);
+  String get initials =>
+      generateInitials(_loadedData?.fullname?.split(' ') ?? []);
 
   bool get isLoading => _isLoading;
 
@@ -80,7 +81,7 @@ class ProfileViewModel extends BaseViewModel {
           .then((data) {
         _loadedData = data;
         _description = switch (data.runtimeType) {
-          const (StudentData) => (data as StudentData).eduGroup,
+          const (StudentData) => (data as StudentData).baseEduInfo.eduGroup,
           _ => '',
         };
       }).catchError((error, stack) {
@@ -110,38 +111,12 @@ class ProfileViewModel extends BaseViewModel {
     if (_loadedData != null && !force) {
       return;
     }
-    final splitName = info.fullname?.split(' ');
 
-    _loadedData = UserData(
-      info.bitrixId ?? 0,
-      null,
-      _generateFullname(splitName ?? []),
-      null,
-      null,
-      '',
-      info.photoSrc,
-      null,
+    _loadedData = UserData.withUserShortInfo(
+      userShortInfo: info,
+      userId: 0,
+      sex: '',
     );
-  }
-
-  Fullname _generateFullname(List<String> splitName) {
-    switch (splitName.length) {
-      case 0:
-        return Fullname(null, null, null);
-      case 1:
-        return Fullname(splitName.first, null, null);
-      case 2:
-        return Fullname(splitName.first, splitName.last, null);
-      default:
-        return Fullname(
-          splitName[1],
-          [
-            splitName.first,
-            ...splitName.sublist(2, splitName.length - 1),
-          ].join(' '),
-          splitName.last,
-        );
-    }
   }
 
   Future<UserData?> _getCurrentUser() async {

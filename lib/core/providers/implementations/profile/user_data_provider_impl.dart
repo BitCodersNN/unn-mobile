@@ -3,8 +3,8 @@
 
 import 'dart:convert';
 
-import 'package:unn_mobile/core/models/profile/employee_data.dart';
-import 'package:unn_mobile/core/models/profile/student_data.dart';
+import 'package:unn_mobile/core/models/profile/employee/employee_data.dart';
+import 'package:unn_mobile/core/models/profile/student/student_data.dart';
 import 'package:unn_mobile/core/models/profile/user_data.dart';
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
 import 'package:unn_mobile/core/services/interfaces/common/storage_service.dart';
@@ -38,25 +38,19 @@ class UserDataProviderImpl implements UserDataProvider {
       key: _UserDataProvideKeys._userDataKey,
     );
 
+    final decodedJson = jsonDecode(userInfo!);
+
     try {
-      if (userType == _student) {
-        userData = StudentData.fromJson(
-          jsonDecode(
-            userInfo!,
-          ),
-        );
-      } else if (userType == _employee) {
-        userData = EmployeeData.fromJson(
-          jsonDecode(
-            userInfo!,
-          ),
-        );
-      }
+      userData = switch (userType) {
+        _student => StudentData.fromJson(decodedJson),
+        _employee => EmployeeData.fromCurrentProfileJson(decodedJson),
+        _ => UserData.fromJson(decodedJson),
+      };
     } catch (e, stackTrace) {
       _loggerService.logError(
         e,
         stackTrace,
-        information: [userInfo!],
+        information: [userInfo],
       );
     }
 

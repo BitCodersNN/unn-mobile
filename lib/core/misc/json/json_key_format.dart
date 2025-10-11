@@ -6,4 +6,5 @@ enum JsonKeyFormat {
   bitrix,
   blogPost,
   message,
+  profile,
 }

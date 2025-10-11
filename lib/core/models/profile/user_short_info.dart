@@ -54,21 +54,33 @@ class _MessageUserInfoKeys implements _UserInfoKeys {
   String get photoSrc => 'avatar';
 }
 
+class _ProfileUserInfoKeys implements _UserInfoKeys {
+  const _ProfileUserInfoKeys();
+  @override
+  String get fullname => 'fullname';
+  @override
+  String get id => 'bitrix_id';
+  @override
+  String get photoSrc => 'photo';
+  String get orig => 'orig';
+}
+
 class UserShortInfo
     with
         MultiFormatJsonSerializable,
         BitrixJsonSerializable,
         BlogPostJsonSerializable,
-        MessageJsonSerializable {
+        MessageJsonSerializable,
+        ProfileJsonSerializable {
   final int? bitrixId;
   final String? fullname;
   final String? photoSrc;
 
-  UserShortInfo(
+  UserShortInfo({
     this.bitrixId,
     this.fullname,
     this.photoSrc,
-  );
+  });
 
   factory UserShortInfo._fromJsonWithKeys(
     Map<String, dynamic> json,
@@ -84,39 +96,61 @@ class UserShortInfo
     final fullname = json[keys.fullname] as String?;
 
     String? photoSrc = json[keys.photoSrc] as String?;
-    if (photoSrc != null && photoSrc.isNotEmpty && photoBaseUrl != null) {
+
+    if (photoSrc == '${ProtocolType.https.name}://${Host.unn}') {
+      photoSrc = null;
+    }
+
+    if (photoSrc != null &&
+        photoSrc.isNotEmpty &&
+        !photoSrc.startsWith(ProtocolType.https.name) &&
+        photoBaseUrl != null) {
       photoSrc = '$photoBaseUrl$photoSrc';
     }
 
-    return UserShortInfo(parsedId, fullname, photoSrc);
-  }
-
-  factory UserShortInfo.fromJson(Map<String, dynamic> json) {
-    return UserShortInfo._fromJsonWithKeys(
-      json,
-      const DefaultUserInfoKeys(),
+    return UserShortInfo(
+      bitrixId: parsedId,
+      fullname: fullname,
+      photoSrc: photoSrc,
     );
   }
 
-  factory UserShortInfo.fromBitrixJson(Map<String, dynamic> json) {
-    return UserShortInfo._fromJsonWithKeys(
-      json,
-      const _BitrixUserInfoKeys(),
-    );
-  }
+  factory UserShortInfo.fromJson(Map<String, dynamic> json) =>
+      UserShortInfo._fromJsonWithKeys(
+        json,
+        const DefaultUserInfoKeys(),
+      );
 
-  factory UserShortInfo.fromJsonImportantBlogPost(Map<String, dynamic> json) {
-    return UserShortInfo._fromJsonWithKeys(
-      json,
-      const _BlogPostUserInfoKeys(),
-      photoBaseUrl: '${ProtocolType.https}://${Host.unn}',
-    );
-  }
+  factory UserShortInfo.fromBitrixJson(Map<String, dynamic> json) =>
+      UserShortInfo._fromJsonWithKeys(
+        json,
+        const _BitrixUserInfoKeys(),
+      );
 
-  factory UserShortInfo.fromMessageJson(Map<String, dynamic> json) {
+  factory UserShortInfo.fromJsonImportantBlogPost(Map<String, dynamic> json) =>
+      UserShortInfo._fromJsonWithKeys(
+        json,
+        const _BlogPostUserInfoKeys(),
+        photoBaseUrl: '${ProtocolType.https.name}://${Host.unn}',
+      );
+
+  factory UserShortInfo.fromMessageJson(Map<String, dynamic> json) =>
+      UserShortInfo._fromJsonWithKeys(
+        json,
+        const _MessageUserInfoKeys(),
+      );
+
+  factory UserShortInfo.fromProfileJson(Map<String, dynamic> json) {
+    const keys = _ProfileUserInfoKeys();
+
+    if (json[keys.photoSrc] is Map) {
+      json[keys.photoSrc] = json[keys.photoSrc][keys.orig];
+    }
+
     return UserShortInfo._fromJsonWithKeys(
       json,
-      const _MessageUserInfoKeys(),
+      keys,
+      photoBaseUrl: '${ProtocolType.https.name}://${Host.unn}',
     );
   }
 
@@ -127,6 +161,7 @@ class UserShortInfo
         JsonKeyFormat.bitrix: _BitrixUserInfoKeys(),
         JsonKeyFormat.blogPost: _BlogPostUserInfoKeys(),
         JsonKeyFormat.message: _MessageUserInfoKeys(),
+        JsonKeyFormat.profile: _ProfileUserInfoKeys(),
       };
 
   @protected
@@ -134,7 +169,7 @@ class UserShortInfo
   Map<String, dynamic> buildJsonMap(JsonKeys jsonKeys) {
     jsonKeys as _UserInfoKeys;
     return {
-      jsonKeys.id: bitrixId.toString(),
+      jsonKeys.id: bitrixId?.toString(),
       jsonKeys.fullname: fullname,
       jsonKeys.photoSrc: photoSrc,
     };
