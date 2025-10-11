@@ -9,6 +9,7 @@ class RadioGroupDialog extends StatefulWidget {
   final Widget? label;
   final Widget okButtonChild;
   final Widget cancelButtonChild;
+
   const RadioGroupDialog({
     super.key,
     required this.radioLabels,
@@ -23,47 +24,80 @@ class RadioGroupDialog extends StatefulWidget {
 }
 
 class _RadioGroupDialogState extends State<RadioGroupDialog> {
-  int? selectedValue = 0;
+  late int selectedValue;
+  late Map<int, GlobalKey> _itemKeys;
 
   @override
   void initState() {
     super.initState();
     selectedValue = widget.initialIndex;
+    _itemKeys = {
+      for (int i = 0; i < widget.radioLabels.length; i++) i: GlobalKey(),
+    };
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _scrollToSelected();
+      }
+    });
+  }
+
+  void _scrollToSelected() {
+    final key = _itemKeys[selectedValue];
+    if (key?.currentContext != null) {
+      Scrollable.ensureVisible(
+        key!.currentContext!,
+        duration: Duration.zero,
+        curve: Curves.linear,
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+    final maxContentHeight = screenHeight * 0.5;
+
     return AlertDialog(
       title: widget.label,
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: List.generate(
-          widget.radioLabels.length,
-          (index) => RadioListTile<int>(
-            title: widget.radioLabels[index],
-            value: index,
-            groupValue: selectedValue,
-            onChanged: (value) {
-              setState(
-                () {
-                  selectedValue = value;
-                },
-              );
-            },
+      content: Scrollbar(
+        thumbVisibility: true,
+        thickness: 4,
+        radius: const Radius.circular(3),
+        child: ConstrainedBox(
+          constraints: BoxConstraints(maxHeight: maxContentHeight),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: List.generate(
+                widget.radioLabels.length,
+                (index) => RadioListTile<int>(
+                  key: _itemKeys[index],
+                  title: widget.radioLabels[index],
+                  value: index,
+                  groupValue: selectedValue,
+                  onChanged: (value) {
+                    if (value != null) {
+                      setState(() {
+                        selectedValue = value;
+                      });
+                    }
+                  },
+                  contentPadding: const EdgeInsets.only(right: 32.0),
+                  dense: true,
+                ),
+              ),
+            ),
           ),
         ),
       ),
+      actionsAlignment: MainAxisAlignment.start,
       actions: [
         TextButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
+          onPressed: () => Navigator.pop(context),
           child: widget.cancelButtonChild,
         ),
         TextButton(
-          onPressed: () {
-            Navigator.pop(context, selectedValue);
-          },
+          onPressed: () => Navigator.pop(context, selectedValue),
           child: widget.okButtonChild,
         ),
       ],
