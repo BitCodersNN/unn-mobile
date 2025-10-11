@@ -90,13 +90,13 @@ void _removeDiskAttachDivs(dom.Element element) {
     final id = child.attributes['id'] ?? '';
     if (id.startsWith('disk-attach-')) {
       final prev = child.previousElementSibling;
-      if (prev != null && prev.localName == 'br') {
-        prev.remove();
+      if (prev?.localName == 'br') {
+        prev!.remove();
       }
 
       final next = child.nextElementSibling;
-      if (next != null && next.localName == 'br') {
-        next.remove();
+      if (next?.localName == 'br') {
+        next!.remove();
       }
 
       child.remove();
