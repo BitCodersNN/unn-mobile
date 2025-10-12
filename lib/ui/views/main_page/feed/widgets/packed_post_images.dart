@@ -5,6 +5,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider_plus/carousel_slider_plus.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
+import 'package:unn_mobile/core/misc/bounded_int.dart';
 import 'package:unn_mobile/ui/widgets/dismissable_image.dart';
 import 'package:unn_mobile/ui/widgets/packed_images_view.dart';
 
@@ -37,41 +38,39 @@ class PackedPostImages extends StatelessWidget {
 }
 
 class _ImagesCarouselDialog extends StatefulWidget {
-  const _ImagesCarouselDialog(this.attachedImages, this.initialIndex);
+  _ImagesCarouselDialog(this.attachedImages, int initialIndex)
+      : initialIndex = BoundedInt(
+          value: initialIndex,
+          min: 0,
+          max: attachedImages.length,
+        );
 
   final Iterable<String> attachedImages;
-  final int initialIndex;
+  final BoundedInt initialIndex;
 
   @override
   State<_ImagesCarouselDialog> createState() => _ImagesCarouselDialogState();
 }
 
 class _ImagesCarouselDialogState extends State<_ImagesCarouselDialog> {
-  OverlayEntry? _overlay;
-  GlobalKey<_ImagesCarouselDialogOverlayState>? _overlayKey;
+  late final OverlayEntry _overlay;
+  final GlobalKey<_ImagesCarouselDialogOverlayState> _overlayKey = GlobalKey();
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      updateOverlay(widget.initialIndex);
+      _overlay = OverlayEntry(
+        builder: (context) {
+          return _ImagesCarouselDialogOverlay(
+            key: _overlayKey,
+            length: widget.attachedImages.length,
+            initialIndex: widget.initialIndex.value,
+          );
+        },
+      );
+      Overlay.of(context, rootOverlay: true).insert(_overlay);
     });
-  }
-
-  void updateOverlay(int index) {
-    _overlay?.remove();
-    _overlayKey = GlobalKey();
-
-    _overlay = OverlayEntry(
-      builder: (context) {
-        return _ImagesCarouselDialogOverlay(
-          key: _overlayKey,
-          length: widget.attachedImages.length,
-          initialIndex: widget.initialIndex,
-        );
-      },
-    );
-    Overlay.of(context, rootOverlay: true).insert(_overlay!);
   }
 
   @override
@@ -80,9 +79,9 @@ class _ImagesCarouselDialogState extends State<_ImagesCarouselDialog> {
       slideAxis: SlideAxis.vertical,
       child: ImagesCarousel(
         attachedImages: widget.attachedImages,
-        imageModel: widget.initialIndex,
+        imageModel: widget.initialIndex.value,
         onPageChanged: (index) {
-          _overlayKey?.currentState?.updateIndex(index);
+          _overlayKey.currentState?.updateIndex(index);
         },
       ),
     );
@@ -90,20 +89,19 @@ class _ImagesCarouselDialogState extends State<_ImagesCarouselDialog> {
 
   @override
   void dispose() {
-    _overlay?.remove();
+    _overlay.remove();
     super.dispose();
   }
 }
 
 class _ImagesCarouselDialogOverlay extends StatefulWidget {
-  const _ImagesCarouselDialogOverlay({
+  _ImagesCarouselDialogOverlay({
     super.key,
-    required this.length,
-    required this.initialIndex,
-  });
+    required int length,
+    required int initialIndex,
+  }) : initialIndex = BoundedInt(value: initialIndex, min: 0, max: length - 1);
 
-  final int length;
-  final int initialIndex;
+  final BoundedInt initialIndex;
 
   @override
   State<_ImagesCarouselDialogOverlay> createState() =>
@@ -112,16 +110,16 @@ class _ImagesCarouselDialogOverlay extends StatefulWidget {
 
 class _ImagesCarouselDialogOverlayState
     extends State<_ImagesCarouselDialogOverlay> {
-  int index = 0;
+  var index = 0;
 
   @override
   void initState() {
     super.initState();
-    index = widget.initialIndex;
+    index = widget.initialIndex.value;
   }
 
   void updateIndex(int newIndex) {
-    if (index < widget.length) {
+    if (newIndex > 0 && newIndex <= widget.initialIndex.max) {
       setState(() {
         index = newIndex;
       });
@@ -141,7 +139,7 @@ class _ImagesCarouselDialogOverlayState
               color: Colors.transparent,
             ),
             child: Text(
-              '${index + 1} из ${widget.length}',
+              '${index + 1} из ${widget.initialIndex.max + 1}',
               style: const TextStyle(
                 color: Colors.black,
                 fontSize: 24,
