@@ -453,24 +453,19 @@ class _FeedPostState extends State<FeedPost> {
 
     for (final fileViewModel in model.attachedFileViewModels) {
       final file = await fileViewModel.getFile();
-      if (file != null && file.existsSync()) {
-        xFiles.add(XFile(file.path));
+      if (file?.existsSync() == true) {
+        xFiles.add(XFile(file!.path));
       }
     }
 
     final images = await Future.wait(
       model.attachedImages.map(
         (imageUrl) async {
-          final data = await http.get(Uri.parse(imageUrl));
-          final mimeType = data.headers['Content-Type'] ??
-              lookupMimeType(p.basename(imageUrl));
-          if (data.statusCode != 200) {
+          try {
+            return await _imageUrlToXFile(imageUrl);
+          } catch (e) {
             return null;
           }
-          return XFile.fromData(
-            data.bodyBytes,
-            mimeType: mimeType,
-          );
         },
       ),
     );
@@ -487,6 +482,19 @@ class _FeedPostState extends State<FeedPost> {
         text:
             "Из ленты Портала ННГУ (автор ${model.profileViewModel.fullname}):\n${parsedString ?? ''}",
       ),
+    );
+  }
+
+  Future<XFile?> _imageUrlToXFile(String imageUrl) async {
+    final data = await http.get(Uri.parse(imageUrl));
+    final mimeType =
+        data.headers['Content-Type'] ?? lookupMimeType(p.basename(imageUrl));
+    if (data.statusCode != 200) {
+      return null;
+    }
+    return XFile.fromData(
+      data.bodyBytes,
+      mimeType: mimeType,
     );
   }
 
