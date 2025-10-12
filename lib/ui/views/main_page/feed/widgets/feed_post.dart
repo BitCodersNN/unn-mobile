@@ -238,51 +238,7 @@ class _FeedPostState extends State<FeedPost> {
                             Expanded(child: Container()),
                             IconButton(
                               onPressed: () async {
-                                final List<XFile> xFiles = [];
-
-                                for (final fileViewModel
-                                    in model.attachedFileViewModels) {
-                                  final file = await fileViewModel.getFile();
-                                  if (file != null && file.existsSync()) {
-                                    xFiles.add(XFile(file.path));
-                                  }
-                                }
-
-                                final images = await Future.wait(
-                                  model.attachedImages.map(
-                                    (imageUrl) async {
-                                      final data =
-                                          await http.get(Uri.parse(imageUrl));
-                                      final mimeType = data
-                                              .headers['Content-Type'] ??
-                                          lookupMimeType(p.basename(imageUrl));
-                                      if (data.statusCode != 200) {
-                                        return null;
-                                      }
-                                      return XFile.fromData(
-                                        data.bodyBytes,
-                                        mimeType: mimeType,
-                                      );
-                                    },
-                                  ),
-                                );
-
-                                xFiles.addAll(images.nonNulls);
-
-                                final htmlDoc = parse(
-                                  HtmlUnescape().convert(model.postText),
-                                );
-                                final parsedString = parse(htmlDoc.body?.text)
-                                    .documentElement
-                                    ?.text;
-                                await SharePlus.instance.share(
-                                  ShareParams(
-                                    files: xFiles.isEmpty ? null : xFiles,
-                                    text: parsedString?.isEmpty ?? true
-                                        ? null
-                                        : parsedString,
-                                  ),
-                                );
+                                await _sharePost(model);
                               },
                               icon: const Icon(Icons.share),
                             ),
@@ -309,6 +265,49 @@ class _FeedPostState extends State<FeedPost> {
     GoRouter.of(context).go(
       '${GoRouter.of(context).routeInformationProvider.value.uri.path}/'
       '${postCommentsRoute.pageRoute.replaceAll(':postId', post.blogData.id.toString())}',
+    );
+  }
+
+  Future<void> _sharePost(FeedPostViewModel model) async {
+    final List<XFile> xFiles = [];
+
+    for (final fileViewModel in model.attachedFileViewModels) {
+      final file = await fileViewModel.getFile();
+      if (file?.existsSync() == true) {
+        xFiles.add(XFile(file!.path));
+      }
+    }
+
+    final fetchedImages = await Future.wait(
+      model.attachedImages.map(
+        (url) => _imageUrlToXFile(url).onError((_, __) => null),
+      ),
+    );
+    xFiles.addAll(fetchedImages.whereType<XFile>());
+
+    final htmlDoc = parse(
+      HtmlUnescape().convert(model.postText),
+    );
+    final parsedString = parse(htmlDoc.body?.text).documentElement?.text;
+    await SharePlus.instance.share(
+      ShareParams(
+        files: xFiles.isEmpty ? null : xFiles,
+        text:
+            "Из ленты Портала ННГУ (автор ${model.profileViewModel.fullname}):\n${parsedString ?? ''}",
+      ),
+    );
+  }
+
+  Future<XFile?> _imageUrlToXFile(String imageUrl) async {
+    final data = await http.get(Uri.parse(imageUrl));
+    final mimeType =
+        data.headers['Content-Type'] ?? lookupMimeType(p.basename(imageUrl));
+    if (data.statusCode != 200) {
+      return null;
+    }
+    return XFile.fromData(
+      data.bodyBytes,
+      mimeType: mimeType,
     );
   }
 
