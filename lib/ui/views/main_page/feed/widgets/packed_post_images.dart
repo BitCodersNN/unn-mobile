@@ -5,6 +5,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider_plus/carousel_slider_plus.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
+import 'package:unn_mobile/ui/widgets/dismissable_image.dart';
 import 'package:unn_mobile/ui/widgets/packed_images_view.dart';
 
 class PackedPostImages extends StatelessWidget {
@@ -111,27 +112,7 @@ class _ImagesCarouselState extends State<ImagesCarousel> {
       ),
       items: [
         for (final image in widget.attachedImages)
-          ExtendedImage(
-            enableLoadState: true,
-            mode: ExtendedImageMode.gesture,
-            initGestureConfigHandler: (state) {
-              return GestureConfig(
-                minScale: 0.9,
-                animationMinScale: 0.7,
-                maxScale: 3.0,
-                animationMaxScale: 3.5,
-                speed: 1.0,
-                inertialSpeed: 100.0,
-                initialScale: 1.0,
-                inPageView: false,
-                initialAlignment: InitialAlignment.center,
-              );
-            },
-            image: CachedNetworkImageProvider(
-              image,
-            ),
-            enableSlideOutPage: true,
-          ),
+          DismissibleImage(image: image),
       ],
     );
   }

@@ -449,15 +449,18 @@ class _ReactionCounterWithIcons extends StatelessWidget {
             ),
             child: Builder(
               builder: (context) {
-                int i = 0;
+                final reactionTypeCount = model.reactionList.length - 1;
+                final reactionCounterOffset =
+                    reactionsSize * (reactionTypeCount) / 2 + reactionsSize + 8;
                 return SizedBox(
                   height: reactionsSize,
                   child: Stack(
                     alignment: Alignment.centerLeft,
                     children: [
-                      for (final smallReactionEntry in model.reactionList)
+                      for (final (i, smallReactionEntry)
+                          in model.reactionList.indexed)
                         Positioned(
-                          left: reactionsSize / 2 * i++,
+                          left: reactionsSize / 2 * i,
                           child: ClipOval(
                             child: Container(
                               width: reactionsSize,
@@ -470,18 +473,19 @@ class _ReactionCounterWithIcons extends StatelessWidget {
                             ),
                           ),
                         ),
-                      Positioned(
-                        left: reactionsSize * (i - 1) / 2 + reactionsSize + 8,
-                        child: Text(
-                          '${model.reactionCount > 0 ? model.reactionCount : ''}',
-                          style: TextStyle(
-                            fontSize: 13.0,
-                            fontStyle: FontStyle.italic,
-                            fontWeight: FontWeight.w400,
-                            color: background,
+                      if (model.reactionCount > 0)
+                        Positioned(
+                          left: reactionCounterOffset,
+                          child: Text(
+                            '${model.reactionCount}',
+                            style: TextStyle(
+                              fontSize: 13.0,
+                              fontStyle: FontStyle.italic,
+                              fontWeight: FontWeight.w400,
+                              color: background,
+                            ),
                           ),
                         ),
-                      ),
                     ],
                   ),
                 );
