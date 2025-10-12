@@ -33,6 +33,8 @@ class FeedCommentViewModel extends BaseViewModel {
 
   ReactionViewModel get reactionViewModel => _reactionViewModel;
 
+  Iterable<String> get attachedImages => comment.imageUrls ?? [];
+
   bool get renderMessage => !isBusy;
 
   void init(BlogPostCommentData comment) {

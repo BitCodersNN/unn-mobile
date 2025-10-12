@@ -10,7 +10,8 @@ import 'package:unn_mobile/core/viewmodels/main_page/feed/reaction_view_model.da
 import 'package:unn_mobile/ui/views/base_view.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/functions/reactions_window.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/widgets/attached_file.dart';
-import 'package:unn_mobile/ui/views/main_page/feed/widgets/feed_post.dart';
+import 'package:unn_mobile/ui/views/main_page/feed/widgets/packed_post_images.dart';
+import 'package:unn_mobile/ui/views/main_page/feed/widgets/post_html_widget.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/widgets/reaction_bubble.dart';
 import 'package:unn_mobile/ui/widgets/shimmer.dart';
 import 'package:unn_mobile/ui/widgets/shimmer_loading.dart';
@@ -44,8 +45,13 @@ class FeedCommentView extends StatelessWidget {
                   top: 8,
                 ),
                 child: model.renderMessage
-                    ? FeedPost.htmlWidget(model.message, context)
+                    ? PostHtmlWidget(text: model.message)
                     : const SizedBox(),
+              ),
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20.0, vertical: 8.0),
+                child: PackedPostImages(attachedImages: model.attachedImages),
               ),
               for (final file in model.attachedFileViewModels)
                 Padding(
