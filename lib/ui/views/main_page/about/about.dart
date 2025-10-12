@@ -9,10 +9,12 @@ import 'package:unn_mobile/core/models/about/author.dart';
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/about/about_view_model.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
+import 'package:unn_mobile/ui/views/main_page/main_page.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class AboutScreenView extends StatelessWidget {
-  const AboutScreenView({super.key});
+  final int? bottomRouteIndex;
+  const AboutScreenView({super.key, this.bottomRouteIndex});
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +22,10 @@ class AboutScreenView extends StatelessWidget {
       onModelReady: (model) => model.init(),
       builder: (context, model, child) {
         return Scaffold(
-          appBar: AppBar(title: const Text('О нас')),
+          appBar: AppBar(
+            leading: getSubpageLeading(bottomRouteIndex),
+            title: const Text('О нас'),
+          ),
           body: LayoutBuilder(
             builder: (context, constraints) {
               return SingleChildScrollView(

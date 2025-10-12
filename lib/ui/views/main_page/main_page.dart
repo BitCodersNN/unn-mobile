@@ -14,16 +14,31 @@ import 'package:unn_mobile/ui/views/main_page/main_page_drawer.dart';
 import 'package:unn_mobile/ui/views/main_page/main_page_navigation_bar.dart';
 
 class MainPage extends StatefulWidget {
+  static MainPageState? get globalState => mainPageKey.currentState;
+
   final StatefulNavigationShell shell;
 
   const MainPage({super.key, required this.shell});
 
   @override
-  State<MainPage> createState() => _MainPageState();
+  State<MainPage> createState() => MainPageState();
 }
 
-class _MainPageState extends State<MainPage> {
+Widget? getSubpageLeading(int? bottomRouteIndex) {
+  if (bottomRouteIndex == null) {
+    return null;
+  }
+  return IconButton(
+    onPressed: () {
+      MainPage.globalState?.scaffold?.openDrawer();
+    },
+    icon: const Icon(Icons.menu),
+  );
+}
+
+class MainPageState extends State<MainPage> {
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
+  ScaffoldState? get scaffold => scaffoldKey.currentState;
 
   final drawerIdOffset = 10;
 
@@ -55,6 +70,7 @@ class _MainPageState extends State<MainPage> {
     return BaseView<MainPageViewModel>(
       builder: (context, model, _) {
         return Scaffold(
+          key: scaffoldKey,
           drawerEdgeDragWidth: MediaQuery.of(context).size.width,
           extendBody: false,
           drawer: isRootScreen(context)
