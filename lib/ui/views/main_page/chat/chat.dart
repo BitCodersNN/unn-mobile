@@ -14,11 +14,12 @@ import 'package:unn_mobile/core/viewmodels/factories/main_page_routes_view_model
 import 'package:unn_mobile/core/viewmodels/main_page/chat/chat_screen_view_model.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
 import 'package:unn_mobile/ui/views/main_page/chat/widgets/unread_badge.dart';
+import 'package:unn_mobile/ui/views/main_page/main_page.dart';
 
 class ChatScreenView extends StatefulWidget {
-  const ChatScreenView({super.key, this.routeIndex = 2});
+  const ChatScreenView({super.key, this.bottomRouteIndex = 2});
 
-  final int routeIndex;
+  final int? bottomRouteIndex;
 
   @override
   State<ChatScreenView> createState() => _ChatScreenViewState();
@@ -27,24 +28,20 @@ class ChatScreenView extends StatefulWidget {
 class _ChatScreenViewState extends State<ChatScreenView> {
   @override
   Widget build(BuildContext context) {
-    final viewModel = Injector.appInstance
-        .get<MainPageRoutesViewModelsFactory>()
-        .getViewModelByRouteIndex<ChatScreenViewModel>(widget.routeIndex);
-    final parentScaffold = Scaffold.maybeOf(context);
+    final viewModel = widget.bottomRouteIndex == null
+        ? null
+        : Injector.appInstance
+            .get<MainPageRoutesViewModelsFactory>()
+            .getViewModelByRouteIndex<ChatScreenViewModel>(
+              widget.bottomRouteIndex!,
+            );
 
     return BaseView<ChatScreenViewModel>(
       builder: (context, model, child) {
         return Scaffold(
           appBar: AppBar(
             title: const Text('Сообщения'),
-            leading: parentScaffold?.hasDrawer ?? false
-                ? IconButton(
-                    onPressed: () {
-                      parentScaffold?.openDrawer();
-                    },
-                    icon: const Icon(Icons.menu),
-                  )
-                : null,
+            leading: getSubpageLeading(widget.bottomRouteIndex),
           ),
           body: Builder(
             builder: (context) {

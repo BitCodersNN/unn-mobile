@@ -9,24 +9,26 @@ import 'package:unn_mobile/core/viewmodels/factories/main_page_routes_view_model
 import 'package:unn_mobile/core/viewmodels/main_page/source/source_page_view_model.dart';
 import 'package:unn_mobile/ui/builders/online_status_builder.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
+import 'package:unn_mobile/ui/views/main_page/main_page.dart';
 import 'package:unn_mobile/ui/views/main_page/source/source_course_view.dart';
 import 'package:unn_mobile/ui/views/main_page/source/source_webinar_view.dart';
 import 'package:unn_mobile/ui/widgets/dialogs/radio_group_dialog.dart';
 import 'package:unn_mobile/ui/widgets/offline_overlay_displayer.dart';
 
 class SourcePageView extends StatelessWidget {
-  final int routeIndex;
-
   static const _selectSemesterKey = 'selectSemester';
 
-  const SourcePageView({super.key, this.routeIndex = 3});
+  final int? bottomRouteIndex;
+
+  const SourcePageView({super.key, this.bottomRouteIndex});
 
   @override
   Widget build(BuildContext context) {
-    final viewModel = Injector.appInstance
-        .get<MainPageRoutesViewModelsFactory>()
-        .getViewModelByRouteIndex<SourcePageViewModel>(routeIndex);
-    final parentScaffold = Scaffold.maybeOf(context);
+    final viewModel = bottomRouteIndex == null
+        ? null
+        : Injector.appInstance
+            .get<MainPageRoutesViewModelsFactory>()
+            .getViewModelByRouteIndex<SourcePageViewModel>(bottomRouteIndex!);
     return OfflineOverlayDisplayer(
       child: OnlineStatusBuilder(
         builder: (context, online) {
@@ -84,14 +86,7 @@ class SourcePageView extends StatelessWidget {
                           },
                         ),
                     ],
-                    leading: parentScaffold?.hasDrawer ?? false
-                        ? IconButton(
-                            onPressed: () {
-                              parentScaffold?.openDrawer();
-                            },
-                            icon: const Icon(Icons.menu),
-                          )
-                        : null,
+                    leading: getSubpageLeading(bottomRouteIndex),
                   ),
                   body: TabBarView(
                     children: [
