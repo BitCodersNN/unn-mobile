@@ -41,14 +41,7 @@ class _ChatScreenViewState extends State<ChatScreenView> {
         return Scaffold(
           appBar: AppBar(
             title: const Text('Сообщения'),
-            leading: widget.bottomRouteIndex != null
-                ? IconButton(
-                    onPressed: () {
-                      MainPage.globalState?.scaffold?.openDrawer();
-                    },
-                    icon: const Icon(Icons.menu),
-                  )
-                : null,
+            leading: getSubpageLeading(widget.bottomRouteIndex),
           ),
           body: Builder(
             builder: (context) {

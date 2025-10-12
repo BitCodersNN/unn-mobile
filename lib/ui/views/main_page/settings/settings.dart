@@ -21,14 +21,7 @@ class SettingsScreenView extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Настройки'),
-        leading: bottomRouteIndex != null
-            ? IconButton(
-                onPressed: () {
-                  MainPage.globalState?.scaffold?.openDrawer();
-                },
-                icon: const Icon(Icons.menu),
-              )
-            : null,
+        leading: getSubpageLeading(bottomRouteIndex),
       ),
       body: BaseView<SettingsScreenViewModel>(
         builder: (context, model, _) {

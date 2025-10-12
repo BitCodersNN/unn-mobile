@@ -24,14 +24,7 @@ class _GradesScreenViewState extends State<GradesScreenView> {
     return OfflineOverlayDisplayer(
       child: Scaffold(
         appBar: AppBar(
-          leading: widget.bottomRouteIndex != null
-              ? IconButton(
-                  onPressed: () {
-                    MainPage.globalState?.scaffold?.openDrawer();
-                  },
-                  icon: const Icon(Icons.menu),
-                )
-              : null,
+          leading: getSubpageLeading(widget.bottomRouteIndex),
           title: const Text('Зачётная книжка'),
         ),
         body: BaseView<GradesScreenViewModel>(

@@ -61,14 +61,7 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView>
           final expanded = _createExpanded(model);
           return Scaffold(
             appBar: AppBar(
-              leading: widget.bottomRouteIndex != null
-                  ? IconButton(
-                      onPressed: () {
-                        MainPage.globalState?.scaffold?.openDrawer();
-                      },
-                      icon: const Icon(Icons.menu),
-                    )
-                  : null,
+              leading: getSubpageLeading(widget.bottomRouteIndex),
               title: const Text('Расписание'),
             ),
             body: OnlineStatusBuilder(

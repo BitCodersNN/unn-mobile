@@ -97,14 +97,7 @@ class FeedScreenViewState extends State<FeedScreenView>
                       },
                     ),
                   ],
-                  leading: widget.bottomRouteIndex != null
-                      ? IconButton(
-                          onPressed: () {
-                            MainPage.globalState?.scaffold?.openDrawer();
-                          },
-                          icon: const Icon(Icons.menu),
-                        )
-                      : null,
+                  leading: getSubpageLeading(widget.bottomRouteIndex),
                 ),
                 body: Column(
                   children: [

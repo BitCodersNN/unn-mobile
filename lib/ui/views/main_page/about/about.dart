@@ -23,14 +23,7 @@ class AboutScreenView extends StatelessWidget {
       builder: (context, model, child) {
         return Scaffold(
           appBar: AppBar(
-            leading: bottomRouteIndex != null
-                ? IconButton(
-                    onPressed: () {
-                      MainPage.globalState?.scaffold?.openDrawer();
-                    },
-                    icon: const Icon(Icons.menu),
-                  )
-                : null,
+            leading: getSubpageLeading(bottomRouteIndex),
             title: const Text('О нас'),
           ),
           body: LayoutBuilder(

@@ -44,14 +44,7 @@ class _DonationsScreenViewState extends State<DonationsScreenView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: widget.bottomRouteIndex != null
-            ? IconButton(
-                onPressed: () {
-                  MainPage.globalState?.scaffold?.openDrawer();
-                },
-                icon: const Icon(Icons.menu),
-              )
-            : null,
+        leading: getSubpageLeading(widget.bottomRouteIndex),
         title: const Text('Поддержать'),
       ),
       body: WebViewWidget(

@@ -86,14 +86,7 @@ class SourcePageView extends StatelessWidget {
                           },
                         ),
                     ],
-                    leading: bottomRouteIndex != null
-                        ? IconButton(
-                            onPressed: () {
-                              MainPage.globalState?.scaffold?.openDrawer();
-                            },
-                            icon: const Icon(Icons.menu),
-                          )
-                        : null,
+                    leading: getSubpageLeading(bottomRouteIndex),
                   ),
                   body: TabBarView(
                     children: [

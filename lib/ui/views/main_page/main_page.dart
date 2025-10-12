@@ -24,6 +24,18 @@ class MainPage extends StatefulWidget {
   State<MainPage> createState() => MainPageState();
 }
 
+Widget? getSubpageLeading(int? bottomRouteIndex) {
+  if (bottomRouteIndex == null) {
+    return null;
+  }
+  return IconButton(
+    onPressed: () {
+      MainPage.globalState?.scaffold?.openDrawer();
+    },
+    icon: const Icon(Icons.menu),
+  );
+}
+
 class MainPageState extends State<MainPage> {
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
   ScaffoldState? get scaffold => scaffoldKey.currentState;
