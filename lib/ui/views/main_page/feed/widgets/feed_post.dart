@@ -458,19 +458,12 @@ class _FeedPostState extends State<FeedPost> {
       }
     }
 
-    final images = await Future.wait(
+final fetchedImages = await Future.wait(
       model.attachedImages.map(
-        (imageUrl) async {
-          try {
-            return await _imageUrlToXFile(imageUrl);
-          } catch (e) {
-            return null;
-          }
-        },
+        (url) => _imageUrlToXFile(url).onError((_, __) => null),
       ),
     );
-
-    xFiles.addAll(images.nonNulls);
+    xFiles.addAll(fetchedImages.whereType<XFile>());
 
     final htmlDoc = parse(
       HtmlUnescape().convert(model.postText),
