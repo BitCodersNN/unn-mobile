@@ -110,7 +110,7 @@ class _ImagesCarouselDialogOverlay extends StatefulWidget {
 
 class _ImagesCarouselDialogOverlayState
     extends State<_ImagesCarouselDialogOverlay> {
-  var index = 0;
+  int index = 0;
 
   @override
   void initState() {
