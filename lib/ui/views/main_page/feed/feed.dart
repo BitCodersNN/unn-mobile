@@ -9,13 +9,14 @@ import 'package:unn_mobile/core/viewmodels/main_page/feed/feed_screen_view_model
 import 'package:unn_mobile/ui/builders/online_status_builder.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/widgets/feed_post.dart';
+import 'package:unn_mobile/ui/views/main_page/main_page.dart';
 import 'package:unn_mobile/ui/views/main_page/main_page_routing.dart';
 import 'package:unn_mobile/ui/views/main_page/main_page_tab_state.dart';
 import 'package:unn_mobile/ui/widgets/offline_overlay_displayer.dart';
 
 class FeedScreenView extends StatefulWidget {
-  final int routeIndex;
-  const FeedScreenView({super.key, required this.routeIndex});
+  final int? bottomRouteIndex;
+  const FeedScreenView({super.key, required this.bottomRouteIndex});
 
   @override
   State<FeedScreenView> createState() => FeedScreenViewState();
@@ -31,9 +32,13 @@ class FeedScreenViewState extends State<FeedScreenView>
   void initState() {
     super.initState();
 
-    _viewModel = Injector.appInstance
-        .get<MainPageRoutesViewModelsFactory>()
-        .getViewModelByRouteIndex<FeedScreenViewModel>(widget.routeIndex);
+    _viewModel = widget.bottomRouteIndex == null
+        ? Injector.appInstance.get<FeedScreenViewModel>()
+        : Injector.appInstance
+            .get<MainPageRoutesViewModelsFactory>()
+            .getViewModelByRouteIndex<FeedScreenViewModel>(
+              widget.bottomRouteIndex!,
+            );
 
     _scrollController = ScrollController(
       initialScrollOffset: _viewModel.scrollPosition,
@@ -59,7 +64,6 @@ class FeedScreenViewState extends State<FeedScreenView>
 
   @override
   Widget build(BuildContext context) {
-    final parentScaffold = Scaffold.maybeOf(context);
     final theme = Theme.of(context);
     return OfflineOverlayDisplayer(
       child: OnlineStatusBuilder(
@@ -93,10 +97,10 @@ class FeedScreenViewState extends State<FeedScreenView>
                       },
                     ),
                   ],
-                  leading: parentScaffold?.hasDrawer ?? false
+                  leading: widget.bottomRouteIndex != null
                       ? IconButton(
                           onPressed: () {
-                            parentScaffold?.openDrawer();
+                            MainPage.globalState?.scaffold?.openDrawer();
                           },
                           icon: const Icon(Icons.menu),
                         )

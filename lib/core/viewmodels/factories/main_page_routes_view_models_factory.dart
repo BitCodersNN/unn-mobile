@@ -17,7 +17,16 @@ class MainPageRoutesViewModelsFactory {
   }
   T getViewModelByRouteIndex<T extends BaseViewModel>(int index) {
     _viewModels.putIfAbsent(index, () => Injector.appInstance.get<T>());
-    return _viewModels[index] as T;
+    switch (_viewModels[index]) {
+      case final T vm:
+        return vm;
+      default:
+        // Если нужна не та вьюмодель, что есть - просто замещаем её на новую
+        _viewModels.remove(index);
+        final vm = Injector.appInstance.get<T>();
+        _viewModels.putIfAbsent(index, () => vm);
+        return vm;
+    }
   }
 
   T? getViewModelByType<T>() {

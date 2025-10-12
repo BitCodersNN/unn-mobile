@@ -7,16 +7,29 @@ import 'package:unn_mobile/core/misc/app_version.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/settings/settings_screen_view_model.dart';
 import 'package:unn_mobile/ui/router.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
+import 'package:unn_mobile/ui/views/main_page/main_page.dart';
 import 'package:unn_mobile/ui/widgets/adaptive_dialog_action.dart';
 
 class SettingsScreenView extends StatelessWidget {
-  const SettingsScreenView({super.key});
+  final int? bottomRouteIndex;
+
+  const SettingsScreenView({super.key, this.bottomRouteIndex});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Scaffold(
-      appBar: AppBar(title: const Text('Настройки')),
+      appBar: AppBar(
+        title: const Text('Настройки'),
+        leading: bottomRouteIndex != null
+            ? IconButton(
+                onPressed: () {
+                  MainPage.globalState?.scaffold?.openDrawer();
+                },
+                icon: const Icon(Icons.menu),
+              )
+            : null,
+      ),
       body: BaseView<SettingsScreenViewModel>(
         builder: (context, model, _) {
           return Column(

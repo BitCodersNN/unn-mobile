@@ -6,9 +6,12 @@ import 'package:unn_mobile/core/viewmodels/main_page/certificates_online/certifi
 import 'package:unn_mobile/core/viewmodels/main_page/certificates_online/certificates_view_model.dart';
 import 'package:unn_mobile/ui/functions.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
+import 'package:unn_mobile/ui/views/main_page/main_page.dart';
 
 class OnlineCertificatesScreenView extends StatefulWidget {
-  const OnlineCertificatesScreenView({super.key});
+  final int? bottomRouteIndex;
+
+  const OnlineCertificatesScreenView({super.key, this.bottomRouteIndex});
 
   @override
   State<OnlineCertificatesScreenView> createState() =>
@@ -21,6 +24,14 @@ class _OnlineCertificatesScreenViewState
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: widget.bottomRouteIndex != null
+            ? IconButton(
+                onPressed: () {
+                  MainPage.globalState?.scaffold?.openDrawer();
+                },
+                icon: const Icon(Icons.menu),
+              )
+            : null,
         title: const Text('Справки онлайн'),
       ),
       body: BaseView<CertificatesViewModel>(

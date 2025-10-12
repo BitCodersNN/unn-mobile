@@ -19,12 +19,15 @@ final shellBranchKeys = //
         .map((route) => (key: GlobalKey<NavigatorState>(), route: route))
         .toList();
 
+final mainPageKey = GlobalKey<MainPageState>();
+
 final mainRouter = GoRouter(
   initialLocation: loadingPageRoute,
   initialExtra: <String, Object>{},
   routes: [
     StatefulShellRoute.indexedStack(
       builder: (context, state, shell) => MainPage(
+        key: mainPageKey,
         shell: shell,
       ),
       branches: [
