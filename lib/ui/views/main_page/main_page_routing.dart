@@ -40,6 +40,30 @@ class MainPageRouteData {
     required this.userTypes,
     required this.builder,
   });
+
+  MainPageRouteData copyWith({
+    IconData? selectedIcon,
+    IconData? unselectedIcon,
+    String? pageTitle,
+    String? pageRoute,
+    Widget Function(BuildContext, GoRouterState)? builder,
+    bool? isDisabled,
+    List<Type>? userTypes,
+    List<MainPageRouteData>? subroutes,
+    bool? onlineOnly,
+  }) {
+    return MainPageRouteData(
+      selectedIcon ?? this.selectedIcon,
+      unselectedIcon ?? this.unselectedIcon,
+      pageTitle ?? this.pageTitle,
+      pageRoute ?? this.pageRoute,
+      onlineOnly: onlineOnly ?? this.onlineOnly,
+      subroutes: subroutes ?? this.subroutes,
+      isDisabled: isDisabled ?? this.isDisabled,
+      userTypes: userTypes ?? this.userTypes,
+      builder: builder ?? this.builder,
+    );
+  }
 }
 
 final MainPageRouteData postCommentsRoute = MainPageRouteData(
@@ -81,7 +105,7 @@ class MainPageRouting {
       'Лента',
       '/feed',
       builder: (_, __) => const FeedScreenView(
-        routeIndex: 0,
+        bottomRouteIndex: 0,
       ),
       userTypes: [],
       subroutes: [
@@ -96,7 +120,7 @@ class MainPageRouting {
       'Расписание',
       '/schedule',
       builder: (_, __) => const ScheduleScreenView(
-        routeIndex: 1,
+        bottomRouteIndex: 1,
       ),
       userTypes: [],
     ),
@@ -106,7 +130,7 @@ class MainPageRouting {
       'Сообщения',
       '/chats',
       builder: (_, __) => const ChatScreenView(
-        routeIndex: 2,
+        bottomRouteIndex: 2,
       ),
       subroutes: [
         MainPageRouteData(
@@ -131,7 +155,7 @@ class MainPageRouting {
       'Материалы',
       '/source',
       builder: (_, __) => const SourcePageView(
-        routeIndex: 3,
+        bottomRouteIndex: 3,
       ),
       isDisabled: false,
       userTypes: [],
