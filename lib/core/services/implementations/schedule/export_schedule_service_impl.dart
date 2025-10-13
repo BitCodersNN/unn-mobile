@@ -14,10 +14,6 @@ import 'package:unn_mobile/core/models/schedule/schedule_filter.dart';
 import 'package:unn_mobile/core/services/interfaces/schedule/export_schedule_service.dart';
 
 class ExportScheduleServiceImpl implements ExportScheduleService {
-  final PermissionHandlerPlatform _permissionHandler =
-      PermissionHandlerPlatform.instance;
-  final DeviceCalendarPlugin _deviceCalendarPlugin = DeviceCalendarPlugin();
-
   final String _calendarName = 'Расписание ННГУ';
   final String _ics = 'ics';
   final String _start = 'start';
@@ -70,25 +66,35 @@ class ExportScheduleServiceImpl implements ExportScheduleService {
     final iCalendarData =
         ICalendar.fromString(response.data).data.skip(1).toList();
 
-    final status = await _permissionHandler
-        .checkPermissionStatus(Permission.calendarFullAccess);
-    if (!status.isGranted) {
+    final deviceCalendarPlugin = DeviceCalendarPlugin();
+
+    final isGranted = await PermissionHandlerPlatform.instance
+        .checkPermissionStatus(Permission.calendarFullAccess)
+        .isGranted;
+
+    if (!isGranted) {
       return ExportScheduleResult.noPermission;
     }
 
-    String? calendarID = await _findCalendarId();
-    calendarID ??=
-        (await _deviceCalendarPlugin.createCalendar(_calendarName)).data;
+    String? calendarID = await _findCalendarId(deviceCalendarPlugin);
 
-    return _addEventsInCalendar(iCalendarData, calendarID);
+    calendarID ??=
+        (await deviceCalendarPlugin.createCalendar(_calendarName)).data;
+
+    return _addEventsInCalendar(
+      deviceCalendarPlugin,
+      iCalendarData,
+      calendarID,
+    );
   }
 
   @override
   Future<RequestCalendarPermissionResult> requestCalendarPermission() async {
-    final status = await _permissionHandler
+    final status = await PermissionHandlerPlatform.instance
         .checkPermissionStatus(Permission.calendarFullAccess);
+
     if (status.isDenied) {
-      final permissionStatuses = await _permissionHandler
+      final permissionStatuses = await PermissionHandlerPlatform.instance
           .requestPermissions([Permission.calendarFullAccess]);
       return (permissionStatuses[Permission.calendarFullAccess] ==
               PermissionStatus.granted)
@@ -101,23 +107,27 @@ class ExportScheduleServiceImpl implements ExportScheduleService {
   }
 
   @override
-  Future<bool> openSettings() {
-    return _permissionHandler.openAppSettings();
-  }
+  Future<bool> openSettings() =>
+      PermissionHandlerPlatform.instance.openAppSettings();
 
-  Future<String?> _findCalendarId() async {
-    final calendars = await _deviceCalendarPlugin.retrieveCalendars();
+  Future<String?> _findCalendarId(
+    DeviceCalendarPlugin deviceCalendarPlugin,
+  ) async {
+    final calendars = await deviceCalendarPlugin.retrieveCalendars();
+
     for (final calendar in calendars.data!) {
       if (calendar.name == _calendarName) {
         return calendar.id;
       }
     }
+
     return null;
   }
 
   Future<ExportScheduleResult> _addEventsInCalendar(
-    iCalendarData,
-    calendarID,
+    DeviceCalendarPlugin deviceCalendarPlugin,
+    List<Map<String, dynamic>> iCalendarData,
+    String? calendarID,
   ) async {
     const String summary = 'summary';
     const String location = 'location';
@@ -125,24 +135,37 @@ class ExportScheduleServiceImpl implements ExportScheduleService {
     const String dtend = 'dtend';
     const String description = 'description';
 
-    final timeZone = timeZoneDatabase.locations[_timeZone]!;
-    try {
-      for (final event in iCalendarData) {
-        await _deviceCalendarPlugin.createOrUpdateEvent(
-          Event(
-            calendarID,
-            title: event[summary],
-            location: event[location],
-            start:
-                TZDateTime.parse(timeZone, (event[dtstart] as IcsDateTime).dt),
-            end: TZDateTime.parse(timeZone, (event[dtend] as IcsDateTime).dt),
-            description: event[description],
-          ),
-        );
+    final timeZone = timeZoneDatabase.locations[_timeZone];
+    if (timeZone == null) {
+      throw StateError('Часовой пояс $_timeZone не поддерживается');
+    }
+
+    final futures = iCalendarData.map((event) {
+      final start = event[dtstart] as IcsDateTime?;
+      final end = event[dtend] as IcsDateTime?;
+
+      if (start?.dt == null || end?.dt == null) {
+        throw Exception('Пропущено время начала или окончания события: $event');
       }
+
+      return deviceCalendarPlugin.createOrUpdateEvent(
+        Event(
+          calendarID,
+          title: event[summary] as String?,
+          location: event[location] as String?,
+          description: event[description] as String?,
+          start: TZDateTime.parse(timeZone, start!.dt),
+          end: TZDateTime.parse(timeZone, end!.dt),
+        ),
+      );
+    }).toList();
+
+    try {
+      await Future.wait(futures, eagerError: true);
     } catch (e) {
       rethrow;
     }
+
     return ExportScheduleResult.success;
   }
 }
