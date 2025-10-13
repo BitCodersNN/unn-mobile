@@ -3,8 +3,10 @@
 
 import 'dart:convert';
 
+import 'package:unn_mobile/core/misc/json/json_iterable_parser.dart';
 import 'package:unn_mobile/core/models/schedule/subject.dart';
 import 'package:unn_mobile/core/providers/interfaces/schedule/offline_schedule_provider.dart';
+import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
 import 'package:unn_mobile/core/services/interfaces/common/storage_service.dart';
 
 class _OfflineScheduleProviderKeys {
@@ -13,26 +15,27 @@ class _OfflineScheduleProviderKeys {
 
 class OfflineScheduleProviderImpl implements OfflineScheduleProvider {
   final StorageService _storage;
+  final LoggerService _loggerService;
 
-  OfflineScheduleProviderImpl(this._storage);
+  OfflineScheduleProviderImpl(this._storage, this._loggerService);
 
   @override
   Future<List<Subject>?> getData() async {
     if (!(await isContained())) {
       return null;
     }
+
     final jsonList = jsonDecode(
       (await _storage.read(
         key: _OfflineScheduleProviderKeys.scheduleKey,
       ))!,
     );
-    final List<Subject> schedule = [];
 
-    for (final jsonMap in jsonList) {
-      schedule.add(Subject.fromJson(jsonMap));
-    }
-
-    return schedule;
+    return parseJsonIterable<Subject>(
+      jsonList,
+      (jsonMap) => Subject.fromJson(jsonMap),
+      _loggerService,
+    );
   }
 
   @override
@@ -41,7 +44,7 @@ class OfflineScheduleProviderImpl implements OfflineScheduleProvider {
       return;
     }
 
-    final dynamic jsonList = [];
+    final List jsonList = [];
     for (final subject in schedule) {
       jsonList.add(subject.toJson());
     }
@@ -52,9 +55,12 @@ class OfflineScheduleProviderImpl implements OfflineScheduleProvider {
   }
 
   @override
-  Future<bool> isContained() async {
-    return await _storage.containsKey(
-      key: _OfflineScheduleProviderKeys.scheduleKey,
-    );
-  }
+  Future<bool> isContained() async => _storage.containsKey(
+        key: _OfflineScheduleProviderKeys.scheduleKey,
+      );
+
+  @override
+  Future<void> removeData() async => _storage.remove(
+        key: _OfflineScheduleProviderKeys.scheduleKey,
+      );
 }

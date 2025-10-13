@@ -18,4 +18,8 @@ abstract interface class AuthDataProvider implements DataProvider<AuthData> {
   /// Проверяет наличие логина и пароля пользователя в хранилище
   @override
   Future<bool> isContained();
+
+  /// Удаляет логни и пароль пользователя из хранилища
+  @override
+  Future<void> removeData();
 }

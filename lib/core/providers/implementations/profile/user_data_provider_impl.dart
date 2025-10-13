@@ -3,6 +3,8 @@
 
 import 'dart:convert';
 
+import 'package:unn_mobile/core/constants/profiles_strings.dart';
+import 'package:unn_mobile/core/misc/camel_case_converter.dart';
 import 'package:unn_mobile/core/models/profile/employee/employee_data.dart';
 import 'package:unn_mobile/core/models/profile/student/student_data.dart';
 import 'package:unn_mobile/core/models/profile/user_data.dart';
@@ -18,8 +20,8 @@ class _UserDataProvideKeys {
 class UserDataProviderImpl implements UserDataProvider {
   final LoggerService _loggerService;
   final StorageService _storage;
-  static const _student = 'StudentData';
-  static const _employee = 'EmployeeData';
+  static const _student = '${ProfilesStrings.student}_data';
+  static const _employee = '${ProfilesStrings.employee}_data';
 
   UserDataProviderImpl(this._storage, this._loggerService);
 
@@ -29,32 +31,30 @@ class UserDataProviderImpl implements UserDataProvider {
       return null;
     }
 
-    UserData? userData;
-    final userType = await _storage.read(
-      key: _UserDataProvideKeys._userTypeKey,
-    );
+    final [userType, userInfo] = await Future.wait([
+      _storage.read(key: _UserDataProvideKeys._userTypeKey),
+      _storage.read(key: _UserDataProvideKeys._userDataKey),
+    ]);
 
-    final String? userInfo = await _storage.read(
-      key: _UserDataProvideKeys._userDataKey,
-    );
-
-    final decodedJson = jsonDecode(userInfo!);
-
-    try {
-      userData = switch (userType) {
-        _student => StudentData.fromJson(decodedJson),
-        _employee => EmployeeData.fromCurrentProfileJson(decodedJson),
-        _ => UserData.fromJson(decodedJson),
-      };
-    } catch (e, stackTrace) {
+    if (userType == null || userInfo == null) {
       _loggerService.logError(
-        e,
-        stackTrace,
-        information: [userInfo],
+        'Отсутствуют данные пользователя',
+        null,
+        information: [
+          'userType: $userType',
+          'userInfo: $userInfo',
+        ],
       );
+      return null;
     }
 
-    return userData;
+    final jsonMap = jsonDecode(userInfo) as Map<String, dynamic>;
+
+    return switch (userType) {
+      _student => StudentData.fromJson(jsonMap),
+      _employee => EmployeeData.fromCurrentProfileJson(jsonMap),
+      _ => UserData.fromJson(jsonMap),
+    };
   }
 
   @override
@@ -63,24 +63,39 @@ class UserDataProviderImpl implements UserDataProvider {
       return;
     }
 
-    final userType = userData.runtimeType.toString();
-    await _storage.write(
-      key: _UserDataProvideKeys._userTypeKey,
-      value: userType,
-    );
-    await _storage.write(
-      key: _UserDataProvideKeys._userDataKey,
-      value: jsonEncode(userData.toJson()),
+    await Future.wait(
+      [
+        _storage.write(
+          key: _UserDataProvideKeys._userTypeKey,
+          value: userData.runtimeType.toString().toSnakeCase(),
+        ),
+        _storage.write(
+          key: _UserDataProvideKeys._userDataKey,
+          value: jsonEncode(userData.toJson()),
+        ),
+      ],
     );
   }
 
   @override
   Future<bool> isContained() async {
-    return await _storage.containsKey(
+    final results = await Future.wait(
+      [
+        _storage.containsKey(
           key: _UserDataProvideKeys._userTypeKey,
-        ) &&
-        await _storage.containsKey(
+        ),
+        _storage.containsKey(
           key: _UserDataProvideKeys._userDataKey,
-        );
+        ),
+      ],
+    );
+
+    return results.every((isPresent) => isPresent);
   }
+
+  @override
+  Future<void> removeData() => Future.wait([
+        _storage.remove(key: _UserDataProvideKeys._userTypeKey),
+        _storage.remove(key: _UserDataProvideKeys._userTypeKey),
+      ]);
 }

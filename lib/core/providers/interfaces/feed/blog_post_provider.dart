@@ -6,6 +6,7 @@ import 'package:unn_mobile/core/providers/interfaces/data_provider.dart';
 
 abstract interface class BlogPostProvider
     implements DataProvider<List<BlogPost>?> {
+  /// Получает спикос постов из хранилища
   @override
   Future<List<BlogPost>?> getData();
 
@@ -14,4 +15,7 @@ abstract interface class BlogPostProvider
 
   @override
   Future<bool> isContained();
+
+  @override
+  Future<void> removeData();
 }
