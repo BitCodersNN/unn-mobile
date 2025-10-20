@@ -53,12 +53,10 @@ class MarkBySubjectProviderImpl implements MarkBySubjectProvider {
     if (gradeBook == null) {
       return;
     }
-    final Map<String, dynamic> jsonMap = {};
-    gradeBook.forEach((key, value) {
-      final List<dynamic> jsonList =
-          value.map((item) => item.toJson()).toList();
-      jsonMap[key.toString()] = jsonList;
-    });
+    final jsonMap = {
+      for (final MapEntry(key: key, value: value) in gradeBook.entries)
+        key.toString(): [for (final item in value) item.toJson()],
+    };
 
     final String jsonString = json.encode(jsonMap);
 

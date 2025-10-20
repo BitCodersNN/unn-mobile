@@ -11,11 +11,9 @@ class SourceCourseView extends StatelessWidget {
   const SourceCourseView({required this.model, super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return BaseView<SourceCourseViewModel>(
-      model: model,
-      builder: (context, model, _) {
-        return ExpansionTile(
+  Widget build(BuildContext context) => BaseView<SourceCourseViewModel>(
+        model: model,
+        builder: (context, model, _) => ExpansionTile(
           showTrailingIcon: false,
           title: Container(
             decoration: BoxDecoration(
@@ -45,9 +43,7 @@ class SourceCourseView extends StatelessWidget {
           ),
           shape: const Border(),
           expandedCrossAxisAlignment: CrossAxisAlignment.start,
-          children: model.items.map((i) => SourceItemView(model: i)).toList(),
-        );
-      },
-    );
-  }
+          children: [for (final i in model.items) SourceItemView(model: i)],
+        ),
+      );
 }

@@ -51,7 +51,7 @@ class SearchIdOnPortalServiceImpl implements SearchIdOnPortalService {
       _loggerService.logError(error, stackTrace);
       return null;
     }
-    return (response.data as JsonMap)[_JsonKeys.id];
+    return (response.data as JsonMap)[_JsonKeys.id] as String?;
   }
 
   @override

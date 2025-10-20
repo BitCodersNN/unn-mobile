@@ -110,31 +110,27 @@ class MarkBySubject {
   int get creditedHours => hours ~/ _hoursPerCreditedHour;
   String get subject => _subject;
 
-  factory MarkBySubject.fromJson(JsonMap jsonMap) {
-    return MarkBySubject(
-      controlType: jsonMap[_MarkBySubjectJsonKeys.controlType] as String,
-      date: DateTime.parse(
-        jsonMap[_MarkBySubjectJsonKeys.date] as String,
-      ),
-      hours: int.parse(
-        jsonMap[_MarkBySubjectJsonKeys.hours] as String,
-      ),
-      lecturers: jsonMap[_MarkBySubjectJsonKeys.lecturers] as String?,
-      markType: MarkType.fromDouble(
-        (jsonMap[_MarkBySubjectJsonKeys.mark] as dynamic).toDouble(),
-      ),
-      subject: jsonMap[_MarkBySubjectJsonKeys.subject] as String,
-    );
-  }
+  factory MarkBySubject.fromJson(JsonMap jsonMap) => MarkBySubject(
+        controlType: jsonMap[_MarkBySubjectJsonKeys.controlType]! as String,
+        date: DateTime.parse(
+          jsonMap[_MarkBySubjectJsonKeys.date]! as String,
+        ),
+        hours: int.parse(
+          jsonMap[_MarkBySubjectJsonKeys.hours]! as String,
+        ),
+        lecturers: jsonMap[_MarkBySubjectJsonKeys.lecturers] as String?,
+        markType: MarkType.fromDouble(
+          (jsonMap[_MarkBySubjectJsonKeys.mark] as dynamic).toDouble(),
+        ),
+        subject: jsonMap[_MarkBySubjectJsonKeys.subject]! as String,
+      );
 
-  JsonMap toJson() {
-    return {
-      _MarkBySubjectJsonKeys.controlType: controlType,
-      _MarkBySubjectJsonKeys.date: date.toIso8601String(),
-      _MarkBySubjectJsonKeys.hours: hours.toString(),
-      _MarkBySubjectJsonKeys.lecturers: lecturers,
-      _MarkBySubjectJsonKeys.mark: markType.convertToDouble(),
-      _MarkBySubjectJsonKeys.subject: subject,
-    };
-  }
+  JsonMap toJson() => {
+        _MarkBySubjectJsonKeys.controlType: controlType,
+        _MarkBySubjectJsonKeys.date: date.toIso8601String(),
+        _MarkBySubjectJsonKeys.hours: hours.toString(),
+        _MarkBySubjectJsonKeys.lecturers: lecturers,
+        _MarkBySubjectJsonKeys.mark: markType.convertToDouble(),
+        _MarkBySubjectJsonKeys.subject: subject,
+      };
 }

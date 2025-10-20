@@ -27,15 +27,13 @@ class _SlidingGradientTransform extends GradientTransform {
   final double slidePercent;
 
   @override
-  Matrix4? transform(Rect bounds, {TextDirection? textDirection}) {
-    return Matrix4.translationValues(bounds.width * slidePercent, 0.0, 0.0);
-  }
+  Matrix4? transform(Rect bounds, {TextDirection? textDirection}) =>
+      Matrix4.translationValues(bounds.width * slidePercent, 0.0, 0.0);
 }
 
 class Shimmer extends StatefulWidget {
-  static ShimmerState? of(BuildContext context) {
-    return context.findAncestorStateOfType<ShimmerState>();
-  }
+  static ShimmerState? of(BuildContext context) =>
+      context.findAncestorStateOfType<ShimmerState>();
 
   const Shimmer({
     super.key,
@@ -86,9 +84,7 @@ class ShimmerState extends State<Shimmer> with SingleTickerProviderStateMixin {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return widget.child ?? const SizedBox();
-  }
+  Widget build(BuildContext context) => widget.child ?? const SizedBox();
 
   @override
   void dispose() {

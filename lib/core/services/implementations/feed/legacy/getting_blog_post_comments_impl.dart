@@ -151,10 +151,10 @@ class GettingBlogPostCommentsImpl implements GettingBlogPostComments {
       if (commentId != null && filesListAsString != null) {
         final commentIdAsInt = commentId.toInt();
         if (commentIdAsInt != null) {
-          commentIdToAttachFiles[commentIdAsInt] =
-              filesListAsString.split(',').map((idAsString) {
-            return idAsString.substring(1, idAsString.length - 1).toInt()!;
-          }).toList();
+          commentIdToAttachFiles[commentIdAsInt] = [
+            for (final idAsString in filesListAsString.split(','))
+              int.parse(idAsString.substring(1, idAsString.length - 1)),
+          ];
         }
       }
     });

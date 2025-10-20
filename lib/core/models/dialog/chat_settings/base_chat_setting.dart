@@ -28,13 +28,13 @@ class BaseChatSetting {
 
   factory BaseChatSetting.fromJson(JsonMap json) => BaseChatSetting(
         muteList: _parseMuteList(json[_ChatSettingJsonKeys.muteList]),
-        owner: json[_ChatSettingJsonKeys.owner] as int,
+        owner: json[_ChatSettingJsonKeys.owner]! as int,
         role: enumFromString(
           UserRole.values,
-          (json[_ChatSettingJsonKeys.role] as String).toLowerCase(),
+          (json[_ChatSettingJsonKeys.role]! as String).toLowerCase(),
         ),
         permissions: ChatPermissions.fromJson(
-          json[_ChatSettingJsonKeys.permissions] as JsonMap,
+          json[_ChatSettingJsonKeys.permissions]! as JsonMap,
         ),
       );
 
@@ -46,11 +46,9 @@ class BaseChatSetting {
         _ChatSettingJsonKeys.permissions: permissions.toJson(),
       };
 
-  static Map<String, bool> _serializeMuteList(List<int> muteList) {
-    return {
-      for (final userId in muteList) userId.toString(): true,
-    };
-  }
+  static Map<String, bool> _serializeMuteList(List<int> muteList) => {
+        for (final userId in muteList) userId.toString(): true,
+      };
 
   static List<int> _parseMuteList(dynamic muteList) {
     if (muteList is! Map) {

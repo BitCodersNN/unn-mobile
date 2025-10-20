@@ -27,9 +27,9 @@ class Author {
   });
 
   factory Author.fromJson(JsonMap json) => Author(
-        fullname: json[_AuthorJsonKeys.fullname],
-        educationGroup: json[_AuthorJsonKeys.educationGroup],
-        avatar: json[_AuthorJsonKeys.avatar],
+        fullname: json[_AuthorJsonKeys.fullname]! as String,
+        educationGroup: json[_AuthorJsonKeys.educationGroup] as String?,
+        avatar: json[_AuthorJsonKeys.avatar]! as String,
       );
 
   JsonMap toJson() => {

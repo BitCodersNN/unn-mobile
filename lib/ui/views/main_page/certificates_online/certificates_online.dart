@@ -21,26 +21,24 @@ class OnlineCertificatesScreenView extends StatefulWidget {
 class _OnlineCertificatesScreenViewState
     extends State<OnlineCertificatesScreenView> {
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        leading: getSubpageLeading(widget.bottomRouteIndex),
-        title: const Text('Справки онлайн'),
-      ),
-      body: BaseView<CertificatesViewModel>(
-        builder: (context, model, _) {
-          if (model.isBusy) {
-            return const Center(
-              child: SizedBox(
-                width: 50,
-                height: 50,
-                child: CircularProgressIndicator(),
-              ),
-            );
-          }
-          return LayoutBuilder(
-            builder: (context, constraints) {
-              return RefreshIndicator(
+  Widget build(BuildContext context) => Scaffold(
+        appBar: AppBar(
+          leading: getSubpageLeading(widget.bottomRouteIndex),
+          title: const Text('Справки онлайн'),
+        ),
+        body: BaseView<CertificatesViewModel>(
+          builder: (context, model, _) {
+            if (model.isBusy) {
+              return const Center(
+                child: SizedBox(
+                  width: 50,
+                  height: 50,
+                  child: CircularProgressIndicator(),
+                ),
+              );
+            }
+            return LayoutBuilder(
+              builder: (context, constraints) => RefreshIndicator(
                 onRefresh: model.reload,
                 child: SingleChildScrollView(
                   // padding: const EdgeInsets.all(16.0),
@@ -79,19 +77,16 @@ class _OnlineCertificatesScreenViewState
                     ),
                   ),
                 ),
-              );
-            },
-          );
-        },
-        onModelReady: (p0) => p0.init(),
-      ),
-    );
-  }
+              ),
+            );
+          },
+          onModelReady: (p0) => p0.init(),
+        ),
+      );
 
-  Widget _buildCertificateCard(CertificateItemViewModel viewModel) {
-    return BaseView<CertificateItemViewModel>(
-      builder: (context, model, _) {
-        return Container(
+  Widget _buildCertificateCard(CertificateItemViewModel viewModel) =>
+      BaseView<CertificateItemViewModel>(
+        builder: (context, model, _) => Container(
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(16.0),
@@ -254,47 +249,43 @@ class _OnlineCertificatesScreenViewState
                 ),
             ],
           ),
-        );
-      },
-      model: viewModel,
-      onModelReady: (model) {
-        model
-          ..onSigDownloaded = (file) async {
-            await viewFileAndShowMessage(
-              context,
-              file,
-              'Подпись загружена успешно',
-            );
-          }
-          ..onCertificateDownloaded = (file) async {
-            await viewFileAndShowMessage(
-              context,
-              file,
-              'Файл загружен успешно',
-            );
-          };
-      },
-    );
-  }
-
-  Padding _extraField(String title, String? text) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: RichText(
-        text: TextSpan(
-          style: const TextStyle(
-            fontSize: 15,
-            color: Colors.black,
-          ),
-          children: [
-            TextSpan(
-              text: title,
-              style: const TextStyle(fontWeight: FontWeight.bold),
-            ),
-            TextSpan(text: text),
-          ],
         ),
-      ),
-    );
-  }
+        model: viewModel,
+        onModelReady: (model) {
+          model
+            ..onSigDownloaded = (file) async {
+              await viewFileAndShowMessage(
+                context,
+                file,
+                'Подпись загружена успешно',
+              );
+            }
+            ..onCertificateDownloaded = (file) async {
+              await viewFileAndShowMessage(
+                context,
+                file,
+                'Файл загружен успешно',
+              );
+            };
+        },
+      );
+
+  Padding _extraField(String title, String? text) => Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: RichText(
+          text: TextSpan(
+            style: const TextStyle(
+              fontSize: 15,
+              color: Colors.black,
+            ),
+            children: [
+              TextSpan(
+                text: title,
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+              TextSpan(text: text),
+            ],
+          ),
+        ),
+      );
 }

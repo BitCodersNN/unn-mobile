@@ -50,8 +50,8 @@ class StudentData extends UserData {
   factory StudentData.fromJson(JsonMap json) => StudentData.withUserData(
         baseEduInfo: BaseEduInfo.fromJson(json),
         userData: UserData.fromJson(json),
-        eduStatus: json[_StudentDataJsonKeys.eduStatus] as String,
-        eduYear: json[_StudentDataJsonKeys.eduYear] as int,
+        eduStatus: json[_StudentDataJsonKeys.eduStatus]! as String,
+        eduYear: json[_StudentDataJsonKeys.eduYear]! as int,
       );
 
   @override

@@ -21,13 +21,8 @@ class SettingsScreenViewModel extends BaseViewModel {
     notifyListeners();
   }
 
-  List<String> get activeNavbarRouteNames {
-    return MainPageRouting.activeNavbarRoutes
-        .map(
-          (e) => e.pageTitle,
-        )
-        .toList(growable: false);
-  }
+  List<String> get activeNavbarRouteNames =>
+      [for (final e in MainPageRouting.activeNavbarRoutes) e.pageTitle];
 
   String get initialScreenName =>
       MainPageRouting.activeNavbarRoutes[AppSettings.initialPage].pageTitle;

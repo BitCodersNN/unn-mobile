@@ -27,19 +27,16 @@ class ScheduleSearchSuggestionItem {
   @override
   int get hashCode => Object.hash(_id, _label, _description);
 
-  factory ScheduleSearchSuggestionItem.fromJson(JsonMap jsonMap) {
-    return ScheduleSearchSuggestionItem(
-      jsonMap[_ScheduleSearchSuggestionJsonKeys.id] as String,
-      jsonMap[_ScheduleSearchSuggestionJsonKeys.label] as String,
-      jsonMap[_ScheduleSearchSuggestionJsonKeys.description] as String,
-    );
-  }
+  factory ScheduleSearchSuggestionItem.fromJson(JsonMap jsonMap) =>
+      ScheduleSearchSuggestionItem(
+        jsonMap[_ScheduleSearchSuggestionJsonKeys.id]! as String,
+        jsonMap[_ScheduleSearchSuggestionJsonKeys.label]! as String,
+        jsonMap[_ScheduleSearchSuggestionJsonKeys.description]! as String,
+      );
 
-  JsonMap toJson() {
-    return {
-      _ScheduleSearchSuggestionJsonKeys.id: _id,
-      _ScheduleSearchSuggestionJsonKeys.label: _label,
-      _ScheduleSearchSuggestionJsonKeys.description: _description,
-    };
-  }
+  JsonMap toJson() => {
+        _ScheduleSearchSuggestionJsonKeys.id: _id,
+        _ScheduleSearchSuggestionJsonKeys.label: _label,
+        _ScheduleSearchSuggestionJsonKeys.description: _description,
+      };
 }

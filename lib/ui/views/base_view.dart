@@ -39,15 +39,13 @@ class BaseViewState<T extends BaseViewModel> extends State<BaseView<T>> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return ChangeNotifierProvider.value(
-      value: model,
-      child: ListenableBuilder(
-        builder: (context, child) => widget.builder(context, model, child),
-        listenable: model,
-      ),
-    );
-  }
+  Widget build(BuildContext context) => ChangeNotifierProvider.value(
+        value: model,
+        child: ListenableBuilder(
+          builder: (context, child) => widget.builder(context, model, child),
+          listenable: model,
+        ),
+      );
 
   @override
   void dispose() {

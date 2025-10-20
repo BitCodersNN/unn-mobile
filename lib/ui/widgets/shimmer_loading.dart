@@ -66,16 +66,14 @@ class _ShimmerLoadingState extends State<ShimmerLoading> {
 
     return ShaderMask(
       blendMode: BlendMode.srcATop,
-      shaderCallback: (bounds) {
-        return gradient.createShader(
-          Rect.fromLTWH(
-            -offsetWithinShimmer.dx,
-            -offsetWithinShimmer.dy,
-            shimmerSize.width,
-            shimmerSize.height,
-          ),
-        );
-      },
+      shaderCallback: (bounds) => gradient.createShader(
+        Rect.fromLTWH(
+          -offsetWithinShimmer.dx,
+          -offsetWithinShimmer.dy,
+          shimmerSize.width,
+          shimmerSize.height,
+        ),
+      ),
       child: widget.child,
     );
   }

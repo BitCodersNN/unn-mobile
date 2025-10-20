@@ -47,18 +47,21 @@ class LoadingPageModel {
         json[_LoadingPageModelJsonKeys.description] as JsonMap?;
 
     return LoadingPageModel(
-      imagePath: json[_LoadingPageModelJsonKeys.logoPath],
+      imagePath: json[_LoadingPageModelJsonKeys.logoPath]! as String,
       dateTimeRangeToUseOn: _getDateTimeRangeFromJson(json),
-      title: titleJson?[_LoadingPageModelJsonKeys.text] ?? defaultTitle,
+      title:
+          titleJson?[_LoadingPageModelJsonKeys.text] as String? ?? defaultTitle,
       titleStyle: _getTextStyleFromJson(titleJson) ?? defaultTextStyle,
-      description: descriptionJson?[_LoadingPageModelJsonKeys.text],
+      description: descriptionJson?[_LoadingPageModelJsonKeys.text] as String?,
       descriptionStyle: _getTextStyleFromJson(descriptionJson),
     );
   }
 
   static DateTimeRange? _getDateTimeRangeFromJson(JsonMap json) {
-    final String? startDateStr = json[_LoadingPageModelJsonKeys.startDate];
-    final String? endDateStr = json[_LoadingPageModelJsonKeys.endDate];
+    final String? startDateStr =
+        json[_LoadingPageModelJsonKeys.startDate] as String?;
+    final String? endDateStr =
+        json[_LoadingPageModelJsonKeys.endDate] as String?;
 
     DateTimeRange? dateTimeRange;
     if (startDateStr != null && endDateStr != null) {
@@ -81,13 +84,14 @@ class LoadingPageModel {
       return null;
     }
 
-    final colorFromJson = json[_LoadingPageModelJsonKeys.color];
+    final colorFromJson = json[_LoadingPageModelJsonKeys.color] as String?;
     final colorInt = int.tryParse(
       colorFromJson ?? defaultTextStyle.color.toString(),
     );
     final Color titleColor = Color(colorInt!);
 
-    final fontSizeFromJson = json[_LoadingPageModelJsonKeys.fontSize];
+    final fontSizeFromJson =
+        json[_LoadingPageModelJsonKeys.fontSize] as String?;
 
     final fontSize = double.tryParse(
       fontSizeFromJson ?? defaultTextStyle.fontSize.toString(),

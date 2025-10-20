@@ -28,7 +28,7 @@ class ScheduleSearchHistoryServiceImpl implements ScheduleSearchHistoryService {
   Future<void> _initFromStorage() async {
     try {
       await Future.wait(
-        IdType.values.map(_loadHistoryQueueForType).toList(),
+        [for (final type in IdType.values) _loadHistoryQueueForType(type)],
       );
     } catch (e, stack) {
       _loggerService.logError(e, stack);

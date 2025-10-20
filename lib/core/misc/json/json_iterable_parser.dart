@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2025 BitCodersNN
 
+import 'package:unn_mobile/core/misc/json/json_utils.dart';
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
 
 /// Преобразует итерируемую коллекцию JSON-объектов в список объектов типа [T].
@@ -18,14 +19,13 @@ import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
 /// - Гарантирует сохранение порядка элементов при обработке упорядоченных коллекций
 List<T> parseJsonIterable<T>(
   Iterable<dynamic> jsonItems,
-  T Function(Map<String, dynamic>) fromJson,
+  T Function(JsonMap) fromJson,
   LoggerService loggerService,
-) {
-  return jsonItems
-      .map((item) => _parseItem(item, fromJson, loggerService))
-      .whereType<T>()
-      .toList();
-}
+) =>
+    jsonItems
+        .map((item) => _parseItem(item, fromJson, loggerService))
+        .whereType<T>()
+        .toList();
 
 /// Асинхронно преобразует итерируемую коллекцию JSON-объектов в список объектов типа [T].
 ///
@@ -48,7 +48,7 @@ List<T> parseJsonIterable<T>(
 /// требует асинхронных операций (например, обращений к базе данных или сети).
 Future<List<T>> parseJsonIterableAsync<T>(
   Iterable<dynamic> jsonItems,
-  Future<T> Function(Map<String, dynamic>) fromJson,
+  Future<T> Function(JsonMap) fromJson,
   LoggerService loggerService,
 ) async {
   final results = await Future.wait(
@@ -59,7 +59,7 @@ Future<List<T>> parseJsonIterableAsync<T>(
 
 Future<T?> _parseItemAsync<T>(
   dynamic item,
-  Future<T> Function(Map<String, dynamic>) fromJson,
+  Future<T> Function(JsonMap) fromJson,
   LoggerService loggerService,
 ) async {
   if (!_validateItemType<T>(item, loggerService)) {
@@ -76,7 +76,7 @@ Future<T?> _parseItemAsync<T>(
 
 T? _parseItem<T>(
   dynamic item,
-  T Function(Map<String, dynamic>) fromJson,
+  T Function(JsonMap) fromJson,
   LoggerService loggerService,
 ) {
   if (!_validateItemType<T>(item, loggerService)) {
@@ -95,7 +95,7 @@ bool _validateItemType<T>(
   dynamic item,
   LoggerService loggerService,
 ) {
-  if (item is! Map<String, dynamic>) {
+  if (item is! JsonMap) {
     loggerService.logError(
       FormatException('Invalid JSON item type: ${item.runtimeType}'),
       StackTrace.current,

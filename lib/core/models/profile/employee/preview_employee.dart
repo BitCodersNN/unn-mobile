@@ -34,20 +34,20 @@ class PreviewEmployee extends UserShortInfo {
 
   factory PreviewEmployee.fromJson(JsonMap json) =>
       PreviewEmployee.withUserShortInfo(
-        userId: json[_PreviewEmployeeJsonKeys.id] as int,
+        userId: json[_PreviewEmployeeJsonKeys.id]! as int,
         userShortInfo: UserShortInfo.fromProfileJson(json),
-        profiles: (json[_PreviewEmployeeJsonKeys.profiles] as List)
-            .map(
-              (item) => BaseEmployeeProfile.fromJson(item as JsonMap),
-            )
-            .toList(),
+        profiles: [
+          for (final item in json[_PreviewEmployeeJsonKeys.profiles]! as List)
+            BaseEmployeeProfile.fromJson(item as JsonMap),
+        ],
       );
 
   @override
   JsonMap toJson() => {
         ...super.toProfileJson(),
         _PreviewEmployeeJsonKeys.id: userId,
-        _PreviewEmployeeJsonKeys.profiles:
-            profiles.map((profile) => profile.toJson()).toList(),
+        _PreviewEmployeeJsonKeys.profiles: [
+          for (final profile in profiles) profile.toJson(),
+        ],
       };
 }

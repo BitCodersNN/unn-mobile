@@ -62,15 +62,14 @@ abstract class WebAuthenticatedApiHelper extends AuthenticatedApiHelper {
     Map<String, dynamic>? queryParameters,
     Options? options,
     ProgressCallback? onReceiveProgress,
-  }) {
-    return _request(
-      httpMethod: HttpMethod.get,
-      path: path,
-      queryParameters: queryParameters,
-      options: options,
-      onReceiveProgress: onReceiveProgress,
-    );
-  }
+  }) =>
+      _request(
+        httpMethod: HttpMethod.get,
+        path: path,
+        queryParameters: queryParameters,
+        options: options,
+        onReceiveProgress: onReceiveProgress,
+      );
 
   @override
   Future<Response> post({
@@ -80,17 +79,16 @@ abstract class WebAuthenticatedApiHelper extends AuthenticatedApiHelper {
     Options? options,
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
-  }) {
-    return _request(
-      httpMethod: HttpMethod.post,
-      path: path,
-      body: data,
-      queryParameters: queryParameters,
-      options: options,
-      onReceiveProgress: onReceiveProgress,
-      onSendProgress: onSendProgress,
-    );
-  }
+  }) =>
+      _request(
+        httpMethod: HttpMethod.post,
+        path: path,
+        body: data,
+        queryParameters: queryParameters,
+        options: options,
+        onReceiveProgress: onReceiveProgress,
+        onSendProgress: onSendProgress,
+      );
 
   Future<Response> _request({
     required HttpMethod httpMethod,

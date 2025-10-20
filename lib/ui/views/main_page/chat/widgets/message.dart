@@ -90,15 +90,14 @@ class MessageWidget extends StatefulWidget {
     );
   }
 
-  static Widget _buildContent(BuildContext context, Message message) {
-    return switch (message) {
-      final MessageWithForward msg => _buildMessageWithForward(context, msg),
-      final MessageWithReply msg => _buildMessageWithReply(context, msg),
-      final MessageWithForwardAndReply msg =>
-        _buildMessageWithForwardAndReply(context, msg),
-      final Message msg => _buildMessage(context, msg),
-    };
-  }
+  static Widget _buildContent(BuildContext context, Message message) =>
+      switch (message) {
+        final MessageWithForward msg => _buildMessageWithForward(context, msg),
+        final MessageWithReply msg => _buildMessageWithReply(context, msg),
+        final MessageWithForwardAndReply msg =>
+          _buildMessageWithForwardAndReply(context, msg),
+        final Message msg => _buildMessage(context, msg),
+      };
 
   static Widget _buildMessage(
     BuildContext context,
@@ -138,17 +137,16 @@ class MessageWidget extends StatefulWidget {
   static Widget _buildMessageWithReply(
     BuildContext context,
     MessageWithReply msg,
-  ) {
-    return Column(
-      children: [
-        buildReplyMessage(
-          context,
-          msg.replyMessage,
-        ),
-        _buildMessage(context, msg),
-      ],
-    );
-  }
+  ) =>
+      Column(
+        children: [
+          buildReplyMessage(
+            context,
+            msg.replyMessage,
+          ),
+          _buildMessage(context, msg),
+        ],
+      );
 
   static Widget _buildMessageWithForward(
     BuildContext context,
@@ -175,16 +173,15 @@ class MessageWidget extends StatefulWidget {
   static Widget _buildMessageWithForwardAndReply(
     BuildContext context,
     MessageWithForwardAndReply msg,
-  ) {
-    return Column(
-      spacing: 2.0,
-      children: [
-        _forwardMessageHeader(context, msg.forwardInfo, false),
-        buildReplyMessage(context, msg.replyMessage, showFullText: true),
-        _buildMessage(context, msg),
-      ],
-    );
-  }
+  ) =>
+      Column(
+        spacing: 2.0,
+        children: [
+          _forwardMessageHeader(context, msg.forwardInfo, false),
+          buildReplyMessage(context, msg.replyMessage, showFullText: true),
+          _buildMessage(context, msg),
+        ],
+      );
 
   static Widget _messageAuthorHeader(BuildContext context, String? fullname) {
     final theme = Theme.of(context);
@@ -233,12 +230,10 @@ class _MessageWidgetState extends State<MessageWidget> {
 
     return BaseView<MessageReactionViewModel>(
       model: MessageReactionViewModel.cached(widget.message.messageId),
-      builder: (context, model, _) {
-        return GestureDetector(
-          onLongPress: () => _showContextMenu(model),
-          child: _buildMessageContent(context, model, theme),
-        );
-      },
+      builder: (context, model, _) => GestureDetector(
+        onLongPress: () => _showContextMenu(model),
+        child: _buildMessageContent(context, model, theme),
+      ),
       onModelReady: (model) => model.init(
         widget.message.messageId,
         widget.message.ratingList,
@@ -268,43 +263,44 @@ class _MessageWidgetState extends State<MessageWidget> {
     });
   }
 
-  List<PopupMenuEntry<String>> _buildMenuItems(MessageReactionViewModel model) {
-    return [
-      PopupMenuItem(
-        enabled: false,
-        child: Scrollbar(
-          child: SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: ReactionType.values
-                  .map(
-                    (reaction) => GestureDetector(
-                      onTap: () => _handleReactionTap(reaction, model),
-                      child: Padding(
-                        padding: const EdgeInsets.all(4.0),
-                        child: CircleAvatar(
-                          radius: 16,
-                          backgroundImage: AssetImage(reaction.assetName),
+  List<PopupMenuEntry<String>> _buildMenuItems(
+    MessageReactionViewModel model,
+  ) =>
+      [
+        PopupMenuItem(
+          enabled: false,
+          child: Scrollbar(
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: ReactionType.values
+                    .map(
+                      (reaction) => GestureDetector(
+                        onTap: () => _handleReactionTap(reaction, model),
+                        child: Padding(
+                          padding: const EdgeInsets.all(4.0),
+                          child: CircleAvatar(
+                            radius: 16,
+                            backgroundImage: AssetImage(reaction.assetName),
+                          ),
                         ),
                       ),
-                    ),
-                  )
-                  .toList(),
+                    )
+                    .toList(),
+              ),
             ),
           ),
         ),
-      ),
-      const PopupMenuItem(
-        value: 'copy',
-        child: Text('Скопировать текст'),
-      ),
-      const PopupMenuItem(
-        value: 'reply',
-        child: Text('Ответить'),
-      ),
-    ];
-  }
+        const PopupMenuItem(
+          value: 'copy',
+          child: Text('Скопировать текст'),
+        ),
+        const PopupMenuItem(
+          value: 'reply',
+          child: Text('Ответить'),
+        ),
+      ];
 
   void _handleReactionTap(
     ReactionType reaction,
@@ -336,13 +332,12 @@ class _MessageWidgetState extends State<MessageWidget> {
     BuildContext context,
     MessageReactionViewModel model,
     ThemeData theme,
-  ) {
-    return Row(
-      children: [
-        Expanded(
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              return Padding(
+  ) =>
+      Row(
+        children: [
+          Expanded(
+            child: LayoutBuilder(
+              builder: (context, constraints) => Padding(
                 padding: const EdgeInsets.only(bottom: 4.0),
                 child: Align(
                   alignment: widget.fromCurrentUser
@@ -409,14 +404,12 @@ class _MessageWidgetState extends State<MessageWidget> {
                     ),
                   ),
                 ),
-              );
-            },
+              ),
+            ),
           ),
-        ),
-        const Expanded(flex: 0, child: SizedBox()),
-      ],
-    );
-  }
+          const Expanded(flex: 0, child: SizedBox()),
+        ],
+      );
 }
 
 class MessageReactionView extends StatelessWidget {
@@ -427,30 +420,28 @@ class MessageReactionView extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 4.0),
-      child: Wrap(
-        direction: Axis.horizontal,
-        spacing: 8,
-        crossAxisAlignment: WrapCrossAlignment.center,
-        children: [
-          for (final reaction in ReactionType.values)
-            if (model.getReactionCount(reaction) > 0)
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 4.0),
-                child: ReactionBubble(
-                  isSelected: model.currentReaction == reaction,
-                  onPressed: () {
-                    triggerHaptic(HapticIntensity.selection);
-                    model.toggleReaction(reaction);
-                  },
-                  icon: Image.asset(reaction.assetName),
-                  text: model.getReactionCount(reaction).toString(),
+  Widget build(BuildContext context) => Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 4.0),
+        child: Wrap(
+          direction: Axis.horizontal,
+          spacing: 8,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          children: [
+            for (final reaction in ReactionType.values)
+              if (model.getReactionCount(reaction) > 0)
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 4.0),
+                  child: ReactionBubble(
+                    isSelected: model.currentReaction == reaction,
+                    onPressed: () {
+                      triggerHaptic(HapticIntensity.selection);
+                      model.toggleReaction(reaction);
+                    },
+                    icon: Image.asset(reaction.assetName),
+                    text: model.getReactionCount(reaction).toString(),
+                  ),
                 ),
-              ),
-        ],
-      ),
-    );
-  }
+          ],
+        ),
+      );
 }

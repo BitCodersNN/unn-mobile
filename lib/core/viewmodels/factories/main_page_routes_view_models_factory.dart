@@ -26,16 +26,14 @@ class MainPageRoutesViewModelsFactory {
     return newInstance;
   }
 
-  T? getViewModelByType<T>() {
-    return _viewModels.values
-        .map(
-          (e) => e is T ? e as T : null,
-        )
-        .firstWhere(
-          (p) => p != null,
-          orElse: () => null,
-        );
-  }
+  T? getViewModelByType<T>() => _viewModels.values
+      .map(
+        (e) => e is T ? e as T : null,
+      )
+      .firstWhere(
+        (p) => p != null,
+        orElse: () => null,
+      );
 
   void _resetIfUnauthorized() {
     if (_authorizationService.isAuthorised) {

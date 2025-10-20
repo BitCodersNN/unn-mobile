@@ -51,9 +51,8 @@ class MessageFileSenderServiceImpl implements MessageFileSenderService {
     required int chatId,
     required File file,
     String? text,
-  }) async {
-    return (await sendFiles(chatId: chatId, files: [file], text: text))?.first;
-  }
+  }) async =>
+      (await sendFiles(chatId: chatId, files: [file], text: text))?.first;
 
   @override
   Future<List<FileData>?> sendFiles({
@@ -95,27 +94,26 @@ class MessageFileSenderServiceImpl implements MessageFileSenderService {
       _loggerService.logError(exception, stackTrace);
       return null;
     }
-    return ((response.data as JsonMap)[_JsonKeys.result]
-        as JsonMap)[_JsonKeys.id];
+    return ((response.data as JsonMap)[_JsonKeys.result]!
+        as JsonMap)[_JsonKeys.id] as int?;
   }
 
   Future<List<FileData>> _uploadFiles(int folderId, List<File> files) async {
-    final uploadFutures = files
-        .map(
-          (file) => _uploadFile(folderId, file).catchError(
-            (exception, stackTrace) {
-              _loggerService.logError(exception, stackTrace);
-              return null;
-            },
-          ),
-        )
-        .toList();
+    final uploadFutures = [
+      for (final file in files)
+        _uploadFile(folderId, file).catchError(
+          (exception, stackTrace) {
+            _loggerService.logError(exception, stackTrace);
+            return null;
+          },
+        ),
+    ];
 
     final fileDataList = await Future.wait(uploadFutures);
-    return fileDataList
-        .where((fileData) => fileData != null)
-        .cast<FileData>()
-        .toList();
+    return [
+      for (final fileData in fileDataList)
+        if (fileData != null) fileData,
+    ];
   }
 
   Future<FileData?> _uploadFile(int folderId, File file) async {
@@ -143,7 +141,7 @@ class MessageFileSenderServiceImpl implements MessageFileSenderService {
       }
 
       return FileData.fromBitrixJson(
-        (response.data as JsonMap)[_JsonKeys.result],
+        (response.data as JsonMap)[_JsonKeys.result]! as JsonMap,
       );
     } catch (exception, stackTrace) {
       _loggerService.logError(exception, stackTrace);

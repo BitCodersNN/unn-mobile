@@ -65,22 +65,20 @@ class _HeightLimiterState extends State<HeightLimiter> {
     );
   }
 
-  Widget _buildOverflowIndicator() {
-    return Container(
-      height: widget.fadeEffectHeight,
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.bottomCenter,
-          end: Alignment.topCenter,
-          colors: [
-            Colors.white.withAlpha(200),
-            Colors.white.withAlpha(0),
-          ],
-          tileMode: TileMode.clamp,
+  Widget _buildOverflowIndicator() => Container(
+        height: widget.fadeEffectHeight,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.bottomCenter,
+            end: Alignment.topCenter,
+            colors: [
+              Colors.white.withAlpha(200),
+              Colors.white.withAlpha(0),
+            ],
+            tileMode: TileMode.clamp,
+          ),
         ),
-      ),
-    );
-  }
+      );
 }
 
 class MeasureSizeRenderObject extends RenderProxyBox {
@@ -115,9 +113,8 @@ class MeasureSize extends SingleChildRenderObjectWidget {
   });
 
   @override
-  RenderObject createRenderObject(BuildContext context) {
-    return MeasureSizeRenderObject(onChange);
-  }
+  RenderObject createRenderObject(BuildContext context) =>
+      MeasureSizeRenderObject(onChange);
 
   @override
   void updateRenderObject(

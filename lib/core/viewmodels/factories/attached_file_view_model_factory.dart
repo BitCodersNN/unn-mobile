@@ -16,11 +16,10 @@ class AttachedFileViewModelFactory extends CachedViewModelFactoryBase<
 
   @override
   @protected
-  AttachedFileViewModel createViewModel(AttachedFileCacheKey key) {
-    return AttachedFileViewModel(
-      getService<FileDataService>(),
-      getService<LoggerService>(),
-      getService<FeedFileDownloaderService>(),
-    );
-  }
+  AttachedFileViewModel createViewModel(AttachedFileCacheKey key) =>
+      AttachedFileViewModel(
+        getService<FileDataService>(),
+        getService<LoggerService>(),
+        getService<FeedFileDownloaderService>(),
+      );
 }

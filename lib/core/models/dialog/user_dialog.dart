@@ -37,10 +37,10 @@ final class UserDialog extends Dialog {
       unreadMessagesCount: dialog.unreadMessagesCount,
       lastMessageStatus: dialog.lastMessageStatus,
       pinned: dialog.pinned,
-      dialogId: json[_UserDialogJsonKeys.id],
+      dialogId: json[_UserDialogJsonKeys.id]! as int,
       lastActivityAt: DateTime.tryParse(
-        (json[_UserDialogJsonKeys.user]
-            as JsonMap)[_UserDialogJsonKeys.lastActivityDate],
+        (json[_UserDialogJsonKeys.user]!
+            as JsonMap)[_UserDialogJsonKeys.lastActivityDate]! as String,
       ),
     );
   }

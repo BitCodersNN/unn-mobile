@@ -41,9 +41,10 @@ class GradeBookServiceImpl implements GradeBookService {
 
     final Map<int, List<MarkBySubject>> marks = {};
     for (final JsonMap? course in response.data) {
-      for (final JsonMap semesterInfo in course?[_JsonKeys.semesters] ?? []) {
+      for (final JsonMap semesterInfo
+          in course?[_JsonKeys.semesters] as List? ?? []) {
         final semester = (semesterInfo[_JsonKeys.semester] as num?)?.toInt();
-        final data = semesterInfo[_JsonKeys.data] ?? [];
+        final data = semesterInfo[_JsonKeys.data] as Iterable? ?? [];
         if (semester != null) {
           marks[semester] = parseJsonIterable<MarkBySubject>(
             data,

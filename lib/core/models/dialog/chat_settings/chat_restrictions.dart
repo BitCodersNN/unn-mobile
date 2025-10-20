@@ -39,15 +39,15 @@ class ChatRestrictions {
   });
 
   factory ChatRestrictions.fromJson(JsonMap json) => ChatRestrictions(
-        avatar: json[_ChatRestrictionsJsonKeys.avatar],
-        rename: json[_ChatRestrictionsJsonKeys.rename],
-        extend: json[_ChatRestrictionsJsonKeys.extend],
-        call: json[_ChatRestrictionsJsonKeys.call],
-        mute: json[_ChatRestrictionsJsonKeys.mute],
-        leave: json[_ChatRestrictionsJsonKeys.leave],
-        leaveOwner: json[_ChatRestrictionsJsonKeys.leaveOwner],
-        send: json[_ChatRestrictionsJsonKeys.send],
-        userList: json[_ChatRestrictionsJsonKeys.userList],
+        avatar: json[_ChatRestrictionsJsonKeys.avatar]! as bool,
+        rename: json[_ChatRestrictionsJsonKeys.rename]! as bool,
+        extend: json[_ChatRestrictionsJsonKeys.extend]! as bool,
+        call: json[_ChatRestrictionsJsonKeys.call]! as bool,
+        mute: json[_ChatRestrictionsJsonKeys.mute]! as bool,
+        leave: json[_ChatRestrictionsJsonKeys.leave]! as bool,
+        leaveOwner: json[_ChatRestrictionsJsonKeys.leaveOwner]! as bool,
+        send: json[_ChatRestrictionsJsonKeys.send]! as bool,
+        userList: json[_ChatRestrictionsJsonKeys.userList]! as bool,
       );
 
   JsonMap toJson() => {

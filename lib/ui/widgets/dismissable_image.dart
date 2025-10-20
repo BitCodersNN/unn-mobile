@@ -14,25 +14,23 @@ class DismissibleImage extends StatelessWidget {
   final String image;
 
   @override
-  Widget build(BuildContext context) {
-    return ExtendedImage(
-      enableLoadState: true,
-      mode: ExtendedImageMode.gesture,
-      enableSlideOutPage: true,
-      image: CachedNetworkImageProvider(
-        image,
-      ),
-      initGestureConfigHandler: (state) => GestureConfig(
-        minScale: 0.9,
-        animationMinScale: 0.7,
-        maxScale: 3.0,
-        animationMaxScale: 3.5,
-        speed: 1.0,
-        inertialSpeed: 100.0,
-        initialScale: 1.0,
-        inPageView: false,
-        initialAlignment: InitialAlignment.center,
-      ),
-    );
-  }
+  Widget build(BuildContext context) => ExtendedImage(
+        enableLoadState: true,
+        mode: ExtendedImageMode.gesture,
+        enableSlideOutPage: true,
+        image: CachedNetworkImageProvider(
+          image,
+        ),
+        initGestureConfigHandler: (state) => GestureConfig(
+          minScale: 0.9,
+          animationMinScale: 0.7,
+          maxScale: 3.0,
+          animationMaxScale: 3.5,
+          speed: 1.0,
+          inertialSpeed: 100.0,
+          initialScale: 1.0,
+          inPageView: false,
+          initialAlignment: InitialAlignment.center,
+        ),
+      );
 }

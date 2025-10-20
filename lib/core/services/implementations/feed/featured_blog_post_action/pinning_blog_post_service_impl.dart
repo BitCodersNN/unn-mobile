@@ -26,22 +26,18 @@ class PinningBlogPostServiceImpl implements PinningBlogPostService {
   );
 
   @override
-  Future<bool> pin(int pinnedId) {
-    return _updatePostPinStatus(
-      pinnedId,
-      AnalyticsLabel.pinBlogPost,
-      AjaxActionStrings.pinBlogPost,
-    );
-  }
+  Future<bool> pin(int pinnedId) => _updatePostPinStatus(
+        pinnedId,
+        AnalyticsLabel.pinBlogPost,
+        AjaxActionStrings.pinBlogPost,
+      );
 
   @override
-  Future<bool> unpin(int pinnedId) {
-    return _updatePostPinStatus(
-      pinnedId,
-      AnalyticsLabel.unpinBlogPost,
-      AjaxActionStrings.unpinBlogPost,
-    );
-  }
+  Future<bool> unpin(int pinnedId) => _updatePostPinStatus(
+        pinnedId,
+        AnalyticsLabel.unpinBlogPost,
+        AjaxActionStrings.unpinBlogPost,
+      );
 
   Future<bool> _updatePostPinStatus(
     int pinnedId,

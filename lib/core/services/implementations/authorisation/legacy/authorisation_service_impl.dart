@@ -128,10 +128,8 @@ class LegacyAuthorizationServiceImpl extends ChangeNotifier
     return requestSender.get(timeoutSeconds: 15);
   }
 
-  Future<bool> _isOffline() async {
-    return (await Connectivity().checkConnectivity())
-        .contains(ConnectivityResult.none);
-  }
+  Future<bool> _isOffline() async => (await Connectivity().checkConnectivity())
+      .contains(ConnectivityResult.none);
 
   @override
   void logout() {}

@@ -21,9 +21,9 @@ class Department {
   });
 
   factory Department.fromJson(JsonMap json) => Department(
-        id: json[_DepartmentJsonKeys.id] as int,
-        title: json[_DepartmentJsonKeys.title] as String,
-        shortTitle: json[_DepartmentJsonKeys.shortTitle] as String,
+        id: json[_DepartmentJsonKeys.id]! as int,
+        title: json[_DepartmentJsonKeys.title]! as String,
+        shortTitle: json[_DepartmentJsonKeys.shortTitle]! as String,
       );
 
   JsonMap toJson() => {

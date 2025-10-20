@@ -37,16 +37,11 @@ class ProfileViewModel extends BaseViewModel {
     this._currentUserSyncStorage,
   );
 
-  factory ProfileViewModel.cached(ProfileCacheKey key) {
-    return Injector.appInstance
-        .get<ProfileViewModelFactory>()
-        .getViewModel(key);
-  }
-  factory ProfileViewModel.currentUser() {
-    return Injector.appInstance
-        .get<ProfileViewModelFactory>()
-        .getCurrentUserViewModel();
-  }
+  factory ProfileViewModel.cached(ProfileCacheKey key) =>
+      Injector.appInstance.get<ProfileViewModelFactory>().getViewModel(key);
+  factory ProfileViewModel.currentUser() => Injector.appInstance
+      .get<ProfileViewModelFactory>()
+      .getCurrentUserViewModel();
   String? get avatarUrl => _loadedData?.photoSrc;
 
   String get description => _description ?? '';
@@ -124,13 +119,12 @@ class ProfileViewModel extends BaseViewModel {
     return currentUser ?? _currentUserSyncStorage.currentUserData;
   }
 
-  Future<UserData?> _getProfile(int userId, bool loadFromPost) async {
-    return loadFromPost
-        ? await _getProfileService.getProfileByAuthorId(
-            authorId: userId,
-          )
-        : await _getProfileService.getProfile(
-            userId: userId,
-          );
-  }
+  Future<UserData?> _getProfile(int userId, bool loadFromPost) async =>
+      loadFromPost
+          ? await _getProfileService.getProfileByAuthorId(
+              authorId: userId,
+            )
+          : await _getProfileService.getProfile(
+              userId: userId,
+            );
 }

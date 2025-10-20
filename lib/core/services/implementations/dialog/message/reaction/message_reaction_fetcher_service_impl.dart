@@ -60,17 +60,17 @@ class MessageReactionFetcherServiceImpl
       return null;
     }
 
-    final result = (response.data as JsonMap)[_JsonKeys.result] as JsonMap;
-    final usersById = buildObjectByIdMap(result[_JsonKeys.users]);
+    final result = (response.data as JsonMap)[_JsonKeys.result]! as JsonMap;
+    final usersById = buildObjectByIdMap(result[_JsonKeys.users]! as List);
     const defaultUserInfoKeys = DefaultUserInfoKeys();
 
     final users = parseJsonIterable<Map<String, dynamic>>(
-      result[_JsonKeys.reactions],
+      result[_JsonKeys.reactions]! as Iterable,
       (reaction) {
         final userId = reaction[_JsonKeys.userId];
         return {
           _JsonKeys.reaction:
-              (reaction[_JsonKeys.reaction] as String).toLowerCase(),
+              (reaction[_JsonKeys.reaction]! as String).toLowerCase(),
           defaultUserInfoKeys.id: userId,
           defaultUserInfoKeys.fullname: usersById[userId]![_JsonKeys.name],
           defaultUserInfoKeys.photoSrc: usersById[userId]![_JsonKeys.avatar],

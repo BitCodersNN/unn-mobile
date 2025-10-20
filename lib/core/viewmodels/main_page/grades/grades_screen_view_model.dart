@@ -13,16 +13,15 @@ class GradesScreenViewModel extends BaseViewModel {
 
   GradesScreenViewModel(this._gradeBookService, this._markBySubjectProvider);
 
-  Future<Map<int, List<MarkBySubject>>?> getGradeBook() {
-    return tryLoginAndRetrieveData(
-      () async {
-        final gradeBook = await _gradeBookService.getGradeBook();
-        if (gradeBook != null) {
-          await _markBySubjectProvider.saveData(gradeBook);
-        }
-        return gradeBook;
-      },
-      _markBySubjectProvider.getData,
-    );
-  }
+  Future<Map<int, List<MarkBySubject>>?> getGradeBook() =>
+      tryLoginAndRetrieveData(
+        () async {
+          final gradeBook = await _gradeBookService.getGradeBook();
+          if (gradeBook != null) {
+            await _markBySubjectProvider.saveData(gradeBook);
+          }
+          return gradeBook;
+        },
+        _markBySubjectProvider.getData,
+      );
 }

@@ -51,19 +51,18 @@ class MainPageRouteData {
     List<Type>? userTypes,
     List<MainPageRouteData>? subroutes,
     bool? onlineOnly,
-  }) {
-    return MainPageRouteData(
-      selectedIcon ?? this.selectedIcon,
-      unselectedIcon ?? this.unselectedIcon,
-      pageTitle ?? this.pageTitle,
-      pageRoute ?? this.pageRoute,
-      onlineOnly: onlineOnly ?? this.onlineOnly,
-      subroutes: subroutes ?? this.subroutes,
-      isDisabled: isDisabled ?? this.isDisabled,
-      userTypes: userTypes ?? this.userTypes,
-      builder: builder ?? this.builder,
-    );
-  }
+  }) =>
+      MainPageRouteData(
+        selectedIcon ?? this.selectedIcon,
+        unselectedIcon ?? this.unselectedIcon,
+        pageTitle ?? this.pageTitle,
+        pageRoute ?? this.pageRoute,
+        onlineOnly: onlineOnly ?? this.onlineOnly,
+        subroutes: subroutes ?? this.subroutes,
+        isDisabled: isDisabled ?? this.isDisabled,
+        userTypes: userTypes ?? this.userTypes,
+        builder: builder ?? this.builder,
+      );
 }
 
 final MainPageRouteData postCommentsRoute = MainPageRouteData(
@@ -138,11 +137,9 @@ class MainPageRouting {
           Icons.chat,
           'Чат',
           ':chatId',
-          builder: (_, state) {
-            return ChatInside(
-              chatId: int.tryParse(state.pathParameters['chatId'] ?? '0') ?? 0,
-            );
-          },
+          builder: (_, state) => ChatInside(
+            chatId: int.tryParse(state.pathParameters['chatId'] ?? '0') ?? 0,
+          ),
           userTypes: [],
         ),
       ],

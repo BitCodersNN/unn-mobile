@@ -52,11 +52,11 @@ class UserData extends UserShortInfo {
     final userJsonMap = (json[_UserDataJsonKeys.user] ?? json) as JsonMap;
     return UserData.withUserShortInfo(
       userShortInfo: UserShortInfo.fromProfileJson(userJsonMap),
-      userId: userJsonMap[_UserDataJsonKeys.id] as int,
+      userId: userJsonMap[_UserDataJsonKeys.id]! as int,
       login: userJsonMap[_UserDataJsonKeys.login] as String?,
       email: userJsonMap[_UserDataJsonKeys.email] as String?,
       phone: userJsonMap[_UserDataJsonKeys.phone] as String?,
-      sex: userJsonMap[_UserDataJsonKeys.sex] as String,
+      sex: userJsonMap[_UserDataJsonKeys.sex]! as String,
       notes: userJsonMap[_UserDataJsonKeys.notes] as String?,
     );
   }

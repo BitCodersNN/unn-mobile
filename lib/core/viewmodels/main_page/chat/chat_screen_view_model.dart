@@ -57,17 +57,16 @@ class ChatScreenViewModel extends BaseViewModel {
   Future<PartialResult<Dialog>?> _getDialogItems({
     required int limit,
     DateTime? lastMessageDate,
-  }) {
-    return tryLoginAndRetrieveData<PartialResult<Dialog>>(
-      () => _dialogService.getDialogs(
-        dialogQueryParameter: DialogQueryParameter(
-          limit: limit,
-          lastMessageDate: lastMessageDate,
+  }) =>
+      tryLoginAndRetrieveData<PartialResult<Dialog>>(
+        () => _dialogService.getDialogs(
+          dialogQueryParameter: DialogQueryParameter(
+            limit: limit,
+            lastMessageDate: lastMessageDate,
+          ),
         ),
-      ),
-      () => null,
-    );
-  }
+        () => null,
+      );
 
   FutureOr<void> _init(int failedAttempts) async {
     if (failedAttempts == maxRetryAttempts) {

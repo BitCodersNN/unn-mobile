@@ -107,6 +107,6 @@ class ImportantBlogPostUsersServiceImpl
       return null;
     }
 
-    return (response.data as JsonMap)[_JsonKeys.data];
+    return (response.data as JsonMap)[_JsonKeys.data] as Map?;
   }
 }

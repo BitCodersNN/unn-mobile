@@ -53,11 +53,10 @@ class AttachedFileViewModel extends BaseViewModel {
     this._loggerService,
     this._feedFileDownloaderService,
   );
-  factory AttachedFileViewModel.cached(AttachedFileCacheKey key) {
-    return Injector.appInstance
-        .get<AttachedFileViewModelFactory>()
-        .getViewModel(key);
-  }
+  factory AttachedFileViewModel.cached(AttachedFileCacheKey key) =>
+      Injector.appInstance
+          .get<AttachedFileViewModelFactory>()
+          .getViewModel(key);
 
   String get error => _error ?? '';
 
@@ -141,7 +140,6 @@ class AttachedFileViewModel extends BaseViewModel {
     });
   }
 
-  Future<FileData?> _loadData(int fileId) {
-    return _fileDataService.getFileData(id: fileId);
-  }
+  Future<FileData?> _loadData(int fileId) =>
+      _fileDataService.getFileData(id: fileId);
 }

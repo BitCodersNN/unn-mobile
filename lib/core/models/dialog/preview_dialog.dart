@@ -19,10 +19,10 @@ class PreviewDialog extends BaseDialogInfo {
   });
 
   factory PreviewDialog.fromJson(JsonMap json) => PreviewDialog(
-        chatId: (json[_PreviewDialogJsonKeys.customData]
-            as JsonMap)[_PreviewDialogJsonKeys.id],
-        title: json[_PreviewDialogJsonKeys.title],
-        avatarUrl: json[_PreviewDialogJsonKeys.avatar],
+        chatId: (json[_PreviewDialogJsonKeys.customData]!
+            as JsonMap)[_PreviewDialogJsonKeys.id]! as int,
+        title: json[_PreviewDialogJsonKeys.title]! as String,
+        avatarUrl: json[_PreviewDialogJsonKeys.avatar]! as String,
       );
 
   JsonMap toJson() => {

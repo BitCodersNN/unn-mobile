@@ -38,29 +38,27 @@ class MessageGroup extends StatelessWidget {
           .lastOrNull;
       return Center(
         child: LayoutBuilder(
-          builder: (context, constraints) {
-            return ConstrainedBox(
-              constraints: BoxConstraints(
-                maxWidth: constraints.maxWidth * 0.7,
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(4.0),
-                child: IntrinsicWidth(
-                  child: Container(
-                    padding: const EdgeInsets.all(8.0),
-                    decoration: BoxDecoration(
-                      color: theme.hoverColor,
-                      borderRadius: BorderRadius.circular(8.0),
-                    ),
-                    child: BBCodeText(
-                      data: '[CENTER]${msgText ?? ''}[/CENTER]',
-                      stylesheet: getBBStyleSheet(),
-                    ),
+          builder: (context, constraints) => ConstrainedBox(
+            constraints: BoxConstraints(
+              maxWidth: constraints.maxWidth * 0.7,
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(4.0),
+              child: IntrinsicWidth(
+                child: Container(
+                  padding: const EdgeInsets.all(8.0),
+                  decoration: BoxDecoration(
+                    color: theme.hoverColor,
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                  child: BBCodeText(
+                    data: '[CENTER]${msgText ?? ''}[/CENTER]',
+                    stylesheet: getBBStyleSheet(),
                   ),
                 ),
               ),
-            );
-          },
+            ),
+          ),
         ),
       );
     }

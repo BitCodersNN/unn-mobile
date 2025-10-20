@@ -55,11 +55,8 @@ class FeedPostViewModel extends BaseViewModel {
     this._postAcknowledgementService,
     this._pinningService,
   );
-  factory FeedPostViewModel.cached(FeedPostCacheKey key) {
-    return Injector.appInstance
-        .get<FeedPostViewModelFactory>()
-        .getViewModel(key);
-  }
+  factory FeedPostViewModel.cached(FeedPostCacheKey key) =>
+      Injector.appInstance.get<FeedPostViewModelFactory>().getViewModel(key);
 
   int get authorId => blogData.authorBitrixId;
 

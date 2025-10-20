@@ -18,29 +18,27 @@ class MainPageNavigationBar extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Container(
-          height: 0.3,
-          color: Colors.grey.withValues(alpha: 0.5),
-        ),
-        NavigationBar(
-          destinations: _getNavbarDestinations(
-            model,
-            context,
+  Widget build(BuildContext context) => Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            height: 0.3,
+            color: Colors.grey.withValues(alpha: 0.5),
           ),
-          height: navbarHeight,
-          backgroundColor: Colors.transparent,
-          indicatorColor: Colors.transparent,
-          animationDuration: Duration.zero,
-          selectedIndex: getSelectedBarIndex(context),
-          onDestinationSelected: onDestinationSelected,
-        ),
-      ],
-    );
-  }
+          NavigationBar(
+            destinations: _getNavbarDestinations(
+              model,
+              context,
+            ),
+            height: navbarHeight,
+            backgroundColor: Colors.transparent,
+            indicatorColor: Colors.transparent,
+            animationDuration: Duration.zero,
+            selectedIndex: getSelectedBarIndex(context),
+            onDestinationSelected: onDestinationSelected,
+          ),
+        ],
+      );
 
   static int getSelectedBarIndex(BuildContext context) {
     final String location = GoRouterState.of(context).uri.path;

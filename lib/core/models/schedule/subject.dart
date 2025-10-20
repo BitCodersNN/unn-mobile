@@ -104,10 +104,9 @@ class Subject {
         _SubjectJsonKeys.lecturerUID: syncId,
       };
 
-  static DateTime _parseDateTime(String date, String time) {
-    return DateTimeParser.parse(
-      '$date $time',
-      DatePattern.ymmddhm,
-    );
-  }
+  static DateTime _parseDateTime(String date, String time) =>
+      DateTimeParser.parse(
+        '$date $time',
+        DatePattern.ymmddhm,
+      );
 }

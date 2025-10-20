@@ -77,9 +77,7 @@ class FeedScreenViewModel extends BaseViewModel
     List<BlogPost>? newPosts,
   ) {
     final postViewmodels = newPosts?.map(
-      (p) {
-        return FeedPostViewModel.cached(p.data.id)..initFromFullInfo(p, this);
-      },
+      (p) => FeedPostViewModel.cached(p.data.id)..initFromFullInfo(p, this),
     );
     posts.addAll(postViewmodels ?? []);
   }

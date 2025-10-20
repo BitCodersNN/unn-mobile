@@ -29,10 +29,10 @@ class EmployeeProfile {
 
   factory EmployeeProfile.fromJson(JsonMap json) => EmployeeProfile(
         previewEmployeeProfile: BaseEmployeeProfile.fromJson(json),
-        jobType: json[_EmployeeProfileJsonKeys.jobType] as String,
+        jobType: json[_EmployeeProfileJsonKeys.jobType]! as String,
         manager: json[_EmployeeProfileJsonKeys.manager] != null
             ? UserShortInfo.fromProfileJson(
-                json[_EmployeeProfileJsonKeys.manager] as JsonMap,
+                json[_EmployeeProfileJsonKeys.manager]! as JsonMap,
               )
             : null,
       );

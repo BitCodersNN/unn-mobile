@@ -18,126 +18,126 @@ class SourceWebinarView extends StatelessWidget {
   const SourceWebinarView({required this.model, super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return BaseView<SourceWebinarViewModel>(
-      builder: (context, model, _) {
-        final theme = Theme.of(context);
-        return Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-          child: GestureDetector(
-            onTap: () {
-              model.expanded = !model.expanded;
-            },
-            child: Container(
-              decoration: BoxDecoration(
-                borderRadius: const BorderRadius.only(
-                  topRight: Radius.circular(16.0),
-                  bottomRight: Radius.circular(16.0),
+  Widget build(BuildContext context) => BaseView<SourceWebinarViewModel>(
+        builder: (context, model, _) {
+          final theme = Theme.of(context);
+          return Padding(
+            padding:
+                const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+            child: GestureDetector(
+              onTap: () {
+                model.expanded = !model.expanded;
+              },
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: const BorderRadius.only(
+                    topRight: Radius.circular(16.0),
+                    bottomRight: Radius.circular(16.0),
+                  ),
+                  shape: BoxShape.rectangle,
+                  color: theme.getTimeBasedSurfaceColor(
+                    model.dateTimeRange,
+                    isEven: true,
+                  ),
                 ),
-                shape: BoxShape.rectangle,
-                color: theme.getTimeBasedSurfaceColor(
-                  model.dateTimeRange,
-                  isEven: true,
-                ),
-              ),
-              child: IntrinsicHeight(
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    AnimatedContainer(
-                      duration: const Duration(milliseconds: 500),
-                      width: 6,
-                      decoration: BoxDecoration(
-                        borderRadius: const BorderRadius.all(
-                          Radius.circular(3.0),
+                child: IntrinsicHeight(
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      AnimatedContainer(
+                        duration: const Duration(milliseconds: 500),
+                        width: 6,
+                        decoration: BoxDecoration(
+                          borderRadius: const BorderRadius.all(
+                            Radius.circular(3.0),
+                          ),
+                          color: theme.getColorOfSubjectType(SubjectType.lab),
                         ),
-                        color: theme.getColorOfSubjectType(SubjectType.lab),
                       ),
-                    ),
-                    Expanded(
-                      child: Padding(
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8.0,
+                            vertical: 4.0,
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                model.title,
+                                style: theme.textTheme.titleMedium
+                                    ?.copyWith(fontWeight: FontWeight.bold),
+                                overflow: model.expanded
+                                    ? TextOverflow.visible
+                                    : TextOverflow.ellipsis,
+                                softWrap: true,
+                              ),
+                              model.expanded
+                                  ? SelectableText.rich(
+                                      TextSpan(
+                                        text: model.comment,
+                                        // Потому что SelectableText ворует событие тапа
+                                        recognizer: TapGestureRecognizer()
+                                          ..onTap = () {
+                                            model.expanded = !model.expanded;
+                                          },
+                                      ),
+                                    )
+                                  : Text(
+                                      model.comment,
+                                      maxLines: 3,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                              if (model.expanded) ...[
+                                if (model.urlStream?.isNotEmpty ?? false)
+                                  HtmlWidget(
+                                    'Трансляция: <a href="${model.urlStream}">${model.urlStream}</a>',
+                                    onTapUrl: htmlWidgetOnTapUrl,
+                                  ),
+                                if (model.urlRecord?.isNotEmpty ?? false)
+                                  HtmlWidget(
+                                    'Запись: <a href="${model.urlRecord}">${model.urlRecord}</a>',
+                                    onTapUrl: htmlWidgetOnTapUrl,
+                                  ),
+                              ],
+                            ],
+                          ),
+                        ),
+                      ),
+                      Padding(
                         padding: const EdgeInsets.symmetric(
-                          horizontal: 8.0,
                           vertical: 4.0,
+                          horizontal: 8.0,
                         ),
                         child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              model.title,
-                              style: theme.textTheme.titleMedium
-                                  ?.copyWith(fontWeight: FontWeight.bold),
-                              overflow: model.expanded
-                                  ? TextOverflow.visible
-                                  : TextOverflow.ellipsis,
-                              softWrap: true,
+                              model.dateTimeRange.start
+                                  .format(DatePattern.hhmm),
+                              style: theme.textTheme.titleMedium!
+                                  .copyWith(fontWeight: FontWeight.bold),
                             ),
-                            model.expanded
-                                ? SelectableText.rich(
-                                    TextSpan(
-                                      text: model.comment,
-                                      // Потому что SelectableText ворует событие тапа
-                                      recognizer: TapGestureRecognizer()
-                                        ..onTap = () {
-                                          model.expanded = !model.expanded;
-                                        },
-                                    ),
-                                  )
-                                : Text(
-                                    model.comment,
-                                    maxLines: 3,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                            if (model.expanded) ...[
-                              if (model.urlStream?.isNotEmpty ?? false)
-                                HtmlWidget(
-                                  'Трансляция: <a href="${model.urlStream}">${model.urlStream}</a>',
-                                  onTapUrl: htmlWidgetOnTapUrl,
-                                ),
-                              if (model.urlRecord?.isNotEmpty ?? false)
-                                HtmlWidget(
-                                  'Запись: <a href="${model.urlRecord}">${model.urlRecord}</a>',
-                                  onTapUrl: htmlWidgetOnTapUrl,
-                                ),
-                            ],
+                            Expanded(
+                              child: Container(),
+                            ),
+                            Text(
+                              model.dateTimeRange.end.format(DatePattern.hhmm),
+                              style: theme.textTheme.titleMedium!.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: theme.unnMobileColors!.ligtherTextColor,
+                              ),
+                            ),
                           ],
                         ),
                       ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 4.0,
-                        horizontal: 8.0,
-                      ),
-                      child: Column(
-                        children: [
-                          Text(
-                            model.dateTimeRange.start.format(DatePattern.hhmm),
-                            style: theme.textTheme.titleMedium!
-                                .copyWith(fontWeight: FontWeight.bold),
-                          ),
-                          Expanded(
-                            child: Container(),
-                          ),
-                          Text(
-                            model.dateTimeRange.end.format(DatePattern.hhmm),
-                            style: theme.textTheme.titleMedium!.copyWith(
-                              fontWeight: FontWeight.bold,
-                              color: theme.unnMobileColors!.ligtherTextColor,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),
-          ),
-        );
-      },
-      model: model,
-    );
-  }
+          );
+        },
+        model: model,
+      );
 }

@@ -41,15 +41,13 @@ class _DonationsScreenViewState extends State<DonationsScreenView> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        leading: getSubpageLeading(widget.bottomRouteIndex),
-        title: const Text('Поддержать'),
-      ),
-      body: WebViewWidget(
-        controller: controller..setBackgroundColor(const Color(0xFFF9FAFF)),
-      ),
-    );
-  }
+  Widget build(BuildContext context) => Scaffold(
+        appBar: AppBar(
+          leading: getSubpageLeading(widget.bottomRouteIndex),
+          title: const Text('Поддержать'),
+        ),
+        body: WebViewWidget(
+          controller: controller..setBackgroundColor(const Color(0xFFF9FAFF)),
+        ),
+      );
 }

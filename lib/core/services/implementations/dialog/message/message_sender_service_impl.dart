@@ -120,7 +120,7 @@ class MessageSenderServiceImpl implements MessageSenderService {
       return null;
     }
 
-    return ((response.data as JsonMap)[_JsonKeys.data]
-        as JsonMap)[_JsonKeys.id];
+    return ((response.data as JsonMap)[_JsonKeys.data]!
+        as JsonMap)[_JsonKeys.id] as int?;
   }
 }

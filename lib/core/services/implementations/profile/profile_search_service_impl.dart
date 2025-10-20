@@ -100,14 +100,14 @@ class ProfileSearchServiceImpl implements ProfileSearchService {
       return null;
     }
     final items = parseJsonIterable<T>(
-      (response.data as JsonMap)[_ResponseJsonKeys.items],
+      (response.data as JsonMap)[_ResponseJsonKeys.items]! as Iterable,
       fromJson,
       _loggerService,
     );
 
     return ResultWithTotal(
       items: items,
-      total: (response.data as JsonMap)[_ResponseJsonKeys.total],
+      total: (response.data as JsonMap)[_ResponseJsonKeys.total]! as int,
     );
   }
 }

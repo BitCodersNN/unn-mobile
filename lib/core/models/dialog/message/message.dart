@@ -39,7 +39,7 @@ class Message extends MessageShortInfo {
 
   factory Message.fromJson(JsonMap jsonMap) {
     final List<FileData> files = [];
-    for (final file in jsonMap[MessageJsonKeys.files]) {
+    for (final file in jsonMap[MessageJsonKeys.files]! as List) {
       files.add(
         FileData.fromMessageJson(file),
       );
@@ -47,11 +47,11 @@ class Message extends MessageShortInfo {
 
     return Message(
       messageShortInfo: MessageShortInfo.fromJson(jsonMap),
-      ratingList: jsonMap[MessageJsonKeys.ratingList],
-      messageStatus: jsonMap[MessageJsonKeys.messageStatus],
+      ratingList: jsonMap[MessageJsonKeys.ratingList] as RatingList?,
+      messageStatus: jsonMap[MessageJsonKeys.messageStatus]! as MessageState,
       files: files,
-      viewedByOthers: jsonMap[MessageJsonKeys.viewedByOthers],
-      notify: jsonMap[MessageJsonKeys.notify],
+      viewedByOthers: jsonMap[MessageJsonKeys.viewedByOthers]! as bool,
+      notify: jsonMap[MessageJsonKeys.notify]! as bool,
     );
   }
 

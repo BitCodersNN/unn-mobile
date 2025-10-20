@@ -45,14 +45,14 @@ final class DistanceFileData extends DistanceMaterialData {
 
   @override
   factory DistanceFileData.fromJson(JsonMap jsonMap) => DistanceFileData(
-        comment: jsonMap[_FileDataJsonKeys.comment] as String,
+        comment: jsonMap[_FileDataJsonKeys.comment]! as String,
         dateTime: DateTime.parse(
-          jsonMap[_FileDataJsonKeys.fileDate] as String,
+          jsonMap[_FileDataJsonKeys.fileDate]! as String,
         ),
-        id: int.parse(jsonMap[_FileDataJsonKeys.id] as String),
-        name: jsonMap[_FileDataJsonKeys.fileSrcName] as String,
+        id: int.parse(jsonMap[_FileDataJsonKeys.id]! as String),
+        name: jsonMap[_FileDataJsonKeys.fileSrcName]! as String,
         sizeInBytes: int.parse(
-          jsonMap[_FileDataJsonKeys.fileSize] as String,
+          jsonMap[_FileDataJsonKeys.fileSize]! as String,
         ),
         downloadUrl: '$_baseDownloadUrl${jsonMap[_FileDataJsonKeys.fileHash]}',
       );

@@ -35,12 +35,12 @@ class AuthorsProviderImpl implements AuthorsProvider {
 
     return {
       AuthorsConfigKeys.authors: parseJsonIterable<Author>(
-        jsonMap[AuthorsConfigKeys.authors],
+        jsonMap[AuthorsConfigKeys.authors]! as Iterable,
         Author.fromJson,
         _loggerService,
       ),
       AuthorsConfigKeys.pastAuthors: parseJsonIterable<Author>(
-        jsonMap[AuthorsConfigKeys.pastAuthors],
+        jsonMap[AuthorsConfigKeys.pastAuthors]! as Iterable,
         Author.fromJson,
         _loggerService,
       ),
@@ -56,7 +56,7 @@ class AuthorsProviderImpl implements AuthorsProvider {
     final jsonMap = authors.map(
       (key, value) => MapEntry(
         key,
-        value.map((author) => author.toJson()).toList(),
+        [for (final author in value) author.toJson()],
       ),
     );
 

@@ -24,12 +24,11 @@ class DistanceLearningDownloaderServiceImpl
     required String fileName,
     required String downloadUrl,
     bool force = false,
-  }) {
-    return _fileDownloader.downloadFile(
-      fileName,
-      downloadUrl: downloadUrl,
-      force: force,
-      pickLocation: true,
-    );
-  }
+  }) =>
+      _fileDownloader.downloadFile(
+        fileName,
+        downloadUrl: downloadUrl,
+        force: force,
+        pickLocation: true,
+      );
 }

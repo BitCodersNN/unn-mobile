@@ -124,12 +124,15 @@ class RatingList {
 
   factory RatingList.fromJson(JsonMap jsonMap) {
     final Map<ReactionType, List<UserShortInfo>> ratingList = {};
-    final usersList = jsonMap[_UserInfoJsonKeys.users] as List<JsonMap>;
+    final usersList = (jsonMap[_UserInfoJsonKeys.users]! as List)
+        .cast<Map<String, Object?>>();
+
     for (final userMap in usersList) {
       final userInfo = UserShortInfo.fromJson(userMap);
       final userReaction = ReactionType.values.firstWhere(
-        (reaction) =>
-            reaction.toString().endsWith(userMap[_UserInfoJsonKeys.reaction]),
+        (reaction) => reaction
+            .toString()
+            .endsWith(userMap[_UserInfoJsonKeys.reaction]! as String),
       );
 
       ratingList.putIfAbsent(userReaction, () => []);

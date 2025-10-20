@@ -68,26 +68,26 @@ class BaseEduInfo {
       };
 
   factory BaseEduInfo.fromJson(JsonMap jsonMap) => BaseEduInfo(
-        eduForm: jsonMap[_BaseEduInfoJsonKeys.eduForm] as String,
-        eduCourse: jsonMap[_BaseEduInfoJsonKeys.eduCourse] as int,
-        eduLevel: jsonMap[_BaseEduInfoJsonKeys.eduLevel] as String,
-        faculty: (jsonMap[_BaseEduInfoJsonKeys.faculty]
-            as JsonMap)[_BaseEduInfoJsonKeys.title] as String,
-        eduDirection: (jsonMap[_BaseEduInfoJsonKeys.eduDirection]
-            as JsonMap)[_BaseEduInfoJsonKeys.title] as String,
-        eduGroup: (jsonMap[_BaseEduInfoJsonKeys.eduGroup]
-            as JsonMap)[_BaseEduInfoJsonKeys.title] as String,
+        eduForm: jsonMap[_BaseEduInfoJsonKeys.eduForm]! as String,
+        eduCourse: jsonMap[_BaseEduInfoJsonKeys.eduCourse]! as int,
+        eduLevel: jsonMap[_BaseEduInfoJsonKeys.eduLevel]! as String,
+        faculty: (jsonMap[_BaseEduInfoJsonKeys.faculty]!
+            as JsonMap)[_BaseEduInfoJsonKeys.title]! as String,
+        eduDirection: (jsonMap[_BaseEduInfoJsonKeys.eduDirection]!
+            as JsonMap)[_BaseEduInfoJsonKeys.title]! as String,
+        eduGroup: (jsonMap[_BaseEduInfoJsonKeys.eduGroup]!
+            as JsonMap)[_BaseEduInfoJsonKeys.title]! as String,
         eduSpecialization: (jsonMap[_BaseEduInfoJsonKeys.eduSpecialization]
             as JsonMap?)?[_BaseEduInfoJsonKeys.title] as String?,
       );
 
   factory BaseEduInfo.previewStudentfromJson(JsonMap json) => BaseEduInfo(
-        eduForm: json[_BaseEduInfoJsonKeys.eduForm] as String,
-        eduCourse: json[_BaseEduInfoJsonKeys.eduCourse] as int,
-        eduLevel: json[_BaseEduInfoJsonKeys.eduLevel] as String,
-        faculty: json[_BaseEduInfoJsonKeys.department] as String,
-        eduDirection: json[_BaseEduInfoJsonKeys.eduDirection] as String,
-        eduGroup: json[_BaseEduInfoJsonKeys.eduGroup] as String,
+        eduForm: json[_BaseEduInfoJsonKeys.eduForm]! as String,
+        eduCourse: json[_BaseEduInfoJsonKeys.eduCourse]! as int,
+        eduLevel: json[_BaseEduInfoJsonKeys.eduLevel]! as String,
+        faculty: json[_BaseEduInfoJsonKeys.department]! as String,
+        eduDirection: json[_BaseEduInfoJsonKeys.eduDirection]! as String,
+        eduGroup: json[_BaseEduInfoJsonKeys.eduGroup]! as String,
         eduSpecialization:
             json[_BaseEduInfoJsonKeys.eduSpecialization] as String?,
       );

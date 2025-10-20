@@ -83,13 +83,14 @@ class MessageFetcherServiceImpl implements MessageFetcherService {
       return null;
     }
 
-    final data = (response.data as JsonMap)[_JsonKeys.data] as JsonMap;
+    final data = (response.data as JsonMap)[_JsonKeys.data]! as JsonMap;
     final messages = await _processMessagesData(data);
 
     return PaginatedResult(
       items: messages,
-      hasPreviousPage: data[PaginatedResultJsonKeys.hasPrevPage] ?? false,
-      hasNextPage: data[PaginatedResultJsonKeys.hasNextPage],
+      hasPreviousPage:
+          data[PaginatedResultJsonKeys.hasPrevPage] as bool? ?? false,
+      hasNextPage: data[PaginatedResultJsonKeys.hasNextPage]! as bool,
     );
   }
 
@@ -105,9 +106,10 @@ class MessageFetcherServiceImpl implements MessageFetcherService {
       ...buildObjectByIdMap(data[_JsonKeys.additionalMessages]),
       ...buildObjectByIdMap(data[_JsonKeys.messages]),
     };
-    final messageIdsWithReactions = reactionsJson
-        .map<int>((msg) => (msg as JsonMap)[_JsonKeys.messageId] as int)
-        .toSet();
+    final messageIdsWithReactions = {
+      for (final msg in reactionsJson)
+        (msg as JsonMap)[_JsonKeys.messageId]! as int,
+    };
 
     return parseJsonIterableAsync<Message>(
       messagesJson,
@@ -209,7 +211,7 @@ class MessageFetcherServiceImpl implements MessageFetcherService {
 
   List<dynamic> _processFiles(List? rawFileIds, Map<int, dynamic> filesById) {
     final fileIds = rawFileIds ?? [];
-    return fileIds.map((fileId) => filesById[int.parse(fileId)]).toList();
+    return [for (final fileId in fileIds) filesById[int.parse(fileId)]];
   }
 
   Map<String, dynamic> _processReplyAndForward(

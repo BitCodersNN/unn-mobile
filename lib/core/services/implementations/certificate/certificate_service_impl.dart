@@ -33,7 +33,7 @@ class CertificatesServiceImpl implements CertificatesService {
       return null;
     }
     final jsonMap = jsonDecode(response.data) as JsonMap;
-    if (!(jsonMap['enabled'] as bool)) {
+    if (!(jsonMap['enabled']! as bool)) {
       return Certificates.empty();
     }
 

@@ -42,10 +42,10 @@ class Semester {
 
   factory Semester.fromJson(JsonMap jsonMap) => Semester(
         semester: int.parse(
-          jsonMap[SemesterJsonKeys.semester] as String,
+          jsonMap[SemesterJsonKeys.semester]! as String,
         ),
         year: int.parse(
-          jsonMap[SemesterJsonKeys.year] as String,
+          jsonMap[SemesterJsonKeys.year]! as String,
         ),
       );
 

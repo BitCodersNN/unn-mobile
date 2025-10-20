@@ -66,10 +66,10 @@ class DialogServiceImpl implements DialogService {
     }
 
     final dialogs = parseJsonIterable<Dialog>(
-      ((response.data as JsonMap)[_ResponseJsonKeys.result]
-          as JsonMap)[_ResponseJsonKeys.items],
+      ((response.data as JsonMap)[_ResponseJsonKeys.result]!
+          as JsonMap)[_ResponseJsonKeys.items]! as Iterable,
       (json) {
-        final type = json[_ResponseJsonKeys.type] as String;
+        final type = json[_ResponseJsonKeys.type]! as String;
         switch (type) {
           case _ResponseJsonKeys.chat:
             return GroupDialog.fromJson(json);
@@ -84,8 +84,8 @@ class DialogServiceImpl implements DialogService {
 
     return PartialResult(
       items: dialogs,
-      hasMore: ((response.data as JsonMap)[_ResponseJsonKeys.result]
-          as JsonMap)[PartialResultJsonKeys.hasMore],
+      hasMore: ((response.data as JsonMap)[_ResponseJsonKeys.result]!
+          as JsonMap)[PartialResultJsonKeys.hasMore]! as bool,
     );
   }
 }

@@ -36,7 +36,7 @@ class LastCommitShaServiceImpl implements LastCommitShaService {
     }
 
     try {
-      return (response.data as JsonMap)['sha'];
+      return (response.data as JsonMap)['sha'] as String?;
     } catch (error, stackTrace) {
       _loggerService.log('Exception: $error\nStackTrace: $stackTrace');
       return null;

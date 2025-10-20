@@ -15,11 +15,10 @@ class MessageReactionViewModel extends ReactionViewModelBase {
     this._reactionServiceAggregator,
     super._currentUserSyncStorage,
   );
-  factory MessageReactionViewModel.cached(MessageReactionCacheKey key) {
-    return Injector.appInstance
-        .get<MessageReactionViewModelFactory>()
-        .getViewModel(key);
-  }
+  factory MessageReactionViewModel.cached(MessageReactionCacheKey key) =>
+      Injector.appInstance
+          .get<MessageReactionViewModelFactory>()
+          .getViewModel(key);
 
   final MessageReactionServiceAggregator _reactionServiceAggregator;
 

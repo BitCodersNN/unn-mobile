@@ -18,23 +18,21 @@ class PackedPostImages extends StatelessWidget {
   final Iterable<String> attachedImages;
 
   @override
-  Widget build(BuildContext context) {
-    return PackedImagesView(
-      onChildTap: (index) async {
-        await showDialog(
-          context: context,
-          builder: (context) => _ImagesCarouselDialog(attachedImages, index),
-        );
-      },
-      children: attachedImages
-          .map(
-            (e) => CachedNetworkImage(
-              imageUrl: e.startsWith('/') ? 'https://portal.unn.ru$e' : e,
-            ),
-          )
-          .toList(),
-    );
-  }
+  Widget build(BuildContext context) => PackedImagesView(
+        onChildTap: (index) async {
+          await showDialog(
+            context: context,
+            builder: (context) => _ImagesCarouselDialog(attachedImages, index),
+          );
+        },
+        children: attachedImages
+            .map(
+              (e) => CachedNetworkImage(
+                imageUrl: e.startsWith('/') ? 'https://portal.unn.ru$e' : e,
+              ),
+            )
+            .toList(),
+      );
 }
 
 class _ImagesCarouselDialog extends StatefulWidget {
@@ -61,31 +59,27 @@ class _ImagesCarouselDialogState extends State<_ImagesCarouselDialog> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _overlay = OverlayEntry(
-        builder: (context) {
-          return _ImagesCarouselDialogOverlay(
-            key: _overlayKey,
-            length: widget.attachedImages.length,
-            initialIndex: widget.initialIndex.value,
-          );
-        },
+        builder: (context) => _ImagesCarouselDialogOverlay(
+          key: _overlayKey,
+          length: widget.attachedImages.length,
+          initialIndex: widget.initialIndex.value,
+        ),
       );
       Overlay.of(context, rootOverlay: true).insert(_overlay);
     });
   }
 
   @override
-  Widget build(BuildContext context) {
-    return ExtendedImageSlidePage(
-      slideAxis: SlideAxis.vertical,
-      child: ImagesCarousel(
-        attachedImages: widget.attachedImages,
-        imageModel: widget.initialIndex.value,
-        onPageChanged: (index) {
-          _overlayKey.currentState?.updateIndex(index);
-        },
-      ),
-    );
-  }
+  Widget build(BuildContext context) => ExtendedImageSlidePage(
+        slideAxis: SlideAxis.vertical,
+        child: ImagesCarousel(
+          attachedImages: widget.attachedImages,
+          imageModel: widget.initialIndex.value,
+          onPageChanged: (index) {
+            _overlayKey.currentState?.updateIndex(index);
+          },
+        ),
+      );
 
   @override
   void dispose() {
@@ -127,29 +121,27 @@ class _ImagesCarouselDialogOverlayState
   }
 
   @override
-  Widget build(BuildContext context) {
-    return SafeArea(
-      child: Align(
-        alignment: Alignment.topCenter,
-        child: Material(
-          color: Colors.transparent,
-          child: Container(
-            padding: const EdgeInsets.all(12),
-            decoration: const BoxDecoration(
-              color: Colors.transparent,
-            ),
-            child: Text(
-              '${index + 1} из ${widget.initialIndex.max + 1}',
-              style: const TextStyle(
-                color: Colors.black,
-                fontSize: 24,
+  Widget build(BuildContext context) => SafeArea(
+        child: Align(
+          alignment: Alignment.topCenter,
+          child: Material(
+            color: Colors.transparent,
+            child: Container(
+              padding: const EdgeInsets.all(12),
+              decoration: const BoxDecoration(
+                color: Colors.transparent,
+              ),
+              child: Text(
+                '${index + 1} из ${widget.initialIndex.max + 1}',
+                style: const TextStyle(
+                  color: Colors.black,
+                  fontSize: 24,
+                ),
               ),
             ),
           ),
         ),
-      ),
-    );
-  }
+      );
 }
 
 class ImagesCarousel extends StatefulWidget {
@@ -170,21 +162,19 @@ class ImagesCarousel extends StatefulWidget {
 
 class _ImagesCarouselState extends State<ImagesCarousel> {
   @override
-  Widget build(BuildContext context) {
-    return CarouselSlider(
-      options: CarouselOptions(
-        scrollPhysics: const BouncingScrollPhysics(),
-        enableInfiniteScroll: false,
-        disableCenter: true,
-        padEnds: true,
-        viewportFraction: 1.0,
-        initialPage: widget.imageModel,
-        onPageChanged: (index, reason) => widget.onPageChanged?.call(index),
-      ),
-      items: [
-        for (final image in widget.attachedImages)
-          DismissibleImage(image: image),
-      ],
-    );
-  }
+  Widget build(BuildContext context) => CarouselSlider(
+        options: CarouselOptions(
+          scrollPhysics: const BouncingScrollPhysics(),
+          enableInfiniteScroll: false,
+          disableCenter: true,
+          padEnds: true,
+          viewportFraction: 1.0,
+          initialPage: widget.imageModel,
+          onPageChanged: (index, reason) => widget.onPageChanged?.call(index),
+        ),
+        items: [
+          for (final image in widget.attachedImages)
+            DismissibleImage(image: image),
+        ],
+      );
 }

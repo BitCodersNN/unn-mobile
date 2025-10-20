@@ -31,201 +31,186 @@ class SourcePageView extends StatelessWidget {
             .getViewModelByRouteIndex<SourcePageViewModel>(bottomRouteIndex!);
     return OfflineOverlayDisplayer(
       child: OnlineStatusBuilder(
-        builder: (context, online) {
-          return BaseView<SourcePageViewModel>(
-            model: viewModel,
-            builder: (context, model, child) {
-              return DefaultTabController(
-                length: 2,
-                child: Scaffold(
-                  appBar: AppBar(
-                    title: const Text('Материалы'),
-                    bottom: const TabBar.secondary(
-                      tabs: [
-                        Tab(
-                          child: Text('Учебные материалы'),
-                        ),
-                        Tab(
-                          child: Text('Онлайн-занятия'),
+        builder: (context, online) => BaseView<SourcePageViewModel>(
+          model: viewModel,
+          builder: (context, model, child) => DefaultTabController(
+            length: 2,
+            child: Scaffold(
+              appBar: AppBar(
+                title: const Text('Материалы'),
+                bottom: const TabBar.secondary(
+                  tabs: [
+                    Tab(
+                      child: Text('Учебные материалы'),
+                    ),
+                    Tab(
+                      child: Text('Онлайн-занятия'),
+                    ),
+                  ],
+                ),
+                actions: [
+                  if (model.semesters.isNotEmpty)
+                    PopupMenuButton(
+                      itemBuilder: (context) => [
+                        const PopupMenuItem(
+                          value: _selectSemesterKey,
+                          child: Text('Выбрать семестр'),
                         ),
                       ],
-                    ),
-                    actions: [
-                      if (model.semesters.isNotEmpty)
-                        PopupMenuButton(
-                          itemBuilder: (context) {
-                            return [
-                              const PopupMenuItem(
-                                value: _selectSemesterKey,
-                                child: Text('Выбрать семестр'),
+                      onSelected: (value) async {
+                        switch (value) {
+                          case _selectSemesterKey:
+                            final selectedSem = await showDialog<int?>(
+                              context: context,
+                              builder: (context) => RadioGroupDialog(
+                                label: const Text('Выберите семестр:'),
+                                initialIndex: model.currentSemesterIndex ?? 0,
+                                radioLabels: [
+                                  for (final s in model.semesters)
+                                    Text(s.toString()),
+                                ],
                               ),
-                            ];
-                          },
-                          onSelected: (value) async {
-                            switch (value) {
-                              case _selectSemesterKey:
-                                final selectedSem = await showDialog<int?>(
-                                  context: context,
-                                  builder: (context) {
-                                    return RadioGroupDialog(
-                                      label: const Text('Выберите семестр:'),
-                                      initialIndex:
-                                          model.currentSemesterIndex ?? 0,
-                                      radioLabels: model.semesters
-                                          .map((s) => Text(s.toString()))
-                                          .toList(),
-                                    );
-                                  },
-                                );
-                                if (selectedSem == null) {
-                                  return;
-                                }
-                                model.setSemester(selectedSem);
-                                break;
+                            );
+                            if (selectedSem == null) {
+                              return;
                             }
+                            model.setSemester(selectedSem);
+                            break;
+                        }
+                      },
+                    ),
+                ],
+                leading: getSubpageLeading(bottomRouteIndex),
+              ),
+              body: TabBarView(
+                children: [
+                  Builder(
+                    builder: (context) {
+                      if (model.isBusy) {
+                        return const Center(
+                          child: SizedBox(
+                            width: 40,
+                            height: 40,
+                            child: CircularProgressIndicator(),
+                          ),
+                        );
+                      }
+                      if (model.hasMaterialsError || model.courses.isEmpty) {
+                        return RefreshIndicator(
+                          onRefresh: () async => await model.refresh(),
+                          child: LayoutBuilder(
+                            builder: (context, constraints) =>
+                                SingleChildScrollView(
+                              physics: const AlwaysScrollableScrollPhysics(),
+                              child: ConstrainedBox(
+                                constraints: BoxConstraints(
+                                  minWidth: constraints.maxWidth,
+                                  minHeight: constraints.maxHeight,
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    model.materialsError ??
+                                        (model.courses.isEmpty
+                                            ? 'Нет доступных материалов'
+                                            : ''),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        );
+                      }
+                      final list = model.courses.toList();
+                      return RefreshIndicator(
+                        onRefresh: () async => model.refresh(),
+                        child: ListView.builder(
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          itemCount: list.length,
+                          itemBuilder: (context, index) =>
+                              SourceCourseView(model: list[index]),
+                        ),
+                      );
+                    },
+                  ),
+                  // --------------------------
+                  // ссылки
+                  // --------------------------
+                  Builder(
+                    builder: (context) {
+                      if (model.isBusy) {
+                        return const Center(
+                          child: SizedBox(
+                            width: 40,
+                            height: 40,
+                            child: CircularProgressIndicator(),
+                          ),
+                        );
+                      }
+                      if (model.hasWebinarsError || model.webinars.isEmpty) {
+                        return RefreshIndicator(
+                          onRefresh: () async => await model.refresh(),
+                          child: LayoutBuilder(
+                            builder: (context, constraints) =>
+                                SingleChildScrollView(
+                              physics: const AlwaysScrollableScrollPhysics(),
+                              child: ConstrainedBox(
+                                constraints: BoxConstraints(
+                                  minWidth: constraints.maxWidth,
+                                  minHeight: constraints.maxHeight,
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    model.webinarsError ??
+                                        (model.webinars.isEmpty
+                                            ? 'Нет доступных ссылок'
+                                            : ''),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        );
+                      }
+                      final dates =
+                          model.webinars.keys.toList().reversed.toList();
+                      final theme = Theme.of(context);
+                      return RefreshIndicator(
+                        onRefresh: () async => await model.refresh(),
+                        child: ListView.builder(
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          itemCount: dates.length,
+                          itemBuilder: (context, index) {
+                            final date = dates[index];
+
+                            return Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 12.0,
+                                    horizontal: 28.0,
+                                  ),
+                                  child: Text(
+                                    date.format(DatePattern.dMMMM),
+                                    style: theme.textTheme.headlineSmall,
+                                  ),
+                                ),
+                                for (final webinar
+                                    in model.webinars[date] ?? [])
+                                  SourceWebinarView(model: webinar),
+                              ],
+                            );
                           },
                         ),
-                    ],
-                    leading: getSubpageLeading(bottomRouteIndex),
+                      );
+                    },
                   ),
-                  body: TabBarView(
-                    children: [
-                      Builder(
-                        builder: (context) {
-                          if (model.isBusy) {
-                            return const Center(
-                              child: SizedBox(
-                                width: 40,
-                                height: 40,
-                                child: CircularProgressIndicator(),
-                              ),
-                            );
-                          }
-                          if (model.hasMaterialsError ||
-                              model.courses.isEmpty) {
-                            return RefreshIndicator(
-                              onRefresh: () async => await model.refresh(),
-                              child: LayoutBuilder(
-                                builder: (context, constraints) {
-                                  return SingleChildScrollView(
-                                    physics:
-                                        const AlwaysScrollableScrollPhysics(),
-                                    child: ConstrainedBox(
-                                      constraints: BoxConstraints(
-                                        minWidth: constraints.maxWidth,
-                                        minHeight: constraints.maxHeight,
-                                      ),
-                                      child: Center(
-                                        child: Text(
-                                          model.materialsError ??
-                                              (model.courses.isEmpty
-                                                  ? 'Нет доступных материалов'
-                                                  : ''),
-                                        ),
-                                      ),
-                                    ),
-                                  );
-                                },
-                              ),
-                            );
-                          }
-                          final list = model.courses.toList();
-                          return RefreshIndicator(
-                            onRefresh: () async => model.refresh(),
-                            child: ListView.builder(
-                              physics: const AlwaysScrollableScrollPhysics(),
-                              itemCount: list.length,
-                              itemBuilder: (context, index) {
-                                return SourceCourseView(model: list[index]);
-                              },
-                            ),
-                          );
-                        },
-                      ),
-                      // --------------------------
-                      // ссылки
-                      // --------------------------
-                      Builder(
-                        builder: (context) {
-                          if (model.isBusy) {
-                            return const Center(
-                              child: SizedBox(
-                                width: 40,
-                                height: 40,
-                                child: CircularProgressIndicator(),
-                              ),
-                            );
-                          }
-                          if (model.hasWebinarsError ||
-                              model.webinars.isEmpty) {
-                            return RefreshIndicator(
-                              onRefresh: () async => await model.refresh(),
-                              child: LayoutBuilder(
-                                builder: (context, constraints) {
-                                  return SingleChildScrollView(
-                                    physics:
-                                        const AlwaysScrollableScrollPhysics(),
-                                    child: ConstrainedBox(
-                                      constraints: BoxConstraints(
-                                        minWidth: constraints.maxWidth,
-                                        minHeight: constraints.maxHeight,
-                                      ),
-                                      child: Center(
-                                        child: Text(
-                                          model.webinarsError ??
-                                              (model.webinars.isEmpty
-                                                  ? 'Нет доступных ссылок'
-                                                  : ''),
-                                        ),
-                                      ),
-                                    ),
-                                  );
-                                },
-                              ),
-                            );
-                          }
-                          final dates =
-                              model.webinars.keys.toList().reversed.toList();
-                          final theme = Theme.of(context);
-                          return RefreshIndicator(
-                            onRefresh: () async => await model.refresh(),
-                            child: ListView.builder(
-                              physics: const AlwaysScrollableScrollPhysics(),
-                              itemCount: dates.length,
-                              itemBuilder: (context, index) {
-                                final date = dates[index];
-
-                                return Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                        vertical: 12.0,
-                                        horizontal: 28.0,
-                                      ),
-                                      child: Text(
-                                        date.format(DatePattern.dMMMM),
-                                        style: theme.textTheme.headlineSmall,
-                                      ),
-                                    ),
-                                    for (final webinar
-                                        in model.webinars[date] ?? [])
-                                      SourceWebinarView(model: webinar),
-                                  ],
-                                );
-                              },
-                            ),
-                          );
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            },
-            onModelReady: (model) => model.init(),
-          );
-        },
+                ],
+              ),
+            ),
+          ),
+          onModelReady: (model) => model.init(),
+        ),
       ),
     );
   }

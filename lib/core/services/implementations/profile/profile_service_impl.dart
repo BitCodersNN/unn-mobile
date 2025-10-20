@@ -42,7 +42,7 @@ class ProfileServiceImpl implements ProfileService {
 
     final data = response.data as JsonMap;
     final userType = data[ProfilesStrings.type] ??
-        ((data[ProfilesStrings.profilesKey] as List)[0]
+        ((data[ProfilesStrings.profilesKey]! as List)[0]
             as JsonMap)[ProfilesStrings.type];
 
     UserData? userData;
@@ -101,7 +101,7 @@ class ProfileServiceImpl implements ProfileService {
 
     int? id;
     try {
-      id = (response.data as JsonMap)[_id];
+      id = (response.data as JsonMap)[_id] as int?;
     } catch (error, stackTrace) {
       _loggerService.logError(error, stackTrace);
     }

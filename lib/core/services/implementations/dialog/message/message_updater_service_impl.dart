@@ -60,6 +60,6 @@ class MessageUpdaterServiceImpl implements MessageUpdaterService {
       return false;
     }
 
-    return (response.data as JsonMap)[_JsonKeys.data];
+    return (response.data as JsonMap)[_JsonKeys.data]! as bool;
   }
 }

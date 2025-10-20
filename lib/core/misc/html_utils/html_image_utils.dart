@@ -122,9 +122,11 @@ dom.Document? _parseHtmlSafely(String htmlText) {
   }
 }
 
-Map<String, dynamic> _buildResult(String cleanedText, List<String>? imageUrls) {
-  return {
-    ExtractImagesAndCleanHtmlTextMapKey.cleanedText: cleanedText,
-    ExtractImagesAndCleanHtmlTextMapKey.imageUrls: imageUrls,
-  };
-}
+Map<String, dynamic> _buildResult(
+  String cleanedText,
+  List<String>? imageUrls,
+) =>
+    {
+      ExtractImagesAndCleanHtmlTextMapKey.cleanedText: cleanedText,
+      ExtractImagesAndCleanHtmlTextMapKey.imageUrls: imageUrls,
+    };

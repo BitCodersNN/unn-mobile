@@ -20,9 +20,11 @@ class ReplyInfo {
   });
 
   factory ReplyInfo.fromJson(JsonMap jsonMap) => ReplyInfo(
-        replyMessage:
-            MessageShortInfo.fromJson(jsonMap[ReplyInfoJsonKeys.replyMessage]),
-        messageStatus: jsonMap[ReplyInfoJsonKeys.replyMessageStatus],
+        replyMessage: MessageShortInfo.fromJson(
+          jsonMap[ReplyInfoJsonKeys.replyMessage]! as JsonMap,
+        ),
+        messageStatus:
+            jsonMap[ReplyInfoJsonKeys.replyMessageStatus]! as MessageState,
       );
 
   JsonMap toJson() => {

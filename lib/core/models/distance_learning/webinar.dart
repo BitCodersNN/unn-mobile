@@ -44,19 +44,19 @@ final class Webinar {
   });
 
   factory Webinar.fromJson(JsonMap jsonMap) => Webinar(
-        id: int.tryParse(jsonMap[_WebinarJsonKeys.id] as String),
-        discipline: jsonMap[_WebinarJsonKeys.discipline] as String,
-        title: jsonMap[_WebinarJsonKeys.title] as String,
-        comment: jsonMap[_WebinarJsonKeys.comment] as String,
+        id: int.tryParse(jsonMap[_WebinarJsonKeys.id]! as String),
+        discipline: jsonMap[_WebinarJsonKeys.discipline]! as String,
+        title: jsonMap[_WebinarJsonKeys.title]! as String,
+        comment: jsonMap[_WebinarJsonKeys.comment]! as String,
         dateTimeRange: _parseDateTimeRange(jsonMap),
-        groups: (jsonMap[_WebinarJsonKeys.groups] as String)
+        groups: (jsonMap[_WebinarJsonKeys.groups]! as String)
             .split('|')
             .where((element) => element.isNotEmpty)
             .toSet()
             .toList(),
-        employeeLogin: jsonMap[_WebinarJsonKeys.login] as String,
-        urlStream: jsonMap[_WebinarJsonKeys.urlStream] as String,
-        urlRecord: jsonMap[_WebinarJsonKeys.urlRecord] as String,
+        employeeLogin: jsonMap[_WebinarJsonKeys.login]! as String,
+        urlStream: jsonMap[_WebinarJsonKeys.urlStream]! as String,
+        urlRecord: jsonMap[_WebinarJsonKeys.urlRecord]! as String,
       );
 
   JsonMap toJson() => {
@@ -80,9 +80,9 @@ final class Webinar {
       };
 
   static DateTimeRange _parseDateTimeRange(JsonMap jsonMap) {
-    final dateString = jsonMap[_WebinarJsonKeys.date] as String;
-    final timeString = jsonMap[_WebinarJsonKeys.time] as String;
-    final finishTimeString = jsonMap[_WebinarJsonKeys.finishTime] as String;
+    final dateString = jsonMap[_WebinarJsonKeys.date]! as String;
+    final timeString = jsonMap[_WebinarJsonKeys.time]! as String;
+    final finishTimeString = jsonMap[_WebinarJsonKeys.finishTime]! as String;
 
     final startDateTime = DateTime.parse('$dateString $timeString');
     final endDateTime = DateTime.parse('$dateString $finishTimeString');

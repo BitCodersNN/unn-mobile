@@ -90,9 +90,8 @@ class ScheduleTabViewModel extends BaseViewModel {
   FutureOr<void> addHistoryItem(ScheduleSearchSuggestionItem item) =>
       _historyService.pushToHistory(_idType, item);
 
-  Future<RequestCalendarPermissionResult> askForExportPermission() {
-    return _exportScheduleService.requestCalendarPermission();
-  }
+  Future<RequestCalendarPermissionResult> askForExportPermission() =>
+      _exportScheduleService.requestCalendarPermission();
 
   DateTimeRange decidePivotWeek() => DateTime.now().weekday == DateTime.sunday
       ? DateTimeRanges.nextWeek()
@@ -233,9 +232,8 @@ class ScheduleTabViewModel extends BaseViewModel {
     notifyListeners();
   }
 
-  Future<List<ScheduleSearchSuggestionItem>> _getHistorySuggestions() async {
-    return await _historyService.getHistory(_idType);
-  }
+  Future<List<ScheduleSearchSuggestionItem>> _getHistorySuggestions() async =>
+      await _historyService.getHistory(_idType);
 
   Future<Map<int, List<Subject>>> _getScheduleLoader() async {
     setState(ViewState.busy);

@@ -42,20 +42,19 @@ final class GroupDialog extends Dialog {
       unreadMessagesCount: dialog.unreadMessagesCount,
       lastMessageStatus: dialog.lastMessageStatus,
       pinned: dialog.pinned,
-      dialogId: json[GroupDialogJsonKeys.id],
-      chatSetting: _parseChatSetting(json[GroupDialogJsonKeys.chat]),
+      dialogId: json[GroupDialogJsonKeys.id]! as String,
+      chatSetting:
+          _parseChatSetting(json[GroupDialogJsonKeys.chat]! as JsonMap),
     );
   }
 
   @override
-  JsonMap toJson() {
-    return {
-      ...super.toJson(),
-      GroupDialogJsonKeys.id: dialogId,
-      GroupDialogJsonKeys.chat: chatSetting.toJson(),
-      GroupDialogJsonKeys.type: GroupDialogJsonKeys.chat,
-    };
-  }
+  JsonMap toJson() => {
+        ...super.toJson(),
+        GroupDialogJsonKeys.id: dialogId,
+        GroupDialogJsonKeys.chat: chatSetting.toJson(),
+        GroupDialogJsonKeys.type: GroupDialogJsonKeys.chat,
+      };
 
   static ChatSetting _parseChatSetting(JsonMap chatJson) {
     final type = chatJson[GroupDialogJsonKeys.type] as String?;

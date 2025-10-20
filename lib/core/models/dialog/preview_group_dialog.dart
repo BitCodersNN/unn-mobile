@@ -29,9 +29,9 @@ class PreviewGroupDialog extends PreviewDialog {
       chatId: dialog.chatId,
       title: dialog.title,
       avatarUrl: dialog.avatarUrl,
-      id: json[_PreviewGroupDialogJsonKeys.id],
+      id: json[_PreviewGroupDialogJsonKeys.id]! as String,
       baseChatSetting: BaseChatSetting.fromJson(
-        json[_PreviewGroupDialogJsonKeys.customData],
+        json[_PreviewGroupDialogJsonKeys.customData]! as JsonMap,
       ),
     );
   }

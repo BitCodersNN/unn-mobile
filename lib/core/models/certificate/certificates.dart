@@ -41,16 +41,14 @@ class Certificates {
     return Certificates._(certificates: certificates);
   }
 
-  static List<Certificate> _parsePracticeCertificates(List<dynamic> practices) {
-    return practices
-        .whereType<JsonMap>()
-        .map(
-          (practice) => PracticeOrder.fromJson(
-            _createPracticeCertificateJson(practice),
-          ),
-        )
-        .toList();
-  }
+  static List<Certificate> _parsePracticeCertificates(
+    List<dynamic> practices,
+  ) =>
+      [
+        for (final practice in practices)
+          if (practice is JsonMap)
+            PracticeOrder.fromJson(_createPracticeCertificateJson(practice)),
+      ];
 
   static JsonMap _createCertificateJson(
     String certificateType,

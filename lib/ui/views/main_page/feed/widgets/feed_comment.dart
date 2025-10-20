@@ -24,11 +24,9 @@ class FeedCommentView extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
-    return BaseView<FeedCommentViewModel>(
-      model: viewModel,
-      builder: (context, model, child) {
-        return Shimmer(
+  Widget build(BuildContext context) => BaseView<FeedCommentViewModel>(
+        model: viewModel,
+        builder: (context, model, child) => Shimmer(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -61,10 +59,8 @@ class FeedCommentView extends StatelessWidget {
               _ReactionView(model: model.reactionViewModel, context: context),
             ],
           ),
-        );
-      },
-    );
-  }
+        ),
+      );
 }
 
 class _ReactionView extends StatelessWidget {
@@ -81,47 +77,45 @@ class _ReactionView extends StatelessWidget {
     final scaledAddButtonSize = MediaQuery.of(context).textScaler.scale(20) + 8;
     return BaseView<ReactionViewModel>(
       model: model,
-      builder: (context, model, _) {
-        return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: Wrap(
-            direction: Axis.horizontal,
-            spacing: 8,
-            crossAxisAlignment: WrapCrossAlignment.center,
-            children: [
-              for (final reaction in ReactionType.values)
-                if (model.getReactionCount(reaction) > 0)
-                  ReactionBubble(
-                    isSelected: model.currentReaction == reaction,
-                    onPressed: () {
-                      model.toggleReaction(reaction);
-                    },
-                    icon: Image.asset(reaction.assetName),
-                    text: model.getReactionCount(reaction).toString(),
-                  ),
-              if (!model.isLoading && model.canAddReaction)
-                IconButton.filledTonal(
-                  padding: EdgeInsets.zero,
-                  constraints: BoxConstraints.tightFor(
-                    height: scaledAddButtonSize,
-                    width: scaledAddButtonSize,
-                  ),
+      builder: (context, model, _) => Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+        child: Wrap(
+          direction: Axis.horizontal,
+          spacing: 8,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          children: [
+            for (final reaction in ReactionType.values)
+              if (model.getReactionCount(reaction) > 0)
+                ReactionBubble(
+                  isSelected: model.currentReaction == reaction,
                   onPressed: () {
-                    showReactionChoicePanel(context, model);
+                    model.toggleReaction(reaction);
                   },
-                  icon: Icon(
-                    Icons.add,
-                    size: MediaQuery.of(context)
-                        .textScaler
-                        .clamp(maxScaleFactor: 1.3)
-                        .scale(16),
-                  ),
+                  icon: Image.asset(reaction.assetName),
+                  text: model.getReactionCount(reaction).toString(),
                 ),
-              //
-            ],
-          ),
-        );
-      },
+            if (!model.isLoading && model.canAddReaction)
+              IconButton.filledTonal(
+                padding: EdgeInsets.zero,
+                constraints: BoxConstraints.tightFor(
+                  height: scaledAddButtonSize,
+                  width: scaledAddButtonSize,
+                ),
+                onPressed: () {
+                  showReactionChoicePanel(context, model);
+                },
+                icon: Icon(
+                  Icons.add,
+                  size: MediaQuery.of(context)
+                      .textScaler
+                      .clamp(maxScaleFactor: 1.3)
+                      .scale(16),
+                ),
+              ),
+            //
+          ],
+        ),
+      ),
     );
   }
 }
@@ -142,75 +136,72 @@ class _CommentHeader extends StatelessWidget {
     final theme = Theme.of(context);
     return BaseView<ProfileViewModel>(
       model: viewModel,
-      builder: (context, model, _) {
-        return Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(left: 16),
-              child: ShimmerLoading(
-                isLoading: model.isLoading || hide,
-                child: CircleAvatar(
-                  backgroundImage: model.hasAvatar
-                      ? CachedNetworkImageProvider(model.avatarUrl!)
-                      : null,
-                  radius: MediaQuery.of(context).textScaler.scale(20),
-                  child: model.hasAvatar
-                      ? null
-                      : Text(
-                          style: theme.textTheme.headlineSmall!.copyWith(
-                            color: theme.colorScheme.onSurface,
-                            fontSize:
-                                MediaQuery.of(context).textScaler.scale(20),
-                          ),
-                          model.initials,
+      builder: (context, model, _) => Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(left: 16),
+            child: ShimmerLoading(
+              isLoading: model.isLoading || hide,
+              child: CircleAvatar(
+                backgroundImage: model.hasAvatar
+                    ? CachedNetworkImageProvider(model.avatarUrl!)
+                    : null,
+                radius: MediaQuery.of(context).textScaler.scale(20),
+                child: model.hasAvatar
+                    ? null
+                    : Text(
+                        style: theme.textTheme.headlineSmall!.copyWith(
+                          color: theme.colorScheme.onSurface,
+                          fontSize: MediaQuery.of(context).textScaler.scale(20),
                         ),
-                  //
-                ),
+                        model.initials,
+                      ),
+                //
               ),
             ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: ShimmerLoading(
-                isLoading: model.isLoading || hide,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    if (!model.isLoading && !hide)
-                      Text(
-                        model.fullname,
-                        style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      )
-                    else
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                        child: Container(
-                          width: double.infinity,
-                          height: MediaQuery.of(context)
-                              .textScaler
-                              .clamp(maxScaleFactor: 1.5)
-                              .scale(16),
-                          decoration: BoxDecoration(
-                            color: Colors.black,
-                            borderRadius: BorderRadius.circular(16),
-                          ),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: ShimmerLoading(
+              isLoading: model.isLoading || hide,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (!model.isLoading && !hide)
+                    Text(
+                      model.fullname,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    )
+                  else
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      child: Container(
+                        width: double.infinity,
+                        height: MediaQuery.of(context)
+                            .textScaler
+                            .clamp(maxScaleFactor: 1.5)
+                            .scale(16),
+                        decoration: BoxDecoration(
+                          color: Colors.black,
+                          borderRadius: BorderRadius.circular(16),
                         ),
                       ),
-                    if (!model.isLoading && !hide)
-                      Text(
-                        dateTime,
-                        style: theme.textTheme.bodySmall,
-                      ),
-                  ],
-                ),
+                    ),
+                  if (!model.isLoading && !hide)
+                    Text(
+                      dateTime,
+                      style: theme.textTheme.bodySmall,
+                    ),
+                ],
               ),
             ),
-          ],
-        );
-      },
+          ),
+        ],
+      ),
     );
   }
 }

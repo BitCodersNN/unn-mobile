@@ -36,9 +36,8 @@ class HttpRequestSender {
   /// Возращает строку
   static Future<String> responseToStringBody(
     HttpClientResponse response,
-  ) {
-    return response.transform(utf8.decoder).join();
-  }
+  ) =>
+      response.transform(utf8.decoder).join();
 
   /// Отправляет post запрос на сервер unn-portal
   ///
@@ -106,19 +105,16 @@ class HttpRequestSender {
     return request;
   }
 
-  Uri _createURI() {
-    return Uri.parse("${_useSSL ? "https" : "http"}://$_host/$_path")
-        .replace(queryParameters: _queryParams);
-  }
+  Uri _createURI() => Uri.parse("${_useSSL ? "https" : "http"}://$_host/$_path")
+      .replace(queryParameters: _queryParams);
 }
 
 extension on HttpClientRequest {
-  Future<HttpClientResponse> closeWithTimeout(int timeoutSeconds) {
-    return close().timeout(
-      Duration(seconds: timeoutSeconds),
-      onTimeout: () => throw TimeoutException('close request timed out'),
-    );
-  }
+  Future<HttpClientResponse> closeWithTimeout(int timeoutSeconds) =>
+      close().timeout(
+        Duration(seconds: timeoutSeconds),
+        onTimeout: () => throw TimeoutException('close request timed out'),
+      );
 }
 
 enum _HttpMethod {

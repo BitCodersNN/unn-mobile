@@ -37,73 +37,71 @@ class _ChatScreenViewState extends State<ChatScreenView> {
             );
 
     return BaseView<ChatScreenViewModel>(
-      builder: (context, model, child) {
-        return Scaffold(
-          appBar: AppBar(
-            title: const Text('Сообщения'),
-            leading: getSubpageLeading(widget.bottomRouteIndex),
-          ),
-          body: Builder(
-            builder: (context) {
-              if (model.isBusy && model.dialogs.isEmpty) {
-                return const Center(
-                  child: SizedBox(
-                    width: 40,
-                    height: 40,
-                    child: CircularProgressIndicator(),
-                  ),
-                );
-              }
-              if (model.hasError && model.dialogs.isEmpty) {
-                return Center(
-                  child: Column(
-                    children: [
-                      const Text('Не удалось загрузить'),
-                      TextButton(
-                        onPressed: () {
-                          model.init();
-                        },
-                        child: const Text('Повторить загрузку'),
-                      ),
-                    ],
-                  ),
-                );
-              }
-              return NotificationListener<ScrollEndNotification>(
-                onNotification: (e) {
-                  if (e.metrics.maxScrollExtent - e.metrics.pixels < 20.0 &&
-                      model.hasMoreDialogs) {
-                    model.loadMore();
-                  }
-                  return true;
-                },
-                child: RefreshIndicator(
-                  onRefresh: () async => await model.init(),
-                  child: ListView(
-                    physics: const AlwaysScrollableScrollPhysics(),
-                    children: [
-                      for (final (dialog) in model.dialogs)
-                        DialogInfo(
-                          dialog: dialog,
-                          chatsModel: model,
-                        ),
-                      if (model.hasError) const Text('Не удалось загрузить'),
-                      if (model.isBusy)
-                        const Center(
-                          child: SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(),
-                          ),
-                        ),
-                    ],
-                  ),
+      builder: (context, model, child) => Scaffold(
+        appBar: AppBar(
+          title: const Text('Сообщения'),
+          leading: getSubpageLeading(widget.bottomRouteIndex),
+        ),
+        body: Builder(
+          builder: (context) {
+            if (model.isBusy && model.dialogs.isEmpty) {
+              return const Center(
+                child: SizedBox(
+                  width: 40,
+                  height: 40,
+                  child: CircularProgressIndicator(),
                 ),
               );
-            },
-          ),
-        );
-      },
+            }
+            if (model.hasError && model.dialogs.isEmpty) {
+              return Center(
+                child: Column(
+                  children: [
+                    const Text('Не удалось загрузить'),
+                    TextButton(
+                      onPressed: () {
+                        model.init();
+                      },
+                      child: const Text('Повторить загрузку'),
+                    ),
+                  ],
+                ),
+              );
+            }
+            return NotificationListener<ScrollEndNotification>(
+              onNotification: (e) {
+                if (e.metrics.maxScrollExtent - e.metrics.pixels < 20.0 &&
+                    model.hasMoreDialogs) {
+                  model.loadMore();
+                }
+                return true;
+              },
+              child: RefreshIndicator(
+                onRefresh: () async => await model.init(),
+                child: ListView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  children: [
+                    for (final (dialog) in model.dialogs)
+                      DialogInfo(
+                        dialog: dialog,
+                        chatsModel: model,
+                      ),
+                    if (model.hasError) const Text('Не удалось загрузить'),
+                    if (model.isBusy)
+                      const Center(
+                        child: SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            );
+          },
+        ),
+      ),
       model: viewModel,
       onModelReady: (model) => model.init(),
     );

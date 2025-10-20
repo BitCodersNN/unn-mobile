@@ -36,10 +36,9 @@ class AuthorisationHelper {
           path: _pathOfEndpoint,
           data: formData,
           options: Options(
-            validateStatus: (status) {
-              return (status != null && status >= 200 && status < 300) ||
-                  additionalGoodStatusCodes.contains(status);
-            },
+            validateStatus: (status) =>
+                (status != null && status >= 200 && status < 300) ||
+                additionalGoodStatusCodes.contains(status),
           ),
         ),
       );
@@ -72,8 +71,6 @@ class AuthorisationHelper {
     return AuthRequestResult.noInternet;
   }
 
-  Future<bool> _isOffline() async {
-    return (await Connectivity().checkConnectivity())
-        .contains(ConnectivityResult.none);
-  }
+  Future<bool> _isOffline() async => (await Connectivity().checkConnectivity())
+      .contains(ConnectivityResult.none);
 }

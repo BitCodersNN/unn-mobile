@@ -22,13 +22,13 @@ class ForwardInfo {
 
   factory ForwardInfo.fromJson(JsonMap jsonMap) => ForwardInfo(
         forwardChatId:
-            (jsonMap[ForwardInfoJsonKeys.forwardId] as String).split('/')[0],
+            (jsonMap[ForwardInfoJsonKeys.forwardId]! as String).split('/')[0],
         forwardMessageId: int.parse(
-          (jsonMap[ForwardInfoJsonKeys.forwardId] as String).split('/')[1],
+          (jsonMap[ForwardInfoJsonKeys.forwardId]! as String).split('/')[1],
         ),
         forwardAuthor: jsonMap[ForwardInfoJsonKeys.forwardAuthor] != null
             ? UserShortInfo.fromMessageJson(
-                jsonMap[ForwardInfoJsonKeys.forwardAuthor],
+                jsonMap[ForwardInfoJsonKeys.forwardAuthor]! as JsonMap,
               )
             : null,
       );

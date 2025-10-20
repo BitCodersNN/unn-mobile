@@ -89,9 +89,9 @@ class ReactionServiceImpl implements ReactionService {
 
     dynamic jsonValue;
     try {
-      jsonValue =
-          ((response.data as JsonMap)[_KeysForReactionManagerJsonConverter.data]
-              as JsonMap)[_KeysForReactionManagerJsonConverter.userData];
+      jsonValue = ((response.data
+              as JsonMap)[_KeysForReactionManagerJsonConverter.data]!
+          as JsonMap)[_KeysForReactionManagerJsonConverter.userData];
     } catch (error, stackTrace) {
       _loggerService.logError(error, stackTrace);
       return null;

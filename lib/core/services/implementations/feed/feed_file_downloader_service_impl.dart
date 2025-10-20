@@ -23,24 +23,22 @@ class FeedFileDownloaderServiceImpl implements FeedFileDownloaderService {
     required String fileName,
     required String downloadUrl,
     required bool force,
-  }) {
-    return _fileDownloader.downloadFile(
-      fileName,
-      downloadUrl: downloadUrl,
-      force: force,
-    );
-  }
+  }) =>
+      _fileDownloader.downloadFile(
+        fileName,
+        downloadUrl: downloadUrl,
+        force: force,
+      );
 
   @override
   Future<List<File>?> downloadFiles({
     required List<String> fileNames,
     required String downloadUrl,
     required bool force,
-  }) {
-    return _fileDownloader.downloadFiles(
-      fileNames,
-      downloadUrl: downloadUrl,
-      force: force,
-    );
-  }
+  }) =>
+      _fileDownloader.downloadFiles(
+        fileNames,
+        downloadUrl: downloadUrl,
+        force: force,
+      );
 }

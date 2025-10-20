@@ -61,36 +61,34 @@ class _SendFieldState extends State<SendField> {
               onPressed: () async {
                 final files = await showModalBottomSheet<Iterable<String>?>(
                   context: context,
-                  builder: (context) {
-                    return Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        ListTile(
-                          title: const Text('Выбрать из галереи'),
-                          leading: const Icon(Icons.image),
-                          onTap: () async {
-                            final files =
-                                await openUploadFilePicker(gallery: true);
-                            if (context.mounted) {
-                              GoRouter.of(context).pop(files);
-                            }
-                          },
-                        ),
-                        ListTile(
-                          title: const Text('Выбрать файл'),
-                          leading: const Icon(Icons.file_present_rounded),
-                          onTap: () async {
-                            final files = await openUploadFilePicker(
-                              gallery: false,
-                            );
-                            if (context.mounted) {
-                              GoRouter.of(context).pop(files);
-                            }
-                          },
-                        ),
-                      ],
-                    );
-                  },
+                  builder: (context) => Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      ListTile(
+                        title: const Text('Выбрать из галереи'),
+                        leading: const Icon(Icons.image),
+                        onTap: () async {
+                          final files =
+                              await openUploadFilePicker(gallery: true);
+                          if (context.mounted) {
+                            GoRouter.of(context).pop(files);
+                          }
+                        },
+                      ),
+                      ListTile(
+                        title: const Text('Выбрать файл'),
+                        leading: const Icon(Icons.file_present_rounded),
+                        onTap: () async {
+                          final files = await openUploadFilePicker(
+                            gallery: false,
+                          );
+                          if (context.mounted) {
+                            GoRouter.of(context).pop(files);
+                          }
+                        },
+                      ),
+                    ],
+                  ),
                 );
 
                 if (files == null || files.isEmpty) {

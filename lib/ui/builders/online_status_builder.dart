@@ -41,13 +41,10 @@ class _OnlineStatusBuilderState extends State<OnlineStatusBuilder> {
       Injector.appInstance.get<OnlineStatusData>();
 
   @override
-  Widget build(BuildContext context) {
-    return ValueListenableBuilder<bool>(
-      valueListenable: onlineStatusData.notifier,
-      builder: (context, value, _) {
-        return widget.builder?.call(context, value) ??
-            (value ? widget.onlineWidget! : widget.offlineWidget!);
-      },
-    );
-  }
+  Widget build(BuildContext context) => ValueListenableBuilder<bool>(
+        valueListenable: onlineStatusData.notifier,
+        builder: (context, value, _) =>
+            widget.builder?.call(context, value) ??
+            (value ? widget.onlineWidget! : widget.offlineWidget!),
+      );
 }

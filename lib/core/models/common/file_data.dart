@@ -73,7 +73,7 @@ class FileData
     bool generateIdFromName = false,
   }) {
     final id = switch (generateIdFromName) {
-      true => (json[keys.name] as String).hashCode,
+      true => (json[keys.name]! as String).hashCode,
       false => switch (json[keys.id]) {
           final int idValue => idValue,
           final String idString => int.parse(idString),
@@ -89,33 +89,27 @@ class FileData
 
     return FileData(
       id: id,
-      name: json[keys.name] as String,
+      name: json[keys.name]! as String,
       sizeInBytes: size,
-      downloadUrl: json[keys.downloadUrl] as String,
+      downloadUrl: json[keys.downloadUrl]! as String,
     );
   }
 
-  factory FileData.fromJson(JsonMap json) {
-    return FileData._fromJsonWithKeys(
-      json,
-      const _DefaultFileDataKeys(),
-      generateIdFromName: true,
-    );
-  }
+  factory FileData.fromJson(JsonMap json) => FileData._fromJsonWithKeys(
+        json,
+        const _DefaultFileDataKeys(),
+        generateIdFromName: true,
+      );
 
-  factory FileData.fromBitrixJson(JsonMap json) {
-    return FileData._fromJsonWithKeys(
-      json,
-      const _BitrixFileDataKeys(),
-    );
-  }
+  factory FileData.fromBitrixJson(JsonMap json) => FileData._fromJsonWithKeys(
+        json,
+        const _BitrixFileDataKeys(),
+      );
 
-  factory FileData.fromMessageJson(JsonMap json) {
-    return FileData._fromJsonWithKeys(
-      json,
-      const _MessageFileDataKeys(),
-    );
-  }
+  factory FileData.fromMessageJson(JsonMap json) => FileData._fromJsonWithKeys(
+        json,
+        const _MessageFileDataKeys(),
+      );
 
   @protected
   @override

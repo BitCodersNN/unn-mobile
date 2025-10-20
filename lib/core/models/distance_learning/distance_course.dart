@@ -32,9 +32,9 @@ class DistanceCourse {
 
   factory DistanceCourse.fromJson(JsonMap jsonMap) => DistanceCourse(
         semester: Semester.fromJson(jsonMap),
-        discipline: jsonMap[DistanceCourseJsonKeys.discipline] as String,
-        employeeLogin: jsonMap[DistanceCourseJsonKeys.login] as String,
-        groups: (jsonMap[DistanceCourseJsonKeys.groups] as String)
+        discipline: jsonMap[DistanceCourseJsonKeys.discipline]! as String,
+        employeeLogin: jsonMap[DistanceCourseJsonKeys.login]! as String,
+        groups: (jsonMap[DistanceCourseJsonKeys.groups]! as String)
             .split('|')
             .where((element) => element.isNotEmpty)
             .toSet()
@@ -47,8 +47,9 @@ class DistanceCourse {
         DistanceCourseJsonKeys.discipline: discipline,
         DistanceCourseJsonKeys.login: employeeLogin,
         DistanceCourseJsonKeys.groups: groups.join('|'),
-        DistanceCourseJsonKeys.files:
-            materials.map((file) => file.toJson()).toList(),
+        DistanceCourseJsonKeys.files: [
+          for (final file in materials) file.toJson(),
+        ],
       };
 
   static List<DistanceMaterialData> _parseMaterials(
@@ -57,12 +58,12 @@ class DistanceCourse {
     final files = getListFromJson(json, DistanceCourseJsonKeys.files);
     final links = getListFromJson(json, DistanceCourseJsonKeys.links);
 
-    final fileDataList = files
-        .map((materialJson) => DistanceFileData.fromJson(materialJson))
-        .toList();
-    final linkDataList = links
-        .map((materialJson) => DistanceLinkData.fromJson(materialJson))
-        .toList();
+    final fileDataList = [
+      for (final materialJson in files) DistanceFileData.fromJson(materialJson),
+    ];
+    final linkDataList = [
+      for (final materialJson in links) DistanceLinkData.fromJson(materialJson),
+    ];
 
     return [...fileDataList, ...linkDataList];
   }

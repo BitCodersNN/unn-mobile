@@ -14,10 +14,10 @@ const mainPageRoute = '/';
 const authPageRoute = '/auth';
 const drawerRoutePrefix = 'drawer';
 
-final shellBranchKeys = //
-    MainPageRouting.navbarRoutes
-        .map((route) => (key: GlobalKey<NavigatorState>(), route: route))
-        .toList();
+final shellBranchKeys = [
+  for (final route in MainPageRouting.navbarRoutes)
+    (key: GlobalKey<NavigatorState>(), route: route),
+];
 
 final mainPageKey = GlobalKey<MainPageState>();
 
@@ -83,14 +83,13 @@ final mainRouter = GoRouter(
 List<GoRoute> _buildSubroutes(
   List<MainPageRouteData> routes, {
   String prefix = '',
-}) {
-  return routes
-      .map(
-        (route) => GoRoute(
-          path: '$prefix${route.pageRoute}',
-          builder: (context, state) => route.builder(context, state),
-          routes: _buildSubroutes(route.subroutes),
-        ),
-      )
-      .toList(growable: false);
-}
+}) =>
+    routes
+        .map(
+          (route) => GoRoute(
+            path: '$prefix${route.pageRoute}',
+            builder: (context, state) => route.builder(context, state),
+            routes: _buildSubroutes(route.subroutes),
+          ),
+        )
+        .toList(growable: false);

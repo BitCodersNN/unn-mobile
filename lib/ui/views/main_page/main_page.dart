@@ -66,40 +66,34 @@ class MainPageState extends State<MainPage> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return BaseView<MainPageViewModel>(
-      builder: (context, model, _) {
-        return Scaffold(
+  Widget build(BuildContext context) => BaseView<MainPageViewModel>(
+        builder: (context, model, _) => Scaffold(
           key: scaffoldKey,
           drawerEdgeDragWidth: MediaQuery.of(context).size.width,
           extendBody: false,
           drawer: isRootScreen(context)
               ? Builder(
                   // Разделяем контекст, иначе в текущем нет Scaffold, а он нам нужен
-                  builder: (context) {
-                    return MainPageDrawer(
-                      model: model,
-                      onDestinationSelected: (value) {
-                        Scaffold.of(context).closeDrawer();
-                        final selectedBarIndex = widget.shell.currentIndex;
-                        final currentPageRoute = MainPageRouting
-                            .navbarRoutes[selectedBarIndex].pageRoute;
-                        final destinationSubroute = model.routes
-                            .where((r) => model.isOnline || !r.onlineOnly)
-                            .elementAt(value)
-                            .pageRoute;
-                        GoRouter.of(context).go(
-                          '$currentPageRoute/$drawerRoutePrefix/$destinationSubroute',
-                        );
-                      },
-                    );
-                  },
+                  builder: (context) => MainPageDrawer(
+                    model: model,
+                    onDestinationSelected: (value) {
+                      Scaffold.of(context).closeDrawer();
+                      final selectedBarIndex = widget.shell.currentIndex;
+                      final currentPageRoute = MainPageRouting
+                          .navbarRoutes[selectedBarIndex].pageRoute;
+                      final destinationSubroute = model.routes
+                          .where((r) => model.isOnline || !r.onlineOnly)
+                          .elementAt(value)
+                          .pageRoute;
+                      GoRouter.of(context).go(
+                        '$currentPageRoute/$drawerRoutePrefix/$destinationSubroute',
+                      );
+                    },
+                  ),
                 )
               : null,
           body: Builder(
-            builder: (context) {
-              return widget.shell;
-            },
+            builder: (context) => widget.shell,
           ),
           bottomNavigationBar: MainPageNavigationBar(
             model: model,
@@ -123,11 +117,9 @@ class MainPageState extends State<MainPage> {
               }
             },
           ),
-        );
-      },
-      onModelReady: (model) => model.init(),
-    );
-  }
+        ),
+        onModelReady: (model) => model.init(),
+      );
 
   void goToRootScreen(BuildContext context, int currentRouteIndex) {
     GoRouter.of(context)

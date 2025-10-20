@@ -176,13 +176,13 @@ class ChatInsideViewModel extends BaseViewModel {
   }
 
   FutureOr<bool> sendFiles(Iterable<String> uris, {String? text}) =>
-      _sendMessageWrapper<List<FileData>>(() {
-        return _messagesAggregator.sendFiles(
+      _sendMessageWrapper<List<FileData>>(
+        () => _messagesAggregator.sendFiles(
           chatId: _dialog!.chatId,
-          files: uris.map(File.new).toList(),
+          files: [for (final uri in uris) File(uri)],
           text: text,
-        );
-      });
+        ),
+      );
 
   FutureOr<bool> sendMessage(String text) async =>
       await _sendMessageWrapper<int>(() async {

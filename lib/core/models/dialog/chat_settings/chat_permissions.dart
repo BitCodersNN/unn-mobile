@@ -32,16 +32,22 @@ class ChatPermissions {
   });
 
   factory ChatPermissions.fromJson(JsonMap json) => ChatPermissions(
-        canPost: _parseRole(json[_ChatPermissionsJsonKeys.canPost]),
-        manageMessages:
-            _parseRole(json[_ChatPermissionsJsonKeys.manageMessages]),
-        manageSettings:
-            _parseRole(json[_ChatPermissionsJsonKeys.manageSettings]),
-        manageUI: _parseRole(json[_ChatPermissionsJsonKeys.manageUI]),
-        manageUsersAdd:
-            _parseRole(json[_ChatPermissionsJsonKeys.manageUsersAdd]),
-        manageUsersDelete:
-            _parseRole(json[_ChatPermissionsJsonKeys.manageUsersDelete]),
+        canPost: _parseRole(json[_ChatPermissionsJsonKeys.canPost] as String?),
+        manageMessages: _parseRole(
+          json[_ChatPermissionsJsonKeys.manageMessages] as String?,
+        ),
+        manageSettings: _parseRole(
+          json[_ChatPermissionsJsonKeys.manageSettings] as String?,
+        ),
+        manageUI: _parseRole(
+          json[_ChatPermissionsJsonKeys.manageUI] as String?,
+        ),
+        manageUsersAdd: _parseRole(
+          json[_ChatPermissionsJsonKeys.manageUsersAdd] as String?,
+        ),
+        manageUsersDelete: _parseRole(
+          json[_ChatPermissionsJsonKeys.manageUsersDelete] as String?,
+        ),
       );
 
   JsonMap toJson() => {
@@ -64,7 +70,6 @@ class ChatPermissions {
     return enumFromString(UserRole.values, value.toLowerCase()) ?? defaultValue;
   }
 
-  static String _enumToString(UserRole role) {
-    return role.toString().split('.').last.toLowerCase();
-  }
+  static String _enumToString(UserRole role) =>
+      role.toString().split('.').last.toLowerCase();
 }

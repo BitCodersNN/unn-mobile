@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2025 BitCodersNN
 
+import 'dart:async';
+
 import 'package:flutter/services.dart';
 import 'package:unn_mobile/core/misc/authorisation/authorisation_request_result.dart';
 import 'package:unn_mobile/core/models/authorisation/auth_data.dart';
@@ -33,7 +35,7 @@ class AuthorisationRefreshServiceImpl implements AuthorisationRefreshService {
         error,
         stack,
       );
-      await _storage.clear();
+      unawaited(_storage.clear());
       return false;
     }
   }

@@ -34,10 +34,10 @@ class ChatSetting extends BaseChatSetting {
       role: baseChatSetting.role,
       permissions: baseChatSetting.permissions,
       managerList:
-          List<int>.from(json[_ChatSettingJsonKeys.managerList] as List),
-      userCounter: json[_ChatSettingJsonKeys.userCounter] as int,
+          List<int>.from(json[_ChatSettingJsonKeys.managerList]! as List),
+      userCounter: json[_ChatSettingJsonKeys.userCounter]! as int,
       restrictions: ChatRestrictions.fromJson(
-        json[_ChatSettingJsonKeys.restrictions] as JsonMap,
+        json[_ChatSettingJsonKeys.restrictions]! as JsonMap,
       ),
     );
   }

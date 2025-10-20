@@ -5,6 +5,7 @@ import 'package:dio/dio.dart';
 import 'package:unn_mobile/core/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/constants/api/path.dart';
 import 'package:unn_mobile/core/constants/string_keys/session_identifier_keys.dart';
+import 'package:unn_mobile/core/misc/json/json_iterable_parser.dart';
 import 'package:unn_mobile/core/misc/json/json_utils.dart';
 import 'package:unn_mobile/core/models/feed/blog_post_data.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation/unn_authorisation_service.dart';
@@ -55,26 +56,17 @@ class GettingBlogPostsImpl implements GettingBlogPosts {
 
     Iterable jsonList;
     try {
-      jsonList = (response.data as JsonMap)['result'];
+      jsonList = (response.data as JsonMap)['result']! as Iterable;
     } catch (error, stackTrace) {
       _loggerService.logError(error, stackTrace);
       return null;
     }
 
-    List<BlogPostData>? blogPosts;
-    try {
-      blogPosts = jsonList
-          .map<BlogPostData>(
-            (blogPostJson) => BlogPostData.fromBitrixJson(blogPostJson),
-          )
-          .toList();
-    } catch (error, stackTrace) {
-      _loggerService.logError(error, stackTrace);
-    }
-
-    if (blogPosts != null) {
-      blogPosts.sort((a, b) => b.datePublish.compareTo(a.datePublish));
-    }
+    final blogPosts = parseJsonIterable<BlogPostData>(
+      jsonList,
+      BlogPostData.fromBitrixJson,
+      _loggerService,
+    )..sort((a, b) => b.datePublish.compareTo(a.datePublish));
 
     return blogPosts;
   }

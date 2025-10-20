@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2025 BitCodersNN
 
+import 'dart:async';
+
 import 'package:unn_mobile/core/models/profile/employee/employee_data.dart';
 import 'package:unn_mobile/core/models/profile/student/student_data.dart';
 import 'package:unn_mobile/core/models/profile/user_data.dart';
@@ -31,7 +33,7 @@ class CurrentUserSyncStorage {
     } else {
       _currentUserData =
           await _gettingProfileOfCurrentUser.getProfileOfCurrentUser();
-      await _userDataProvider.saveData(_currentUserData);
+      unawaited(_userDataProvider.saveData(_currentUserData));
     }
   }
 }

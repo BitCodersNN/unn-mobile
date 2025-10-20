@@ -28,15 +28,16 @@ class MessageShortInfo {
   });
 
   factory MessageShortInfo.fromJson(JsonMap jsonMap) => MessageShortInfo(
-        messageId: jsonMap[MessageShortInfoJsonKeys.id],
+        messageId: jsonMap[MessageShortInfoJsonKeys.id]! as int,
         author: jsonMap[MessageShortInfoJsonKeys.author] != null
             ? UserShortInfo.fromMessageJson(
-                jsonMap[MessageShortInfoJsonKeys.author],
+                jsonMap[MessageShortInfoJsonKeys.author]! as JsonMap,
               )
             : null,
-        text: jsonMap[MessageShortInfoJsonKeys.text],
-        uuid: jsonMap[MessageShortInfoJsonKeys.uuid],
-        dateTime: DateTime.parse(jsonMap[MessageShortInfoJsonKeys.date]),
+        text: jsonMap[MessageShortInfoJsonKeys.text]! as String,
+        uuid: jsonMap[MessageShortInfoJsonKeys.uuid] as String?,
+        dateTime:
+            DateTime.parse(jsonMap[MessageShortInfoJsonKeys.date]! as String),
       );
 
   JsonMap toJson() => {

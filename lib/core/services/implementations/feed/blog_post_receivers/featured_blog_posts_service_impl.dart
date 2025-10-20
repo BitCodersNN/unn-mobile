@@ -58,9 +58,9 @@ class FeaturedBlogPostsServiceImpl implements FeaturedBlogPostsService {
         continue;
       }
 
-      if (jsonMap[BlogPostType.pinned.stringValue]) {
+      if (jsonMap[BlogPostType.pinned.stringValue]! as bool) {
         blogPosts.putIfAbsent(BlogPostType.pinned, () => []).add(blogPost);
-      } else if (jsonMap[BlogPostType.important.stringValue]) {
+      } else if (jsonMap[BlogPostType.important.stringValue]! as bool) {
         blogPosts.putIfAbsent(BlogPostType.important, () => []).add(blogPost);
       }
     }

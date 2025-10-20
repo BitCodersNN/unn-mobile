@@ -13,10 +13,9 @@ class MessageReactionViewModelFactory extends CachedViewModelFactoryBase<
   MessageReactionViewModelFactory() : super(100);
 
   @override
-  MessageReactionViewModel createViewModel(MessageReactionCacheKey key) {
-    return MessageReactionViewModel(
-      getService<MessageReactionServiceAggregator>(),
-      getService<CurrentUserSyncStorage>(),
-    );
-  }
+  MessageReactionViewModel createViewModel(MessageReactionCacheKey key) =>
+      MessageReactionViewModel(
+        getService<MessageReactionServiceAggregator>(),
+        getService<CurrentUserSyncStorage>(),
+      );
 }

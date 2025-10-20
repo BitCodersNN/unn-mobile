@@ -46,31 +46,28 @@ class Dialog extends BaseDialogInfo {
   });
 
   factory Dialog.fromJson(JsonMap jsonMap) {
-    final messageMap = jsonMap[_DialogJsonKeys.message] as JsonMap;
+    final messageMap = jsonMap[_DialogJsonKeys.message]! as JsonMap;
     final fileInfo = messageMap[_DialogJsonKeys.file];
 
     if (fileInfo != null && fileInfo != false) {
-      // toString есть везде
-      // ignore: avoid_dynamic_calls
-      final fileName = fileInfo[_DialogJsonKeys.name].toString();
+      final fileName = (fileInfo as JsonMap)[_DialogJsonKeys.name]! as String;
       messageMap[_DialogJsonKeys.text] = 'Файл: $fileName';
     }
     return Dialog(
-      chatId: jsonMap[_DialogJsonKeys.chatId],
-      title: jsonMap[_DialogJsonKeys.title],
-      // JSON десериализация слишком динамична, чтобы не пользовать dynamic
-      // ignore: avoid_dynamic_calls
-      avatarUrl: jsonMap[_DialogJsonKeys.avatar][_DialogJsonKeys.url],
+      chatId: jsonMap[_DialogJsonKeys.chatId]! as int,
+      title: jsonMap[_DialogJsonKeys.title]! as String,
+      avatarUrl: (jsonMap[_DialogJsonKeys.avatar]!
+          as JsonMap)[_DialogJsonKeys.url]! as String,
       previewMessage: MessageShortInfo.fromJson({
         ...messageMap,
         MessageShortInfoJsonKeys.author: jsonMap[_DialogJsonKeys.user],
       }),
       lastMessageStatus: enumFromString<MessageStatus>(
         MessageStatus.values,
-        messageMap[_DialogJsonKeys.status],
+        messageMap[_DialogJsonKeys.status]! as String,
       ),
-      unreadMessagesCount: jsonMap[_DialogJsonKeys.counter],
-      pinned: jsonMap[_DialogJsonKeys.pinned],
+      unreadMessagesCount: jsonMap[_DialogJsonKeys.counter]! as int,
+      pinned: jsonMap[_DialogJsonKeys.pinned]! as bool,
     );
   }
 

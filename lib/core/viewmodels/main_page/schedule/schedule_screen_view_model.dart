@@ -38,11 +38,10 @@ class ScheduleScreenViewModel extends BaseViewModel
       return;
     }
     isInitialized = true;
-    _tabViewModels = tabIdTypes.map(
-      (idType) {
-        return Injector.appInstance.get<ScheduleTabViewModel>();
-      },
-    ).toList();
+    _tabViewModels = [
+      for (final _ in tabIdTypes)
+        Injector.appInstance.get<ScheduleTabViewModel>(),
+    ];
   }
 
   @override

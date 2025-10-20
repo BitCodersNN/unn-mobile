@@ -66,11 +66,9 @@ class ScheduleTabState extends State<ScheduleTab>
 
     return BaseView<ScheduleTabViewModel>(
       model: widget.viewModel,
-      builder: (context, model, child) {
-        return Column(
-          children: [_customScrollView(theme, model)],
-        );
-      },
+      builder: (context, model, child) => Column(
+        children: [_customScrollView(theme, model)],
+      ),
       onModelReady: (model) {
         model.init(
           widget.type,
@@ -103,40 +101,39 @@ class ScheduleTabState extends State<ScheduleTab>
     );
   }
 
-  Widget _searchBar(ScheduleTabViewModel model, BuildContext context) {
-    return ColoredBox(
-      color: Theme.of(context).colorScheme.surface,
-      child: flutter_changed.SearchAnchor(
-        textInputAction: TextInputAction.search,
-        viewOnBackButtonClick: (value) {
-          _searchController.text = searchQueryForRestore;
-          Future.delayed(
-            const Duration(milliseconds: 50),
-            () {
-              SystemChannels.textInput.invokeMethod('TextInput.hide');
-              _searchFocusNode.unfocus();
-            },
-          );
-        },
-        viewOnSubmitted: (value) async {
-          var resultingFieldText = searchQueryForRestore;
-          if (value == '' && value != model.lastSearchQuery) {
-            await model.submitSearch(value);
-            resultingFieldText = value;
-          }
-          _searchController.closeView(resultingFieldText);
-          Future.delayed(
-            const Duration(milliseconds: 50),
-            () {
-              SystemChannels.textInput.invokeMethod('TextInput.hide');
-              _searchFocusNode.unfocus();
-            },
-          );
-        },
-        searchController: _searchController,
-        isFullScreen: true,
-        builder: (context, controller) {
-          return Padding(
+  Widget _searchBar(ScheduleTabViewModel model, BuildContext context) =>
+      ColoredBox(
+        color: Theme.of(context).colorScheme.surface,
+        child: flutter_changed.SearchAnchor(
+          textInputAction: TextInputAction.search,
+          viewOnBackButtonClick: (value) {
+            _searchController.text = searchQueryForRestore;
+            Future.delayed(
+              const Duration(milliseconds: 50),
+              () {
+                SystemChannels.textInput.invokeMethod('TextInput.hide');
+                _searchFocusNode.unfocus();
+              },
+            );
+          },
+          viewOnSubmitted: (value) async {
+            var resultingFieldText = searchQueryForRestore;
+            if (value == '' && value != model.lastSearchQuery) {
+              await model.submitSearch(value);
+              resultingFieldText = value;
+            }
+            _searchController.closeView(resultingFieldText);
+            Future.delayed(
+              const Duration(milliseconds: 50),
+              () {
+                SystemChannels.textInput.invokeMethod('TextInput.hide');
+                _searchFocusNode.unfocus();
+              },
+            );
+          },
+          searchController: _searchController,
+          isFullScreen: true,
+          builder: (context, controller) => Padding(
             padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
             child: MediaQuery.withClampedTextScaling(
               maxScaleFactor: 1.5,
@@ -188,14 +185,12 @@ class ScheduleTabState extends State<ScheduleTab>
                             if (context.mounted) {
                               selectedRange = await showDialog(
                                 context: context,
-                                builder: (context) {
-                                  return RadioGroupDialog(
-                                    label: const Text(
-                                      'Экспортировать расписание: ',
-                                    ),
-                                    radioLabels: _exportRanges.values.toList(),
-                                  );
-                                },
+                                builder: (context) => RadioGroupDialog(
+                                  label: const Text(
+                                    'Экспортировать расписание: ',
+                                  ),
+                                  radioLabels: _exportRanges.values.toList(),
+                                ),
                               );
                             }
                             if (selectedRange != null) {
@@ -225,18 +220,16 @@ class ScheduleTabState extends State<ScheduleTab>
                         },
                       ),
                     ],
-                    builder: (context, controller, child) {
-                      return IconButton(
-                        onPressed: () {
-                          if (controller.isOpen) {
-                            controller.close();
-                          } else {
-                            controller.open();
-                          }
-                        },
-                        icon: const Icon(Icons.more_horiz),
-                      );
-                    },
+                    builder: (context, controller, child) => IconButton(
+                      onPressed: () {
+                        if (controller.isOpen) {
+                          controller.close();
+                        } else {
+                          controller.open();
+                        }
+                      },
+                      icon: const Icon(Icons.more_horiz),
+                    ),
                   ),
                 ],
                 shape: WidgetStateProperty.resolveWith(
@@ -258,37 +251,35 @@ class ScheduleTabState extends State<ScheduleTab>
                 controller: controller,
               ),
             ),
-          );
-        },
-        suggestionsBuilder: (context, controller) async {
-          final rawSuggestions = await model.getSearchSuggestions(
-            controller.text,
-          ); // Неэффективно, но работает >:(
+          ),
+          suggestionsBuilder: (context, controller) async {
+            final rawSuggestions = await model.getSearchSuggestions(
+              controller.text,
+            ); // Неэффективно, но работает >:(
 
-          return rawSuggestions.map<ScheduleSearchSuggestionItemView>(
-            (e) => ScheduleSearchSuggestionItemView(
-              model: e,
-              onSelected: () {
-                // controller.text = e.label;
-                controller.closeView(e.label);
-                Future.delayed(
-                  const Duration(milliseconds: 50),
-                  () {
-                    SystemChannels.textInput.invokeMethod('TextInput.hide');
-                  },
-                );
-                model
-                  ..lastSearchQuery = controller.text
-                  ..addHistoryItem(e)
-                  ..selectedId = e.id
-                  ..updateFilter(e.id);
-              },
-            ),
-          );
-        },
-      ),
-    );
-  }
+            return rawSuggestions.map<ScheduleSearchSuggestionItemView>(
+              (e) => ScheduleSearchSuggestionItemView(
+                model: e,
+                onSelected: () {
+                  // controller.text = e.label;
+                  controller.closeView(e.label);
+                  Future.delayed(
+                    const Duration(milliseconds: 50),
+                    () {
+                      SystemChannels.textInput.invokeMethod('TextInput.hide');
+                    },
+                  );
+                  model
+                    ..lastSearchQuery = controller.text
+                    ..addHistoryItem(e)
+                    ..selectedId = e.id
+                    ..updateFilter(e.id);
+                },
+              ),
+            );
+          },
+        ),
+      );
 
   @override
   bool get wantKeepAlive => true;
@@ -440,82 +431,79 @@ class ScheduleTabState extends State<ScheduleTab>
     }
   }
 
-  Widget _showCircularLoader() {
-    return const SliverToBoxAdapter(
-      child: Center(
-        child: Padding(
-          padding: EdgeInsets.all(20.0),
-          child: SizedBox(
-            width: 100,
-            height: 100,
-            child: CircularProgressIndicator(),
+  Widget _showCircularLoader() => const SliverToBoxAdapter(
+        child: Center(
+          child: Padding(
+            padding: EdgeInsets.all(20.0),
+            child: SizedBox(
+              width: 100,
+              height: 100,
+              child: CircularProgressIndicator(),
+            ),
           ),
         ),
-      ),
-    );
-  }
+      );
 
   SliverList _scheduleSliverList(
     ScheduleTabViewModel model,
     AsyncSnapshot<Map<int, List<Subject>>?> snapshot,
     ThemeData theme,
-  ) {
-    return SliverList(
-      delegate: SliverChildBuilderDelegate(
-        (context, index) {
-          final formatedDate = toBeginningOfSentenceCase(
-            (model.offline ? DateFormat.EEEE : DateFormat.MMMMEEEEd)('ru_RU')
-                .format(
-              model.displayedWeek.start.add(
-                Duration(days: snapshot.data!.keys.elementAt(index) - 1),
+  ) =>
+      SliverList(
+        delegate: SliverChildBuilderDelegate(
+          (context, index) {
+            final formatedDate = toBeginningOfSentenceCase(
+              (model.offline ? DateFormat.EEEE : DateFormat.MMMMEEEEd)('ru_RU')
+                  .format(
+                model.displayedWeek.start.add(
+                  Duration(days: snapshot.data!.keys.elementAt(index) - 1),
+                ),
               ),
-            ),
-          );
+            );
 
-          return AutoScrollTag(
-            key: ValueKey(index),
-            controller: _scrollController,
-            index: index,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: Container(
-                    decoration: (snapshot.data!.values
-                            .elementAt(index)
-                            .first
-                            .dateTimeRange
-                            .start
-                            .isSameDate(DateTime.now()))
-                        ? BoxDecoration(
-                            border: Border(
-                              bottom: BorderSide(color: theme.primaryColor),
-                            ),
-                          )
-                        : null,
-                    child: Text(
-                      formatedDate,
-                      textAlign: TextAlign.left,
-                      style: theme.textTheme.titleLarge!.copyWith(),
+            return AutoScrollTag(
+              key: ValueKey(index),
+              controller: _scrollController,
+              index: index,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: Container(
+                      decoration: (snapshot.data!.values
+                              .elementAt(index)
+                              .first
+                              .dateTimeRange
+                              .start
+                              .isSameDate(DateTime.now()))
+                          ? BoxDecoration(
+                              border: Border(
+                                bottom: BorderSide(color: theme.primaryColor),
+                              ),
+                            )
+                          : null,
+                      child: Text(
+                        formatedDate,
+                        textAlign: TextAlign.left,
+                        style: theme.textTheme.titleLarge!.copyWith(),
+                      ),
                     ),
                   ),
-                ),
-                for (int i = 0;
-                    i < snapshot.data!.values.elementAt(index).length;
-                    i++)
-                  ScheduleItemNormal(
-                    subject: snapshot.data!.values.elementAt(index)[i],
-                    even: i.isEven,
-                  ),
-              ],
-            ),
-          );
-        },
-        childCount: snapshot.data!.length,
-      ),
-    );
-  }
+                  for (int i = 0;
+                      i < snapshot.data!.values.elementAt(index).length;
+                      i++)
+                    ScheduleItemNormal(
+                      subject: snapshot.data!.values.elementAt(index)[i],
+                      even: i.isEven,
+                    ),
+                ],
+              ),
+            );
+          },
+          childCount: snapshot.data!.length,
+        ),
+      );
 
   @override
   void dispose() {

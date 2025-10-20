@@ -16,21 +16,17 @@ class PostHtmlWidget extends StatelessWidget {
   final String text;
 
   @override
-  Widget build(BuildContext context) {
-    return HtmlWidget(
-      text,
-      onTapUrl: htmlWidgetOnTapUrl,
-      onTapImage: (imageMetadata) async {
-        await showDialog(
-          context: context,
-          builder: (context) {
-            return ExtendedImageSlidePage(
+  Widget build(BuildContext context) => HtmlWidget(
+        text,
+        onTapUrl: htmlWidgetOnTapUrl,
+        onTapImage: (imageMetadata) async {
+          await showDialog(
+            context: context,
+            builder: (context) => ExtendedImageSlidePage(
               slideAxis: SlideAxis.vertical,
               child: DismissibleImage(image: imageMetadata.sources.first.url),
-            );
-          },
-        );
-      },
-    );
-  }
+            ),
+          );
+        },
+      );
 }

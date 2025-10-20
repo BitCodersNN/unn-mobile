@@ -168,14 +168,12 @@ import 'package:unn_mobile/core/viewmodels/main_page/source/source_page_view_mod
 void registerDependencies() {
   final injector = Injector.appInstance;
 
-  T get<T>({String dependencyName = ''}) {
-    return injector.get<T>(dependencyName: dependencyName);
-  }
+  T get<T>({String dependencyName = ''}) =>
+      injector.get<T>(dependencyName: dependencyName);
 
   ApiHelper getPlatformSpecificHelper //
-      <TWeb extends ApiHelper, TDefault extends ApiHelper>() {
-    return kIsWeb ? get<TWeb>() : get<TDefault>();
-  }
+      <TWeb extends ApiHelper, TDefault extends ApiHelper>() =>
+          kIsWeb ? get<TWeb>() : get<TDefault>();
 
   final apiHelperFactories = {
     HostType.github: () => get<GithubApiHelper>(),
@@ -188,9 +186,7 @@ void registerDependencies() {
         getPlatformSpecificHelper<WebUnnSourceApiHelper, UnnSourceApiHelper>(),
   };
 
-  ApiHelper getApiHelper(HostType hostType) {
-    return apiHelperFactories[hostType]!();
-  }
+  ApiHelper getApiHelper(HostType hostType) => apiHelperFactories[hostType]!();
 
   // register all the dependencies here:
 
@@ -203,12 +199,7 @@ void registerDependencies() {
     ..registerSingleton<OnlineStatusData>(OnlineStatusData.new)
     ..registerSingleton<StorageService>(StorageServiceImpl.new)
 
-    /* legacy
-    injector.registerSingleton<AuthorizationService>(
-      () => LegacyAuthorizationServiceImpl(get<OnlineStatusData>()),
-    );
-  */
-
+    // Authorization services
     ..registerSingleton<UnnAuthorisationService>(
       () => UnnAuthorisationServiceImpl(
         get<OnlineStatusData>(),
@@ -222,54 +213,10 @@ void registerDependencies() {
         get<LoggerService>(),
       ),
     )
-    ..registerSingleton<GithubApiHelper>(
-      GithubApiHelper.new,
-    )
-    ..registerSingleton<GitHubRawApiHelper>(
-      GitHubRawApiHelper.new,
-    )
-    ..registerSingleton<UnnPortalApiHelper>(
-      () => UnnPortalApiHelper(
-        authorizationService: get<UnnAuthorisationService>(),
-      ),
-    )
-    ..registerSingleton<UnnMobileApiHelper>(
-      () => UnnMobileApiHelper(
-        authorizationService: get<UnnAuthorisationService>(),
-      ),
-    )
-    ..registerSingleton<WebUnnPortalApiHelper>(
-      () => WebUnnPortalApiHelper(
-        authorizationService: get<UnnAuthorisationService>(),
-      ),
-    )
-    ..registerSingleton<WebUnnMobileApiHelper>(
-      () => WebUnnMobileApiHelper(
-        authorizationService: get<UnnAuthorisationService>(),
-      ),
-    )
-    ..registerSingleton<UnnSourceApiHelper>(
-      () => UnnSourceApiHelper(
-        authorizationService: get<SourceAuthorisationService>(),
-      ),
-    )
-    ..registerSingleton<WebUnnSourceApiHelper>(
-      () => WebUnnSourceApiHelper(
-        authorizationService: get<SourceAuthorisationService>(),
-      ),
-    )
-    ..registerSingleton<SourceAuthorisationService>(
-      () => SourceAuthorisationServiceImpl(
-        get<OnlineStatusData>(),
-        get<LoggerService>(),
-      ),
-    )
-    ..registerSingleton<GithubApiHelper>(
-      GithubApiHelper.new,
-    )
-    ..registerSingleton<GitHubRawApiHelper>(
-      GitHubRawApiHelper.new,
-    )
+
+    // API Helpers
+    ..registerSingleton<GithubApiHelper>(GithubApiHelper.new)
+    ..registerSingleton<GitHubRawApiHelper>(GitHubRawApiHelper.new)
     ..registerSingleton<UnnPortalApiHelper>(
       () => UnnPortalApiHelper(
         authorizationService: get<UnnAuthorisationService>(),
@@ -301,10 +248,7 @@ void registerDependencies() {
       ),
     )
 
-    // get<LastCommitShaService>(),
-    // get<LoadingPageConfigService>(),
-    // get<LastCommitShaProvider>(),
-    // get<LoadingPageProvider>(),
+    // Config & metadata services
     ..registerSingleton<LastCommitShaService>(
       () => LastCommitShaServiceImpl(
         get<LoggerService>(),
@@ -319,8 +263,8 @@ void registerDependencies() {
     )
     ..registerSingleton<LogoDownloaderService>(
       () => LogoDownloaderServiceImpl(
-        injector.get<LoggerService>(),
-        injector.get<GitHubRawApiHelper>(),
+        get<LoggerService>(),
+        get<GitHubRawApiHelper>(),
       ),
     )
     ..registerSingleton<AuthorsConfigService>(
@@ -329,6 +273,8 @@ void registerDependencies() {
         getApiHelper(HostType.githubRaw),
       ),
     )
+
+    // Storage-based providers
     ..registerSingleton<LastCommitShaAuthorsProvider>(
       () => LastCommitShaAuthorsProviderImpl(
         get<StorageService>(),
@@ -357,6 +303,8 @@ void registerDependencies() {
         get<LoggerService>(),
       ),
     )
+
+    // Auth data & refresh
     ..registerSingleton<AuthDataProvider>(
       () => AuthorisationDataProviderImpl(
         get<StorageService>(),
@@ -370,6 +318,8 @@ void registerDependencies() {
         get<LoggerService>(),
       ),
     )
+
+    // User & profile
     ..registerSingleton<ProfileOfCurrentUserService>(
       () => ProfileOfCurrentUserServiceImpl(
         get<LoggerService>(),
@@ -383,6 +333,20 @@ void registerDependencies() {
         getApiHelper(HostType.unnPortal),
       ),
     )
+    ..registerSingleton<UserDataProvider>(
+      () => UserDataProviderImpl(
+        get<StorageService>(),
+        get<LoggerService>(),
+      ),
+    )
+    ..registerSingleton<CurrentUserSyncStorage>(
+      () => CurrentUserSyncStorage(
+        get<UserDataProvider>(),
+        get<ProfileOfCurrentUserService>(),
+      ),
+    )
+
+    // Schedule
     ..registerSingleton<ScheduleService>(
       () => ScheduleServiceImpl(
         get<LoggerService>(),
@@ -406,12 +370,8 @@ void registerDependencies() {
         get<LoggerService>(),
       ),
     )
-    ..registerSingleton<UserDataProvider>(
-      () => UserDataProviderImpl(
-        get<StorageService>(),
-        get<LoggerService>(),
-      ),
-    )
+
+    // Blog & feed
     ..registerDependency<RegularBlogPostsService>(
       () => RegularBlogPostsServiceImpl(
         get<LoggerService>(),
@@ -435,29 +395,6 @@ void registerDependencies() {
         get<LoggerService>(),
         getApiHelper(HostType.unnPortal),
       ),
-    );
-  for (final type in BlogPostType.values) {
-    injector.registerDependency<BlogPostProvider>(
-      () => BlogPostProviderImpl(
-        injector.get<StorageService>(),
-        get<LoggerService>(),
-        type,
-      ),
-      dependencyName: type.stringValue,
-    );
-  }
-  injector
-    ..registerDependency<ImportantBlogPostAcknowledgementService>(
-      () => ImportantBlogPostAcknowledgementServiceImpl(
-        get<LoggerService>(),
-        getApiHelper(HostType.unnPortal),
-      ),
-    )
-    ..registerDependency<ImportantBlogPostUsersService>(
-      () => ImportantBlogPostUsersServiceImpl(
-        get<LoggerService>(),
-        getApiHelper(HostType.unnPortal),
-      ),
     )
     ..registerSingleton<GettingBlogPosts>(
       () => GettingBlogPostsImpl(
@@ -471,7 +408,36 @@ void registerDependencies() {
         get<LoggerService>(),
         getApiHelper(HostType.unnPortal),
       ),
+    );
+
+  // BlogPostProvider per type
+  for (final type in BlogPostType.values) {
+    injector.registerDependency<BlogPostProvider>(
+      () => BlogPostProviderImpl(
+        get<StorageService>(),
+        get<LoggerService>(),
+        type,
+      ),
+      dependencyName: type.stringValue,
+    );
+  }
+
+  // Important blog posts
+  injector
+    ..registerDependency<ImportantBlogPostAcknowledgementService>(
+      () => ImportantBlogPostAcknowledgementServiceImpl(
+        get<LoggerService>(),
+        getApiHelper(HostType.unnPortal),
+      ),
     )
+    ..registerDependency<ImportantBlogPostUsersService>(
+      () => ImportantBlogPostUsersServiceImpl(
+        get<LoggerService>(),
+        getApiHelper(HostType.unnPortal),
+      ),
+    )
+
+    // Profile & files
     ..registerSingleton<ProfileService>(
       () => ProfileServiceImpl(
         get<LoggerService>(),
@@ -485,6 +451,8 @@ void registerDependencies() {
         getApiHelper(HostType.unnPortal),
       ),
     )
+
+    // Ratings & voting
     ..registerSingleton<GettingRatingList>(
       () => GettingRatingListImpl(
         get<LoggerService>(),
@@ -497,17 +465,18 @@ void registerDependencies() {
         getApiHelper(HostType.unnPortal),
       ),
     )
+
+    // Feed & tracking
     ..registerSingleton<LastFeedLoadDateTimeProvider>(
       () => LastFeedLoadDateTimeProviderImpl(
         get<StorageService>(),
       ),
     )
-    ..registerSingleton<CurrentUserSyncStorage>(
-      () => CurrentUserSyncStorage(
-        get<UserDataProvider>(),
-        get<ProfileOfCurrentUserService>(),
-      ),
+    ..registerSingleton<AppOpenTracker>(
+      () => AppOpenTracker(get<StorageService>()),
     )
+
+    // Grades
     ..registerSingleton<GradeBookService>(
       () => GradeBookServiceImpl(
         get<LoggerService>(),
@@ -520,9 +489,8 @@ void registerDependencies() {
         get<LoggerService>(),
       ),
     )
-    ..registerSingleton<AppOpenTracker>(
-      () => AppOpenTracker(get<StorageService>()),
-    )
+
+    // Reactions
     ..registerSingleton<ReactionService>(
       () => ReactionServiceImpl(
         get<CurrentUserSyncStorage>(),
@@ -530,6 +498,8 @@ void registerDependencies() {
         getApiHelper(HostType.unnPortal),
       ),
     )
+
+    // Certificates
     ..registerSingleton<CertificatesService>(
       () => CertificatesServiceImpl(
         get<LoggerService>(),
@@ -548,6 +518,8 @@ void registerDependencies() {
         getApiHelper(HostType.unnPortal),
       ),
     )
+
+    // Distance learning (UNN Source)
     ..registerSingleton<DistanceCourseSemesterService>(
       () => DistanceCourseSemesterServiceImpl(
         get<LoggerService>(),
@@ -572,17 +544,19 @@ void registerDependencies() {
         getApiHelper(HostType.unnSource),
       ),
     )
-    ..registerSingleton<MessageIgnoredKeysProvider>(
-      () => MessageIgnoredKeysProviderImpl(get<StorageService>()),
-    )
-    ..registerSingleton<MessageIgnoreService>(
-      () => MessageIgnoreServiceImpl(get<MessageIgnoredKeysProvider>()),
-    )
     ..registerSingleton<SessionCheckerService>(
       () => SessionCheckerServiceImpl(
         get<LoggerService>(),
         getApiHelper(HostType.unnSource),
       ),
+    )
+
+    // Messages & dialogs
+    ..registerSingleton<MessageIgnoredKeysProvider>(
+      () => MessageIgnoredKeysProviderImpl(get<StorageService>()),
+    )
+    ..registerSingleton<MessageIgnoreService>(
+      () => MessageIgnoreServiceImpl(get<MessageIgnoredKeysProvider>()),
     )
     ..registerSingleton<MessageReactionFetcherService>(
       () => MessageReactionFetcherServiceImpl(
@@ -594,6 +568,12 @@ void registerDependencies() {
       () => MessageReactionMutatorServiceImpl(
         get<LoggerService>(),
         getApiHelper(HostType.unnPortal),
+      ),
+    )
+    ..registerSingleton<MessageReactionServiceAggregator>(
+      () => MessageReactionServiceAggregatorImpl(
+        get<MessageReactionFetcherService>(),
+        get<MessageReactionMutatorService>(),
       ),
     )
     ..registerSingleton<MessageFetcherService>(
@@ -633,6 +613,16 @@ void registerDependencies() {
         getApiHelper(HostType.unnPortal),
       ),
     )
+    ..registerSingleton<MessageServiceAggregator>(
+      () => MessageServiceAggregatorImpl(
+        get<MessageFetcherService>(),
+        get<MessageSenderService>(),
+        get<MessageUpdaterService>(),
+        get<MessageRemoverService>(),
+        get<MessageFileSenderService>(),
+        get<MessageReaderService>(),
+      ),
+    )
     ..registerSingleton<DialogService>(
       () => DialogServiceImpl(
         get<LoggerService>(),
@@ -658,94 +648,19 @@ void registerDependencies() {
         get<ProfileService>(),
       ),
     )
-    ..registerSingleton<FileDataService>(
-      () => FileDataServiceImpl(
-        get<UnnAuthorisationService>(),
-        get<LoggerService>(),
-        getApiHelper(HostType.unnPortal),
-      ),
-    )
-    ..registerSingleton<GettingRatingList>(
-      () => GettingRatingListImpl(
-        get<LoggerService>(),
-        getApiHelper(HostType.unnPortal),
-      ),
-    )
-    ..registerSingleton<GettingVoteKeySigned>(
-      () => GettingVoteKeySignedImpl(
-        get<LoggerService>(),
-        getApiHelper(HostType.unnPortal),
-      ),
-    )
-    ..registerSingleton<LastFeedLoadDateTimeProvider>(
-      () => LastFeedLoadDateTimeProviderImpl(
-        get<StorageService>(),
-      ),
-    )
-    ..registerSingleton<CurrentUserSyncStorage>(
-      () => CurrentUserSyncStorage(
-        get<UserDataProvider>(),
-        get<ProfileOfCurrentUserService>(),
-      ),
-    )
-    ..registerSingleton<GradeBookService>(
-      () => GradeBookServiceImpl(
-        get<LoggerService>(),
-        getApiHelper(HostType.unnPortal),
-      ),
-    )
-    ..registerSingleton<MarkBySubjectProvider>(
-      () => MarkBySubjectProviderImpl(
-        get<StorageService>(),
-        get<LoggerService>(),
-      ),
-    )
-    ..registerSingleton<AppOpenTracker>(
-      () => AppOpenTracker(get<StorageService>()),
-    )
-    ..registerSingleton<ReactionService>(
-      () => ReactionServiceImpl(
-        get<CurrentUserSyncStorage>(),
-        get<LoggerService>(),
-        getApiHelper(HostType.unnPortal),
-      ),
-    )
-    ..registerSingleton<MessageReactionServiceAggregator>(
-      () => MessageReactionServiceAggregatorImpl(
-        get<MessageReactionFetcherService>(),
-        get<MessageReactionMutatorService>(),
-      ),
-    )
-    ..registerSingleton<MessageServiceAggregator>(
-      () => MessageServiceAggregatorImpl(
-        get<MessageFetcherService>(),
-        get<MessageSenderService>(),
-        get<MessageUpdaterService>(),
-        get<MessageRemoverService>(),
-        get<MessageFileSenderService>(),
-        get<MessageReaderService>(),
-      ),
-    )
 
     //
     // Factories
     //
-
     ..registerSingleton<AttachedFileViewModelFactory>(
       AttachedFileViewModelFactory.new,
     )
-    ..registerSingleton<ProfileViewModelFactory>(
-      ProfileViewModelFactory.new,
-    )
-    ..registerSingleton<ReactionViewModelFactory>(
-      ReactionViewModelFactory.new,
-    )
+    ..registerSingleton<ProfileViewModelFactory>(ProfileViewModelFactory.new)
+    ..registerSingleton<ReactionViewModelFactory>(ReactionViewModelFactory.new)
     ..registerSingleton<MessageReactionViewModelFactory>(
       MessageReactionViewModelFactory.new,
     )
-    ..registerSingleton<FeedPostViewModelFactory>(
-      FeedPostViewModelFactory.new,
-    )
+    ..registerSingleton<FeedPostViewModelFactory>(FeedPostViewModelFactory.new)
     ..registerSingleton<FeedCommentViewModelFactory>(
       FeedCommentViewModelFactory.new,
     )
@@ -758,7 +673,6 @@ void registerDependencies() {
     //
     // ViewModels
     //
-
     ..registerDependency(
       () => LoadingPageViewModel(
         get<LoggerService>(),

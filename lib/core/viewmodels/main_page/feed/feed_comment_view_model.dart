@@ -22,11 +22,8 @@ class FeedCommentViewModel extends BaseViewModel {
   late ProfileViewModel _profileViewModel;
 
   FeedCommentViewModel();
-  factory FeedCommentViewModel.cached(FeedCommentCacheKey key) {
-    return Injector.appInstance
-        .get<FeedCommentViewModelFactory>()
-        .getViewModel(key);
-  }
+  factory FeedCommentViewModel.cached(FeedCommentCacheKey key) =>
+      Injector.appInstance.get<FeedCommentViewModelFactory>().getViewModel(key);
 
   String get message => _unescaper.convert(comment.message);
   ProfileViewModel get profileViewModel => _profileViewModel;

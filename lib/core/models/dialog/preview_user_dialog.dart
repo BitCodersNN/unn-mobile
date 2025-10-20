@@ -29,11 +29,11 @@ class PreviewUserDialog extends PreviewDialog {
       title: dialog.title,
       avatarUrl: dialog.avatarUrl,
       lastActivityAt: DateTime.tryParse(
-        (json[_PreviewUserDialogJsonKeys.customData]
-            as JsonMap)[_PreviewUserDialogJsonKeys.lastActivityDate],
+        (json[_PreviewUserDialogJsonKeys.customData]!
+            as JsonMap)[_PreviewUserDialogJsonKeys.lastActivityDate]! as String,
       ),
-      workPosition: (json[_PreviewUserDialogJsonKeys.customData]
-          as JsonMap)[_PreviewUserDialogJsonKeys.workPosition],
+      workPosition: (json[_PreviewUserDialogJsonKeys.customData]!
+          as JsonMap)[_PreviewUserDialogJsonKeys.workPosition]! as String,
     );
   }
 

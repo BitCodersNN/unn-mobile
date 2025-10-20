@@ -34,7 +34,7 @@ class PreviewStudent extends UserShortInfo {
   factory PreviewStudent.fromJson(JsonMap json) =>
       PreviewStudent.withUserShortInfo(
         userShortInfo: UserShortInfo.fromProfileJson(json),
-        userId: json[_PreviewStudentJsonKeys.userId] as int,
+        userId: json[_PreviewStudentJsonKeys.userId]! as int,
         baseEduInfo: BaseEduInfo.previewStudentfromJson(json),
       );
 

@@ -74,14 +74,13 @@ class DialogSearchServiceImpl implements DialogSearchService {
       },
       data: {
         _DataKeys.dialog: RequestPayloads.dialog,
-        _DataKeys.recentItems: dialogIds
-            .map(
-              (id) => {
-                _DataKeys.id: id,
-                _DataKeys.entityId: _ResponseJsonKeys.imRecentV2,
-              },
-            )
-            .toList(),
+        _DataKeys.recentItems: [
+          for (final id in dialogIds)
+            {
+              _DataKeys.id: id,
+              _DataKeys.entityId: _ResponseJsonKeys.imRecentV2,
+            },
+        ],
       },
     );
     if (responseData == null) {
@@ -102,10 +101,11 @@ class DialogSearchServiceImpl implements DialogSearchService {
     }
 
     return parseJsonIterable<PreviewDialog>(
-      (((responseData as JsonMap)[_ResponseJsonKeys.data] as JsonMap) //
-          [_ResponseJsonKeys.dialog] as JsonMap)[_ResponseJsonKeys.items],
+      (((responseData as JsonMap)[_ResponseJsonKeys.data]!
+              as JsonMap)[_ResponseJsonKeys.dialog]!
+          as JsonMap)[_ResponseJsonKeys.items]! as Iterable,
       (json) {
-        final type = json[_ResponseJsonKeys.entityType] as String;
+        final type = json[_ResponseJsonKeys.entityType]! as String;
         switch (type) {
           case _ResponseJsonKeys.chat:
             return PreviewGroupDialog.fromJson(json);

@@ -52,7 +52,7 @@ class BlogPostProviderImpl implements BlogPostProvider {
       return _storage.write(key: _key, value: '');
     }
 
-    final jsonList = data.map((blogPost) => blogPost.toJson()).toList();
+    final jsonList = [for (final blogPost in data) blogPost.toJson()];
     final jsonString = jsonEncode(jsonList);
 
     await _storage.write(key: _key, value: jsonString);

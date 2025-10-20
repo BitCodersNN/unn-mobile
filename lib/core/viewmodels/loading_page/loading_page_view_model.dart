@@ -70,7 +70,6 @@ class LoadingPageViewModel extends BaseViewModel {
   }
 
   Future<void> initLoadingPages() async {
-    await _loadingPageConfigService.getLoadingPages();
     final loadingPages = await _loadingPageProvider.getData();
 
     if (loadingPages == null) {
@@ -149,14 +148,16 @@ class LoadingPageViewModel extends BaseViewModel {
     if (await _appOpenTracker.isFirstTimeOpenOnVersion()) {
       final profile =
           await _gettingProfileOfCurrentUser.getProfileOfCurrentUser();
-      await _userDataProvider.saveData(profile);
+      unawaited(_userDataProvider.saveData(profile));
     }
 
     await _typeOfCurrentUser.updateCurrentUserInfo();
     if (_typeOfCurrentUser.currentUserData != null &&
         _typeOfCurrentUser.currentUserData!.photoSrc != null) {
-      await DefaultCacheManager().downloadFile(
-        _typeOfCurrentUser.currentUserData!.photoSrc!,
+      unawaited(
+        DefaultCacheManager().downloadFile(
+          _typeOfCurrentUser.currentUserData!.photoSrc!,
+        ),
       );
     }
   }
@@ -172,7 +173,7 @@ class LoadingPageViewModel extends BaseViewModel {
     await Future.wait([
       _loadingPageProvider.saveData(loadingPagesConfig),
       _logoDownloaderService.downloadFiles(
-        fileNames: loadingPagesConfig.map((model) => model.imagePath).toList(),
+        fileNames: [for (final model in loadingPagesConfig) model.imagePath],
       ),
     ]);
   }

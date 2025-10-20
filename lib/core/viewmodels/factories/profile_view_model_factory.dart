@@ -17,16 +17,13 @@ class ProfileViewModelFactory
 
   @override
   @protected
-  ProfileViewModel createViewModel(ProfileCacheKey key) {
-    return ProfileViewModel(
-      getService<ProfileOfCurrentUserService>(),
-      getService<ProfileService>(),
-      getService<LoggerService>(),
-      getService<CurrentUserSyncStorage>(),
-    );
-  }
+  ProfileViewModel createViewModel(ProfileCacheKey key) => ProfileViewModel(
+        getService<ProfileOfCurrentUserService>(),
+        getService<ProfileService>(),
+        getService<LoggerService>(),
+        getService<CurrentUserSyncStorage>(),
+      );
 
-  ProfileViewModel getCurrentUserViewModel() {
-    return createViewModel(0)..init(loadCurrentUser: true);
-  }
+  ProfileViewModel getCurrentUserViewModel() =>
+      createViewModel(0)..init(loadCurrentUser: true);
 }

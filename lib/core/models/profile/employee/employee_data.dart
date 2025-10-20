@@ -49,30 +49,30 @@ class EmployeeData extends UserData {
   JsonMap toJson() => {
         ...super.toJson(),
         _EmployeeDataJsonKeys.syncId: syncId,
-        _EmployeeDataJsonKeys.profiles:
-            profiles.map((profile) => profile.toJson()).toList(),
+        _EmployeeDataJsonKeys.profiles: [
+          for (final profile in profiles) profile.toJson(),
+        ],
       };
 
   factory EmployeeData.fromJson(JsonMap json) => EmployeeData.withUserData(
         userData: UserData.fromJson(
           // Если сделать каст, ужасно ломается форматирование
           // ignore: avoid_dynamic_calls
-          (json[_EmployeeDataJsonKeys.profiles] as List)[0]
+          (json[_EmployeeDataJsonKeys.profiles]! as List)[0]
                   [_EmployeeDataJsonKeys.user] ??
               json,
         ),
-        syncId: json[_EmployeeDataJsonKeys.syncId] as String,
-        profiles: (json[_EmployeeDataJsonKeys.profiles] as List)
-            .map(
-              (item) => EmployeeProfile.fromJson(item as JsonMap),
-            )
-            .toList(),
+        syncId: json[_EmployeeDataJsonKeys.syncId]! as String,
+        profiles: [
+          for (final item in json[_EmployeeDataJsonKeys.profiles]! as List)
+            EmployeeProfile.fromJson(item as JsonMap),
+        ],
       );
 
   factory EmployeeData.fromCurrentProfileJson(JsonMap json) =>
       EmployeeData.withUserData(
         userData: UserData.fromJson(json),
-        syncId: json[_EmployeeDataJsonKeys.syncId] as String,
+        syncId: json[_EmployeeDataJsonKeys.syncId]! as String,
         profiles: [EmployeeProfile.fromJson(json)],
       );
 }
