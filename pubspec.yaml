@@ -44,7 +44,7 @@ dependencies:
   path_provider: ^2.1.3
   open_filex: ^4.7.0
   path: 
-  extended_image: ^8.2.0
+  extended_image: ">=8.2.0 <11.0.0"
   package_info_plus: ^8.0.2
   go_router: '>=14.8.1 <14.9.0'
   event: ^3.1.0
