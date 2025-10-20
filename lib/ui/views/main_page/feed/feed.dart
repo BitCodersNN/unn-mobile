@@ -217,7 +217,9 @@ class FeedScreenViewState extends State<FeedScreenView>
                       ),
                     ),
                     onNotification: (scrollEnd) {
-                      if (!online) return false;
+                      if (!online) {
+                        return false;
+                      }
                       final metrics = scrollEnd.metrics;
 
                       if (metrics.pixels >= metrics.maxScrollExtent - 300) {
