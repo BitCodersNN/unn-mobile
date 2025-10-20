@@ -50,11 +50,12 @@ class AuthorsProviderImpl implements AuthorsProvider {
   Future<void> saveData(Map<String, List<Author>>? authors) async {
     if (authors == null) return;
 
-    final Map<String, List<Map<String, dynamic>>> jsonMap = {};
-    for (final entry in authors.entries) {
-      jsonMap[entry.key] =
-          entry.value.map((author) => author.toJson()).toList();
-    }
+    final jsonMap = authors.map(
+      (key, value) => MapEntry(
+        key,
+        value.map((author) => author.toJson()).toList(),
+      ),
+    );
 
     await _storage.write(
       key: _AuthorsProviderKeys.authorsKey,
@@ -66,4 +67,8 @@ class AuthorsProviderImpl implements AuthorsProvider {
   Future<bool> isContained() async => _storage.containsKey(
         key: _AuthorsProviderKeys.authorsKey,
       );
+
+  @override
+  Future<void> removeData() async =>
+      _storage.remove(key: _AuthorsProviderKeys.authorsKey);
 }

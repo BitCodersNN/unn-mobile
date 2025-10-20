@@ -12,4 +12,7 @@ abstract interface class DataProvider<T> {
 
   /// Проверяет наличие данных в хранилище
   Future<bool> isContained();
+
+  /// Удаляет данные из хранилища
+  Future<void> removeData();
 }

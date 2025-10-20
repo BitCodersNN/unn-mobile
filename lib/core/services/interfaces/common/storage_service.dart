@@ -9,5 +9,6 @@ abstract interface class StorageService {
     required String value,
     bool secure = false,
   });
+  Future<void> remove({required String key, bool secure = false});
   Future<void> clear();
 }

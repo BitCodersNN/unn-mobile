@@ -18,4 +18,8 @@ abstract interface class UserDataProvider implements DataProvider<UserData?> {
   /// Проверяет наличие данных профиля пользователя в хранилище
   @override
   Future<bool> isContained();
+
+  /// Удаляет данные профиля пользователя из хранилища
+  @override
+  Future<void> removeData();
 }

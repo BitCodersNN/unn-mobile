@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2025 BitCodersNN
 
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
@@ -207,16 +209,18 @@ class ScheduleTabState extends State<ScheduleTab>
                                   ),
                                 );
                               }
-                              await showMessage(
-                                // ignore: use_build_context_synchronously
-                                context,
-                                result
-                                    ? 'Расписание экспортировано в календарь "Расписание ННГУ". \n'
-                                        'Возможно, понадобится включить настройку Device Calendar в приложении календаря.'
-                                    : 'Не удалось экспортировать. Попробуйте снова.',
-                                messageKey:
-                                    result ? 'export_schedule_success' : null,
-                              );
+                              if (Platform.isAndroid) {
+                                await showMessage(
+                                  // ignore: use_build_context_synchronously
+                                  context,
+                                  result
+                                      ? 'Расписание экспортировано в календарь "Расписание ННГУ". \n'
+                                          'Возможно, понадобится включить настройку Device Calendar в приложении календаря.'
+                                      : 'Не удалось экспортировать. Попробуйте снова.',
+                                  messageKey:
+                                      result ? 'export_schedule_success' : null,
+                                );
+                              }
                             }
                           }
                         },

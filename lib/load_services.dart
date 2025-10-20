@@ -360,7 +360,10 @@ void registerDependencies() {
     ),
   );
   injector.registerSingleton<OfflineScheduleProvider>(
-    () => OfflineScheduleProviderImpl(get<StorageService>()),
+    () => OfflineScheduleProviderImpl(
+      get<StorageService>(),
+      get<LoggerService>(),
+    ),
   );
   injector.registerSingleton<ScheduleSearchHistoryService>(
     () => ScheduleSearchHistoryServiceImpl(
@@ -402,6 +405,7 @@ void registerDependencies() {
     injector.registerDependency<BlogPostProvider>(
       () => BlogPostProviderImpl(
         injector.get<StorageService>(),
+        get<LoggerService>(),
         type,
       ),
       dependencyName: type.stringValue,
@@ -478,6 +482,7 @@ void registerDependencies() {
   injector.registerSingleton<MarkBySubjectProvider>(
     () => MarkBySubjectProviderImpl(
       get<StorageService>(),
+      get<LoggerService>(),
     ),
   );
   injector.registerSingleton<AppOpenTracker>(

@@ -21,11 +21,9 @@ class LastCommitShaProviderImpl implements LastCommitShaProvider {
       return null;
     }
 
-    final sha = await _storage.read(
+    return _storage.read(
       key: _key,
     );
-
-    return sha;
   }
 
   @override
@@ -41,11 +39,12 @@ class LastCommitShaProviderImpl implements LastCommitShaProvider {
   }
 
   @override
-  Future<bool> isContained() async {
-    return await _storage.containsKey(
-      key: _key,
-    );
-  }
+  Future<bool> isContained() async => _storage.containsKey(
+        key: _key,
+      );
 
   String get _key => '${gitPath.name.toSnakeCase()}_sha_key';
+
+  @override
+  Future<void> removeData() => _storage.remove(key: _key);
 }

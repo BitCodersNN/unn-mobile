@@ -3,18 +3,21 @@
 
 import 'dart:convert';
 
+import 'package:unn_mobile/core/misc/json/json_iterable_parser.dart';
 import 'package:unn_mobile/core/models/grade_book/mark_by_subject.dart';
 import 'package:unn_mobile/core/providers/interfaces/grade_book/mark_by_subject_provider.dart';
+import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
 import 'package:unn_mobile/core/services/interfaces/common/storage_service.dart';
 
 class _OfflineMarkBySubjectProviderKeys {
-  static const markBySubject = 'markBySubject';
+  static const markBySubject = 'mark_by_subject';
 }
 
 class MarkBySubjectProviderImpl implements MarkBySubjectProvider {
   final StorageService _storage;
+  final LoggerService _loggerService;
 
-  MarkBySubjectProviderImpl(this._storage);
+  MarkBySubjectProviderImpl(this._storage, this._loggerService);
 
   @override
   Future<Map<int, List<MarkBySubject>>?> getData() async {
@@ -26,25 +29,24 @@ class MarkBySubjectProviderImpl implements MarkBySubjectProvider {
         key: _OfflineMarkBySubjectProviderKeys.markBySubject,
       ))!,
     );
-
     final Map<String, dynamic> jsonMap = json.decode(jsonString);
-
     final Map<int, List<MarkBySubject>> gradeBook = {};
+
     jsonMap.forEach((key, value) {
-      final List<MarkBySubject> marksList = (value as List)
-          .map((item) => MarkBySubject.fromJson(item as Map<String, dynamic>))
-          .toList();
-      gradeBook[int.parse(key)] = marksList;
+      gradeBook[int.parse(key)] = parseJsonIterable<MarkBySubject>(
+        value,
+        MarkBySubject.fromJson,
+        _loggerService,
+      );
     });
+
     return gradeBook;
   }
 
   @override
-  Future<bool> isContained() async {
-    return await _storage.containsKey(
-      key: _OfflineMarkBySubjectProviderKeys.markBySubject,
-    );
-  }
+  Future<bool> isContained() async => _storage.containsKey(
+        key: _OfflineMarkBySubjectProviderKeys.markBySubject,
+      );
 
   @override
   Future<void> saveData(Map<int, List<MarkBySubject>>? gradeBook) async {
@@ -65,4 +67,9 @@ class MarkBySubjectProviderImpl implements MarkBySubjectProvider {
       value: jsonEncode(jsonString),
     );
   }
+
+  @override
+  Future<void> removeData() async => _storage.remove(
+        key: _OfflineMarkBySubjectProviderKeys.markBySubject,
+      );
 }

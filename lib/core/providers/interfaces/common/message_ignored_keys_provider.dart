@@ -17,4 +17,8 @@ abstract interface class MessageIgnoredKeysProvider
   /// Сохраняет множество строковых ключей сообщений в хранилище
   @override
   Future<void> saveData(Set<String> data);
+
+  /// Удаляет множество строковых ключей сообщений из храналища
+  @override
+  Future<void> removeData();
 }

@@ -31,13 +31,11 @@ class LoadingPageProviderImpl implements LoadingPageProvider {
       ))!,
     );
 
-    final loadingPages = parseJsonIterable<LoadingPageModel>(
+    return parseJsonIterable<LoadingPageModel>(
       jsonList,
       LoadingPageModel.fromJson,
       _loggerService,
     );
-
-    return loadingPages;
   }
 
   @override
@@ -46,10 +44,10 @@ class LoadingPageProviderImpl implements LoadingPageProvider {
       return;
     }
 
-    final dynamic jsonList = [];
-    for (final loadingPage in loadingPages) {
-      jsonList.add(loadingPage.toJson());
-    }
+    final List<Map<String, dynamic>> jsonList = [
+      for (final loadingPage in loadingPages) loadingPage.toJson(),
+    ];
+
     await _storage.write(
       key: _LoadingPageProviderKeys.loadingPagesKey,
       value: jsonEncode(jsonList),
@@ -58,6 +56,11 @@ class LoadingPageProviderImpl implements LoadingPageProvider {
 
   @override
   Future<bool> isContained() async => _storage.containsKey(
+        key: _LoadingPageProviderKeys.loadingPagesKey,
+      );
+
+  @override
+  Future<void> removeData() async => _storage.remove(
         key: _LoadingPageProviderKeys.loadingPagesKey,
       );
 }
