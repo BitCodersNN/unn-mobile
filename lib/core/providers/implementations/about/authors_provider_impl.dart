@@ -50,12 +50,10 @@ class AuthorsProviderImpl implements AuthorsProvider {
   Future<void> saveData(Map<String, List<Author>>? authors) async {
     if (authors == null) return;
 
-    final jsonMap = Map<String, List<Map<String, dynamic>>>.fromEntries(
-      authors.entries.map(
-        (entry) => MapEntry(
-          entry.key,
-          entry.value.map((author) => author.toJson()).toList(),
-        ),
+    final jsonMap = authors.map(
+      (key, value) => MapEntry(
+        key,
+        value.map((author) => author.toJson()).toList(),
       ),
     );
 

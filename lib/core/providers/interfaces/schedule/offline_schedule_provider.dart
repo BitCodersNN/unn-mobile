@@ -21,4 +21,8 @@ abstract interface class OfflineScheduleProvider
   /// Проверяет наличие расписания в хранилище
   @override
   Future<bool> isContained();
+
+  /// Удаляет расписание из хранилища
+  @override
+  Future<void> removeData();
 }

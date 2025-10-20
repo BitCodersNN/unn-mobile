@@ -44,8 +44,9 @@ class LoadingPageProviderImpl implements LoadingPageProvider {
       return;
     }
 
-    final List<Map<String, dynamic>> jsonList =
-        loadingPages.map((page) => page.toJson()).toList();
+    final List<Map<String, dynamic>> jsonList = [
+      for (final loadingPage in loadingPages) loadingPage.toJson(),
+    ];
 
     await _storage.write(
       key: _LoadingPageProviderKeys.loadingPagesKey,
