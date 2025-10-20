@@ -17,7 +17,6 @@ import 'package:unn_mobile/core/viewmodels/main_page/main_page_route_view_model.
 class FeedScreenViewModel extends BaseViewModel
     implements MainPageRouteViewModel {
   static const postsPerPage = 10;
-  late DateTime lastFeedLoadDateTime;
   final LastFeedLoadDateTimeProvider _lastFeedLoadDateTimeProvider;
   final BlogPostProvider _blogPostProvider;
   final RegularBlogPostsService _regularBlogPostsService;
@@ -29,11 +28,15 @@ class FeedScreenViewModel extends BaseViewModel
 
   final List<FeedPostViewModel> _totalPosts = [];
 
+  int _numberUnreadMessages = 0;
   int _currentPage = 0;
   bool _failedToLoad = false;
 
   List<FeedPostViewModel> get posts =>
       _totalPosts.take(postsPerPage * _currentPage).toList();
+
+  int get numberUnreadMessages => _numberUnreadMessages;
+
   bool get failedToLoad => _failedToLoad;
   bool get loadingMore => _loadingMore;
 
@@ -63,9 +66,7 @@ class FeedScreenViewModel extends BaseViewModel
   );
 
   void init() {
-    _lastFeedLoadDateTimeProvider.getData().then(
-          (value) => lastFeedLoadDateTime = value ?? DateTime(2000, 1, 1),
-        );
+    _lastFeedLoadDateTimeProvider.getData();
     _blogPostProvider //
         .getData() //
         .then((posts) => _addPostsToList(offlinePosts, posts)) //
@@ -74,10 +75,18 @@ class FeedScreenViewModel extends BaseViewModel
 
   void _addPostsToList(
     List<FeedPostViewModel> posts,
-    List<BlogPost>? newPosts,
-  ) {
+    List<BlogPost>? newPosts, {
+    bool isRegularPost = true,
+  }) {
     final postViewmodels = newPosts?.map(
-      (p) => FeedPostViewModel.cached(p.data.id)..initFromFullInfo(p, this),
+      (p) {
+        final post = FeedPostViewModel.cached(p.data.id);
+        post.initFromFullInfo(p, this);
+        if (post.isNewPost && isRegularPost) {
+          _numberUnreadMessages++;
+        }
+        return post;
+      },
     );
     posts.addAll(postViewmodels ?? []);
   }
@@ -108,6 +117,7 @@ class FeedScreenViewModel extends BaseViewModel
   Future<void> reload() async => await changeState(() async {
         failedToLoad = false;
         loadingMore = true;
+        _numberUnreadMessages = 0;
 
         await refreshFeatured();
 
@@ -131,6 +141,8 @@ class FeedScreenViewModel extends BaseViewModel
         offlinePosts.addAll(_totalPosts);
         loadingMore = false;
         _currentPage = 1;
+        await _lastFeedLoadDateTimeProvider
+            .saveData(freshPosts.first.data.datePublish);
       });
 
   Future<void> refreshFeatured() async => changeState(() async {
@@ -140,9 +152,17 @@ class FeedScreenViewModel extends BaseViewModel
           () => null,
         );
         pinnedPosts.clear();
-        _addPostsToList(pinnedPosts, featuredPosts?[BlogPostType.pinned]);
+        _addPostsToList(
+          pinnedPosts,
+          featuredPosts?[BlogPostType.pinned],
+          isRegularPost: false,
+        );
         announcements.clear();
-        _addPostsToList(announcements, featuredPosts?[BlogPostType.important]);
+        _addPostsToList(
+          announcements,
+          featuredPosts?[BlogPostType.important],
+          isRegularPost: false,
+        );
       });
 
   bool isPostPinned(int id) => pinnedPosts.any((p) => p.blogData.id == id);
