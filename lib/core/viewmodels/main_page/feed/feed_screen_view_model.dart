@@ -80,8 +80,8 @@ class FeedScreenViewModel extends BaseViewModel
   }) {
     final postViewmodels = newPosts?.map(
       (p) {
-        final post = FeedPostViewModel.cached(p.data.id);
-        post.initFromFullInfo(p, this);
+        final post = FeedPostViewModel.cached(p.data.id)
+          ..initFromFullInfo(p, this);
         if (post.isNewPost && isRegularPost) {
           _numberUnreadMessages++;
         }

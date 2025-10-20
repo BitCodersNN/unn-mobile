@@ -133,68 +133,6 @@ class FeedScreenViewState extends State<FeedScreenView>
                                     ],
                                   ),
                                 ),
-                              if (model.failedToLoad)
-                                _coloredTopMessage(
-                                  context,
-                                  'Не удалось загрузить посты',
-                                  const Color(0xFFBB1111),
-                                  const Color(0xFFFFFFFF),
-                                ),
-                              if (!online && model.offlinePosts.isNotEmpty)
-                                _coloredTopMessage(
-                                  context,
-                                  'Показаны последние загруженные посты',
-                                  const Color(0xFF696969),
-                                  const Color(0xFFFFFFFF),
-                                ),
-                              SliverToBoxAdapter(
-                                child: ListView.builder(
-                                  shrinkWrap: true,
-                                  physics: const NeverScrollableScrollPhysics(),
-                                  itemCount: model.posts.length,
-                                  itemBuilder: (context, index) {
-                                    if (index == model.numberUnreadMessages) {
-                                      return Container(
-                                        color: Colors.white,
-                                        padding: const EdgeInsets.symmetric(
-                                          vertical: 12.0,
-                                          horizontal: 20.0,
-                                        ),
-                                        margin: const EdgeInsets.only(
-                                          top: 8.0,
-                                          bottom: 8.0,
-                                        ),
-                                        child: Column(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            Text(
-                                              'ПРОЧИТАННЫЕ ПОСТЫ',
-                                              textAlign: TextAlign.center,
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .labelMedium
-                                                  ?.copyWith(
-                                                    color: Colors.grey[600],
-                                                    fontSize: 14.0,
-                                                  ),
-                                            ),
-                                          ],
-                                        ),
-                                      );
-                                    }
-
-                                    final actualIndex =
-                                        index > model.numberUnreadMessages
-                                            ? index - 1
-                                            : index;
-                                    final post = model.posts[actualIndex];
-                                    return FeedPost(
-                                      key: ObjectKey(post),
-                                      post: post,
-                                      showingComments: false,
-                                    );
-                                  },
-                                ),
                               ),
                             ),
                           if (model.failedToLoad)
@@ -217,7 +155,41 @@ class FeedScreenViewState extends State<FeedScreenView>
                               physics: const NeverScrollableScrollPhysics(),
                               itemCount: model.posts.length,
                               itemBuilder: (context, index) {
-                                final post = model.posts[index];
+                                if (index == model.numberUnreadMessages) {
+                                  return Container(
+                                    color: Colors.white,
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 12.0,
+                                      horizontal: 20.0,
+                                    ),
+                                    margin: const EdgeInsets.only(
+                                      top: 8.0,
+                                      bottom: 8.0,
+                                    ),
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Text(
+                                          'ПРОЧИТАННЫЕ ПОСТЫ',
+                                          textAlign: TextAlign.center,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .labelMedium
+                                              ?.copyWith(
+                                                color: Colors.grey[600],
+                                                fontSize: 14.0,
+                                              ),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                }
+
+                                final actualIndex =
+                                    index > model.numberUnreadMessages
+                                        ? index - 1
+                                        : index;
+                                final post = model.posts[actualIndex];
                                 return FeedPost(
                                   key: ObjectKey(post),
                                   post: post,
@@ -245,9 +217,7 @@ class FeedScreenViewState extends State<FeedScreenView>
                       ),
                     ),
                     onNotification: (scrollEnd) {
-                      if (!online) {
-                        return false;
-                      }
+                      if (!online) return false;
                       final metrics = scrollEnd.metrics;
 
                       if (metrics.pixels >= metrics.maxScrollExtent - 300) {
