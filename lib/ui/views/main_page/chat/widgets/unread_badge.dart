@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 
 class UnreadBadge extends StatelessWidget {
   const UnreadBadge({
-    super.key,
     required this.unreadCount,
+    super.key,
   });
 
   final String unreadCount;

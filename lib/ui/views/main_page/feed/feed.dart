@@ -16,7 +16,7 @@ import 'package:unn_mobile/ui/widgets/offline_overlay_displayer.dart';
 
 class FeedScreenView extends StatefulWidget {
   final int? bottomRouteIndex;
-  const FeedScreenView({super.key, required this.bottomRouteIndex});
+  const FeedScreenView({required this.bottomRouteIndex, super.key});
 
   @override
   State<FeedScreenView> createState() => FeedScreenViewState();
@@ -54,7 +54,7 @@ class FeedScreenViewState extends State<FeedScreenView>
         );
       }
     };
-    _viewModel.onRefresh = () => refreshTab();
+    _viewModel.onRefresh = refreshTab;
     _scrollController.addListener(scrollUpdate);
   }
 
@@ -188,7 +188,9 @@ class FeedScreenViewState extends State<FeedScreenView>
                           ),
                         ),
                         onNotification: (scrollEnd) {
-                          if (!online) return false;
+                          if (!online) {
+                            return false;
+                          }
                           final metrics = scrollEnd.metrics;
 
                           if (metrics.pixels >= metrics.maxScrollExtent - 300) {
@@ -244,8 +246,9 @@ class FeedScreenViewState extends State<FeedScreenView>
   void dispose() {
     _viewModel.scrollToTop = null;
     _viewModel.onRefresh = null;
-    _scrollController.removeListener(scrollUpdate);
-    _scrollController.dispose();
+    _scrollController
+      ..removeListener(scrollUpdate)
+      ..dispose();
     super.dispose();
   }
 

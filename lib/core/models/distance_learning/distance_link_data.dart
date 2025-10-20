@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2025 BitCodersNN
 
+import 'package:unn_mobile/core/misc/json/json_utils.dart';
 import 'package:unn_mobile/core/models/distance_learning/distance_material_data.dart';
 
 class _LinkDataJsonKeys {
@@ -19,8 +20,7 @@ final class DistanceLinkData extends DistanceMaterialData {
   });
 
   @override
-  factory DistanceLinkData.fromJson(Map<String, Object?> jsonMap) =>
-      DistanceLinkData(
+  factory DistanceLinkData.fromJson(JsonMap jsonMap) => DistanceLinkData(
         link: jsonMap[_LinkDataJsonKeys.link] as String,
         comment: jsonMap[_LinkDataJsonKeys.comment] as String,
         dateTime: DateTime.parse(
@@ -29,7 +29,7 @@ final class DistanceLinkData extends DistanceMaterialData {
       );
 
   @override
-  Map<String, Object?> toJson() => {
+  JsonMap toJson() => {
         _LinkDataJsonKeys.link: link,
         _LinkDataJsonKeys.comment: comment,
         _LinkDataJsonKeys.dateTime: dateTime.toIso8601String(),

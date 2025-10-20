@@ -31,6 +31,8 @@ class LecturerProfileServiceImpl implements LecturerProfileService {
     int offset = 0;
     int? total;
 
+    // Вообще, надо бы придумать условие выхода
+    // ignore: literal_only_boolean_expressions
     do {
       final employees = await _profileSearchService.getEmployees(
         EmployeeSearchFilter(globalFilter: fullname),

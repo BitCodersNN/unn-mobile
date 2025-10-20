@@ -17,8 +17,8 @@ import 'package:unn_mobile/ui/widgets/shimmer_loading.dart';
 class AttachedFile extends StatefulWidget {
   final AttachedFileViewModel viewModel;
   const AttachedFile({
-    super.key,
     required this.viewModel,
+    super.key,
   });
 
   @override
@@ -40,7 +40,7 @@ class _AttachedFileState extends State<AttachedFile> {
           child: SizedBox(
             width: double.infinity,
             child: Padding(
-              padding: const EdgeInsets.only(left: 0),
+              padding: EdgeInsets.zero,
               child: GestureDetector(
                 onTap: () async {
                   await _downloadAndOpenFile(model, false, context);
@@ -53,7 +53,7 @@ class _AttachedFileState extends State<AttachedFile> {
                         .logEvent(name: 'feed_attached_file_long_press'),
                   ]);
                 },
-                child: Container(
+                child: ColoredBox(
                   color: Colors.transparent,
                   child: Shimmer(
                     child: Row(

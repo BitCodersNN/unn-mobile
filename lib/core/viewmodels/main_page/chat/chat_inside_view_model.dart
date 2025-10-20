@@ -5,7 +5,7 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:math';
 
-import 'package:unn_mobile/core/aggregators/intefaces/message_service_aggregator.dart';
+import 'package:unn_mobile/core/aggregators/interfaces/message_service_aggregator.dart';
 import 'package:unn_mobile/core/misc/authorisation/try_login_and_retrieve_data.dart';
 import 'package:unn_mobile/core/misc/date_time_utilities/date_time_extensions.dart';
 import 'package:unn_mobile/core/misc/objects_with_pagination.dart';
@@ -79,7 +79,7 @@ class ChatInsideViewModel extends BaseViewModel {
     }
 
     final messages = await tryLoginAndRetrieveData<PaginatedResult<Message>>(
-      () async => await _messagesAggregator.fetch(chatId: _dialog!.chatId),
+      () => _messagesAggregator.fetch(chatId: _dialog!.chatId),
       () => null,
     );
     if (messages == null) {
@@ -104,11 +104,12 @@ class ChatInsideViewModel extends BaseViewModel {
 
       _dialogsViewModel!.notifyListeners();
     }
-    _unpartitionedMessages.removeRange(
-      0,
-      min(messagesToRemove, _unpartitionedMessages.length),
-    );
-    _unpartitionedMessages.insertAll(0, messages.items.reversed);
+    _unpartitionedMessages
+      ..removeRange(
+        0,
+        min(messagesToRemove, _unpartitionedMessages.length),
+      )
+      ..insertAll(0, messages.items.reversed);
 
     _messages
       ..clear()
@@ -136,7 +137,7 @@ class ChatInsideViewModel extends BaseViewModel {
         }
         final messages =
             await tryLoginAndRetrieveData<PaginatedResult<Message>?>(
-          () async => await _messagesAggregator.fetch(
+          () => _messagesAggregator.fetch(
             chatId: _dialog!.chatId,
             lastMessageId: _unpartitionedMessages.last.messageId,
           ),
@@ -174,11 +175,11 @@ class ChatInsideViewModel extends BaseViewModel {
     await refreshLoop(checkStartConditions: false);
   }
 
-  FutureOr<bool> sendFiles(Iterable<String> uris, {String? text}) async =>
-      _sendMessageWrapper<List<FileData>>(() async {
-        return await _messagesAggregator.sendFiles(
+  FutureOr<bool> sendFiles(Iterable<String> uris, {String? text}) =>
+      _sendMessageWrapper<List<FileData>>(() {
+        return _messagesAggregator.sendFiles(
           chatId: _dialog!.chatId,
-          files: uris.map((e) => File(e)).toList(),
+          files: uris.map(File.new).toList(),
           text: text,
         );
       });
@@ -213,7 +214,7 @@ class ChatInsideViewModel extends BaseViewModel {
     _dialog = _dialogsViewModel!.dialogs.firstWhere((d) => d.chatId == chatId);
 
     final messages = await tryLoginAndRetrieveData<PaginatedResult<Message>>(
-      () async => await _messagesAggregator.fetch(chatId: chatId),
+      () => _messagesAggregator.fetch(chatId: chatId),
       () => null,
     );
     if (messages == null) {
@@ -227,7 +228,7 @@ class ChatInsideViewModel extends BaseViewModel {
     _hasMessagesBefore = messages.hasPreviousPage;
     _hasMessagesAfter = messages.hasNextPage;
 
-    refreshLoop();
+    unawaited(refreshLoop());
   }
 
   List<List<List<Message>>> _partitionMessages(Iterable<Message> messages) {

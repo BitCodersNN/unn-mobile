@@ -18,7 +18,9 @@ List<Map<String, dynamic>> flattenTree({
   final List<Map<String, dynamic>> result = [];
 
   void traverse(Map<String, dynamic>? node) {
-    if (node == null || node.isEmpty) return;
+    if (node == null || node.isEmpty) {
+      return;
+    }
 
     Map<String, dynamic> outputNode;
 

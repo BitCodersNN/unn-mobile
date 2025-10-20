@@ -17,7 +17,7 @@ void updateLastCommitShaAndConfigIfChanged({
   ]);
 
   if (shaFromProvider == null || shaFromService != shaFromProvider) {
-    Future.wait([
+    await Future.wait([
       saveConfig(),
       lastCommitShaProvider.saveData(shaFromService),
     ]);

@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2025 BitCodersNN
 
+import 'package:unn_mobile/core/misc/json/json_utils.dart';
 import 'package:unn_mobile/core/models/profile/student/base_edu_info.dart';
 import 'package:unn_mobile/core/models/profile/user_data.dart';
 
@@ -46,8 +47,7 @@ class StudentData extends UserData {
           notes: userData.notes,
         );
 
-  factory StudentData.fromJson(Map<String, Object?> json) =>
-      StudentData.withUserData(
+  factory StudentData.fromJson(JsonMap json) => StudentData.withUserData(
         baseEduInfo: BaseEduInfo.fromJson(json),
         userData: UserData.fromJson(json),
         eduStatus: json[_StudentDataJsonKeys.eduStatus] as String,
@@ -55,7 +55,7 @@ class StudentData extends UserData {
       );
 
   @override
-  Map<String, dynamic> toJson() => {
+  JsonMap toJson() => {
         ...super.toJson(),
         ...baseEduInfo.toJson(),
         _StudentDataJsonKeys.eduStatus: eduStatus,

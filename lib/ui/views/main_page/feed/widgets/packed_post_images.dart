@@ -11,8 +11,8 @@ import 'package:unn_mobile/ui/widgets/packed_images_view.dart';
 
 class PackedPostImages extends StatelessWidget {
   const PackedPostImages({
-    super.key,
     required this.attachedImages,
+    super.key,
   });
 
   final Iterable<String> attachedImages;
@@ -96,9 +96,9 @@ class _ImagesCarouselDialogState extends State<_ImagesCarouselDialog> {
 
 class _ImagesCarouselDialogOverlay extends StatefulWidget {
   _ImagesCarouselDialogOverlay({
-    super.key,
     required int length,
     required int initialIndex,
+    super.key,
   }) : initialIndex = BoundedInt(value: initialIndex, min: 0, max: length - 1);
 
   final BoundedInt initialIndex;
@@ -158,8 +158,8 @@ class ImagesCarousel extends StatefulWidget {
   final void Function(int index)? onPageChanged;
 
   const ImagesCarousel({
-    super.key,
     required this.attachedImages,
+    super.key,
     this.imageModel = 0,
     this.onPageChanged,
   });

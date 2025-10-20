@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2025 BitCodersNN
 
+import 'package:unn_mobile/core/aggregators/interfaces/message_reaction_service_aggregator.dart';
 import 'package:unn_mobile/core/models/feed/rating_list.dart';
 import 'package:unn_mobile/core/services/interfaces/dialog/message/reaction/message_reaction_fetcher_service.dart';
 import 'package:unn_mobile/core/services/interfaces/dialog/message/reaction/message_reaction_mutator_service.dart';
-import 'package:unn_mobile/core/aggregators/intefaces/message_reaction_service_aggregator.dart';
 
 class MessageReactionServiceAggregatorImpl
     implements MessageReactionServiceAggregator {

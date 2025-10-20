@@ -11,8 +11,8 @@ class OfflineOverlayDisplayer extends StatefulWidget {
   final double bottomOffset;
 
   const OfflineOverlayDisplayer({
-    super.key,
     required this.child,
+    super.key,
     this.bottomOffset = 0,
   });
 
@@ -115,7 +115,7 @@ class _OfflineOverlayState extends State<_OfflineOverlay> {
                           );
                         }
                         return IconButton(
-                          onPressed: () async {
+                          onPressed: () {
                             setState(() {
                               refreshAction = Injector.appInstance
                                   .get<AuthorisationRefreshService>()

@@ -8,8 +8,8 @@ import 'package:unn_mobile/ui/widgets/adaptive_dialog_action.dart';
 
 class MessageDialog extends StatefulWidget {
   const MessageDialog({
-    super.key,
     required this.message,
+    super.key,
     this.canBeIgnored = false,
     this.messageKey = '',
   });
@@ -55,7 +55,7 @@ class _MessageDialogState extends State<MessageDialog> {
       actions: <Widget>[
         AdaptiveDialogAction(
           child: const Text('OK'),
-          onPressed: () async {
+          onPressed: () {
             Navigator.of(context).pop<bool>(ignoreCheckbox);
           },
         ),

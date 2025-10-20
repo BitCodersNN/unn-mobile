@@ -41,7 +41,7 @@ class ChatScreenViewModel extends BaseViewModel {
     await busyCallAsync(() => _init(0));
   }
 
-  FutureOr<void> loadMore() async => busyCallAsync(() async {
+  FutureOr<void> loadMore() => busyCallAsync(() async {
         _hasError = false;
         final dialogItems = await _getDialogItems(
           limit: dialogLimit,
@@ -57,9 +57,9 @@ class ChatScreenViewModel extends BaseViewModel {
   Future<PartialResult<Dialog>?> _getDialogItems({
     required int limit,
     DateTime? lastMessageDate,
-  }) async {
-    return await tryLoginAndRetrieveData<PartialResult<Dialog>>(
-      () async => await _dialogService.getDialogs(
+  }) {
+    return tryLoginAndRetrieveData<PartialResult<Dialog>>(
+      () => _dialogService.getDialogs(
         dialogQueryParameter: DialogQueryParameter(
           limit: limit,
           lastMessageDate: lastMessageDate,

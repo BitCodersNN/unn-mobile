@@ -10,7 +10,7 @@ import 'package:unn_mobile/ui/views/base_view.dart';
 
 class SourceItemView extends StatelessWidget {
   final SourceItemViewModel model;
-  const SourceItemView({super.key, required this.model});
+  const SourceItemView({required this.model, super.key});
 
   @override
   Widget build(BuildContext context) {

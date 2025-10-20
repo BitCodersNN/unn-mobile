@@ -34,9 +34,9 @@ class _DonationsScreenViewState extends State<DonationsScreenView> {
         ),
       );
 
-    if (controller.platform is AndroidWebViewController) {
-      final androidController = controller.platform as AndroidWebViewController;
-      androidController.setTextZoom(100);
+    final platform = controller.platform;
+    if (platform is AndroidWebViewController) {
+      platform.setTextZoom(100);
     }
   }
 

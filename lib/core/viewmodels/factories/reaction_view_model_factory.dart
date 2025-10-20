@@ -17,7 +17,7 @@ class ReactionViewModelFactory
 
   @override
   @protected
-  ReactionViewModel createViewModel(key) {
+  ReactionViewModel createViewModel(ReactionCacheKey key) {
     return ReactionViewModel(
       getService<GettingVoteKeySigned>(),
       getService<GettingRatingList>(),

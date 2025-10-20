@@ -15,44 +15,13 @@ import 'package:unn_mobile/ui/views/base_view.dart';
 class SourceWebinarView extends StatelessWidget {
   final SourceWebinarViewModel model;
 
-  const SourceWebinarView({super.key, required this.model});
+  const SourceWebinarView({required this.model, super.key});
 
   @override
   Widget build(BuildContext context) {
     return BaseView<SourceWebinarViewModel>(
       builder: (context, model, _) {
         final theme = Theme.of(context);
-        /*return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                vertical: 8.0,
-                horizontal: 24.0,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    model.title,
-                    style: theme.textTheme.titleLarge,
-                  ),
-                  SelectableText('Комментарий: ${model.comment}'),
-                  if (model.urlStream?.isNotEmpty ?? false)
-                    HtmlWidget(
-                      'Ссылка на трансляцию: <a href="${model.urlStream}">${model.urlStream}</a>',
-                      onTapUrl: htmlWidgetOnTapUrl,
-                    ),
-                  if (model.urlRecord?.isNotEmpty ?? false)
-                    HtmlWidget(
-                      'Ссылка на запись: <a href="${model.urlRecord}">${model.urlRecord}</a>',
-                      onTapUrl: htmlWidgetOnTapUrl,
-                    ),
-                ],
-              ),
-            ),
-          ],
-        );*/
         return Padding(
           padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
           child: GestureDetector(

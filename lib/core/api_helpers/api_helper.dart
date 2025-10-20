@@ -3,9 +3,9 @@
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:unn_mobile/core/misc/api_helpers/interfaces/api_options_helper.dart';
-import 'package:unn_mobile/core/misc/api_helpers/interfaces/get_api_helper.dart';
-import 'package:unn_mobile/core/misc/api_helpers/interfaces/post_api_helper.dart';
+import 'package:unn_mobile/core/api_helpers/interfaces/api_options_helper.dart';
+import 'package:unn_mobile/core/api_helpers/interfaces/get_api_helper.dart';
+import 'package:unn_mobile/core/api_helpers/interfaces/post_api_helper.dart';
 import 'package:unn_mobile/core/misc/dio_interceptor/response_type_interceptor.dart';
 
 class ApiHelper implements GetApiHelper, PostApiHelper, ApiOptionsHelper {
@@ -28,8 +28,8 @@ class ApiHelper implements GetApiHelper, PostApiHelper, ApiOptionsHelper {
     Map<String, dynamic>? queryParameters,
     Options? options,
     ProgressCallback? onReceiveProgress,
-  }) async {
-    return await dio.get(
+  }) {
+    return dio.get(
       path,
       queryParameters: queryParameters,
       options: options,
@@ -45,8 +45,8 @@ class ApiHelper implements GetApiHelper, PostApiHelper, ApiOptionsHelper {
     Options? options,
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
-  }) async {
-    return await dio.post(
+  }) {
+    return dio.post(
       path,
       data: data,
       queryParameters: queryParameters,

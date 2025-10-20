@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2025 BitCodersNN
 
+import 'package:unn_mobile/core/misc/json/json_utils.dart';
 import 'package:unn_mobile/core/models/profile/employee/base_employee_profile.dart';
 import 'package:unn_mobile/core/models/profile/user_short_info.dart';
 
@@ -20,19 +21,18 @@ class EmployeeProfile {
     this.manager,
   });
 
-  Map<String, dynamic> toJson() => {
+  JsonMap toJson() => {
         ...previewEmployeeProfile.toJson(),
         _EmployeeProfileJsonKeys.jobType: jobType,
         _EmployeeProfileJsonKeys.manager: manager?.toProfileJson(),
       };
 
-  factory EmployeeProfile.fromJson(Map<String, Object?> json) =>
-      EmployeeProfile(
+  factory EmployeeProfile.fromJson(JsonMap json) => EmployeeProfile(
         previewEmployeeProfile: BaseEmployeeProfile.fromJson(json),
         jobType: json[_EmployeeProfileJsonKeys.jobType] as String,
         manager: json[_EmployeeProfileJsonKeys.manager] != null
             ? UserShortInfo.fromProfileJson(
-                json[_EmployeeProfileJsonKeys.manager] as Map<String, dynamic>,
+                json[_EmployeeProfileJsonKeys.manager] as JsonMap,
               )
             : null,
       );

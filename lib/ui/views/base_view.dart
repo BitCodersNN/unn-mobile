@@ -1,6 +1,9 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2025 BitCodersNN
 
+// Нужно это учитывать, но проблем пока с этим не было
+// ignore_for_file: unsafe_variance
+
 import 'package:flutter/material.dart';
 import 'package:injector/injector.dart';
 import 'package:provider/provider.dart';
@@ -15,9 +18,9 @@ class BaseView<T extends BaseViewModel> extends StatefulWidget {
   final T? model;
 
   const BaseView({
+    required this.builder,
     super.key,
     this.model,
-    required this.builder,
     this.onModelReady,
     this.onDispose,
   });
@@ -31,9 +34,7 @@ class BaseViewState<T extends BaseViewModel> extends State<BaseView<T>> {
   @override
   void initState() {
     model = widget.model ?? Injector.appInstance.get<T>();
-    if (widget.onModelReady != null) {
-      widget.onModelReady!(model);
-    }
+    widget.onModelReady?.call(model);
     super.initState();
   }
 

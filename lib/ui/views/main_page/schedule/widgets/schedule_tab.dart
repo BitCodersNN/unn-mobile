@@ -5,6 +5,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_changed/search_anchor.dart' as flutter_changed;
 import 'package:intl/intl.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
 import 'package:unn_mobile/core/misc/date_time_utilities/date_time_extensions.dart';
@@ -16,7 +17,6 @@ import 'package:unn_mobile/core/viewmodels/main_page/schedule/schedule_tab_view_
 import 'package:unn_mobile/ui/views/base_view.dart';
 import 'package:unn_mobile/ui/views/main_page/schedule/widgets/schedule_item_normal.dart';
 import 'package:unn_mobile/ui/views/main_page/schedule/widgets/schedule_search_suggestion_item_view.dart';
-import 'package:flutter_changed/search_anchor.dart' as flutter_changed;
 import 'package:unn_mobile/ui/widgets/dialogs/message_dialog.dart';
 import 'package:unn_mobile/ui/widgets/dialogs/radio_group_dialog.dart';
 import 'package:unn_mobile/ui/widgets/persistent_header.dart';
@@ -104,7 +104,7 @@ class ScheduleTabState extends State<ScheduleTab>
   }
 
   Widget _searchBar(ScheduleTabViewModel model, BuildContext context) {
-    return Container(
+    return ColoredBox(
       color: Theme.of(context).colorScheme.surface,
       child: flutter_changed.SearchAnchor(
         textInputAction: TextInputAction.search,
@@ -209,9 +209,8 @@ class ScheduleTabState extends State<ScheduleTab>
                                   ),
                                 );
                               }
-                              if (Platform.isAndroid) {
+                              if (Platform.isAndroid && context.mounted) {
                                 await showMessage(
-                                  // ignore: use_build_context_synchronously
                                   context,
                                   result
                                       ? 'Расписание экспортировано в календарь "Расписание ННГУ". \n'
@@ -278,10 +277,11 @@ class ScheduleTabState extends State<ScheduleTab>
                     SystemChannels.textInput.invokeMethod('TextInput.hide');
                   },
                 );
-                model.lastSearchQuery = controller.text;
-                model.addHistoryItem(e);
-                model.selectedId = e.id;
-                model.updateFilter(e.id);
+                model
+                  ..lastSearchQuery = controller.text
+                  ..addHistoryItem(e)
+                  ..selectedId = e.id
+                  ..updateFilter(e.id);
               },
             ),
           );
@@ -312,7 +312,7 @@ class ScheduleTabState extends State<ScheduleTab>
                 SliverPersistentHeader(
                   delegate: PersistentHeader(
                     maxExtent: 60,
-                    widget: Container(
+                    widget: ColoredBox(
                       color: theme.colorScheme.surface,
                       child: Padding(
                         padding: const EdgeInsets.fromLTRB(0, 10, 0, 5),
@@ -506,7 +506,7 @@ class ScheduleTabState extends State<ScheduleTab>
                     i++)
                   ScheduleItemNormal(
                     subject: snapshot.data!.values.elementAt(index)[i],
-                    even: i % 2 == 0,
+                    even: i.isEven,
                   ),
               ],
             ),
@@ -521,8 +521,9 @@ class ScheduleTabState extends State<ScheduleTab>
   void dispose() {
     widget.viewModel.onRefresh = null;
     _scrollController.dispose();
-    _searchController.removeListener(searchListener);
-    _searchController.dispose();
+    _searchController
+      ..removeListener(searchListener)
+      ..dispose();
     super.dispose();
   }
 

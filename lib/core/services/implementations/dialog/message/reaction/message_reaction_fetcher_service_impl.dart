@@ -2,12 +2,13 @@
 // Copyright 2025 BitCodersNN
 
 import 'package:dio/dio.dart';
+import 'package:unn_mobile/core/api_helpers/api_helper.dart';
+import 'package:unn_mobile/core/api_helpers/authenticated_api_helper.dart';
 import 'package:unn_mobile/core/constants/api/path.dart';
-import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
-import 'package:unn_mobile/core/misc/api_helpers/authenticated_api_helper.dart';
 import 'package:unn_mobile/core/misc/dio_interceptor/response_data_type.dart';
 import 'package:unn_mobile/core/misc/dio_options_factory/options_with_timeout_and_expected_type_factory.dart';
 import 'package:unn_mobile/core/misc/json/json_iterable_parser.dart';
+import 'package:unn_mobile/core/misc/json/json_utils.dart';
 import 'package:unn_mobile/core/misc/object_by_id_map.dart';
 import 'package:unn_mobile/core/models/feed/rating_list.dart';
 import 'package:unn_mobile/core/models/profile/user_short_info.dart';
@@ -59,7 +60,7 @@ class MessageReactionFetcherServiceImpl
       return null;
     }
 
-    final result = response.data[_JsonKeys.result];
+    final result = (response.data as JsonMap)[_JsonKeys.result] as JsonMap;
     final usersById = buildObjectByIdMap(result[_JsonKeys.users]);
     const defaultUserInfoKeys = DefaultUserInfoKeys();
 

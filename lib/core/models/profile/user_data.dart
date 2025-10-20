@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2025 BitCodersNN
 
+import 'package:unn_mobile/core/misc/json/json_utils.dart';
 import 'package:unn_mobile/core/models/profile/user_short_info.dart';
 
 class _UserDataJsonKeys {
@@ -36,10 +37,10 @@ class UserData extends UserShortInfo {
   UserData.withUserShortInfo({
     required UserShortInfo userShortInfo,
     required this.userId,
+    required this.sex,
     this.login,
     this.email,
     this.phone,
-    required this.sex,
     this.notes,
   }) : super(
           bitrixId: userShortInfo.bitrixId,
@@ -47,9 +48,8 @@ class UserData extends UserShortInfo {
           photoSrc: userShortInfo.photoSrc,
         );
 
-  factory UserData.fromJson(Map<String, Object?> json) {
-    final userJsonMap =
-        (json[_UserDataJsonKeys.user] ?? json) as Map<String, Object?>;
+  factory UserData.fromJson(JsonMap json) {
+    final userJsonMap = (json[_UserDataJsonKeys.user] ?? json) as JsonMap;
     return UserData.withUserShortInfo(
       userShortInfo: UserShortInfo.fromProfileJson(userJsonMap),
       userId: userJsonMap[_UserDataJsonKeys.id] as int,
@@ -62,7 +62,7 @@ class UserData extends UserShortInfo {
   }
 
   @override
-  Map<String, dynamic> toJson() => {
+  JsonMap toJson() => {
         _UserDataJsonKeys.user: {
           ...super.toProfileJson(),
           _UserDataJsonKeys.id: userId,

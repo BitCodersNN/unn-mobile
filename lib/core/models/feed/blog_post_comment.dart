@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2025 BitCodersNN
 
-import 'package:unn_mobile/core/models/feed/blog_post_comment_data.dart';
+import 'package:unn_mobile/core/misc/json/json_utils.dart';
 import 'package:unn_mobile/core/models/common/file_data.dart';
+import 'package:unn_mobile/core/models/feed/blog_post_comment_data.dart';
 import 'package:unn_mobile/core/models/feed/rating_list.dart';
 import 'package:unn_mobile/core/models/profile/user_short_info.dart';
 
@@ -25,7 +26,7 @@ class BlogPostComment {
     required this.attachFiles,
   });
 
-  factory BlogPostComment.fromJson(Map<String, dynamic> jsonMap) {
+  factory BlogPostComment.fromJson(JsonMap jsonMap) {
     return BlogPostComment._(
       data: BlogPostCommentData.fromJson(jsonMap),
       ratingList:
@@ -44,7 +45,7 @@ class BlogPostComment {
     );
   }
 
-  Map<String, dynamic> toJson() {
+  JsonMap toJson() {
     return {
       ...data.toJson(),
       _BlogPostCommentDataWithRatingsJsonKeys.reaction: ratingList?.toJson(),
@@ -54,7 +55,7 @@ class BlogPostComment {
     };
   }
 
-  factory BlogPostComment.fromBitrixJson(Map<String, dynamic> jsonMap) {
+  factory BlogPostComment.fromBitrixJson(JsonMap jsonMap) {
     return BlogPostComment._(
       data: BlogPostCommentData.fromBitrixJson(jsonMap),
       ratingList:

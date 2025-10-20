@@ -6,17 +6,17 @@ import 'package:html_unescape/html_unescape.dart';
 import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/models/feed/blog_post.dart';
 import 'package:unn_mobile/core/models/feed/blog_post_data.dart';
+import 'package:unn_mobile/core/providers/interfaces/feed/last_feed_load_date_time_provider.dart';
+import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/blog_post_receivers/blog_post_service.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/featured_blog_post_action/important_blog_post_acknowledgement_service.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/featured_blog_post_action/pinning_blog_post_service.dart';
-import 'package:unn_mobile/core/providers/interfaces/feed/last_feed_load_date_time_provider.dart';
-import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
-import 'package:unn_mobile/core/viewmodels/main_page/feed/attached_file_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/factories/feed_post_view_model_factory.dart';
+import 'package:unn_mobile/core/viewmodels/main_page/common/profile_view_model.dart';
+import 'package:unn_mobile/core/viewmodels/main_page/feed/attached_file_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/feed/feed_comment_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/feed/feed_screen_view_model.dart';
-import 'package:unn_mobile/core/viewmodels/main_page/common/profile_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/feed/reaction_view_model.dart';
 
 class FeedPostViewModel extends BaseViewModel {

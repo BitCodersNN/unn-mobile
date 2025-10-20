@@ -1,13 +1,14 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2025 BitCodersNN
 
+import 'package:unn_mobile/core/api_helpers/authenticated_api_helper.dart';
+import 'package:unn_mobile/core/api_helpers/base_options_factory.dart';
 import 'package:unn_mobile/core/constants/api/host.dart';
-import 'package:unn_mobile/core/misc/api_helpers/base_options_factory.dart';
-import 'package:unn_mobile/core/misc/api_helpers/authenticated_api_helper.dart';
+import 'package:unn_mobile/core/services/interfaces/authorisation/authorisation_service.dart';
 
 final class UnnPortalApiHelper extends AuthenticatedApiHelper {
   UnnPortalApiHelper({
-    required authorizationService,
+    required AuthorisationService authorizationService,
   }) : super(
           authorizationService,
           options: createBaseOptions(

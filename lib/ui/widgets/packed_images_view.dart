@@ -10,8 +10,8 @@ class PackedImagesView extends StatelessWidget {
   final FutureOr<void> Function(int index)? onChildTap;
 
   const PackedImagesView({
-    super.key,
     required this.children,
+    super.key,
     this.onChildTap,
   });
 

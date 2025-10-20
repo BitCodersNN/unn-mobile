@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2025 BitCodersNN
 
+import 'package:unn_mobile/core/misc/json/json_utils.dart';
 import 'package:unn_mobile/core/models/profile/student/base_edu_info.dart';
 import 'package:unn_mobile/core/models/profile/user_short_info.dart';
 
@@ -13,11 +14,11 @@ class PreviewStudent extends UserShortInfo {
   final BaseEduInfo baseEduInfo;
 
   PreviewStudent({
-    super.bitrixId,
     required super.fullname,
     required super.photoSrc,
     required this.userId,
     required this.baseEduInfo,
+    super.bitrixId,
   });
 
   PreviewStudent.withUserShortInfo({
@@ -30,7 +31,7 @@ class PreviewStudent extends UserShortInfo {
           photoSrc: userShortInfo.photoSrc,
         );
 
-  factory PreviewStudent.fromJson(Map<String, Object?> json) =>
+  factory PreviewStudent.fromJson(JsonMap json) =>
       PreviewStudent.withUserShortInfo(
         userShortInfo: UserShortInfo.fromProfileJson(json),
         userId: json[_PreviewStudentJsonKeys.userId] as int,
@@ -38,7 +39,7 @@ class PreviewStudent extends UserShortInfo {
       );
 
   @override
-  Map<String, dynamic> toJson() => {
+  JsonMap toJson() => {
         ...super.toProfileJson(),
         _PreviewStudentJsonKeys.userId: userId,
         ...baseEduInfo.toPreviewStudentJson(),

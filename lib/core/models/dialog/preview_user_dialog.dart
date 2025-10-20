@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2025 BitCodersNN
 
+import 'package:unn_mobile/core/misc/json/json_utils.dart';
 import 'package:unn_mobile/core/models/dialog/preview_dialog.dart';
 
 class _PreviewUserDialogJsonKeys {
@@ -21,27 +22,26 @@ class PreviewUserDialog extends PreviewDialog {
     required this.workPosition,
   });
 
-  factory PreviewUserDialog.fromJson(Map<String, dynamic> json) {
+  factory PreviewUserDialog.fromJson(JsonMap json) {
     final dialog = PreviewDialog.fromJson(json);
     return PreviewUserDialog(
       chatId: dialog.chatId,
       title: dialog.title,
       avatarUrl: dialog.avatarUrl,
       lastActivityAt: DateTime.tryParse(
-        json[_PreviewUserDialogJsonKeys.customData]
-            [_PreviewUserDialogJsonKeys.lastActivityDate],
+        (json[_PreviewUserDialogJsonKeys.customData]
+            as JsonMap)[_PreviewUserDialogJsonKeys.lastActivityDate],
       ),
-      workPosition: json[_PreviewUserDialogJsonKeys.customData]
-          [_PreviewUserDialogJsonKeys.workPosition],
+      workPosition: (json[_PreviewUserDialogJsonKeys.customData]
+          as JsonMap)[_PreviewUserDialogJsonKeys.workPosition],
     );
   }
 
   @override
-  Map<String, dynamic> toJson() {
+  JsonMap toJson() {
     final superJson = super.toJson();
-    final existingCustomData = superJson[_PreviewUserDialogJsonKeys.customData]
-            as Map<String, dynamic>? ??
-        {};
+    final existingCustomData =
+        superJson[_PreviewUserDialogJsonKeys.customData] as JsonMap? ?? {};
     return {
       ...superJson,
       _PreviewUserDialogJsonKeys.customData: {

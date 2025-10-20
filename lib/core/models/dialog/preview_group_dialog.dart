@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2025 BitCodersNN
 
+import 'package:unn_mobile/core/misc/json/json_utils.dart';
 import 'package:unn_mobile/core/models/dialog/chat_settings/base_chat_setting.dart';
 import 'package:unn_mobile/core/models/dialog/preview_dialog.dart';
 
@@ -21,7 +22,7 @@ class PreviewGroupDialog extends PreviewDialog {
     required this.baseChatSetting,
   });
 
-  factory PreviewGroupDialog.fromJson(Map<String, dynamic> json) {
+  factory PreviewGroupDialog.fromJson(JsonMap json) {
     final dialog = PreviewDialog.fromJson(json);
 
     return PreviewGroupDialog(
@@ -36,11 +37,10 @@ class PreviewGroupDialog extends PreviewDialog {
   }
 
   @override
-  Map<String, dynamic> toJson() {
+  JsonMap toJson() {
     final superJson = super.toJson();
-    final existingCustomData = superJson[_PreviewGroupDialogJsonKeys.customData]
-            as Map<String, dynamic>? ??
-        {};
+    final existingCustomData =
+        superJson[_PreviewGroupDialogJsonKeys.customData] as JsonMap? ?? {};
 
     return {
       ...superJson,

@@ -62,8 +62,7 @@ class AboutScreenView extends StatelessWidget {
                                           ),
                                         ),
                                         ...model.authors.map(
-                                          (author) =>
-                                              _AuthorProfileWidget(author),
+                                          _AuthorProfileWidget.new,
                                         ),
                                       ],
                                     ),
@@ -83,8 +82,7 @@ class AboutScreenView extends StatelessWidget {
                                     dense: true,
                                     children: [
                                       ...model.pastAuthors.map(
-                                        (author) =>
-                                            _AuthorProfileWidget(author),
+                                        _AuthorProfileWidget.new,
                                       ),
                                     ],
                                   ),
@@ -147,7 +145,7 @@ class _AuthorProfileWidget extends StatelessWidget {
           borderRadius: BorderRadius.all(Radius.circular(15)),
           boxShadow: [
             BoxShadow(
-              offset: Offset(0, 0),
+              offset: Offset.zero,
               blurRadius: 16,
               color: Color(0x20527DAF),
             ),

@@ -2,15 +2,16 @@
 // Copyright 2025 BitCodersNN
 
 import 'package:dio/dio.dart';
+import 'package:unn_mobile/core/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/constants/api/path.dart';
-import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/misc/camel_case_converter.dart';
 import 'package:unn_mobile/core/misc/json/json_iterable_parser.dart';
+import 'package:unn_mobile/core/misc/json/json_utils.dart';
 import 'package:unn_mobile/core/misc/objects_with_pagination.dart';
 import 'package:unn_mobile/core/models/profile/employee/preview_employee.dart';
-import 'package:unn_mobile/core/models/profile/student/preview_student.dart';
 import 'package:unn_mobile/core/models/profile/search_filter.dart';
 import 'package:unn_mobile/core/models/profile/sort_field.dart';
+import 'package:unn_mobile/core/models/profile/student/preview_student.dart';
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
 import 'package:unn_mobile/core/services/interfaces/profile/profile_search_service.dart';
 
@@ -43,7 +44,7 @@ class ProfileSearchServiceImpl implements ProfileSearchService {
     int ordinalNumberFirst = 0,
     int count = 10,
     bool reverse = false,
-  }) async =>
+  }) =>
       _fetchPaginatedData(
         ApiPath.employees,
         searchFilter,
@@ -61,7 +62,7 @@ class ProfileSearchServiceImpl implements ProfileSearchService {
     int count = 10,
     SortField sortField = SortField.fullname,
     bool reverse = false,
-  }) async =>
+  }) =>
       _fetchPaginatedData(
         ApiPath.students,
         searchFilter,
@@ -99,14 +100,14 @@ class ProfileSearchServiceImpl implements ProfileSearchService {
       return null;
     }
     final items = parseJsonIterable<T>(
-      response.data[_ResponseJsonKeys.items],
+      (response.data as JsonMap)[_ResponseJsonKeys.items],
       fromJson,
       _loggerService,
     );
 
     return ResultWithTotal(
       items: items,
-      total: response.data[_ResponseJsonKeys.total],
+      total: (response.data as JsonMap)[_ResponseJsonKeys.total],
     );
   }
 }

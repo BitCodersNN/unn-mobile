@@ -10,10 +10,10 @@ class ReactionBubble extends StatelessWidget {
   final Widget? icon;
 
   const ReactionBubble({
-    super.key,
     required this.onPressed,
     required this.isSelected,
     required this.text,
+    super.key,
     this.icon,
   });
 

@@ -8,6 +8,7 @@ import 'package:unn_mobile/ui/views/main_page/about/about.dart';
 import 'package:unn_mobile/ui/views/main_page/certificates_online/certificates_online.dart';
 import 'package:unn_mobile/ui/views/main_page/chat/chat.dart';
 import 'package:unn_mobile/ui/views/main_page/chat/chat_inside.dart';
+import 'package:unn_mobile/ui/views/main_page/donations/donations.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/feed.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/widgets/announcements_page.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/widgets/comments_page.dart';
@@ -15,7 +16,6 @@ import 'package:unn_mobile/ui/views/main_page/feed/widgets/pinned_posts_page.dar
 import 'package:unn_mobile/ui/views/main_page/grades/grades.dart';
 import 'package:unn_mobile/ui/views/main_page/schedule/schedule.dart';
 import 'package:unn_mobile/ui/views/main_page/settings/settings.dart';
-import 'package:unn_mobile/ui/views/main_page/donations/donations.dart';
 import 'package:unn_mobile/ui/views/main_page/source/source.dart';
 
 class MainPageRouteData {
@@ -34,11 +34,11 @@ class MainPageRouteData {
     this.unselectedIcon,
     this.pageTitle,
     this.pageRoute, {
+    required this.userTypes,
+    required this.builder,
     this.onlineOnly = false,
     this.subroutes = const [],
     this.isDisabled = false,
-    required this.userTypes,
-    required this.builder,
   });
 
   MainPageRouteData copyWith({
@@ -206,7 +206,7 @@ class MainPageRouting {
     ),
   ];
   static final List<MainPageRouteData> _activeNavbarRoutes =
-      navbarRoutes.where((e) => e.isDisabled == false).toList();
+      navbarRoutes.where((e) => !e.isDisabled).toList();
 
   static List<MainPageRouteData> get activeNavbarRoutes => _activeNavbarRoutes;
 }

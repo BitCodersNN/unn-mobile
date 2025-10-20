@@ -10,8 +10,8 @@ import 'package:unn_mobile/ui/views/main_page/chat/widgets/message.dart';
 
 class SendField extends StatefulWidget {
   const SendField({
-    super.key,
     required this.model,
+    super.key,
   });
 
   final ChatInsideViewModel model;
@@ -69,7 +69,8 @@ class _SendFieldState extends State<SendField> {
                           title: const Text('Выбрать из галереи'),
                           leading: const Icon(Icons.image),
                           onTap: () async {
-                            final files = await openUploadFilePicker(true);
+                            final files =
+                                await openUploadFilePicker(gallery: true);
                             if (context.mounted) {
                               GoRouter.of(context).pop(files);
                             }
@@ -79,7 +80,9 @@ class _SendFieldState extends State<SendField> {
                           title: const Text('Выбрать файл'),
                           leading: const Icon(Icons.file_present_rounded),
                           onTap: () async {
-                            final files = await openUploadFilePicker(false);
+                            final files = await openUploadFilePicker(
+                              gallery: false,
+                            );
                             if (context.mounted) {
                               GoRouter.of(context).pop(files);
                             }

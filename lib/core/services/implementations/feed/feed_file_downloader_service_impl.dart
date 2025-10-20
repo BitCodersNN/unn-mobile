@@ -23,7 +23,7 @@ class FeedFileDownloaderServiceImpl implements FeedFileDownloaderService {
     required String fileName,
     required String downloadUrl,
     required bool force,
-  }) async {
+  }) {
     return _fileDownloader.downloadFile(
       fileName,
       downloadUrl: downloadUrl,
@@ -36,7 +36,7 @@ class FeedFileDownloaderServiceImpl implements FeedFileDownloaderService {
     required List<String> fileNames,
     required String downloadUrl,
     required bool force,
-  }) async {
+  }) {
     return _fileDownloader.downloadFiles(
       fileNames,
       downloadUrl: downloadUrl,

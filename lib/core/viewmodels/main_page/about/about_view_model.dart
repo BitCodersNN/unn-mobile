@@ -55,6 +55,6 @@ class AboutViewModel extends BaseViewModel {
       return;
     }
 
-    authorsProvider.saveData(authors);
+    await authorsProvider.saveData(authors);
   }
 }

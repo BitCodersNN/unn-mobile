@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2025 BitCodersNN
 
+import 'package:unn_mobile/core/misc/json/json_utils.dart';
 import 'package:unn_mobile/core/misc/json/tree_flattener.dart';
 import 'package:unn_mobile/core/models/profile/employee/department.dart';
 
@@ -25,7 +26,7 @@ class BaseEmployeeProfile {
     required this.departments,
   });
 
-  Map<String, dynamic> toJson() => {
+  JsonMap toJson() => {
         _BaseEmployeeProfileJsonKeys.id: id,
         _BaseEmployeeProfileJsonKeys.departmentId: departmentId?.toString(),
         _BaseEmployeeProfileJsonKeys.jobTitle: jobTitle,
@@ -33,8 +34,7 @@ class BaseEmployeeProfile {
             departments.map((department) => department.toJson()).toList(),
       };
 
-  factory BaseEmployeeProfile.fromJson(Map<String, Object?> json) =>
-      BaseEmployeeProfile(
+  factory BaseEmployeeProfile.fromJson(JsonMap json) => BaseEmployeeProfile(
         id: json[_BaseEmployeeProfileJsonKeys.id] as int,
         departmentId: json[_BaseEmployeeProfileJsonKeys.departmentId] != null
             ? int.tryParse(
@@ -52,16 +52,16 @@ class BaseEmployeeProfile {
       return [];
     }
 
-    Iterable<Map<String, dynamic>> departmentMaps;
+    Iterable<JsonMap> departmentMaps;
 
     if (departmentJson is List) {
-      departmentMaps = departmentJson.whereType<Map<String, dynamic>>();
-    } else if (departmentJson is Map<String, dynamic>) {
+      departmentMaps = departmentJson.whereType<JsonMap>();
+    } else if (departmentJson is JsonMap) {
       departmentMaps = flattenTree(
         json: departmentJson,
         rootKey: _BaseEmployeeProfileJsonKeys.department,
         childKey: _BaseEmployeeProfileJsonKeys.child,
-      ).whereType<Map<String, dynamic>>();
+      ).whereType<JsonMap>();
     } else {
       return [];
     }

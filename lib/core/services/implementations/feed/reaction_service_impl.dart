@@ -2,14 +2,15 @@
 // Copyright 2025 BitCodersNN
 
 import 'package:dio/dio.dart';
+import 'package:unn_mobile/core/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/constants/api/ajax_action.dart';
-import 'package:unn_mobile/core/constants/api/path.dart';
 import 'package:unn_mobile/core/constants/api/analytics_label.dart';
+import 'package:unn_mobile/core/constants/api/path.dart';
 import 'package:unn_mobile/core/constants/rating_list_strings.dart';
-import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
-import 'package:unn_mobile/core/misc/user/current_user_sync_storage.dart';
 import 'package:unn_mobile/core/misc/dio_interceptor/response_data_type.dart';
 import 'package:unn_mobile/core/misc/dio_options_factory/options_with_timeout_and_expected_type_factory.dart';
+import 'package:unn_mobile/core/misc/json/json_utils.dart';
+import 'package:unn_mobile/core/misc/user/current_user_sync_storage.dart';
 import 'package:unn_mobile/core/models/feed/rating_list.dart';
 import 'package:unn_mobile/core/models/profile/user_short_info.dart';
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
@@ -35,8 +36,8 @@ class ReactionServiceImpl implements ReactionService {
   Future<UserShortInfo?> addReaction(
     ReactionType reactionType,
     String voteKeySigned,
-  ) async =>
-      await _manageReaction(
+  ) =>
+      _manageReaction(
         reactionType,
         voteKeySigned,
         RatingListStrings.plus,
@@ -86,19 +87,20 @@ class ReactionServiceImpl implements ReactionService {
       return null;
     }
 
-    dynamic jsonMap;
+    dynamic jsonValue;
     try {
-      jsonMap = response.data[_KeysForReactionManagerJsonConverter.data]
-          [_KeysForReactionManagerJsonConverter.userData];
+      jsonValue =
+          ((response.data as JsonMap)[_KeysForReactionManagerJsonConverter.data]
+              as JsonMap)[_KeysForReactionManagerJsonConverter.userData];
     } catch (error, stackTrace) {
       _loggerService.logError(error, stackTrace);
       return null;
     }
 
-    if (jsonMap == false) {
+    if (jsonValue == false) {
       return null;
     }
 
-    return _currentUserSync.currentUserData as UserShortInfo;
+    return _currentUserSync.currentUserData! as UserShortInfo;
   }
 }

@@ -4,11 +4,12 @@
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
+import 'package:unn_mobile/core/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/constants/api/path.dart';
-import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
+import 'package:unn_mobile/core/misc/json/json_utils.dart';
 import 'package:unn_mobile/core/models/certificate/certificates.dart';
-import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
 import 'package:unn_mobile/core/services/interfaces/certificate/certificates_service.dart';
+import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
 
 class CertificatesServiceImpl implements CertificatesService {
   final LoggerService _loggerService;
@@ -31,8 +32,8 @@ class CertificatesServiceImpl implements CertificatesService {
       _loggerService.logError(error, stackTrace);
       return null;
     }
-    final jsonMap = jsonDecode(response.data);
-    if (!jsonMap['enabled']) {
+    final jsonMap = jsonDecode(response.data) as JsonMap;
+    if (!(jsonMap['enabled'] as bool)) {
       return Certificates.empty();
     }
 

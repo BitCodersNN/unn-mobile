@@ -73,7 +73,7 @@ Widget _circleAvatarWithCaption(
         Navigator.of(context).pop();
       },
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 0),
+        padding: EdgeInsets.zero,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [

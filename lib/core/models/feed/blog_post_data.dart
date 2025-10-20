@@ -5,6 +5,7 @@ import 'package:unn_mobile/core/constants/date_pattern.dart';
 import 'package:unn_mobile/core/misc/date_time_utilities/date_time_extensions.dart';
 import 'package:unn_mobile/core/misc/date_time_utilities/date_time_parser.dart';
 import 'package:unn_mobile/core/misc/html_utils/html_image_utils.dart';
+import 'package:unn_mobile/core/misc/json/json_utils.dart';
 
 class _BlogPostDataBitrixJsonKeys {
   static const String id = 'ID';
@@ -44,19 +45,19 @@ class BlogPostData {
 
   BlogPostData._({
     required this.id,
-    this.blogId,
     required this.authorBitrixId,
     required this.title,
     required this.detailText,
-    this.imageUrls,
     required this.datePublish,
     required this.numberOfComments,
+    this.blogId,
+    this.imageUrls,
     this.files,
     this.pinnedId,
     this.keySigned,
   });
 
-  factory BlogPostData.fromJson(Map<String, Object?> jsonMap) {
+  factory BlogPostData.fromJson(JsonMap jsonMap) {
     final fullText = jsonMap[_BlogPostDataJsonKeys.fulltext] as String;
     final result = extractImagesAndCleanHtmlText(fullText);
     return BlogPostData._(
@@ -66,7 +67,7 @@ class BlogPostData {
       blogId: null,
       authorBitrixId: int.parse(
         (jsonMap[_BlogPostDataJsonKeys.author]
-            as Map<String, Object?>)[_BlogPostDataJsonKeys.id] as String,
+            as JsonMap)[_BlogPostDataJsonKeys.id] as String,
       ),
       title: jsonMap[_BlogPostDataJsonKeys.title] as String,
       detailText: result[ExtractImagesAndCleanHtmlTextMapKey.cleanedText],
@@ -86,7 +87,7 @@ class BlogPostData {
     );
   }
 
-  Map<String, dynamic> toJson() => {
+  JsonMap toJson() => {
         _BlogPostDataJsonKeys.id: id.toString(),
         _BlogPostDataJsonKeys.author: {
           _BlogPostDataJsonKeys.id: authorBitrixId.toString(),
@@ -102,7 +103,7 @@ class BlogPostData {
         _BlogPostDataJsonKeys.keySigned: keySigned,
       };
 
-  factory BlogPostData.fromBitrixJson(Map<String, Object?> jsonMap) {
+  factory BlogPostData.fromBitrixJson(JsonMap jsonMap) {
     return BlogPostData._(
       id: int.parse(
         jsonMap[_BlogPostDataBitrixJsonKeys.id] as String,

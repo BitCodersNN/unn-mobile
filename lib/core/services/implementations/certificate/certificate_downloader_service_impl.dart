@@ -19,7 +19,7 @@ class CertificateDownloaderServiceImpl implements CertificateDownloaderService {
         );
 
   @override
-  Future<File?> downloadFile(String fileName) async {
+  Future<File?> downloadFile(String fileName) {
     return _fileDownloader.downloadFile(
       fileName,
       pickLocation: Platform.isAndroid,

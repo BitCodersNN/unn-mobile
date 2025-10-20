@@ -18,7 +18,7 @@ class MessageIgnoreServiceImpl implements MessageIgnoreService {
     }
 
     keys.add(sanitizedKey);
-    _messageIgnoredKeysProvider.saveData(keys);
+    await _messageIgnoredKeysProvider.saveData(keys);
   }
 
   @override

@@ -66,7 +66,7 @@ class ShimmerState extends State<Shimmer> with SingleTickerProviderStateMixin {
   bool get isSized =>
       (context.findRenderObject() as RenderBox?)?.hasSize ?? false;
 
-  Size get size => (context.findRenderObject() as RenderBox).size;
+  Size get size => (context.findRenderObject()! as RenderBox).size;
 
   Listenable get shimmerChanges => _shimmerController;
 
@@ -81,7 +81,7 @@ class ShimmerState extends State<Shimmer> with SingleTickerProviderStateMixin {
     required RenderBox descendant,
     Offset offset = Offset.zero,
   }) {
-    final shimmerBox = context.findRenderObject() as RenderBox;
+    final shimmerBox = context.findRenderObject()! as RenderBox;
     return descendant.localToGlobal(offset, ancestor: shimmerBox);
   }
 

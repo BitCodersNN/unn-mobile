@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2025 BitCodersNN
 
+import 'package:unn_mobile/core/misc/json/json_utils.dart';
 import 'package:unn_mobile/core/models/common/file_data.dart';
-import 'package:unn_mobile/core/models/dialog/message/message_short_info.dart';
 import 'package:unn_mobile/core/models/dialog/message/enum/message_state.dart';
+import 'package:unn_mobile/core/models/dialog/message/message_short_info.dart';
 import 'package:unn_mobile/core/models/feed/rating_list.dart';
 
 class MessageJsonKeys {
@@ -36,7 +37,7 @@ class Message extends MessageShortInfo {
           dateTime: messageShortInfo.dateTime,
         );
 
-  factory Message.fromJson(Map<String, dynamic> jsonMap) {
+  factory Message.fromJson(JsonMap jsonMap) {
     final List<FileData> files = [];
     for (final file in jsonMap[MessageJsonKeys.files]) {
       files.add(
@@ -55,8 +56,8 @@ class Message extends MessageShortInfo {
   }
 
   @override
-  Map<String, dynamic> toJson() {
-    final List<Map<String, dynamic>> filesJson = [];
+  JsonMap toJson() {
+    final List<JsonMap> filesJson = [];
     for (final file in files) {
       filesJson.add(file.toMessageJson());
     }

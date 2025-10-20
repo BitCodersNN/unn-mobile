@@ -97,7 +97,7 @@ class _OnlineCertificatesScreenViewState
             borderRadius: BorderRadius.circular(16.0),
             boxShadow: const [
               BoxShadow(
-                offset: Offset(0, 0),
+                offset: Offset.zero,
                 blurRadius: 16.0,
                 color: Color(0x20527DAF),
               ),
@@ -258,20 +258,21 @@ class _OnlineCertificatesScreenViewState
       },
       model: viewModel,
       onModelReady: (model) {
-        model.onSigDownloaded = (file) async {
-          await viewFileAndShowMessage(
-            context,
-            file,
-            'Подпись загружена успешно',
-          );
-        };
-        model.onCertificateDownloaded = (file) async {
-          await viewFileAndShowMessage(
-            context,
-            file,
-            'Файл загружен успешно',
-          );
-        };
+        model
+          ..onSigDownloaded = (file) async {
+            await viewFileAndShowMessage(
+              context,
+              file,
+              'Подпись загружена успешно',
+            );
+          }
+          ..onCertificateDownloaded = (file) async {
+            await viewFileAndShowMessage(
+              context,
+              file,
+              'Файл загружен успешно',
+            );
+          };
       },
     );
   }

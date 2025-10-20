@@ -62,10 +62,10 @@ dependencies:
   file_picker: ^10.1.9
 
 dev_dependencies:
-  flutter_test:
-    sdk: flutter
   flutter_lints: ^4.0.0
   flutter_launcher_icons: ^0.13.1
+  flutter_test:
+    sdk: flutter
 
 flutter:
   uses-material-design: true

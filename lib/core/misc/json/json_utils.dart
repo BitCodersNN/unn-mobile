@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2025 BitCodersNN
 
+typedef JsonMap = Map<String, dynamic>;
+
 /// Безопасно извлекает значение из [json] по ключу [key] и приводит его к типу [T].
 ///
 /// Если ключ отсутствует, либо значение по нему `null` или не может быть приведено к типу [T],

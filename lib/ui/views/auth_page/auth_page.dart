@@ -225,7 +225,7 @@ class AuthPageWithState extends State<AuthPage> {
         ),
         boxShadow: [
           BoxShadow(
-            offset: const Offset(0, 0),
+            offset: Offset.zero,
             blurRadius: 10,
             color: const Color(0xFF29293F).withValues(alpha: 0.2),
           ),

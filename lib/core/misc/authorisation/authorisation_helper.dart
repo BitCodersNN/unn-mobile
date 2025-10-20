@@ -2,11 +2,11 @@
 // Copyright 2025 BitCodersNN
 
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
-import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
+import 'package:unn_mobile/core/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/misc/authorisation/authorisation_request_result.dart';
 import 'package:unn_mobile/core/models/common/online_status_data.dart';
-import 'package:dartz/dartz.dart';
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
 
 class AuthorisationHelper {

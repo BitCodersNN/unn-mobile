@@ -11,8 +11,8 @@ class ScheduleItemNormal extends StatefulWidget {
   final Subject subject;
   final bool even;
   const ScheduleItemNormal({
-    super.key,
     required this.subject,
+    super.key,
     this.even = false,
   });
 

@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2025 BitCodersNN
 
+import 'package:unn_mobile/core/misc/json/json_utils.dart';
+
 class _ChatRestrictionsJsonKeys {
   static const String avatar = 'avatar';
   static const String rename = 'rename';
@@ -36,8 +38,7 @@ class ChatRestrictions {
     this.userList = true,
   });
 
-  factory ChatRestrictions.fromJson(Map<String, dynamic> json) =>
-      ChatRestrictions(
+  factory ChatRestrictions.fromJson(JsonMap json) => ChatRestrictions(
         avatar: json[_ChatRestrictionsJsonKeys.avatar],
         rename: json[_ChatRestrictionsJsonKeys.rename],
         extend: json[_ChatRestrictionsJsonKeys.extend],
@@ -49,7 +50,7 @@ class ChatRestrictions {
         userList: json[_ChatRestrictionsJsonKeys.userList],
       );
 
-  Map<String, dynamic> toJson() => {
+  JsonMap toJson() => {
         _ChatRestrictionsJsonKeys.avatar: avatar,
         _ChatRestrictionsJsonKeys.rename: rename,
         _ChatRestrictionsJsonKeys.extend: extend,

@@ -9,9 +9,9 @@ import 'package:unn_mobile/core/misc/user/user_functions.dart';
 import 'package:unn_mobile/core/models/profile/student/student_data.dart';
 import 'package:unn_mobile/core/models/profile/user_data.dart';
 import 'package:unn_mobile/core/models/profile/user_short_info.dart';
-import 'package:unn_mobile/core/services/interfaces/profile/profile_service.dart';
-import 'package:unn_mobile/core/services/interfaces/profile/profile_of_current_user_service.dart';
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
+import 'package:unn_mobile/core/services/interfaces/profile/profile_of_current_user_service.dart';
+import 'package:unn_mobile/core/services/interfaces/profile/profile_service.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/factories/profile_view_model_factory.dart';
 
@@ -81,7 +81,7 @@ class ProfileViewModel extends BaseViewModel {
           .then((data) {
         _loadedData = data;
         _description = switch (data.runtimeType) {
-          const (StudentData) => (data as StudentData).baseEduInfo.eduGroup,
+          const (StudentData) => (data! as StudentData).baseEduInfo.eduGroup,
           _ => '',
         };
       }).catchError((error, stack) {

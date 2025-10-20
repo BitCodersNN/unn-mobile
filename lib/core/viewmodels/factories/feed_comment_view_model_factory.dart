@@ -11,7 +11,7 @@ class FeedCommentViewModelFactory extends CachedViewModelFactoryBase<
   FeedCommentViewModelFactory() : super(100);
 
   @override
-  FeedCommentViewModel createViewModel(key) {
+  FeedCommentViewModel createViewModel(FeedCommentCacheKey key) {
     return FeedCommentViewModel();
   }
 }

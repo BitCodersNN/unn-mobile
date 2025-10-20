@@ -4,13 +4,17 @@
 import 'dart:async';
 
 import 'package:injector/injector.dart';
-import 'package:unn_mobile/core/aggregators/intefaces/message_reaction_service_aggregator.dart';
+import 'package:unn_mobile/core/aggregators/interfaces/message_reaction_service_aggregator.dart';
 import 'package:unn_mobile/core/models/feed/rating_list.dart';
 import 'package:unn_mobile/core/models/profile/user_short_info.dart';
 import 'package:unn_mobile/core/viewmodels/factories/message_reaction_view_model_factory.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/common/reaction_view_model_base.dart';
 
 class MessageReactionViewModel extends ReactionViewModelBase {
+  MessageReactionViewModel(
+    this._reactionServiceAggregator,
+    super._currentUserSyncStorage,
+  );
   factory MessageReactionViewModel.cached(MessageReactionCacheKey key) {
     return Injector.appInstance
         .get<MessageReactionViewModelFactory>()
@@ -20,11 +24,6 @@ class MessageReactionViewModel extends ReactionViewModelBase {
   final MessageReactionServiceAggregator _reactionServiceAggregator;
 
   int? _messageId;
-
-  MessageReactionViewModel(
-    this._reactionServiceAggregator,
-    super._currentUserSyncStorage,
-  );
 
   FutureOr<void> init(int messageId, RatingList? ratingList) async {
     this.ratingList = ratingList;

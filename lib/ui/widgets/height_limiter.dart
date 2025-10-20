@@ -14,9 +14,9 @@ class HeightLimiter extends StatefulWidget {
   final Widget Function(BuildContext context)? overflowIndicatorBuilder;
 
   const HeightLimiter({
-    super.key,
     required this.maxHeight,
     required this.child,
+    super.key,
     this.fadeEffectHeight = 72,
     this.overflowIndicatorBuilder,
   });
@@ -94,7 +94,9 @@ class MeasureSizeRenderObject extends RenderProxyBox {
     super.performLayout();
 
     final Size newSize = child!.size;
-    if (oldSize == newSize) return;
+    if (oldSize == newSize) {
+      return;
+    }
 
     oldSize = newSize;
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -107,9 +109,9 @@ class MeasureSize extends SingleChildRenderObjectWidget {
   final OnWidgetSizeChange onChange;
 
   const MeasureSize({
-    super.key,
     required this.onChange,
     required Widget super.child,
+    super.key,
   });
 
   @override

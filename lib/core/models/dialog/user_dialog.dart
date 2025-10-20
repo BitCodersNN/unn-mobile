@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2025 BitCodersNN
 
+import 'package:unn_mobile/core/misc/json/json_utils.dart';
 import 'package:unn_mobile/core/models/dialog/dialog.dart';
 
 class _UserDialogJsonKeys {
@@ -26,7 +27,7 @@ final class UserDialog extends Dialog {
     required this.lastActivityAt,
   });
 
-  factory UserDialog.fromJson(Map<String, dynamic> json) {
+  factory UserDialog.fromJson(JsonMap json) {
     final dialog = Dialog.fromJson(json);
     return UserDialog(
       chatId: dialog.chatId,
@@ -38,13 +39,14 @@ final class UserDialog extends Dialog {
       pinned: dialog.pinned,
       dialogId: json[_UserDialogJsonKeys.id],
       lastActivityAt: DateTime.tryParse(
-        json[_UserDialogJsonKeys.user][_UserDialogJsonKeys.lastActivityDate],
+        (json[_UserDialogJsonKeys.user]
+            as JsonMap)[_UserDialogJsonKeys.lastActivityDate],
       ),
     );
   }
 
   @override
-  Map<String, dynamic> toJson() => {
+  JsonMap toJson() => {
         ...super.toJson(),
         _UserDialogJsonKeys.id: dialogId,
         _UserDialogJsonKeys.type: _UserDialogJsonKeys.user,

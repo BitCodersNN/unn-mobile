@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2025 BitCodersNN
 
+import 'package:unn_mobile/core/misc/json/json_utils.dart';
+
 abstract base class DistanceMaterialData {
   final String comment;
   final DateTime dateTime;
@@ -10,5 +12,5 @@ abstract base class DistanceMaterialData {
     required this.dateTime,
   });
 
-  Map<String, Object?> toJson();
+  JsonMap toJson();
 }

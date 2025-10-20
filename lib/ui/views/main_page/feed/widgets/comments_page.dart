@@ -10,8 +10,8 @@ import 'package:unn_mobile/ui/views/main_page/feed/widgets/feed_post.dart';
 class CommentsPage extends StatelessWidget {
   final int postId;
   const CommentsPage({
-    super.key,
     required this.postId,
+    super.key,
   });
   @override
   Widget build(BuildContext context) {

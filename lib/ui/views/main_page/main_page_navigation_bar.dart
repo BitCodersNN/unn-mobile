@@ -12,9 +12,9 @@ class MainPageNavigationBar extends StatelessWidget {
 
   static const navbarHeight = 60.0;
   const MainPageNavigationBar({
+    required this.model,
     super.key,
     this.onDestinationSelected,
-    required this.model,
   });
 
   @override
@@ -34,7 +34,7 @@ class MainPageNavigationBar extends StatelessWidget {
           height: navbarHeight,
           backgroundColor: Colors.transparent,
           indicatorColor: Colors.transparent,
-          animationDuration: const Duration(milliseconds: 0),
+          animationDuration: Duration.zero,
           selectedIndex: getSelectedBarIndex(context),
           onDestinationSelected: onDestinationSelected,
         ),

@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2025 BitCodersNN
 
+import 'package:unn_mobile/core/misc/json/json_utils.dart';
+
 class _DepartmentJsonKeys {
   static const String id = 'id';
   static const String title = 'title';
@@ -18,13 +20,13 @@ class Department {
     required this.shortTitle,
   });
 
-  factory Department.fromJson(Map<String, Object?> json) => Department(
+  factory Department.fromJson(JsonMap json) => Department(
         id: json[_DepartmentJsonKeys.id] as int,
         title: json[_DepartmentJsonKeys.title] as String,
         shortTitle: json[_DepartmentJsonKeys.shortTitle] as String,
       );
 
-  Map<String, dynamic> toJson() => {
+  JsonMap toJson() => {
         _DepartmentJsonKeys.id: id,
         _DepartmentJsonKeys.title: title,
         _DepartmentJsonKeys.shortTitle: shortTitle,

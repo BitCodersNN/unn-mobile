@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2025 BitCodersNN
 
+import 'package:unn_mobile/core/misc/json/json_utils.dart';
 import 'package:unn_mobile/core/models/certificate/certificate_types_info.dart';
 
 class CertificateJsonKeys {
@@ -28,11 +29,12 @@ class Certificate {
   String? get certificateSigPath =>
       certificatePath.isEmpty ? null : '$certificatePath.sig';
 
-  factory Certificate.fromJson(Map<String, Object?> jsonMap) => Certificate(
-        name: jsonMap[CertificateJsonKeys.name] as String,
-        sendtype: jsonMap[CertificateJsonKeys.sendtype] as int,
-        description: jsonMap[CertificateJsonKeys.description] as String,
-        certificatePath: jsonMap[CertificateJsonKeys.certificatePath] as String,
+  factory Certificate.fromJson(JsonMap jsonMap) => Certificate(
+        name: jsonMap[CertificateJsonKeys.name]! as String,
+        sendtype: jsonMap[CertificateJsonKeys.sendtype]! as int,
+        description: jsonMap[CertificateJsonKeys.description]! as String,
+        certificatePath:
+            jsonMap[CertificateJsonKeys.certificatePath]! as String,
       );
 
   factory Certificate.fromPracticeUrl(String practiceUrl) {
@@ -40,12 +42,12 @@ class Certificate {
         certificateTypesInfo[CertificateJsonKeys.practices];
     return Certificate(
       name: 'Предписание на практику',
-      sendtype: practiceTypeInfo?[CertificateJsonKeys.sendtype] as int,
-      description: practiceTypeInfo?[CertificateJsonKeys.description] as String,
+      sendtype: practiceTypeInfo![CertificateJsonKeys.sendtype]! as int,
+      description: practiceTypeInfo[CertificateJsonKeys.description]! as String,
       certificatePath: practiceUrl,
     );
   }
-  Map<String, dynamic> toJson() => {
+  JsonMap toJson() => {
         CertificateJsonKeys.name: name,
         CertificateJsonKeys.sendtype: sendtype,
         CertificateJsonKeys.description: description,

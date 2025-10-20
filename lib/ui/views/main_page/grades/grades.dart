@@ -69,7 +69,7 @@ class _GradesScreenViewState extends State<GradesScreenView> {
               length: tabs.length,
               child: Column(
                 children: [
-                  Container(
+                  ColoredBox(
                     color: theme.colorScheme.surface,
                     child: TabBar.secondary(
                       tabAlignment: TabAlignment.start,

@@ -8,7 +8,7 @@ import 'package:unn_mobile/ui/views/main_page/source/source_item_view.dart';
 
 class SourceCourseView extends StatelessWidget {
   final SourceCourseViewModel model;
-  const SourceCourseView({super.key, required this.model});
+  const SourceCourseView({required this.model, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +23,7 @@ class SourceCourseView extends StatelessWidget {
               borderRadius: BorderRadius.circular(16.0),
               boxShadow: const [
                 BoxShadow(
-                  offset: Offset(0, 0),
+                  offset: Offset.zero,
                   blurRadius: 16.0,
                   color: Color(0x20527DAF),
                 ),

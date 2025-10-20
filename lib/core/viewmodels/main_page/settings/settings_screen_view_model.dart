@@ -57,6 +57,6 @@ class SettingsScreenViewModel extends BaseViewModel {
   }
 
   Future<void> logout() async {
-    clearEverything();
+    await clearEverything();
   }
 }

@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2025 BitCodersNN
 
+import 'package:unn_mobile/core/misc/json/json_utils.dart';
+import 'package:unn_mobile/core/models/common/file_data.dart';
 import 'package:unn_mobile/core/models/feed/blog_post_comment.dart';
 import 'package:unn_mobile/core/models/feed/blog_post_data.dart';
-import 'package:unn_mobile/core/models/common/file_data.dart';
 import 'package:unn_mobile/core/models/feed/rating_list.dart';
 import 'package:unn_mobile/core/models/profile/user_short_info.dart';
 
@@ -37,7 +38,7 @@ class BlogPost {
     required this.comments,
   });
 
-  factory BlogPost.fromJson(Map<String, dynamic> jsonMap) {
+  factory BlogPost.fromJson(JsonMap jsonMap) {
     return BlogPost._(
       data: BlogPostData.fromJson(jsonMap),
       ratingList: RatingList.fromJson(
@@ -55,7 +56,7 @@ class BlogPost {
     );
   }
 
-  Map<String, dynamic> toJson() {
+  JsonMap toJson() {
     return {
       ...data.toJson(),
       _BlogPostJsonKeys.reaction: ratingList.toJson(),
@@ -67,13 +68,13 @@ class BlogPost {
     };
   }
 
-  factory BlogPost.fromBitrixJson(Map<String, dynamic> jsonMap) {
+  factory BlogPost.fromBitrixJson(JsonMap jsonMap) {
     return BlogPost._(
       data: BlogPostData.fromBitrixJson(
-        jsonMap[_BlogPostBitrixJsonKeys.post] as Map<String, Object?>,
+        jsonMap[_BlogPostBitrixJsonKeys.post] as JsonMap,
       ),
       ratingList: RatingList.fromBitrixJson(
-        jsonMap[_BlogPostBitrixJsonKeys.ratingList] as Map<String, Object?>,
+        jsonMap[_BlogPostBitrixJsonKeys.ratingList] as JsonMap,
       ),
       userShortInfo: UserShortInfo.fromBitrixJson(
         jsonMap[_BlogPostBitrixJsonKeys.author],

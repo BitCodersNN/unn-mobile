@@ -2,15 +2,15 @@
 // Copyright 2025 BitCodersNN
 
 import 'package:dio/dio.dart';
+import 'package:unn_mobile/core/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/constants/api/ajax_action.dart';
-import 'package:unn_mobile/core/constants/api/path.dart';
 import 'package:unn_mobile/core/constants/api/analytics_label.dart';
-import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
-import 'package:unn_mobile/core/misc/response_status_validator.dart';
+import 'package:unn_mobile/core/constants/api/path.dart';
 import 'package:unn_mobile/core/misc/dio_interceptor/response_data_type.dart';
 import 'package:unn_mobile/core/misc/dio_options_factory/options_with_timeout_and_expected_type_factory.dart';
-import 'package:unn_mobile/core/services/interfaces/feed/featured_blog_post_action/pinning_blog_post_service.dart';
+import 'package:unn_mobile/core/misc/response_status_validator.dart';
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
+import 'package:unn_mobile/core/services/interfaces/feed/featured_blog_post_action/pinning_blog_post_service.dart';
 
 class _DataKeys {
   static const String logId = 'params[logId]';
@@ -26,8 +26,8 @@ class PinningBlogPostServiceImpl implements PinningBlogPostService {
   );
 
   @override
-  Future<bool> pin(int pinnedId) async {
-    return await _updatePostPinStatus(
+  Future<bool> pin(int pinnedId) {
+    return _updatePostPinStatus(
       pinnedId,
       AnalyticsLabel.pinBlogPost,
       AjaxActionStrings.pinBlogPost,
@@ -35,8 +35,8 @@ class PinningBlogPostServiceImpl implements PinningBlogPostService {
   }
 
   @override
-  Future<bool> unpin(int pinnedId) async {
-    return await _updatePostPinStatus(
+  Future<bool> unpin(int pinnedId) {
+    return _updatePostPinStatus(
       pinnedId,
       AnalyticsLabel.unpinBlogPost,
       AjaxActionStrings.unpinBlogPost,

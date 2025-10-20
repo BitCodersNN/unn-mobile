@@ -23,7 +23,9 @@ class LoadingPageConfigServiceImpl implements LoadingPageConfigService {
   Future<List<LoadingPageModel>?> getLoadingPages() async {
     final jsonMap = await gitConfigLoader.getConfig();
 
-    if (jsonMap == null) return null;
+    if (jsonMap == null) {
+      return null;
+    }
 
     final loadingPages = jsonMap.values.expand((list) => list).toList();
     return parseJsonIterable<LoadingPageModel>(

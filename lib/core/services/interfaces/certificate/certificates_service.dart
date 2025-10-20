@@ -1,11 +1,14 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2025 BitCodersNN
 
+import 'package:unn_mobile/core/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/models/certificate/certificates.dart';
+import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
 
 abstract interface class CertificatesService {
   /// Получает справочные данные с сервера.
   ///
+  // ignore: comment_references
   /// Метод выполняет GET-запрос по пути, указанному в [ApiPaths.spravka], используя [ApiHelper].
   /// Если запрос завершается успешно, данные декодируются из JSON и проверяется флаг 'enabled'.
   /// Если флаг 'enabled' равен `false`, возвращается пустой объект [References.empty()].

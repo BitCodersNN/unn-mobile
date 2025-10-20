@@ -4,8 +4,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:unn_mobile/core/models/feed/rating_list.dart';
-import 'package:unn_mobile/core/viewmodels/main_page/feed/feed_comment_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/common/profile_view_model.dart';
+import 'package:unn_mobile/core/viewmodels/main_page/feed/feed_comment_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/feed/reaction_view_model.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/functions/reactions_window.dart';
@@ -19,8 +19,8 @@ import 'package:unn_mobile/ui/widgets/shimmer_loading.dart';
 class FeedCommentView extends StatelessWidget {
   final FeedCommentViewModel viewModel;
   const FeedCommentView({
-    super.key,
     required this.viewModel,
+    super.key,
   });
 
   @override
@@ -101,7 +101,7 @@ class _ReactionView extends StatelessWidget {
                   ),
               if (!model.isLoading && model.canAddReaction)
                 IconButton.filledTonal(
-                  padding: const EdgeInsets.all(0),
+                  padding: EdgeInsets.zero,
                   constraints: BoxConstraints.tightFor(
                     height: scaledAddButtonSize,
                     width: scaledAddButtonSize,
@@ -133,8 +133,8 @@ class _CommentHeader extends StatelessWidget {
 
   const _CommentHeader({
     required this.dateTime,
-    this.hide = false,
     required this.viewModel,
+    this.hide = false,
   });
 
   @override

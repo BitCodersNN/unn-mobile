@@ -19,10 +19,10 @@ class MessageGroup extends StatelessWidget {
   String? get name => messages.firstOrNull?.author?.fullname;
 
   const MessageGroup({
-    super.key,
     required this.currentUserId,
     required this.messages,
     required this.chatModel,
+    super.key,
   });
 
   @override

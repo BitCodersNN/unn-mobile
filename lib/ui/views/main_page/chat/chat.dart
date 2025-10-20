@@ -112,9 +112,9 @@ class _ChatScreenViewState extends State<ChatScreenView> {
 
 class DialogInfo extends StatelessWidget {
   DialogInfo({
-    super.key,
     required this.dialog,
     required this.chatsModel,
+    super.key,
   });
 
   final d.Dialog dialog;
@@ -195,7 +195,7 @@ class DialogInfo extends StatelessWidget {
       ),
       enableFeedback: true,
       visualDensity: VisualDensity.adaptivePlatformDensity,
-      onTap: () async {
+      onTap: () {
         GoRouter.of(context)
             .go('${GoRouter.of(context).state.path}/${dialog.chatId}');
       },

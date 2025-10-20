@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2025 BitCodersNN
 
+import 'package:unn_mobile/core/misc/json/json_utils.dart';
 import 'package:unn_mobile/core/models/dialog/message/forward_info.dart';
 import 'package:unn_mobile/core/models/dialog/message/message.dart';
 import 'package:unn_mobile/core/models/dialog/message/reply_info.dart';
@@ -22,7 +23,7 @@ class MessageWithForwardAndReply extends Message {
           notify: message.notify,
         );
 
-  factory MessageWithForwardAndReply.fromJson(Map<String, dynamic> jsonMap) =>
+  factory MessageWithForwardAndReply.fromJson(JsonMap jsonMap) =>
       MessageWithForwardAndReply(
         message: Message.fromJson(jsonMap),
         forwardInfo: ForwardInfo.fromJson(jsonMap),
@@ -30,7 +31,7 @@ class MessageWithForwardAndReply extends Message {
       );
 
   @override
-  Map<String, dynamic> toJson() => {
+  JsonMap toJson() => {
         ...super.toJson(),
         'forward_info': forwardInfo.toJson(),
         'reply_message': replyMessage.toJson(),

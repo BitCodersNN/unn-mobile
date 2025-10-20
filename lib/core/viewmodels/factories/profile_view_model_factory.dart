@@ -3,9 +3,9 @@
 
 import 'package:flutter/foundation.dart';
 import 'package:unn_mobile/core/misc/user/current_user_sync_storage.dart';
-import 'package:unn_mobile/core/services/interfaces/profile/profile_service.dart';
-import 'package:unn_mobile/core/services/interfaces/profile/profile_of_current_user_service.dart';
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
+import 'package:unn_mobile/core/services/interfaces/profile/profile_of_current_user_service.dart';
+import 'package:unn_mobile/core/services/interfaces/profile/profile_service.dart';
 import 'package:unn_mobile/core/viewmodels/factories/cached_view_model_factory_base.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/common/profile_view_model.dart';
 
@@ -17,7 +17,7 @@ class ProfileViewModelFactory
 
   @override
   @protected
-  ProfileViewModel createViewModel(key) {
+  ProfileViewModel createViewModel(ProfileCacheKey key) {
     return ProfileViewModel(
       getService<ProfileOfCurrentUserService>(),
       getService<ProfileService>(),

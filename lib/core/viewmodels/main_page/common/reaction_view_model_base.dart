@@ -23,10 +23,7 @@ abstract class ReactionViewModelBase extends BaseViewModel {
   );
 
   bool get canAddReaction =>
-      ReactionType.values
-          .map((e) => getReactionCount(e))
-          .where((e) => e > 0)
-          .length <
+      ReactionType.values.map(getReactionCount).where((e) => e > 0).length <
       ReactionType.values.length;
 
   ReactionType? get currentReaction {

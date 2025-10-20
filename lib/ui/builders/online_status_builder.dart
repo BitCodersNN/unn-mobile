@@ -21,6 +21,8 @@ import 'package:unn_mobile/core/models/common/online_status_data.dart';
 class OnlineStatusBuilder extends StatefulWidget {
   final Widget? onlineWidget;
   final Widget? offlineWidget;
+  // для билдеров все аргументы позиционные
+  // ignore: avoid_positional_boolean_parameters
   final Widget Function(BuildContext context, bool isOnline)? builder;
 
   const OnlineStatusBuilder({

@@ -9,11 +9,11 @@ import 'package:unn_mobile/ui/views/main_page/feed/widgets/feed_post.dart';
 
 class PostsListPage extends StatelessWidget {
   const PostsListPage({
-    super.key,
     required this.title,
     required this.viewModel,
     required this.postsList,
     required this.noPostsText,
+    super.key,
   });
 
   final String title;

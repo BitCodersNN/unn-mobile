@@ -2,6 +2,7 @@
 // Copyright 2025 BitCodersNN
 
 import 'package:unn_mobile/core/misc/enum_from_string.dart';
+import 'package:unn_mobile/core/misc/json/json_utils.dart';
 import 'package:unn_mobile/core/models/dialog/enum/user_role.dart';
 
 class _ChatPermissionsJsonKeys {
@@ -30,8 +31,7 @@ class ChatPermissions {
     this.manageUsersDelete = UserRole.manager,
   });
 
-  factory ChatPermissions.fromJson(Map<String, dynamic> json) =>
-      ChatPermissions(
+  factory ChatPermissions.fromJson(JsonMap json) => ChatPermissions(
         canPost: _parseRole(json[_ChatPermissionsJsonKeys.canPost]),
         manageMessages:
             _parseRole(json[_ChatPermissionsJsonKeys.manageMessages]),
@@ -44,7 +44,7 @@ class ChatPermissions {
             _parseRole(json[_ChatPermissionsJsonKeys.manageUsersDelete]),
       );
 
-  Map<String, dynamic> toJson() => {
+  JsonMap toJson() => {
         _ChatPermissionsJsonKeys.canPost: _enumToString(canPost),
         _ChatPermissionsJsonKeys.manageMessages: _enumToString(manageMessages),
         _ChatPermissionsJsonKeys.manageSettings: _enumToString(manageSettings),
@@ -58,7 +58,9 @@ class ChatPermissions {
     String? value, {
     UserRole defaultValue = UserRole.owner,
   }) {
-    if (value == null || value.isEmpty) return defaultValue;
+    if (value == null || value.isEmpty) {
+      return defaultValue;
+    }
     return enumFromString(UserRole.values, value.toLowerCase()) ?? defaultValue;
   }
 

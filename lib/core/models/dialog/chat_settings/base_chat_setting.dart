@@ -2,6 +2,7 @@
 // Copyright 2025 BitCodersNN
 
 import 'package:unn_mobile/core/misc/enum_from_string.dart';
+import 'package:unn_mobile/core/misc/json/json_utils.dart';
 import 'package:unn_mobile/core/models/dialog/chat_settings/chat_permissions.dart';
 import 'package:unn_mobile/core/models/dialog/enum/user_role.dart';
 
@@ -25,8 +26,7 @@ class BaseChatSetting {
     required this.permissions,
   });
 
-  factory BaseChatSetting.fromJson(Map<String, dynamic> json) =>
-      BaseChatSetting(
+  factory BaseChatSetting.fromJson(JsonMap json) => BaseChatSetting(
         muteList: _parseMuteList(json[_ChatSettingJsonKeys.muteList]),
         owner: json[_ChatSettingJsonKeys.owner] as int,
         role: enumFromString(
@@ -34,11 +34,11 @@ class BaseChatSetting {
           (json[_ChatSettingJsonKeys.role] as String).toLowerCase(),
         ),
         permissions: ChatPermissions.fromJson(
-          json[_ChatSettingJsonKeys.permissions] as Map<String, dynamic>,
+          json[_ChatSettingJsonKeys.permissions] as JsonMap,
         ),
       );
 
-  Map<String, dynamic> toJson() => {
+  JsonMap toJson() => {
         _ChatSettingJsonKeys.muteList: _serializeMuteList(muteList),
         _ChatSettingJsonKeys.owner: owner,
         _ChatSettingJsonKeys.role:
@@ -53,7 +53,9 @@ class BaseChatSetting {
   }
 
   static List<int> _parseMuteList(dynamic muteList) {
-    if (muteList is! Map) return [];
+    if (muteList is! Map) {
+      return [];
+    }
 
     return [
       for (final entry in muteList.entries)

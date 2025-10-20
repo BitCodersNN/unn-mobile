@@ -30,8 +30,7 @@ class DistanceCourse {
     required this.materials,
   });
 
-  factory DistanceCourse.fromJson(Map<String, Object?> jsonMap) =>
-      DistanceCourse(
+  factory DistanceCourse.fromJson(JsonMap jsonMap) => DistanceCourse(
         semester: Semester.fromJson(jsonMap),
         discipline: jsonMap[DistanceCourseJsonKeys.discipline] as String,
         employeeLogin: jsonMap[DistanceCourseJsonKeys.login] as String,
@@ -43,7 +42,7 @@ class DistanceCourse {
         materials: _parseMaterials(jsonMap),
       );
 
-  Map<String, Object?> toJson() => {
+  JsonMap toJson() => {
         ...semester.toJson(),
         DistanceCourseJsonKeys.discipline: discipline,
         DistanceCourseJsonKeys.login: employeeLogin,
@@ -53,7 +52,7 @@ class DistanceCourse {
       };
 
   static List<DistanceMaterialData> _parseMaterials(
-    Map<String, Object?> json,
+    JsonMap json,
   ) {
     final files = getListFromJson(json, DistanceCourseJsonKeys.files);
     final links = getListFromJson(json, DistanceCourseJsonKeys.links);

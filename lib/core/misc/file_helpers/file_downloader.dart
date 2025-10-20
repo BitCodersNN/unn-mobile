@@ -2,13 +2,14 @@
 // Copyright 2025 BitCodersNN
 
 import 'dart:io';
+
 import 'package:content_resolver/content_resolver.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:mime/mime.dart';
+import 'package:unn_mobile/core/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/constants/api/protocol_type.dart';
 import 'package:unn_mobile/core/constants/regular_expressions.dart';
-import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/misc/file_helpers/file_functions.dart';
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
 
@@ -53,11 +54,11 @@ class FileDownloader {
     String? downloadUrl,
     bool force = false,
     bool pickLocation = false,
-  }) async {
+  }) {
     if (pickLocation && Platform.isAndroid) {
-      return await _downloadToUserSelectedDirectory(downloadUrl, fileName);
+      return _downloadToUserSelectedDirectory(downloadUrl, fileName);
     }
-    return await _downloadToDefaultDirectory(
+    return _downloadToDefaultDirectory(
       fileName,
       downloadFolderName,
       force,

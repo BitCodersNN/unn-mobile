@@ -2,13 +2,14 @@
 // Copyright 2025 BitCodersNN
 
 import 'package:dio/dio.dart';
+import 'package:unn_mobile/core/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/constants/api/ajax_action.dart';
 import 'package:unn_mobile/core/constants/api/path.dart';
 import 'package:unn_mobile/core/constants/api/request_payloads.dart';
-import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/misc/dio_interceptor/response_data_type.dart';
 import 'package:unn_mobile/core/misc/dio_options_factory/options_with_timeout_and_expected_type_factory.dart';
 import 'package:unn_mobile/core/misc/json/json_iterable_parser.dart';
+import 'package:unn_mobile/core/misc/json/json_utils.dart';
 import 'package:unn_mobile/core/misc/response_status_validator.dart';
 import 'package:unn_mobile/core/models/dialog/preview_dialog.dart';
 import 'package:unn_mobile/core/models/dialog/preview_group_dialog.dart';
@@ -46,14 +47,14 @@ class DialogSearchServiceImpl implements DialogSearchService {
   );
 
   @override
-  Future<List<PreviewDialog>?> getHistory() async => _fetchDialogs(
+  Future<List<PreviewDialog>?> getHistory() => _fetchDialogs(
         {
           AjaxActionStrings.actionKey: AjaxActionStrings.loadDialog,
         },
       );
 
   @override
-  Future<List<PreviewDialog>?> search(String query) async => _fetchDialogs(
+  Future<List<PreviewDialog>?> search(String query) => _fetchDialogs(
         {
           AjaxActionStrings.actionKey: AjaxActionStrings.searchDialog,
         },
@@ -83,7 +84,9 @@ class DialogSearchServiceImpl implements DialogSearchService {
             .toList(),
       },
     );
-    if (responseData == null) return false;
+    if (responseData == null) {
+      return false;
+    }
 
     return ResponseStatusValidator.validate(responseData, _loggerService);
   }
@@ -94,11 +97,13 @@ class DialogSearchServiceImpl implements DialogSearchService {
   }) async {
     final responseData = await _executeQuery(queryParameters, data: data);
 
-    if (responseData == null) return null;
+    if (responseData == null) {
+      return null;
+    }
 
     return parseJsonIterable<PreviewDialog>(
-      responseData[_ResponseJsonKeys.data][_ResponseJsonKeys.dialog]
-          [_ResponseJsonKeys.items],
+      (((responseData as JsonMap)[_ResponseJsonKeys.data] as JsonMap) //
+          [_ResponseJsonKeys.dialog] as JsonMap)[_ResponseJsonKeys.items],
       (json) {
         final type = json[_ResponseJsonKeys.entityType] as String;
         switch (type) {

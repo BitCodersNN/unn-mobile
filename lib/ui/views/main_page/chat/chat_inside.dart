@@ -13,7 +13,7 @@ import 'package:unn_mobile/ui/views/main_page/chat/widgets/message_group.dart';
 import 'package:unn_mobile/ui/views/main_page/chat/widgets/send_field.dart';
 
 class ChatInside extends StatefulWidget {
-  const ChatInside({super.key, required this.chatId});
+  const ChatInside({required this.chatId, super.key});
 
   final int chatId;
 
@@ -187,9 +187,9 @@ class _ChatInsideState extends State<ChatInside> {
 
 class Avatar extends StatelessWidget {
   const Avatar({
-    super.key,
     required this.avatarUrl,
     required this.dialogTitle,
+    super.key,
   });
 
   final String? avatarUrl;

@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:unn_mobile/core/misc/json/json_key.dart';
 import 'package:unn_mobile/core/misc/json/json_key_format.dart';
 import 'package:unn_mobile/core/misc/json/json_serializable.dart';
+import 'package:unn_mobile/core/misc/json/json_utils.dart';
 
 abstract class _FileDataKeys extends JsonKeys {
   String get id;
@@ -67,7 +68,7 @@ class FileData
   });
 
   factory FileData._fromJsonWithKeys(
-    Map<String, dynamic> json,
+    JsonMap json,
     _FileDataKeys keys, {
     bool generateIdFromName = false,
   }) {
@@ -94,7 +95,7 @@ class FileData
     );
   }
 
-  factory FileData.fromJson(Map<String, dynamic> json) {
+  factory FileData.fromJson(JsonMap json) {
     return FileData._fromJsonWithKeys(
       json,
       const _DefaultFileDataKeys(),
@@ -102,14 +103,14 @@ class FileData
     );
   }
 
-  factory FileData.fromBitrixJson(Map<String, dynamic> json) {
+  factory FileData.fromBitrixJson(JsonMap json) {
     return FileData._fromJsonWithKeys(
       json,
       const _BitrixFileDataKeys(),
     );
   }
 
-  factory FileData.fromMessageJson(Map<String, dynamic> json) {
+  factory FileData.fromMessageJson(JsonMap json) {
     return FileData._fromJsonWithKeys(
       json,
       const _MessageFileDataKeys(),
@@ -126,7 +127,7 @@ class FileData
 
   @protected
   @override
-  Map<String, dynamic> buildJsonMap(JsonKeys keys) {
+  JsonMap buildJsonMap(JsonKeys keys) {
     keys as _FileDataKeys;
     return {
       keys.id: id.toString(),

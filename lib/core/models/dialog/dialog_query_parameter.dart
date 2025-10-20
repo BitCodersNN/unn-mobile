@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2025 BitCodersNN
 
+import 'package:unn_mobile/core/misc/json/json_utils.dart';
+
 class _DialogQueryParameterJsonKeys {
   static const String limit = 'LIMIT';
   static const String skipOpenlines = 'SKIP_OPENLINES';
@@ -29,7 +31,7 @@ class DialogQueryParameter {
     this.parseText = false,
   });
 
-  Map<String, Object?> toJson() => {
+  JsonMap toJson() => {
         _DialogQueryParameterJsonKeys.limit: limit,
         _DialogQueryParameterJsonKeys.lastMessageDate:
             lastMessageDate?.toIso8601String(),

@@ -2,22 +2,23 @@
 // Copyright 2025 BitCodersNN
 
 import 'package:dio/dio.dart';
-import 'package:unn_mobile/core/aggregators/intefaces/message_reaction_service_aggregator.dart';
+import 'package:unn_mobile/core/aggregators/interfaces/message_reaction_service_aggregator.dart';
+import 'package:unn_mobile/core/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/constants/api/ajax_action.dart';
 import 'package:unn_mobile/core/constants/api/path.dart';
-import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/misc/dio_interceptor/response_data_type.dart';
 import 'package:unn_mobile/core/misc/dio_options_factory/options_with_timeout_and_expected_type_factory.dart';
 import 'package:unn_mobile/core/misc/json/json_iterable_parser.dart';
+import 'package:unn_mobile/core/misc/json/json_utils.dart';
 import 'package:unn_mobile/core/misc/object_by_id_map.dart';
+import 'package:unn_mobile/core/misc/objects_with_pagination.dart';
 import 'package:unn_mobile/core/misc/response_status_validator.dart';
+import 'package:unn_mobile/core/models/dialog/message/enum/message_state.dart';
 import 'package:unn_mobile/core/models/dialog/message/forward_info.dart';
 import 'package:unn_mobile/core/models/dialog/message/message.dart';
 import 'package:unn_mobile/core/models/dialog/message/message_short_info.dart';
-import 'package:unn_mobile/core/models/dialog/message/enum/message_state.dart';
 import 'package:unn_mobile/core/models/dialog/message/message_with_forward.dart';
 import 'package:unn_mobile/core/models/dialog/message/message_with_forward_and_reply.dart';
-import 'package:unn_mobile/core/misc/objects_with_pagination.dart';
 import 'package:unn_mobile/core/models/dialog/message/message_with_reply.dart';
 import 'package:unn_mobile/core/models/dialog/message/reply_info.dart';
 import 'package:unn_mobile/core/models/feed/rating_list.dart';
@@ -75,12 +76,14 @@ class MessageFetcherServiceImpl implements MessageFetcherService {
         ? await _fetchFirstMessages(chatId, limit)
         : await _fetchMessages(chatId, lastMessageId, limit);
 
-    if (response == null) return null;
+    if (response == null) {
+      return null;
+    }
     if (!ResponseStatusValidator.validate(response.data, _loggerService)) {
       return null;
     }
 
-    final data = response.data[_JsonKeys.data] as Map<String, dynamic>;
+    final data = (response.data as JsonMap)[_JsonKeys.data] as JsonMap;
     final messages = await _processMessagesData(data);
 
     return PaginatedResult(
@@ -90,7 +93,7 @@ class MessageFetcherServiceImpl implements MessageFetcherService {
     );
   }
 
-  Future<List<Message>> _processMessagesData(Map<String, dynamic> data) async {
+  Future<List<Message>> _processMessagesData(Map<String, dynamic> data) {
     final messagesJson = data[_JsonKeys.messages] as List;
     final usersJson = data[_JsonKeys.users] as List;
     final filesJson = data[MessageJsonKeys.files] as List;
@@ -103,12 +106,12 @@ class MessageFetcherServiceImpl implements MessageFetcherService {
       ...buildObjectByIdMap(data[_JsonKeys.messages]),
     };
     final messageIdsWithReactions = reactionsJson
-        .map<int>((msg) => msg[_JsonKeys.messageId] as int)
+        .map<int>((msg) => (msg as JsonMap)[_JsonKeys.messageId] as int)
         .toSet();
 
-    return await parseJsonIterableAsync<Message>(
+    return parseJsonIterableAsync<Message>(
       messagesJson,
-      (message) async => await _processSingleMessage(
+      (message) => _processSingleMessage(
         message,
         usersById,
         filesById,
@@ -269,16 +272,16 @@ class MessageFetcherServiceImpl implements MessageFetcherService {
     Map<int, dynamic> usersById,
   ) =>
       {
-        ForwardInfoJsonKeys.forwardId: message[_JsonKeys.forward]
-            [MessageShortInfoJsonKeys.id],
-        ForwardInfoJsonKeys.forwardAuthor:
-            usersById[message[_JsonKeys.forward][_JsonKeys.userId]],
+        ForwardInfoJsonKeys.forwardId: (message[_JsonKeys.forward]
+            as JsonMap)[MessageShortInfoJsonKeys.id],
+        ForwardInfoJsonKeys.forwardAuthor: usersById[
+            (message[_JsonKeys.forward] as JsonMap)[_JsonKeys.userId]],
       };
 
   Future<Response?> _fetchFirstMessages(
     int chatId,
     int limit,
-  ) async =>
+  ) =>
       _fetchMessagesFromApi(
         action: AjaxActionStrings.fetchFirstMessage,
         data: {
@@ -291,7 +294,7 @@ class MessageFetcherServiceImpl implements MessageFetcherService {
     int chatId,
     int lastMessageId,
     int limit,
-  ) async =>
+  ) =>
       _fetchMessagesFromApi(
         action: AjaxActionStrings.fetchMessage,
         data: {

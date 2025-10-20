@@ -3,8 +3,8 @@
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:unn_mobile/core/viewmodels/main_page/main_page_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/common/profile_view_model.dart';
+import 'package:unn_mobile/core/viewmodels/main_page/main_page_view_model.dart';
 import 'package:unn_mobile/ui/builders/online_status_builder.dart';
 
 class MainPageDrawer extends StatefulWidget {
@@ -12,9 +12,9 @@ class MainPageDrawer extends StatefulWidget {
   final void Function(int)? onDestinationSelected;
 
   const MainPageDrawer({
+    required this.model,
     super.key,
     this.onDestinationSelected,
-    required this.model,
   });
 
   @override

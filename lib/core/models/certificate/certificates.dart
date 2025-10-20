@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2025 BitCodersNN
 
-import 'package:unn_mobile/core/models/certificate/practice_order.dart';
+import 'package:unn_mobile/core/misc/json/json_utils.dart';
 import 'package:unn_mobile/core/models/certificate/certificate.dart';
 import 'package:unn_mobile/core/models/certificate/certificate_types_info.dart';
+import 'package:unn_mobile/core/models/certificate/practice_order.dart';
 
 class _CertificatesJsonKeys {
   static const String practices = 'practices';
@@ -17,11 +18,11 @@ class Certificates {
 
   Certificates.empty() : this._(certificates: []);
 
-  factory Certificates.fromJson(Map<String, Object?> jsonMap) {
+  factory Certificates.fromJson(JsonMap jsonMap) {
     final certificates = <Certificate>[];
     jsonMap.forEach((certificateType, certificate) {
       if (certificateType == _CertificatesJsonKeys.practices) {
-        certificates.addAll(_parsePracticeCertificates(certificate as List));
+        certificates.addAll(_parsePracticeCertificates(certificate! as List));
       } else if (certificateTypesInfo.containsKey(certificateType)) {
         final certificateJson = _createCertificateJson(
           certificateType,
@@ -30,7 +31,7 @@ class Certificates {
         certificates.add(Certificate.fromJson(certificateJson));
       }
     });
-    if ((jsonMap[_CertificatesJsonKeys.practice] as String).isNotEmpty) {
+    if ((jsonMap[_CertificatesJsonKeys.practice]! as String).isNotEmpty) {
       certificates.add(
         Certificate.fromPracticeUrl(
           jsonMap[_CertificatesJsonKeys.practice]! as String,
@@ -42,7 +43,7 @@ class Certificates {
 
   static List<Certificate> _parsePracticeCertificates(List<dynamic> practices) {
     return practices
-        .whereType<Map<String, Object?>>()
+        .whereType<JsonMap>()
         .map(
           (practice) => PracticeOrder.fromJson(
             _createPracticeCertificateJson(practice),
@@ -51,31 +52,31 @@ class Certificates {
         .toList();
   }
 
-  static Map<String, Object?> _createCertificateJson(
+  static JsonMap _createCertificateJson(
     String certificateType,
     String? certificateUri,
   ) {
     final certificateJson =
-        Map<String, Object?>.from(certificateTypesInfo[certificateType]!);
+        JsonMap.from(certificateTypesInfo[certificateType]!);
 
     certificateJson[CertificateJsonKeys.certificatePath] =
-        certificateUri?.isNotEmpty == true
+        certificateUri?.isNotEmpty ?? false
             ? Uri.parse(certificateUri!).path.substring(1)
             : '';
 
     return certificateJson;
   }
 
-  static Map<String, Object?> _createPracticeCertificateJson(
-    Map<String, Object?> practice,
+  static JsonMap _createPracticeCertificateJson(
+    JsonMap practice,
   ) {
     final certificateUri = practice[_CertificatesJsonKeys.practice] as String?;
-    final practiceReferenceJson = Map<String, Object?>.from(practice);
-    practiceReferenceJson.addAll(
-      certificateTypesInfo[_CertificatesJsonKeys.practices]!,
-    );
+    final practiceReferenceJson = JsonMap.from(practice)
+      ..addAll(
+        certificateTypesInfo[_CertificatesJsonKeys.practices]!,
+      );
     practiceReferenceJson[CertificateJsonKeys.certificatePath] =
-        certificateUri?.isNotEmpty == true
+        certificateUri?.isNotEmpty ?? false
             ? Uri.parse(certificateUri!).path.substring(1)
             : '';
     return practiceReferenceJson;

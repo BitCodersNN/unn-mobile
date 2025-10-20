@@ -33,10 +33,10 @@ class MessageWidget extends StatefulWidget {
   final ChatInsideViewModel chatModel;
 
   const MessageWidget({
-    super.key,
     required this.message,
     required this.fromCurrentUser,
     required this.chatModel,
+    super.key,
     this.displayAuthor = false,
   });
 
@@ -250,7 +250,7 @@ class _MessageWidgetState extends State<MessageWidget> {
     setState(() => _isHighlighted = true);
     triggerHaptic(HapticIntensity.medium);
 
-    final renderBox = context.findRenderObject() as RenderBox;
+    final renderBox = context.findRenderObject()! as RenderBox;
     final offset = renderBox.localToGlobal(Offset.zero);
 
     showMenu<String>(
@@ -318,7 +318,9 @@ class _MessageWidgetState extends State<MessageWidget> {
   }
 
   void _handleMenuSelection(String? value) async {
-    if (value == null) return;
+    if (value == null) {
+      return;
+    }
 
     switch (value) {
       case 'copy':
@@ -420,8 +422,8 @@ class _MessageWidgetState extends State<MessageWidget> {
 class MessageReactionView extends StatelessWidget {
   final MessageReactionViewModel model;
   const MessageReactionView({
-    super.key,
     required this.model,
+    super.key,
   });
 
   @override

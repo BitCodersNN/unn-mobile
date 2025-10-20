@@ -3,9 +3,9 @@
 
 import 'package:unn_mobile/core/misc/objects_with_pagination.dart';
 import 'package:unn_mobile/core/models/profile/employee/preview_employee.dart';
-import 'package:unn_mobile/core/models/profile/student/preview_student.dart';
 import 'package:unn_mobile/core/models/profile/search_filter.dart';
 import 'package:unn_mobile/core/models/profile/sort_field.dart';
+import 'package:unn_mobile/core/models/profile/student/preview_student.dart';
 
 abstract interface class ProfileSearchService {
   /// Возвращает список предварительных данных студентов на основе заданных критериев поиска и пагинации.

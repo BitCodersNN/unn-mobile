@@ -2,14 +2,15 @@
 // Copyright 2025 BitCodersNN
 
 import 'package:dio/dio.dart';
+import 'package:unn_mobile/core/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/constants/api/path.dart';
-import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/misc/dio_interceptor/response_data_type.dart';
 import 'package:unn_mobile/core/misc/dio_options_factory/options_with_timeout_and_expected_type_factory.dart';
+import 'package:unn_mobile/core/misc/json/json_utils.dart';
 import 'package:unn_mobile/core/models/feed/blog_post.dart';
 import 'package:unn_mobile/core/models/feed/blog_post_type.dart';
-import 'package:unn_mobile/core/services/interfaces/feed/blog_post_receivers/featured_blog_post_service.dart';
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
+import 'package:unn_mobile/core/services/interfaces/feed/blog_post_receivers/featured_blog_post_service.dart';
 
 class FeaturedBlogPostsServiceImpl implements FeaturedBlogPostsService {
   final LoggerService _loggerService;
@@ -46,7 +47,7 @@ class FeaturedBlogPostsServiceImpl implements FeaturedBlogPostsService {
   ) {
     final Map<BlogPostType, List<BlogPost>> blogPosts = {};
 
-    for (final jsonMap in jsonList) {
+    for (final JsonMap jsonMap in jsonList) {
       BlogPost blogPost;
       try {
         blogPost = BlogPost.fromJson(jsonMap);

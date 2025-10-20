@@ -62,7 +62,9 @@ Future<T?> _parseItemAsync<T>(
   Future<T> Function(Map<String, dynamic>) fromJson,
   LoggerService loggerService,
 ) async {
-  if (!_validateItemType<T>(item, loggerService)) return null;
+  if (!_validateItemType<T>(item, loggerService)) {
+    return null;
+  }
 
   try {
     return await fromJson(item);
@@ -77,7 +79,9 @@ T? _parseItem<T>(
   T Function(Map<String, dynamic>) fromJson,
   LoggerService loggerService,
 ) {
-  if (!_validateItemType<T>(item, loggerService)) return null;
+  if (!_validateItemType<T>(item, loggerService)) {
+    return null;
+  }
 
   try {
     return fromJson(item);

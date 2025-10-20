@@ -9,8 +9,8 @@ import 'package:unn_mobile/ui/widgets/dismissable_image.dart';
 
 class PostHtmlWidget extends StatelessWidget {
   const PostHtmlWidget({
-    super.key,
     required this.text,
+    super.key,
   });
 
   final String text;

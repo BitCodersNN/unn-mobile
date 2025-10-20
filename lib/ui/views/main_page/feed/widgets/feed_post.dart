@@ -7,15 +7,17 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:html/parser.dart';
 import 'package:html_unescape/html_unescape.dart';
+import 'package:http/http.dart' as http;
 import 'package:injector/injector.dart';
 import 'package:intl/intl.dart';
 import 'package:mime/mime.dart';
+import 'package:path/path.dart' as p;
 import 'package:share_plus/share_plus.dart';
 import 'package:unn_mobile/core/misc/haptic_utils.dart';
 import 'package:unn_mobile/core/models/feed/rating_list.dart';
 import 'package:unn_mobile/core/viewmodels/factories/feed_post_view_model_factory.dart';
-import 'package:unn_mobile/core/viewmodels/main_page/feed/feed_post_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/common/profile_view_model.dart';
+import 'package:unn_mobile/core/viewmodels/main_page/feed/feed_post_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/feed/reaction_view_model.dart';
 import 'package:unn_mobile/ui/unn_mobile_colors.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
@@ -27,8 +29,6 @@ import 'package:unn_mobile/ui/views/main_page/main_page_routing.dart';
 import 'package:unn_mobile/ui/widgets/height_limiter.dart';
 import 'package:unn_mobile/ui/widgets/shimmer.dart';
 import 'package:unn_mobile/ui/widgets/shimmer_loading.dart';
-import 'package:http/http.dart' as http;
-import 'package:path/path.dart' as p;
 
 const idkWhatColor = Color(0xFF989EA9);
 
@@ -38,9 +38,9 @@ class FeedPost extends StatefulWidget {
   final bool isCollapsed;
 
   const FeedPost({
-    super.key,
     required this.post,
     required this.showingComments,
+    super.key,
     this.isCollapsed = true,
   });
 
@@ -58,8 +58,6 @@ class _FeedPostState extends State<FeedPost> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    theme.extension<UnnMobileColors>();
     final reactionsSize = MediaQuery.textScalerOf(context).scale(18.0);
     return BaseView<FeedPostViewModel>(
       model: widget.post,
@@ -83,7 +81,7 @@ class _FeedPostState extends State<FeedPost> {
                 color: _getPostColor(context, model),
                 boxShadow: const [
                   BoxShadow(
-                    offset: Offset(0, 0),
+                    offset: Offset.zero,
                     blurRadius: 9,
                     color: Color(0x33527DAF),
                   ),
@@ -205,7 +203,7 @@ class _FeedPostState extends State<FeedPost> {
                           children: [
                             _ReactionButton(
                               model.reactionViewModel,
-                              !widget.showingComments,
+                              showCounter: !widget.showingComments,
                             ),
                             Container(
                               padding: const EdgeInsets.symmetric(
@@ -261,7 +259,7 @@ class _FeedPostState extends State<FeedPost> {
   static void _openPostCommentsPage(
     BuildContext context,
     FeedPostViewModel post,
-  ) async {
+  ) {
     GoRouter.of(context).go(
       '${GoRouter.of(context).routeInformationProvider.value.uri.path}/'
       '${postCommentsRoute.pageRoute.replaceAll(':postId', post.blogData.id.toString())}',
@@ -273,7 +271,7 @@ class _FeedPostState extends State<FeedPost> {
 
     for (final fileViewModel in model.attachedFileViewModels) {
       final file = await fileViewModel.getFile();
-      if (file?.existsSync() == true) {
+      if (file?.existsSync() ?? false) {
         xFiles.add(XFile(file!.path));
       }
     }
@@ -450,7 +448,7 @@ class _ReactionCounterWithIcons extends StatelessWidget {
               builder: (context) {
                 final reactionTypeCount = model.reactionList.length - 1;
                 final reactionCounterOffset =
-                    reactionsSize * (reactionTypeCount) / 2 + reactionsSize + 8;
+                    reactionsSize * reactionTypeCount / 2 + reactionsSize + 8;
                 return SizedBox(
                   height: reactionsSize,
                   child: Stack(
@@ -501,7 +499,7 @@ class _ReactionButton extends StatelessWidget {
   final ReactionViewModel viewModel;
   final bool showCounter;
 
-  const _ReactionButton(this.viewModel, this.showCounter);
+  const _ReactionButton(this.viewModel, {required this.showCounter});
 
   @override
   Widget build(BuildContext context) {

@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2025 BitCodersNN
 
+import 'package:unn_mobile/core/misc/json/json_utils.dart';
+
 class _MarkBySubjectJsonKeys {
   static const String controlType = 'control_type';
   static const String date = 'date';
@@ -108,7 +110,7 @@ class MarkBySubject {
   int get creditedHours => hours ~/ _hoursPerCreditedHour;
   String get subject => _subject;
 
-  factory MarkBySubject.fromJson(Map<String, Object?> jsonMap) {
+  factory MarkBySubject.fromJson(JsonMap jsonMap) {
     return MarkBySubject(
       controlType: jsonMap[_MarkBySubjectJsonKeys.controlType] as String,
       date: DateTime.parse(
@@ -125,7 +127,7 @@ class MarkBySubject {
     );
   }
 
-  Map<String, Object?> toJson() {
+  JsonMap toJson() {
     return {
       _MarkBySubjectJsonKeys.controlType: controlType,
       _MarkBySubjectJsonKeys.date: date.toIso8601String(),

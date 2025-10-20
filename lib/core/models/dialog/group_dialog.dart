@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2025 BitCodersNN
 
+import 'package:unn_mobile/core/misc/json/json_utils.dart';
 import 'package:unn_mobile/core/models/dialog/chat_settings/calendar_chat_setting.dart';
 import 'package:unn_mobile/core/models/dialog/chat_settings/chat_setting.dart';
 import 'package:unn_mobile/core/models/dialog/chat_settings/sonnet_group_chat_setting.dart';
@@ -30,7 +31,7 @@ final class GroupDialog extends Dialog {
     required this.chatSetting,
   });
 
-  factory GroupDialog.fromJson(Map<String, dynamic> json) {
+  factory GroupDialog.fromJson(JsonMap json) {
     final dialog = Dialog.fromJson(json);
 
     return GroupDialog(
@@ -47,7 +48,7 @@ final class GroupDialog extends Dialog {
   }
 
   @override
-  Map<String, dynamic> toJson() {
+  JsonMap toJson() {
     return {
       ...super.toJson(),
       GroupDialogJsonKeys.id: dialogId,
@@ -56,7 +57,7 @@ final class GroupDialog extends Dialog {
     };
   }
 
-  static ChatSetting _parseChatSetting(Map<String, dynamic> chatJson) {
+  static ChatSetting _parseChatSetting(JsonMap chatJson) {
     final type = chatJson[GroupDialogJsonKeys.type] as String?;
 
     switch (type) {

@@ -7,8 +7,8 @@ import 'package:flutter/material.dart';
 
 class DismissibleImage extends StatelessWidget {
   const DismissibleImage({
-    super.key,
     required this.image,
+    super.key,
   });
 
   final String image;

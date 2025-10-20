@@ -2,6 +2,7 @@
 // Copyright 2025 BitCodersNN
 
 import 'package:unn_mobile/core/misc/html_utils/html_image_utils.dart';
+import 'package:unn_mobile/core/misc/json/json_utils.dart';
 
 class _BlogPostCommentDataBitrixJsonKeys {
   static const String id = 'id';
@@ -35,12 +36,12 @@ class BlogPostCommentData {
     required this.authorBitrixId,
     required this.dateTime,
     required this.message,
-    this.imageUrls,
     required this.keySigned,
+    this.imageUrls,
     this.attachedFiles = const [],
   });
 
-  factory BlogPostCommentData.fromJson(Map<String, Object?> jsonMap) {
+  factory BlogPostCommentData.fromJson(JsonMap jsonMap) {
     final text = jsonMap[_BlogPostCommentDataJsonKeys.text] as String;
     final result = extractImagesAndCleanHtmlText(text);
     return BlogPostCommentData(
@@ -62,7 +63,7 @@ class BlogPostCommentData {
     );
   }
 
-  Map<String, dynamic> toJson() => {
+  JsonMap toJson() => {
         _BlogPostCommentDataJsonKeys.id: id.toString(),
         _BlogPostCommentDataJsonKeys.author: {
           _BlogPostCommentDataJsonKeys.id: authorBitrixId.toString(),
@@ -74,7 +75,7 @@ class BlogPostCommentData {
             attachedFiles.map((hashCode) => hashCode.toString()).toList(),
       };
 
-  factory BlogPostCommentData.fromBitrixJson(Map<String, Object?> jsonMap) =>
+  factory BlogPostCommentData.fromBitrixJson(JsonMap jsonMap) =>
       BlogPostCommentData(
         id: int.parse(
           jsonMap[_BlogPostCommentDataBitrixJsonKeys.id] as String,
