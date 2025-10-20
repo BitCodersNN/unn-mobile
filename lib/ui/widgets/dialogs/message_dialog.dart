@@ -35,7 +35,7 @@ class _MessageDialogState extends State<MessageDialog> {
             if (widget.canBeIgnored && widget.messageKey.isNotEmpty)
               Row(
                 children: [
-                  Checkbox(
+                  Checkbox.adaptive(
                     value: ignoreCheckbox,
                     onChanged: (value) {
                       setState(() {
