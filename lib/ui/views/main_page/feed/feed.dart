@@ -160,7 +160,41 @@ class FeedScreenViewState extends State<FeedScreenView>
                                   physics: const NeverScrollableScrollPhysics(),
                                   itemCount: model.posts.length,
                                   itemBuilder: (context, index) {
-                                    final post = model.posts[index];
+                                    if (index == model.numberUnreadMessages) {
+                                      return Container(
+                                        color: Colors.white,
+                                        padding: const EdgeInsets.symmetric(
+                                          vertical: 12.0,
+                                          horizontal: 20.0,
+                                        ),
+                                        margin: const EdgeInsets.only(
+                                          top: 8.0,
+                                          bottom: 8.0,
+                                        ),
+                                        child: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Text(
+                                              'ПРОЧИТАННЫЕ ПОСТЫ',
+                                              textAlign: TextAlign.center,
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .labelMedium
+                                                  ?.copyWith(
+                                                    color: Colors.grey[600],
+                                                    fontSize: 14.0,
+                                                  ),
+                                            ),
+                                          ],
+                                        ),
+                                      );
+                                    }
+
+                                    final actualIndex =
+                                        index > model.numberUnreadMessages
+                                            ? index - 1
+                                            : index;
+                                    final post = model.posts[actualIndex];
                                     return FeedPost(
                                       key: ObjectKey(post),
                                       post: post,
