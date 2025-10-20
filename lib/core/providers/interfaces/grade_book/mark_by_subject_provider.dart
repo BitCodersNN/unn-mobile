@@ -12,7 +12,7 @@ abstract interface class MarkBySubjectProvider
   @override
   Future<Map<int, List<MarkBySubject>>?> getData();
 
-  /// Сохраняет зачетную книжки в хранилище. Если зачетная книжка уже сохранена в хранилище, то старая удаляется и записывается новая
+  /// Сохраняет зачетную книжку в хранилище. Если зачетная книжка уже сохранена в хранилище, то старая удаляется и записывается новая
   ///
   /// [recordBook]: зачетная книжка
   @override
@@ -21,4 +21,8 @@ abstract interface class MarkBySubjectProvider
   /// Проверяет наличие зачетной книжки в хранилище
   @override
   Future<bool> isContained();
+
+  /// Удаляет зачетную книжку из хранилища
+  @override
+  Future<void> removeData();
 }

@@ -7,7 +7,7 @@ import 'package:unn_mobile/core/models/authorisation/auth_data.dart';
 
 class _AuthDataProviderKeys {
   static const _loginKey = 'login_key';
-  static const _passwotdKey = 'password_key';
+  static const _passwordKey = 'password_key';
 }
 
 class AuthorisationDataProviderImpl implements AuthDataProvider {
@@ -17,43 +17,46 @@ class AuthorisationDataProviderImpl implements AuthDataProvider {
 
   @override
   Future<AuthData> getData() async {
-    final login = await _storage.read(
-          key: _AuthDataProviderKeys._loginKey,
-          secure: true,
-        ) ??
-        AuthData.getDefaultParameter();
-    final password = await _storage.read(
-          key: _AuthDataProviderKeys._passwotdKey,
-          secure: true,
-        ) ??
-        AuthData.getDefaultParameter();
+    final results = await Future.wait([
+      _storage.read(key: _AuthDataProviderKeys._loginKey, secure: true),
+      _storage.read(key: _AuthDataProviderKeys._passwordKey, secure: true),
+    ]);
+
+    final login = results[0] ?? AuthData.getDefaultParameter();
+    final password = results[1] ?? AuthData.getDefaultParameter();
 
     return AuthData(login, password);
   }
 
   @override
-  Future<void> saveData(AuthData authData) async {
-    await _storage.write(
-      key: _AuthDataProviderKeys._loginKey,
-      value: authData.login,
-      secure: true,
-    );
-    await _storage.write(
-      key: _AuthDataProviderKeys._passwotdKey,
-      value: authData.password,
-      secure: true,
-    );
-  }
+  Future<void> saveData(AuthData authData) async => Future.wait([
+        _storage.write(
+          key: _AuthDataProviderKeys._loginKey,
+          value: authData.login,
+          secure: true,
+        ),
+        _storage.write(
+          key: _AuthDataProviderKeys._passwordKey,
+          value: authData.password,
+          secure: true,
+        ),
+      ]);
 
   @override
   Future<bool> isContained() async {
-    return (await _storage.containsKey(
-          key: _AuthDataProviderKeys._loginKey,
-          secure: true,
-        ) &&
-        await _storage.containsKey(
-          key: _AuthDataProviderKeys._passwotdKey,
-          secure: true,
-        ));
+    final results = await Future.wait([
+      _storage.containsKey(key: _AuthDataProviderKeys._loginKey, secure: true),
+      _storage.containsKey(
+        key: _AuthDataProviderKeys._passwordKey,
+        secure: true,
+      ),
+    ]);
+    return results.every((isPresent) => isPresent);
   }
+
+  @override
+  Future<void> removeData() async => Future.wait([
+        _storage.remove(key: _AuthDataProviderKeys._loginKey, secure: true),
+        _storage.remove(key: _AuthDataProviderKeys._passwordKey, secure: true),
+      ]);
 }

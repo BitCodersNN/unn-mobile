@@ -66,6 +66,18 @@ class StorageServiceImpl implements StorageService {
     await _secureStorage.deleteAll();
   }
 
+  @override
+  Future<void> remove({required String key, bool secure = false}) async {
+    await _initIfNeeded();
+    final cacheMap = secure ? _secureCache : _nonSecureCache;
+    cacheMap.remove(key);
+    if (secure) {
+      await _secureStorage.delete(key: key);
+    } else {
+      await _sharedPreferences!.remove(key);
+    }
+  }
+
   Future<void> _initIfNeeded() async {
     WidgetsFlutterBinding.ensureInitialized();
     _sharedPreferences ??= await SharedPreferences.getInstance();
