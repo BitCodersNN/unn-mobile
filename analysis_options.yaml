@@ -1,7 +1,7 @@
 include: package:flutter_lints/flutter.yaml
 
 analyzer:
-  exclude: ["build/**", "modules", "lib/core/providers"]
+  exclude: ["build/**", "modules"]
 
 linter:
   rules:
@@ -46,7 +46,6 @@ linter:
     - sort_unnamed_constructors_first
     - throw_in_finally
     - type_annotate_public_apis
-#    - unnecessary_ignore
     - unnecessary_null_aware_operator_on_extension_on_nullable
     - unnecessary_null_checks
     - unnecessary_parenthesis
@@ -57,7 +56,6 @@ linter:
     - use_if_null_to_convert_nulls_to_bools
     - use_is_even_rather_than_modulo
     - use_named_constants
-#    - use_null_aware_elements
     - use_string_buffers
     - use_to_and_as_if_applicable
 

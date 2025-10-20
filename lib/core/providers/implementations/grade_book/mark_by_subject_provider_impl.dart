@@ -44,7 +44,7 @@ class MarkBySubjectProviderImpl implements MarkBySubjectProvider {
   }
 
   @override
-  Future<bool> isContained() async => _storage.containsKey(
+  Future<bool> isContained() => _storage.containsKey(
         key: _OfflineMarkBySubjectProviderKeys.markBySubject,
       );
 
@@ -69,7 +69,7 @@ class MarkBySubjectProviderImpl implements MarkBySubjectProvider {
   }
 
   @override
-  Future<void> removeData() async => _storage.remove(
+  Future<void> removeData() => _storage.remove(
         key: _OfflineMarkBySubjectProviderKeys.markBySubject,
       );
 }

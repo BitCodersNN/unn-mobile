@@ -36,13 +36,13 @@ class BlogPostProviderImpl implements BlogPostProvider {
 
     return parseJsonIterable<BlogPost>(
       jsonDecode(jsonString) as List<dynamic>,
-      (jsonMap) => BlogPost.fromJson(jsonMap),
+      BlogPost.fromJson,
       _loggerService,
     );
   }
 
   @override
-  Future<bool> isContained() async => _storage.containsKey(
+  Future<bool> isContained() => _storage.containsKey(
         key: _key,
       );
 
@@ -59,5 +59,5 @@ class BlogPostProviderImpl implements BlogPostProvider {
   }
 
   @override
-  Future<void> removeData() async => _storage.remove(key: _key);
+  Future<void> removeData() => _storage.remove(key: _key);
 }
