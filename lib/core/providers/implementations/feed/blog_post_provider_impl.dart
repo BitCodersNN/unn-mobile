@@ -36,13 +36,13 @@ class BlogPostProviderImpl implements BlogPostProvider {
 
     return parseJsonIterable<BlogPost>(
       jsonDecode(jsonString) as List<dynamic>,
-      (jsonMap) => BlogPost.fromJson(jsonMap),
+      BlogPost.fromJson,
       _loggerService,
     );
   }
 
   @override
-  Future<bool> isContained() async => _storage.containsKey(
+  Future<bool> isContained() => _storage.containsKey(
         key: _key,
       );
 
@@ -52,12 +52,12 @@ class BlogPostProviderImpl implements BlogPostProvider {
       return _storage.write(key: _key, value: '');
     }
 
-    final jsonList = data.map((blogPost) => blogPost.toJson()).toList();
+    final jsonList = [for (final blogPost in data) blogPost.toJson()];
     final jsonString = jsonEncode(jsonList);
 
     await _storage.write(key: _key, value: jsonString);
   }
 
   @override
-  Future<void> removeData() async => _storage.remove(key: _key);
+  Future<void> removeData() => _storage.remove(key: _key);
 }

@@ -9,5 +9,54 @@ linter:
     - prefer_single_quotes
     - always_use_package_imports
     - require_trailing_commas
-    - prefer_final_locals
     - prefer_final_in_for_each
+    - unnecessary_await_in_return
+    - unnecessary_lambdas
+    - unnecessary_async
+    - unawaited_futures
+    - always_put_control_body_on_new_line
+    - always_put_required_named_parameters_first
+    - avoid_bool_literals_in_conditional_expressions
+    - avoid_dynamic_calls
+    - avoid_multiple_declarations_per_line
+    - avoid_positional_boolean_parameters
+    - avoid_setters_without_getters
+    - avoid_type_to_string
+    - cascade_invocations
+    - cast_nullable_to_non_nullable
+    - directives_ordering
+    - document_ignores
+    - eol_at_end_of_file
+    - implicit_reopen
+    - join_return_with_assignment
+    - leading_newlines_in_multiline_strings
+    - literal_only_boolean_expressions
+    - matching_super_parameters
+    - no_adjacent_strings_in_list
+    - no_literal_bool_comparisons
+    - no_runtimeType_toString
+    - no_self_assignments
+    - noop_primitive_operations
+    - only_throw_errors
+    - prefer_const_constructors
+    - prefer_constructors_over_static_methods
+    - prefer_final_locals
+    - prefer_null_aware_method_calls
+    - sized_box_shrink_expand
+    - sort_unnamed_constructors_first
+    - throw_in_finally
+    - type_annotate_public_apis
+    - unnecessary_null_aware_operator_on_extension_on_nullable
+    - unnecessary_null_checks
+    - unnecessary_parenthesis
+    - unnecessary_statements
+    - unsafe_variance
+    - use_colored_box
+    - use_enums
+    - use_if_null_to_convert_nulls_to_bools
+    - use_is_even_rather_than_modulo
+    - use_named_constants
+    - use_string_buffers
+    - use_to_and_as_if_applicable
+    - prefer_expression_function_bodies
+

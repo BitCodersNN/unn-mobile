@@ -51,7 +51,7 @@ class Subject {
     return SubjectType.unknown;
   }
 
-  factory Subject.fromJson(Map<String, dynamic> jsonMap) {
+  factory Subject.fromJson(JsonMap jsonMap) {
     final String date = getStringFromJson(jsonMap, _SubjectJsonKeys.date);
     final String beginLesson =
         getStringFromJson(jsonMap, _SubjectJsonKeys.beginLesson);
@@ -89,7 +89,7 @@ class Subject {
     );
   }
 
-  Map<String, dynamic> toJson() => {
+  JsonMap toJson() => {
         _SubjectJsonKeys.date:
             dateTimeRange.start.format(DatePattern.yyyymmddDash),
         _SubjectJsonKeys.beginLesson:
@@ -104,10 +104,9 @@ class Subject {
         _SubjectJsonKeys.lecturerUID: syncId,
       };
 
-  static DateTime _parseDateTime(String date, String time) {
-    return DateTimeParser.parse(
-      '$date $time',
-      DatePattern.ymmddhm,
-    );
-  }
+  static DateTime _parseDateTime(String date, String time) =>
+      DateTimeParser.parse(
+        '$date $time',
+        DatePattern.ymmddhm,
+      );
 }

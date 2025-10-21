@@ -33,19 +33,18 @@ class UnnMobileColors extends ThemeExtension<UnnMobileColors> {
     Color? newPostHighlight,
     Map<SubjectType, Color>? subjectTypeHighlight,
     Color? ligtherTextColor,
-  }) {
-    return UnnMobileColors(
-      scheduleDayHighlight: scheduleDayHighlight ?? this.scheduleDayHighlight,
-      scheduleSubjectHighlight:
-          scheduleSubjectHighlight ?? this.scheduleSubjectHighlight,
-      defaultPostHighlight: defaultPostHighlight ?? this.defaultPostHighlight,
-      importantPostHighlight:
-          importantPostHighlight ?? this.importantPostHighlight,
-      newPostHighlight: newPostHighlight ?? this.newPostHighlight,
-      subjectTypeHighlight: subjectTypeHighlight ?? this.subjectTypeHighlight,
-      ligtherTextColor: ligtherTextColor ?? this.ligtherTextColor,
-    );
-  }
+  }) =>
+      UnnMobileColors(
+        scheduleDayHighlight: scheduleDayHighlight ?? this.scheduleDayHighlight,
+        scheduleSubjectHighlight:
+            scheduleSubjectHighlight ?? this.scheduleSubjectHighlight,
+        defaultPostHighlight: defaultPostHighlight ?? this.defaultPostHighlight,
+        importantPostHighlight:
+            importantPostHighlight ?? this.importantPostHighlight,
+        newPostHighlight: newPostHighlight ?? this.newPostHighlight,
+        subjectTypeHighlight: subjectTypeHighlight ?? this.subjectTypeHighlight,
+        ligtherTextColor: ligtherTextColor ?? this.ligtherTextColor,
+      );
 
   @override
   ThemeExtension<UnnMobileColors> lerp(

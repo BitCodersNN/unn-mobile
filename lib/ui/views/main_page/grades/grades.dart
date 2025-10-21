@@ -20,21 +20,18 @@ class GradesScreenView extends StatefulWidget {
 
 class _GradesScreenViewState extends State<GradesScreenView> {
   @override
-  Widget build(BuildContext context) {
-    return OfflineOverlayDisplayer(
-      child: Scaffold(
-        appBar: AppBar(
-          leading: getSubpageLeading(widget.bottomRouteIndex),
-          title: const Text('Зачётная книжка'),
+  Widget build(BuildContext context) => OfflineOverlayDisplayer(
+        child: Scaffold(
+          appBar: AppBar(
+            leading: getSubpageLeading(widget.bottomRouteIndex),
+            title: const Text('Зачётная книжка'),
+          ),
+          body: BaseView<GradesScreenViewModel>(
+            builder: (context, value, child) =>
+                _getGradesBook(context: context, model: value),
+          ),
         ),
-        body: BaseView<GradesScreenViewModel>(
-          builder: (context, value, child) {
-            return _getGradesBook(context: context, model: value);
-          },
-        ),
-      ),
-    );
-  }
+      );
 
   Widget _getGradesBook({
     required GradesScreenViewModel model,
@@ -69,7 +66,7 @@ class _GradesScreenViewState extends State<GradesScreenView> {
               length: tabs.length,
               child: Column(
                 children: [
-                  Container(
+                  ColoredBox(
                     color: theme.colorScheme.surface,
                     child: TabBar.secondary(
                       tabAlignment: TabAlignment.start,

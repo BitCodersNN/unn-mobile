@@ -1371,12 +1371,14 @@ class _SearchBarState extends State<SearchBar> {
     List<Widget>? trailing;
     if (widget.trailing != null) {
       trailing = widget.trailing
-          ?.map((Widget trailing) => IconTheme.merge(
-                data: isIconThemeColorDefault(iconTheme.color)
-                    ? IconThemeData(color: colorScheme.onSurfaceVariant)
-                    : iconTheme,
-                child: trailing,
-              ))
+          ?.map(
+            (Widget trailing) => IconTheme.merge(
+              data: isIconThemeColorDefault(iconTheme.color)
+                  ? IconThemeData(color: colorScheme.onSurfaceVariant)
+                  : iconTheme,
+              child: trailing,
+            ),
+          )
           .toList();
     }
 

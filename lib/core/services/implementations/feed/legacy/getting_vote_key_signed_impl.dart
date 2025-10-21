@@ -2,11 +2,11 @@
 // Copyright 2025 BitCodersNN
 
 import 'package:dio/dio.dart';
+import 'package:unn_mobile/core/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/constants/api/path.dart';
 import 'package:unn_mobile/core/constants/regular_expressions.dart';
-import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
-import 'package:unn_mobile/core/services/interfaces/feed/legacy/getting_vote_key_signed.dart';
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
+import 'package:unn_mobile/core/services/interfaces/feed/legacy/getting_vote_key_signed.dart';
 
 class _PathParts {
   static const blog = 'blog';
@@ -46,11 +46,18 @@ class GettingVoteKeySignedImpl implements GettingVoteKeySigned {
 
     String? keySignedMatches;
     try {
-      keySignedMatches = (RegularExpressions.keySignedRegExp
-          .firstMatch(response.data)
-          ?.group(0) as String);
+      keySignedMatches = RegularExpressions.keySignedRegExp
+          .firstMatch(response.data)!
+          .group(0);
     } catch (error, stackTrace) {
       _loggerService.logError(error, stackTrace);
+      return null;
+    }
+    if (keySignedMatches == null) {
+      _loggerService.logError(
+        Exception('Failed to get keysigned: no regexp matches'),
+        StackTrace.current,
+      );
       return null;
     }
 

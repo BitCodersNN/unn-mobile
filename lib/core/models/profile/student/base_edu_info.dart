@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2025 BitCodersNN
 
+import 'package:unn_mobile/core/misc/json/json_utils.dart';
+
 class _BaseEduInfoJsonKeys {
   static const String eduForm = 'edu_form';
   static const String eduCourse = 'edu_course';
@@ -37,7 +39,7 @@ class BaseEduInfo {
     required this.eduSpecialization,
   });
 
-  Map<String, dynamic> toJson() => {
+  JsonMap toJson() => {
         _BaseEduInfoJsonKeys.eduForm: eduForm,
         _BaseEduInfoJsonKeys.eduCourse: eduCourse,
         _BaseEduInfoJsonKeys.eduLevel: eduLevel,
@@ -55,7 +57,7 @@ class BaseEduInfo {
         },
       };
 
-  Map<String, dynamic> toPreviewStudentJson() => {
+  JsonMap toPreviewStudentJson() => {
         _BaseEduInfoJsonKeys.eduForm: eduForm,
         _BaseEduInfoJsonKeys.eduCourse: eduCourse,
         _BaseEduInfoJsonKeys.eduLevel: eduLevel,
@@ -65,28 +67,27 @@ class BaseEduInfo {
         _BaseEduInfoJsonKeys.eduSpecialization: eduSpecialization,
       };
 
-  factory BaseEduInfo.fromJson(Map<String, Object?> jsonMap) => BaseEduInfo(
-        eduForm: jsonMap[_BaseEduInfoJsonKeys.eduForm] as String,
-        eduCourse: jsonMap[_BaseEduInfoJsonKeys.eduCourse] as int,
-        eduLevel: jsonMap[_BaseEduInfoJsonKeys.eduLevel] as String,
-        faculty: (jsonMap[_BaseEduInfoJsonKeys.faculty]
-            as Map<String, Object?>)[_BaseEduInfoJsonKeys.title] as String,
-        eduDirection: (jsonMap[_BaseEduInfoJsonKeys.eduDirection]
-            as Map<String, Object?>)[_BaseEduInfoJsonKeys.title] as String,
-        eduGroup: (jsonMap[_BaseEduInfoJsonKeys.eduGroup]
-            as Map<String, Object?>)[_BaseEduInfoJsonKeys.title] as String,
+  factory BaseEduInfo.fromJson(JsonMap jsonMap) => BaseEduInfo(
+        eduForm: jsonMap[_BaseEduInfoJsonKeys.eduForm]! as String,
+        eduCourse: jsonMap[_BaseEduInfoJsonKeys.eduCourse]! as int,
+        eduLevel: jsonMap[_BaseEduInfoJsonKeys.eduLevel]! as String,
+        faculty: (jsonMap[_BaseEduInfoJsonKeys.faculty]!
+            as JsonMap)[_BaseEduInfoJsonKeys.title]! as String,
+        eduDirection: (jsonMap[_BaseEduInfoJsonKeys.eduDirection]!
+            as JsonMap)[_BaseEduInfoJsonKeys.title]! as String,
+        eduGroup: (jsonMap[_BaseEduInfoJsonKeys.eduGroup]!
+            as JsonMap)[_BaseEduInfoJsonKeys.title]! as String,
         eduSpecialization: (jsonMap[_BaseEduInfoJsonKeys.eduSpecialization]
-            as Map<String, Object?>?)?[_BaseEduInfoJsonKeys.title] as String?,
+            as JsonMap?)?[_BaseEduInfoJsonKeys.title] as String?,
       );
 
-  factory BaseEduInfo.previewStudentfromJson(Map<String, Object?> json) =>
-      BaseEduInfo(
-        eduForm: json[_BaseEduInfoJsonKeys.eduForm] as String,
-        eduCourse: json[_BaseEduInfoJsonKeys.eduCourse] as int,
-        eduLevel: json[_BaseEduInfoJsonKeys.eduLevel] as String,
-        faculty: json[_BaseEduInfoJsonKeys.department] as String,
-        eduDirection: json[_BaseEduInfoJsonKeys.eduDirection] as String,
-        eduGroup: json[_BaseEduInfoJsonKeys.eduGroup] as String,
+  factory BaseEduInfo.previewStudentfromJson(JsonMap json) => BaseEduInfo(
+        eduForm: json[_BaseEduInfoJsonKeys.eduForm]! as String,
+        eduCourse: json[_BaseEduInfoJsonKeys.eduCourse]! as int,
+        eduLevel: json[_BaseEduInfoJsonKeys.eduLevel]! as String,
+        faculty: json[_BaseEduInfoJsonKeys.department]! as String,
+        eduDirection: json[_BaseEduInfoJsonKeys.eduDirection]! as String,
+        eduGroup: json[_BaseEduInfoJsonKeys.eduGroup]! as String,
         eduSpecialization:
             json[_BaseEduInfoJsonKeys.eduSpecialization] as String?,
       );

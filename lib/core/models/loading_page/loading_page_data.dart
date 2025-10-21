@@ -3,6 +3,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:unn_mobile/core/misc/hex_color.dart';
+import 'package:unn_mobile/core/misc/json/json_utils.dart';
 
 class _LoadingPageModelJsonKeys {
   static const String logoPath = 'logo_path';
@@ -40,23 +41,27 @@ class LoadingPageModel {
     this.descriptionStyle,
   });
 
-  factory LoadingPageModel.fromJson(Map<String, dynamic> json) {
-    final titleJson = json[_LoadingPageModelJsonKeys.title];
-    final descriptionJson = json[_LoadingPageModelJsonKeys.description];
+  factory LoadingPageModel.fromJson(JsonMap json) {
+    final titleJson = json[_LoadingPageModelJsonKeys.title] as JsonMap?;
+    final descriptionJson =
+        json[_LoadingPageModelJsonKeys.description] as JsonMap?;
 
     return LoadingPageModel(
-      imagePath: json[_LoadingPageModelJsonKeys.logoPath],
+      imagePath: json[_LoadingPageModelJsonKeys.logoPath]! as String,
       dateTimeRangeToUseOn: _getDateTimeRangeFromJson(json),
-      title: titleJson?[_LoadingPageModelJsonKeys.text] ?? defaultTitle,
+      title:
+          titleJson?[_LoadingPageModelJsonKeys.text] as String? ?? defaultTitle,
       titleStyle: _getTextStyleFromJson(titleJson) ?? defaultTextStyle,
-      description: descriptionJson?[_LoadingPageModelJsonKeys.text],
+      description: descriptionJson?[_LoadingPageModelJsonKeys.text] as String?,
       descriptionStyle: _getTextStyleFromJson(descriptionJson),
     );
   }
 
-  static DateTimeRange? _getDateTimeRangeFromJson(Map<String, dynamic> json) {
-    final String? startDateStr = json[_LoadingPageModelJsonKeys.startDate];
-    final String? endDateStr = json[_LoadingPageModelJsonKeys.endDate];
+  static DateTimeRange? _getDateTimeRangeFromJson(JsonMap json) {
+    final String? startDateStr =
+        json[_LoadingPageModelJsonKeys.startDate] as String?;
+    final String? endDateStr =
+        json[_LoadingPageModelJsonKeys.endDate] as String?;
 
     DateTimeRange? dateTimeRange;
     if (startDateStr != null && endDateStr != null) {
@@ -72,20 +77,21 @@ class LoadingPageModel {
   }
 
   static TextStyle? _getTextStyleFromJson(
-    Map<String, dynamic>? json, {
+    JsonMap? json, {
     TextStyle defaultTextStyle = defaultTextStyle,
   }) {
     if (json == null) {
       return null;
     }
 
-    final colorFromJson = json[_LoadingPageModelJsonKeys.color];
+    final colorFromJson = json[_LoadingPageModelJsonKeys.color] as String?;
     final colorInt = int.tryParse(
       colorFromJson ?? defaultTextStyle.color.toString(),
     );
     final Color titleColor = Color(colorInt!);
 
-    final fontSizeFromJson = json[_LoadingPageModelJsonKeys.fontSize];
+    final fontSizeFromJson =
+        json[_LoadingPageModelJsonKeys.fontSize] as String?;
 
     final fontSize = double.tryParse(
       fontSizeFromJson ?? defaultTextStyle.fontSize.toString(),
@@ -100,7 +106,7 @@ class LoadingPageModel {
     return titleStyle;
   }
 
-  Map<String, dynamic> toJson() => {
+  JsonMap toJson() => {
         _LoadingPageModelJsonKeys.logoPath: imagePath,
         _LoadingPageModelJsonKeys.startDate:
             dateTimeRangeToUseOn?.start.toString().substring(5, 10),

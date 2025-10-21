@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:unn_mobile/core/constants/date_pattern.dart';
 import 'package:unn_mobile/core/misc/date_time_utilities/date_time_extensions.dart';
 import 'package:unn_mobile/core/misc/date_time_utilities/date_time_parser.dart';
+import 'package:unn_mobile/core/misc/json/json_utils.dart';
 import 'package:unn_mobile/core/models/certificate/certificate.dart';
 
 class _PracticeOrderJsonKeys {
@@ -29,7 +30,7 @@ class PracticeOrder extends Certificate {
     required this.num,
   });
 
-  factory PracticeOrder.fromJson(Map<String, Object?> jsonMap) {
+  factory PracticeOrder.fromJson(JsonMap jsonMap) {
     final certificate = Certificate.fromJson(jsonMap);
 
     return PracticeOrder(
@@ -37,23 +38,23 @@ class PracticeOrder extends Certificate {
       sendtype: certificate.sendtype,
       description: certificate.description,
       certificatePath: certificate.certificatePath,
-      type: jsonMap[_PracticeOrderJsonKeys.type] as String,
+      type: jsonMap[_PracticeOrderJsonKeys.type]! as String,
       practiceDateTimeRange: DateTimeRange(
         start: DateTimeParser.parse(
-          jsonMap[_PracticeOrderJsonKeys.date1] as String,
+          jsonMap[_PracticeOrderJsonKeys.date1]! as String,
           DatePattern.ddmmyyyy,
         ),
         end: DateTimeParser.parse(
-          jsonMap[_PracticeOrderJsonKeys.date2] as String,
+          jsonMap[_PracticeOrderJsonKeys.date2]! as String,
           DatePattern.ddmmyyyy,
         ),
       ),
-      num: jsonMap[_PracticeOrderJsonKeys.num] as int,
+      num: jsonMap[_PracticeOrderJsonKeys.num]! as int,
     );
   }
 
   @override
-  Map<String, dynamic> toJson() => {
+  JsonMap toJson() => {
         ...super.toJson(),
         _PracticeOrderJsonKeys.type: type,
         _PracticeOrderJsonKeys.date1:

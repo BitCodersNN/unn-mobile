@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2025 BitCodersNN
 
+import 'package:unn_mobile/core/misc/json/json_utils.dart';
 import 'package:unn_mobile/core/models/dialog/base_dialog_info.dart';
 
 class _PreviewDialogJsonKeys {
@@ -17,14 +18,14 @@ class PreviewDialog extends BaseDialogInfo {
     required super.avatarUrl,
   });
 
-  factory PreviewDialog.fromJson(Map<String, dynamic> json) => PreviewDialog(
-        chatId: json[_PreviewDialogJsonKeys.customData]
-            [_PreviewDialogJsonKeys.id],
-        title: json[_PreviewDialogJsonKeys.title],
-        avatarUrl: json[_PreviewDialogJsonKeys.avatar],
+  factory PreviewDialog.fromJson(JsonMap json) => PreviewDialog(
+        chatId: (json[_PreviewDialogJsonKeys.customData]!
+            as JsonMap)[_PreviewDialogJsonKeys.id]! as int,
+        title: json[_PreviewDialogJsonKeys.title]! as String,
+        avatarUrl: json[_PreviewDialogJsonKeys.avatar]! as String,
       );
 
-  Map<String, dynamic> toJson() => {
+  JsonMap toJson() => {
         _PreviewDialogJsonKeys.customData: {
           _PreviewDialogJsonKeys.id: chatId,
         },

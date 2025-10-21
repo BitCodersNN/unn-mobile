@@ -6,9 +6,9 @@ import 'package:unn_mobile/ui/widgets/shimmer.dart';
 
 class ShimmerLoading extends StatefulWidget {
   const ShimmerLoading({
-    super.key,
     required this.isLoading,
     required this.child,
+    super.key,
   });
 
   final bool isLoading;
@@ -61,21 +61,19 @@ class _ShimmerLoadingState extends State<ShimmerLoading> {
     final shimmerSize = shimmer.size;
     final gradient = shimmer.gradient;
     final offsetWithinShimmer = shimmer.getDescendantOffset(
-      descendant: context.findRenderObject() as RenderBox,
+      descendant: context.findRenderObject()! as RenderBox,
     );
 
     return ShaderMask(
       blendMode: BlendMode.srcATop,
-      shaderCallback: (bounds) {
-        return gradient.createShader(
-          Rect.fromLTWH(
-            -offsetWithinShimmer.dx,
-            -offsetWithinShimmer.dy,
-            shimmerSize.width,
-            shimmerSize.height,
-          ),
-        );
-      },
+      shaderCallback: (bounds) => gradient.createShader(
+        Rect.fromLTWH(
+          -offsetWithinShimmer.dx,
+          -offsetWithinShimmer.dy,
+          shimmerSize.width,
+          shimmerSize.height,
+        ),
+      ),
       child: widget.child,
     );
   }

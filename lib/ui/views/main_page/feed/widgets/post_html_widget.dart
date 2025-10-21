@@ -9,28 +9,24 @@ import 'package:unn_mobile/ui/widgets/dismissable_image.dart';
 
 class PostHtmlWidget extends StatelessWidget {
   const PostHtmlWidget({
-    super.key,
     required this.text,
+    super.key,
   });
 
   final String text;
 
   @override
-  Widget build(BuildContext context) {
-    return HtmlWidget(
-      text,
-      onTapUrl: htmlWidgetOnTapUrl,
-      onTapImage: (imageMetadata) async {
-        await showDialog(
-          context: context,
-          builder: (context) {
-            return ExtendedImageSlidePage(
+  Widget build(BuildContext context) => HtmlWidget(
+        text,
+        onTapUrl: htmlWidgetOnTapUrl,
+        onTapImage: (imageMetadata) async {
+          await showDialog(
+            context: context,
+            builder: (context) => ExtendedImageSlidePage(
               slideAxis: SlideAxis.vertical,
               child: DismissibleImage(image: imageMetadata.sources.first.url),
-            );
-          },
-        );
-      },
-    );
-  }
+            ),
+          );
+        },
+      );
 }

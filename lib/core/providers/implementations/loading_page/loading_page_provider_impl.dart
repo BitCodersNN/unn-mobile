@@ -55,12 +55,12 @@ class LoadingPageProviderImpl implements LoadingPageProvider {
   }
 
   @override
-  Future<bool> isContained() async => _storage.containsKey(
+  Future<bool> isContained() => _storage.containsKey(
         key: _LoadingPageProviderKeys.loadingPagesKey,
       );
 
   @override
-  Future<void> removeData() async => _storage.remove(
+  Future<void> removeData() => _storage.remove(
         key: _LoadingPageProviderKeys.loadingPagesKey,
       );
 }

@@ -2,13 +2,13 @@
 // Copyright 2025 BitCodersNN
 
 import 'package:dio/dio.dart';
+import 'package:unn_mobile/core/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/constants/api/ajax_action.dart';
 import 'package:unn_mobile/core/constants/api/path.dart';
 import 'package:unn_mobile/core/constants/regular_expressions.dart';
-import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/models/feed/blog_post_comment_data.dart';
-import 'package:unn_mobile/core/services/interfaces/feed/legacy/getting_blog_post_comments.dart';
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
+import 'package:unn_mobile/core/services/interfaces/feed/legacy/getting_blog_post_comments.dart';
 
 class _JsonKeys {
   static const _messageListKey = 'messageList';
@@ -151,10 +151,10 @@ class GettingBlogPostCommentsImpl implements GettingBlogPostComments {
       if (commentId != null && filesListAsString != null) {
         final commentIdAsInt = commentId.toInt();
         if (commentIdAsInt != null) {
-          commentIdToAttachFiles[commentIdAsInt] =
-              filesListAsString.split(',').map((idAsString) {
-            return idAsString.substring(1, idAsString.length - 1).toInt()!;
-          }).toList();
+          commentIdToAttachFiles[commentIdAsInt] = [
+            for (final idAsString in filesListAsString.split(','))
+              int.parse(idAsString.substring(1, idAsString.length - 1)),
+          ];
         }
       }
     });

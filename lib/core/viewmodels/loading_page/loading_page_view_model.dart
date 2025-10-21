@@ -9,20 +9,20 @@ import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:go_router/go_router.dart';
 import 'package:unn_mobile/core/misc/app_open_tracker.dart';
 import 'package:unn_mobile/core/misc/authorisation/authorisation_request_result.dart';
+import 'package:unn_mobile/core/misc/date_time_utilities/date_time_extensions.dart';
 import 'package:unn_mobile/core/misc/git/git_folder.dart';
 import 'package:unn_mobile/core/misc/git/update_last_commit_sha_and_config_if_changed.dart';
 import 'package:unn_mobile/core/misc/user/current_user_sync_storage.dart';
-import 'package:unn_mobile/core/misc/date_time_utilities/date_time_extensions.dart';
 import 'package:unn_mobile/core/models/loading_page/loading_page_data.dart';
 import 'package:unn_mobile/core/providers/interfaces/loading_page/last_commit_sha_loading_page_provider.dart';
-import 'package:unn_mobile/core/services/interfaces/authorisation/authorisation_refresh_service.dart';
-import 'package:unn_mobile/core/services/interfaces/profile/profile_of_current_user_service.dart';
-import 'package:unn_mobile/core/services/interfaces/common/last_commit_sha_service.dart';
-import 'package:unn_mobile/core/services/interfaces/loading_page/loading_page_config_service.dart';
 import 'package:unn_mobile/core/providers/interfaces/loading_page/loading_page_provider.dart';
-import 'package:unn_mobile/core/services/interfaces/loading_page/logo_downloader_service.dart';
-import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
 import 'package:unn_mobile/core/providers/interfaces/profile/user_data_provider.dart';
+import 'package:unn_mobile/core/services/interfaces/authorisation/authorisation_refresh_service.dart';
+import 'package:unn_mobile/core/services/interfaces/common/last_commit_sha_service.dart';
+import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
+import 'package:unn_mobile/core/services/interfaces/loading_page/loading_page_config_service.dart';
+import 'package:unn_mobile/core/services/interfaces/loading_page/logo_downloader_service.dart';
+import 'package:unn_mobile/core/services/interfaces/profile/profile_of_current_user_service.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
 import 'package:unn_mobile/ui/router.dart';
 
@@ -61,12 +61,15 @@ class LoadingPageViewModel extends BaseViewModel {
 
   File? get logoImage => _logoImage;
 
-  void decideRoute(context) {
-    _init().then((value) => _goToScreen(context, value));
+  void decideRoute(BuildContext context) {
+    _init().then((value) {
+      if (context.mounted) {
+        _goToScreen(context, value);
+      }
+    });
   }
 
   Future<void> initLoadingPages() async {
-    _loadingPageConfigService.getLoadingPages();
     final loadingPages = await _loadingPageProvider.getData();
 
     if (loadingPages == null) {
@@ -145,14 +148,16 @@ class LoadingPageViewModel extends BaseViewModel {
     if (await _appOpenTracker.isFirstTimeOpenOnVersion()) {
       final profile =
           await _gettingProfileOfCurrentUser.getProfileOfCurrentUser();
-      _userDataProvider.saveData(profile);
+      unawaited(_userDataProvider.saveData(profile));
     }
 
     await _typeOfCurrentUser.updateCurrentUserInfo();
     if (_typeOfCurrentUser.currentUserData != null &&
         _typeOfCurrentUser.currentUserData!.photoSrc != null) {
-      DefaultCacheManager().downloadFile(
-        _typeOfCurrentUser.currentUserData!.photoSrc!,
+      unawaited(
+        DefaultCacheManager().downloadFile(
+          _typeOfCurrentUser.currentUserData!.photoSrc!,
+        ),
       );
     }
   }
@@ -168,7 +173,7 @@ class LoadingPageViewModel extends BaseViewModel {
     await Future.wait([
       _loadingPageProvider.saveData(loadingPagesConfig),
       _logoDownloaderService.downloadFiles(
-        fileNames: loadingPagesConfig.map((model) => model.imagePath).toList(),
+        fileNames: [for (final model in loadingPagesConfig) model.imagePath],
       ),
     ]);
   }

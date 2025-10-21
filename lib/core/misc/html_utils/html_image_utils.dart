@@ -42,11 +42,17 @@ Map<String, dynamic> extractImagesAndCleanHtmlText(
     final width = widthStr == null ? null : int.tryParse(widthStr);
     final height = heightStr == null ? null : int.tryParse(heightStr);
 
-    if (width != null && width < minWidth) continue;
-    if (height != null && height < minHeight) continue;
+    if (width != null && width < minWidth) {
+      continue;
+    }
+    if (height != null && height < minHeight) {
+      continue;
+    }
 
     final imageSource = node.attributes['src']?.trim();
-    if (imageSource == null || imageSource.isEmpty) continue;
+    if (imageSource == null || imageSource.isEmpty) {
+      continue;
+    }
 
     trailingImages.add(node);
     imageUrls.add(imageSource);
@@ -68,7 +74,7 @@ String restoreHtmlText(
   String additionalAttributes = 'style="max-height:500px;" alt="Image"',
 }) {
   imageUrls ??= [];
-  final buffer = StringBuffer();
+  final buffer = StringBuffer(cleanedHtmlText);
 
   if (imageUrls.isNotEmpty) {
     buffer.write('\n');
@@ -78,14 +84,16 @@ String restoreHtmlText(
     buffer.write('<img src="$url" $additionalAttributes>\n');
   }
 
-  return '$cleanedHtmlText${buffer.toString()}';
+  return buffer.toString();
 }
 
 void _removeDiskAttachDivs(dom.Element element) {
   final children = List<dom.Element>.from(element.children);
 
   for (final child in children) {
-    if (child.parent != element) continue;
+    if (child.parent != element) {
+      continue;
+    }
 
     final id = child.attributes['id'] ?? '';
     if (id.startsWith('disk-attach-')) {
@@ -114,9 +122,11 @@ dom.Document? _parseHtmlSafely(String htmlText) {
   }
 }
 
-Map<String, dynamic> _buildResult(String cleanedText, List<String>? imageUrls) {
-  return {
-    ExtractImagesAndCleanHtmlTextMapKey.cleanedText: cleanedText,
-    ExtractImagesAndCleanHtmlTextMapKey.imageUrls: imageUrls,
-  };
-}
+Map<String, dynamic> _buildResult(
+  String cleanedText,
+  List<String>? imageUrls,
+) =>
+    {
+      ExtractImagesAndCleanHtmlTextMapKey.cleanedText: cleanedText,
+      ExtractImagesAndCleanHtmlTextMapKey.imageUrls: imageUrls,
+    };

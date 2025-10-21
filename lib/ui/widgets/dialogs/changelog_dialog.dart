@@ -11,35 +11,33 @@ class ChangelogDialog extends StatelessWidget {
   const ChangelogDialog({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return AlertDialog.adaptive(
-      title: const Text('Список изменений: '),
-      content: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Flexible(
-            child: SingleChildScrollView(
-              child: BBCodeText(
-                data: changelogString,
-                stylesheet: getBBStyleSheet(),
+  Widget build(BuildContext context) => AlertDialog.adaptive(
+        title: const Text('Список изменений: '),
+        content: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Flexible(
+              child: SingleChildScrollView(
+                child: BBCodeText(
+                  data: changelogString,
+                  stylesheet: getBBStyleSheet(),
+                ),
               ),
             ),
-          ),
-          const Divider(),
-          BBCodeText(
-            data:
-                'Также, подписывайтесь на наш [URL=https://t.me/unn_mobile]Telegram-канал[/URL]',
-            stylesheet: getBBStyleSheet(),
+            const Divider(),
+            BBCodeText(
+              data:
+                  'Также, подписывайтесь на наш [URL=https://t.me/unn_mobile]Telegram-канал[/URL]',
+              stylesheet: getBBStyleSheet(),
+            ),
+          ],
+        ),
+        actions: [
+          AdaptiveDialogAction(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('OK'),
           ),
         ],
-      ),
-      actions: [
-        AdaptiveDialogAction(
-          onPressed: () => Navigator.of(context).pop(),
-          child: const Text('OK'),
-        ),
-      ],
-    );
-  }
+      );
 }

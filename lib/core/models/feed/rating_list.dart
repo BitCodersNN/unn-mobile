@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2025 BitCodersNN
 
+import 'package:unn_mobile/core/misc/json/json_utils.dart';
 import 'package:unn_mobile/core/models/profile/user_short_info.dart';
 
 class _UserInfoJsonKeys {
@@ -78,8 +79,8 @@ class RatingList {
     int userId,
   ) {
     for (final reactionType in _ratingList.keys) {
-      final listReactionUserInfo = _ratingList[reactionType] ?? [];
-      listReactionUserInfo.removeWhere((element) => element.bitrixId == userId);
+      _ratingList[reactionType]
+          ?.removeWhere((element) => element.bitrixId == userId);
     }
   }
 
@@ -121,14 +122,17 @@ class RatingList {
         : null;
   }
 
-  factory RatingList.fromJson(Map<String, Object?> jsonMap) {
+  factory RatingList.fromJson(JsonMap jsonMap) {
     final Map<ReactionType, List<UserShortInfo>> ratingList = {};
-    final usersList = jsonMap[_UserInfoJsonKeys.users] as List;
+    final usersList = (jsonMap[_UserInfoJsonKeys.users]! as List)
+        .cast<Map<String, Object?>>();
+
     for (final userMap in usersList) {
       final userInfo = UserShortInfo.fromJson(userMap);
       final userReaction = ReactionType.values.firstWhere(
-        (reaction) =>
-            reaction.toString().endsWith(userMap[_UserInfoJsonKeys.reaction]),
+        (reaction) => reaction
+            .toString()
+            .endsWith(userMap[_UserInfoJsonKeys.reaction]! as String),
       );
 
       ratingList.putIfAbsent(userReaction, () => []);
@@ -137,8 +141,8 @@ class RatingList {
     return RatingList(ratingList);
   }
 
-  Map<String, Object?> toJson() {
-    final List<Map<String, Object?>> usersList = [];
+  JsonMap toJson() {
+    final List<JsonMap> usersList = [];
 
     ratingList.forEach((reaction, users) {
       for (final user in users) {
@@ -154,14 +158,14 @@ class RatingList {
     };
   }
 
-  factory RatingList.fromBitrixJson(Map<String, Object?> jsonMap) {
+  factory RatingList.fromBitrixJson(JsonMap jsonMap) {
     final Map<ReactionType, List<UserShortInfo>> ratingList = {};
 
     jsonMap.forEach((key, value) {
       if (value is List) {
         final List<UserShortInfo> userList = [];
         for (final userJson in value) {
-          if (userJson is Map<String, dynamic>) {
+          if (userJson is JsonMap) {
             userList.add(UserShortInfo.fromBitrixJson(userJson));
           }
         }

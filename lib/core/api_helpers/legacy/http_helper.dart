@@ -16,9 +16,9 @@ class HttpRequestSender {
   final Map<String, String> _cookies;
 
   HttpRequestSender({
+    required String path,
     bool useSSL = true,
     String host = Host.unn,
-    required String path,
     Map<String, dynamic> queryParams = const {},
     Map<String, String> headers = const {},
     Map<String, String> cookies = const {},
@@ -36,9 +36,8 @@ class HttpRequestSender {
   /// Возращает строку
   static Future<String> responseToStringBody(
     HttpClientResponse response,
-  ) async {
-    return await response.transform(utf8.decoder).join();
-  }
+  ) =>
+      response.transform(utf8.decoder).join();
 
   /// Отправляет post запрос на сервер unn-portal
   ///
@@ -67,7 +66,7 @@ class HttpRequestSender {
     );
 
     //fetch response
-    return await request.closeWithTimeout(timeoutSeconds);
+    return request.closeWithTimeout(timeoutSeconds);
   }
 
   /// Отправляет get запрос на сервер unn-portal
@@ -82,7 +81,7 @@ class HttpRequestSender {
     final request =
         await _prepareHttpClientRequest(_HttpMethod.get, timeoutSeconds);
 
-    return await request.close();
+    return request.close();
   }
 
   Future<HttpClientRequest> _prepareHttpClientRequest(
@@ -106,19 +105,16 @@ class HttpRequestSender {
     return request;
   }
 
-  Uri _createURI() {
-    return Uri.parse("${_useSSL ? "https" : "http"}://$_host/$_path")
-        .replace(queryParameters: _queryParams);
-  }
+  Uri _createURI() => Uri.parse("${_useSSL ? "https" : "http"}://$_host/$_path")
+      .replace(queryParameters: _queryParams);
 }
 
 extension on HttpClientRequest {
-  Future<HttpClientResponse> closeWithTimeout(int timeoutSeconds) async {
-    return await close().timeout(
-      Duration(seconds: timeoutSeconds),
-      onTimeout: () => throw TimeoutException('close request timed out'),
-    );
-  }
+  Future<HttpClientResponse> closeWithTimeout(int timeoutSeconds) =>
+      close().timeout(
+        Duration(seconds: timeoutSeconds),
+        onTimeout: () => throw TimeoutException('close request timed out'),
+      );
 }
 
 enum _HttpMethod {

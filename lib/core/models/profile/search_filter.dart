@@ -4,6 +4,8 @@
 import 'package:unn_mobile/core/misc/bounded_int.dart';
 import 'package:unn_mobile/core/misc/camel_case_converter.dart';
 
+typedef FilterMap = Map<String, dynamic>;
+
 const Map<EduLevel, String> _displayNames = {
   EduLevel.graduateStudent: 'Аспирант',
   EduLevel.basicLevel: 'Базовый уровень',
@@ -33,7 +35,7 @@ class _MatchMode {
 }
 
 class SearchFilter {
-  final Map<String, dynamic> filters;
+  final Map<String, FilterMap> filters;
 
   SearchFilter({
     String? globalFilter,
@@ -51,7 +53,7 @@ class SearchFilter {
           eduYear: eduYear?.value,
         );
 
-  static Map<String, dynamic> _buildFilters({
+  static Map<String, FilterMap> _buildFilters({
     String? globalFilter,
     String? fullname,
     String? eduLevel,
@@ -59,7 +61,7 @@ class SearchFilter {
     String? eduForm,
     int? eduYear,
   }) {
-    final filters = <String, dynamic>{
+    final filters = <String, FilterMap>{
       _FilterNames.global: {
         _MatchMode.key: _MatchMode.contains,
         'value': globalFilter,
@@ -83,7 +85,7 @@ class SearchFilter {
     return filters;
   }
 
-  String? get globalFilter => filters[_FilterNames.global]['value'];
+  String? get globalFilter => filters[_FilterNames.global]?['value'];
 }
 
 class EmployeeSearchFilter extends SearchFilter {

@@ -4,6 +4,7 @@
 import 'package:flutter/material.dart';
 import 'package:unn_mobile/core/constants/date_pattern.dart';
 import 'package:unn_mobile/core/misc/date_time_utilities/date_time_extensions.dart';
+import 'package:unn_mobile/core/misc/json/json_utils.dart';
 
 class _WebinarJsonKeys {
   static const id = 'id';
@@ -42,23 +43,23 @@ final class Webinar {
     required this.urlRecord,
   });
 
-  factory Webinar.fromJson(Map<String, Object?> jsonMap) => Webinar(
-        id: int.tryParse(jsonMap[_WebinarJsonKeys.id] as String),
-        discipline: jsonMap[_WebinarJsonKeys.discipline] as String,
-        title: jsonMap[_WebinarJsonKeys.title] as String,
-        comment: jsonMap[_WebinarJsonKeys.comment] as String,
+  factory Webinar.fromJson(JsonMap jsonMap) => Webinar(
+        id: int.tryParse(jsonMap[_WebinarJsonKeys.id]! as String),
+        discipline: jsonMap[_WebinarJsonKeys.discipline]! as String,
+        title: jsonMap[_WebinarJsonKeys.title]! as String,
+        comment: jsonMap[_WebinarJsonKeys.comment]! as String,
         dateTimeRange: _parseDateTimeRange(jsonMap),
-        groups: (jsonMap[_WebinarJsonKeys.groups] as String)
+        groups: (jsonMap[_WebinarJsonKeys.groups]! as String)
             .split('|')
             .where((element) => element.isNotEmpty)
             .toSet()
             .toList(),
-        employeeLogin: jsonMap[_WebinarJsonKeys.login] as String,
-        urlStream: jsonMap[_WebinarJsonKeys.urlStream] as String,
-        urlRecord: jsonMap[_WebinarJsonKeys.urlRecord] as String,
+        employeeLogin: jsonMap[_WebinarJsonKeys.login]! as String,
+        urlStream: jsonMap[_WebinarJsonKeys.urlStream]! as String,
+        urlRecord: jsonMap[_WebinarJsonKeys.urlRecord]! as String,
       );
 
-  Map<String, Object?> toJson() => {
+  JsonMap toJson() => {
         _WebinarJsonKeys.id: id?.toString(),
         _WebinarJsonKeys.discipline: discipline,
         _WebinarJsonKeys.title: title,
@@ -78,10 +79,10 @@ final class Webinar {
         _WebinarJsonKeys.urlRecord: urlRecord,
       };
 
-  static DateTimeRange _parseDateTimeRange(Map<String, Object?> jsonMap) {
-    final dateString = jsonMap[_WebinarJsonKeys.date] as String;
-    final timeString = jsonMap[_WebinarJsonKeys.time] as String;
-    final finishTimeString = jsonMap[_WebinarJsonKeys.finishTime] as String;
+  static DateTimeRange _parseDateTimeRange(JsonMap jsonMap) {
+    final dateString = jsonMap[_WebinarJsonKeys.date]! as String;
+    final timeString = jsonMap[_WebinarJsonKeys.time]! as String;
+    final finishTimeString = jsonMap[_WebinarJsonKeys.finishTime]! as String;
 
     final startDateTime = DateTime.parse('$dateString $timeString');
     final endDateTime = DateTime.parse('$dateString $finishTimeString');

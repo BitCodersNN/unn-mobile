@@ -20,14 +20,12 @@ class PinnedPostsPage extends StatelessWidget {
         .getViewModelByType<FeedScreenViewModel>();
 
     return BaseView<FeedScreenViewModel>(
-      builder: (context, vm, _) {
-        return PostsListPage(
-          title: 'Закреплённые посты',
-          viewModel: vm,
-          postsList: vm.pinnedPosts,
-          noPostsText: 'Нет закреплённых постов',
-        );
-      },
+      builder: (context, vm, _) => PostsListPage(
+        title: 'Закреплённые посты',
+        viewModel: vm,
+        postsList: vm.pinnedPosts,
+        noPostsText: 'Нет закреплённых постов',
+      ),
       model: viewModel,
     );
   }

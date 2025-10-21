@@ -8,9 +8,9 @@ import 'package:unn_mobile/core/misc/camel_case_converter.dart';
 import 'package:unn_mobile/core/models/profile/employee/employee_data.dart';
 import 'package:unn_mobile/core/models/profile/student/student_data.dart';
 import 'package:unn_mobile/core/models/profile/user_data.dart';
+import 'package:unn_mobile/core/providers/interfaces/profile/user_data_provider.dart';
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
 import 'package:unn_mobile/core/services/interfaces/common/storage_service.dart';
-import 'package:unn_mobile/core/providers/interfaces/profile/user_data_provider.dart';
 
 class _UserDataProvideKeys {
   static const _userTypeKey = 'user_type_key';

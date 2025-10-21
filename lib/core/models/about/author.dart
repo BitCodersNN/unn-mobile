@@ -4,6 +4,7 @@
 import 'package:unn_mobile/core/constants/api/host.dart';
 import 'package:unn_mobile/core/constants/api/path.dart';
 import 'package:unn_mobile/core/constants/api/protocol_type.dart';
+import 'package:unn_mobile/core/misc/json/json_utils.dart';
 
 class _AuthorJsonKeys {
   static const String fullname = 'fullname';
@@ -21,17 +22,17 @@ class Author {
 
   Author({
     required this.fullname,
-    this.educationGroup,
     required this.avatar,
+    this.educationGroup,
   });
 
-  factory Author.fromJson(Map<String, dynamic> json) => Author(
-        fullname: json[_AuthorJsonKeys.fullname],
-        educationGroup: json[_AuthorJsonKeys.educationGroup],
-        avatar: json[_AuthorJsonKeys.avatar],
+  factory Author.fromJson(JsonMap json) => Author(
+        fullname: json[_AuthorJsonKeys.fullname]! as String,
+        educationGroup: json[_AuthorJsonKeys.educationGroup] as String?,
+        avatar: json[_AuthorJsonKeys.avatar]! as String,
       );
 
-  Map<String, dynamic> toJson() => {
+  JsonMap toJson() => {
         _AuthorJsonKeys.fullname: fullname,
         _AuthorJsonKeys.educationGroup: educationGroup,
         _AuthorJsonKeys.avatar: avatar,

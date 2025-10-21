@@ -9,9 +9,9 @@ class ScheduleSearchSuggestionItemView extends StatelessWidget {
 
   final void Function() onSelected;
   const ScheduleSearchSuggestionItemView({
-    super.key,
     required this.model,
     required this.onSelected,
+    super.key,
   });
 
   @override

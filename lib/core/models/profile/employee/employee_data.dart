@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2025 BitCodersNN
 
+import 'package:unn_mobile/core/misc/json/json_utils.dart';
 import 'package:unn_mobile/core/models/profile/employee/employee_profile.dart';
 import 'package:unn_mobile/core/models/profile/user_data.dart';
 
@@ -45,32 +46,33 @@ class EmployeeData extends UserData {
         );
 
   @override
-  Map<String, dynamic> toJson() => {
+  JsonMap toJson() => {
         ...super.toJson(),
         _EmployeeDataJsonKeys.syncId: syncId,
-        _EmployeeDataJsonKeys.profiles:
-            profiles.map((profile) => profile.toJson()).toList(),
+        _EmployeeDataJsonKeys.profiles: [
+          for (final profile in profiles) profile.toJson(),
+        ],
       };
 
-  factory EmployeeData.fromJson(Map<String, Object?> json) =>
-      EmployeeData.withUserData(
+  factory EmployeeData.fromJson(JsonMap json) => EmployeeData.withUserData(
         userData: UserData.fromJson(
-          (json[_EmployeeDataJsonKeys.profiles] as List)[0]
+          // Если сделать каст, ужасно ломается форматирование
+          // ignore: avoid_dynamic_calls
+          (json[_EmployeeDataJsonKeys.profiles]! as List)[0]
                   [_EmployeeDataJsonKeys.user] ??
               json,
         ),
-        syncId: json[_EmployeeDataJsonKeys.syncId] as String,
-        profiles: (json[_EmployeeDataJsonKeys.profiles] as List)
-            .map(
-              (item) => EmployeeProfile.fromJson(item as Map<String, dynamic>),
-            )
-            .toList(),
+        syncId: json[_EmployeeDataJsonKeys.syncId]! as String,
+        profiles: [
+          for (final item in json[_EmployeeDataJsonKeys.profiles]! as List)
+            EmployeeProfile.fromJson(item as JsonMap),
+        ],
       );
 
-  factory EmployeeData.fromCurrentProfileJson(Map<String, Object?> json) =>
+  factory EmployeeData.fromCurrentProfileJson(JsonMap json) =>
       EmployeeData.withUserData(
         userData: UserData.fromJson(json),
-        syncId: json[_EmployeeDataJsonKeys.syncId] as String,
+        syncId: json[_EmployeeDataJsonKeys.syncId]! as String,
         profiles: [EmployeeProfile.fromJson(json)],
       );
 }

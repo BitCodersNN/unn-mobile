@@ -5,28 +5,21 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 extension DateTimeExtensions on DateTime {
-  bool isSameDate(DateTime other) {
-    return day == other.day && month == other.month && year == other.year;
-  }
+  bool isSameDate(DateTime other) =>
+      day == other.day && month == other.month && year == other.year;
 
-  bool isBeforeOrEqualIgnoringYear(DateTime other) {
-    return other.month > month || (other.month == month && other.day >= day);
-  }
+  bool isBeforeOrEqualIgnoringYear(DateTime other) =>
+      other.month > month || (other.month == month && other.day >= day);
 
-  bool isAfterOrEqualIgnoringYear(DateTime other) {
-    return month > other.month || (month == other.month && day >= other.day);
-  }
+  bool isAfterOrEqualIgnoringYear(DateTime other) =>
+      month > other.month || (month == other.month && day >= other.day);
 
-  bool isDateInRangeIgnoringYear(DateTimeRange range) {
-    return isAfterOrEqualIgnoringYear(range.start) &&
-        isBeforeOrEqualIgnoringYear(range.end);
-  }
+  bool isDateInRangeIgnoringYear(DateTimeRange range) =>
+      isAfterOrEqualIgnoringYear(range.start) &&
+      isBeforeOrEqualIgnoringYear(range.end);
 
-  String format(String pattern) {
-    return DateFormat(pattern, 'ru-RU').format(this);
-  }
+  String format(String pattern) => DateFormat(pattern, 'ru-RU').format(this);
 
-  bool isBetween(DateTime start, DateTime end) {
-    return isAfter(start) && isBefore(end);
-  }
+  bool isBetween(DateTime start, DateTime end) =>
+      isAfter(start) && isBefore(end);
 }

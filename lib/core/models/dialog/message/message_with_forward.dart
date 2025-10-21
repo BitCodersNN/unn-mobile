@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2025 BitCodersNN
 
+import 'package:unn_mobile/core/misc/json/json_utils.dart';
 import 'package:unn_mobile/core/models/dialog/message/forward_info.dart';
 import 'package:unn_mobile/core/models/dialog/message/message.dart';
 
@@ -19,14 +20,13 @@ class MessageWithForward extends Message {
           notify: message.notify,
         );
 
-  factory MessageWithForward.fromJson(Map<String, dynamic> jsonMap) =>
-      MessageWithForward(
+  factory MessageWithForward.fromJson(JsonMap jsonMap) => MessageWithForward(
         message: Message.fromJson(jsonMap),
         forwardInfo: ForwardInfo.fromJson(jsonMap),
       );
 
   @override
-  Map<String, dynamic> toJson() => {
+  JsonMap toJson() => {
         ...super.toJson(),
         ...forwardInfo.toJson(),
       };

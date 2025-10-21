@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2025 BitCodersNN
 
+import 'package:unn_mobile/core/misc/json/json_utils.dart';
 import 'package:unn_mobile/core/models/dialog/chat_settings/irregular_chat_setting.dart';
 import 'package:unn_mobile/core/models/dialog/group_dialog.dart';
 
@@ -19,7 +20,7 @@ final class CalendarChatSetting extends IrregularChatSetting {
     required super.restrictions,
   });
 
-  factory CalendarChatSetting.fromJson(Map<String, dynamic> json) {
+  factory CalendarChatSetting.fromJson(JsonMap json) {
     final chatSetting = IrregularChatSetting.fromJson(json);
     return CalendarChatSetting(
       entityId: chatSetting.entityId,
@@ -35,7 +36,7 @@ final class CalendarChatSetting extends IrregularChatSetting {
   }
 
   @override
-  Map<String, dynamic> toJson() => {
+  JsonMap toJson() => {
         ...super.toJson(),
         GroupDialogJsonKeys.type: GroupDialogJsonKeys.calendar,
       };

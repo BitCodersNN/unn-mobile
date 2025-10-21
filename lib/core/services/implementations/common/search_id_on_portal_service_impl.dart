@@ -2,17 +2,18 @@
 // Copyright 2025 BitCodersNN
 
 import 'package:dio/dio.dart';
+import 'package:unn_mobile/core/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/constants/api/path.dart';
-import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/misc/dio_options_factory/options_with_expected_type_factory.dart';
 import 'package:unn_mobile/core/misc/json/json_iterable_parser.dart';
+import 'package:unn_mobile/core/misc/json/json_utils.dart';
 import 'package:unn_mobile/core/models/profile/employee/employee_data.dart';
-import 'package:unn_mobile/core/models/schedule/schedule_search_suggestion_item.dart';
-import 'package:unn_mobile/core/models/schedule/schedule_filter.dart';
 import 'package:unn_mobile/core/models/profile/student/student_data.dart';
-import 'package:unn_mobile/core/services/interfaces/profile/profile_of_current_user_service.dart';
+import 'package:unn_mobile/core/models/schedule/schedule_filter.dart';
+import 'package:unn_mobile/core/models/schedule/schedule_search_suggestion_item.dart';
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
 import 'package:unn_mobile/core/services/interfaces/common/search_id_on_portal_service.dart';
+import 'package:unn_mobile/core/services/interfaces/profile/profile_of_current_user_service.dart';
 
 class _QueryParameterKeys {
   static const String uns = 'uns';
@@ -36,6 +37,7 @@ class SearchIdOnPortalServiceImpl implements SearchIdOnPortalService {
   );
 
   @Deprecated('unn portal больше не поддерживает "ruzapi/studentinfo/"')
+  //
   // ignore: unused_element
   Future<String?> _getIdOfLoggedInStudent(String uns) async {
     Response response;
@@ -49,7 +51,7 @@ class SearchIdOnPortalServiceImpl implements SearchIdOnPortalService {
       _loggerService.logError(error, stackTrace);
       return null;
     }
-    return response.data[_JsonKeys.id];
+    return (response.data as JsonMap)[_JsonKeys.id] as String?;
   }
 
   @override

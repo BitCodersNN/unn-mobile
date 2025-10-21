@@ -17,8 +17,8 @@ import 'package:unn_mobile/ui/widgets/shimmer_loading.dart';
 class AttachedFile extends StatefulWidget {
   final AttachedFileViewModel viewModel;
   const AttachedFile({
-    super.key,
     required this.viewModel,
+    super.key,
   });
 
   @override
@@ -40,7 +40,7 @@ class _AttachedFileState extends State<AttachedFile> {
           child: SizedBox(
             width: double.infinity,
             child: Padding(
-              padding: const EdgeInsets.only(left: 0),
+              padding: EdgeInsets.zero,
               child: GestureDetector(
                 onTap: () async {
                   await _downloadAndOpenFile(model, false, context);
@@ -53,7 +53,7 @@ class _AttachedFileState extends State<AttachedFile> {
                         .logEvent(name: 'feed_attached_file_long_press'),
                   ]);
                 },
-                child: Container(
+                child: ColoredBox(
                   color: Colors.transparent,
                   child: Shimmer(
                     child: Row(
@@ -161,30 +161,26 @@ class _AttachedFileState extends State<AttachedFile> {
         if (context.mounted) {
           await showDialog(
             context: context,
-            builder: (context) {
-              return ExtendedImageSlidePage(
-                slideAxis: SlideAxis.vertical,
-                child: ExtendedImage(
-                  enableLoadState: true,
-                  mode: ExtendedImageMode.gesture,
-                  initGestureConfigHandler: (state) {
-                    return GestureConfig(
-                      minScale: 0.9,
-                      animationMinScale: 0.7,
-                      maxScale: 3.0,
-                      animationMaxScale: 3.5,
-                      speed: 1.0,
-                      inertialSpeed: 100.0,
-                      initialScale: 1.0,
-                      inPageView: false,
-                      initialAlignment: InitialAlignment.center,
-                    );
-                  },
-                  image: FileImage(file),
-                  enableSlideOutPage: true,
+            builder: (context) => ExtendedImageSlidePage(
+              slideAxis: SlideAxis.vertical,
+              child: ExtendedImage(
+                enableLoadState: true,
+                mode: ExtendedImageMode.gesture,
+                initGestureConfigHandler: (state) => GestureConfig(
+                  minScale: 0.9,
+                  animationMinScale: 0.7,
+                  maxScale: 3.0,
+                  animationMaxScale: 3.5,
+                  speed: 1.0,
+                  inertialSpeed: 100.0,
+                  initialScale: 1.0,
+                  inPageView: false,
+                  initialAlignment: InitialAlignment.center,
                 ),
-              );
-            },
+                image: FileImage(file),
+                enableSlideOutPage: true,
+              ),
+            ),
           );
         }
         break;

@@ -17,118 +17,110 @@ class AboutScreenView extends StatelessWidget {
   const AboutScreenView({super.key, this.bottomRouteIndex});
 
   @override
-  Widget build(BuildContext context) {
-    return BaseView<AboutViewModel>(
-      onModelReady: (model) => model.init(),
-      builder: (context, model, child) {
-        return Scaffold(
+  Widget build(BuildContext context) => BaseView<AboutViewModel>(
+        onModelReady: (model) => model.init(),
+        builder: (context, model, child) => Scaffold(
           appBar: AppBar(
             leading: getSubpageLeading(bottomRouteIndex),
             title: const Text('О нас'),
           ),
           body: LayoutBuilder(
-            builder: (context, constraints) {
-              return SingleChildScrollView(
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(minHeight: constraints.maxHeight),
-                  child: IntrinsicHeight(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        if (!model.initialized)
-                          const Expanded(
-                            child: Center(child: CircularProgressIndicator()),
-                          )
-                        else
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                if (model.authors.isNotEmpty)
-                                  Padding(
-                                    padding: const EdgeInsets.only(top: 15),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Center(
-                                          child: Text(
-                                            'Команда разработчиков',
-                                            textAlign: TextAlign.center,
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .headlineSmall
-                                                ?.copyWith(color: Colors.black),
-                                          ),
-                                        ),
-                                        ...model.authors.map(
-                                          (author) =>
-                                              _AuthorProfileWidget(author),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                if (model.pastAuthors.isNotEmpty) ...[
-                                  const Divider(),
-                                  ExpansionTile(
-                                    shape: const Border(),
-                                    title: Text(
-                                      'Прошлые участники',
-                                      textAlign: TextAlign.left,
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .headlineSmall
-                                          ?.copyWith(color: Colors.black),
-                                    ),
-                                    dense: true,
+            builder: (context, constraints) => SingleChildScrollView(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                child: IntrinsicHeight(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      if (!model.initialized)
+                        const Expanded(
+                          child: Center(child: CircularProgressIndicator()),
+                        )
+                      else
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              if (model.authors.isNotEmpty)
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 15),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
-                                      ...model.pastAuthors.map(
-                                        (author) =>
-                                            _AuthorProfileWidget(author),
+                                      Center(
+                                        child: Text(
+                                          'Команда разработчиков',
+                                          textAlign: TextAlign.center,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .headlineSmall
+                                              ?.copyWith(color: Colors.black),
+                                        ),
+                                      ),
+                                      ...model.authors.map(
+                                        _AuthorProfileWidget.new,
                                       ),
                                     ],
                                   ),
-                                  const Divider(),
-                                  Expanded(child: Container()),
-                                ],
-                                const Spacer(),
+                                ),
+                              if (model.pastAuthors.isNotEmpty) ...[
+                                const Divider(),
+                                ExpansionTile(
+                                  shape: const Border(),
+                                  title: Text(
+                                    'Прошлые участники',
+                                    textAlign: TextAlign.left,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .headlineSmall
+                                        ?.copyWith(color: Colors.black),
+                                  ),
+                                  dense: true,
+                                  children: [
+                                    ...model.pastAuthors.map(
+                                      _AuthorProfileWidget.new,
+                                    ),
+                                  ],
+                                ),
+                                const Divider(),
+                                Expanded(child: Container()),
                               ],
-                            ),
+                              const Spacer(),
+                            ],
                           ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: HtmlWidget(
-                            '''
+                        ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: HtmlWidget(
+                          '''
                       <center><p>Приложение распространяется под лицензией <a href="https://github.com/BitCodersNN/unn-mobile?tab=Apache-2.0-1-ov-file">Apache 2.0</a></p>
                       <p>Код приложения доступен <a href="https://github.com/BitCodersNN/unn-mobile">на нашем GitHub</a></p>
                       <p>По всем вопросам можно обращаться: <a href="https://t.me/unn_mobile">t.me/unn_mobile</a></p></center>
                       ''',
-                            textStyle: const TextStyle(
-                              color: Color(0xFF717A84),
-                              fontFamily: 'Inter',
-                              fontSize: 13,
-                            ),
-                            onTapUrl: (url) async {
-                              if (!await launchUrl(Uri.parse(url))) {
-                                Injector.appInstance
-                                    .get<LoggerService>()
-                                    .log('Could not launch url $url');
-                              }
-                              return true;
-                            },
+                          textStyle: const TextStyle(
+                            color: Color(0xFF717A84),
+                            fontFamily: 'Inter',
+                            fontSize: 13,
                           ),
+                          onTapUrl: (url) async {
+                            if (!await launchUrl(Uri.parse(url))) {
+                              Injector.appInstance
+                                  .get<LoggerService>()
+                                  .log('Could not launch url $url');
+                            }
+                            return true;
+                          },
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
-              );
-            },
+              ),
+            ),
           ),
-        );
-      },
-    );
-  }
+        ),
+      );
 }
 
 class _AuthorProfileWidget extends StatelessWidget {
@@ -137,75 +129,73 @@ class _AuthorProfileWidget extends StatelessWidget {
   const _AuthorProfileWidget(this.profile);
 
   @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-      child: Container(
-        height: 90,
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.all(Radius.circular(15)),
-          boxShadow: [
-            BoxShadow(
-              offset: Offset(0, 0),
-              blurRadius: 16,
-              color: Color(0x20527DAF),
-            ),
-          ],
-        ),
-        child: Row(
-          children: [
-            const SizedBox(width: 10),
-            ClipOval(
-              child: SizedBox(
-                width: 55,
-                height: 55,
-                child: CachedNetworkImage(
-                  imageUrl: profile.avatarUrl,
-                  fit: BoxFit.cover,
-                  placeholder: (context, url) => const Center(
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  ),
-                  errorWidget: (context, url, error) => const CircleAvatar(
-                    radius: 27.5,
-                    backgroundColor: Colors.grey,
-                    child: Icon(Icons.person, size: 30, color: Colors.white),
+  Widget build(BuildContext context) => Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        child: Container(
+          height: 90,
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.all(Radius.circular(15)),
+            boxShadow: [
+              BoxShadow(
+                offset: Offset.zero,
+                blurRadius: 16,
+                color: Color(0x20527DAF),
+              ),
+            ],
+          ),
+          child: Row(
+            children: [
+              const SizedBox(width: 10),
+              ClipOval(
+                child: SizedBox(
+                  width: 55,
+                  height: 55,
+                  child: CachedNetworkImage(
+                    imageUrl: profile.avatarUrl,
+                    fit: BoxFit.cover,
+                    placeholder: (context, url) => const Center(
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    ),
+                    errorWidget: (context, url, error) => const CircleAvatar(
+                      radius: 27.5,
+                      backgroundColor: Colors.grey,
+                      child: Icon(Icons.person, size: 30, color: Colors.white),
+                    ),
                   ),
                 ),
               ),
-            ),
-            const SizedBox(width: 15),
-            Flexible(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    profile.fullname,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      fontSize: 15,
-                      fontFamily: 'Inter',
-                      fontWeight: FontWeight.w600,
-                      color: Color(0xFF282828),
-                    ),
-                  ),
-                  if (profile.educationGroup != null)
+              const SizedBox(width: 15),
+              Flexible(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
                     Text(
-                      profile.educationGroup!,
+                      profile.fullname,
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
-                        fontSize: 13,
+                        fontSize: 15,
                         fontFamily: 'Inter',
-                        color: Color(0xFF717A84),
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xFF282828),
                       ),
                     ),
-                ],
+                    if (profile.educationGroup != null)
+                      Text(
+                        profile.educationGroup!,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontSize: 13,
+                          fontFamily: 'Inter',
+                          color: Color(0xFF717A84),
+                        ),
+                      ),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
-      ),
-    );
-  }
+      );
 }
