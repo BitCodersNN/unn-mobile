@@ -3,6 +3,8 @@ run-name: Change app version in PR ${{ github.event.number }}
 on: 
   pull_request:
     branches: [ "develop" ]
+    branches-ignore:
+      - dependabot/*
   workflow_dispatch:
     
 permissions:
