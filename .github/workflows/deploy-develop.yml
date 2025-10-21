@@ -12,6 +12,7 @@ on:
       - "android/**"
       - "lib/**"
       - "pubspec.yaml"
+  workflow_dispatch:
       
 
 concurrency:
@@ -21,11 +22,11 @@ concurrency:
 jobs:
   build-deploy:
     runs-on: ubuntu-latest
+    environment: development
     steps:
       - uses: actions/checkout@v4
         with:
           submodules: recursive
-          ref: develop
       - uses: flutter-actions/setup-flutter@v3.6
         with:
           version: '3.29.2'
