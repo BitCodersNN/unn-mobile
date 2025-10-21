@@ -9,6 +9,8 @@ run-name: Analyze formatting in PR ${{ github.event.number }}
 on:
   pull_request:
     branches: [ "develop" ]
+  workflow_dispatch:
+    
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
