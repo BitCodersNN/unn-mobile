@@ -26,7 +26,6 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: recursive
-          ref: develop
       - uses: flutter-actions/setup-flutter@v3.6
         with:
           version: '3.29.2'
