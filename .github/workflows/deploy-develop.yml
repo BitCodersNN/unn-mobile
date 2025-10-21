@@ -85,8 +85,6 @@ jobs:
         uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0
         with:
           name: unn-mobile.apk
-      - name: debug print files
-        run: ls -lA
       - name: install firebase
         run: curl -sL https://firebase.tools | bash
       - name: deploy
