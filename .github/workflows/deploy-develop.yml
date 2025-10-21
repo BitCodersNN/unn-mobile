@@ -20,9 +20,9 @@ concurrency:
   cancel-in-progress: true
   
 jobs:
-  build-deploy:
+  build:
     runs-on: ubuntu-latest
-    environment: development
+    environment: develop-android
     steps:
       - uses: actions/checkout@v4
         with:
@@ -42,7 +42,6 @@ jobs:
         with:
           ndk-version: r27
           link-to-sdk: true
-          
       - name: load certificate
         uses: mobiledevops/secret-to-file-action@v1
         with:
@@ -67,6 +66,10 @@ jobs:
           flutterfire configure -t $firebase_token -y -p unn-mobile-1 --platforms=android --android-package-name=ru.unn.unn_mobile
       - name: build
         run: flutter build apk
+  deploy:
+    runs-on: ubuntu-latest
+    environment: develop-android
+    steps:
       - name: deploy
         env:
           firebase_token: ${{ secrets.FIREBASE_TOKEN }}
