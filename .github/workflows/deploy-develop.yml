@@ -71,6 +71,8 @@ jobs:
     environment: develop-android
     needs: build
     steps:
+      - name: install firebase
+        run: curl -sL https://firebase.tools | bash
       - name: deploy
         env:
           firebase_token: ${{ secrets.FIREBASE_TOKEN }}
