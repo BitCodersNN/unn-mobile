@@ -3,6 +3,8 @@ run-name: Change app version in PR ${{ github.event.number }}
 on: 
   pull_request:
     branches: [ "develop" ]
+  workflow_dispatch:
+    
 permissions:
   contents: write
 jobs:
