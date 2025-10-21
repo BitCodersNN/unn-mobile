@@ -69,6 +69,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     environment: develop-android
+    needs: build
     steps:
       - name: deploy
         env:
