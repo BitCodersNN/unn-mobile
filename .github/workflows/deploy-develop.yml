@@ -81,6 +81,7 @@ jobs:
     environment: develop-android
     needs: build
     steps:
+      - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955
       - name: retrieve the binary
         uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0
         with:
