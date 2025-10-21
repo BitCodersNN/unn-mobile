@@ -26,11 +26,8 @@ class ReactionViewModel extends ReactionViewModelBase {
     super._currentUserSyncStorage,
   );
 
-  factory ReactionViewModel.cached(ReactionCacheKey key) {
-    return Injector.appInstance
-        .get<ReactionViewModelFactory>()
-        .getViewModel(key);
-  }
+  factory ReactionViewModel.cached(ReactionCacheKey key) =>
+      Injector.appInstance.get<ReactionViewModelFactory>().getViewModel(key);
 
   bool get isLoading => _isLoading;
 

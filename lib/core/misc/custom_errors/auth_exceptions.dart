@@ -8,9 +8,7 @@ class SessionCookieException implements Exception {
   SessionCookieException({required this.message, this.privateInformation});
 
   @override
-  String toString() {
-    return 'SessionCookieException: message: $message';
-  }
+  String toString() => 'SessionCookieException: message: $message';
 }
 
 class CsrfValueException implements Exception {
@@ -21,7 +19,5 @@ class CsrfValueException implements Exception {
   CsrfValueException({required this.message, this.privateInformation});
 
   @override
-  String toString() {
-    return 'SessionCookieException: message: $message';
-  }
+  String toString() => 'SessionCookieException: message: $message';
 }

@@ -9,11 +9,11 @@ import 'package:unn_mobile/ui/views/main_page/feed/widgets/feed_post.dart';
 
 class PostsListPage extends StatelessWidget {
   const PostsListPage({
-    super.key,
     required this.title,
     required this.viewModel,
     required this.postsList,
     required this.noPostsText,
+    super.key,
   });
 
   final String title;
@@ -22,67 +22,61 @@ class PostsListPage extends StatelessWidget {
   final String noPostsText;
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(title),
-      ),
-      body: OnlineStatusBuilder(
-        builder: (context, online) {
-          return LayoutBuilder(
-            builder: (context, constraints) {
-              return RefreshIndicator(
-                onRefresh: () async {
-                  if (online) {
-                    await viewModel?.refreshFeatured();
+  Widget build(BuildContext context) => Scaffold(
+        appBar: AppBar(
+          title: Text(title),
+        ),
+        body: OnlineStatusBuilder(
+          builder: (context, online) => LayoutBuilder(
+            builder: (context, constraints) => RefreshIndicator(
+              onRefresh: () async {
+                if (online) {
+                  await viewModel?.refreshFeatured();
+                }
+              },
+              child: Builder(
+                builder: (context) {
+                  if (viewModel == null) {
+                    return const Text('Что-то пошло не так');
                   }
-                },
-                child: Builder(
-                  builder: (context) {
-                    if (viewModel == null) {
-                      return const Text('Что-то пошло не так');
-                    }
-                    if (postsList.isEmpty) {
-                      final child = Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Center(
-                          child: Text(
-                            noPostsText,
-                            style: Theme.of(context).textTheme.bodyLarge,
-                          ),
+                  if (postsList.isEmpty) {
+                    final child = Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Center(
+                        child: Text(
+                          noPostsText,
+                          style: Theme.of(context).textTheme.bodyLarge,
                         ),
-                      );
-                      return SingleChildScrollView(
-                        physics: const AlwaysScrollableScrollPhysics(),
-                        child: ConstrainedBox(
-                          constraints: BoxConstraints(
-                            minWidth: constraints.maxWidth,
-                            minHeight: constraints.maxHeight,
-                          ),
-                          child: child,
-                        ),
-                      );
-                    }
-                    return SingleChildScrollView(
-                      physics: const AlwaysScrollableScrollPhysics(),
-                      child: Column(
-                        children: [
-                          for (final post in postsList)
-                            FeedPost(
-                              key: ValueKey(post),
-                              post: post,
-                              showingComments: false,
-                            ),
-                        ],
                       ),
                     );
-                  },
-                ),
-              );
-            },
-          );
-        },
-      ),
-    );
-  }
+                    return SingleChildScrollView(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints(
+                          minWidth: constraints.maxWidth,
+                          minHeight: constraints.maxHeight,
+                        ),
+                        child: child,
+                      ),
+                    );
+                  }
+                  return SingleChildScrollView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    child: Column(
+                      children: [
+                        for (final post in postsList)
+                          FeedPost(
+                            key: ValueKey(post),
+                            post: post,
+                            showingComments: false,
+                          ),
+                      ],
+                    ),
+                  );
+                },
+              ),
+            ),
+          ),
+        ),
+      );
 }

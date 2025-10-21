@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2025 BitCodersNN
 
-import 'package:unn_mobile/core/models/schedule/schedule_search_suggestion_item.dart';
 import 'package:unn_mobile/core/models/schedule/schedule_filter.dart';
+import 'package:unn_mobile/core/models/schedule/schedule_search_suggestion_item.dart';
 
 abstract interface class SearchIdOnPortalService {
   /// Получение ID текущего пользователя, которое используется на unn-portal

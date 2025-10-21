@@ -3,25 +3,27 @@
 
 import 'package:flutter/material.dart';
 
-class AddaptiveSwtich extends StatefulWidget {
+class AdaptiveSwtich extends StatefulWidget {
   final bool enabled;
+  // для хендлеров нужны позиционные аргументы
+  // ignore: avoid_positional_boolean_parameters
   final Function(bool) onChanged;
   final Size size;
   final bool startPosition;
 
-  const AddaptiveSwtich({
-    super.key,
+  const AdaptiveSwtich({
     required this.startPosition,
     required this.enabled,
     required this.onChanged,
+    super.key,
     this.size = const Size(40, 30),
   });
 
   @override
-  State<AddaptiveSwtich> createState() => _AddaptiveSwtichState();
+  State<AdaptiveSwtich> createState() => _AdaptiveSwtichState();
 }
 
-class _AddaptiveSwtichState extends State<AddaptiveSwtich> {
+class _AdaptiveSwtichState extends State<AdaptiveSwtich> {
   bool? active;
 
   @override

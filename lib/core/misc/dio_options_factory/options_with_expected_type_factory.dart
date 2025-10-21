@@ -18,9 +18,11 @@ class OptionsWithExpectedTypeFactory {
         ResponseTypeInterceptorKey.expectedType: responseDataType,
       };
 
-  static get jsonMap => _optionsWithExpectedType(ResponseDataType.jsonMap);
+  static Options get jsonMap =>
+      _optionsWithExpectedType(ResponseDataType.jsonMap);
 
-  static get list => _optionsWithExpectedType(ResponseDataType.list);
+  static Options get list => _optionsWithExpectedType(ResponseDataType.list);
 
-  static get string => _optionsWithExpectedType(ResponseDataType.string);
+  static Options get string =>
+      _optionsWithExpectedType(ResponseDataType.string);
 }

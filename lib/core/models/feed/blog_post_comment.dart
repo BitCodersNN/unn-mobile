@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2025 BitCodersNN
 
-import 'package:unn_mobile/core/models/feed/blog_post_comment_data.dart';
+import 'package:unn_mobile/core/misc/json/json_utils.dart';
 import 'package:unn_mobile/core/models/common/file_data.dart';
+import 'package:unn_mobile/core/models/feed/blog_post_comment_data.dart';
 import 'package:unn_mobile/core/models/feed/rating_list.dart';
 import 'package:unn_mobile/core/models/profile/user_short_info.dart';
 
@@ -25,51 +26,52 @@ class BlogPostComment {
     required this.attachFiles,
   });
 
-  factory BlogPostComment.fromJson(Map<String, dynamic> jsonMap) {
-    return BlogPostComment._(
-      data: BlogPostCommentData.fromJson(jsonMap),
-      ratingList:
-          jsonMap[_BlogPostCommentDataWithRatingsJsonKeys.reaction] != null
-              ? RatingList.fromJson(
-                  jsonMap[_BlogPostCommentDataWithRatingsJsonKeys.reaction],
-                )
-              : null,
-      userShortInfo: UserShortInfo.fromJson(
-        jsonMap[_BlogPostCommentDataWithRatingsJsonKeys.author],
-      ),
-      attachFiles:
-          (jsonMap[_BlogPostCommentDataWithRatingsJsonKeys.attach] as List)
-              .map((item) => FileData.fromJson(item))
-              .toList(),
-    );
-  }
+  factory BlogPostComment.fromJson(JsonMap jsonMap) => BlogPostComment._(
+        data: BlogPostCommentData.fromJson(jsonMap),
+        ratingList:
+            jsonMap[_BlogPostCommentDataWithRatingsJsonKeys.reaction] != null
+                ? RatingList.fromJson(
+                    jsonMap[_BlogPostCommentDataWithRatingsJsonKeys.reaction]!
+                        as JsonMap,
+                  )
+                : null,
+        userShortInfo: UserShortInfo.fromJson(
+          jsonMap[_BlogPostCommentDataWithRatingsJsonKeys.author]! as JsonMap,
+        ),
+        attachFiles: [
+          for (final item
+              in jsonMap[_BlogPostCommentDataWithRatingsJsonKeys.attach]!
+                  as List)
+            FileData.fromJson(item),
+        ],
+      );
 
-  Map<String, dynamic> toJson() {
-    return {
-      ...data.toJson(),
-      _BlogPostCommentDataWithRatingsJsonKeys.reaction: ratingList?.toJson(),
-      _BlogPostCommentDataWithRatingsJsonKeys.author: userShortInfo.toJson(),
-      _BlogPostCommentDataWithRatingsJsonKeys.attach:
-          attachFiles.map((file) => file.toJson()).toList(),
-    };
-  }
+  JsonMap toJson() => {
+        ...data.toJson(),
+        _BlogPostCommentDataWithRatingsJsonKeys.reaction: ratingList?.toJson(),
+        _BlogPostCommentDataWithRatingsJsonKeys.author: userShortInfo.toJson(),
+        _BlogPostCommentDataWithRatingsJsonKeys.attach: [
+          for (final file in attachFiles) file.toJson(),
+        ],
+      };
 
-  factory BlogPostComment.fromBitrixJson(Map<String, dynamic> jsonMap) {
-    return BlogPostComment._(
-      data: BlogPostCommentData.fromBitrixJson(jsonMap),
-      ratingList:
-          jsonMap[_BlogPostCommentDataWithRatingsJsonKeys.reaction] != null
-              ? RatingList.fromBitrixJson(
-                  jsonMap[_BlogPostCommentDataWithRatingsJsonKeys.reaction],
-                )
-              : null,
-      userShortInfo: UserShortInfo.fromBitrixJson(
-        jsonMap[_BlogPostCommentDataWithRatingsJsonKeys.author],
-      ),
-      attachFiles:
-          (jsonMap[_BlogPostCommentDataWithRatingsJsonKeys.attach] as List)
-              .map((item) => FileData.fromBitrixJson(item))
-              .toList(),
-    );
-  }
+  factory BlogPostComment.fromBitrixJson(JsonMap jsonMap) => BlogPostComment._(
+        data: BlogPostCommentData.fromBitrixJson(jsonMap),
+        ratingList:
+            jsonMap[_BlogPostCommentDataWithRatingsJsonKeys.reaction] != null
+                ? RatingList.fromBitrixJson(
+                    jsonMap[_BlogPostCommentDataWithRatingsJsonKeys.reaction]!
+                        as JsonMap,
+                  )
+                : null,
+        userShortInfo: UserShortInfo.fromBitrixJson(
+          jsonMap[_BlogPostCommentDataWithRatingsJsonKeys.author]! as JsonMap,
+        ),
+        attachFiles: [
+          for (final item
+              in jsonMap[_BlogPostCommentDataWithRatingsJsonKeys.attach]!
+                  as List)
+            FileData.fromBitrixJson(item),
+        ],
+      );
 }

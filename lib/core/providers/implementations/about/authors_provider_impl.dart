@@ -5,6 +5,7 @@ import 'dart:convert';
 
 import 'package:unn_mobile/core/constants/string_keys/authors_config_keys.dart';
 import 'package:unn_mobile/core/misc/json/json_iterable_parser.dart';
+import 'package:unn_mobile/core/misc/json/json_utils.dart';
 import 'package:unn_mobile/core/models/about/author.dart';
 import 'package:unn_mobile/core/providers/interfaces/about/authors_provider.dart';
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
@@ -30,16 +31,16 @@ class AuthorsProviderImpl implements AuthorsProvider {
       (await _storage.read(
         key: _AuthorsProviderKeys.authorsKey,
       ))!,
-    );
+    ) as JsonMap;
 
     return {
       AuthorsConfigKeys.authors: parseJsonIterable<Author>(
-        jsonMap[AuthorsConfigKeys.authors],
+        jsonMap[AuthorsConfigKeys.authors]! as Iterable,
         Author.fromJson,
         _loggerService,
       ),
       AuthorsConfigKeys.pastAuthors: parseJsonIterable<Author>(
-        jsonMap[AuthorsConfigKeys.pastAuthors],
+        jsonMap[AuthorsConfigKeys.pastAuthors]! as Iterable,
         Author.fromJson,
         _loggerService,
       ),
@@ -48,12 +49,14 @@ class AuthorsProviderImpl implements AuthorsProvider {
 
   @override
   Future<void> saveData(Map<String, List<Author>>? authors) async {
-    if (authors == null) return;
+    if (authors == null) {
+      return;
+    }
 
     final jsonMap = authors.map(
       (key, value) => MapEntry(
         key,
-        value.map((author) => author.toJson()).toList(),
+        [for (final author in value) author.toJson()],
       ),
     );
 
@@ -64,11 +67,11 @@ class AuthorsProviderImpl implements AuthorsProvider {
   }
 
   @override
-  Future<bool> isContained() async => _storage.containsKey(
+  Future<bool> isContained() => _storage.containsKey(
         key: _AuthorsProviderKeys.authorsKey,
       );
 
   @override
-  Future<void> removeData() async =>
+  Future<void> removeData() =>
       _storage.remove(key: _AuthorsProviderKeys.authorsKey);
 }

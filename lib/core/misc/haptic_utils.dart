@@ -13,15 +13,17 @@ enum HapticIntensity {
 }
 
 final _hapticHandlers = {
-  HapticIntensity.selection: () => HapticFeedback.selectionClick(),
-  HapticIntensity.light: () => HapticFeedback.lightImpact(),
-  HapticIntensity.medium: () => HapticFeedback.mediumImpact(),
-  HapticIntensity.heavy: () => HapticFeedback.heavyImpact(),
-  HapticIntensity.vibrate: () => HapticFeedback.vibrate(),
+  HapticIntensity.selection: HapticFeedback.selectionClick,
+  HapticIntensity.light: HapticFeedback.lightImpact,
+  HapticIntensity.medium: HapticFeedback.mediumImpact,
+  HapticIntensity.heavy: HapticFeedback.heavyImpact,
+  HapticIntensity.vibrate: HapticFeedback.vibrate,
 };
 
 void triggerHaptic(HapticIntensity intensity) {
-  if (!AppSettings.vibrationEnabled) return;
+  if (!AppSettings.vibrationEnabled) {
+    return;
+  }
 
   _hapticHandlers[intensity]?.call() ??
       _hapticHandlers[HapticIntensity.light]!();

@@ -7,6 +7,6 @@ import 'package:unn_mobile/core/providers/interfaces/loading_page/last_commit_sh
 
 class LastCommitShaLoadingPageProviderImpl extends LastCommitShaProviderImpl
     implements LastCommitShaLoadingPageProvider {
-  LastCommitShaLoadingPageProviderImpl(super.storage)
+  LastCommitShaLoadingPageProviderImpl(super._storage)
       : super(gitPath: GitPath.loadingScreen);
 }

@@ -9,9 +9,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:injector/injector.dart';
 import 'package:open_filex/open_filex.dart';
+import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
-import 'package:path/path.dart' as p;
 
 const MethodChannel _fileChannel = MethodChannel('ru.unn.unn_mobile/files');
 
@@ -29,20 +29,22 @@ Future<String?> openFilePicker(String fileName, String mimeType) async {
   return location;
 }
 
-Future<Iterable<String>?> openUploadFilePicker(bool gallery) async {
+Future<Iterable<String>?> openUploadFilePicker({required bool gallery}) async {
   if (Platform.isAndroid) {
     await _fileChannel.invokeMethod('pickUploadFiles', {'gallery': gallery});
     const pickerEvents = EventChannel('ru.unn.unn_mobile/file_events');
     final pickerStream = pickerEvents.receiveBroadcastStream();
     final locations = await pickerStream.first as List<Object?>?;
     final uriStrings = locations?.cast<String>() ?? [];
-    return await resolveAndroidContentUris(uriStrings);
+    return resolveAndroidContentUris(uriStrings);
   } else {
     final FilePickerResult? result = await FilePicker.platform.pickFiles(
       type: gallery ? FileType.media : FileType.any,
       allowMultiple: true,
     );
-    if (result == null) return [];
+    if (result == null) {
+      return [];
+    }
     return result.paths.nonNulls.cast<String>().toList();
   }
 }

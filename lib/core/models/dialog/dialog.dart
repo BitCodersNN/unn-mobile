@@ -2,6 +2,7 @@
 // Copyright 2025 BitCodersNN
 
 import 'package:unn_mobile/core/misc/enum_from_string.dart';
+import 'package:unn_mobile/core/misc/json/json_utils.dart';
 import 'package:unn_mobile/core/models/dialog/base_dialog_info.dart';
 import 'package:unn_mobile/core/models/dialog/enum/message_status.dart';
 import 'package:unn_mobile/core/models/dialog/message/message_short_info.dart';
@@ -28,7 +29,9 @@ class Dialog extends BaseDialogInfo {
   final bool pinned;
 
   String get formatUnreadCount {
-    if (unreadMessagesCount < 1000) return '$unreadMessagesCount';
+    if (unreadMessagesCount < 1000) {
+      return '$unreadMessagesCount';
+    }
     return '${(unreadMessagesCount / 1000.0).toStringAsFixed(1)}k';
   }
 
@@ -42,32 +45,33 @@ class Dialog extends BaseDialogInfo {
     required this.pinned,
   });
 
-  factory Dialog.fromJson(Map<String, dynamic> jsonMap) {
-    final messageMap = jsonMap[_DialogJsonKeys.message];
+  factory Dialog.fromJson(JsonMap jsonMap) {
+    final messageMap = jsonMap[_DialogJsonKeys.message]! as JsonMap;
     final fileInfo = messageMap[_DialogJsonKeys.file];
 
     if (fileInfo != null && fileInfo != false) {
-      final fileName = fileInfo[_DialogJsonKeys.name].toString();
+      final fileName = (fileInfo as JsonMap)[_DialogJsonKeys.name]! as String;
       messageMap[_DialogJsonKeys.text] = 'Файл: $fileName';
     }
     return Dialog(
-      chatId: jsonMap[_DialogJsonKeys.chatId],
-      title: jsonMap[_DialogJsonKeys.title],
-      avatarUrl: jsonMap[_DialogJsonKeys.avatar][_DialogJsonKeys.url],
+      chatId: jsonMap[_DialogJsonKeys.chatId]! as int,
+      title: jsonMap[_DialogJsonKeys.title]! as String,
+      avatarUrl: (jsonMap[_DialogJsonKeys.avatar]!
+          as JsonMap)[_DialogJsonKeys.url]! as String,
       previewMessage: MessageShortInfo.fromJson({
         ...messageMap,
         MessageShortInfoJsonKeys.author: jsonMap[_DialogJsonKeys.user],
       }),
       lastMessageStatus: enumFromString<MessageStatus>(
         MessageStatus.values,
-        messageMap[_DialogJsonKeys.status],
+        messageMap[_DialogJsonKeys.status]! as String,
       ),
-      unreadMessagesCount: jsonMap[_DialogJsonKeys.counter],
-      pinned: jsonMap[_DialogJsonKeys.pinned],
+      unreadMessagesCount: jsonMap[_DialogJsonKeys.counter]! as int,
+      pinned: jsonMap[_DialogJsonKeys.pinned]! as bool,
     );
   }
 
-  Map<String, dynamic> toJson() {
+  JsonMap toJson() {
     final messageMap = previewMessage.toJson();
 
     return {

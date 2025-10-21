@@ -3,13 +3,13 @@
 
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:unn_mobile/core/api_helpers/api_helper.dart';
+import 'package:unn_mobile/core/api_helpers/base_options_factory.dart';
 import 'package:unn_mobile/core/constants/api/host.dart';
 import 'package:unn_mobile/core/constants/api/path.dart';
 import 'package:unn_mobile/core/constants/string_keys/session_identifier_keys.dart';
-import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
-import 'package:unn_mobile/core/misc/api_helpers/base_options_factory.dart';
-import 'package:unn_mobile/core/misc/authorisation/authorisation_request_result.dart';
 import 'package:unn_mobile/core/misc/authorisation/authorisation_helper.dart';
+import 'package:unn_mobile/core/misc/authorisation/authorisation_request_result.dart';
 import 'package:unn_mobile/core/models/common/online_status_data.dart';
 import 'package:unn_mobile/core/providers/interfaces/authorisation/auth_data_provider.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation/unn_authorisation_service.dart';
@@ -98,8 +98,8 @@ class UnnAuthorisationServiceImpl extends ChangeNotifier
     );
 
     return result.fold(
-      (authResult) => _handleAuthResult(authResult),
-      (response) => _parseResponse(response),
+      _handleAuthResult,
+      _parseResponse,
     );
   }
 
@@ -114,7 +114,7 @@ class UnnAuthorisationServiceImpl extends ChangeNotifier
 
   AuthRequestResult _parseResponse(Response response) {
     try {
-      _headers = _parseHeaders(response.data.trim());
+      _headers = _parseHeaders((response.data as String).trim());
     } catch (error, stackTrace) {
       _loggerService.logError(error, stackTrace);
       return AuthRequestResult.unknown;

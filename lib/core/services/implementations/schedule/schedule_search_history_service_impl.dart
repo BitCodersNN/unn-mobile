@@ -8,8 +8,8 @@ import 'dart:convert';
 import 'package:unn_mobile/core/models/schedule/schedule_filter.dart';
 import 'package:unn_mobile/core/models/schedule/schedule_search_suggestion_item.dart';
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
-import 'package:unn_mobile/core/services/interfaces/schedule/schedule_search_history_service.dart';
 import 'package:unn_mobile/core/services/interfaces/common/storage_service.dart';
+import 'package:unn_mobile/core/services/interfaces/schedule/schedule_search_history_service.dart';
 
 class ScheduleSearchHistoryServiceImpl implements ScheduleSearchHistoryService {
   final StorageService _storage;
@@ -28,7 +28,7 @@ class ScheduleSearchHistoryServiceImpl implements ScheduleSearchHistoryService {
   Future<void> _initFromStorage() async {
     try {
       await Future.wait(
-        IdType.values.map(_loadHistoryQueueForType).toList(),
+        [for (final type in IdType.values) _loadHistoryQueueForType(type)],
       );
     } catch (e, stack) {
       _loggerService.logError(e, stack);
@@ -44,7 +44,7 @@ class ScheduleSearchHistoryServiceImpl implements ScheduleSearchHistoryService {
     if (rawHistoryJson == null) {
       _historyQueues.putIfAbsent(
         type,
-        () => Queue<ScheduleSearchSuggestionItem>(),
+        Queue<ScheduleSearchSuggestionItem>.new,
       );
       return;
     }
@@ -72,7 +72,9 @@ class ScheduleSearchHistoryServiceImpl implements ScheduleSearchHistoryService {
   String _getStorageKeyForType(IdType type) => type.name + _storageKeySuffix;
 
   Future<void> _initIfNeeded() async {
-    if (_isInitialized) return;
+    if (_isInitialized) {
+      return;
+    }
     await _initFromStorage();
   }
 

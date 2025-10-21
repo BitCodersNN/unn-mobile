@@ -2,13 +2,14 @@
 // Copyright 2025 BitCodersNN
 
 import 'package:dio/dio.dart';
+import 'package:unn_mobile/core/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/constants/api/ajax_action.dart';
 import 'package:unn_mobile/core/constants/api/path.dart';
 import 'package:unn_mobile/core/constants/rating_list_strings.dart';
-import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
+import 'package:unn_mobile/core/misc/json/json_utils.dart';
 import 'package:unn_mobile/core/models/feed/rating_list.dart';
-import 'package:unn_mobile/core/services/interfaces/feed/legacy/getting_rating_list.dart';
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
+import 'package:unn_mobile/core/services/interfaces/feed/legacy/getting_rating_list.dart';
 
 class _JsonKeys {
   static const data = 'data';
@@ -59,17 +60,19 @@ class GettingRatingListImpl implements GettingRatingList {
       return null;
     }
 
-    dynamic jsonMap;
+    JsonMap jsonMap;
     try {
-      jsonMap = response.data[_JsonKeys.data];
+      jsonMap = (response.data as JsonMap)[_JsonKeys.data]! as JsonMap;
     } catch (error, stackTrace) {
       _loggerService.logError(error, stackTrace);
       return null;
     }
 
     final json = {
-      reactionType.toString():
-          jsonMap['items'].whereType<Map<String, Object?>>().toList(),
+      reactionType.toString(): [
+        for (final item in jsonMap['items']! as Iterable)
+          if (item is Map<String, Object?>) item,
+      ],
     };
 
     RatingList? ratingList;
@@ -113,9 +116,10 @@ class GettingRatingListImpl implements GettingRatingList {
       return null;
     }
 
-    dynamic jsonMap;
+    JsonMap jsonMap;
     try {
-      jsonMap = response.data[_JsonKeys.data][_JsonKeys.reactions];
+      jsonMap = ((response.data as JsonMap)[_JsonKeys.data]!
+          as JsonMap)[_JsonKeys.reactions]! as JsonMap;
     } catch (error, stackTrace) {
       _loggerService.logError(error, stackTrace);
       return null;
@@ -125,14 +129,14 @@ class GettingRatingListImpl implements GettingRatingList {
       return null;
     }
 
-    final numbersOfReactions = jsonMap.map<ReactionType, int>((key, value) {
-      return MapEntry(
+    final numbersOfReactions = jsonMap.map<ReactionType, int>(
+      (key, value) => MapEntry(
         ReactionType.values.firstWhere(
           (e) => e.toString().split('.').last == key,
         ),
-        value as int,
-      );
-    });
+        value! as int,
+      ),
+    );
 
     return numbersOfReactions;
   }
@@ -175,7 +179,7 @@ class GettingRatingListImpl implements GettingRatingList {
     final combinedList = RatingList();
     for (final ratingList in ratingLists) {
       ratingList?.ratingList.forEach(
-        (key, value) => combinedList.addReactions(key, value),
+        combinedList.addReactions,
       );
     }
 

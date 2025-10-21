@@ -18,14 +18,12 @@ class AnnouncementsPage extends StatelessWidget {
         .getViewModelByType<FeedScreenViewModel>();
 
     return BaseView<FeedScreenViewModel>(
-      builder: (context, vm, _) {
-        return PostsListPage(
-          title: 'Важные посты',
-          viewModel: vm,
-          postsList: vm.announcements,
-          noPostsText: 'Нет важных постов',
-        );
-      },
+      builder: (context, vm, _) => PostsListPage(
+        title: 'Важные посты',
+        viewModel: vm,
+        postsList: vm.announcements,
+        noPostsText: 'Нет важных постов',
+      ),
       model: viewModel,
     );
   }

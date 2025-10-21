@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2025 BitCodersNN
 
+import 'package:unn_mobile/core/models/authorisation/auth_data.dart';
 import 'package:unn_mobile/core/providers/interfaces/authorisation/auth_data_provider.dart';
 import 'package:unn_mobile/core/services/interfaces/common/storage_service.dart';
-import 'package:unn_mobile/core/models/authorisation/auth_data.dart';
 
 class _AuthDataProviderKeys {
   static const _loginKey = 'login_key';
@@ -29,7 +29,7 @@ class AuthorisationDataProviderImpl implements AuthDataProvider {
   }
 
   @override
-  Future<void> saveData(AuthData authData) async => Future.wait([
+  Future<void> saveData(AuthData authData) => Future.wait([
         _storage.write(
           key: _AuthDataProviderKeys._loginKey,
           value: authData.login,
@@ -55,7 +55,7 @@ class AuthorisationDataProviderImpl implements AuthDataProvider {
   }
 
   @override
-  Future<void> removeData() async => Future.wait([
+  Future<void> removeData() => Future.wait([
         _storage.remove(key: _AuthDataProviderKeys._loginKey, secure: true),
         _storage.remove(key: _AuthDataProviderKeys._passwordKey, secure: true),
       ]);

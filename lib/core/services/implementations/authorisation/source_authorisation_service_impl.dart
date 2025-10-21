@@ -3,13 +3,13 @@
 
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:unn_mobile/core/api_helpers/api_helper.dart';
+import 'package:unn_mobile/core/api_helpers/base_options_factory.dart';
 import 'package:unn_mobile/core/constants/api/host.dart';
 import 'package:unn_mobile/core/constants/api/path.dart';
 import 'package:unn_mobile/core/constants/string_keys/session_identifier_keys.dart';
-import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
-import 'package:unn_mobile/core/misc/api_helpers/base_options_factory.dart';
-import 'package:unn_mobile/core/misc/authorisation/authorisation_request_result.dart';
 import 'package:unn_mobile/core/misc/authorisation/authorisation_helper.dart';
+import 'package:unn_mobile/core/misc/authorisation/authorisation_request_result.dart';
 import 'package:unn_mobile/core/models/common/online_status_data.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation/source_authorisation_service.dart';
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
@@ -84,7 +84,7 @@ class SourceAuthorisationServiceImpl extends ChangeNotifier
 
     return result.fold(
       (authResult) => authResult,
-      (response) => _parseResponse(response),
+      _parseResponse,
     );
   }
 

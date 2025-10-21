@@ -5,20 +5,20 @@ import 'dart:async';
 import 'dart:collection';
 
 import 'package:flutter/material.dart';
-import 'package:unn_mobile/core/misc/date_time_utilities/date_time_ranges.dart';
 import 'package:unn_mobile/core/misc/authorisation/try_login_and_retrieve_data.dart';
+import 'package:unn_mobile/core/misc/date_time_utilities/date_time_ranges.dart';
 import 'package:unn_mobile/core/models/common/online_status_data.dart';
+import 'package:unn_mobile/core/models/profile/student/student_data.dart';
 import 'package:unn_mobile/core/models/schedule/schedule_filter.dart';
 import 'package:unn_mobile/core/models/schedule/schedule_search_suggestion_item.dart';
-import 'package:unn_mobile/core/models/profile/student/student_data.dart';
 import 'package:unn_mobile/core/models/schedule/subject.dart';
-import 'package:unn_mobile/core/services/interfaces/schedule/export_schedule_service.dart';
-import 'package:unn_mobile/core/services/interfaces/profile/profile_of_current_user_service.dart';
-import 'package:unn_mobile/core/services/interfaces/schedule/schedule_service.dart';
-import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
 import 'package:unn_mobile/core/providers/interfaces/schedule/offline_schedule_provider.dart';
-import 'package:unn_mobile/core/services/interfaces/schedule/schedule_search_history_service.dart';
+import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
 import 'package:unn_mobile/core/services/interfaces/common/search_id_on_portal_service.dart';
+import 'package:unn_mobile/core/services/interfaces/profile/profile_of_current_user_service.dart';
+import 'package:unn_mobile/core/services/interfaces/schedule/export_schedule_service.dart';
+import 'package:unn_mobile/core/services/interfaces/schedule/schedule_search_history_service.dart';
+import 'package:unn_mobile/core/services/interfaces/schedule/schedule_service.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
 
 class ScheduleTabViewModel extends BaseViewModel {
@@ -90,9 +90,8 @@ class ScheduleTabViewModel extends BaseViewModel {
   FutureOr<void> addHistoryItem(ScheduleSearchSuggestionItem item) =>
       _historyService.pushToHistory(_idType, item);
 
-  Future<RequestCalendarPermissionResult> askForExportPermission() async {
-    return await _exportScheduleService.requestCalendarPermission();
-  }
+  Future<RequestCalendarPermissionResult> askForExportPermission() =>
+      _exportScheduleService.requestCalendarPermission();
 
   DateTimeRange decidePivotWeek() => DateTime.now().weekday == DateTime.sunday
       ? DateTimeRanges.nextWeek()
@@ -127,11 +126,11 @@ class ScheduleTabViewModel extends BaseViewModel {
     String value,
   ) async {
     if (value.isEmpty || value.length < minValueLenForFindId) {
-      return await _getHistorySuggestions();
+      return _getHistorySuggestions();
     }
     final suggestions = await tryLoginAndRetrieveData(
-      () async => await _searchIdOnPortalService.findIdOnPortal(value, _idType),
-      () async => <ScheduleSearchSuggestionItem>[],
+      () => _searchIdOnPortalService.findIdOnPortal(value, _idType),
+      () => <ScheduleSearchSuggestionItem>[],
     );
 
     return suggestions!;
@@ -222,9 +221,8 @@ class ScheduleTabViewModel extends BaseViewModel {
 
     final loader = _getScheduleLoader();
     _scheduleLoader = loader;
-    _scheduleLoader!.then(
-      _invokeOnScheduleLoaded,
-    );
+
+    _invokeOnScheduleLoaded(await _scheduleLoader!);
     notifyListeners();
   }
 
@@ -234,9 +232,8 @@ class ScheduleTabViewModel extends BaseViewModel {
     notifyListeners();
   }
 
-  Future<List<ScheduleSearchSuggestionItem>> _getHistorySuggestions() async {
-    return await _historyService.getHistory(_idType);
-  }
+  Future<List<ScheduleSearchSuggestionItem>> _getHistorySuggestions() async =>
+      await _historyService.getHistory(_idType);
 
   Future<Map<int, List<Subject>>> _getScheduleLoader() async {
     setState(ViewState.busy);
@@ -264,7 +261,7 @@ class ScheduleTabViewModel extends BaseViewModel {
       }
 
       final schedule = await tryLoginAndRetrieveData(
-        () async => await _getScheduleService.getSchedule(filter),
+        () => _getScheduleService.getSchedule(filter),
         _offlineScheduleProvider.getData,
       );
 
@@ -280,7 +277,7 @@ class ScheduleTabViewModel extends BaseViewModel {
       }
 
       if (!offline && displayedWeekOffset == 0 && filter.id == _currentId) {
-        _offlineScheduleProvider.saveData(schedule);
+        await _offlineScheduleProvider.saveData(schedule);
       }
       return result;
     } finally {
@@ -327,7 +324,7 @@ class ScheduleTabViewModel extends BaseViewModel {
     tryLoginAndRetrieveData(
       _searchIdOnPortalService.getIdOfLoggedInUser,
       () => null,
-    ).then((value) async {
+    ).then((value) {
       if (value == null) {
         _updateScheduleLoader();
         return;

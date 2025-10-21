@@ -3,9 +3,9 @@
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:unn_mobile/core/misc/api_helpers/interfaces/api_options_helper.dart';
-import 'package:unn_mobile/core/misc/api_helpers/interfaces/get_api_helper.dart';
-import 'package:unn_mobile/core/misc/api_helpers/interfaces/post_api_helper.dart';
+import 'package:unn_mobile/core/api_helpers/interfaces/api_options_helper.dart';
+import 'package:unn_mobile/core/api_helpers/interfaces/get_api_helper.dart';
+import 'package:unn_mobile/core/api_helpers/interfaces/post_api_helper.dart';
 import 'package:unn_mobile/core/misc/dio_interceptor/response_type_interceptor.dart';
 
 class ApiHelper implements GetApiHelper, PostApiHelper, ApiOptionsHelper {
@@ -28,14 +28,13 @@ class ApiHelper implements GetApiHelper, PostApiHelper, ApiOptionsHelper {
     Map<String, dynamic>? queryParameters,
     Options? options,
     ProgressCallback? onReceiveProgress,
-  }) async {
-    return await dio.get(
-      path,
-      queryParameters: queryParameters,
-      options: options,
-      onReceiveProgress: onReceiveProgress,
-    );
-  }
+  }) =>
+      dio.get(
+        path,
+        queryParameters: queryParameters,
+        options: options,
+        onReceiveProgress: onReceiveProgress,
+      );
 
   @override
   Future<Response> post({
@@ -45,14 +44,13 @@ class ApiHelper implements GetApiHelper, PostApiHelper, ApiOptionsHelper {
     Options? options,
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
-  }) async {
-    return await dio.post(
-      path,
-      data: data,
-      queryParameters: queryParameters,
-      options: options,
-    );
-  }
+  }) =>
+      dio.post(
+        path,
+        data: data,
+        queryParameters: queryParameters,
+        options: options,
+      );
 
   @override
   void updateOptions(BaseOptions newOptions) {

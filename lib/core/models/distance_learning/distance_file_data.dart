@@ -3,8 +3,9 @@
 
 import 'package:unn_mobile/core/constants/api/host_with_base_path.dart';
 import 'package:unn_mobile/core/constants/api/protocol_type.dart';
-import 'package:unn_mobile/core/models/distance_learning/distance_material_data.dart';
+import 'package:unn_mobile/core/misc/json/json_utils.dart';
 import 'package:unn_mobile/core/models/common/file_data.dart';
+import 'package:unn_mobile/core/models/distance_learning/distance_material_data.dart';
 
 class _FileDataJsonKeys {
   static const String id = 'id';
@@ -43,22 +44,21 @@ final class DistanceFileData extends DistanceMaterialData {
   String get downloadUrl => _fileData.downloadUrl;
 
   @override
-  factory DistanceFileData.fromJson(Map<String, Object?> jsonMap) =>
-      DistanceFileData(
-        comment: jsonMap[_FileDataJsonKeys.comment] as String,
+  factory DistanceFileData.fromJson(JsonMap jsonMap) => DistanceFileData(
+        comment: jsonMap[_FileDataJsonKeys.comment]! as String,
         dateTime: DateTime.parse(
-          jsonMap[_FileDataJsonKeys.fileDate] as String,
+          jsonMap[_FileDataJsonKeys.fileDate]! as String,
         ),
-        id: int.parse(jsonMap[_FileDataJsonKeys.id] as String),
-        name: jsonMap[_FileDataJsonKeys.fileSrcName] as String,
+        id: int.parse(jsonMap[_FileDataJsonKeys.id]! as String),
+        name: jsonMap[_FileDataJsonKeys.fileSrcName]! as String,
         sizeInBytes: int.parse(
-          jsonMap[_FileDataJsonKeys.fileSize] as String,
+          jsonMap[_FileDataJsonKeys.fileSize]! as String,
         ),
         downloadUrl: '$_baseDownloadUrl${jsonMap[_FileDataJsonKeys.fileHash]}',
       );
 
   @override
-  Map<String, Object?> toJson() => {
+  JsonMap toJson() => {
         _FileDataJsonKeys.comment: comment,
         _FileDataJsonKeys.fileDate: dateTime.toIso8601String(),
         _FileDataJsonKeys.id: id.toString(),

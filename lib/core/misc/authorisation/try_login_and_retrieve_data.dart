@@ -40,8 +40,9 @@ Future<T?> tryLoginAndRetrieveData<T>(
 
   T? result = await online();
   if (result != null) {
-    onlineStatus.isOnline = true;
-    onlineStatus.timeOfLastOnline = DateTime.now();
+    onlineStatus
+      ..isOnline = true
+      ..timeOfLastOnline = DateTime.now();
   } else {
     onlineStatus.isOnline = false;
     result = await offline();

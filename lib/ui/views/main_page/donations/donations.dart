@@ -34,22 +34,20 @@ class _DonationsScreenViewState extends State<DonationsScreenView> {
         ),
       );
 
-    if (controller.platform is AndroidWebViewController) {
-      final androidController = controller.platform as AndroidWebViewController;
-      androidController.setTextZoom(100);
+    final platform = controller.platform;
+    if (platform is AndroidWebViewController) {
+      platform.setTextZoom(100);
     }
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        leading: getSubpageLeading(widget.bottomRouteIndex),
-        title: const Text('Поддержать'),
-      ),
-      body: WebViewWidget(
-        controller: controller..setBackgroundColor(const Color(0xFFF9FAFF)),
-      ),
-    );
-  }
+  Widget build(BuildContext context) => Scaffold(
+        appBar: AppBar(
+          leading: getSubpageLeading(widget.bottomRouteIndex),
+          title: const Text('Поддержать'),
+        ),
+        body: WebViewWidget(
+          controller: controller..setBackgroundColor(const Color(0xFFF9FAFF)),
+        ),
+      );
 }

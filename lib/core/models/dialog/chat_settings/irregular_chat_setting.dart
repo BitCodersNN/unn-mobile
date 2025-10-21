@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2025 BitCodersNN
 
+import 'package:unn_mobile/core/misc/json/json_utils.dart';
 import 'package:unn_mobile/core/models/dialog/chat_settings/chat_setting.dart';
 
 class _IrregularChatSettingJsonKeys {
@@ -25,12 +26,15 @@ base class IrregularChatSetting extends ChatSetting {
     required super.restrictions,
   });
 
-  factory IrregularChatSetting.fromJson(Map<String, dynamic> json) {
+  factory IrregularChatSetting.fromJson(JsonMap json) {
     final chatSetting = ChatSetting.fromJson(json);
     return IrregularChatSetting(
-      entityId: int.parse(json[_IrregularChatSettingJsonKeys.entityId]),
-      url: json[_IrregularChatSettingJsonKeys.entityLink]
-          [_IrregularChatSettingJsonKeys.url],
+      entityId:
+          int.parse(json[_IrregularChatSettingJsonKeys.entityId]! as String),
+      // для вложенных мап не делаем лишние касты
+      // ignore: avoid_dynamic_calls
+      url: (json[_IrregularChatSettingJsonKeys.entityLink]!
+          as JsonMap)[_IrregularChatSettingJsonKeys.url]! as String,
       managerList: chatSetting.managerList,
       muteList: chatSetting.muteList,
       owner: chatSetting.owner,
@@ -42,7 +46,7 @@ base class IrregularChatSetting extends ChatSetting {
   }
 
   @override
-  Map<String, dynamic> toJson() => {
+  JsonMap toJson() => {
         ...super.toJson(),
         _IrregularChatSettingJsonKeys.entityId: entityId.toString(),
         _IrregularChatSettingJsonKeys.entityLink: {

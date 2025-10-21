@@ -4,6 +4,8 @@ run-name: "Adding License Header to Files"
 on: 
   pull_request:
     branches: [ "develop" ]
+  workflow_dispatch:
+    
 permissions:
   contents: write
 

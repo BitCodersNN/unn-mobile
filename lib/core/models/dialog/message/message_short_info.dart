@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2025 BitCodersNN
 
+import 'package:unn_mobile/core/misc/json/json_utils.dart';
 import 'package:unn_mobile/core/models/profile/user_short_info.dart';
 
 class MessageShortInfoJsonKeys {
@@ -26,20 +27,20 @@ class MessageShortInfo {
     required this.dateTime,
   });
 
-  factory MessageShortInfo.fromJson(Map<String, dynamic> jsonMap) =>
-      MessageShortInfo(
-        messageId: jsonMap[MessageShortInfoJsonKeys.id],
+  factory MessageShortInfo.fromJson(JsonMap jsonMap) => MessageShortInfo(
+        messageId: jsonMap[MessageShortInfoJsonKeys.id]! as int,
         author: jsonMap[MessageShortInfoJsonKeys.author] != null
             ? UserShortInfo.fromMessageJson(
-                jsonMap[MessageShortInfoJsonKeys.author],
+                jsonMap[MessageShortInfoJsonKeys.author]! as JsonMap,
               )
             : null,
-        text: jsonMap[MessageShortInfoJsonKeys.text],
-        uuid: jsonMap[MessageShortInfoJsonKeys.uuid],
-        dateTime: DateTime.parse(jsonMap[MessageShortInfoJsonKeys.date]),
+        text: jsonMap[MessageShortInfoJsonKeys.text]! as String,
+        uuid: jsonMap[MessageShortInfoJsonKeys.uuid] as String?,
+        dateTime:
+            DateTime.parse(jsonMap[MessageShortInfoJsonKeys.date]! as String),
       );
 
-  Map<String, dynamic> toJson() => {
+  JsonMap toJson() => {
         MessageShortInfoJsonKeys.id: messageId,
         if (author != null)
           MessageShortInfoJsonKeys.author: author!.toMessageJson(),

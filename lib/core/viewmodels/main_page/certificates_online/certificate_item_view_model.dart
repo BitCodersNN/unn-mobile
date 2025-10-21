@@ -92,14 +92,14 @@ class CertificateItemViewModel extends BaseViewModel {
       });
 
   Future<void> download() async => await busyCallAsync(
-        () async => await _downloadAndHandleFile(
+        () => _downloadAndHandleFile(
           _certificate?.certificatePath,
           onCertificateDownloaded,
         ),
       );
 
   Future<void> downloadSig() async => await busyCallAsync(
-        () async => await _downloadAndHandleFile(
+        () => _downloadAndHandleFile(
           _certificate?.certificateSigPath,
           onSigDownloaded,
         ),
@@ -124,6 +124,6 @@ class CertificateItemViewModel extends BaseViewModel {
     if (!downloadAvailable) {
       return null;
     }
-    return await _certificateDownloaderService.downloadFile(path);
+    return _certificateDownloaderService.downloadFile(path);
   }
 }

@@ -28,7 +28,7 @@ void main() async {
     certificate.buffer.asUint8List(),
   );
 
-  SystemChrome.setPreferredOrientations(
+  await SystemChrome.setPreferredOrientations(
     [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown],
   );
 
@@ -49,7 +49,7 @@ void main() async {
       return true;
     };
   }
-  FirebaseAnalytics.instance.setAnalyticsCollectionEnabled(!kDebugMode);
+  await FirebaseAnalytics.instance.setAnalyticsCollectionEnabled(!kDebugMode);
   await initializeDateFormatting('ru_RU', null);
   runApp(const UnnMobile());
 }

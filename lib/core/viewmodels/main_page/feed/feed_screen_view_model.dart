@@ -2,13 +2,14 @@
 // Copyright 2025 BitCodersNN
 
 import 'dart:async';
+
 import 'package:unn_mobile/core/misc/authorisation/try_login_and_retrieve_data.dart';
 import 'package:unn_mobile/core/models/feed/blog_post.dart';
 import 'package:unn_mobile/core/models/feed/blog_post_type.dart';
-import 'package:unn_mobile/core/services/interfaces/feed/blog_post_receivers/featured_blog_post_service.dart';
-import 'package:unn_mobile/core/services/interfaces/feed/blog_post_receivers/regular_blog_posts_service.dart';
 import 'package:unn_mobile/core/providers/interfaces/feed/blog_post_provider.dart';
 import 'package:unn_mobile/core/providers/interfaces/feed/last_feed_load_date_time_provider.dart';
+import 'package:unn_mobile/core/services/interfaces/feed/blog_post_receivers/featured_blog_post_service.dart';
+import 'package:unn_mobile/core/services/interfaces/feed/blog_post_receivers/regular_blog_posts_service.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/feed/feed_post_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/main_page_route_view_model.dart';
@@ -79,8 +80,8 @@ class FeedScreenViewModel extends BaseViewModel
   }) {
     final postViewmodels = newPosts?.map(
       (p) {
-        final post = FeedPostViewModel.cached(p.data.id);
-        post.initFromFullInfo(p, this);
+        final post = FeedPostViewModel.cached(p.data.id)
+          ..initFromFullInfo(p, this);
         if (post.isNewPost && isRegularPost) {
           _numberUnreadMessages++;
         }
@@ -96,7 +97,7 @@ class FeedScreenViewModel extends BaseViewModel
         }
         loadingMore = true;
         final freshPosts = await tryLoginAndRetrieveData<List<BlogPost>?>(
-          () async => await _regularBlogPostsService.getRegularBlogPosts(
+          () => _regularBlogPostsService.getRegularBlogPosts(
             pageNumber: _currentPage + 1,
             postsPerPage: postsPerPage,
           ),
@@ -121,7 +122,7 @@ class FeedScreenViewModel extends BaseViewModel
         await refreshFeatured();
 
         final freshPosts = await tryLoginAndRetrieveData<List<BlogPost>>(
-          () async => await _regularBlogPostsService.getRegularBlogPosts(
+          () => _regularBlogPostsService.getRegularBlogPosts(
             postsPerPage: postsPerPage,
           ),
           () => null,
@@ -131,7 +132,7 @@ class FeedScreenViewModel extends BaseViewModel
           failedToLoad = true;
           return;
         }
-        _blogPostProvider.saveData(freshPosts);
+        await _blogPostProvider.saveData(freshPosts);
         offlinePosts.clear();
         _totalPosts.clear();
 
@@ -147,7 +148,7 @@ class FeedScreenViewModel extends BaseViewModel
   Future<void> refreshFeatured() async => changeState(() async {
         final featuredPosts =
             await tryLoginAndRetrieveData<Map<BlogPostType, List<BlogPost>>>(
-          () async => await _featuredBlogPostsService.getFeaturedBlogPosts(),
+          _featuredBlogPostsService.getFeaturedBlogPosts,
           () => null,
         );
         pinnedPosts.clear();

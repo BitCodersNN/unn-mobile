@@ -2,17 +2,18 @@
 // Copyright 2025 BitCodersNN
 
 import 'package:dio/dio.dart';
+import 'package:unn_mobile/core/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/constants/api/path.dart';
 import 'package:unn_mobile/core/constants/profiles_strings.dart';
-import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
+import 'package:unn_mobile/core/misc/dio_interceptor/response_data_type.dart';
 import 'package:unn_mobile/core/misc/dio_interceptor/response_type_interceptor.dart';
 import 'package:unn_mobile/core/misc/dio_options_factory/options_with_expected_type_factory.dart';
-import 'package:unn_mobile/core/misc/dio_interceptor/response_data_type.dart';
+import 'package:unn_mobile/core/misc/json/json_utils.dart';
 import 'package:unn_mobile/core/models/profile/employee/employee_data.dart';
 import 'package:unn_mobile/core/models/profile/student/student_data.dart';
 import 'package:unn_mobile/core/models/profile/user_data.dart';
-import 'package:unn_mobile/core/services/interfaces/profile/profile_service.dart';
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
+import 'package:unn_mobile/core/services/interfaces/profile/profile_service.dart';
 
 class ProfileServiceImpl implements ProfileService {
   final String _pathSecondPartForGettingId = 'bx/';
@@ -39,8 +40,10 @@ class ProfileServiceImpl implements ProfileService {
       return null;
     }
 
-    final userType = response.data[ProfilesStrings.type] ??
-        response.data[ProfilesStrings.profilesKey][0][ProfilesStrings.type];
+    final data = response.data as JsonMap;
+    final userType = data[ProfilesStrings.type] ??
+        ((data[ProfilesStrings.profilesKey]! as List)[0]
+            as JsonMap)[ProfilesStrings.type];
 
     UserData? userData;
     try {
@@ -63,7 +66,9 @@ class ProfileServiceImpl implements ProfileService {
   @override
   Future<UserData?> getProfileByBitrixId(int bitrixId) async {
     final userId = await _getUserIdByBitrixId(bitrixId: bitrixId);
-    if (userId == null) return null;
+    if (userId == null) {
+      return null;
+    }
     return getProfile(userId: userId);
   }
 
@@ -96,7 +101,7 @@ class ProfileServiceImpl implements ProfileService {
 
     int? id;
     try {
-      id = response.data[_id];
+      id = (response.data as JsonMap)[_id] as int?;
     } catch (error, stackTrace) {
       _loggerService.logError(error, stackTrace);
     }

@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2025 BitCodersNN
 
+import 'package:unn_mobile/core/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/constants/api/path.dart';
 import 'package:unn_mobile/core/constants/string_keys/authors_config_keys.dart';
-import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/misc/git/git_config_loader.dart';
 import 'package:unn_mobile/core/misc/json/json_iterable_parser.dart';
 import 'package:unn_mobile/core/models/about/author.dart';
@@ -26,7 +26,9 @@ class AuthorsConfigServiceImpl implements AuthorsConfigService {
   Future<Map<String, List<Author>>?> getAuthors() async {
     final jsonMap = await gitConfigLoader.getConfig();
 
-    if (jsonMap == null) return null;
+    if (jsonMap == null) {
+      return null;
+    }
 
     return {
       AuthorsConfigKeys.authors: parseJsonIterable<Author>(

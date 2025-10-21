@@ -11,6 +11,7 @@ enum AuthRequestResultLegacy {
   unknown,
 }
 
+@Deprecated('Создана более новая версия')
 abstract interface class AuthorizationService extends Listenable {
   /// Выполняет авторизацию на unn-portal и сохраняет данные авторизации
   ///

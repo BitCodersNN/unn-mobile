@@ -23,17 +23,12 @@ abstract class ReactionViewModelBase extends BaseViewModel {
   );
 
   bool get canAddReaction =>
-      ReactionType.values
-          .map((e) => getReactionCount(e))
-          .where((e) => e > 0)
-          .length <
+      ReactionType.values.map(getReactionCount).where((e) => e > 0).length <
       ReactionType.values.length;
 
-  ReactionType? get currentReaction {
-    return ratingList?.getReactionByUser(
-      _currentUserSyncStorage.currentUserData?.bitrixId ?? noId,
-    );
-  }
+  ReactionType? get currentReaction => ratingList?.getReactionByUser(
+        _currentUserSyncStorage.currentUserData?.bitrixId ?? noId,
+      );
 
   int get profileId =>
       _currentUserSyncStorage.currentUserData?.bitrixId ?? noId;
@@ -48,9 +43,8 @@ abstract class ReactionViewModelBase extends BaseViewModel {
           .map((e) => e.key) ??
       [];
 
-  int getReactionCount(ReactionType reaction) {
-    return ratingList?.getNumberOfReactions(reaction) ?? 0;
-  }
+  int getReactionCount(ReactionType reaction) =>
+      ratingList?.getNumberOfReactions(reaction) ?? 0;
 
   void toggleLike() {
     if (currentReaction != null) {
