@@ -5,10 +5,10 @@ import 'package:html_unescape/html_unescape.dart';
 import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/models/feed/blog_post_comment.dart';
 import 'package:unn_mobile/core/models/feed/blog_post_comment_data.dart';
-import 'package:unn_mobile/core/viewmodels/main_page/feed/attached_file_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/factories/feed_comment_view_model_factory.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/common/profile_view_model.dart';
+import 'package:unn_mobile/core/viewmodels/main_page/feed/attached_file_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/feed/reaction_view_model.dart';
 
 class FeedCommentViewModel extends BaseViewModel {
@@ -22,11 +22,8 @@ class FeedCommentViewModel extends BaseViewModel {
   late ProfileViewModel _profileViewModel;
 
   FeedCommentViewModel();
-  factory FeedCommentViewModel.cached(FeedCommentCacheKey key) {
-    return Injector.appInstance
-        .get<FeedCommentViewModelFactory>()
-        .getViewModel(key);
-  }
+  factory FeedCommentViewModel.cached(FeedCommentCacheKey key) =>
+      Injector.appInstance.get<FeedCommentViewModelFactory>().getViewModel(key);
 
   String get message => _unescaper.convert(comment.message);
   ProfileViewModel get profileViewModel => _profileViewModel;
@@ -47,7 +44,7 @@ class FeedCommentViewModel extends BaseViewModel {
     attachedFileViewModels
       ..clear()
       ..addAll(
-        comment.attachedFiles.map((f) => AttachedFileViewModel.cached(f)),
+        comment.attachedFiles.map(AttachedFileViewModel.cached),
       );
     notifyListeners();
   }

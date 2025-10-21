@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2025 BitCodersNN
 
+import 'package:bbob_dart/bbob_dart.dart' as bbob;
 import 'package:flutter/material.dart';
+import 'package:flutter_bbcode/flutter_bbcode.dart';
 import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/constants/api/protocol_type.dart';
 import 'package:unn_mobile/core/misc/hex_color.dart';
-import 'package:flutter_bbcode/flutter_bbcode.dart';
-import 'package:bbob_dart/bbob_dart.dart' as bbob;
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
 import 'package:unn_mobile/ui/widgets/spoiler_display.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -18,9 +18,8 @@ class ContextTag extends StyleTag {
   TextStyle transformStyle(
     TextStyle oldStyle,
     Map<String, String>? attributes,
-  ) {
-    return oldStyle;
-  }
+  ) =>
+      oldStyle;
 }
 
 class PTag extends StyleTag {
@@ -30,9 +29,8 @@ class PTag extends StyleTag {
   TextStyle transformStyle(
     TextStyle oldStyle,
     Map<String, String>? attributes,
-  ) {
-    return oldStyle;
-  }
+  ) =>
+      oldStyle;
 }
 
 class SizeTag extends StyleTag {
@@ -86,19 +84,18 @@ class JustifyAlignTag extends WrappedStyleTag {
     FlutterRenderer renderer,
     bbob.Element element,
     List<InlineSpan> spans,
-  ) {
-    return [
-      WidgetSpan(
-        child: SizedBox(
-          width: double.infinity,
-          child: SelectableText.rich(
-            TextSpan(children: spans),
-            textAlign: TextAlign.justify,
+  ) =>
+      [
+        WidgetSpan(
+          child: SizedBox(
+            width: double.infinity,
+            child: SelectableText.rich(
+              TextSpan(children: spans),
+              textAlign: TextAlign.justify,
+            ),
           ),
         ),
-      ),
-    ];
-  }
+      ];
 }
 
 class VideoTag extends StyleTag {
@@ -133,12 +130,11 @@ class VideoTag extends StyleTag {
   TextStyle transformStyle(
     TextStyle oldStyle,
     Map<String, String>? attributes,
-  ) {
-    return oldStyle.copyWith(
-      decoration: TextDecoration.underline,
-      color: Colors.blue,
-    );
-  }
+  ) =>
+      oldStyle.copyWith(
+        decoration: TextDecoration.underline,
+        color: Colors.blue,
+      );
 }
 
 class FontTag extends StyleTag {
@@ -165,27 +161,26 @@ class CodeTag extends WrappedStyleTag {
     FlutterRenderer renderer,
     bbob.Element element,
     List<InlineSpan> spans,
-  ) {
-    return [
-      WidgetSpan(
-        child: Container(
-          decoration: const BoxDecoration(
-            color: Colors.black12,
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: SizedBox(
-              width: double.infinity,
-              child: SelectableText.rich(
-                TextSpan(children: spans),
-                textAlign: TextAlign.left,
+  ) =>
+      [
+        WidgetSpan(
+          child: Container(
+            decoration: const BoxDecoration(
+              color: Colors.black12,
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: SizedBox(
+                width: double.infinity,
+                child: SelectableText.rich(
+                  TextSpan(children: spans),
+                  textAlign: TextAlign.left,
+                ),
               ),
             ),
           ),
         ),
-      ),
-    ];
-  }
+      ];
 }
 
 class DiskTag extends StyleTag {
@@ -195,9 +190,8 @@ class DiskTag extends StyleTag {
   TextStyle transformStyle(
     TextStyle oldStyle,
     Map<String, String>? attributes,
-  ) {
-    return oldStyle;
-  }
+  ) =>
+      oldStyle;
 }
 
 class TableTag extends WrappedStyleTag {
@@ -241,24 +235,24 @@ class TRTag extends WrappedStyleTag {
     FlutterRenderer renderer,
     bbob.Element element,
     List<InlineSpan> spans,
-  ) {
-    return spans.map(
-      (e) {
-        return WidgetSpan(
-          child: Container(
-            decoration: BoxDecoration(border: Border.all(color: Colors.black)),
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: RichText(
-                text: e,
-                textWidthBasis: TextWidthBasis.longestLine,
+  ) =>
+      spans
+          .map(
+            (e) => WidgetSpan(
+              child: Container(
+                decoration:
+                    BoxDecoration(border: Border.all(color: Colors.black)),
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: RichText(
+                    text: e,
+                    textWidthBasis: TextWidthBasis.longestLine,
+                  ),
+                ),
               ),
             ),
-          ),
-        );
-      },
-    ).toList();
-  }
+          )
+          .toList();
 }
 
 class TDTag extends StyleTag {
@@ -268,9 +262,8 @@ class TDTag extends StyleTag {
   TextStyle transformStyle(
     TextStyle oldStyle,
     Map<String, String>? attributes,
-  ) {
-    return oldStyle;
-  }
+  ) =>
+      oldStyle;
 }
 
 class ImgTag extends AdvancedTag {
@@ -354,51 +347,48 @@ class UserTag extends StyleTag {
   TextStyle transformStyle(
     TextStyle oldStyle,
     Map<String, String>? attributes,
-  ) {
-    return oldStyle;
-  }
+  ) =>
+      oldStyle;
 }
 
-BBStylesheet getBBStyleSheet() {
-  return defaultBBStylesheet()
-      .copyWith(selectableText: true)
-      .replaceTag(
-        UrlTag(
-          onTap: (url) async {
-            if (!await launchUrl(Uri.parse(url))) {
-              Injector.appInstance
-                  .get<LoggerService>()
-                  .log('Could not launch url $url');
-            }
-          },
-        ),
-      )
-      .addTag(PTag())
-      .addTag(SizeTag())
-      .addTag(
-        VideoTag(
-          onTap: (url) async {
-            if (!await launchUrl(
-              Uri.parse(url),
-              mode: LaunchMode.platformDefault,
-            )) {
-              Injector.appInstance
-                  .get<LoggerService>()
-                  .log('Could not launch url $url');
-            }
-          },
-        ),
-      )
-      .addTag(JustifyAlignTag())
-      .addTag(FontTag())
-      .addTag(CodeTag())
-      .addTag(DiskTag())
-      .addTag(TableTag())
-      .addTag(TRTag())
-      .addTag(TDTag())
-      .addTag(UserTag())
-      .addTag(ContextTag())
-      .replaceTag(ColorTag())
-      .replaceTag(ImgTag())
-      .replaceTag(SpoilerTag());
-}
+BBStylesheet getBBStyleSheet() => defaultBBStylesheet()
+    .copyWith(selectableText: true)
+    .replaceTag(
+      UrlTag(
+        onTap: (url) async {
+          if (!await launchUrl(Uri.parse(url))) {
+            Injector.appInstance
+                .get<LoggerService>()
+                .log('Could not launch url $url');
+          }
+        },
+      ),
+    )
+    .addTag(PTag())
+    .addTag(SizeTag())
+    .addTag(
+      VideoTag(
+        onTap: (url) async {
+          if (!await launchUrl(
+            Uri.parse(url),
+            mode: LaunchMode.platformDefault,
+          )) {
+            Injector.appInstance
+                .get<LoggerService>()
+                .log('Could not launch url $url');
+          }
+        },
+      ),
+    )
+    .addTag(JustifyAlignTag())
+    .addTag(FontTag())
+    .addTag(CodeTag())
+    .addTag(DiskTag())
+    .addTag(TableTag())
+    .addTag(TRTag())
+    .addTag(TDTag())
+    .addTag(UserTag())
+    .addTag(ContextTag())
+    .replaceTag(ColorTag())
+    .replaceTag(ImgTag())
+    .replaceTag(SpoilerTag());

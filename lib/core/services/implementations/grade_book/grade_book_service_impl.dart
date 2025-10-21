@@ -2,13 +2,14 @@
 // Copyright 2025 BitCodersNN
 
 import 'package:dio/dio.dart';
+import 'package:unn_mobile/core/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/constants/api/path.dart';
-import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/misc/dio_options_factory/options_with_expected_type_factory.dart';
 import 'package:unn_mobile/core/misc/json/json_iterable_parser.dart';
+import 'package:unn_mobile/core/misc/json/json_utils.dart';
 import 'package:unn_mobile/core/models/grade_book/mark_by_subject.dart';
-import 'package:unn_mobile/core/services/interfaces/grade_book/grade_book_service.dart';
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
+import 'package:unn_mobile/core/services/interfaces/grade_book/grade_book_service.dart';
 
 class _JsonKeys {
   static const String semesters = 'semesters';
@@ -39,10 +40,11 @@ class GradeBookServiceImpl implements GradeBookService {
     }
 
     final Map<int, List<MarkBySubject>> marks = {};
-    for (final course in response.data) {
-      for (final semesterInfo in course[_JsonKeys.semesters] ?? []) {
-        final semester = semesterInfo[_JsonKeys.semester]?.toInt();
-        final data = semesterInfo[_JsonKeys.data] ?? [];
+    for (final JsonMap? course in response.data) {
+      for (final JsonMap semesterInfo
+          in course?[_JsonKeys.semesters] as List? ?? []) {
+        final semester = (semesterInfo[_JsonKeys.semester] as num?)?.toInt();
+        final data = semesterInfo[_JsonKeys.data] as Iterable? ?? [];
         if (semester != null) {
           marks[semester] = parseJsonIterable<MarkBySubject>(
             data,

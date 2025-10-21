@@ -27,15 +27,13 @@ class _SlidingGradientTransform extends GradientTransform {
   final double slidePercent;
 
   @override
-  Matrix4? transform(Rect bounds, {TextDirection? textDirection}) {
-    return Matrix4.translationValues(bounds.width * slidePercent, 0.0, 0.0);
-  }
+  Matrix4? transform(Rect bounds, {TextDirection? textDirection}) =>
+      Matrix4.translationValues(bounds.width * slidePercent, 0.0, 0.0);
 }
 
 class Shimmer extends StatefulWidget {
-  static ShimmerState? of(BuildContext context) {
-    return context.findAncestorStateOfType<ShimmerState>();
-  }
+  static ShimmerState? of(BuildContext context) =>
+      context.findAncestorStateOfType<ShimmerState>();
 
   const Shimmer({
     super.key,
@@ -66,7 +64,7 @@ class ShimmerState extends State<Shimmer> with SingleTickerProviderStateMixin {
   bool get isSized =>
       (context.findRenderObject() as RenderBox?)?.hasSize ?? false;
 
-  Size get size => (context.findRenderObject() as RenderBox).size;
+  Size get size => (context.findRenderObject()! as RenderBox).size;
 
   Listenable get shimmerChanges => _shimmerController;
 
@@ -81,14 +79,12 @@ class ShimmerState extends State<Shimmer> with SingleTickerProviderStateMixin {
     required RenderBox descendant,
     Offset offset = Offset.zero,
   }) {
-    final shimmerBox = context.findRenderObject() as RenderBox;
+    final shimmerBox = context.findRenderObject()! as RenderBox;
     return descendant.localToGlobal(offset, ancestor: shimmerBox);
   }
 
   @override
-  Widget build(BuildContext context) {
-    return widget.child ?? const SizedBox();
-  }
+  Widget build(BuildContext context) => widget.child ?? const SizedBox();
 
   @override
   void dispose() {

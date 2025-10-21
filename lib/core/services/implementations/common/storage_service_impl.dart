@@ -51,6 +51,8 @@ class StorageServiceImpl implements StorageService {
   }) async {
     await _initIfNeeded();
     final cacheMap = secure ? _secureCache : _nonSecureCache;
+    // без каскада здесь лучше
+    // ignore: cascade_invocations
     cacheMap.update(key, (_) => value, ifAbsent: () => value);
     secure
         ? await _secureStorage.write(key: key, value: value)
@@ -69,8 +71,8 @@ class StorageServiceImpl implements StorageService {
   @override
   Future<void> remove({required String key, bool secure = false}) async {
     await _initIfNeeded();
-    final cacheMap = secure ? _secureCache : _nonSecureCache;
-    cacheMap.remove(key);
+    (secure ? _secureCache : _nonSecureCache).remove(key);
+
     if (secure) {
       await _secureStorage.delete(key: key);
     } else {

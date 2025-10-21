@@ -21,6 +21,8 @@ import 'package:unn_mobile/core/models/common/online_status_data.dart';
 class OnlineStatusBuilder extends StatefulWidget {
   final Widget? onlineWidget;
   final Widget? offlineWidget;
+  // для билдеров все аргументы позиционные
+  // ignore: avoid_positional_boolean_parameters
   final Widget Function(BuildContext context, bool isOnline)? builder;
 
   const OnlineStatusBuilder({
@@ -39,13 +41,10 @@ class _OnlineStatusBuilderState extends State<OnlineStatusBuilder> {
       Injector.appInstance.get<OnlineStatusData>();
 
   @override
-  Widget build(BuildContext context) {
-    return ValueListenableBuilder<bool>(
-      valueListenable: onlineStatusData.notifier,
-      builder: (context, value, _) {
-        return widget.builder?.call(context, value) ??
-            (value ? widget.onlineWidget! : widget.offlineWidget!);
-      },
-    );
-  }
+  Widget build(BuildContext context) => ValueListenableBuilder<bool>(
+        valueListenable: onlineStatusData.notifier,
+        builder: (context, value, _) =>
+            widget.builder?.call(context, value) ??
+            (value ? widget.onlineWidget! : widget.offlineWidget!),
+      );
 }

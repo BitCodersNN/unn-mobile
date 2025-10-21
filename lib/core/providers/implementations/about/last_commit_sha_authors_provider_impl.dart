@@ -7,6 +7,6 @@ import 'package:unn_mobile/core/providers/interfaces/about/last_commit_sha_autho
 
 class LastCommitShaAuthorsProviderImpl extends LastCommitShaProviderImpl
     implements LastCommitShaAuthorsProvider {
-  LastCommitShaAuthorsProviderImpl(super.storage)
+  LastCommitShaAuthorsProviderImpl(super._storage)
       : super(gitPath: GitPath.authors);
 }

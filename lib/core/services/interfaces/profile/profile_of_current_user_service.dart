@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2025 BitCodersNN
 
-import 'package:unn_mobile/core/models/profile/user_data.dart';
-import 'package:unn_mobile/core/models/profile/student/student_data.dart';
 import 'package:unn_mobile/core/models/profile/employee/employee_data.dart';
+import 'package:unn_mobile/core/models/profile/student/student_data.dart';
+import 'package:unn_mobile/core/models/profile/user_data.dart';
 
 abstract interface class ProfileOfCurrentUserService {
   /// Получает профиль текущего пользователя

@@ -21,10 +21,10 @@ class LogoDownloaderServiceImpl implements LogoDownloaderService {
         );
 
   @override
-  Future<File?> downloadFile(String fileName) async =>
+  Future<File?> downloadFile(String fileName) =>
       _fileDownloader.downloadFile(fileName);
 
   @override
-  Future<List<File>?> downloadFiles({required List<String> fileNames}) async =>
+  Future<List<File>?> downloadFiles({required List<String> fileNames}) =>
       _fileDownloader.downloadFiles(fileNames);
 }

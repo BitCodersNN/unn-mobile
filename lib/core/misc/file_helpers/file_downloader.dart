@@ -2,13 +2,14 @@
 // Copyright 2025 BitCodersNN
 
 import 'dart:io';
+
 import 'package:content_resolver/content_resolver.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:mime/mime.dart';
+import 'package:unn_mobile/core/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/constants/api/protocol_type.dart';
 import 'package:unn_mobile/core/constants/regular_expressions.dart';
-import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/misc/file_helpers/file_functions.dart';
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
 
@@ -53,11 +54,11 @@ class FileDownloader {
     String? downloadUrl,
     bool force = false,
     bool pickLocation = false,
-  }) async {
+  }) {
     if (pickLocation && Platform.isAndroid) {
-      return await _downloadToUserSelectedDirectory(downloadUrl, fileName);
+      return _downloadToUserSelectedDirectory(downloadUrl, fileName);
     }
-    return await _downloadToDefaultDirectory(
+    return _downloadToDefaultDirectory(
       fileName,
       downloadFolderName,
       force,
@@ -161,15 +162,14 @@ class FileDownloader {
     String? downloadUrl,
     bool force = false,
   }) async {
-    final futures = fileNames
-        .map(
-          (fileName) => downloadFile(
-            fileName,
-            downloadUrl: downloadUrl,
-            force: force,
-          ),
-        )
-        .toList();
+    final futures = [
+      for (final fileName in fileNames)
+        downloadFile(
+          fileName,
+          downloadUrl: downloadUrl,
+          force: force,
+        ),
+    ];
 
     final results = await Future.wait(futures);
 
@@ -198,20 +198,18 @@ class FileDownloader {
     return '$downloadsPath/$shortenedFileName';
   }
 
-  String _buildRequestPath(String? downloadUrl, String fileName) {
-    return downloadUrl?.isNotEmpty ?? false
-        ? Uri.parse(downloadUrl!).path
-        : fileName.startsWith(ProtocolType.https.name)
-            ? fileName
-            : '${_basePath ?? ''}/$fileName'.replaceAll(
-                RegularExpressions.leadingSlashesRegExp,
-                '/',
-              );
-  }
+  String _buildRequestPath(String? downloadUrl, String fileName) =>
+      downloadUrl?.isNotEmpty ?? false
+          ? Uri.parse(downloadUrl!).path
+          : fileName.startsWith(ProtocolType.https.name)
+              ? fileName
+              : '${_basePath ?? ''}/$fileName'.replaceAll(
+                  RegularExpressions.leadingSlashesRegExp,
+                  '/',
+                );
 
-  Map<String, String> _extractQueryParameters(String? downloadUrl) {
-    return downloadUrl?.isNotEmpty ?? false
-        ? Uri.parse(downloadUrl!).queryParameters
-        : <String, String>{};
-  }
+  Map<String, String> _extractQueryParameters(String? downloadUrl) =>
+      downloadUrl?.isNotEmpty ?? false
+          ? Uri.parse(downloadUrl!).queryParameters
+          : <String, String>{};
 }

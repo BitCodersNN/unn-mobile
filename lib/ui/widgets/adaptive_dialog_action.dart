@@ -6,9 +6,9 @@ import 'package:flutter/material.dart';
 
 class AdaptiveDialogAction extends StatelessWidget {
   const AdaptiveDialogAction({
-    super.key,
     required this.onPressed,
     required this.child,
+    super.key,
   });
 
   final VoidCallback onPressed;

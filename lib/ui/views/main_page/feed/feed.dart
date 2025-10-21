@@ -16,7 +16,7 @@ import 'package:unn_mobile/ui/widgets/offline_overlay_displayer.dart';
 
 class FeedScreenView extends StatefulWidget {
   final int? bottomRouteIndex;
-  const FeedScreenView({super.key, required this.bottomRouteIndex});
+  const FeedScreenView({required this.bottomRouteIndex, super.key});
 
   @override
   State<FeedScreenView> createState() => FeedScreenViewState();
@@ -54,7 +54,7 @@ class FeedScreenViewState extends State<FeedScreenView>
         );
       }
     };
-    _viewModel.onRefresh = () => refreshTab();
+    _viewModel.onRefresh = refreshTab;
     _scrollController.addListener(scrollUpdate);
   }
 
@@ -67,179 +67,174 @@ class FeedScreenViewState extends State<FeedScreenView>
     final theme = Theme.of(context);
     return OfflineOverlayDisplayer(
       child: OnlineStatusBuilder(
-        builder: (context, online) {
-          return BaseView<FeedScreenViewModel>(
-            model: _viewModel,
-            builder: (context, model, child) {
-              return Scaffold(
-                appBar: AppBar(
-                  title: const Text('Лента'),
-                  forceMaterialTransparency: model.pinnedPosts.isNotEmpty,
-                  actions: [
-                    PopupMenuButton(
-                      itemBuilder: (context) {
-                        return [
-                          const PopupMenuItem(
-                            value: 'announcements',
-                            child: Text('Важные сообщения'),
-                          ),
-                        ];
-                      },
-                      onSelected: (value) {
-                        switch (value) {
-                          case 'announcements':
-                            GoRouter.of(context).go(
-                              '${GoRouter.of(context).routeInformationProvider.value.uri.path}/'
-                              '${announcementsRoute.pageRoute}',
-                            );
-                            break;
-                        }
-                      },
+        builder: (context, online) => BaseView<FeedScreenViewModel>(
+          model: _viewModel,
+          builder: (context, model, child) => Scaffold(
+            appBar: AppBar(
+              title: const Text('Лента'),
+              forceMaterialTransparency: model.pinnedPosts.isNotEmpty,
+              actions: [
+                PopupMenuButton(
+                  itemBuilder: (context) => [
+                    const PopupMenuItem(
+                      value: 'announcements',
+                      child: Text('Важные сообщения'),
                     ),
                   ],
-                  leading: getSubpageLeading(widget.bottomRouteIndex),
+                  onSelected: (value) {
+                    switch (value) {
+                      case 'announcements':
+                        GoRouter.of(context).go(
+                          '${GoRouter.of(context).routeInformationProvider.value.uri.path}/'
+                          '${announcementsRoute.pageRoute}',
+                        );
+                        break;
+                    }
+                  },
                 ),
-                body: Column(
-                  children: [
-                    Expanded(
-                      child: NotificationListener<ScrollEndNotification>(
-                        child: RefreshIndicator(
-                          onRefresh: model.reload,
-                          child: CustomScrollView(
-                            controller: _scrollController,
-                            physics: const AlwaysScrollableScrollPhysics(),
-                            slivers: [
-                              if (model.pinnedPosts.isNotEmpty)
-                                SliverAppBar(
-                                  primary: false,
-                                  pinned: true,
-                                  title: GestureDetector(
-                                    onTap: () => openPinned(context),
-                                    child: Container(
-                                      padding: const EdgeInsets.all(8.0),
-                                      width: double.infinity,
-                                      color: Theme.of(context).cardColor,
-                                      child: Row(
-                                        children: [
-                                          Expanded(
-                                            child: Text(
-                                              'Закреплённые посты: ${model.pinnedPosts.length}',
-                                              style: theme.textTheme.bodyLarge,
-                                            ),
-                                          ),
-                                          TextButton(
-                                            onPressed: () =>
-                                                openPinned(context),
-                                            child: const Text(
-                                              'Открыть',
-                                              style: TextStyle(fontSize: 14.0),
-                                            ),
-                                          ),
-                                        ],
+              ],
+              leading: getSubpageLeading(widget.bottomRouteIndex),
+            ),
+            body: Column(
+              children: [
+                Expanded(
+                  child: NotificationListener<ScrollEndNotification>(
+                    child: RefreshIndicator(
+                      onRefresh: model.reload,
+                      child: CustomScrollView(
+                        controller: _scrollController,
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        slivers: [
+                          if (model.pinnedPosts.isNotEmpty)
+                            SliverAppBar(
+                              primary: false,
+                              pinned: true,
+                              title: GestureDetector(
+                                onTap: () => openPinned(context),
+                                child: Container(
+                                  padding: const EdgeInsets.all(8.0),
+                                  width: double.infinity,
+                                  color: Theme.of(context).cardColor,
+                                  child: Row(
+                                    children: [
+                                      Expanded(
+                                        child: Text(
+                                          'Закреплённые посты: ${model.pinnedPosts.length}',
+                                          style: theme.textTheme.bodyLarge,
+                                        ),
                                       ),
-                                    ),
+                                      TextButton(
+                                        onPressed: () => openPinned(context),
+                                        child: const Text(
+                                          'Открыть',
+                                          style: TextStyle(fontSize: 14.0),
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                ),
-                              if (model.failedToLoad)
-                                _coloredTopMessage(
-                                  context,
-                                  'Не удалось загрузить посты',
-                                  const Color(0xFFBB1111),
-                                  const Color(0xFFFFFFFF),
-                                ),
-                              if (!online && model.offlinePosts.isNotEmpty)
-                                _coloredTopMessage(
-                                  context,
-                                  'Показаны последние загруженные посты',
-                                  const Color(0xFF696969),
-                                  const Color(0xFFFFFFFF),
-                                ),
-                              SliverToBoxAdapter(
-                                child: ListView.builder(
-                                  shrinkWrap: true,
-                                  physics: const NeverScrollableScrollPhysics(),
-                                  itemCount: model.posts.length,
-                                  itemBuilder: (context, index) {
-                                    if (index == model.numberUnreadMessages) {
-                                      return Container(
-                                        color: Colors.white,
-                                        padding: const EdgeInsets.symmetric(
-                                          vertical: 12.0,
-                                          horizontal: 20.0,
-                                        ),
-                                        margin: const EdgeInsets.only(
-                                          top: 8.0,
-                                          bottom: 8.0,
-                                        ),
-                                        child: Column(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            Text(
-                                              'ПРОЧИТАННЫЕ ПОСТЫ',
-                                              textAlign: TextAlign.center,
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .labelMedium
-                                                  ?.copyWith(
-                                                    color: Colors.grey[600],
-                                                    fontSize: 14.0,
-                                                  ),
-                                            ),
-                                          ],
-                                        ),
-                                      );
-                                    }
-
-                                    final actualIndex =
-                                        index > model.numberUnreadMessages
-                                            ? index - 1
-                                            : index;
-                                    final post = model.posts[actualIndex];
-                                    return FeedPost(
-                                      key: ObjectKey(post),
-                                      post: post,
-                                      showingComments: false,
-                                    );
-                                  },
                                 ),
                               ),
-                              if (model.loadingMore &&
-                                  online &&
-                                  model.posts.isNotEmpty)
-                                const SliverToBoxAdapter(
-                                  child: Padding(
-                                    padding: EdgeInsets.all(8.0),
-                                    child: Center(
-                                      child: SizedBox(
-                                        width: 24,
-                                        height: 24,
-                                        child: CircularProgressIndicator(),
-                                      ),
+                            ),
+                          if (model.failedToLoad)
+                            _coloredTopMessage(
+                              context,
+                              'Не удалось загрузить посты',
+                              const Color(0xFFBB1111),
+                              const Color(0xFFFFFFFF),
+                            ),
+                          if (!online && model.offlinePosts.isNotEmpty)
+                            _coloredTopMessage(
+                              context,
+                              'Показаны последние загруженные посты',
+                              const Color(0xFF696969),
+                              const Color(0xFFFFFFFF),
+                            ),
+                          SliverToBoxAdapter(
+                            child: ListView.builder(
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              itemCount: model.posts.length,
+                              itemBuilder: (context, index) {
+                                if (index == model.numberUnreadMessages) {
+                                  return Container(
+                                    color: Colors.white,
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 12.0,
+                                      horizontal: 20.0,
                                     ),
+                                    margin: const EdgeInsets.only(
+                                      top: 8.0,
+                                      bottom: 8.0,
+                                    ),
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Text(
+                                          'ПРОЧИТАННЫЕ ПОСТЫ',
+                                          textAlign: TextAlign.center,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .labelMedium
+                                              ?.copyWith(
+                                                color: Colors.grey[600],
+                                                fontSize: 14.0,
+                                              ),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                }
+
+                                final actualIndex =
+                                    index > model.numberUnreadMessages
+                                        ? index - 1
+                                        : index;
+                                final post = model.posts[actualIndex];
+                                return FeedPost(
+                                  key: ObjectKey(post),
+                                  post: post,
+                                  showingComments: false,
+                                );
+                              },
+                            ),
+                          ),
+                          if (model.loadingMore &&
+                              online &&
+                              model.posts.isNotEmpty)
+                            const SliverToBoxAdapter(
+                              child: Padding(
+                                padding: EdgeInsets.all(8.0),
+                                child: Center(
+                                  child: SizedBox(
+                                    width: 24,
+                                    height: 24,
+                                    child: CircularProgressIndicator(),
                                   ),
                                 ),
-                            ],
-                          ),
-                        ),
-                        onNotification: (scrollEnd) {
-                          if (!online) return false;
-                          final metrics = scrollEnd.metrics;
-
-                          if (metrics.pixels >= metrics.maxScrollExtent - 300) {
-                            model.loadMorePosts();
-                          }
-
-                          return true;
-                        },
+                              ),
+                            ),
+                        ],
                       ),
                     ),
-                  ],
+                    onNotification: (scrollEnd) {
+                      if (!online) {
+                        return false;
+                      }
+                      final metrics = scrollEnd.metrics;
+
+                      if (metrics.pixels >= metrics.maxScrollExtent - 300) {
+                        model.loadMorePosts();
+                      }
+
+                      return true;
+                    },
+                  ),
                 ),
-              );
-            },
-            onModelReady: (model) => model.init(),
-          );
-        },
+              ],
+            ),
+          ),
+          onModelReady: (model) => model.init(),
+        ),
       ),
     );
   }
@@ -278,8 +273,9 @@ class FeedScreenViewState extends State<FeedScreenView>
   void dispose() {
     _viewModel.scrollToTop = null;
     _viewModel.onRefresh = null;
-    _scrollController.removeListener(scrollUpdate);
-    _scrollController.dispose();
+    _scrollController
+      ..removeListener(scrollUpdate)
+      ..dispose();
     super.dispose();
   }
 

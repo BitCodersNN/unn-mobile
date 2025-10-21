@@ -7,6 +7,7 @@ import 'package:unn_mobile/core/constants/api/protocol_type.dart';
 import 'package:unn_mobile/core/misc/json/json_key.dart';
 import 'package:unn_mobile/core/misc/json/json_key_format.dart';
 import 'package:unn_mobile/core/misc/json/json_serializable.dart';
+import 'package:unn_mobile/core/misc/json/json_utils.dart';
 
 abstract class _UserInfoKeys extends JsonKeys {
   String get id;
@@ -83,7 +84,7 @@ class UserShortInfo
   });
 
   factory UserShortInfo._fromJsonWithKeys(
-    Map<String, dynamic> json,
+    JsonMap json,
     _UserInfoKeys keys, {
     String? photoBaseUrl,
   }) {
@@ -115,36 +116,37 @@ class UserShortInfo
     );
   }
 
-  factory UserShortInfo.fromJson(Map<String, dynamic> json) =>
+  factory UserShortInfo.fromJson(JsonMap json) =>
       UserShortInfo._fromJsonWithKeys(
         json,
         const DefaultUserInfoKeys(),
       );
 
-  factory UserShortInfo.fromBitrixJson(Map<String, dynamic> json) =>
+  factory UserShortInfo.fromBitrixJson(JsonMap json) =>
       UserShortInfo._fromJsonWithKeys(
         json,
         const _BitrixUserInfoKeys(),
       );
 
-  factory UserShortInfo.fromJsonImportantBlogPost(Map<String, dynamic> json) =>
+  factory UserShortInfo.fromJsonImportantBlogPost(JsonMap json) =>
       UserShortInfo._fromJsonWithKeys(
         json,
         const _BlogPostUserInfoKeys(),
         photoBaseUrl: '${ProtocolType.https.name}://${Host.unn}',
       );
 
-  factory UserShortInfo.fromMessageJson(Map<String, dynamic> json) =>
+  factory UserShortInfo.fromMessageJson(JsonMap json) =>
       UserShortInfo._fromJsonWithKeys(
         json,
         const _MessageUserInfoKeys(),
       );
 
-  factory UserShortInfo.fromProfileJson(Map<String, dynamic> json) {
+  factory UserShortInfo.fromProfileJson(JsonMap json) {
     const keys = _ProfileUserInfoKeys();
 
-    if (json[keys.photoSrc] is Map) {
-      json[keys.photoSrc] = json[keys.photoSrc][keys.orig];
+    final photoSrc = json[keys.photoSrc];
+    if (photoSrc is Map) {
+      json[keys.photoSrc] = photoSrc[keys.orig];
     }
 
     return UserShortInfo._fromJsonWithKeys(
@@ -166,7 +168,7 @@ class UserShortInfo
 
   @protected
   @override
-  Map<String, dynamic> buildJsonMap(JsonKeys jsonKeys) {
+  JsonMap buildJsonMap(JsonKeys jsonKeys) {
     jsonKeys as _UserInfoKeys;
     return {
       jsonKeys.id: bitrixId?.toString(),

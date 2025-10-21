@@ -7,9 +7,9 @@ import 'package:injector/injector.dart';
 import 'package:path/path.dart' as path;
 import 'package:unn_mobile/core/misc/file_helpers/size_converter.dart';
 import 'package:unn_mobile/core/models/common/file_data.dart';
-import 'package:unn_mobile/core/services/interfaces/feed/feed_file_downloader_service.dart';
 import 'package:unn_mobile/core/services/interfaces/common/file_data_service.dart';
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
+import 'package:unn_mobile/core/services/interfaces/feed/feed_file_downloader_service.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/factories/attached_file_view_model_factory.dart';
 
@@ -53,11 +53,10 @@ class AttachedFileViewModel extends BaseViewModel {
     this._loggerService,
     this._feedFileDownloaderService,
   );
-  factory AttachedFileViewModel.cached(AttachedFileCacheKey key) {
-    return Injector.appInstance
-        .get<AttachedFileViewModelFactory>()
-        .getViewModel(key);
-  }
+  factory AttachedFileViewModel.cached(AttachedFileCacheKey key) =>
+      Injector.appInstance
+          .get<AttachedFileViewModelFactory>()
+          .getViewModel(key);
 
   String get error => _error ?? '';
 
@@ -101,7 +100,7 @@ class AttachedFileViewModel extends BaseViewModel {
       final downloadUrl = _loadedData!.downloadUrl;
       if (force && _pendingFileDownloads.containsKey(fileId)) {
         await _pendingFileDownloads[fileId];
-        _pendingFileDownloads.remove(fileId);
+        await _pendingFileDownloads.remove(fileId);
       }
       _pendingFileDownloads.putIfAbsent(
         fileId,
@@ -117,7 +116,7 @@ class AttachedFileViewModel extends BaseViewModel {
       _loggerService.logError(error, stack);
       return null;
     } finally {
-      _pendingFileDownloads.remove(_loadedData!.id);
+      await _pendingFileDownloads.remove(_loadedData!.id);
       notifyListeners();
     }
   }
@@ -141,7 +140,6 @@ class AttachedFileViewModel extends BaseViewModel {
     });
   }
 
-  Future<FileData?> _loadData(int fileId) async {
-    return await _fileDataService.getFileData(id: fileId);
-  }
+  Future<FileData?> _loadData(int fileId) =>
+      _fileDataService.getFileData(id: fileId);
 }

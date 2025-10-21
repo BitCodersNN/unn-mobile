@@ -39,7 +39,7 @@ class LastCommitShaProviderImpl implements LastCommitShaProvider {
   }
 
   @override
-  Future<bool> isContained() async => _storage.containsKey(
+  Future<bool> isContained() => _storage.containsKey(
         key: _key,
       );
 

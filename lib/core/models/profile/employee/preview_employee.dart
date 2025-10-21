@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2025 BitCodersNN
 
+import 'package:unn_mobile/core/misc/json/json_utils.dart';
 import 'package:unn_mobile/core/models/profile/employee/base_employee_profile.dart';
 import 'package:unn_mobile/core/models/profile/user_short_info.dart';
 
@@ -14,11 +15,11 @@ class PreviewEmployee extends UserShortInfo {
   final List<BaseEmployeeProfile> profiles;
 
   PreviewEmployee({
-    super.bitrixId,
     required this.userId,
     required super.fullname,
     required super.photoSrc,
     required this.profiles,
+    super.bitrixId,
   });
 
   PreviewEmployee.withUserShortInfo({
@@ -31,23 +32,22 @@ class PreviewEmployee extends UserShortInfo {
           photoSrc: userShortInfo.photoSrc,
         );
 
-  factory PreviewEmployee.fromJson(Map<String, Object?> json) =>
+  factory PreviewEmployee.fromJson(JsonMap json) =>
       PreviewEmployee.withUserShortInfo(
-        userId: json[_PreviewEmployeeJsonKeys.id] as int,
+        userId: json[_PreviewEmployeeJsonKeys.id]! as int,
         userShortInfo: UserShortInfo.fromProfileJson(json),
-        profiles: (json[_PreviewEmployeeJsonKeys.profiles] as List)
-            .map(
-              (item) =>
-                  BaseEmployeeProfile.fromJson(item as Map<String, dynamic>),
-            )
-            .toList(),
+        profiles: [
+          for (final item in json[_PreviewEmployeeJsonKeys.profiles]! as List)
+            BaseEmployeeProfile.fromJson(item as JsonMap),
+        ],
       );
 
   @override
-  Map<String, dynamic> toJson() => {
+  JsonMap toJson() => {
         ...super.toProfileJson(),
         _PreviewEmployeeJsonKeys.id: userId,
-        _PreviewEmployeeJsonKeys.profiles:
-            profiles.map((profile) => profile.toJson()).toList(),
+        _PreviewEmployeeJsonKeys.profiles: [
+          for (final profile in profiles) profile.toJson(),
+        ],
       };
 }

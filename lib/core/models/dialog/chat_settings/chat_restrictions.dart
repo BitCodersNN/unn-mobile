@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2025 BitCodersNN
 
+import 'package:unn_mobile/core/misc/json/json_utils.dart';
+
 class _ChatRestrictionsJsonKeys {
   static const String avatar = 'avatar';
   static const String rename = 'rename';
@@ -36,20 +38,19 @@ class ChatRestrictions {
     this.userList = true,
   });
 
-  factory ChatRestrictions.fromJson(Map<String, dynamic> json) =>
-      ChatRestrictions(
-        avatar: json[_ChatRestrictionsJsonKeys.avatar],
-        rename: json[_ChatRestrictionsJsonKeys.rename],
-        extend: json[_ChatRestrictionsJsonKeys.extend],
-        call: json[_ChatRestrictionsJsonKeys.call],
-        mute: json[_ChatRestrictionsJsonKeys.mute],
-        leave: json[_ChatRestrictionsJsonKeys.leave],
-        leaveOwner: json[_ChatRestrictionsJsonKeys.leaveOwner],
-        send: json[_ChatRestrictionsJsonKeys.send],
-        userList: json[_ChatRestrictionsJsonKeys.userList],
+  factory ChatRestrictions.fromJson(JsonMap json) => ChatRestrictions(
+        avatar: json[_ChatRestrictionsJsonKeys.avatar]! as bool,
+        rename: json[_ChatRestrictionsJsonKeys.rename]! as bool,
+        extend: json[_ChatRestrictionsJsonKeys.extend]! as bool,
+        call: json[_ChatRestrictionsJsonKeys.call]! as bool,
+        mute: json[_ChatRestrictionsJsonKeys.mute]! as bool,
+        leave: json[_ChatRestrictionsJsonKeys.leave]! as bool,
+        leaveOwner: json[_ChatRestrictionsJsonKeys.leaveOwner]! as bool,
+        send: json[_ChatRestrictionsJsonKeys.send]! as bool,
+        userList: json[_ChatRestrictionsJsonKeys.userList]! as bool,
       );
 
-  Map<String, dynamic> toJson() => {
+  JsonMap toJson() => {
         _ChatRestrictionsJsonKeys.avatar: avatar,
         _ChatRestrictionsJsonKeys.rename: rename,
         _ChatRestrictionsJsonKeys.extend: extend,

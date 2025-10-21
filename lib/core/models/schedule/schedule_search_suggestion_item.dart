@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2025 BitCodersNN
 
+import 'package:unn_mobile/core/misc/json/json_utils.dart';
+
 class _ScheduleSearchSuggestionJsonKeys {
   static const String id = 'id';
   static const String label = 'label';
@@ -19,25 +21,22 @@ class ScheduleSearchSuggestionItem {
   String get description => _description;
 
   @override
-  bool operator ==(other) =>
+  bool operator ==(Object other) =>
       other is ScheduleSearchSuggestionItem && (_id == other._id);
 
   @override
   int get hashCode => Object.hash(_id, _label, _description);
 
-  factory ScheduleSearchSuggestionItem.fromJson(Map<String, Object?> jsonMap) {
-    return ScheduleSearchSuggestionItem(
-      jsonMap[_ScheduleSearchSuggestionJsonKeys.id] as String,
-      jsonMap[_ScheduleSearchSuggestionJsonKeys.label] as String,
-      jsonMap[_ScheduleSearchSuggestionJsonKeys.description] as String,
-    );
-  }
+  factory ScheduleSearchSuggestionItem.fromJson(JsonMap jsonMap) =>
+      ScheduleSearchSuggestionItem(
+        jsonMap[_ScheduleSearchSuggestionJsonKeys.id]! as String,
+        jsonMap[_ScheduleSearchSuggestionJsonKeys.label]! as String,
+        jsonMap[_ScheduleSearchSuggestionJsonKeys.description]! as String,
+      );
 
-  Map<String, Object?> toJson() {
-    return {
-      _ScheduleSearchSuggestionJsonKeys.id: _id,
-      _ScheduleSearchSuggestionJsonKeys.label: _label,
-      _ScheduleSearchSuggestionJsonKeys.description: _description,
-    };
-  }
+  JsonMap toJson() => {
+        _ScheduleSearchSuggestionJsonKeys.id: _id,
+        _ScheduleSearchSuggestionJsonKeys.label: _label,
+        _ScheduleSearchSuggestionJsonKeys.description: _description,
+      };
 }

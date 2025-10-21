@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2025 BitCodersNN
 
+import 'package:unn_mobile/core/services/implementations/dialog/dialog_search_service_impl.dart';
+
 /// Класс, содержащий константы, описывающие структуру запросов к разным API
 class RequestPayloads {
   /// Константа, описывающая структуру запроса для поиска и управления диалогами.

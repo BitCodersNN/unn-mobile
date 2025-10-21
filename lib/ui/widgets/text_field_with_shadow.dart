@@ -85,19 +85,12 @@ class TextFieldWithBoxShadow extends StatelessWidget {
                     borderRadius: BorderRadius.circular(
                       16.0,
                     ),
-                    // borderSide: BorderSide(
-                    // 		width: 0,
-                    // 		style: BorderStyle.none
-                    // ),
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(
                       16.0,
                     ),
-                    borderSide: const BorderSide(
-                      width: 0,
-                      style: BorderStyle.none,
-                    ),
+                    borderSide: BorderSide.none,
                   ),
                 ),
                 controller: controller,

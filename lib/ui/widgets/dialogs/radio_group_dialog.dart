@@ -11,8 +11,8 @@ class RadioGroupDialog extends StatefulWidget {
   final Widget cancelButtonChild;
 
   const RadioGroupDialog({
-    super.key,
     required this.radioLabels,
+    super.key,
     this.label,
     this.okButtonChild = const Text('OK'),
     this.cancelButtonChild = const Text('Отмена'),

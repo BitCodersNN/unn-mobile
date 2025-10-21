@@ -2,15 +2,16 @@
 // Copyright 2025 BitCodersNN
 
 import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:unn_mobile/core/api_helpers/authenticated_api_helper.dart';
+import 'package:unn_mobile/core/api_helpers/base_options_factory.dart';
+import 'package:unn_mobile/core/api_helpers/http_methods.dart';
 import 'package:unn_mobile/core/constants/api/host_with_base_path.dart';
 import 'package:unn_mobile/core/constants/api/protocol_type.dart';
 import 'package:unn_mobile/core/constants/regular_expressions.dart';
 import 'package:unn_mobile/core/constants/string_keys/session_identifier_keys.dart';
-import 'package:unn_mobile/core/misc/api_helpers/authenticated_api_helper.dart';
-import 'package:unn_mobile/core/misc/api_helpers/base_options_factory.dart';
-import 'package:unn_mobile/core/misc/api_helpers/http_methods.dart';
 
 class _HttpHeaders {
   static const String cookieKey = 'Cookie';
@@ -61,15 +62,14 @@ abstract class WebAuthenticatedApiHelper extends AuthenticatedApiHelper {
     Map<String, dynamic>? queryParameters,
     Options? options,
     ProgressCallback? onReceiveProgress,
-  }) async {
-    return await _request(
-      httpMethod: HttpMethod.get,
-      path: path,
-      queryParameters: queryParameters,
-      options: options,
-      onReceiveProgress: onReceiveProgress,
-    );
-  }
+  }) =>
+      _request(
+        httpMethod: HttpMethod.get,
+        path: path,
+        queryParameters: queryParameters,
+        options: options,
+        onReceiveProgress: onReceiveProgress,
+      );
 
   @override
   Future<Response> post({
@@ -79,17 +79,16 @@ abstract class WebAuthenticatedApiHelper extends AuthenticatedApiHelper {
     Options? options,
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
-  }) async {
-    return await _request(
-      httpMethod: HttpMethod.post,
-      path: path,
-      body: data,
-      queryParameters: queryParameters,
-      options: options,
-      onReceiveProgress: onReceiveProgress,
-      onSendProgress: onSendProgress,
-    );
-  }
+  }) =>
+      _request(
+        httpMethod: HttpMethod.post,
+        path: path,
+        body: data,
+        queryParameters: queryParameters,
+        options: options,
+        onReceiveProgress: onReceiveProgress,
+        onSendProgress: onSendProgress,
+      );
 
   Future<Response> _request({
     required HttpMethod httpMethod,

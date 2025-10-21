@@ -2,11 +2,12 @@
 // Copyright 2025 BitCodersNN
 
 import 'package:dio/dio.dart';
+import 'package:unn_mobile/core/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/constants/api/path.dart';
 import 'package:unn_mobile/core/constants/string_keys/session_identifier_keys.dart';
-import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/misc/dio_interceptor/response_data_type.dart';
 import 'package:unn_mobile/core/misc/dio_options_factory/options_with_timeout_and_expected_type_factory.dart';
+import 'package:unn_mobile/core/misc/json/json_utils.dart';
 import 'package:unn_mobile/core/models/common/file_data.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation/unn_authorisation_service.dart';
 import 'package:unn_mobile/core/services/interfaces/common/file_data_service.dart';
@@ -49,7 +50,7 @@ class FileDataServiceImpl implements FileDataService {
     dynamic jsonMap;
 
     try {
-      jsonMap = response.data['result'];
+      jsonMap = (response.data as JsonMap)['result'];
     } catch (error, stackTrace) {
       _loggerService.logError(error, stackTrace);
       return null;

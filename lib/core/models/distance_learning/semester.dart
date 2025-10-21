@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:unn_mobile/core/constants/academic_year.dart';
 import 'package:unn_mobile/core/misc/bounded_int.dart';
 import 'package:unn_mobile/core/misc/date_time_utilities/date_time_extensions.dart';
+import 'package:unn_mobile/core/misc/json/json_utils.dart';
 
 class SemesterJsonKeys {
   static const String semester = 'semester';
@@ -39,16 +40,16 @@ class Semester {
           errorMessage: 'Год должен быть от 2000 до ${DateTime.now().year}',
         );
 
-  factory Semester.fromJson(Map<String, Object?> jsonMap) => Semester(
+  factory Semester.fromJson(JsonMap jsonMap) => Semester(
         semester: int.parse(
-          jsonMap[SemesterJsonKeys.semester] as String,
+          jsonMap[SemesterJsonKeys.semester]! as String,
         ),
         year: int.parse(
-          jsonMap[SemesterJsonKeys.year] as String,
+          jsonMap[SemesterJsonKeys.year]! as String,
         ),
       );
 
-  Map<String, Object?> toJson() => {
+  JsonMap toJson() => {
         SemesterJsonKeys.semester: semester.toString(),
         SemesterJsonKeys.year: year.toString(),
       };

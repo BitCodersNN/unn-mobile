@@ -14,9 +14,9 @@ class HeightLimiter extends StatefulWidget {
   final Widget Function(BuildContext context)? overflowIndicatorBuilder;
 
   const HeightLimiter({
-    super.key,
     required this.maxHeight,
     required this.child,
+    super.key,
     this.fadeEffectHeight = 72,
     this.overflowIndicatorBuilder,
   });
@@ -65,22 +65,20 @@ class _HeightLimiterState extends State<HeightLimiter> {
     );
   }
 
-  Widget _buildOverflowIndicator() {
-    return Container(
-      height: widget.fadeEffectHeight,
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.bottomCenter,
-          end: Alignment.topCenter,
-          colors: [
-            Colors.white.withAlpha(200),
-            Colors.white.withAlpha(0),
-          ],
-          tileMode: TileMode.clamp,
+  Widget _buildOverflowIndicator() => Container(
+        height: widget.fadeEffectHeight,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.bottomCenter,
+            end: Alignment.topCenter,
+            colors: [
+              Colors.white.withAlpha(200),
+              Colors.white.withAlpha(0),
+            ],
+            tileMode: TileMode.clamp,
+          ),
         ),
-      ),
-    );
-  }
+      );
 }
 
 class MeasureSizeRenderObject extends RenderProxyBox {
@@ -94,7 +92,9 @@ class MeasureSizeRenderObject extends RenderProxyBox {
     super.performLayout();
 
     final Size newSize = child!.size;
-    if (oldSize == newSize) return;
+    if (oldSize == newSize) {
+      return;
+    }
 
     oldSize = newSize;
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -107,15 +107,14 @@ class MeasureSize extends SingleChildRenderObjectWidget {
   final OnWidgetSizeChange onChange;
 
   const MeasureSize({
-    super.key,
     required this.onChange,
     required Widget super.child,
+    super.key,
   });
 
   @override
-  RenderObject createRenderObject(BuildContext context) {
-    return MeasureSizeRenderObject(onChange);
-  }
+  RenderObject createRenderObject(BuildContext context) =>
+      MeasureSizeRenderObject(onChange);
 
   @override
   void updateRenderObject(

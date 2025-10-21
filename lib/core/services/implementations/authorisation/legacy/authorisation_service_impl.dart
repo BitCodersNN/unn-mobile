@@ -5,12 +5,12 @@ import 'dart:io';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
+import 'package:unn_mobile/core/api_helpers/legacy/http_helper.dart';
 import 'package:unn_mobile/core/constants/api/ajax_action.dart';
 import 'package:unn_mobile/core/constants/api/path.dart';
 import 'package:unn_mobile/core/constants/string_keys/session_identifier_keys.dart';
 import 'package:unn_mobile/core/misc/authorisation/authorisation_request_result.dart';
 import 'package:unn_mobile/core/misc/custom_errors/auth_exceptions.dart';
-import 'package:unn_mobile/core/misc/api_helpers/legacy/http_helper.dart';
 import 'package:unn_mobile/core/models/common/online_status_data.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation/unn_authorisation_service.dart';
 
@@ -100,13 +100,13 @@ class LegacyAuthorizationServiceImpl extends ChangeNotifier
   Future<HttpClientResponse> _sendAuthRequest(
     String login,
     String password,
-  ) async {
+  ) {
     final requestSender = HttpRequestSender(
       path: ApiPath.auth,
       queryParams: {'login': 'yes'},
     );
 
-    return await requestSender.postForm(
+    return requestSender.postForm(
       {
         'AUTH_FORM': 'Y',
         'TYPE': 'AUTH',
@@ -118,20 +118,18 @@ class LegacyAuthorizationServiceImpl extends ChangeNotifier
     );
   }
 
-  Future<HttpClientResponse> _sendCsrfRequest(String session) async {
+  Future<HttpClientResponse> _sendCsrfRequest(String session) {
     final requestSender = HttpRequestSender(
       path: ApiPath.ajax,
       queryParams: {AjaxActionStrings.actionKey: AjaxActionStrings.getNextPage},
       cookies: {SessionIdentifierKeys.sessionIdCookieKey: session},
     );
 
-    return await requestSender.get(timeoutSeconds: 15);
+    return requestSender.get(timeoutSeconds: 15);
   }
 
-  Future<bool> _isOffline() async {
-    return (await Connectivity().checkConnectivity())
-        .contains(ConnectivityResult.none);
-  }
+  Future<bool> _isOffline() async => (await Connectivity().checkConnectivity())
+      .contains(ConnectivityResult.none);
 
   @override
   void logout() {}

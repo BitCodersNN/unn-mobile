@@ -53,63 +53,59 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView>
   }
 
   @override
-  Widget build(BuildContext context) {
-    return OfflineOverlayDisplayer(
-      child: BaseView<ScheduleScreenViewModel>(
-        model: _viewModel,
-        builder: (context, model, _) {
-          final expanded = _createExpanded(model);
-          return Scaffold(
-            appBar: AppBar(
-              leading: getSubpageLeading(widget.bottomRouteIndex),
-              title: const Text('Расписание'),
-            ),
-            body: OnlineStatusBuilder(
-              onlineWidget: Column(
-                children: [
-                  MediaQuery.withClampedTextScaling(
-                    maxScaleFactor: 1.5,
-                    child: TabBar(
-                      indicatorSize: TabBarIndicatorSize.label,
-                      tabAlignment: TabAlignment.center,
-                      isScrollable: true,
-                      tabs: [
-                        for (final idType in model.tabIdTypes)
-                          Tab(
-                            text: _tabTexts[idType],
-                          ),
-                      ],
-                      controller: _tabController,
-                      onTap: (value) => model.selectedTab = value,
+  Widget build(BuildContext context) => OfflineOverlayDisplayer(
+        child: BaseView<ScheduleScreenViewModel>(
+          model: _viewModel,
+          builder: (context, model, _) {
+            final expanded = _createExpanded(model);
+            return Scaffold(
+              appBar: AppBar(
+                leading: getSubpageLeading(widget.bottomRouteIndex),
+                title: const Text('Расписание'),
+              ),
+              body: OnlineStatusBuilder(
+                onlineWidget: Column(
+                  children: [
+                    MediaQuery.withClampedTextScaling(
+                      maxScaleFactor: 1.5,
+                      child: TabBar(
+                        indicatorSize: TabBarIndicatorSize.label,
+                        tabAlignment: TabAlignment.center,
+                        isScrollable: true,
+                        tabs: [
+                          for (final idType in model.tabIdTypes)
+                            Tab(
+                              text: _tabTexts[idType],
+                            ),
+                        ],
+                        controller: _tabController,
+                        onTap: (value) => model.selectedTab = value,
+                      ),
                     ),
-                  ),
-                  expanded,
-                ],
+                    expanded,
+                  ],
+                ),
+                offlineWidget: Column(
+                  children: [
+                    expanded,
+                  ],
+                ),
               ),
-              offlineWidget: Column(
-                children: [
-                  expanded,
-                ],
-              ),
-            ),
-          );
-        },
-        onModelReady: (p0) => p0.init(),
-      ),
-    );
-  }
+            );
+          },
+          onModelReady: (p0) => p0.init(),
+        ),
+      );
 
-  Expanded _createExpanded(ScheduleScreenViewModel model) {
-    return Expanded(
-      child: TabBarView(
-        controller: _tabController,
-        children: [
-          for (int i = 0; i < model.tabIdTypes.length; i++)
-            ScheduleTab(model.tabIdTypes[i], model.tabViewModels[i]),
-        ],
-      ),
-    );
-  }
+  Expanded _createExpanded(ScheduleScreenViewModel model) => Expanded(
+        child: TabBarView(
+          controller: _tabController,
+          children: [
+            for (int i = 0; i < model.tabIdTypes.length; i++)
+              ScheduleTab(model.tabIdTypes[i], model.tabViewModels[i]),
+          ],
+        ),
+      );
 
   @override
   void dispose() {

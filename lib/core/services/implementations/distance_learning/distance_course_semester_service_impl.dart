@@ -2,13 +2,13 @@
 // Copyright 2025 BitCodersNN
 
 import 'package:dio/dio.dart';
+import 'package:unn_mobile/core/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/constants/regular_expressions.dart';
-import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/misc/dio_interceptor/response_data_type.dart';
 import 'package:unn_mobile/core/misc/dio_options_factory/options_with_timeout_and_expected_type_factory.dart';
 import 'package:unn_mobile/core/models/distance_learning/semester.dart';
-import 'package:unn_mobile/core/services/interfaces/distance_learning/distance_course_semester_service.dart';
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
+import 'package:unn_mobile/core/services/interfaces/distance_learning/distance_course_semester_service.dart';
 
 class DistanceCourseSemesterServiceImpl
     implements DistanceCourseSemesterService {
@@ -52,26 +52,24 @@ class DistanceCourseSemesterServiceImpl
     }
   }
 
-  List<Semester> _parseSemesters(Iterable<RegExpMatch> matches) {
-    return matches
-        .map((match) {
-          final yearStr = match.group(1);
-          final semesterStr = match.group(2);
+  List<Semester> _parseSemesters(Iterable<RegExpMatch> matches) => matches
+      .map((match) {
+        final yearStr = match.group(1);
+        final semesterStr = match.group(2);
 
-          final year = int.tryParse(yearStr ?? '');
-          final semester = int.tryParse(semesterStr ?? '');
+        final year = int.tryParse(yearStr ?? '');
+        final semester = int.tryParse(semesterStr ?? '');
 
-          if (year == null || semester == null) {
-            throw FormatException('Invalid year or semester in match: $match');
-          }
+        if (year == null || semester == null) {
+          throw FormatException('Invalid year or semester in match: $match');
+        }
 
-          try {
-            return Semester(year: year, semester: semester);
-          } on ArgumentError {
-            return null;
-          }
-        })
-        .whereType<Semester>()
-        .toList();
-  }
+        try {
+          return Semester(year: year, semester: semester);
+        } on ArgumentError {
+          return null;
+        }
+      })
+      .whereType<Semester>()
+      .toList();
 }

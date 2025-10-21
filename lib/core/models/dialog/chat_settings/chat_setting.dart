@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2025 BitCodersNN
 
+import 'package:unn_mobile/core/misc/json/json_utils.dart';
 import 'package:unn_mobile/core/models/dialog/chat_settings/base_chat_setting.dart';
 import 'package:unn_mobile/core/models/dialog/chat_settings/chat_restrictions.dart';
 
@@ -25,7 +26,7 @@ class ChatSetting extends BaseChatSetting {
     required this.restrictions,
   });
 
-  factory ChatSetting.fromJson(Map<String, dynamic> json) {
+  factory ChatSetting.fromJson(JsonMap json) {
     final baseChatSetting = BaseChatSetting.fromJson(json);
     return ChatSetting(
       muteList: baseChatSetting.muteList,
@@ -33,16 +34,16 @@ class ChatSetting extends BaseChatSetting {
       role: baseChatSetting.role,
       permissions: baseChatSetting.permissions,
       managerList:
-          List<int>.from(json[_ChatSettingJsonKeys.managerList] as List),
-      userCounter: json[_ChatSettingJsonKeys.userCounter] as int,
+          List<int>.from(json[_ChatSettingJsonKeys.managerList]! as List),
+      userCounter: json[_ChatSettingJsonKeys.userCounter]! as int,
       restrictions: ChatRestrictions.fromJson(
-        json[_ChatSettingJsonKeys.restrictions] as Map<String, dynamic>,
+        json[_ChatSettingJsonKeys.restrictions]! as JsonMap,
       ),
     );
   }
 
   @override
-  Map<String, dynamic> toJson() => {
+  JsonMap toJson() => {
         ...super.toJson(),
         _ChatSettingJsonKeys.managerList: managerList,
         _ChatSettingJsonKeys.userCounter: userCounter,

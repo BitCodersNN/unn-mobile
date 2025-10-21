@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2025 BitCodersNN
 
+import 'package:unn_mobile/core/misc/json/json_utils.dart';
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
 
 class _ResponseDataJsonKeys {
@@ -11,7 +12,7 @@ class _ResponseDataJsonKeys {
 
 class ResponseStatusValidator {
   static bool validate(
-    Map<String, dynamic> responseData,
+    JsonMap responseData,
     LoggerService loggerService,
   ) {
     final status = responseData[_ResponseDataJsonKeys.status];

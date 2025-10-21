@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:unn_mobile/core/misc/json/json_key.dart';
 import 'package:unn_mobile/core/misc/json/json_key_format.dart';
 import 'package:unn_mobile/core/misc/json/json_serializable.dart';
+import 'package:unn_mobile/core/misc/json/json_utils.dart';
 
 abstract class _FileDataKeys extends JsonKeys {
   String get id;
@@ -67,12 +68,12 @@ class FileData
   });
 
   factory FileData._fromJsonWithKeys(
-    Map<String, dynamic> json,
+    JsonMap json,
     _FileDataKeys keys, {
     bool generateIdFromName = false,
   }) {
     final id = switch (generateIdFromName) {
-      true => (json[keys.name] as String).hashCode,
+      true => (json[keys.name]! as String).hashCode,
       false => switch (json[keys.id]) {
           final int idValue => idValue,
           final String idString => int.parse(idString),
@@ -88,33 +89,27 @@ class FileData
 
     return FileData(
       id: id,
-      name: json[keys.name] as String,
+      name: json[keys.name]! as String,
       sizeInBytes: size,
-      downloadUrl: json[keys.downloadUrl] as String,
+      downloadUrl: json[keys.downloadUrl]! as String,
     );
   }
 
-  factory FileData.fromJson(Map<String, dynamic> json) {
-    return FileData._fromJsonWithKeys(
-      json,
-      const _DefaultFileDataKeys(),
-      generateIdFromName: true,
-    );
-  }
+  factory FileData.fromJson(JsonMap json) => FileData._fromJsonWithKeys(
+        json,
+        const _DefaultFileDataKeys(),
+        generateIdFromName: true,
+      );
 
-  factory FileData.fromBitrixJson(Map<String, dynamic> json) {
-    return FileData._fromJsonWithKeys(
-      json,
-      const _BitrixFileDataKeys(),
-    );
-  }
+  factory FileData.fromBitrixJson(JsonMap json) => FileData._fromJsonWithKeys(
+        json,
+        const _BitrixFileDataKeys(),
+      );
 
-  factory FileData.fromMessageJson(Map<String, dynamic> json) {
-    return FileData._fromJsonWithKeys(
-      json,
-      const _MessageFileDataKeys(),
-    );
-  }
+  factory FileData.fromMessageJson(JsonMap json) => FileData._fromJsonWithKeys(
+        json,
+        const _MessageFileDataKeys(),
+      );
 
   @protected
   @override
@@ -126,7 +121,7 @@ class FileData
 
   @protected
   @override
-  Map<String, dynamic> buildJsonMap(JsonKeys keys) {
+  JsonMap buildJsonMap(JsonKeys keys) {
     keys as _FileDataKeys;
     return {
       keys.id: id.toString(),

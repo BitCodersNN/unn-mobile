@@ -17,9 +17,8 @@ class PersistentHeader extends SliverPersistentHeaderDelegate {
     BuildContext context,
     double shrinkOffset,
     bool overlapsContent,
-  ) {
-    return widget;
-  }
+  ) =>
+      widget;
 
   @override
   final double maxExtent;
@@ -28,7 +27,5 @@ class PersistentHeader extends SliverPersistentHeaderDelegate {
   final double minExtent;
 
   @override
-  bool shouldRebuild(SliverPersistentHeaderDelegate oldDelegate) {
-    return true;
-  }
+  bool shouldRebuild(SliverPersistentHeaderDelegate oldDelegate) => true;
 }

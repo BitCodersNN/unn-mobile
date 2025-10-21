@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2025 BitCodersNN
 
+import 'dart:async';
+
 import 'package:unn_mobile/core/constants/string_keys/authors_config_keys.dart';
 import 'package:unn_mobile/core/misc/git/git_folder.dart';
 import 'package:unn_mobile/core/misc/git/update_last_commit_sha_and_config_if_changed.dart';
@@ -55,6 +57,6 @@ class AboutViewModel extends BaseViewModel {
       return;
     }
 
-    authorsProvider.saveData(authors);
+    unawaited(authorsProvider.saveData(authors));
   }
 }

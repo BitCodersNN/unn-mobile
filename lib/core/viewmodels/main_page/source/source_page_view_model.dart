@@ -106,7 +106,7 @@ class SourcePageViewModel extends BaseViewModel {
       _sessionChecker,
       _sourceAuthorisationService,
       _authDataProvider,
-      () async => _courseService.getDistanceCourses(semester: currentSemester!),
+      () => _courseService.getDistanceCourses(semester: currentSemester!),
     );
     _materialsMap[currentSemester!] =
         courses?.map((c) => SourceCourseViewModel(c, _downloader)) ?? [];
@@ -118,7 +118,7 @@ class SourcePageViewModel extends BaseViewModel {
       _sessionChecker,
       _sourceAuthorisationService,
       _authDataProvider,
-      () async => await _webinarService.getWebinars(semester: currentSemester!),
+      () => _webinarService.getWebinars(semester: currentSemester!),
     );
     final groupedWebinars = <DateTime, List<SourceWebinarViewModel>>{};
 
@@ -129,9 +129,8 @@ class SourcePageViewModel extends BaseViewModel {
 
     for (final webinar in webinars) {
       final date = DateUtils.dateOnly(webinar.dateTimeRange.start);
-      final list = groupedWebinars[date] ?? [];
-      list.add(SourceWebinarViewModel(webinar));
-      groupedWebinars[date] = list;
+      groupedWebinars[date] = groupedWebinars[date] ?? []
+        ..add(SourceWebinarViewModel(webinar));
     }
 
     _webinarsMap[currentSemester!] = groupedWebinars;

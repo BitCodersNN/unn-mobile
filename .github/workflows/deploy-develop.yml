@@ -12,6 +12,7 @@ on:
       - "android/**"
       - "lib/**"
       - "pubspec.yaml"
+  workflow_dispatch:
       
 
 concurrency:

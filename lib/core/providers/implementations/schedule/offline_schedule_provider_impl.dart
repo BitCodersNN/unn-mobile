@@ -33,7 +33,7 @@ class OfflineScheduleProviderImpl implements OfflineScheduleProvider {
 
     return parseJsonIterable<Subject>(
       jsonList,
-      (jsonMap) => Subject.fromJson(jsonMap),
+      Subject.fromJson,
       _loggerService,
     );
   }
@@ -55,12 +55,12 @@ class OfflineScheduleProviderImpl implements OfflineScheduleProvider {
   }
 
   @override
-  Future<bool> isContained() async => _storage.containsKey(
+  Future<bool> isContained() => _storage.containsKey(
         key: _OfflineScheduleProviderKeys.scheduleKey,
       );
 
   @override
-  Future<void> removeData() async => _storage.remove(
+  Future<void> removeData() => _storage.remove(
         key: _OfflineScheduleProviderKeys.scheduleKey,
       );
 }

@@ -33,7 +33,7 @@ class LastFeedLoadDateTimeProviderImpl implements LastFeedLoadDateTimeProvider {
   }
 
   @override
-  Future<bool> isContained() async => _storage.containsKey(
+  Future<bool> isContained() => _storage.containsKey(
         key: _LastFeedLoadDateTimeProviderKeys.feedTimeStorageKey,
       );
 

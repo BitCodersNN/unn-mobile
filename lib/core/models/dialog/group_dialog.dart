@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2025 BitCodersNN
 
+import 'package:unn_mobile/core/misc/json/json_utils.dart';
 import 'package:unn_mobile/core/models/dialog/chat_settings/calendar_chat_setting.dart';
 import 'package:unn_mobile/core/models/dialog/chat_settings/chat_setting.dart';
 import 'package:unn_mobile/core/models/dialog/chat_settings/sonnet_group_chat_setting.dart';
@@ -30,7 +31,7 @@ final class GroupDialog extends Dialog {
     required this.chatSetting,
   });
 
-  factory GroupDialog.fromJson(Map<String, dynamic> json) {
+  factory GroupDialog.fromJson(JsonMap json) {
     final dialog = Dialog.fromJson(json);
 
     return GroupDialog(
@@ -41,22 +42,21 @@ final class GroupDialog extends Dialog {
       unreadMessagesCount: dialog.unreadMessagesCount,
       lastMessageStatus: dialog.lastMessageStatus,
       pinned: dialog.pinned,
-      dialogId: json[GroupDialogJsonKeys.id],
-      chatSetting: _parseChatSetting(json[GroupDialogJsonKeys.chat]),
+      dialogId: json[GroupDialogJsonKeys.id]! as String,
+      chatSetting:
+          _parseChatSetting(json[GroupDialogJsonKeys.chat]! as JsonMap),
     );
   }
 
   @override
-  Map<String, dynamic> toJson() {
-    return {
-      ...super.toJson(),
-      GroupDialogJsonKeys.id: dialogId,
-      GroupDialogJsonKeys.chat: chatSetting.toJson(),
-      GroupDialogJsonKeys.type: GroupDialogJsonKeys.chat,
-    };
-  }
+  JsonMap toJson() => {
+        ...super.toJson(),
+        GroupDialogJsonKeys.id: dialogId,
+        GroupDialogJsonKeys.chat: chatSetting.toJson(),
+        GroupDialogJsonKeys.type: GroupDialogJsonKeys.chat,
+      };
 
-  static ChatSetting _parseChatSetting(Map<String, dynamic> chatJson) {
+  static ChatSetting _parseChatSetting(JsonMap chatJson) {
     final type = chatJson[GroupDialogJsonKeys.type] as String?;
 
     switch (type) {

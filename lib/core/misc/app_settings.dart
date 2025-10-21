@@ -13,12 +13,12 @@ class AppSettings {
     vibrationEnabled = await _readValue(
       AppSettingsKeys.vibrationEnabled,
       defaultValue: true,
-      parser: (val) => bool.tryParse(val),
+      parser: bool.tryParse,
     );
     initialPage = await _readValue(
       AppSettingsKeys.initialPage,
       defaultValue: 0,
-      parser: (val) => int.tryParse(val),
+      parser: int.tryParse,
     );
   }
 

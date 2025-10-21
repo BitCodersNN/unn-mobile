@@ -2,16 +2,17 @@
 // Copyright 2025 BitCodersNN
 
 import 'package:dio/dio.dart';
+import 'package:unn_mobile/core/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/constants/api/path.dart';
-import 'package:unn_mobile/core/misc/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/misc/custom_errors/response_type_exception.dart';
 import 'package:unn_mobile/core/misc/dio_interceptor/response_data_type.dart';
 import 'package:unn_mobile/core/misc/dio_options_factory/options_for_distance_course_factory.dart';
 import 'package:unn_mobile/core/misc/json/json_iterable_parser.dart';
+import 'package:unn_mobile/core/misc/json/json_utils.dart';
 import 'package:unn_mobile/core/models/distance_learning/distance_course.dart';
 import 'package:unn_mobile/core/models/distance_learning/semester.dart';
-import 'package:unn_mobile/core/services/interfaces/distance_learning/distance_course_service.dart';
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
+import 'package:unn_mobile/core/services/interfaces/distance_learning/distance_course_service.dart';
 
 class _QueryParamNames {
   static const String semester = 'semester';
@@ -47,8 +48,8 @@ class DistanceCourseServiceImpl implements DistanceCourseService {
     } catch (exception, stackTrace) {
       if (exception is DioException &&
           exception.error is ResponseTypeException) {
-        final responseTypeException = exception.error as ResponseTypeException;
-        if (responseTypeException.actualType == List<dynamic>) {
+        final responseTypeException = exception.error as ResponseTypeException?;
+        if (responseTypeException?.actualType == List<dynamic>) {
           return [];
         }
       }
@@ -57,14 +58,14 @@ class DistanceCourseServiceImpl implements DistanceCourseService {
     }
 
     return parseJsonIterable<DistanceCourse>(
-      response.data.values,
+      (response.data as JsonMap).values,
       _processCourse,
       _loggerService,
     );
   }
 
   DistanceCourse _processCourse(Map<String, dynamic> course) {
-    final firstMaterialData = (course.values.first as List).first;
+    final firstMaterialData = (course.values.first as List).first as JsonMap;
 
     course[SemesterJsonKeys.semester] =
         firstMaterialData[SemesterJsonKeys.semester];
