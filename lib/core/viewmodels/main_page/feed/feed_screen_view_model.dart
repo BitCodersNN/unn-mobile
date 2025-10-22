@@ -66,7 +66,6 @@ class FeedScreenViewModel extends BaseViewModel
   );
 
   void init() {
-    _lastFeedLoadDateTimeProvider.getData();
     _blogPostProvider //
         .getData() //
         .then((posts) => _addPostsToList(offlinePosts, posts)) //
@@ -119,20 +118,31 @@ class FeedScreenViewModel extends BaseViewModel
         loadingMore = true;
         _numberUnreadMessages = 0;
 
-        await refreshFeatured();
-
-        final freshPosts = await tryLoginAndRetrieveData<List<BlogPost>>(
-          () => _regularBlogPostsService.getRegularBlogPosts(
-            postsPerPage: postsPerPage,
-          ),
-          () => null,
+        final [_, _, freshPosts as List<BlogPost>?] = await Future.wait(
+          [
+            _lastFeedLoadDateTimeProvider.getData(),
+            refreshFeatured(),
+            tryLoginAndRetrieveData<List<BlogPost>>(
+              () => _regularBlogPostsService.getRegularBlogPosts(
+                postsPerPage: postsPerPage,
+              ),
+              () => null,
+            ),
+          ],
         );
+
         if (freshPosts == null) {
           loadingMore = false;
           failedToLoad = true;
           return;
         }
-        await _blogPostProvider.saveData(freshPosts);
+
+        await Future.wait([
+          _blogPostProvider.saveData(freshPosts),
+          _lastFeedLoadDateTimeProvider
+              .saveData(freshPosts.first.data.datePublish),
+        ]);
+
         offlinePosts.clear();
         _totalPosts.clear();
 
@@ -141,8 +151,6 @@ class FeedScreenViewModel extends BaseViewModel
         offlinePosts.addAll(_totalPosts);
         loadingMore = false;
         _currentPage = 1;
-        await _lastFeedLoadDateTimeProvider
-            .saveData(freshPosts.first.data.datePublish);
       });
 
   Future<void> refreshFeatured() async => changeState(() async {

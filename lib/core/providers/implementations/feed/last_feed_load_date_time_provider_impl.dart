@@ -43,7 +43,6 @@ class LastFeedLoadDateTimeProviderImpl implements LastFeedLoadDateTimeProvider {
       key: _LastFeedLoadDateTimeProviderKeys.feedTimeStorageKey,
       value: data?.toIso8601String() ?? '_',
     );
-    _storedTime = data;
   }
 
   @override
