@@ -50,7 +50,7 @@ dependencies:
   event: ^3.1.0
   webview_flutter_android: ^4.0.0
   dartz: ^0.10.1
-  flutter_widget_from_html: ^0.15.3
+  flutter_widget_from_html: ">=0.15.3 <0.18.0"
   mime: ^2.0.0
   uuid: ^4.5.1
   content_resolver: ^0.3.2
