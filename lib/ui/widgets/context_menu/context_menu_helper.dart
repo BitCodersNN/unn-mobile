@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright 2025 BitCodersNN
+
 // context_menu_action.dart
 
 import 'package:flutter/material.dart';
