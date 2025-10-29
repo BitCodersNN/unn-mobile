@@ -18,10 +18,20 @@ class ContextMenuAction {
   factory ContextMenuAction.text({
     required String label,
     VoidCallback? onTap,
+    Widget? leadingIcon,
   }) =>
       ContextMenuAction(
         entry: PopupMenuItem<void>(
-          child: Text(label),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (leadingIcon != null) ...[
+                leadingIcon,
+                const SizedBox(width: 12),
+              ],
+              Text(label),
+            ],
+          ),
         ),
         onTap: onTap,
       );

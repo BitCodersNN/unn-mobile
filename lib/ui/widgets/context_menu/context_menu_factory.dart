@@ -71,6 +71,7 @@ List<ContextMenuAction> _createActions({
       ContextMenuAction.text(
         label: 'Скопировать текст',
         onTap: () => Clipboard.setData(ClipboardData(text: textToCopy)),
+        leadingIcon: const Icon(Icons.content_copy, size: 18),
       ),
     );
   }
@@ -80,6 +81,7 @@ List<ContextMenuAction> _createActions({
       ContextMenuAction.text(
         label: 'Ответить',
         onTap: onReply,
+        leadingIcon: const Icon(Icons.reply, size: 18),
       ),
     );
   }
@@ -89,6 +91,10 @@ List<ContextMenuAction> _createActions({
       ContextMenuAction.text(
         label: isPinned ? 'Открепить' : 'Закрепить',
         onTap: onTogglePin,
+        leadingIcon: Icon(
+          isPinned ? Icons.push_pin : Icons.push_pin_outlined,
+          size: 18,
+        ),
       ),
     );
   }
@@ -98,6 +104,7 @@ List<ContextMenuAction> _createActions({
       ContextMenuAction.text(
         label: 'Поделиться',
         onTap: onShare,
+        leadingIcon: const Icon(Icons.share, size: 18),
       ),
     );
   }
