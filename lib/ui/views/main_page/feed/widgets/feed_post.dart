@@ -24,7 +24,7 @@ import 'package:unn_mobile/ui/views/base_view.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/functions/reactions_window.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/widgets/attached_file.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/widgets/packed_post_images.dart';
-import 'package:unn_mobile/ui/views/main_page/feed/widgets/post_html_widget.dart';
+import 'package:unn_mobile/ui/views/main_page/feed/widgets/text_html_widget.dart';
 import 'package:unn_mobile/ui/views/main_page/main_page_routing.dart';
 import 'package:unn_mobile/ui/widgets/context_menu/context_menu_factory.dart';
 import 'package:unn_mobile/ui/widgets/context_menu/context_menu_helper.dart';
@@ -333,7 +333,7 @@ class _FeedPostState extends State<FeedPost> {
   Widget _buildPostContent(FeedPostViewModel model) => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          PostHtmlWidget(text: model.postText),
+          TextHtmlWidget(text: model.postText),
           PackedPostImages(attachedImages: model.attachedImages),
         ],
       );
