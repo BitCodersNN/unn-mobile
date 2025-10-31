@@ -2,7 +2,6 @@
 // Copyright 2025 BitCodersNN
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bbcode/flutter_bbcode.dart';
 import 'package:unn_mobile/core/constants/date_pattern.dart';
 import 'package:unn_mobile/core/misc/custom_bb_tags.dart';
@@ -22,6 +21,8 @@ import 'package:unn_mobile/core/viewmodels/main_page/feed/attached_file_view_mod
 import 'package:unn_mobile/ui/views/base_view.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/widgets/attached_file.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/widgets/reaction_bubble.dart';
+import 'package:unn_mobile/ui/widgets/context_menu/context_menu_factory.dart';
+import 'package:unn_mobile/ui/widgets/context_menu/context_menu_helper.dart';
 
 const systemMessageSeparator =
     '------------------------------------------------------\n';
@@ -231,7 +232,17 @@ class _MessageWidgetState extends State<MessageWidget> {
     return BaseView<MessageReactionViewModel>(
       model: MessageReactionViewModel.cached(widget.message.messageId),
       builder: (context, model, _) => GestureDetector(
-        onLongPress: () => _showContextMenu(model),
+        onLongPress: () => ContextMenuHelper.showContextMenu(
+          context: context,
+          model: model,
+          actionsBuilder: () => createMessageActions(
+            context: context,
+            model: model,
+            widget: widget,
+          ),
+          onOpen: () => setState(() => _isHighlighted = true),
+          onClose: () => setState(() => _isHighlighted = false),
+        ),
         child: _buildMessageContent(context, model, theme),
       ),
       onModelReady: (model) => model.init(
@@ -239,93 +250,6 @@ class _MessageWidgetState extends State<MessageWidget> {
         widget.message.ratingList,
       ),
     );
-  }
-
-  void _showContextMenu(MessageReactionViewModel model) {
-    setState(() => _isHighlighted = true);
-    triggerHaptic(HapticIntensity.medium);
-
-    final renderBox = context.findRenderObject()! as RenderBox;
-    final offset = renderBox.localToGlobal(Offset.zero);
-
-    showMenu<String>(
-      context: context,
-      position: RelativeRect.fromLTRB(
-        offset.dx,
-        offset.dy + renderBox.size.height,
-        offset.dx + renderBox.size.width,
-        offset.dy + renderBox.size.height + 1,
-      ),
-      items: _buildMenuItems(model),
-    ).then((value) {
-      setState(() => _isHighlighted = false);
-      _handleMenuSelection(value);
-    });
-  }
-
-  List<PopupMenuEntry<String>> _buildMenuItems(
-    MessageReactionViewModel model,
-  ) =>
-      [
-        PopupMenuItem(
-          enabled: false,
-          child: Scrollbar(
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: ReactionType.values
-                    .map(
-                      (reaction) => GestureDetector(
-                        onTap: () => _handleReactionTap(reaction, model),
-                        child: Padding(
-                          padding: const EdgeInsets.all(4.0),
-                          child: CircleAvatar(
-                            radius: 16,
-                            backgroundImage: AssetImage(reaction.assetName),
-                          ),
-                        ),
-                      ),
-                    )
-                    .toList(),
-              ),
-            ),
-          ),
-        ),
-        const PopupMenuItem(
-          value: 'copy',
-          child: Text('Скопировать текст'),
-        ),
-        const PopupMenuItem(
-          value: 'reply',
-          child: Text('Ответить'),
-        ),
-      ];
-
-  void _handleReactionTap(
-    ReactionType reaction,
-    MessageReactionViewModel model,
-  ) {
-    triggerHaptic(HapticIntensity.selection);
-    if (model.currentReaction != reaction) {
-      model.toggleReaction(reaction);
-    }
-    Navigator.pop(context);
-  }
-
-  void _handleMenuSelection(String? value) async {
-    if (value == null) {
-      return;
-    }
-
-    switch (value) {
-      case 'copy':
-        await Clipboard.setData(ClipboardData(text: widget.message.text));
-        break;
-      case 'reply':
-        widget.chatModel.replyMessage = widget.message;
-        break;
-    }
   }
 
   Widget _buildMessageContent(

@@ -13,6 +13,8 @@ import 'package:unn_mobile/ui/views/main_page/feed/widgets/attached_file.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/widgets/packed_post_images.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/widgets/post_html_widget.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/widgets/reaction_bubble.dart';
+import 'package:unn_mobile/ui/widgets/context_menu/context_menu_factory.dart';
+import 'package:unn_mobile/ui/widgets/context_menu/context_menu_helper.dart';
 import 'package:unn_mobile/ui/widgets/shimmer.dart';
 import 'package:unn_mobile/ui/widgets/shimmer_loading.dart';
 
@@ -26,38 +28,50 @@ class FeedCommentView extends StatelessWidget {
   @override
   Widget build(BuildContext context) => BaseView<FeedCommentViewModel>(
         model: viewModel,
-        builder: (context, model, child) => Shimmer(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _CommentHeader(
-                dateTime: model.comment.dateTime,
-                viewModel: model.profileViewModel,
-                hide: model.isBusy,
-              ),
-              Padding(
-                padding: const EdgeInsets.only(
-                  left: 16,
-                  bottom: 10,
-                  right: 10,
-                  top: 8,
+        builder: (context, model, child) => GestureDetector(
+          onLongPress: () => ContextMenuHelper.showContextMenu(
+            context: context,
+            model: model,
+            actionsBuilder: () => createCommentActions(
+              context: context,
+              model: model,
+            ),
+          ),
+          child: Shimmer(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _CommentHeader(
+                  dateTime: model.comment.dateTime,
+                  viewModel: model.profileViewModel,
+                  hide: model.isBusy,
                 ),
-                child: model.renderMessage
-                    ? PostHtmlWidget(text: model.message)
-                    : const SizedBox(),
-              ),
-              Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 20.0, vertical: 8.0),
-                child: PackedPostImages(attachedImages: model.attachedImages),
-              ),
-              for (final file in model.attachedFileViewModels)
                 Padding(
-                  padding: const EdgeInsets.only(left: 16),
-                  child: AttachedFile(viewModel: file),
+                  padding: const EdgeInsets.only(
+                    left: 16,
+                    bottom: 10,
+                    right: 10,
+                    top: 8,
+                  ),
+                  child: model.renderMessage
+                      ? PostHtmlWidget(text: model.message)
+                      : const SizedBox(),
                 ),
-              _ReactionView(model: model.reactionViewModel, context: context),
-            ],
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20.0,
+                    vertical: 0.0,
+                  ),
+                  child: PackedPostImages(attachedImages: model.attachedImages),
+                ),
+                for (final file in model.attachedFileViewModels)
+                  Padding(
+                    padding: const EdgeInsets.only(left: 16),
+                    child: AttachedFile(viewModel: file),
+                  ),
+                _ReactionView(model: model.reactionViewModel, context: context),
+              ],
+            ),
           ),
         ),
       );

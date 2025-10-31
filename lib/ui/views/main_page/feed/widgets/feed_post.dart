@@ -26,6 +26,8 @@ import 'package:unn_mobile/ui/views/main_page/feed/widgets/attached_file.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/widgets/packed_post_images.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/widgets/post_html_widget.dart';
 import 'package:unn_mobile/ui/views/main_page/main_page_routing.dart';
+import 'package:unn_mobile/ui/widgets/context_menu/context_menu_factory.dart';
+import 'package:unn_mobile/ui/widgets/context_menu/context_menu_helper.dart';
 import 'package:unn_mobile/ui/widgets/height_limiter.dart';
 import 'package:unn_mobile/ui/widgets/shimmer.dart';
 import 'package:unn_mobile/ui/widgets/shimmer_loading.dart';
@@ -71,6 +73,17 @@ class _FeedPostState extends State<FeedPost> {
               .putInCache(model.blogData.id, model);
           _openPostCommentsPage(context, model);
         },
+        onLongPress: () => ContextMenuHelper.showContextMenu(
+          context: context,
+          model: model,
+          actionsBuilder: () => createPostActions(
+            context: context,
+            model: model,
+            onShare: _sharePost,
+          ),
+          onOpen: () => setState(() {}),
+          onClose: () => setState(() {}),
+        ),
         child: Shimmer(
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 100),

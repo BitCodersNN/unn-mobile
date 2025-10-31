@@ -51,25 +51,23 @@ class CommentsPage extends StatelessWidget {
                         ),
                       ),
                     ),
-                    for (final comment in model.comments)
-                      Column(
-                        children: [
-                          const Padding(
-                            padding: EdgeInsets.only(
-                              left: 18,
-                              bottom: 10,
-                              right: 18,
-                            ),
-                            child: Divider(
-                              thickness: 0.3,
-                              color: Color(0xFF989EA9),
-                            ),
+                    Column(
+                      children: [
+                        const Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 18,
+                            vertical: 10,
                           ),
-                          FeedCommentView(
-                            viewModel: comment,
+                          child: Divider(
+                            height: 1,
+                            thickness: 0.3,
+                            color: Color(0xFF989EA9),
                           ),
-                        ],
-                      ),
+                        ),
+                        for (final comment in model.comments)
+                          FeedCommentView(viewModel: comment),
+                      ],
+                    ),
                   ],
                 ),
               ),
