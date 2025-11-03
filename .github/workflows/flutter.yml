@@ -33,7 +33,7 @@ jobs:
           flutter-version: '3.29.2'
           channel: 'stable'
       - name: get firebase config
-        run: echo "${CLEAN_FIREBASE_CONFIG}"
+        run: echo "${{ CLEAN_FIREBASE_CONFIG }}"
       - name: Install dependencies
         run: flutter pub get
         
