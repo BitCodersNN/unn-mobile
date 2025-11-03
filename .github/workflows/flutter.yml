@@ -35,7 +35,7 @@ jobs:
       - name: get firebase config
         env:
           CONFIG: ${{ vars.CLEAN_FIREBASE_CONFIG }}
-        run: echo "$CONFIG"
+        run: echo "$CONFIG" > ./lib/firebase_options.dart
       - name: Install dependencies
         run: flutter pub get
         
