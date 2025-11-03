@@ -33,11 +33,7 @@ jobs:
           flutter-version: '3.29.2'
           channel: 'stable'
       - name: get firebase config
-        uses: mobiledevops/secret-to-file-action@v1
-        with:
-          base64-encoded-secret: ${{ secrets.FIREBASE_CONFIG }}
-          filename: "firebase_options.dart"
-          working-directory: ./lib
+        run: echo "${CLEAN_FIREBASE_CONFIG}" > ./lib/firebase_options.dart
       - name: Install dependencies
         run: flutter pub get
         
