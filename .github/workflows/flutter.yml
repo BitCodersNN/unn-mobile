@@ -34,7 +34,7 @@ jobs:
           channel: 'stable'
       - name: get firebase config
         env:
-          CONFIG: ${{ env.CLEAN_FIREBASE_CONFIG }}
+          CONFIG: ${{ vars.CLEAN_FIREBASE_CONFIG }}
         run: echo "$CONFIG"
       - name: Install dependencies
         run: flutter pub get
