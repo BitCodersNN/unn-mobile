@@ -50,7 +50,9 @@ jobs:
         run: |
           git add .
           git diff --staged
-          diff ./firebase_options.dart ./lib/firebase_options.dart
+      - name: display firebase config diff
+        if: steps.verifying.outcome == 'failure'
+        run: diff ./firebase_options.dart ./lib/firebase_options.dart
       # Consider passing '--fatal-infos' for slightly stricter analysis.
       - name: Analyze project source
         run: flutter analyze lib
