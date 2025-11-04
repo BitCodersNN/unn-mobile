@@ -44,9 +44,10 @@ jobs:
         continue-on-error: true
         run: |
           cp -r lib/ lib_original/
-          dart format ./lib/
+          dart format --set-exit-if-changed ./lib/
       - name: display diff
         if: steps.verifying.outcome == 'failure'
+        continue-on-error: true
         run: |
           diff -u lib_original/ lib/
           rm -rf lib_original/
