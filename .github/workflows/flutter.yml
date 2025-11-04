@@ -36,9 +36,7 @@ jobs:
       - name: get firebase config
         env:
           CONFIG: ${{ vars.CLEAN_FIREBASE_CONFIG }}
-        run: |
-          echo "$CONFIG" > ./lib/firebase_options.dart
-          git add .
+        run: echo "$CONFIG" > ./lib/firebase_options.dart
       - name: Install dependencies
         run: flutter pub get
       - name: Verify formatting
@@ -47,8 +45,8 @@ jobs:
         run: dart format --output=write --set-exit-if-changed ./lib/
       - name: display diff
         if: steps.verifying.outcome == 'failure'
-        run: |
-          git diff --staged
+        run: git diff
+      - run: cat ./lib/firebase_options.dart
       # Consider passing '--fatal-infos' for slightly stricter analysis.
       - name: Analyze project source
         run: flutter analyze lib
