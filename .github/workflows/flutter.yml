@@ -45,7 +45,9 @@ jobs:
         run: dart format --output=write --set-exit-if-changed ./lib/
       - name: display diff
         if: steps.verifying.outcome == 'failure'
-        run: git diff
+        run: |
+          git add .
+          git diff --staged
       - name: fail
         if: steps.verifying.outcome == 'failure'
         run: exit 1
