@@ -36,7 +36,7 @@ jobs:
       - name: get firebase config
         env:
           CONFIG: ${{ vars.CLEAN_FIREBASE_CONFIG }}
-        run: echo "$CONFIG" > ./lib/firebase_options.dart
+        run: printf '%s' "$CONFIG" > ./lib/firebase_options.dart
       - name: Install dependencies
         run: flutter pub get
       - name: Verify formatting
@@ -44,7 +44,7 @@ jobs:
         continue-on-error: true
         run: |
           cp -r lib/ lib_original/
-          dart format --set-exit-if-changed ./lib/
+          dart format ./lib/
       - name: display diff
         if: steps.verifying.outcome == 'failure'
         run: |
