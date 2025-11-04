@@ -32,18 +32,28 @@ jobs:
         with:
           flutter-version: '3.29.2'
           channel: 'stable'
+          cache: true
       - name: get firebase config
-        uses: mobiledevops/secret-to-file-action@v1
-        with:
-          base64-encoded-secret: ${{ secrets.FIREBASE_CONFIG }}
-          filename: "firebase_options.dart"
-          working-directory: ./lib
+        env:
+          CONFIG: ${{ vars.CLEAN_FIREBASE_CONFIG }}
+        run: printf '%s' "$CONFIG" > ./lib/firebase_options.dart
       - name: Install dependencies
         run: flutter pub get
-        
       - name: Verify formatting
-        run: dart format --output=none --set-exit-if-changed ./lib/
-
+        id: verifying
+        continue-on-error: true
+        run: |
+          cp -r lib/ lib_original/
+          dart format --set-exit-if-changed ./lib/
+      - name: display diff
+        if: steps.verifying.outcome == 'failure'
+        continue-on-error: true
+        run: |
+          diff -u lib_original/ lib/
+          rm -rf lib_original/
       # Consider passing '--fatal-infos' for slightly stricter analysis.
       - name: Analyze project source
         run: flutter analyze lib
+      - name: fail
+        if: steps.verifying.outcome == 'failure'
+        run: exit 1
