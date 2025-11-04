@@ -73,7 +73,7 @@ doc/api/
 ios/Runner/GoogleService-Info.plist
 android/app/google-services.json
 ios/firebase_app_id_file.json
-lib/firebase_options.dart
+#lib/firebase_options.dart
 devtools_options.yaml
 
 firebase.json
