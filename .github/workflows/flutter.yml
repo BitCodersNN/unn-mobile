@@ -45,9 +45,10 @@ jobs:
         run: dart format --output=write --set-exit-if-changed ./lib/
       - name: display diff
         if: steps.verifying.outcome == 'failure'
-        run: |
-          git diff
-          exit 1
+        run: git diff
+      - name: fail
+        if: steps.verifying.outcome == 'failure'
+        run: exit 1
 
       # Consider passing '--fatal-infos' for slightly stricter analysis.
       - name: Analyze project source
