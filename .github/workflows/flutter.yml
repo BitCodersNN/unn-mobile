@@ -42,11 +42,14 @@ jobs:
       - name: Verify formatting
         id: verifying
         continue-on-error: true
-        run: dart format --output=write --set-exit-if-changed ./lib/
+        run: |
+          cp -r lib/ lib_original/
+          dart format --set-exit-if-changed ./lib/
       - name: display diff
         if: steps.verifying.outcome == 'failure'
-        run: git diff
-      - run: cat ./lib/firebase_options.dart
+        run: |
+          diff -u lib_original/ lib/
+          rm -rf lib_original/
       # Consider passing '--fatal-infos' for slightly stricter analysis.
       - name: Analyze project source
         run: flutter analyze lib
