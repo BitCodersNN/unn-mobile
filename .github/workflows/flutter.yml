@@ -32,19 +32,19 @@ jobs:
         with:
           flutter-version: '3.29.2'
           channel: 'stable'
+      - run: which flutter
       - name: get firebase config
         env:
           CONFIG: ${{ vars.CLEAN_FIREBASE_CONFIG }}
         run: echo "$CONFIG" > ./lib/firebase_options.dart
       - name: Install dependencies
         run: flutter pub get
-        
       - name: Verify formatting
         id: verifying
         continue-on-error: true
         run: dart format --output=none --set-exit-if-changed ./lib/
       - name: display diff
-        if: failure() && steps.verifying.outcome == 'failure'
+        if: steps.verifying.outcome == 'failure'
         run: git diff
 
       # Consider passing '--fatal-infos' for slightly stricter analysis.
