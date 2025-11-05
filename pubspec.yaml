@@ -2,7 +2,7 @@ name: unn_mobile
 description: A mobile application for UNN Portal website
 publish_to: 'none'
 
-version: 0.6.0+368
+version: 0.6.0+370
 
 environment:
   sdk: '>=3.1.2 <4.0.0'
@@ -19,7 +19,7 @@ dependencies:
   shared_preferences: ^2.2.2
   intl: ^0.19.0
   flutter_svg: any
-  connectivity_plus: ^6.0.5
+  connectivity_plus: ">=6.0.5 <8.0.0"
   device_calendar: 4.3.3-20240801
   icalendar_parser: ^2.0.0
   permission_handler_android: ^12.0.1
