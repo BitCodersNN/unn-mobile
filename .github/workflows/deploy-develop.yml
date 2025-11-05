@@ -106,7 +106,7 @@ jobs:
       - name: deploy (PR)
         if: github.ref != 'refs/heads/develop' && github.ref != 'refs/heads/main'
         env:
-          TITLE: ${{ github.event.pull_request.title }}
+          TITLE: ${{ github.head_ref || github.ref_name }}
           firebase_token: ${{ secrets.FIREBASE_TOKEN }}
           app_id: ${{ secrets.FIREBASE_A_APP_ID }}
         run: |
