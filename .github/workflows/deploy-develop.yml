@@ -27,10 +27,11 @@ jobs:
       - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955
         with:
           submodules: recursive
-      - uses: flutter-actions/setup-flutter@c7fdb36b173fc3e88e5c5a3733c2b66bd9ac91a1
+      - uses: subosito/flutter-action@fd55f4c5af5b953cc57a2be44cb082c8f6635e8e
         with:
-          version: '3.29.2'
+          flutter-version: '3.29.2'
           channel: 'stable'
+          cache: true
       - name: install java (?)
         uses: actions/setup-java@c5195efecf7bdfc987ee8bae7a71cb8b11521c00
         with:
