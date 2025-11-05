@@ -32,6 +32,12 @@ jobs:
           flutter-version: '3.29.2'
           channel: 'stable'
           cache: true
+      - name: Cache Android
+        id: cache-android
+        uses: actions/cache@v4
+        with:
+          path: /usr/local/lib/android
+          key: ${{ runner.os }}-android
       - name: install java (?)
         uses: actions/setup-java@c5195efecf7bdfc987ee8bae7a71cb8b11521c00
         with:
@@ -43,6 +49,7 @@ jobs:
         with:
           ndk-version: r27
           link-to-sdk: true
+          local-cache: true
       - name: load certificate
         uses: mobiledevops/secret-to-file-action@be5f14e82c235ccde011f6ab0f6c984b35dc34c6
         with:
