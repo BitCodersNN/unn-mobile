@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955
         with:
           submodules: recursive
 
@@ -28,22 +28,32 @@ jobs:
       # You can specify other versions if desired, see documentation here:
       # https://github.com/dart-lang/setup-dart/blob/main/README.md
       # - uses: dart-lang/setup-dart@v1
-      - uses: subosito/flutter-action@v2
+      - uses: subosito/flutter-action@fd55f4c5af5b953cc57a2be44cb082c8f6635e8e
         with:
           flutter-version: '3.29.2'
           channel: 'stable'
+          cache: true
       - name: get firebase config
-        uses: mobiledevops/secret-to-file-action@v1
-        with:
-          base64-encoded-secret: ${{ secrets.FIREBASE_CONFIG }}
-          filename: "firebase_options.dart"
-          working-directory: ./lib
+        env:
+          CONFIG: ${{ vars.CLEAN_FIREBASE_CONFIG }}
+        run: printf '%s' "$CONFIG" > ./lib/firebase_options.dart
       - name: Install dependencies
         run: flutter pub get
-        
       - name: Verify formatting
-        run: dart format --output=none --set-exit-if-changed ./lib/
-
+        id: verifying
+        continue-on-error: true
+        run: |
+          cp -r lib/ lib_original/
+          dart format --set-exit-if-changed ./lib/
+      - name: display diff
+        if: steps.verifying.outcome == 'failure'
+        continue-on-error: true
+        run: |
+          diff -u lib_original/ lib/
+          rm -rf lib_original/
       # Consider passing '--fatal-infos' for slightly stricter analysis.
       - name: Analyze project source
         run: flutter analyze lib
+      - name: fail
+        if: steps.verifying.outcome == 'failure'
+        run: exit 1
