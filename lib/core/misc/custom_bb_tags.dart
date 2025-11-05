@@ -7,7 +7,10 @@ import 'package:flutter_bbcode/flutter_bbcode.dart';
 import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/constants/api/protocol_type.dart';
 import 'package:unn_mobile/core/misc/hex_color.dart';
+import 'package:unn_mobile/core/misc/html_utils/html_widget_callbacks.dart';
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
+import 'package:unn_mobile/ui/widgets/context_menu/context_menu_factory.dart';
+import 'package:unn_mobile/ui/widgets/context_menu/context_menu_helper.dart';
 import 'package:unn_mobile/ui/widgets/spoiler_display.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -351,6 +354,54 @@ class UserTag extends StyleTag {
       oldStyle;
 }
 
+class UrlTag extends WrappedStyleTag {
+  final Future<void> Function(String url)? onTap;
+  final void Function(String url, BuildContext context)? onLongPress;
+
+  UrlTag({
+    this.onTap,
+    this.onLongPress,
+  }) : super('url');
+
+  @override
+  List<InlineSpan> wrap(
+    FlutterRenderer renderer,
+    bbob.Element element,
+    List<InlineSpan> spans,
+  ) {
+    final String url = element.attributes.keys.firstOrNull ??
+        (spans.isNotEmpty && spans[0] is TextSpan
+            ? (spans[0] as TextSpan).text ?? ''
+            : 'URL is missing!');
+
+    final textSpan = TextSpan(
+      text: spans.isEmpty ? url : null,
+      children: spans,
+      style: renderer.getCurrentStyle().copyWith(
+            color: Colors.blue,
+            decoration: TextDecoration.underline,
+          ),
+    );
+
+    return [
+      WidgetSpan(
+        child: Builder(
+          builder: (ctx) => GestureDetector(
+            onTap: () => onTap?.call(url),
+            onLongPress:
+                onLongPress != null ? () => onLongPress!(url, ctx) : null,
+            child: RichText(
+              text: textSpan,
+              textAlign: TextAlign.left,
+              softWrap: true,
+            ),
+          ),
+        ),
+      ),
+    ];
+  }
+}
+
 BBStylesheet getBBStyleSheet() => defaultBBStylesheet()
     .copyWith(selectableText: true)
     .replaceTag(
@@ -361,6 +412,17 @@ BBStylesheet getBBStyleSheet() => defaultBBStylesheet()
                 .get<LoggerService>()
                 .log('Could not launch url $url');
           }
+        },
+        onLongPress: (url, ctx) {
+          ContextMenuHelper.showContextMenu(
+            context: ctx,
+            model: url,
+            actionsBuilder: () => createLinkActions(
+              context: ctx,
+              url: url,
+              onOpen: () => htmlWidgetOnTapUrl(url),
+            ),
+          );
         },
       ),
     )

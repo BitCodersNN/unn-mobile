@@ -9,6 +9,7 @@ import 'package:unn_mobile/core/viewmodels/main_page/feed/feed_comment_view_mode
 import 'package:unn_mobile/core/viewmodels/main_page/feed/feed_post_view_model.dart';
 import 'package:unn_mobile/ui/views/main_page/chat/widgets/message.dart';
 import 'package:unn_mobile/ui/widgets/context_menu/context_menu_action.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 List<ContextMenuAction> createMessageActions({
   required BuildContext context,
@@ -46,14 +47,29 @@ List<ContextMenuAction> createCommentActions({
       textToCopy: model.message,
     );
 
+List<ContextMenuAction> createLinkActions({
+  required BuildContext context,
+  required String url,
+  VoidCallback? onOpen,
+  VoidCallback? onShare,
+}) =>
+    _createActions(
+      context: context,
+      linkToCopy: url,
+      onOpenLink: onOpen,
+      onShare: onShare,
+    );
+
 List<ContextMenuAction> _createActions({
   required BuildContext context,
   ReactionViewModelBase? reactionViewModel,
   String? textToCopy,
+  String? linkToCopy,
   VoidCallback? onReply,
   VoidCallback? onTogglePin,
   bool? isPinned,
   VoidCallback? onShare,
+  VoidCallback? onOpenLink,
 }) {
   final actions = <ContextMenuAction>[];
 
@@ -74,6 +90,34 @@ List<ContextMenuAction> _createActions({
         leadingIcon: const Icon(Icons.content_copy, size: 18),
       ),
     );
+  }
+
+  if (linkToCopy != null) {
+    actions
+      ..add(
+        ContextMenuAction.text(
+          label: 'Открыть',
+          onTap: onOpenLink ??
+              () {
+                launchUrl(Uri.parse(linkToCopy));
+              },
+          leadingIcon: const Icon(Icons.open_in_new, size: 18),
+        ),
+      )
+      ..add(
+        ContextMenuAction.text(
+          label: 'Скопировать ссылку',
+          onTap: () {
+            Clipboard.setData(ClipboardData(text: linkToCopy));
+            if (context.mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Ссылка скопирована')),
+              );
+            }
+          },
+          leadingIcon: const Icon(Icons.link, size: 18),
+        ),
+      );
   }
 
   if (onReply != null) {
