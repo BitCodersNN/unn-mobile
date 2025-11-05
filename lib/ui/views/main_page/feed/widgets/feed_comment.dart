@@ -11,8 +11,8 @@ import 'package:unn_mobile/ui/views/base_view.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/functions/reactions_window.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/widgets/attached_file.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/widgets/packed_post_images.dart';
-import 'package:unn_mobile/ui/views/main_page/feed/widgets/post_html_widget.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/widgets/reaction_bubble.dart';
+import 'package:unn_mobile/ui/views/main_page/feed/widgets/text_html_widget.dart';
 import 'package:unn_mobile/ui/widgets/context_menu/context_menu_factory.dart';
 import 'package:unn_mobile/ui/widgets/context_menu/context_menu_helper.dart';
 import 'package:unn_mobile/ui/widgets/shimmer.dart';
@@ -54,7 +54,7 @@ class FeedCommentView extends StatelessWidget {
                     top: 8,
                   ),
                   child: model.renderMessage
-                      ? PostHtmlWidget(text: model.message)
+                      ? TextHtmlWidget(text: model.message)
                       : const SizedBox(),
                 ),
                 Padding(
