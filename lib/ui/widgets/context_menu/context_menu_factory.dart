@@ -3,6 +3,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:unn_mobile/core/misc/html_utils/html_to_plain_text.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/chat/message_reaction_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/common/reaction_view_model_base.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/feed/feed_comment_view_model.dart';
@@ -31,7 +32,7 @@ List<ContextMenuAction> createPostActions({
     _createActions(
       context: context,
       reactionViewModel: model.reactionViewModel,
-      textToCopy: model.postText,
+      textToCopy: htmlToPlainText(model.postText),
       onTogglePin: model.togglePin,
       isPinned: model.isPinned,
       onShare: () => onShare(model),
@@ -44,7 +45,7 @@ List<ContextMenuAction> createCommentActions({
     _createActions(
       context: context,
       reactionViewModel: model.reactionViewModel,
-      textToCopy: model.message,
+      textToCopy: htmlToPlainText(model.message),
     );
 
 List<ContextMenuAction> createLinkActions({

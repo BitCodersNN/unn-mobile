@@ -5,8 +5,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:event/event.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:html/parser.dart';
-import 'package:html_unescape/html_unescape.dart';
 import 'package:http/http.dart' as http;
 import 'package:injector/injector.dart';
 import 'package:intl/intl.dart';
@@ -14,6 +12,7 @@ import 'package:mime/mime.dart';
 import 'package:path/path.dart' as p;
 import 'package:share_plus/share_plus.dart';
 import 'package:unn_mobile/core/misc/haptic_utils.dart';
+import 'package:unn_mobile/core/misc/html_utils/html_to_plain_text.dart';
 import 'package:unn_mobile/core/models/feed/rating_list.dart';
 import 'package:unn_mobile/core/viewmodels/factories/feed_post_view_model_factory.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/common/profile_view_model.dart';
@@ -288,15 +287,11 @@ class _FeedPostState extends State<FeedPost> {
     );
     xFiles.addAll(fetchedImages.whereType<XFile>());
 
-    final htmlDoc = parse(
-      HtmlUnescape().convert(model.postText),
-    );
-    final parsedString = parse(htmlDoc.body?.text).documentElement?.text;
     await SharePlus.instance.share(
       ShareParams(
         files: xFiles.isEmpty ? null : xFiles,
         text:
-            "Из ленты Портала ННГУ (автор ${model.profileViewModel.fullname}):\n${parsedString ?? ''}",
+            'Из ленты Портала ННГУ (автор ${model.profileViewModel.fullname}):\n${htmlToPlainText(model.postText)}',
       ),
     );
   }
