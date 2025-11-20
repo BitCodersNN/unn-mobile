@@ -10,6 +10,7 @@ import 'package:unn_mobile/core/constants/date_pattern.dart';
 import 'package:unn_mobile/core/misc/date_time_utilities/date_time_extensions.dart';
 import 'package:unn_mobile/core/misc/user/user_functions.dart';
 import 'package:unn_mobile/core/models/dialog/dialog.dart' as d;
+import 'package:unn_mobile/core/services/interfaces/dialog/dialog_search_service.dart';
 import 'package:unn_mobile/core/viewmodels/factories/main_page_routes_view_models_factory.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/chat/chat_screen_view_model.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
@@ -26,6 +27,30 @@ class ChatScreenView extends StatefulWidget {
 }
 
 class _ChatScreenViewState extends State<ChatScreenView> {
+  ValueNotifier<int?> selectedItem = ValueNotifier(null);
+
+  @override
+  void initState() {
+    super.initState();
+    selectedItem.addListener(
+      () {
+        if (selectedItem.value == null) {
+          return;
+        }
+        final val = selectedItem.value;
+        selectedItem.value = null;
+        WidgetsBinding.instance.addPostFrameCallback((_) async {
+          await Future.delayed(const Duration(milliseconds: 1000));
+          if (mounted) {
+            GoRouter.of(context).go(
+              '${GoRouter.of(context).state.path}/$val',
+            );
+          }
+        });
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final viewModel = widget.bottomRouteIndex == null
@@ -35,73 +60,149 @@ class _ChatScreenViewState extends State<ChatScreenView> {
             .getViewModelByRouteIndex<ChatScreenViewModel>(
               widget.bottomRouteIndex!,
             );
-
+    final theme = Theme.of(context);
     return BaseView<ChatScreenViewModel>(
-      builder: (context, model, child) => Scaffold(
-        appBar: AppBar(
-          title: const Text('Сообщения'),
-          leading: getSubpageLeading(widget.bottomRouteIndex),
-        ),
-        body: Builder(
-          builder: (context) {
-            if (model.isBusy && model.dialogs.isEmpty) {
-              return const Center(
-                child: SizedBox(
-                  width: 40,
-                  height: 40,
-                  child: CircularProgressIndicator(),
+      builder: (context, model, child) {
+        final pageContext = context;
+        return Scaffold(
+          appBar: AppBar(
+            title: const Text('Сообщения'),
+            leading: getSubpageLeading(widget.bottomRouteIndex),
+            actions: [
+              if (!model.isBusy)
+                SearchAnchor(
+                  builder: (context, controller) => IconButton(
+                    onPressed: () {
+                      controller.openView();
+                    },
+                    icon: const Icon(Icons.search),
+                  ),
+                  suggestionsBuilder: (context, controller) async {
+                    final suggService =
+                        Injector.appInstance.get<DialogSearchService>();
+                    if (controller.text.length < 3) {
+                      final history = await suggService.getHistory();
+                      return history
+                              ?.where((e) => e.title.contains(controller.text))
+                              .map(
+                                (e) => ListTile(
+                                  title: Text(e.title),
+                                ),
+                              ) ??
+                          [];
+                    }
+                    final sugg = await suggService.search(controller.text);
+                    final data = sugg
+                            ?.map(
+                              (e) => ListTile(
+                                leading: CircleAvatar(
+                                  radius: MediaQuery.of(context)
+                                      .textScaler
+                                      .scale(26.0),
+                                  foregroundImage: e.avatarUrl.isNotEmpty
+                                      ? CachedNetworkImageProvider(e.avatarUrl)
+                                      : null,
+                                  child: e.avatarUrl.isEmpty
+                                      ? FittedBox(
+                                          fit: BoxFit.cover,
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(4.0),
+                                            child: Text(
+                                              generateInitials(
+                                                  e.title.split(' ')),
+                                              style: theme
+                                                  .textTheme.headlineSmall!
+                                                  .copyWith(
+                                                color:
+                                                    theme.colorScheme.onSurface,
+                                              ),
+                                            ),
+                                          ),
+                                        )
+                                      : null,
+                                ),
+                                title: Text(
+                                  e.title,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: theme.textTheme.titleMedium,
+                                ),
+                                enableFeedback: true,
+                                visualDensity:
+                                    VisualDensity.adaptivePlatformDensity,
+                                onTap: () {
+                                  controller.closeView('');
+                                  selectedItem.value = e.chatId;
+                                },
+                              ),
+                            )
+                            .toList() ??
+                        [];
+                    return data;
+                  },
                 ),
-              );
-            }
-            if (model.hasError && model.dialogs.isEmpty) {
-              return Center(
-                child: Column(
-                  children: [
-                    const Text('Не удалось загрузить'),
-                    TextButton(
-                      onPressed: () {
-                        model.init();
-                      },
-                      child: const Text('Повторить загрузку'),
-                    ),
-                  ],
-                ),
-              );
-            }
-            return NotificationListener<ScrollEndNotification>(
-              onNotification: (e) {
-                if (e.metrics.maxScrollExtent - e.metrics.pixels < 20.0 &&
-                    model.hasMoreDialogs) {
-                  model.loadMore();
-                }
-                return true;
-              },
-              child: RefreshIndicator(
-                onRefresh: () async => await model.init(),
-                child: ListView(
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  children: [
-                    for (final (dialog) in model.dialogs)
-                      DialogInfo(
-                        dialog: dialog,
-                        chatsModel: model,
+            ],
+          ),
+          body: Builder(
+            builder: (context) {
+              if (model.isBusy && model.dialogs.isEmpty) {
+                return const Center(
+                  child: SizedBox(
+                    width: 40,
+                    height: 40,
+                    child: CircularProgressIndicator(),
+                  ),
+                );
+              }
+              if (model.hasError && model.dialogs.isEmpty) {
+                return Center(
+                  child: Column(
+                    children: [
+                      const Text('Не удалось загрузить'),
+                      TextButton(
+                        onPressed: () {
+                          model.init();
+                        },
+                        child: const Text('Повторить загрузку'),
                       ),
-                    if (model.hasError) const Text('Не удалось загрузить'),
-                    if (model.isBusy)
-                      const Center(
-                        child: SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(),
+                    ],
+                  ),
+                );
+              }
+              return NotificationListener<ScrollEndNotification>(
+                onNotification: (e) {
+                  if (e.metrics.maxScrollExtent - e.metrics.pixels < 20.0 &&
+                      model.hasMoreDialogs) {
+                    model.loadMore();
+                  }
+                  return true;
+                },
+                child: RefreshIndicator(
+                  onRefresh: () async => await model.init(),
+                  child: ListView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    children: [
+                      for (final (dialog) in model.dialogs)
+                        DialogInfo(
+                          dialog: dialog,
+                          chatsModel: model,
                         ),
-                      ),
-                  ],
+                      if (model.hasError) const Text('Не удалось загрузить'),
+                      if (model.isBusy)
+                        const Center(
+                          child: SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(),
+                          ),
+                        ),
+                    ],
+                  ),
                 ),
-              ),
-            );
-          },
-        ),
-      ),
+              );
+            },
+          ),
+        );
+      },
       model: viewModel,
       onModelReady: (model) => model.init(),
     );
