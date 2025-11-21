@@ -24,14 +24,14 @@ class PreviewUserDialog extends PreviewDialog {
 
   factory PreviewUserDialog.fromJson(JsonMap json) {
     final dialog = PreviewDialog.fromJson(json);
+    final lastActivityAt = (json[_PreviewUserDialogJsonKeys.customData]!
+        as JsonMap)[_PreviewUserDialogJsonKeys.lastActivityDate];
     return PreviewUserDialog(
       chatId: dialog.chatId,
       title: dialog.title,
       avatarUrl: dialog.avatarUrl,
-      lastActivityAt: DateTime.tryParse(
-        (json[_PreviewUserDialogJsonKeys.customData]!
-            as JsonMap)[_PreviewUserDialogJsonKeys.lastActivityDate]! as String,
-      ),
+      lastActivityAt:
+          lastActivityAt is String ? DateTime.tryParse(lastActivityAt) : null,
       workPosition: (json[_PreviewUserDialogJsonKeys.customData]!
           as JsonMap)[_PreviewUserDialogJsonKeys.workPosition]! as String,
     );
