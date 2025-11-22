@@ -11,10 +11,13 @@ import 'package:unn_mobile/core/misc/date_time_utilities/date_time_extensions.da
 import 'package:unn_mobile/core/misc/objects_with_pagination.dart';
 import 'package:unn_mobile/core/misc/user/current_user_sync_storage.dart';
 import 'package:unn_mobile/core/models/common/file_data.dart';
+import 'package:unn_mobile/core/models/dialog/base_dialog_info.dart';
 import 'package:unn_mobile/core/models/dialog/dialog.dart';
 import 'package:unn_mobile/core/models/dialog/group_dialog.dart';
 import 'package:unn_mobile/core/models/dialog/message/enum/message_state.dart';
 import 'package:unn_mobile/core/models/dialog/message/message.dart';
+import 'package:unn_mobile/core/models/dialog/preview_group_dialog.dart';
+import 'package:unn_mobile/core/models/dialog/preview_user_dialog.dart';
 import 'package:unn_mobile/core/models/dialog/user_dialog.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/factories/main_page_routes_view_models_factory.dart';
@@ -27,7 +30,7 @@ class ChatInsideViewModel extends BaseViewModel {
 
   ChatScreenViewModel? _dialogsViewModel;
 
-  Dialog? _dialog;
+  BaseDialogInfo? _dialog;
 
   bool _hasError = false;
 
@@ -57,7 +60,10 @@ class ChatInsideViewModel extends BaseViewModel {
   );
   int? get currentUserId => _currentUserSyncStorage.currentUserData?.bitrixId;
 
-  Dialog? get dialog => _dialog;
+  int get unreadMessagesCount =>
+      (_dialog is Dialog) ? (_dialog! as Dialog).unreadMessagesCount : 0;
+
+  BaseDialogInfo? get dialog => _dialog;
   bool get hasError => _hasError;
 
   bool get hasMessagesAfter => _hasMessagesAfter;
@@ -99,8 +105,7 @@ class ChatInsideViewModel extends BaseViewModel {
     if (refreshLoopRunning && !refreshLoopStopFlag) {
       await _dialogsViewModel!.init();
 
-      _dialog = _dialogsViewModel!.dialogs
-          .firstWhere((d) => d.chatId == _dialog!.chatId);
+      fetchDialogFromRoot(_dialog!.chatId);
 
       _dialogsViewModel!.notifyListeners();
     }
@@ -114,6 +119,13 @@ class ChatInsideViewModel extends BaseViewModel {
     _messages
       ..clear()
       ..addAll(_partitionMessages(_unpartitionedMessages));
+  }
+
+  void fetchDialogFromRoot(int chatId) {
+    _dialog = _dialogsViewModel!.dialogs.cast<BaseDialogInfo>().firstWhere(
+          (d) => d.chatId == chatId,
+          orElse: () => _dialogsViewModel!.storedDialogInfo!,
+        );
   }
 
   FutureOr<void> init(int chatId) async {
@@ -169,7 +181,6 @@ class ChatInsideViewModel extends BaseViewModel {
     await Future.delayed(const Duration(seconds: 5));
     if (!_isInitializing) {
       await getNewMessages();
-
       notifyListeners();
     }
     await refreshLoop(checkStartConditions: false);
@@ -187,6 +198,8 @@ class ChatInsideViewModel extends BaseViewModel {
   FutureOr<bool> sendMessage(String text) async =>
       await _sendMessageWrapper<int>(() async {
         final dialogId = switch (_dialog) {
+          final PreviewGroupDialog groupDialog => groupDialog.id,
+          final PreviewUserDialog userDialog => userDialog.chatId.toString(),
           final UserDialog userDialog => userDialog.dialogId.toString(),
           final GroupDialog groupDialog => groupDialog.dialogId,
           _ => '',
@@ -211,8 +224,7 @@ class ChatInsideViewModel extends BaseViewModel {
     _unpartitionedMessages.clear();
     _dialogsViewModel =
         _routesViewModelFactory.getViewModelByType<ChatScreenViewModel>();
-    _dialog = _dialogsViewModel!.dialogs.firstWhere((d) => d.chatId == chatId);
-
+    fetchDialogFromRoot(chatId);
     final messages = await tryLoginAndRetrieveData<PaginatedResult<Message>>(
       () => _messagesAggregator.fetch(chatId: chatId),
       () => null,
@@ -233,7 +245,6 @@ class ChatInsideViewModel extends BaseViewModel {
 
   List<List<List<Message>>> _partitionMessages(Iterable<Message> messages) {
     const maxTimeDifference = 5;
-    final unreadMessagesCount = _dialog?.unreadMessagesCount ?? 0;
     final List<List<List<Message>>> partitions = [];
     for (final (index, message) in messages.indexed) {
       final lastDatePartition = partitions.lastOrNull;

@@ -6,6 +6,7 @@ import 'dart:async';
 import 'package:unn_mobile/core/misc/authorisation/try_login_and_retrieve_data.dart';
 import 'package:unn_mobile/core/misc/objects_with_pagination.dart';
 import 'package:unn_mobile/core/misc/user/current_user_sync_storage.dart';
+import 'package:unn_mobile/core/models/dialog/base_dialog_info.dart';
 import 'package:unn_mobile/core/models/dialog/dialog.dart';
 import 'package:unn_mobile/core/models/dialog/dialog_query_parameter.dart';
 import 'package:unn_mobile/core/services/interfaces/dialog/dialog_service.dart';
@@ -20,6 +21,8 @@ class ChatScreenViewModel extends BaseViewModel {
   final CurrentUserSyncStorage _currentUserSyncStorage;
 
   final List<Dialog> _dialogs = [];
+
+  BaseDialogInfo? storedDialogInfo;
 
   int? _currentUserId;
 
