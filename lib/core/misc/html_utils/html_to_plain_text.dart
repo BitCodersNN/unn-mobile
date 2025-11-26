@@ -10,10 +10,10 @@ void _processNodes(dom.Node node) {
     if (node.localName == 'a') {
       final href = node.attributes['href'];
       if (href != null && href.isNotEmpty) {
-        node.innerHtml = href;
+        node.text = href;
       }
     }
-    for (final child in node.children.toList()) {
+    for (final child in node.children) {
       _processNodes(child);
     }
   }
