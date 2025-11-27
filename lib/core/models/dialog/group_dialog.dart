@@ -15,11 +15,11 @@ class GroupDialogJsonKeys {
   static const String sonetGroup = 'sonetGroup';
 }
 
-final class GroupDialog extends Dialog {
-  final String dialogId;
+final class GroupDialog extends Dialog<String> {
   final ChatSetting chatSetting;
 
   GroupDialog({
+    required super.dialogId,
     required super.chatId,
     required super.title,
     required super.avatarUrl,
@@ -27,21 +27,20 @@ final class GroupDialog extends Dialog {
     required super.unreadMessagesCount,
     required super.lastMessageStatus,
     required super.pinned,
-    required this.dialogId,
     required this.chatSetting,
   });
 
   factory GroupDialog.fromJson(JsonMap json) {
-    final dialog = Dialog.fromJson(json);
+    final dialog = Dialog<String>.fromJson(json);
 
     return GroupDialog(
-      chatId: dialog.chatId,
       title: dialog.title,
       avatarUrl: dialog.avatarUrl,
       previewMessage: dialog.previewMessage,
       unreadMessagesCount: dialog.unreadMessagesCount,
       lastMessageStatus: dialog.lastMessageStatus,
       pinned: dialog.pinned,
+      chatId: dialog.chatId,
       dialogId: json[GroupDialogJsonKeys.id]! as String,
       chatSetting:
           _parseChatSetting(json[GroupDialogJsonKeys.chat]! as JsonMap),
@@ -51,7 +50,6 @@ final class GroupDialog extends Dialog {
   @override
   JsonMap toJson() => {
         ...super.toJson(),
-        GroupDialogJsonKeys.id: dialogId,
         GroupDialogJsonKeys.chat: chatSetting.toJson(),
         GroupDialogJsonKeys.type: GroupDialogJsonKeys.chat,
       };

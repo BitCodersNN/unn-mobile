@@ -11,23 +11,24 @@ class _PreviewDialogJsonKeys {
   static const String customData = 'customData';
 }
 
-class PreviewDialog extends BaseDialogInfo {
+class PreviewDialog<T> extends BaseDialogInfo<T> {
   PreviewDialog({
-    required super.chatId,
+    required super.dialogId,
     required super.title,
     required super.avatarUrl,
   });
 
-  factory PreviewDialog.fromJson(JsonMap json) => PreviewDialog(
-        chatId: (json[_PreviewDialogJsonKeys.customData]!
-            as JsonMap)[_PreviewDialogJsonKeys.id]! as int,
+  factory PreviewDialog.fromJson(JsonMap json) => PreviewDialog<T>(
+        dialogId: T == String
+            ? json[_PreviewDialogJsonKeys.id]! as T
+            : int.tryParse(json[_PreviewDialogJsonKeys.id]! as String) as T,
         title: json[_PreviewDialogJsonKeys.title]! as String,
         avatarUrl: json[_PreviewDialogJsonKeys.avatar]! as String,
       );
 
   JsonMap toJson() => {
         _PreviewDialogJsonKeys.customData: {
-          _PreviewDialogJsonKeys.id: chatId,
+          _PreviewDialogJsonKeys.id: dialogId,
         },
         _PreviewDialogJsonKeys.title: title,
         _PreviewDialogJsonKeys.avatar: avatarUrl,
