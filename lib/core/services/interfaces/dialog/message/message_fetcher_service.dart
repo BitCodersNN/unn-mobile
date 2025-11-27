@@ -20,9 +20,26 @@ abstract interface class MessageFetcherService {
   ///
   /// В случае ошибки:
   ///   - Возвращает `null`
-  Future<PaginatedResult<Message>?> fetch({
+  Future<PaginatedResult<Message>?> fetchByChatId({
     required int chatId,
     int limit,
     int? lastMessageId,
+  });
+
+  /// Получает пагинированный список сообщений из чата.
+  ///
+  /// Параметры:
+  ///   - [dialogId] - идентификатор чата, из которого запрашиваются сообщения (обязательный).
+  ///   - [limit] - максимальное количество сообщений в результате (по умолчанию 25)
+  ///
+  /// Возвращает [PaginatedResult] с:
+  ///   - Списком сообщений ([items])
+  ///   - Флагами наличия предыдущей/следующей страниц ([hasPreviousPage], [hasNextPage])
+  ///
+  /// В случае ошибки:
+  ///   - Возвращает `null`
+  Future<PaginatedResult<Message>?> fetchByDialogId({
+    required String dialogId,
+    int limit = 25,
   });
 }

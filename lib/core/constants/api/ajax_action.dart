@@ -35,8 +35,11 @@ class AjaxActionStrings {
   static const String importantBlogPostUsers =
       'socialnetwork.api.livefeed.blogpost.important.getUsers';
 
-  /// Для получения сообщений в чате
-  static const String fetchFirstMessage = 'im.v2.Chat.Message.list';
+  /// Для получения первых N сообщений в чате по chat id
+  static const String fetchFirstMessageByChatId = 'im.v2.Chat.Message.list';
+
+  /// Для получения первых N сообщений в чате по dialog id
+  static const String fetchFirstMessageByDialogId = 'im.v2.Chat.load';
 
   /// Для получения сообщений в чате c конкретного сообщения
   static const String fetchMessage = 'im.v2.Chat.Message.tail';

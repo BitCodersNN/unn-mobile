@@ -79,7 +79,7 @@ class ChatInsideViewModel extends BaseViewModel {
     }
 
     final messages = await tryLoginAndRetrieveData<PaginatedResult<Message>>(
-      () => _messagesAggregator.fetch(chatId: _dialog!.chatId),
+      () => _messagesAggregator.fetchByChatId(chatId: _dialog!.chatId),
       () => null,
     );
     if (messages == null) {
@@ -137,7 +137,7 @@ class ChatInsideViewModel extends BaseViewModel {
         }
         final messages =
             await tryLoginAndRetrieveData<PaginatedResult<Message>?>(
-          () => _messagesAggregator.fetch(
+          () => _messagesAggregator.fetchByChatId(
             chatId: _dialog!.chatId,
             lastMessageId: _unpartitionedMessages.last.messageId,
           ),
@@ -214,7 +214,7 @@ class ChatInsideViewModel extends BaseViewModel {
     _dialog = _dialogsViewModel!.dialogs.firstWhere((d) => d.chatId == chatId);
 
     final messages = await tryLoginAndRetrieveData<PaginatedResult<Message>>(
-      () => _messagesAggregator.fetch(chatId: chatId),
+      () => _messagesAggregator.fetchByChatId(chatId: chatId),
       () => null,
     );
     if (messages == null) {

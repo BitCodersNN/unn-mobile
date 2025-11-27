@@ -27,7 +27,9 @@ import 'package:unn_mobile/core/services/interfaces/dialog/message/message_fetch
 
 class _DataKeys {
   static const String chatId = 'chatId';
+  static const String dialogId = 'dialogId';
   static const String limit = 'limit';
+  static const String messageLimit = 'messageLimit';
   static const String lastId = 'filter[lastId]';
   static const String orderId = 'order[id]';
 }
@@ -38,6 +40,8 @@ class _DataValue {
 
 class _JsonKeys {
   static const String data = 'data';
+  static const String chat = 'chat';
+  static const String id = 'id';
   static const String messages = 'messages';
   static const String messageId = 'messageId';
   static const String reactions = 'reactions';
@@ -67,15 +71,43 @@ class MessageFetcherServiceImpl implements MessageFetcherService {
   );
 
   @override
-  Future<PaginatedResult<Message>?> fetch({
+  Future<PaginatedResult<Message>?> fetchByChatId({
     required int chatId,
     int limit = 25,
     int? lastMessageId,
-  }) async {
-    final response = lastMessageId == null
-        ? await _fetchFirstMessages(chatId, limit)
-        : await _fetchMessages(chatId, lastMessageId, limit);
+  }) async =>
+      _processPaginatedResponse<PaginatedResult<Message>>(
+        lastMessageId == null
+            ? await _fetchFirstMessages(chatId, limit)
+            : await _fetchMessages(chatId, lastMessageId, limit),
+        (data, messages) => PaginatedResult(
+          items: messages,
+          hasPreviousPage:
+              data[PaginatedResultJsonKeys.hasPrevPage] as bool? ?? false,
+          hasNextPage: data[PaginatedResultJsonKeys.hasNextPage]! as bool,
+        ),
+      );
 
+  @override
+  Future<PaginatedResultWithChatId<Message>?> fetchByDialogId({
+    required String dialogId,
+    int limit = 25,
+  }) async =>
+      _processPaginatedResponse<PaginatedResultWithChatId<Message>>(
+        await _fetchFirstMessages(dialogId, limit, false),
+        (data, messages) => PaginatedResultWithChatId(
+          chatId: (data[_JsonKeys.chat]! as JsonMap)[_JsonKeys.id]! as int,
+          items: messages,
+          hasPreviousPage:
+              data[PaginatedResultJsonKeys.hasPrevPage] as bool? ?? false,
+          hasNextPage: data[PaginatedResultJsonKeys.hasNextPage]! as bool,
+        ),
+      );
+
+  Future<T?> _processPaginatedResponse<T>(
+    Response? response,
+    T Function(JsonMap data, List<Message> messages) createResult,
+  ) async {
     if (response == null) {
       return null;
     }
@@ -86,12 +118,7 @@ class MessageFetcherServiceImpl implements MessageFetcherService {
     final data = (response.data as JsonMap)[_JsonKeys.data]! as JsonMap;
     final messages = await _processMessagesData(data);
 
-    return PaginatedResult(
-      items: messages,
-      hasPreviousPage:
-          data[PaginatedResultJsonKeys.hasPrevPage] as bool? ?? false,
-      hasNextPage: data[PaginatedResultJsonKeys.hasNextPage]! as bool,
-    );
+    return createResult(data, messages);
   }
 
   Future<List<Message>> _processMessagesData(Map<String, dynamic> data) {
@@ -281,15 +308,23 @@ class MessageFetcherServiceImpl implements MessageFetcherService {
       };
 
   Future<Response?> _fetchFirstMessages(
-    int chatId,
-    int limit,
-  ) =>
+    dynamic id,
+    int limit, [
+    bool isChatId = true,
+  ]) =>
       _fetchMessagesFromApi(
-        action: AjaxActionStrings.fetchFirstMessage,
-        data: {
-          _DataKeys.chatId: chatId,
-          _DataKeys.limit: limit,
-        },
+        action: isChatId
+            ? AjaxActionStrings.fetchFirstMessageByChatId
+            : AjaxActionStrings.fetchFirstMessageByDialogId,
+        data: isChatId
+            ? {
+                _DataKeys.chatId: id as int,
+                _DataKeys.limit: limit,
+              }
+            : {
+                _DataKeys.dialogId: id as String,
+                _DataKeys.messageLimit: limit,
+              },
       );
 
   Future<Response?> _fetchMessages(

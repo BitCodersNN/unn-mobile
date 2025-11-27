@@ -32,15 +32,25 @@ class MessageServiceAggregatorImpl implements MessageServiceAggregator {
   );
 
   @override
-  Future<PaginatedResult<Message>?> fetch({
+  Future<PaginatedResult<Message>?> fetchByChatId({
     required int chatId,
     int limit = 25,
     int? lastMessageId,
   }) =>
-      _fetcherService.fetch(
+      _fetcherService.fetchByChatId(
         chatId: chatId,
         limit: limit,
         lastMessageId: lastMessageId,
+      );
+
+  @override
+  Future<PaginatedResult<Message>?> fetchByDialogId({
+    required String dialogId,
+    int limit = 25,
+  }) =>
+      _fetcherService.fetchByDialogId(
+        dialogId: dialogId,
+        limit: limit,
       );
 
   @override
