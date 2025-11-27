@@ -4,7 +4,6 @@
 import 'package:unn_mobile/core/misc/objects_with_pagination.dart';
 import 'package:unn_mobile/core/models/dialog/message/message.dart';
 
-
 abstract interface class MessageFetcherService {
   /// Получает пагинированный список сообщений из чата.
   ///
