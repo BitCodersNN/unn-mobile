@@ -1,8 +1,10 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2025 BitCodersNN
 
-abstract class BaseDialogInfo<T> {
-  final T dialogId;
+import 'package:unn_mobile/core/misc/custom_types/int_or_string.dart';
+
+abstract class BaseDialogInfo {
+  final IntOrString dialogId;
   final String title;
   final String avatarUrl;
 

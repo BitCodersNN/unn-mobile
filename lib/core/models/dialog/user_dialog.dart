@@ -10,7 +10,7 @@ class _UserDialogJsonKeys {
   static const String lastActivityDate = 'last_activity_date';
 }
 
-final class UserDialog extends Dialog<int> {
+final class UserDialog extends Dialog {
   final DateTime? lastActivityAt;
 
   UserDialog({
@@ -26,7 +26,7 @@ final class UserDialog extends Dialog<int> {
   });
 
   factory UserDialog.fromJson(JsonMap json) {
-    final dialog = Dialog<int>.fromJson(json);
+    final dialog = Dialog.fromJson(json);
     return UserDialog(
       dialogId: dialog.dialogId,
       chatId: dialog.chatId,

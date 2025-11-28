@@ -9,7 +9,7 @@ class _PreviewGroupDialogJsonKeys {
   static const String customData = 'customData';
 }
 
-class PreviewGroupDialog extends PreviewDialog<String> {
+class PreviewGroupDialog extends PreviewDialog {
   final BaseChatSetting baseChatSetting;
 
   PreviewGroupDialog({
@@ -20,7 +20,7 @@ class PreviewGroupDialog extends PreviewDialog<String> {
   });
 
   factory PreviewGroupDialog.fromJson(JsonMap json) {
-    final dialog = PreviewDialog<String>.fromJson(json);
+    final dialog = PreviewDialog.fromJson(json, isString: true);
 
     return PreviewGroupDialog(
       dialogId: dialog.dialogId,

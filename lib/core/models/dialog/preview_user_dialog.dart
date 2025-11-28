@@ -10,7 +10,7 @@ class _PreviewUserDialogJsonKeys {
   static const String customData = 'customData';
 }
 
-class PreviewUserDialog extends PreviewDialog<int> {
+class PreviewUserDialog extends PreviewDialog {
   final DateTime? lastActivityAt;
   final String workPosition;
 
@@ -23,7 +23,7 @@ class PreviewUserDialog extends PreviewDialog<int> {
   });
 
   factory PreviewUserDialog.fromJson(JsonMap json) {
-    final dialog = PreviewDialog<int>.fromJson(json);
+    final dialog = PreviewDialog.fromJson(json, isString: false);
     final lastActivityAt = (json[_PreviewUserDialogJsonKeys.customData]!
         as JsonMap)[_PreviewUserDialogJsonKeys.lastActivityDate];
     return PreviewUserDialog(
