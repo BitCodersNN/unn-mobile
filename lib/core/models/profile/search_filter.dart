@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2025 BitCodersNN
 
-import 'package:unn_mobile/core/misc/bounded_int.dart';
 import 'package:unn_mobile/core/misc/camel_case_converter.dart';
+import 'package:unn_mobile/core/misc/custom_types/bounded_int.dart';
 
 typedef FilterMap = Map<String, dynamic>;
 

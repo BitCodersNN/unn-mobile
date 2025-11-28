@@ -12,10 +12,8 @@ import 'package:unn_mobile/core/misc/objects_with_pagination.dart';
 import 'package:unn_mobile/core/misc/user/current_user_sync_storage.dart';
 import 'package:unn_mobile/core/models/common/file_data.dart';
 import 'package:unn_mobile/core/models/dialog/dialog.dart';
-import 'package:unn_mobile/core/models/dialog/group_dialog.dart';
 import 'package:unn_mobile/core/models/dialog/message/enum/message_state.dart';
 import 'package:unn_mobile/core/models/dialog/message/message.dart';
-import 'package:unn_mobile/core/models/dialog/user_dialog.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/factories/main_page_routes_view_models_factory.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/chat/chat_screen_view_model.dart';
@@ -185,23 +183,18 @@ class ChatInsideViewModel extends BaseViewModel {
       );
 
   FutureOr<bool> sendMessage(String text) async =>
-      await _sendMessageWrapper<int>(() async {
-        final dialogId = switch (_dialog) {
-          final UserDialog userDialog => userDialog.dialogId.toString(),
-          final GroupDialog groupDialog => groupDialog.dialogId,
-          _ => '',
-        };
-        return _replyMessage == null
+      await _sendMessageWrapper<int>(
+        () async => _replyMessage == null
             ? await _messagesAggregator.send(
-                dialogId: dialogId,
+                dialogId: _dialog?.dialogId.stringValue ?? '',
                 text: text,
               )
             : await _messagesAggregator.reply(
-                dialogId: dialogId,
+                dialogId: _dialog?.dialogId.stringValue ?? '',
                 text: text,
                 replyMessageId: _replyMessage!.messageId,
-              );
-      });
+              ),
+      );
 
   FutureOr<void> _init(int chatId) async {
     _hasError = false;

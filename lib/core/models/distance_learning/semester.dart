@@ -3,7 +3,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:unn_mobile/core/constants/academic_year.dart';
-import 'package:unn_mobile/core/misc/bounded_int.dart';
+import 'package:unn_mobile/core/misc/custom_types/bounded_int.dart';
 import 'package:unn_mobile/core/misc/date_time_utilities/date_time_extensions.dart';
 import 'package:unn_mobile/core/misc/json/json_utils.dart';
 

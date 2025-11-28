@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2025 BitCodersNN
 
+import 'package:unn_mobile/core/misc/custom_types/int_or_string.dart';
 import 'package:unn_mobile/core/misc/enum_from_string.dart';
 import 'package:unn_mobile/core/misc/json/json_utils.dart';
 import 'package:unn_mobile/core/models/dialog/base_dialog_info.dart';
@@ -8,6 +9,7 @@ import 'package:unn_mobile/core/models/dialog/enum/message_status.dart';
 import 'package:unn_mobile/core/models/dialog/message/message_short_info.dart';
 
 class _DialogJsonKeys {
+  static const String dialogId = 'id';
   static const String chatId = 'chat_id';
   static const String title = 'title';
   static const String avatar = 'avatar';
@@ -23,6 +25,7 @@ class _DialogJsonKeys {
 }
 
 class Dialog extends BaseDialogInfo {
+  final int chatId;
   final MessageShortInfo previewMessage;
   final MessageStatus lastMessageStatus;
   final int unreadMessagesCount;
@@ -36,9 +39,10 @@ class Dialog extends BaseDialogInfo {
   }
 
   Dialog({
-    required super.chatId,
+    required super.dialogId,
     required super.title,
     required super.avatarUrl,
+    required this.chatId,
     required this.previewMessage,
     required this.lastMessageStatus,
     required this.unreadMessagesCount,
@@ -53,11 +57,20 @@ class Dialog extends BaseDialogInfo {
       final fileName = (fileInfo as JsonMap)[_DialogJsonKeys.name]! as String;
       messageMap[_DialogJsonKeys.text] = 'Файл: $fileName';
     }
+    final IntOrString dialogId = switch (jsonMap[_DialogJsonKeys.dialogId]!) {
+      final int value => IntValue(value),
+      final String value => StringValue(value),
+      _ => throw ArgumentError(
+          'Expected int or String',
+        ),
+    };
+
     return Dialog(
-      chatId: jsonMap[_DialogJsonKeys.chatId]! as int,
+      dialogId: dialogId,
       title: jsonMap[_DialogJsonKeys.title]! as String,
       avatarUrl: (jsonMap[_DialogJsonKeys.avatar]!
           as JsonMap)[_DialogJsonKeys.url]! as String,
+      chatId: jsonMap[_DialogJsonKeys.chatId]! as int,
       previewMessage: MessageShortInfo.fromJson({
         ...messageMap,
         MessageShortInfoJsonKeys.author: jsonMap[_DialogJsonKeys.user],
@@ -75,7 +88,7 @@ class Dialog extends BaseDialogInfo {
     final messageMap = previewMessage.toJson();
 
     return {
-      _DialogJsonKeys.chatId: chatId,
+      _DialogJsonKeys.dialogId: dialogId.value,
       _DialogJsonKeys.title: title,
       _DialogJsonKeys.avatar: {
         _DialogJsonKeys.url: avatarUrl,
