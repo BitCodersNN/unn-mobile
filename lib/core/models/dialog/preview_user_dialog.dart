@@ -23,7 +23,7 @@ class PreviewUserDialog extends PreviewDialog {
   });
 
   factory PreviewUserDialog.fromJson(JsonMap json) {
-    final dialog = PreviewDialog.fromJson(json, isString: false);
+    final dialog = PreviewDialog.fromJson(json, idIsString: false);
     final lastActivityAt = (json[_PreviewUserDialogJsonKeys.customData]!
         as JsonMap)[_PreviewUserDialogJsonKeys.lastActivityDate];
     return PreviewUserDialog(

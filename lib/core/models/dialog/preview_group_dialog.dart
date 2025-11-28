@@ -20,7 +20,7 @@ class PreviewGroupDialog extends PreviewDialog {
   });
 
   factory PreviewGroupDialog.fromJson(JsonMap json) {
-    final dialog = PreviewDialog.fromJson(json, isString: true);
+    final dialog = PreviewDialog.fromJson(json, idIsString: true);
 
     return PreviewGroupDialog(
       dialogId: dialog.dialogId,

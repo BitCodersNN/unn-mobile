@@ -19,9 +19,9 @@ class PreviewDialog extends BaseDialogInfo {
     required super.avatarUrl,
   });
 
-  factory PreviewDialog.fromJson(JsonMap json, {required bool isString}) =>
+  factory PreviewDialog.fromJson(JsonMap json, {required bool idIsString}) =>
       PreviewDialog(
-        dialogId: isString
+        dialogId: idIsString
             ? StringValue(json[_PreviewDialogJsonKeys.id]! as String)
             : IntValue(
                 int.tryParse(json[_PreviewDialogJsonKeys.id]! as String)!,
