@@ -6,30 +6,26 @@ import 'package:unn_mobile/core/models/dialog/chat_settings/base_chat_setting.da
 import 'package:unn_mobile/core/models/dialog/preview_dialog.dart';
 
 class _PreviewGroupDialogJsonKeys {
-  static const String id = 'id';
   static const String customData = 'customData';
 }
 
 class PreviewGroupDialog extends PreviewDialog {
-  final String id;
   final BaseChatSetting baseChatSetting;
 
   PreviewGroupDialog({
-    required super.chatId,
+    required super.dialogId,
     required super.title,
     required super.avatarUrl,
-    required this.id,
     required this.baseChatSetting,
   });
 
   factory PreviewGroupDialog.fromJson(JsonMap json) {
-    final dialog = PreviewDialog.fromJson(json);
+    final dialog = PreviewDialog.fromJson(json, idIsString: true);
 
     return PreviewGroupDialog(
-      chatId: dialog.chatId,
+      dialogId: dialog.dialogId,
       title: dialog.title,
       avatarUrl: dialog.avatarUrl,
-      id: json[_PreviewGroupDialogJsonKeys.id]! as String,
       baseChatSetting: BaseChatSetting.fromJson(
         json[_PreviewGroupDialogJsonKeys.customData]! as JsonMap,
       ),
@@ -44,7 +40,6 @@ class PreviewGroupDialog extends PreviewDialog {
 
     return {
       ...superJson,
-      _PreviewGroupDialogJsonKeys.id: id,
       _PreviewGroupDialogJsonKeys.customData: {
         ...existingCustomData,
         ...baseChatSetting.toJson(),

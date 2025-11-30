@@ -22,6 +22,17 @@ class PaginatedResult<T> {
   });
 }
 
+class PaginatedResultWithChatId<T> extends PaginatedResult<T> {
+  final int chatId;
+
+  const PaginatedResultWithChatId({
+    required this.chatId,
+    required super.items,
+    required super.hasPreviousPage,
+    required super.hasNextPage,
+  });
+}
+
 class PartialResult<T> {
   final List<T> items;
   final bool hasMore;

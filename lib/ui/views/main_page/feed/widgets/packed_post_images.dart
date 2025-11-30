@@ -5,7 +5,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider_plus/carousel_slider_plus.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
-import 'package:unn_mobile/core/misc/bounded_int.dart';
+import 'package:unn_mobile/core/misc/custom_types/bounded_int.dart';
 import 'package:unn_mobile/ui/widgets/dismissable_image.dart';
 import 'package:unn_mobile/ui/widgets/packed_images_view.dart';
 

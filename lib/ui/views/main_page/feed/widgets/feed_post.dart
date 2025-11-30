@@ -291,7 +291,7 @@ class _FeedPostState extends State<FeedPost> {
       ShareParams(
         files: xFiles.isEmpty ? null : xFiles,
         text:
-            'Из ленты Портала ННГУ (автор ${model.profileViewModel.fullname}):\n${htmlToPlainText(model.postText)}',
+            '${htmlToPlainText(model.postText)}\n\nИсточник: Портал ННГУ\nАвтор: ${model.profileViewModel.fullname}',
       ),
     );
   }

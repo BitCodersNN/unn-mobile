@@ -13,12 +13,8 @@ import 'package:unn_mobile/core/misc/user/current_user_sync_storage.dart';
 import 'package:unn_mobile/core/models/common/file_data.dart';
 import 'package:unn_mobile/core/models/dialog/base_dialog_info.dart';
 import 'package:unn_mobile/core/models/dialog/dialog.dart';
-import 'package:unn_mobile/core/models/dialog/group_dialog.dart';
 import 'package:unn_mobile/core/models/dialog/message/enum/message_state.dart';
 import 'package:unn_mobile/core/models/dialog/message/message.dart';
-import 'package:unn_mobile/core/models/dialog/preview_group_dialog.dart';
-import 'package:unn_mobile/core/models/dialog/preview_user_dialog.dart';
-import 'package:unn_mobile/core/models/dialog/user_dialog.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/factories/main_page_routes_view_models_factory.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/chat/chat_screen_view_model.dart';
@@ -31,6 +27,8 @@ class ChatInsideViewModel extends BaseViewModel {
   ChatScreenViewModel? _dialogsViewModel;
 
   BaseDialogInfo? _dialog;
+
+  int? chatId;
 
   bool _hasError = false;
 
@@ -79,21 +77,38 @@ class ChatInsideViewModel extends BaseViewModel {
     notifyListeners();
   }
 
+  Future<PaginatedResult<Message>?> getMessagesByDialogId(
+    String dialogId,
+  ) async {
+    final messages =
+        await _messagesAggregator.fetchByDialogId(dialogId: dialogId);
+    if (messages == null) {
+      return null;
+    }
+    if (messages is PaginatedResultWithChatId<Message>) {
+      chatId = messages.chatId;
+    }
+    return messages;
+  }
+
   FutureOr<void> getNewMessages() async {
     if (_dialog == null) {
       return;
     }
 
     final messages = await tryLoginAndRetrieveData<PaginatedResult<Message>>(
-      () => _messagesAggregator.fetch(chatId: _dialog!.chatId),
+      () => chatId == null
+          ? getMessagesByDialogId(_dialog!.dialogId.stringValue)
+          : _messagesAggregator.fetchByChatId(chatId: chatId!),
       () => null,
     );
     if (messages == null) {
       _hasError = true;
       return;
     }
-    await _readMessages(_dialog!.chatId, messages.items);
-
+    if (chatId != null) {
+      await _readMessages(chatId!, messages.items);
+    }
     final messagesToRemove = messages.items.length -
         messages.items.reversed
             .takeWhile(
@@ -105,7 +120,7 @@ class ChatInsideViewModel extends BaseViewModel {
     if (refreshLoopRunning && !refreshLoopStopFlag) {
       await _dialogsViewModel!.init();
 
-      fetchDialogFromRoot(_dialog!.chatId);
+      fetchDialogFromRoot(chatId);
 
       _dialogsViewModel!.notifyListeners();
     }
@@ -121,14 +136,14 @@ class ChatInsideViewModel extends BaseViewModel {
       ..addAll(_partitionMessages(_unpartitionedMessages));
   }
 
-  void fetchDialogFromRoot(int chatId) {
+  void fetchDialogFromRoot(int? chatId) {
     _dialog = _dialogsViewModel!.dialogs.cast<BaseDialogInfo>().firstWhere(
-          (d) => d.chatId == chatId,
+          (d) => d is Dialog && d.chatId == chatId,
           orElse: () => _dialogsViewModel!.storedDialogInfo!,
         );
   }
 
-  FutureOr<void> init(int chatId) async {
+  FutureOr<void> init(int? chatId) async {
     _isInitializing = true;
     try {
       await busyCallAsync(() => _init(chatId));
@@ -149,17 +164,21 @@ class ChatInsideViewModel extends BaseViewModel {
         }
         final messages =
             await tryLoginAndRetrieveData<PaginatedResult<Message>?>(
-          () => _messagesAggregator.fetch(
-            chatId: _dialog!.chatId,
-            lastMessageId: _unpartitionedMessages.last.messageId,
-          ),
+          () => chatId == null
+              ? getMessagesByDialogId(_dialog!.dialogId.stringValue)
+              : _messagesAggregator.fetchByChatId(
+                  chatId: chatId!,
+                  lastMessageId: _unpartitionedMessages.last.messageId,
+                ),
           () => null,
         );
         if (messages == null) {
           _hasError = true;
           return;
         }
-        await _readMessages(_dialog!.chatId, messages.items);
+        if (chatId != null) {
+          await _readMessages(chatId!, messages.items);
+        }
         _unpartitionedMessages.addAll(messages.items);
         _messages
           ..clear()
@@ -189,52 +208,49 @@ class ChatInsideViewModel extends BaseViewModel {
   FutureOr<bool> sendFiles(Iterable<String> uris, {String? text}) =>
       _sendMessageWrapper<List<FileData>>(
         () => _messagesAggregator.sendFiles(
-          chatId: _dialog!.chatId,
+          chatId: chatId!,
           files: [for (final uri in uris) File(uri)],
           text: text,
         ),
       );
 
   FutureOr<bool> sendMessage(String text) async =>
-      await _sendMessageWrapper<int>(() async {
-        final dialogId = switch (_dialog) {
-          final PreviewGroupDialog groupDialog => groupDialog.id,
-          final PreviewUserDialog userDialog => userDialog.chatId.toString(),
-          final UserDialog userDialog => userDialog.dialogId.toString(),
-          final GroupDialog groupDialog => groupDialog.dialogId,
-          _ => '',
-        };
-        return _replyMessage == null
+      await _sendMessageWrapper<int>(
+        () async => _replyMessage == null
             ? await _messagesAggregator.send(
-                dialogId: dialogId,
+                dialogId: _dialog?.dialogId.stringValue ?? '',
                 text: text,
               )
             : await _messagesAggregator.reply(
-                dialogId: dialogId,
+                dialogId: _dialog?.dialogId.stringValue ?? '',
                 text: text,
                 replyMessageId: _replyMessage!.messageId,
-              );
-      });
+              ),
+      );
 
-  FutureOr<void> _init(int chatId) async {
+  FutureOr<void> _init(int? chatId) async {
     _hasError = false;
     _hasMessagesBefore = false;
     _hasMessagesAfter = false;
+    this.chatId = chatId;
     _messages.clear();
     _unpartitionedMessages.clear();
     _dialogsViewModel =
         _routesViewModelFactory.getViewModelByType<ChatScreenViewModel>();
     fetchDialogFromRoot(chatId);
     final messages = await tryLoginAndRetrieveData<PaginatedResult<Message>>(
-      () => _messagesAggregator.fetch(chatId: chatId),
+      () => this.chatId == null
+          ? getMessagesByDialogId(_dialog!.dialogId.stringValue)
+          : _messagesAggregator.fetchByChatId(chatId: this.chatId!),
       () => null,
     );
     if (messages == null) {
       _hasError = true;
       return;
     }
-    await _readMessages(chatId, messages.items);
-
+    if (this.chatId != null) {
+      await _readMessages(this.chatId!, messages.items);
+    }
     _unpartitionedMessages.addAll(messages.items.reversed);
     _messages.addAll(_partitionMessages(messages.items.reversed));
     _hasMessagesBefore = messages.hasPreviousPage;
@@ -300,7 +316,9 @@ class ChatInsideViewModel extends BaseViewModel {
         if (_dialog == null) {
           return false;
         }
-
+        if (chatId == null) {
+          return false;
+        }
         final result = await tryLoginAndRetrieveData<T>(
           sendFunction,
           () => null,

@@ -13,10 +13,9 @@ import 'package:unn_mobile/ui/views/main_page/chat/widgets/message_group.dart';
 import 'package:unn_mobile/ui/views/main_page/chat/widgets/send_field.dart';
 
 class ChatInside extends StatefulWidget {
-  const ChatInside({required this.chatId, super.key});
+  const ChatInside({this.chatId, super.key});
 
-  final int chatId;
-
+  final int? chatId;
   @override
   State<ChatInside> createState() => _ChatInsideState();
 }

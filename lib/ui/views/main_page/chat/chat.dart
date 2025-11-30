@@ -184,7 +184,7 @@ class _ChatScreenViewState extends State<ChatScreenView> {
         controller.closeView('');
         model.storedDialogInfo = dialog;
         GoRouter.of(context).go(
-          '${GoRouter.of(context).state.path}/${dialog.chatId}',
+          '${GoRouter.of(context).state.path}/stored',
         );
       },
     );
