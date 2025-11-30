@@ -47,12 +47,22 @@ class StudentData extends UserData {
           notes: userData.notes,
         );
 
-  factory StudentData.fromJson(JsonMap json) => StudentData.withUserData(
-        baseEduInfo: BaseEduInfo.fromJson(json),
-        userData: UserData.fromJson(json),
-        eduStatus: json[_StudentDataJsonKeys.eduStatus]! as String,
-        eduYear: json[_StudentDataJsonKeys.eduYear]! as int,
-      );
+  factory StudentData.fromJson(JsonMap json) {
+    final profiles = json['profiles'];
+    JsonMap firstProfile = {};
+    if (profiles is List && profiles.isNotEmpty) {
+      firstProfile = profiles[0];
+    }
+
+    final resultMap = {...firstProfile, ...json};
+
+    return StudentData.withUserData(
+      baseEduInfo: BaseEduInfo.fromJson(resultMap),
+      userData: UserData.fromJson(resultMap),
+      eduStatus: resultMap[_StudentDataJsonKeys.eduStatus]! as String,
+      eduYear: resultMap[_StudentDataJsonKeys.eduYear]! as int,
+    );
+  }
 
   @override
   JsonMap toJson() => {

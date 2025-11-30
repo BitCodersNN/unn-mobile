@@ -41,6 +41,7 @@ class ProfileServiceImpl implements ProfileService {
     }
 
     final data = response.data as JsonMap;
+
     final userType = data[ProfilesStrings.type] ??
         ((data[ProfilesStrings.profilesKey]! as List)[0]
             as JsonMap)[ProfilesStrings.type];
@@ -48,8 +49,8 @@ class ProfileServiceImpl implements ProfileService {
     UserData? userData;
     try {
       userData = switch (userType) {
-        ProfilesStrings.student => StudentData.fromJson(response.data),
-        ProfilesStrings.employee => EmployeeData.fromJson(response.data),
+        ProfilesStrings.student => StudentData.fromJson(data),
+        ProfilesStrings.employee => EmployeeData.fromJson(data),
         _ => UserData.fromJson(response.data),
       };
     } catch (error, stackTrace) {
@@ -64,7 +65,7 @@ class ProfileServiceImpl implements ProfileService {
   }
 
   @override
-  Future<UserData?> getProfileByBitrixId(int bitrixId) async {
+  Future<UserData?> getProfileByBitrixId({required int bitrixId}) async {
     final userId = await _getUserIdByBitrixId(bitrixId: bitrixId);
     if (userId == null) {
       return null;
@@ -74,11 +75,11 @@ class ProfileServiceImpl implements ProfileService {
 
   @override
   Future<UserData?> getProfileByAuthorId({required int authorId}) =>
-      getProfileByBitrixId(authorId);
+      getProfileByBitrixId(bitrixId: authorId);
 
   @override
   Future<UserData?> getProfileByDialogId({required int dialogId}) =>
-      getProfileByBitrixId(dialogId);
+      getProfileByBitrixId(bitrixId: dialogId);
 
   Future<int?> _getUserIdByBitrixId({required int bitrixId}) async {
     final path =
