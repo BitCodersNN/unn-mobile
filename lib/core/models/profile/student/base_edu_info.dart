@@ -21,6 +21,15 @@ class _BaseEduInfoJsonKeys {
 /// форму обучения, курс, уровень образования, факультет, направление подготовки,
 /// учебную группу и, при наличии, специализацию.
 class BaseEduInfo {
+  static Set<String> get jsonKeys => {
+        _BaseEduInfoJsonKeys.eduForm,
+        _BaseEduInfoJsonKeys.eduCourse,
+        _BaseEduInfoJsonKeys.eduLevel,
+        _BaseEduInfoJsonKeys.eduDirection,
+        _BaseEduInfoJsonKeys.eduGroup,
+        _BaseEduInfoJsonKeys.eduSpecialization,
+        _BaseEduInfoJsonKeys.faculty,
+      };
   final String eduForm;
   final int eduCourse;
   final String eduLevel;

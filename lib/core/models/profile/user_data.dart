@@ -12,15 +12,30 @@ class _UserDataJsonKeys {
   static const String phone = 'phone';
   static const String sex = 'sex';
   static const String notes = 'notes';
+  static const String web = 'web';
+  static const String birthdate = 'birthdate';
 }
 
 class UserData extends UserShortInfo {
+  static Set<String> get jsonKeys => {
+        _UserDataJsonKeys.id,
+        _UserDataJsonKeys.login,
+        _UserDataJsonKeys.email,
+        _UserDataJsonKeys.phone,
+        _UserDataJsonKeys.sex,
+        _UserDataJsonKeys.notes,
+        _UserDataJsonKeys.web,
+        _UserDataJsonKeys.birthdate,
+        ...UserShortInfo.profileJsonKeys,
+      };
   final int userId;
   final String? login;
   final String? email;
   final String? phone;
   final String sex;
   final String? notes;
+  final String? web;
+  final DateTime? birthdate;
 
   UserData({
     required super.bitrixId,
@@ -32,16 +47,20 @@ class UserData extends UserShortInfo {
     required this.phone,
     required this.sex,
     required this.notes,
+    required this.web,
+    required this.birthdate,
   });
 
   UserData.withUserShortInfo({
     required UserShortInfo userShortInfo,
     required this.userId,
     required this.sex,
+    this.birthdate,
     this.login,
     this.email,
     this.phone,
     this.notes,
+    this.web,
   }) : super(
           bitrixId: userShortInfo.bitrixId,
           fullname: userShortInfo.fullname,
@@ -58,6 +77,10 @@ class UserData extends UserShortInfo {
       phone: userJsonMap[_UserDataJsonKeys.phone] as String?,
       sex: userJsonMap[_UserDataJsonKeys.sex]! as String,
       notes: userJsonMap[_UserDataJsonKeys.notes] as String?,
+      web: userJsonMap[_UserDataJsonKeys.web] as String?,
+      birthdate: DateTime.tryParse(
+        userJsonMap[_UserDataJsonKeys.birthdate] as String? ?? '',
+      ),
     );
   }
 
