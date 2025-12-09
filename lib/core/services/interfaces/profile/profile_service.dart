@@ -23,7 +23,7 @@ abstract interface class ProfileService {
   /// Возвращает [StudentData] или [EmployeeData] — наследников [UserData], или null, если:
   ///   1. Не удалось получить userId по bitrixId (ошибка API, отсутствие id в ответе)
   ///   2. Не вышло получить профиль по найденному userId (ошибка API, некорректный ответ, ошибка декодирования)
-  Future<UserData?> getProfileByBitrixId(int bitrixId);
+  Future<UserData?> getProfileByBitrixId({required int bitrixId});
 
   /// Получает профиль по id автора поста или комменатрия
   ///
