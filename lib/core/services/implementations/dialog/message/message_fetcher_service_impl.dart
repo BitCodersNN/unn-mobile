@@ -54,7 +54,7 @@ class _JsonKeys {
   static const String forward = 'forward';
   static const String isSystem = 'isSystem';
   static const String isDeleted = 'IS_DELETED';
-  static const String replaces = 'replaces';
+  static const String isEdited = 'IS_EDITED';
   static const String authorId = 'author_id';
   static const String userId = 'userId';
 }
@@ -230,9 +230,10 @@ class MessageFetcherServiceImpl implements MessageFetcherService {
     if (params[_JsonKeys.isDeleted] == 'Y') {
       return MessageState.deleted;
     }
-    if ((message[_JsonKeys.replaces] as List).isNotEmpty) {
+    if (params[_JsonKeys.isEdited] == 'Y') {
       return MessageState.edited;
     }
+
     return MessageState.normal;
   }
 
