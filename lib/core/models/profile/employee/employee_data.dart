@@ -7,11 +7,16 @@ import 'package:unn_mobile/core/models/profile/user_data.dart';
 
 class _EmployeeDataJsonKeys {
   static const String profiles = 'profiles';
-  static const String user = 'user';
   static const String syncId = 'sync_id';
 }
 
 class EmployeeData extends UserData {
+  static Set<String> get jsonKeys => {
+        _EmployeeDataJsonKeys.syncId,
+        _EmployeeDataJsonKeys.profiles,
+        ...UserData.jsonKeys,
+      };
+
   final String syncId;
   final List<EmployeeProfile> profiles;
 
@@ -25,6 +30,8 @@ class EmployeeData extends UserData {
     required super.phone,
     required super.sex,
     required super.notes,
+    required super.web,
+    required super.birthdate,
     required this.syncId,
     required this.profiles,
   });
@@ -43,6 +50,8 @@ class EmployeeData extends UserData {
           sex: userData.sex,
           photoSrc: userData.photoSrc,
           notes: userData.notes,
+          web: userData.web,
+          birthdate: userData.birthdate,
         );
 
   @override
@@ -55,13 +64,7 @@ class EmployeeData extends UserData {
       };
 
   factory EmployeeData.fromJson(JsonMap json) => EmployeeData.withUserData(
-        userData: UserData.fromJson(
-          // Если сделать каст, ужасно ломается форматирование
-          // ignore: avoid_dynamic_calls
-          (json[_EmployeeDataJsonKeys.profiles]! as List)[0]
-                  [_EmployeeDataJsonKeys.user] ??
-              json,
-        ),
+        userData: UserData.fromJson(json),
         syncId: json[_EmployeeDataJsonKeys.syncId]! as String,
         profiles: [
           for (final item in json[_EmployeeDataJsonKeys.profiles]! as List)

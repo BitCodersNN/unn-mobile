@@ -11,6 +11,13 @@ class _StudentDataJsonKeys {
 }
 
 class StudentData extends UserData {
+  static Set<String> get jsonKeys => {
+        _StudentDataJsonKeys.eduStatus,
+        _StudentDataJsonKeys.eduYear,
+        ...BaseEduInfo.jsonKeys,
+        ...UserData.jsonKeys,
+      };
+
   final BaseEduInfo baseEduInfo;
   final String eduStatus;
   final int eduYear;
@@ -25,6 +32,8 @@ class StudentData extends UserData {
     required super.phone,
     required super.sex,
     required super.notes,
+    required super.web,
+    required super.birthdate,
     required this.baseEduInfo,
     required this.eduStatus,
     required this.eduYear,
@@ -45,6 +54,8 @@ class StudentData extends UserData {
           sex: userData.sex,
           photoSrc: userData.photoSrc,
           notes: userData.notes,
+          web: userData.web,
+          birthdate: userData.birthdate,
         );
 
   factory StudentData.fromJson(JsonMap json) => StudentData.withUserData(

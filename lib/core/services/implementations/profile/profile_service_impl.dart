@@ -8,6 +8,7 @@ import 'package:unn_mobile/core/constants/profiles_strings.dart';
 import 'package:unn_mobile/core/misc/dio_interceptor/response_data_type.dart';
 import 'package:unn_mobile/core/misc/dio_interceptor/response_type_interceptor.dart';
 import 'package:unn_mobile/core/misc/dio_options_factory/options_with_expected_type_factory.dart';
+import 'package:unn_mobile/core/misc/json/json_search.dart';
 import 'package:unn_mobile/core/misc/json/json_utils.dart';
 import 'package:unn_mobile/core/models/profile/employee/employee_data.dart';
 import 'package:unn_mobile/core/models/profile/student/student_data.dart';
@@ -40,31 +41,32 @@ class ProfileServiceImpl implements ProfileService {
       return null;
     }
 
-    final data = response.data as JsonMap;
-    final userType = data[ProfilesStrings.type] ??
-        ((data[ProfilesStrings.profilesKey]! as List)[0]
+    final responseData = response.data as JsonMap;
+    final userType = responseData[ProfilesStrings.type] ??
+        ((responseData[ProfilesStrings.profilesKey]! as List)[0]
             as JsonMap)[ProfilesStrings.type];
 
     UserData? userData;
     try {
       userData = switch (userType) {
-        ProfilesStrings.student => StudentData.fromJson(response.data),
-        ProfilesStrings.employee => EmployeeData.fromJson(response.data),
-        _ => UserData.fromJson(response.data),
+        ProfilesStrings.student =>
+          StudentData.fromJson(_getStudentJson(responseData)),
+        ProfilesStrings.employee =>
+          EmployeeData.fromJson(_getEmployeeJson(responseData)),
+        _ => UserData.fromJson(_getUserJson(responseData)),
       };
     } catch (error, stackTrace) {
       _loggerService.logError(
         error,
         stackTrace,
-        information: [response.data.toString()],
+        information: [responseData.toString()],
       );
     }
-
     return userData;
   }
 
   @override
-  Future<UserData?> getProfileByBitrixId(int bitrixId) async {
+  Future<UserData?> getProfileByBitrixId({required int bitrixId}) async {
     final userId = await _getUserIdByBitrixId(bitrixId: bitrixId);
     if (userId == null) {
       return null;
@@ -74,11 +76,11 @@ class ProfileServiceImpl implements ProfileService {
 
   @override
   Future<UserData?> getProfileByAuthorId({required int authorId}) =>
-      getProfileByBitrixId(authorId);
+      getProfileByBitrixId(bitrixId: authorId);
 
   @override
   Future<UserData?> getProfileByDialogId({required int dialogId}) =>
-      getProfileByBitrixId(dialogId);
+      getProfileByBitrixId(bitrixId: dialogId);
 
   Future<int?> _getUserIdByBitrixId({required int bitrixId}) async {
     final path =
@@ -108,4 +110,18 @@ class ProfileServiceImpl implements ProfileService {
 
     return id;
   }
+
+  JsonMap _extractJson(JsonMap json, Set<String> keys) {
+    final JsonMap results = {};
+    collectFirstValues(json, keys, results);
+    return results;
+  }
+
+  JsonMap _getStudentJson(JsonMap json) =>
+      _extractJson(json, StudentData.jsonKeys);
+
+  JsonMap _getEmployeeJson(JsonMap json) =>
+      _extractJson(json, EmployeeData.jsonKeys);
+
+  JsonMap _getUserJson(JsonMap json) => _extractJson(json, UserData.jsonKeys);
 }

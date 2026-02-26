@@ -73,6 +73,12 @@ class UserShortInfo
         BlogPostJsonSerializable,
         MessageJsonSerializable,
         ProfileJsonSerializable {
+  static const _profileJsonKeys = _ProfileUserInfoKeys();
+  static Set<String> get profileJsonKeys => {
+        _profileJsonKeys.fullname,
+        _profileJsonKeys.id,
+        _profileJsonKeys.photoSrc,
+      };
   final int? bitrixId;
   final String? fullname;
   final String? photoSrc;
