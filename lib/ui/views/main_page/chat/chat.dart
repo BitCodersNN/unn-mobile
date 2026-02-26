@@ -11,7 +11,6 @@ import 'package:unn_mobile/core/misc/date_time_utilities/date_time_extensions.da
 import 'package:unn_mobile/core/misc/user/user_functions.dart';
 import 'package:unn_mobile/core/models/dialog/dialog.dart' as d;
 import 'package:unn_mobile/core/models/dialog/preview_dialog.dart';
-import 'package:unn_mobile/core/services/interfaces/dialog/dialog_search_service.dart';
 import 'package:unn_mobile/core/viewmodels/factories/main_page_routes_view_models_factory.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/chat/chat_screen_view_model.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
@@ -52,27 +51,11 @@ class _ChatScreenViewState extends State<ChatScreenView> {
                   icon: const Icon(Icons.search),
                 ),
                 suggestionsBuilder: (context, controller) async {
-                  final suggService =
-                      Injector.appInstance.get<DialogSearchService>();
-                  if (controller.text.length < 3) {
-                    final history = await suggService.getHistory();
-                    return history
-                            ?.where((e) => e.title.contains(controller.text))
-                            .map(
-                              (e) =>
-                                  searchItemTile(context, e, controller, model),
-                            ) ??
-                        [];
-                  }
-                  final sugg = await suggService.search(controller.text);
-                  final data = sugg
-                          ?.map(
-                            (e) =>
-                                searchItemTile(context, e, controller, model),
-                          )
-                          .toList() ??
-                      [];
-                  return data;
+                  final suggestions =
+                      await model.getSuggestions(controller.text);
+                  return suggestions.map(
+                    (e) => searchItemTile(context, e, controller, model),
+                  );
                 },
               ),
           ],

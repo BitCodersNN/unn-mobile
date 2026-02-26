@@ -9,6 +9,8 @@ import 'package:unn_mobile/core/misc/user/current_user_sync_storage.dart';
 import 'package:unn_mobile/core/models/dialog/base_dialog_info.dart';
 import 'package:unn_mobile/core/models/dialog/dialog.dart';
 import 'package:unn_mobile/core/models/dialog/dialog_query_parameter.dart';
+import 'package:unn_mobile/core/models/dialog/preview_dialog.dart';
+import 'package:unn_mobile/core/services/interfaces/dialog/dialog_search_service.dart';
 import 'package:unn_mobile/core/services/interfaces/dialog/dialog_service.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
 
@@ -20,6 +22,8 @@ class ChatScreenViewModel extends BaseViewModel {
 
   final CurrentUserSyncStorage _currentUserSyncStorage;
 
+  final DialogSearchService _searchService;
+
   final List<Dialog> _dialogs = [];
 
   BaseDialogInfo? storedDialogInfo;
@@ -30,7 +34,11 @@ class ChatScreenViewModel extends BaseViewModel {
 
   bool _hasMoreDialogs = false;
 
-  ChatScreenViewModel(this._dialogService, this._currentUserSyncStorage);
+  ChatScreenViewModel(
+    this._dialogService,
+    this._currentUserSyncStorage,
+    this._searchService,
+  );
 
   int? get currentUserId => _currentUserId;
 
@@ -87,5 +95,13 @@ class ChatScreenViewModel extends BaseViewModel {
     _dialogs.addAll(dialogItems.items);
 
     _currentUserId = _currentUserSyncStorage.currentUserData?.bitrixId;
+  }
+
+  Future<Iterable<PreviewDialog>> getSuggestions(String query) async {
+    if (query.length < 3) {
+      final history = await _searchService.getHistory();
+      return history?.where((e) => e.title.contains(query)) ?? [];
+    }
+    return await _searchService.search(query) ?? [];
   }
 }
