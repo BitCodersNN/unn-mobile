@@ -13,10 +13,9 @@ import 'package:unn_mobile/ui/views/main_page/chat/widgets/message_group.dart';
 import 'package:unn_mobile/ui/views/main_page/chat/widgets/send_field.dart';
 
 class ChatInside extends StatefulWidget {
-  const ChatInside({required this.chatId, super.key});
+  const ChatInside({this.chatId, super.key});
 
-  final int chatId;
-
+  final int? chatId;
   @override
   State<ChatInside> createState() => _ChatInsideState();
 }
@@ -31,7 +30,7 @@ class _ChatInsideState extends State<ChatInside> {
           WidgetsBinding.instance.addPostFrameCallback((_) {
             if (!hasScrolledOnce &&
                 model.dialog != null &&
-                model.dialog!.unreadMessagesCount > 0 &&
+                model.unreadMessagesCount > 0 &&
                 scrollController.hasClients) {
               final renderBox = newMessagesKey.currentContext
                   ?.findRenderObject() as RenderBox?;
@@ -142,7 +141,8 @@ class _ChatInsideState extends State<ChatInside> {
                             ),
                           ),
                         ],
-                        if (model.lastReadMessageId == null)
+                        if (model.messages.isNotEmpty &&
+                            model.lastReadMessageId == null)
                           _buildNewMessagesBar(),
                         if (model.isBusy)
                           const Center(

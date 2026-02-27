@@ -136,6 +136,14 @@ class MainPageRouting {
           Icons.chat,
           Icons.chat,
           'Чат',
+          'stored',
+          builder: (_, state) => const ChatInside(),
+          userTypes: [],
+        ),
+        MainPageRouteData(
+          Icons.chat,
+          Icons.chat,
+          'Чат',
           ':chatId',
           builder: (_, state) => ChatInside(
             chatId: int.tryParse(state.pathParameters['chatId'] ?? '0') ?? 0,

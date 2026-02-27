@@ -10,6 +10,7 @@ import 'package:unn_mobile/core/constants/date_pattern.dart';
 import 'package:unn_mobile/core/misc/date_time_utilities/date_time_extensions.dart';
 import 'package:unn_mobile/core/misc/user/user_functions.dart';
 import 'package:unn_mobile/core/models/dialog/dialog.dart' as d;
+import 'package:unn_mobile/core/models/dialog/preview_dialog.dart';
 import 'package:unn_mobile/core/viewmodels/factories/main_page_routes_view_models_factory.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/chat/chat_screen_view_model.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
@@ -35,12 +36,29 @@ class _ChatScreenViewState extends State<ChatScreenView> {
             .getViewModelByRouteIndex<ChatScreenViewModel>(
               widget.bottomRouteIndex!,
             );
-
     return BaseView<ChatScreenViewModel>(
       builder: (context, model, child) => Scaffold(
         appBar: AppBar(
           title: const Text('Сообщения'),
           leading: getSubpageLeading(widget.bottomRouteIndex),
+          actions: [
+            if (!model.isBusy)
+              SearchAnchor(
+                builder: (context, controller) => IconButton(
+                  onPressed: () {
+                    controller.openView();
+                  },
+                  icon: const Icon(Icons.search),
+                ),
+                suggestionsBuilder: (context, controller) async {
+                  final suggestions =
+                      await model.getSuggestions(controller.text);
+                  return suggestions.map(
+                    (e) => searchItemTile(context, e, controller, model),
+                  );
+                },
+              ),
+          ],
         ),
         body: Builder(
           builder: (context) {
@@ -104,6 +122,54 @@ class _ChatScreenViewState extends State<ChatScreenView> {
       ),
       model: viewModel,
       onModelReady: (model) => model.init(),
+    );
+  }
+
+  Widget searchItemTile(
+    BuildContext context,
+    PreviewDialog dialog,
+    SearchController controller,
+    ChatScreenViewModel model,
+  ) {
+    final theme = Theme.of(context);
+
+    return ListTile(
+      leading: CircleAvatar(
+        radius: MediaQuery.of(context).textScaler.scale(26.0),
+        foregroundImage: dialog.avatarUrl.isNotEmpty
+            ? CachedNetworkImageProvider(dialog.avatarUrl)
+            : null,
+        child: dialog.avatarUrl.isEmpty
+            ? FittedBox(
+                fit: BoxFit.cover,
+                child: Padding(
+                  padding: const EdgeInsets.all(4.0),
+                  child: Text(
+                    generateInitials(
+                      dialog.title.split(' '),
+                    ),
+                    style: theme.textTheme.headlineSmall!.copyWith(
+                      color: theme.colorScheme.onSurface,
+                    ),
+                  ),
+                ),
+              )
+            : null,
+      ),
+      title: Text(
+        dialog.title,
+        overflow: TextOverflow.ellipsis,
+        style: theme.textTheme.titleMedium,
+      ),
+      enableFeedback: true,
+      visualDensity: VisualDensity.adaptivePlatformDensity,
+      onTap: () {
+        controller.closeView('');
+        model.storedDialogInfo = dialog;
+        GoRouter.of(context).go(
+          '${GoRouter.of(context).state.path}/stored',
+        );
+      },
     );
   }
 }

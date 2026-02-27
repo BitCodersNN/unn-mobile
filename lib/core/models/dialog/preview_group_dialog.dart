@@ -7,6 +7,7 @@ import 'package:unn_mobile/core/models/dialog/preview_dialog.dart';
 
 class _PreviewGroupDialogJsonKeys {
   static const String customData = 'customData';
+  static const String chat = 'chat';
 }
 
 class PreviewGroupDialog extends PreviewDialog {
@@ -27,7 +28,8 @@ class PreviewGroupDialog extends PreviewDialog {
       title: dialog.title,
       avatarUrl: dialog.avatarUrl,
       baseChatSetting: BaseChatSetting.fromJson(
-        json[_PreviewGroupDialogJsonKeys.customData]! as JsonMap,
+        (json[_PreviewGroupDialogJsonKeys.customData]!
+            as JsonMap)[_PreviewGroupDialogJsonKeys.chat]! as JsonMap,
       ),
     );
   }

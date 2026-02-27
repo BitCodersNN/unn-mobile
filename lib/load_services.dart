@@ -761,6 +761,7 @@ void registerDependencies() {
       () => ChatScreenViewModel(
         get<DialogService>(),
         get<CurrentUserSyncStorage>(),
+        get<DialogSearchService>(),
       ),
     )
     ..registerDependency(

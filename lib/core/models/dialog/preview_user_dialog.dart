@@ -8,6 +8,7 @@ class _PreviewUserDialogJsonKeys {
   static const String workPosition = 'workPosition';
   static const String lastActivityDate = 'lastActivityDate';
   static const String customData = 'customData';
+  static const String user = 'user';
 }
 
 class PreviewUserDialog extends PreviewDialog {
@@ -32,7 +33,8 @@ class PreviewUserDialog extends PreviewDialog {
       avatarUrl: dialog.avatarUrl,
       lastActivityAt:
           lastActivityAt is String ? DateTime.tryParse(lastActivityAt) : null,
-      workPosition: (json[_PreviewUserDialogJsonKeys.customData]!
+      workPosition: ((json[_PreviewUserDialogJsonKeys.customData]!
+              as JsonMap)[_PreviewUserDialogJsonKeys.user]!
           as JsonMap)[_PreviewUserDialogJsonKeys.workPosition]! as String,
     );
   }
