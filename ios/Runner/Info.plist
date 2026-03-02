@@ -13,7 +13,7 @@
 	<key>CFBundleIdentifier</key>
 	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
 	<key>CFBundleInfoDictionaryVersion</key>
-	<string>6.0</string>
+	<string>0.5.5</string>
 	<key>CFBundleName</key>
 	<string>unn_mobile</string>
 	<key>CFBundlePackageType</key>
@@ -26,10 +26,18 @@
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSBonjourServices</key>
+	<array>
+		<string>${DART_DEBUG_BONJOUR_SERVICE}</string>
+	</array>
 	<key>NSCalendarsFullAccessUsageDescription</key>
 	<string>Calendar full access</string>
 	<key>NSCalendarsUsageDescription</key>
 	<string>Calendars</string>
+	<key>NSCalendarsWriteOnlyAccessUsageDescription</key>
+	<string>Calendar full access</string>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>Требуется для отладки Flutter (hot reload)</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>
@@ -51,11 +59,5 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
-
-    <!-- Permission options for the `calendar` group -->
-    <key>NSCalendarsUsageDescription</key>
-    <string>Calendars</string>
-    <key>NSCalendarsWriteOnlyAccessUsageDescription</key>
-    <string>Calendar full access</string>
 </dict>
 </plist>
