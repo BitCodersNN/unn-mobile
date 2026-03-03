@@ -78,7 +78,7 @@ class DateTimeRanges {
     DateTime endOfSemester;
 
     if (now.month >= DateTime.february && now.month <= DateTime.august) {
-      endOfSemester = DateTime(currentYear, DateTime.september, 1)
+      endOfSemester = DateTime(currentYear, DateTime.august, 30)
           .subtract(const Duration(milliseconds: 1));
     } else {
       endOfSemester = DateTime(currentYear + 1, DateTime.february, 1)
