@@ -43,7 +43,7 @@ class ProfileOfCurrentUserServiceImpl implements ProfileOfCurrentUserService {
           (jsonMap as JsonMap)[ProfilesStrings.type] == ProfilesStrings.student
               ? StudentData.fromJson(jsonMap)
               : jsonMap[ProfilesStrings.type] == ProfilesStrings.employee
-                  ? EmployeeData.fromCurrentProfileJson(jsonMap)
+                  ? EmployeeData.fromJson(jsonMap)
                   : null;
     } catch (e, stackTrace) {
       _loggerService.logError(e, stackTrace, information: [jsonMap.toString()]);

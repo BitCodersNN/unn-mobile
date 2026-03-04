@@ -50,11 +50,17 @@ class UserDataProviderImpl implements UserDataProvider {
 
     final jsonMap = jsonDecode(userInfo) as Map<String, dynamic>;
 
-    return switch (userType) {
-      _student => StudentData.fromJson(jsonMap),
-      _employee => EmployeeData.fromCurrentProfileJson(jsonMap),
-      _ => UserData.fromJson(jsonMap),
-    };
+    try {
+      return switch (userType) {
+        _student => StudentData.fromJson(jsonMap),
+        _employee => EmployeeData.fromJson(jsonMap),
+        _ => UserData.fromJson(jsonMap),
+      };
+    } catch (e, stackTrace) {
+      _loggerService.logError(e, stackTrace, information: [jsonMap.toString()]);
+    }
+
+    return null;
   }
 
   @override
