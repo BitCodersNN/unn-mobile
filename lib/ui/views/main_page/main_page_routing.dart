@@ -9,7 +9,7 @@ import 'package:unn_mobile/ui/views/main_page/certificates_online/certificates_o
 import 'package:unn_mobile/ui/views/main_page/chat/chat.dart';
 import 'package:unn_mobile/ui/views/main_page/chat/chat_inside.dart';
 import 'package:unn_mobile/ui/views/main_page/donations/donations.dart';
-import 'package:unn_mobile/ui/views/main_page/feed/feed.dart';
+// import 'package:unn_mobile/ui/views/main_page/feed/feed.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/widgets/announcements_page.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/widgets/comments_page.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/widgets/pinned_posts_page.dart';

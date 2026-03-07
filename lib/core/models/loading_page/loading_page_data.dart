@@ -23,7 +23,7 @@ class LoadingPageModel {
     fontFamily: 'LetoSans',
   );
 
-  static const defaultTitle = 'СТУДЕНЧЕСКИЙ ХАБ ДЛЯ ННГУ [НЕОФИЦИАЛЬНЫЙ]';
+  static const defaultTitle = 'СТУДЕНЧЕСКИЙ ХАБ \n ДЛЯ ННГУ \n [НЕОФИЦИАЛЬНЫЙ]';
 
   final String imagePath;
   final DateTimeRange? dateTimeRangeToUseOn;

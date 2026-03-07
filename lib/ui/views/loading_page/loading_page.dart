@@ -14,13 +14,11 @@ class LoadingPage extends StatelessWidget {
           future: model.initLoadingPages(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Scaffold(
-                backgroundColor: Colors.white,
-              );
+              return const Scaffold(backgroundColor: Colors.white);
             } else {
               return Scaffold(
                 backgroundColor: Colors.white,
-                body: _buildContent(context, model),
+                body: SafeArea(child: _buildContent(context, model)),
               );
             }
           },
@@ -29,31 +27,68 @@ class LoadingPage extends StatelessWidget {
       );
 
   Widget _buildContent(BuildContext context, LoadingPageViewModel model) =>
-      Center(
-        child: MediaQuery.withNoTextScaling(
-          child: Padding(
-            padding: const EdgeInsets.only(top: 20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                _text(
-                  model.loadingPageData?.title ?? '',
-                  model.loadingPageData?.titleStyle ?? const TextStyle(),
-                ),
-                if (model.logoImage != null) ...[
-                  const SizedBox(height: 30),
-                  Image.file(model.logoImage!),
-                ],
-                if (model.loadingPageData?.description != null &&
-                    model.loadingPageData?.descriptionStyle != null) ...[
-                  const SizedBox(height: 30),
-                  _text(
-                    model.loadingPageData!.description!,
-                    model.loadingPageData!.descriptionStyle!,
+      LayoutBuilder(
+        builder: (context, constraints) => Center(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              maxWidth: 600,
+              maxHeight: constraints.maxHeight,
+            ),
+            child: Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: constraints.maxWidth * 0.05,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Flexible(
+                    flex: 0,
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: _text(
+                        model.loadingPageData?.title ?? '',
+                        model.loadingPageData?.titleStyle ?? const TextStyle(),
+                      ),
+                    ),
                   ),
+                  if (model.logoImage != null) ...[
+                    const SizedBox(height: 20),
+                    Flexible(
+                      flex: 1,
+                      child: AspectRatio(
+                        aspectRatio: 1,
+                        child: FittedBox(
+                          fit: BoxFit.contain,
+                          child: Image.file(
+                            model.logoImage!,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                  if (model.loadingPageData?.description != null &&
+                      model.loadingPageData?.descriptionStyle != null) ...[
+                    const SizedBox(height: 20),
+                    Flexible(
+                      flex: 0,
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: ConstrainedBox(
+                          constraints: BoxConstraints(
+                            maxWidth: constraints.maxWidth * 0.8,
+                          ),
+                          child: _text(
+                            model.loadingPageData!.description!,
+                            model.loadingPageData!.descriptionStyle!,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ],
-              ],
+              ),
             ),
           ),
         ),
@@ -68,5 +103,7 @@ class LoadingPage extends StatelessWidget {
         title,
         style: textStyle,
         textAlign: textAlign,
+        maxLines: 3,
+        overflow: TextOverflow.ellipsis,
       );
 }

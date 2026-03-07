@@ -39,11 +39,13 @@ class AboutViewModel extends BaseViewModel {
     _authors = await authorsProvider.getData() ??
         await authorsConfigService.getAuthors();
 
-    updateLastCommitShaAndConfigIfChanged(
-      lastCommitShaProvider: lastCommitShaProvider,
-      lastCommitShaService: lastCommitShaService,
-      gitPath: GitPath.authors,
-      saveConfig: _saveAuthorsConfigFromGit,
+    unawaited(
+      updateLastCommitShaAndConfigIfChanged(
+        lastCommitShaProvider: lastCommitShaProvider,
+        lastCommitShaService: lastCommitShaService,
+        gitPath: GitPath.authors,
+        saveConfig: _saveAuthorsConfigFromGit,
+      ),
     );
 
     isInitialized = true;
