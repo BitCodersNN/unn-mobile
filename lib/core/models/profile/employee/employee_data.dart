@@ -66,16 +66,12 @@ class EmployeeData extends UserData {
   factory EmployeeData.fromJson(JsonMap json) => EmployeeData.withUserData(
         userData: UserData.fromJson(json),
         syncId: json[_EmployeeDataJsonKeys.syncId]! as String,
-        profiles: [
-          for (final item in json[_EmployeeDataJsonKeys.profiles]! as List)
-            EmployeeProfile.fromJson(item as JsonMap),
-        ],
-      );
-
-  factory EmployeeData.fromCurrentProfileJson(JsonMap json) =>
-      EmployeeData.withUserData(
-        userData: UserData.fromJson(json),
-        syncId: json[_EmployeeDataJsonKeys.syncId]! as String,
-        profiles: [EmployeeProfile.fromJson(json)],
+        profiles: json.containsKey(_EmployeeDataJsonKeys.profiles)
+            ? [
+                for (final item
+                    in json[_EmployeeDataJsonKeys.profiles]! as List)
+                  EmployeeProfile.fromJson(item as JsonMap),
+              ]
+            : [EmployeeProfile.fromJson(json)],
       );
 }
