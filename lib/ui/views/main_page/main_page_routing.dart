@@ -98,21 +98,21 @@ final MainPageRouteData announcementsRoute = MainPageRouteData(
 
 class MainPageRouting {
   static final List<MainPageRouteData> navbarRoutes = [
-    MainPageRouteData(
-      Icons.star,
-      Icons.star_border,
-      'Лента',
-      '/feed',
-      builder: (_, __) => const FeedScreenView(
-        bottomRouteIndex: 0,
-      ),
-      userTypes: [],
-      subroutes: [
-        postCommentsRoute,
-        pinnedPostsRoute,
-        announcementsRoute,
-      ],
-    ),
+    // MainPageRouteData(
+    //   Icons.star,
+    //   Icons.star_border,
+    //   'Лента',
+    //   '/feed',
+    //   builder: (_, __) => const FeedScreenView(
+    //     bottomRouteIndex: 0,
+    //   ),
+    //   userTypes: [],
+    //   subroutes: [
+    //     postCommentsRoute,
+    //     pinnedPostsRoute,
+    //     announcementsRoute,
+    //   ],
+    // ),
     MainPageRouteData(
       Icons.calendar_month,
       Icons.calendar_month_outlined,

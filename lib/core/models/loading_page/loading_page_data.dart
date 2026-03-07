@@ -18,12 +18,12 @@ class _LoadingPageModelJsonKeys {
 
 class LoadingPageModel {
   static const defaultTextStyle = TextStyle(
-    color: Color(0xFF0F68AA),
+    color: Color(0xFF000000),
     fontSize: 34.09,
     fontFamily: 'LetoSans',
   );
 
-  static const defaultTitle = 'УНИВЕРСИТЕТ \n ЛОБАЧЕВСКОГО';
+  static const defaultTitle = 'СТУДЕНЧЕСКИЙ ХАБ ДЛЯ ННГУ [НЕОФИЦИАЛЬНЫЙ]';
 
   final String imagePath;
   final DateTimeRange? dateTimeRangeToUseOn;

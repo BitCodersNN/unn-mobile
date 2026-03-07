@@ -31,27 +31,30 @@ class LoadingPage extends StatelessWidget {
   Widget _buildContent(BuildContext context, LoadingPageViewModel model) =>
       Center(
         child: MediaQuery.withNoTextScaling(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              _text(
-                model.loadingPageData?.title ?? '',
-                model.loadingPageData?.titleStyle ?? const TextStyle(),
-              ),
-              if (model.logoImage != null) ...[
-                const SizedBox(height: 30),
-                Image.file(model.logoImage!),
-              ],
-              if (model.loadingPageData?.description != null &&
-                  model.loadingPageData?.descriptionStyle != null) ...[
-                const SizedBox(height: 30),
+          child: Padding(
+            padding: const EdgeInsets.only(top: 20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
                 _text(
-                  model.loadingPageData!.description!,
-                  model.loadingPageData!.descriptionStyle!,
+                  model.loadingPageData?.title ?? '',
+                  model.loadingPageData?.titleStyle ?? const TextStyle(),
                 ),
+                if (model.logoImage != null) ...[
+                  const SizedBox(height: 30),
+                  Image.file(model.logoImage!),
+                ],
+                if (model.loadingPageData?.description != null &&
+                    model.loadingPageData?.descriptionStyle != null) ...[
+                  const SizedBox(height: 30),
+                  _text(
+                    model.loadingPageData!.description!,
+                    model.loadingPageData!.descriptionStyle!,
+                  ),
+                ],
               ],
-            ],
+            ),
           ),
         ),
       );
