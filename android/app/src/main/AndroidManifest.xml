@@ -11,7 +11,7 @@
         </intent>
     </queries>
     <application
-        android:label="ННГУ"
+        android:label="Хаб для ННГУ"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
         android:allowBackup="false"
