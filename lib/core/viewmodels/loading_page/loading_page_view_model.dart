@@ -117,11 +117,13 @@ class LoadingPageViewModel extends BaseViewModel {
     AuthRequestResult? authRequestResult;
     late _TypeScreen typeScreen;
 
-    updateLastCommitShaAndConfigIfChanged(
-      lastCommitShaProvider: _lastCommitShaProvider,
-      lastCommitShaService: _lastCommitShaService,
-      gitPath: GitPath.loadingScreen,
-      saveConfig: _saveLoadingPagesConfigFromGit,
+    unawaited(
+      updateLastCommitShaAndConfigIfChanged(
+        lastCommitShaProvider: _lastCommitShaProvider,
+        lastCommitShaService: _lastCommitShaService,
+        gitPath: GitPath.loadingScreen,
+        saveConfig: _saveLoadingPagesConfigFromGit,
+      ),
     );
 
     try {
