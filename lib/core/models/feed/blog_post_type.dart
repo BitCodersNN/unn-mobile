@@ -20,7 +20,6 @@ enum ExtendedBlogPostType {
   importantPinned,
 }
 
-
 extension BlogPostTypeExtension on BlogPostType {
   String get stringValue => _blogPostTypeToString[this]!;
 }
