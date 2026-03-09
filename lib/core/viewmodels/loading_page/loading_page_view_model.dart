@@ -18,6 +18,7 @@ import 'package:unn_mobile/core/providers/interfaces/loading_page/last_commit_sh
 import 'package:unn_mobile/core/providers/interfaces/loading_page/loading_page_provider.dart';
 import 'package:unn_mobile/core/providers/interfaces/profile/user_data_provider.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation/authorisation_refresh_service.dart';
+import 'package:unn_mobile/core/services/interfaces/authorisation/stream_auth_service.dart';
 import 'package:unn_mobile/core/services/interfaces/common/last_commit_sha_service.dart';
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
 import 'package:unn_mobile/core/services/interfaces/loading_page/loading_page_config_service.dart';
@@ -36,6 +37,7 @@ class LoadingPageViewModel extends BaseViewModel {
   final LoadingPageProvider _loadingPageProvider;
   final CurrentUserSyncStorage _typeOfCurrentUser;
   final ProfileOfCurrentUserService _gettingProfileOfCurrentUser;
+  final StreamAuthService _streamAuthService;
   final UserDataProvider _userDataProvider;
   final AppOpenTracker _appOpenTracker;
 
@@ -53,6 +55,7 @@ class LoadingPageViewModel extends BaseViewModel {
     this._typeOfCurrentUser,
     this._gettingProfileOfCurrentUser,
     this._userDataProvider,
+    this._streamAuthService,
     this._appOpenTracker,
   );
 
@@ -140,7 +143,10 @@ class LoadingPageViewModel extends BaseViewModel {
     };
 
     if (typeScreen == _TypeScreen.mainScreen) {
-      await _initUserData();
+      await Future.wait([
+        _initUserData(),
+        _streamAuthService.getStreamAuthParams(),
+      ]);
     }
 
     return typeScreen;

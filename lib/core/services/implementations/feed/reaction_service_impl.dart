@@ -10,6 +10,7 @@ import 'package:unn_mobile/core/constants/rating_list_strings.dart';
 import 'package:unn_mobile/core/misc/dio_interceptor/response_data_type.dart';
 import 'package:unn_mobile/core/misc/dio_options_factory/options_with_timeout_and_expected_type_factory.dart';
 import 'package:unn_mobile/core/misc/json/json_utils.dart';
+import 'package:unn_mobile/core/misc/response_status_validator.dart';
 import 'package:unn_mobile/core/misc/user/current_user_sync_storage.dart';
 import 'package:unn_mobile/core/models/feed/rating_list.dart';
 import 'package:unn_mobile/core/models/profile/user_short_info.dart';
@@ -88,6 +89,10 @@ class ReactionServiceImpl implements ReactionService {
     }
 
     dynamic jsonValue;
+    if (!ResponseStatusValidator.validate(response.data, _loggerService)) {
+      return null;
+    }
+
     try {
       jsonValue = ((response.data
               as JsonMap)[_KeysForReactionManagerJsonConverter.data]!

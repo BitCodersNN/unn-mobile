@@ -16,6 +16,11 @@ class _RegularExpressionSource {
   static const distanceCourseSemester =
       r'selectedYear == (\d{4}) && selectedSemester == (\d)';
   static const upperCaseLetters = r'[A-Z]';
+
+  static const sonetLAssetsCheckSum = r"sonetLAssetsCheckSum:\s*'([^']+)'";
+  static const signedParameters = r"signedParameters:\s*'([^']+)'";
+  static const commentFormUID = r"commentFormUID:\s*'([^']+)'";
+  static const blogCommentFormUID = r"blogCommentFormUID:\s*'([^']+)'";
 }
 
 class RegularExpressions {
@@ -57,5 +62,29 @@ class RegularExpressions {
 
   static final uppercaseLettersRegExp = RegExp(
     _RegularExpressionSource.upperCaseLetters,
+  );
+
+  static final sonetLAssetsCheckSumRegExp = RegExp(
+    _RegularExpressionSource.sonetLAssetsCheckSum,
+    multiLine: true,
+    caseSensitive: false,
+  );
+
+  static final signedParametersRegExp = RegExp(
+    _RegularExpressionSource.signedParameters,
+    multiLine: true,
+    caseSensitive: false,
+  );
+
+  static final commentFormUIDRegExp = RegExp(
+    _RegularExpressionSource.commentFormUID,
+    multiLine: true,
+    caseSensitive: false,
+  );
+
+  static final blogCommentFormUIDRegExp = RegExp(
+    _RegularExpressionSource.blogCommentFormUID,
+    multiLine: true,
+    caseSensitive: false,
   );
 }

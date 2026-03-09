@@ -13,6 +13,14 @@ enum BlogPostType {
   important,
 }
 
+enum ExtendedBlogPostType {
+  regular,
+  pinned,
+  important,
+  importantPinned,
+}
+
+
 extension BlogPostTypeExtension on BlogPostType {
   String get stringValue => _blogPostTypeToString[this]!;
 }

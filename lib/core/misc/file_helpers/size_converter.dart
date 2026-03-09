@@ -27,7 +27,7 @@ extension UnitNames on SizeUnit {
 
 class SizeConverter {
   static const int _base = 10;
-  final Map<SizeUnit?, num> _coefficients = {
+  static final Map<SizeUnit?, num> _coefficients = {
     SizeUnit.byte: pow(_base, 0),
     SizeUnit.kilobyte: pow(_base, 3),
     SizeUnit.megabyte: pow(_base, 6),
@@ -38,6 +38,44 @@ class SizeConverter {
 
   /// Возвращает единицы измерения, используемые в последней операции
   SizeUnit? get lastUsedUnit => _lastUsedUnit;
+
+  /// Парсит строку с размером файла (например, "1.5 ГБ", "100 КБ", "2.3 TB")
+  /// и возвращает размер в байтах.
+  ///
+  /// Поддерживает русские (Б, КБ, МБ, ГБ) и латинские (B, KB, MB, GB) обозначения,
+  /// а также запятую или точку в качестве десятичного разделителя.
+  static int parseFileSize(String sizeText) {
+    final regex = RegExp(
+      r'([\d.,]+)\s*(Б|КБ|МБ|ГБ|ТБ|TB|GB|MB|KB|B)',
+      caseSensitive: false,
+    );
+    final match = regex.firstMatch(sizeText);
+
+    if (match == null) {
+      return 0;
+    }
+
+    final value =
+        double.tryParse(match.group(1)?.replaceAll(',', '.') ?? '0') ?? 0;
+    final unit = match.group(2)?.toUpperCase() ?? 'Б';
+
+    switch (unit) {
+      case 'Б':
+      case 'B':
+        return value.toInt();
+      case 'КБ':
+      case 'KB':
+        return (value * _coefficients[SizeUnit.kilobyte]!.toInt()).toInt();
+      case 'МБ':
+      case 'MB':
+        return (value * _coefficients[SizeUnit.megabyte]!.toInt()).toInt();
+      case 'ГБ':
+      case 'GB':
+        return (value * _coefficients[SizeUnit.gigabyte]!.toInt()).toInt();
+      default:
+        return value.toInt();
+    }
+  }
 
   /// Преобразует байты в указанные единицы измерения или в наибольшие единицы, в которых целая часть числа не равна 0.
   ///

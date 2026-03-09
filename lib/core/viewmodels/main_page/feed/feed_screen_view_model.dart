@@ -8,19 +8,25 @@ import 'package:unn_mobile/core/models/feed/blog_post.dart';
 import 'package:unn_mobile/core/models/feed/blog_post_type.dart';
 import 'package:unn_mobile/core/providers/interfaces/feed/blog_post_provider.dart';
 import 'package:unn_mobile/core/providers/interfaces/feed/last_feed_load_date_time_provider.dart';
-import 'package:unn_mobile/core/services/interfaces/feed/blog_post_receivers/featured_blog_post_service.dart';
-import 'package:unn_mobile/core/services/interfaces/feed/blog_post_receivers/regular_blog_posts_service.dart';
+import 'package:unn_mobile/core/services/interfaces/authorisation/stream_auth_service.dart';
+import 'package:unn_mobile/core/services/interfaces/feed/blog_post_receivers/refresh_blog_post_service.dart';
+import 'package:unn_mobile/core/services/interfaces/feed/legacy/blog_post_receivers/featured_blog_post_service.dart';
+import 'package:unn_mobile/core/services/interfaces/feed/legacy/blog_post_receivers/regular_blog_posts_service.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/feed/feed_post_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/main_page_route_view_model.dart';
 
 class FeedScreenViewModel extends BaseViewModel
     implements MainPageRouteViewModel {
-  static const postsPerPage = 10;
+  static const postsPerPage = 20;
   final LastFeedLoadDateTimeProvider _lastFeedLoadDateTimeProvider;
   final BlogPostProvider _blogPostProvider;
   final RegularBlogPostsService _regularBlogPostsService;
   final FeaturedBlogPostsService _featuredBlogPostsService;
+
+  // TEST
+  final StreamAuthService _streamAuthService;
+  final RefreshBlogPostService _blogPostServiceImpl;
 
   final List<FeedPostViewModel> offlinePosts = [];
   final List<FeedPostViewModel> pinnedPosts = [];
@@ -63,6 +69,10 @@ class FeedScreenViewModel extends BaseViewModel
     this._blogPostProvider,
     this._regularBlogPostsService,
     this._featuredBlogPostsService,
+
+    // TEST
+    this._streamAuthService,
+    this._blogPostServiceImpl,
   );
 
   void init() {
@@ -118,18 +128,40 @@ class FeedScreenViewModel extends BaseViewModel
         loadingMore = true;
         _numberUnreadMessages = 0;
 
-        final [_, _, freshPosts as List<BlogPost>?] = await Future.wait(
-          [
-            _lastFeedLoadDateTimeProvider.getData(),
-            refreshFeatured(),
-            tryLoginAndRetrieveData<List<BlogPost>>(
-              () => _regularBlogPostsService.getRegularBlogPosts(
-                postsPerPage: postsPerPage,
-              ),
-              () => null,
-            ),
-          ],
+        // TEST
+        final posts = await _blogPostServiceImpl.refreshBlogPosts(
+          assetsCheckSum: _streamAuthService.sonetLAssetsCheckSum ?? '',
+          signedParameters: _streamAuthService.signedParameters ?? '',
+          commentFormUID: _streamAuthService.commentFormUID ?? '',
         );
+
+        final freshPosts = posts?[BlogPostType.regular];
+
+        pinnedPosts.clear();
+        _addPostsToList(
+          pinnedPosts,
+          posts?[BlogPostType.pinned],
+          isRegularPost: false,
+        );
+        announcements.clear();
+        _addPostsToList(
+          announcements,
+          posts?[BlogPostType.important],
+          isRegularPost: false,
+        );
+
+        // final [_, _, freshPosts as List<BlogPost>?] = await Future.wait(
+        //   [
+        //     _lastFeedLoadDateTimeProvider.getData(),
+        //     refreshFeatured(),
+        //     tryLoginAndRetrieveData<List<BlogPost>>(
+        //       () => _regularBlogPostsService.getRegularBlogPosts(
+        //         postsPerPage: postsPerPage,
+        //       ),
+        //       () => null,
+        //     ),
+        //   ],
+        // );
 
         if (freshPosts == null) {
           loadingMore = false;

@@ -6,6 +6,7 @@ import 'package:unn_mobile/core/misc/date_time_utilities/date_time_extensions.da
 import 'package:unn_mobile/core/misc/date_time_utilities/date_time_parser.dart';
 import 'package:unn_mobile/core/misc/html_utils/html_image_utils.dart';
 import 'package:unn_mobile/core/misc/json/json_utils.dart';
+import 'package:unn_mobile/core/models/feed/post_destination.dart';
 
 class _BlogPostDataBitrixJsonKeys {
   static const String id = 'ID';
@@ -39,11 +40,14 @@ class BlogPostData {
   final List<String>? imageUrls;
   final DateTime datePublish;
   final int numberOfComments;
-  final List<int>? files;
+  final List<int>? fileIds;
   final int? pinnedId;
   final String? keySigned;
+  // Добавить в toJson и fromJson
+  final int? numberOfViews;
+  final List<PostDestination>? destinations;
 
-  BlogPostData._({
+  BlogPostData({
     required this.id,
     required this.authorBitrixId,
     required this.title,
@@ -52,15 +56,17 @@ class BlogPostData {
     required this.numberOfComments,
     this.blogId,
     this.imageUrls,
-    this.files,
+    this.fileIds,
     this.pinnedId,
     this.keySigned,
+    this.numberOfViews,
+    this.destinations,
   });
 
   factory BlogPostData.fromJson(JsonMap jsonMap) {
     final fullText = jsonMap[_BlogPostDataJsonKeys.fulltext]! as String;
     final result = extractImagesAndCleanHtmlText(fullText);
-    return BlogPostData._(
+    return BlogPostData(
       id: int.parse(
         jsonMap[_BlogPostDataJsonKeys.id]! as String,
       ),
@@ -79,7 +85,7 @@ class BlogPostData {
       numberOfComments: int.parse(
         jsonMap[_BlogPostDataJsonKeys.commentsNum]! as String,
       ),
-      files: [
+      fileIds: [
         if (jsonMap[_BlogPostDataJsonKeys.attach] != null)
           for (final element
               in jsonMap[_BlogPostDataJsonKeys.attach]! as List<dynamic>)
@@ -101,12 +107,12 @@ class BlogPostData {
             datePublish.format(DatePattern.ddmmyyyyhhmmss),
         _BlogPostDataJsonKeys.commentsNum: numberOfComments.toString(),
         _BlogPostDataJsonKeys.attach:
-            files?.map((hash) => hash.toString()).toList(),
+            fileIds?.map((hash) => hash.toString()).toList(),
         _BlogPostDataJsonKeys.pinnedId: pinnedId,
         _BlogPostDataJsonKeys.keySigned: keySigned,
       };
 
-  factory BlogPostData.fromBitrixJson(JsonMap jsonMap) => BlogPostData._(
+  factory BlogPostData.fromBitrixJson(JsonMap jsonMap) => BlogPostData(
         id: int.parse(
           jsonMap[_BlogPostDataBitrixJsonKeys.id]! as String,
         ),
@@ -124,7 +130,7 @@ class BlogPostData {
         numberOfComments: int.parse(
           jsonMap[_BlogPostDataBitrixJsonKeys.numComments]! as String,
         ),
-        files: (jsonMap[_BlogPostDataBitrixJsonKeys.files] as List<dynamic>?)
+        fileIds: (jsonMap[_BlogPostDataBitrixJsonKeys.files] as List<dynamic>?)
             ?.map((element) => element as int)
             .toList(),
       );
