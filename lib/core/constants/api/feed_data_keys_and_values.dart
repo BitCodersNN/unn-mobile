@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright 2026 BitCodersNN
+
 import 'package:unn_mobile/core/constants/string_keys/session_identifier_keys.dart';
 
 class DataKeys {
