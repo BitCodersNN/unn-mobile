@@ -9,9 +9,8 @@ import 'package:unn_mobile/core/models/feed/blog_post_type.dart';
 import 'package:unn_mobile/core/providers/interfaces/feed/blog_post_provider.dart';
 import 'package:unn_mobile/core/providers/interfaces/feed/last_feed_load_date_time_provider.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation/stream_auth_service.dart';
+import 'package:unn_mobile/core/services/interfaces/feed/blog_post_receivers/blog_post_pagination_service.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/blog_post_receivers/refresh_blog_post_service.dart';
-import 'package:unn_mobile/core/services/interfaces/feed/legacy/blog_post_receivers/featured_blog_post_service.dart';
-import 'package:unn_mobile/core/services/interfaces/feed/legacy/blog_post_receivers/regular_blog_posts_service.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/feed/feed_post_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/main_page_route_view_model.dart';
@@ -21,10 +20,8 @@ class FeedScreenViewModel extends BaseViewModel
   static const postsPerPage = 20;
   final LastFeedLoadDateTimeProvider _lastFeedLoadDateTimeProvider;
   final BlogPostProvider _blogPostProvider;
-  final RegularBlogPostsService _regularBlogPostsService;
-  final FeaturedBlogPostsService _featuredBlogPostsService;
+  final BlogPostPaginationService _postPaginationService;
 
-  // TEST
   final StreamAuthService _streamAuthService;
   final RefreshBlogPostService _blogPostServiceImpl;
 
@@ -67,15 +64,12 @@ class FeedScreenViewModel extends BaseViewModel
   FeedScreenViewModel(
     this._lastFeedLoadDateTimeProvider,
     this._blogPostProvider,
-    this._regularBlogPostsService,
-    this._featuredBlogPostsService,
-
-    // TEST
     this._streamAuthService,
     this._blogPostServiceImpl,
+    this._postPaginationService,
   );
 
-  void init() {
+  FutureOr<void> init() {
     _blogPostProvider //
         .getData() //
         .then((posts) => _addPostsToList(offlinePosts, posts)) //
@@ -105,37 +99,46 @@ class FeedScreenViewModel extends BaseViewModel
           return;
         }
         loadingMore = true;
-        final freshPosts = await tryLoginAndRetrieveData<List<BlogPost>?>(
-          () => _regularBlogPostsService.getRegularBlogPosts(
+        final freshPosts =
+            await tryLoginAndRetrieveData<Map<BlogPostType, List<BlogPost>>>(
+          () => _postPaginationService.loadNextPageBlogPosts(
             pageNumber: _currentPage + 1,
-            postsPerPage: postsPerPage,
+            pinIds: _totalPosts
+                .skip(postsPerPage * (_currentPage - 1))
+                .map((t) => t.blogData.pinnedId)
+                .nonNulls
+                .toSet(),
+            signedParameters: _streamAuthService.signedParameters ?? '',
+            commentFormUID: _streamAuthService.commentFormUID ?? '',
+            blogCommentFormUID: _streamAuthService.blogCommentFormUID ?? '',
           ),
           () => null,
         );
+
         if (freshPosts == null) {
           failedToLoad = true;
           loadingMore = false;
           return;
         }
-        _addPostsToList(_totalPosts, freshPosts);
+        _addPostsToList(_totalPosts, freshPosts[BlogPostType.regular]);
         failedToLoad = false;
         _currentPage++;
         loadingMore = false;
       });
 
-  Future<void> reload() async => await changeState(() async {
-        failedToLoad = false;
-        loadingMore = true;
-        _numberUnreadMessages = 0;
+  Future<void> reload({bool updateMainPage = true}) async =>
+      await changeState(() async {
+        if (updateMainPage) {
+          failedToLoad = false;
+          loadingMore = true;
+          _numberUnreadMessages = 0;
+        }
 
-        // TEST
         final posts = await _blogPostServiceImpl.refreshBlogPosts(
           assetsCheckSum: _streamAuthService.sonetLAssetsCheckSum ?? '',
           signedParameters: _streamAuthService.signedParameters ?? '',
           commentFormUID: _streamAuthService.commentFormUID ?? '',
         );
-
-        final freshPosts = posts?[BlogPostType.regular];
 
         pinnedPosts.clear();
         _addPostsToList(
@@ -150,18 +153,11 @@ class FeedScreenViewModel extends BaseViewModel
           isRegularPost: false,
         );
 
-        // final [_, _, freshPosts as List<BlogPost>?] = await Future.wait(
-        //   [
-        //     _lastFeedLoadDateTimeProvider.getData(),
-        //     refreshFeatured(),
-        //     tryLoginAndRetrieveData<List<BlogPost>>(
-        //       () => _regularBlogPostsService.getRegularBlogPosts(
-        //         postsPerPage: postsPerPage,
-        //       ),
-        //       () => null,
-        //     ),
-        //   ],
-        // );
+        if (!updateMainPage) {
+          return;
+        }
+
+        final freshPosts = posts?[BlogPostType.regular];
 
         if (freshPosts == null) {
           loadingMore = false;
@@ -185,26 +181,7 @@ class FeedScreenViewModel extends BaseViewModel
         _currentPage = 1;
       });
 
-  Future<void> refreshFeatured() async => changeState(() async {
-        final featuredPosts =
-            await tryLoginAndRetrieveData<Map<BlogPostType, List<BlogPost>>>(
-          _featuredBlogPostsService.getFeaturedBlogPosts,
-          () => null,
-        );
-        pinnedPosts.clear();
-        _addPostsToList(
-          pinnedPosts,
-          featuredPosts?[BlogPostType.pinned],
-          isRegularPost: false,
-        );
-        announcements.clear();
-        _addPostsToList(
-          announcements,
-          featuredPosts?[BlogPostType.important],
-          isRegularPost: false,
-        );
-      });
-
+  Future<void> refreshFeatured() => reload(updateMainPage: false);
   bool isPostPinned(int id) => pinnedPosts.any((p) => p.blogData.id == id);
 
   bool isPostImportant(int id) => announcements.any((p) => p.blogData.id == id);
