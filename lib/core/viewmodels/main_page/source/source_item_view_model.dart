@@ -40,7 +40,7 @@ class SourceItemViewModel extends BaseViewModel {
   String? get fileSize => _fileData == null
       ? null
       : _sizeConverter.convertBytesToSize(_fileData!.sizeInBytes).toString() +
-          (_sizeConverter.lastUsedUnit?.getUnitString() ?? '');
+          (_sizeConverter.lastUsedUnit?.getUnitStringRu() ?? '');
 
   FutureOr<void> downloadFile() => busyCallAsync(_downloadFile);
 

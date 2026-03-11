@@ -12,10 +12,12 @@ import 'package:unn_mobile/ui/widgets/packed_images_view.dart';
 class PackedPostImages extends StatelessWidget {
   const PackedPostImages({
     required this.attachedImages,
+    required this.authorizationHeaders,
     super.key,
   });
 
   final Iterable<String> attachedImages;
+  final Map<String, String> authorizationHeaders;
 
   @override
   Widget build(BuildContext context) => PackedImagesView(
@@ -29,6 +31,7 @@ class PackedPostImages extends StatelessWidget {
             .map(
               (e) => CachedNetworkImage(
                 imageUrl: e.startsWith('/') ? 'https://portal.unn.ru$e' : e,
+                httpHeaders: authorizationHeaders,
               ),
             )
             .toList(),

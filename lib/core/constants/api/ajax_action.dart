@@ -5,6 +5,9 @@ class AjaxActionStrings {
   /// QueryParams для указания action
   static const String actionKey = 'action';
 
+  /// QueryParams для указания action
+  static const String c = 'c';
+
   /// Для получения следующей страниц живой ленты в формате html
   static const String getNextPage = 'socialnetwork.api.livefeed.getNextPage';
 
@@ -64,4 +67,10 @@ class AjaxActionStrings {
 
   /// Для сохранения диолога в истории поиска
   static const String saveDialog = 'ui.entityselector.saveRecentItems';
+
+  /// Для обновления живой ленты
+  static const String refreshBlogPosts = 'socialnetwork.api.livefeed.refresh';
+
+  /// Для получения постов из живой ленты
+  static const String logBlogPosts = 'bitrix:socialnetwork.log.ex';
 }

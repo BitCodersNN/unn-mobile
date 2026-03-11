@@ -89,7 +89,7 @@ class ReactionViewModel extends ReactionViewModelBase {
         // Если реакция не удалилась - восстанавливаем её
         ratingList!.addReactions(
           currentReactionType,
-          [currentReactionInfo],
+          {currentReactionInfo},
         );
         notifyListeners();
       }
@@ -97,7 +97,7 @@ class ReactionViewModel extends ReactionViewModelBase {
       // Добавляем временно, чтобы сразу показать действие
       ratingList?.addReactions(
         reaction,
-        [UserShortInfo(bitrixId: profileId)],
+        {UserShortInfo(bitrixId: profileId)},
       );
       notifyListeners();
       final reactionUserInfo = await _reactionManager.addReaction(
@@ -110,7 +110,7 @@ class ReactionViewModel extends ReactionViewModelBase {
         // Если реакция реально добавилась - фиксируем это
         ratingList?.addReactions(
           reaction,
-          [reactionUserInfo],
+          {reactionUserInfo},
         );
       }
       notifyListeners();

@@ -111,4 +111,7 @@ class ApiPath {
 
   /// Для отправки файла в чате
   static const String fileCommit = 'rest/im.disk.file.commit.json';
+
+  /// Для получения аутентификационных параметров
+  static const String stream = 'stream/';
 }

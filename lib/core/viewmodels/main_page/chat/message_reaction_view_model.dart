@@ -57,7 +57,7 @@ class MessageReactionViewModel extends ReactionViewModelBase {
         // не закончили процедуру полностью - возвращаем как было
         ratingList!.addReactions(
           currentReactionType,
-          [currentReactionInfo],
+          {currentReactionInfo},
         );
         notifyListeners();
       }
@@ -65,7 +65,7 @@ class MessageReactionViewModel extends ReactionViewModelBase {
       // Добавляем временно, чтобы сразу показать действие
       ratingList?.addReactions(
         reaction,
-        [UserShortInfo(bitrixId: profileId)],
+        {UserShortInfo(bitrixId: profileId)},
       );
       notifyListeners();
       await _reactionServiceAggregator.addReaction(

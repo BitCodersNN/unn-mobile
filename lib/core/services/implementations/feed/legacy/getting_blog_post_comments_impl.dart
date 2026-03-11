@@ -50,7 +50,7 @@ class GettingBlogPostCommentsImpl implements GettingBlogPostComments {
         queryParameters: {
           'mode': 'class',
           AjaxActionStrings.actionKey: AjaxActionStrings.navigateComment,
-          'c': AjaxActionStrings.comment,
+          AjaxActionStrings.c: AjaxActionStrings.comment,
         },
         data: {
           'ENTITY_XML_ID': 'BLOG_$postId',
