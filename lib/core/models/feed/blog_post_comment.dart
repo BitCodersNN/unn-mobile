@@ -19,14 +19,14 @@ class BlogPostComment {
   final UserShortInfo userShortInfo;
   final List<FileData> attachFiles;
 
-  BlogPostComment._({
+  BlogPostComment({
     required this.data,
     required this.ratingList,
     required this.userShortInfo,
     required this.attachFiles,
   });
 
-  factory BlogPostComment.fromJson(JsonMap jsonMap) => BlogPostComment._(
+  factory BlogPostComment.fromJson(JsonMap jsonMap) => BlogPostComment(
         data: BlogPostCommentData.fromJson(jsonMap),
         ratingList:
             jsonMap[_BlogPostCommentDataWithRatingsJsonKeys.reaction] != null
@@ -55,7 +55,7 @@ class BlogPostComment {
         ],
       };
 
-  factory BlogPostComment.fromBitrixJson(JsonMap jsonMap) => BlogPostComment._(
+  factory BlogPostComment.fromBitrixJson(JsonMap jsonMap) => BlogPostComment(
         data: BlogPostCommentData.fromBitrixJson(jsonMap),
         ratingList:
             jsonMap[_BlogPostCommentDataWithRatingsJsonKeys.reaction] != null

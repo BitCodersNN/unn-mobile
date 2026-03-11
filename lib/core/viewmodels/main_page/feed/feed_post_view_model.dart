@@ -7,10 +7,11 @@ import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/models/feed/blog_post.dart';
 import 'package:unn_mobile/core/models/feed/blog_post_data.dart';
 import 'package:unn_mobile/core/providers/interfaces/feed/last_feed_load_date_time_provider.dart';
+import 'package:unn_mobile/core/services/interfaces/authorisation/authorisation_service.dart';
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
-import 'package:unn_mobile/core/services/interfaces/feed/blog_post_receivers/blog_post_service.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/featured_blog_post_action/important_blog_post_acknowledgement_service.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/featured_blog_post_action/pinning_blog_post_service.dart';
+import 'package:unn_mobile/core/services/interfaces/feed/legacy/blog_post_receivers/blog_post_service.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/factories/feed_post_view_model_factory.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/common/profile_view_model.dart';
@@ -20,6 +21,7 @@ import 'package:unn_mobile/core/viewmodels/main_page/feed/feed_screen_view_model
 import 'package:unn_mobile/core/viewmodels/main_page/feed/reaction_view_model.dart';
 
 class FeedPostViewModel extends BaseViewModel {
+  final AuthorisationService _authorisationService;
   final BlogPostService _postsService;
   final LoggerService _loggerService;
   final LastFeedLoadDateTimeProvider _lastFeedLoadDateTimeProvider;
@@ -44,6 +46,11 @@ class FeedPostViewModel extends BaseViewModel {
   bool get isAnnouncement =>
       _feedScreenViewModel?.isPostImportant(blogData.id) ?? false;
 
+  Map<String, String> get authHeaders =>
+      _authorisationService.headers
+          ?.map((key, value) => MapEntry(key, value.toString())) ??
+      {};
+
   final List<FeedCommentViewModel> comments = [];
 
   FeedScreenViewModel? _feedScreenViewModel;
@@ -54,15 +61,16 @@ class FeedPostViewModel extends BaseViewModel {
     this._lastFeedLoadDateTimeProvider,
     this._postAcknowledgementService,
     this._pinningService,
+    this._authorisationService,
   );
   factory FeedPostViewModel.cached(FeedPostCacheKey key) =>
       Injector.appInstance.get<FeedPostViewModelFactory>().getViewModel(key);
 
   int get authorId => blogData.authorBitrixId;
 
-  int get commentsCount => comments.length;
+  int get commentsCount => blogData.numberOfComments;
 
-  int get filesCount => blogData.files?.length ?? 0;
+  int get filesCount => blogData.fileIds?.length ?? 0;
 
   bool get isNewPost =>
       _lastFeedLoadDateTimeProvider.lastFeedLoadDateTime?.isBefore(postTime) ??

@@ -31,6 +31,16 @@ const Map<ReactionType, String> _reactionNames = {
   ReactionType.wonder: 'Ого!',
 };
 
+const Map<String, ReactionType> _reactionTypeMap = {
+  'like': ReactionType.like,
+  'kiss': ReactionType.kiss,
+  'laugh': ReactionType.laugh,
+  'wonder': ReactionType.wonder,
+  'cry': ReactionType.cry,
+  'facepalm': ReactionType.facepalm,
+  'angry': ReactionType.angry,
+};
+
 enum ReactionType {
   like,
   kiss,
@@ -43,87 +53,139 @@ enum ReactionType {
 
   String get assetName => _reactionAssets[this]!;
   String get caption => _reactionNames[this]!;
+
+  static ReactionType? fromString(String value) =>
+      _reactionTypeMap[value.toLowerCase()];
 }
 
 class RatingList {
-  late Map<ReactionType, List<UserShortInfo>> _ratingList;
+  late Map<ReactionType, Set<UserShortInfo>> _ratingList;
+  late Map<ReactionType, int> _reactionCounts;
 
-  Map<ReactionType, List<UserShortInfo>> get ratingList => _ratingList;
+  /// Возвращает список пользователей по типам реакций.
+  ///
+  /// Обратите внимание:
+  /// - Могут присутствовать не все реакции
+  /// - Если текущий пользователь поставил реакцию, то он там точно есть
+  Map<ReactionType, Set<UserShortInfo>> get ratingList => _ratingList;
+  Map<ReactionType, int> get reactionCounts => _reactionCounts;
 
-  RatingList([Map<ReactionType, List<UserShortInfo>>? ratingList]) {
+  RatingList() : this.ratingList();
+
+  RatingList.ratingList([Map<ReactionType, Set<UserShortInfo>>? ratingList]) {
     ratingList ??= {};
     _ratingList = ratingList;
+    _reactionCounts = {
+      for (final type in ReactionType.values)
+        type: ratingList[type]?.length ?? 0,
+    };
+  }
+
+  RatingList.reactionCounts({
+    Map<ReactionType, int>? reactionCounts,
+    (UserShortInfo, ReactionType)? userReaction,
+  }) {
+    _ratingList = {};
+    _reactionCounts = {};
+
+    if (reactionCounts != null) {
+      _reactionCounts = Map.from(reactionCounts);
+    }
+
+    for (final type in ReactionType.values) {
+      _reactionCounts.putIfAbsent(type, () => 0);
+    }
+
+    if (userReaction != null) {
+      _ratingList[userReaction.$2] = {userReaction.$1};
+    }
   }
 
   void addReactions(
     ReactionType reactionType,
-    List<UserShortInfo> userInfo,
+    Set<UserShortInfo> userInfo,
   ) {
-    final int initialSize = _ratingList.length;
-    _ratingList.putIfAbsent(reactionType, () => userInfo);
-
-    if (_ratingList.length == initialSize) {
-      _ratingList[reactionType]!.addAll(userInfo);
+    _ratingList.putIfAbsent(reactionType, () => <UserShortInfo>{});
+    final countBefore = _ratingList[reactionType]!.length;
+    _ratingList[reactionType]!.addAll(userInfo);
+    final countAfter = _ratingList[reactionType]!.length;
+    final addedCount = countAfter - countBefore;
+    if (addedCount > 0) {
+      _reactionCounts[reactionType] =
+          (_reactionCounts[reactionType] ?? 0) + addedCount;
     }
   }
 
-  int getTotalNumberOfReactions() {
-    int total = 0;
-    for (final element in _ratingList.values) {
-      total += element.length;
+  int getTotalNumberOfReactions() =>
+      _reactionCounts.values.fold(0, (sum, count) => sum + count);
+
+  bool removeReaction(int userId) {
+    for (final entry in _ratingList.entries) {
+      final reactionType = entry.key;
+      final users = entry.value;
+
+      UserShortInfo? userToRemove;
+      for (final user in users) {
+        if (user.bitrixId == userId) {
+          userToRemove = user;
+          break;
+        }
+      }
+
+      if (userToRemove != null) {
+        users.remove(userToRemove);
+        _reactionCounts[reactionType] =
+            (_reactionCounts[reactionType] ?? 0) - 1;
+
+        return true;
+      }
     }
-    return total;
+
+    return false;
   }
 
-  void removeReaction(
-    int userId,
-  ) {
-    for (final reactionType in _ratingList.keys) {
-      _ratingList[reactionType]
-          ?.removeWhere((element) => element.bitrixId == userId);
-    }
-  }
-
-  int? getNumberOfReactions([ReactionType? reactionType]) {
+  int getNumberOfReactions([ReactionType? reactionType]) {
     if (reactionType != null) {
-      return _ratingList[reactionType]?.length;
+      return _reactionCounts[reactionType] ?? 0;
     }
     return getTotalNumberOfReactions();
   }
 
-  List<UserShortInfo>? getUsers([ReactionType? reactionType]) {
+  Set<UserShortInfo>? getUsers([ReactionType? reactionType]) {
     if (reactionType != null) {
-      return _ratingList[reactionType];
+      final users = _ratingList[reactionType];
+      return users != null ? Set<UserShortInfo>.from(users) : null;
     }
 
-    final List<UserShortInfo> users = [];
-    for (final list in _ratingList.values) {
-      users.addAll(list);
+    final allUsers = <UserShortInfo>{};
+    for (final users in _ratingList.values) {
+      allUsers.addAll(users);
     }
-    return users;
+    return allUsers;
   }
 
   ReactionType? getReactionByUser(int bitrixId) {
-    final entry = _ratingList.entries.firstWhere(
-      (entry) => entry.value.any((user) => user.bitrixId == bitrixId),
-      orElse: () => const MapEntry(ReactionType.like, []),
-    );
-
-    return entry.value.isNotEmpty ? entry.key : null;
+    for (final entry in _ratingList.entries) {
+      if (entry.value.any((user) => user.bitrixId == bitrixId)) {
+        return entry.key;
+      }
+    }
+    return null;
   }
 
   UserShortInfo? getReactionInfoByUser(int bitrixId) {
-    final entry = _ratingList.entries.firstWhere(
-      (entry) => entry.value.any((user) => user.bitrixId == bitrixId),
-      orElse: () => const MapEntry(ReactionType.like, []),
-    );
-    return entry.value.isNotEmpty
-        ? entry.value.firstWhere((element) => element.bitrixId == bitrixId)
-        : null;
+    for (final entry in _ratingList.entries) {
+      for (final user in entry.value) {
+        if (user.bitrixId == bitrixId) {
+          return user;
+        }
+      }
+    }
+    return null;
   }
 
   factory RatingList.fromJson(JsonMap jsonMap) {
-    final Map<ReactionType, List<UserShortInfo>> ratingList = {};
+    final Map<ReactionType, Set<UserShortInfo>> ratingList = {};
     final usersList = (jsonMap[_UserInfoJsonKeys.users]! as List)
         .cast<Map<String, Object?>>();
 
@@ -135,10 +197,10 @@ class RatingList {
             .endsWith(userMap[_UserInfoJsonKeys.reaction]! as String),
       );
 
-      ratingList.putIfAbsent(userReaction, () => []);
+      ratingList.putIfAbsent(userReaction, () => {});
       ratingList[userReaction]!.add(userInfo);
     }
-    return RatingList(ratingList);
+    return RatingList.ratingList(ratingList);
   }
 
   JsonMap toJson() {
@@ -159,11 +221,11 @@ class RatingList {
   }
 
   factory RatingList.fromBitrixJson(JsonMap jsonMap) {
-    final Map<ReactionType, List<UserShortInfo>> ratingList = {};
+    final Map<ReactionType, Set<UserShortInfo>> ratingList = {};
 
     jsonMap.forEach((key, value) {
       if (value is List) {
-        final List<UserShortInfo> userList = [];
+        final Set<UserShortInfo> userList = {};
         for (final userJson in value) {
           if (userJson is JsonMap) {
             userList.add(UserShortInfo.fromBitrixJson(userJson));
@@ -174,6 +236,6 @@ class RatingList {
       }
     });
 
-    return RatingList(ratingList);
+    return RatingList.ratingList(ratingList);
   }
 }

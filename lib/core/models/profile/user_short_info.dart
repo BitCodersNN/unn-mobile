@@ -89,6 +89,21 @@ class UserShortInfo
     this.photoSrc,
   });
 
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other.runtimeType != runtimeType) {
+      return false;
+    }
+
+    return other is UserShortInfo && other.bitrixId == bitrixId;
+  }
+
+  @override
+  int get hashCode => bitrixId.hashCode;
+
   factory UserShortInfo._fromJsonWithKeys(
     JsonMap json,
     _UserInfoKeys keys, {

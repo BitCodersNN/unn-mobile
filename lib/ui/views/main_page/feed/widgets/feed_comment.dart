@@ -62,7 +62,10 @@ class FeedCommentView extends StatelessWidget {
                     horizontal: 20.0,
                     vertical: 0.0,
                   ),
-                  child: PackedPostImages(attachedImages: model.attachedImages),
+                  child: PackedPostImages(
+                    attachedImages: model.attachedImages,
+                    authorizationHeaders: const {},
+                  ),
                 ),
                 for (final file in model.attachedFileViewModels)
                   Padding(

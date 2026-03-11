@@ -4,9 +4,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:event/event.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
-import 'package:injector/injector.dart';
 import 'package:intl/intl.dart';
 import 'package:mime/mime.dart';
 import 'package:path/path.dart' as p;
@@ -14,7 +12,6 @@ import 'package:share_plus/share_plus.dart';
 import 'package:unn_mobile/core/misc/haptic_utils.dart';
 import 'package:unn_mobile/core/misc/html_utils/html_to_plain_text.dart';
 import 'package:unn_mobile/core/models/feed/rating_list.dart';
-import 'package:unn_mobile/core/viewmodels/factories/feed_post_view_model_factory.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/common/profile_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/feed/feed_post_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/feed/reaction_view_model.dart';
@@ -24,7 +21,6 @@ import 'package:unn_mobile/ui/views/main_page/feed/functions/reactions_window.da
 import 'package:unn_mobile/ui/views/main_page/feed/widgets/attached_file.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/widgets/packed_post_images.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/widgets/text_html_widget.dart';
-import 'package:unn_mobile/ui/views/main_page/main_page_routing.dart';
 import 'package:unn_mobile/ui/widgets/context_menu/context_menu_factory.dart';
 import 'package:unn_mobile/ui/widgets/context_menu/context_menu_helper.dart';
 import 'package:unn_mobile/ui/widgets/height_limiter.dart';
@@ -63,15 +59,15 @@ class _FeedPostState extends State<FeedPost> {
     return BaseView<FeedPostViewModel>(
       model: widget.post,
       builder: (context, model, _) => GestureDetector(
-        onTap: () {
-          if (widget.showingComments) {
-            return;
-          }
-          Injector.appInstance
-              .get<FeedPostViewModelFactory>()
-              .putInCache(model.blogData.id, model);
-          _openPostCommentsPage(context, model);
-        },
+        // onTap: () {
+        //   if (widget.showingComments) {
+        //     return;
+        //   }
+        //   Injector.appInstance
+        //       .get<FeedPostViewModelFactory>()
+        //       .putInCache(model.blogData.id, model);
+        //   _openPostCommentsPage(context, model);
+        // },
         onLongPress: () => ContextMenuHelper.showContextMenu(
           context: context,
           model: model,
@@ -260,15 +256,15 @@ class _FeedPostState extends State<FeedPost> {
     );
   }
 
-  static void _openPostCommentsPage(
-    BuildContext context,
-    FeedPostViewModel post,
-  ) {
-    GoRouter.of(context).go(
-      '${GoRouter.of(context).routeInformationProvider.value.uri.path}/'
-      '${postCommentsRoute.pageRoute.replaceAll(':postId', post.blogData.id.toString())}',
-    );
-  }
+  // static void _openPostCommentsPage(
+  //   BuildContext context,
+  //   FeedPostViewModel post,
+  // ) {
+  //   GoRouter.of(context).go(
+  //     '${GoRouter.of(context).routeInformationProvider.value.uri.path}/'
+  //     '${postCommentsRoute.pageRoute.replaceAll(':postId', post.blogData.id.toString())}',
+  //   );
+  // }
 
   Future<void> _sharePost(FeedPostViewModel model) async {
     final List<XFile> xFiles = [];
@@ -329,7 +325,10 @@ class _FeedPostState extends State<FeedPost> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           TextHtmlWidget(text: model.postText),
-          PackedPostImages(attachedImages: model.attachedImages),
+          PackedPostImages(
+            attachedImages: model.attachedImages,
+            authorizationHeaders: model.authHeaders,
+          ),
         ],
       );
 }

@@ -12,4 +12,6 @@ class DatePattern {
   static const hhmm = 'HH:mm';
   static const dMMMM = 'd MMMM';
   static const e = 'E';
+  static const dmmmmyyyyhhmm = 'd MMMM yyyy HH:mm';
+  static const dmmmmhhmmyyyy = 'd MMMM HH:mm yyyy';
 }

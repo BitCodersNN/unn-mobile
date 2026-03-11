@@ -21,6 +21,7 @@ class _BlogPostJsonKeys {
   static const String attach = 'attach';
   static const String comments = 'comments';
   static const String reaction = 'reaction';
+  static const String commentCount = 'commentСount';
 }
 
 class BlogPost {
@@ -28,17 +29,18 @@ class BlogPost {
   final RatingList ratingList;
   final UserShortInfo userShortInfo;
   final List<FileData> attachFiles;
+  final int commentCount;
   final List<BlogPostComment> comments;
-
-  BlogPost._({
+  BlogPost({
     required this.data,
     required this.ratingList,
     required this.userShortInfo,
     required this.attachFiles,
     required this.comments,
-  });
+    int? commentCount,
+  }) : commentCount = commentCount ?? (comments.length);
 
-  factory BlogPost.fromJson(JsonMap jsonMap) => BlogPost._(
+  factory BlogPost.fromJson(JsonMap jsonMap) => BlogPost(
         data: BlogPostData.fromJson(jsonMap),
         ratingList: RatingList.fromJson(
           jsonMap[_BlogPostJsonKeys.reaction]! as JsonMap,
@@ -54,6 +56,7 @@ class BlogPost {
           for (final comment in jsonMap[_BlogPostJsonKeys.comments]! as List)
             BlogPostComment.fromJson(comment),
         ],
+        commentCount: jsonMap[_BlogPostJsonKeys.commentCount] as int?,
       );
 
   JsonMap toJson() => {
@@ -66,9 +69,10 @@ class BlogPost {
         _BlogPostJsonKeys.comments: [
           for (final comment in comments) comment.toJson(),
         ],
+        _BlogPostJsonKeys.commentCount: commentCount,
       };
 
-  factory BlogPost.fromBitrixJson(JsonMap jsonMap) => BlogPost._(
+  factory BlogPost.fromBitrixJson(JsonMap jsonMap) => BlogPost(
         data: BlogPostData.fromBitrixJson(
           jsonMap[_BlogPostBitrixJsonKeys.post]! as JsonMap,
         ),

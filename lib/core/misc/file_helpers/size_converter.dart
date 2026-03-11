@@ -11,7 +11,7 @@ enum SizeUnit {
 }
 
 extension UnitNames on SizeUnit {
-  String getUnitString() {
+  String getUnitStringRu() {
     switch (this) {
       case SizeUnit.byte:
         return 'Б';
@@ -23,11 +23,28 @@ extension UnitNames on SizeUnit {
         return 'ГБ';
     }
   }
+
+  String getUnitStringEn() {
+    switch (this) {
+      case SizeUnit.byte:
+        return 'B';
+      case SizeUnit.kilobyte:
+        return 'KB';
+      case SizeUnit.megabyte:
+        return 'MB';
+      case SizeUnit.gigabyte:
+        return 'GB';
+    }
+  }
+
+  List<String> getAllUnitVariants() => [getUnitStringRu(), getUnitStringEn()];
 }
 
 class SizeConverter {
   static const int _base = 10;
-  final Map<SizeUnit?, num> _coefficients = {
+  static final String _allUnits =
+      SizeUnit.values.expand((unit) => unit.getAllUnitVariants()).join('|');
+  static final Map<SizeUnit?, num> _coefficients = {
     SizeUnit.byte: pow(_base, 0),
     SizeUnit.kilobyte: pow(_base, 3),
     SizeUnit.megabyte: pow(_base, 6),
@@ -38,6 +55,40 @@ class SizeConverter {
 
   /// Возвращает единицы измерения, используемые в последней операции
   SizeUnit? get lastUsedUnit => _lastUsedUnit;
+
+  /// Парсит строку с размером файла (например, "1.5 ГБ", "100 КБ", "2.3 TB")
+  /// и возвращает размер в байтах.
+  ///
+  /// Поддерживает русские (Б, КБ, МБ, ГБ) и латинские (B, KB, MB, GB) обозначения,
+  /// а также запятую или точку в качестве десятичного разделителя.
+  static int parseFileSize(String sizeText) {
+    final pattern = '([\\d.,]+)\\s*($_allUnits)';
+
+    final regex = RegExp(
+      pattern,
+      caseSensitive: false,
+    );
+
+    final match = regex.firstMatch(sizeText);
+    if (match == null) {
+      return 0;
+    }
+
+    final value =
+        double.tryParse(match.group(1)?.replaceAll(',', '.') ?? '0') ?? 0;
+
+    final unit = match.group(2)?.toUpperCase() ?? 'Б';
+
+    for (final sizeUnit in SizeUnit.values) {
+      if (sizeUnit.getAllUnitVariants().any(
+            (u) => u.toUpperCase() == unit,
+          )) {
+        return (value * _coefficients[sizeUnit]!).toInt();
+      }
+    }
+
+    return value.toInt();
+  }
 
   /// Преобразует байты в указанные единицы измерения или в наибольшие единицы, в которых целая часть числа не равна 0.
   ///
