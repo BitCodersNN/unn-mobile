@@ -27,6 +27,9 @@ final class UserDialog extends Dialog {
 
   factory UserDialog.fromJson(JsonMap json) {
     final dialog = Dialog.fromJson(json);
+    final userMap = json[_UserDialogJsonKeys.user]! as JsonMap;
+    final lastActivityDateValue = userMap[_UserDialogJsonKeys.lastActivityDate];
+
     return UserDialog(
       dialogId: dialog.dialogId,
       chatId: dialog.chatId,
@@ -36,10 +39,9 @@ final class UserDialog extends Dialog {
       unreadMessagesCount: dialog.unreadMessagesCount,
       lastMessageStatus: dialog.lastMessageStatus,
       pinned: dialog.pinned,
-      lastActivityAt: DateTime.tryParse(
-        (json[_UserDialogJsonKeys.user]!
-            as JsonMap)[_UserDialogJsonKeys.lastActivityDate]! as String,
-      ),
+      lastActivityAt: lastActivityDateValue is String
+          ? DateTime.tryParse(lastActivityDateValue)
+          : null,
     );
   }
 
