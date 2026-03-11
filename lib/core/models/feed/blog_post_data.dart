@@ -29,6 +29,8 @@ class _BlogPostDataJsonKeys {
   static const String attach = 'attach';
   static const String pinnedId = 'pinnedid';
   static const String keySigned = 'keysigned';
+  static const String numberOfViews = 'numberOfViews';
+  static const String destinations = 'destinations';
 }
 
 class BlogPostData {
@@ -43,7 +45,6 @@ class BlogPostData {
   final List<int>? fileIds;
   final int? pinnedId;
   final String? keySigned;
-  // Добавить в toJson и fromJson
   final int? numberOfViews;
   final List<PostDestination>? destinations;
 
@@ -93,6 +94,12 @@ class BlogPostData {
       ],
       pinnedId: jsonMap[_BlogPostDataJsonKeys.pinnedId] as int?,
       keySigned: jsonMap[_BlogPostDataJsonKeys.keySigned] as String?,
+      numberOfViews: jsonMap[_BlogPostDataJsonKeys.numberOfViews] as int?,
+      destinations: jsonMap[_BlogPostDataJsonKeys.destinations] != null
+          ? (jsonMap[_BlogPostDataJsonKeys.destinations]! as List<dynamic>)
+              .map((e) => PostDestination.fromJson(e as Map<String, dynamic>))
+              .toList()
+          : null,
     );
   }
 
@@ -110,6 +117,8 @@ class BlogPostData {
             fileIds?.map((hash) => hash.toString()).toList(),
         _BlogPostDataJsonKeys.pinnedId: pinnedId,
         _BlogPostDataJsonKeys.keySigned: keySigned,
+        _BlogPostDataJsonKeys.destinations:
+            destinations?.map((destination) => destination.toJson()).toList(),
       };
 
   factory BlogPostData.fromBitrixJson(JsonMap jsonMap) => BlogPostData(
