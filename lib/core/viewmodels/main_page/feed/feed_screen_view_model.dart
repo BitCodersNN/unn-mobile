@@ -134,10 +134,16 @@ class FeedScreenViewModel extends BaseViewModel
           _numberUnreadMessages = 0;
         }
 
-        final posts = await _blogPostServiceImpl.refreshBlogPosts(
-          assetsCheckSum: _streamAuthService.sonetLAssetsCheckSum ?? '',
-          signedParameters: _streamAuthService.signedParameters ?? '',
-          commentFormUID: _streamAuthService.commentFormUID ?? '',
+        final [posts as Map<BlogPostType, List<BlogPost>>?, _] =
+            await Future.wait(
+          [
+            _blogPostServiceImpl.refreshBlogPosts(
+              assetsCheckSum: _streamAuthService.sonetLAssetsCheckSum ?? '',
+              signedParameters: _streamAuthService.signedParameters ?? '',
+              commentFormUID: _streamAuthService.commentFormUID ?? '',
+            ),
+            _lastFeedLoadDateTimeProvider.getData(),
+          ],
         );
 
         pinnedPosts.clear();

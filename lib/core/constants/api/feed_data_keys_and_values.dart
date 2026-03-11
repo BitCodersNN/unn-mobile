@@ -3,7 +3,7 @@
 
 import 'package:unn_mobile/core/constants/string_keys/session_identifier_keys.dart';
 
-class DataKeys {
+class FeedDataKeys {
   static const String logajax = 'logajax';
   static const String reload = 'RELOAD';
   static const String noblog = 'noblog';
@@ -24,7 +24,7 @@ class DataKeys {
   static const String signedParameters = SessionIdentifierKeys.signedParameters;
 }
 
-class DataVelues {
+class FeedDataVelues {
   static const String y = 'Y';
   static const String n = 'N';
   static const String bitrix24 = 'bitrix24';

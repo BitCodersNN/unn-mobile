@@ -7,6 +7,8 @@ import 'package:html/dom.dart';
 import 'package:html/parser.dart' as parser;
 import 'package:unn_mobile/core/constants/api/host.dart';
 import 'package:unn_mobile/core/constants/api/protocol_type.dart';
+import 'package:unn_mobile/core/constants/date_pattern.dart';
+import 'package:unn_mobile/core/misc/date_time_utilities/date_time_parser.dart';
 import 'package:unn_mobile/core/misc/file_helpers/size_converter.dart';
 import 'package:unn_mobile/core/misc/html_utils/html_image_utils.dart';
 import 'package:unn_mobile/core/models/common/file_data.dart';
@@ -121,7 +123,8 @@ class BlogPostHtmlParser {
       ..clear()
       ..addAll(uniqueUrls);
 
-    final dateElement = postElement.querySelector('.feed-time');
+    final dateElement =
+        postElement.querySelector('.feed-post-time-wrap .feed-time');
     final datePublish = _parseDateTime(dateElement?.text.trim() ?? '');
 
     final commentsCountElement =
@@ -146,7 +149,7 @@ class BlogPostHtmlParser {
       title: title,
       detailText: textAndImages['cleanedText'],
       imageUrls: imageUrls,
-      datePublish: datePublish,
+      datePublish: datePublish ?? DateTime.now(),
       numberOfComments: numberOfComments,
       numberOfViews: numberOfViews,
       fileIds: files.map((file) => file.id).toList(),
@@ -332,46 +335,70 @@ class BlogPostHtmlParser {
     return imgElement?.attributes['src'];
   }
 
-  static DateTime _parseDateTime(String dateTimeString) {
-    final now = DateTime.now();
-
-    if (dateTimeString.contains('сегодня')) {
-      final timeMatch = RegExp(r'(\d{1,2}):(\d{2})').firstMatch(dateTimeString);
-      if (timeMatch != null) {
-        final hour = int.parse(timeMatch.group(1)!);
-        final minute = int.parse(timeMatch.group(2)!);
-        return DateTime(now.year, now.month, now.day, hour, minute);
-      }
-    } else if (dateTimeString.contains('вчера')) {
-      final timeMatch = RegExp(r'(\d{1,2}):(\d{2})').firstMatch(dateTimeString);
-      if (timeMatch != null) {
-        final hour = int.parse(timeMatch.group(1)!);
-        final minute = int.parse(timeMatch.group(2)!);
-        final yesterday = now.subtract(const Duration(days: 1));
-        return DateTime(
-          yesterday.year,
-          yesterday.month,
-          yesterday.day,
-          hour,
-          minute,
-        );
-      }
-    } else {
-      // Пробуем распарсить стандартный формат
-      final dateMatch =
-          RegExp(r'(\d{1,2})\.(\d{1,2})\.(\d{4})\s+(\d{1,2}):(\d{2})')
-              .firstMatch(dateTimeString);
-      if (dateMatch != null) {
-        final day = int.parse(dateMatch.group(1)!);
-        final month = int.parse(dateMatch.group(2)!);
-        final year = int.parse(dateMatch.group(3)!);
-        final hour = int.parse(dateMatch.group(4)!);
-        final minute = int.parse(dateMatch.group(5)!);
-        return DateTime(year, month, day, hour, minute);
-      }
+  static DateTime? _parseDateTime(String dateStr) {
+    if (dateStr.isEmpty) {
+      return null;
     }
 
-    return now;
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+
+    if (dateStr.contains('сегодня')) {
+      final timePart = _extractTime(dateStr);
+      if (timePart != null) {
+        return _combineDateAndTime(today, timePart);
+      }
+      return today;
+    }
+
+    if (dateStr.contains('вчера')) {
+      final yesterday = today.subtract(const Duration(days: 1));
+      final timePart = _extractTime(dateStr);
+      if (timePart != null) {
+        return _combineDateAndTime(yesterday, timePart);
+      }
+      return yesterday;
+    }
+
+    if (_hasYear(dateStr)) {
+      return DateTimeParser.parse(
+        dateStr,
+        DatePattern.ddmmyyyyhhmmss,
+      );
+    }
+
+    final parsed = DateTimeParser.parse(
+      '$dateStr ${now.year}',
+      DatePattern.dmmmmhhmmyyyy,
+    );
+
+    if (parsed.isAfter(now)) {
+      return parsed.subtract(const Duration(days: 365));
+    }
+
+    return parsed;
+  }
+
+  static bool _hasYear(String dateStr) =>
+      RegExp(r'\b\d{4}\b').hasMatch(dateStr);
+
+  static String? _extractTime(String dateStr) {
+    final timeMatch = RegExp(r'(\d{1,2}:\d{2})').firstMatch(dateStr);
+    return timeMatch?.group(1);
+  }
+
+  static DateTime _combineDateAndTime(DateTime date, String timeStr) {
+    final parts = timeStr.split(':');
+    if (parts.length >= 2) {
+      return DateTime(
+        date.year,
+        date.month,
+        date.day,
+        int.parse(parts[0]),
+        int.parse(parts[1]),
+      );
+    }
+    return date;
   }
 
   static List<PostDestination>? _extractDestinations(Element postElement) {
