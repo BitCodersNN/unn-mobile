@@ -753,12 +753,9 @@ void registerDependencies() {
       () => FeedScreenViewModel(
         get<LastFeedLoadDateTimeProvider>(),
         get<BlogPostProvider>(dependencyName: BlogPostType.regular.stringValue),
-        get<RegularBlogPostsService>(),
-        get<FeaturedBlogPostsService>(),
-
-        // TEST
         get<StreamAuthService>(),
         get<RefreshBlogPostService>(),
+        get<BlogPostPaginationService>(),
       ),
     )
     ..registerDependency(
