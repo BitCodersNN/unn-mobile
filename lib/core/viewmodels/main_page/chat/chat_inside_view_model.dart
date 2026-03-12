@@ -137,9 +137,17 @@ class ChatInsideViewModel extends BaseViewModel {
   }
 
   void fetchDialogFromRoot(int? chatId) {
-    _dialog = _dialogsViewModel!.dialogs.cast<BaseDialogInfo>().firstWhere(
+    final viewModel = _dialogsViewModel;
+    final storedInfo = viewModel?.storedDialogInfo;
+
+    if (viewModel == null || storedInfo == null) {
+      _dialog = null;
+      return;
+    }
+
+    _dialog = viewModel.dialogs.cast<BaseDialogInfo>().firstWhere(
           (d) => d is Dialog && d.chatId == chatId,
-          orElse: () => _dialogsViewModel!.storedDialogInfo!,
+          orElse: () => storedInfo,
         );
   }
 

@@ -95,7 +95,7 @@ class FeedScreenViewModel extends BaseViewModel
   }
 
   Future<void> loadMorePosts() async => await changeState(() async {
-        if (loadingMore) {
+        if (loadingMore || _currentPage <= 0) {
           return;
         }
         loadingMore = true;
@@ -121,6 +121,12 @@ class FeedScreenViewModel extends BaseViewModel
           return;
         }
         _addPostsToList(_totalPosts, freshPosts[BlogPostType.regular]);
+        _addPostsToList(
+          announcements,
+          freshPosts[BlogPostType.important],
+          isRegularPost: false,
+        );
+
         failedToLoad = false;
         _currentPage++;
         loadingMore = false;
