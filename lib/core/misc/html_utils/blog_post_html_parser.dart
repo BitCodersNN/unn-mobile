@@ -363,7 +363,7 @@ class BlogPostHtmlParser {
     if (_hasYear(dateStr)) {
       return DateTimeParser.parse(
         dateStr,
-        DatePattern.ddmmyyyyhhmmss,
+        DatePattern.dmmmmyyyyhhmm,
       );
     }
 
