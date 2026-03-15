@@ -24,7 +24,11 @@ class PackedPostImages extends StatelessWidget {
         onChildTap: (index) async {
           await showDialog(
             context: context,
-            builder: (context) => _ImagesCarouselDialog(attachedImages, index),
+            builder: (context) => _ImagesCarouselDialog(
+              attachedImages,
+              index,
+              headers: authorizationHeaders,
+            ),
           );
         },
         children: attachedImages
@@ -39,7 +43,8 @@ class PackedPostImages extends StatelessWidget {
 }
 
 class _ImagesCarouselDialog extends StatefulWidget {
-  _ImagesCarouselDialog(this.attachedImages, int initialIndex)
+  final Map<String, String>? headers;
+  _ImagesCarouselDialog(this.attachedImages, int initialIndex, {this.headers})
       : initialIndex = BoundedInt(
           value: initialIndex,
           min: 0,
@@ -78,6 +83,7 @@ class _ImagesCarouselDialogState extends State<_ImagesCarouselDialog> {
         child: ImagesCarousel(
           attachedImages: widget.attachedImages,
           imageModel: widget.initialIndex.value,
+          headers: widget.headers,
           onPageChanged: (index) {
             _overlayKey.currentState?.updateIndex(index);
           },
@@ -149,6 +155,7 @@ class _ImagesCarouselDialogOverlayState
 
 class ImagesCarousel extends StatefulWidget {
   final Iterable<String> attachedImages;
+  final Map<String, String>? headers;
   final int imageModel;
   final void Function(int index)? onPageChanged;
 
@@ -157,6 +164,7 @@ class ImagesCarousel extends StatefulWidget {
     super.key,
     this.imageModel = 0,
     this.onPageChanged,
+    this.headers,
   });
 
   @override
@@ -177,7 +185,7 @@ class _ImagesCarouselState extends State<ImagesCarousel> {
         ),
         items: [
           for (final image in widget.attachedImages)
-            DismissibleImage(image: image),
+            DismissibleImage(image: image, headers: widget.headers),
         ],
       );
 }

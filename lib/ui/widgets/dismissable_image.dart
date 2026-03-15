@@ -6,8 +6,10 @@ import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 
 class DismissibleImage extends StatelessWidget {
+  final Map<String, String>? headers;
   const DismissibleImage({
     required this.image,
+    this.headers,
     super.key,
   });
 
@@ -19,7 +21,8 @@ class DismissibleImage extends StatelessWidget {
         mode: ExtendedImageMode.gesture,
         enableSlideOutPage: true,
         image: CachedNetworkImageProvider(
-          image,
+          image.startsWith('/') ? 'https://portal.unn.ru$image' : image,
+          headers: headers,
         ),
         initGestureConfigHandler: (state) => GestureConfig(
           minScale: 0.9,

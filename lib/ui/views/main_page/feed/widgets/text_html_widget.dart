@@ -10,7 +10,8 @@ import 'package:unn_mobile/ui/widgets/context_menu/context_menu_helper.dart';
 import 'package:unn_mobile/ui/widgets/dismissable_image.dart';
 
 class TextHtmlWidget extends StatelessWidget {
-  const TextHtmlWidget({required this.text, super.key});
+  final Map<String, String>? headers;
+  const TextHtmlWidget({required this.text, this.headers, super.key});
   final String text;
 
   @override
@@ -22,7 +23,10 @@ class TextHtmlWidget extends StatelessWidget {
             context: context,
             builder: (context) => ExtendedImageSlidePage(
               slideAxis: SlideAxis.vertical,
-              child: DismissibleImage(image: imageMetadata.sources.first.url),
+              child: DismissibleImage(
+                image: imageMetadata.sources.first.url,
+                headers: headers,
+              ),
             ),
           );
         },
