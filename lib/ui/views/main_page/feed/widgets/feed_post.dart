@@ -334,7 +334,10 @@ class _FeedPostState extends State<FeedPost> {
   Widget _buildPostContent(FeedPostViewModel model) => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          TextHtmlWidget(text: model.postText),
+          TextHtmlWidget(
+            text: model.postText,
+            headers: model.authHeaders,
+          ),
           PackedPostImages(
             attachedImages: model.attachedImages,
             authorizationHeaders: model.authHeaders,
