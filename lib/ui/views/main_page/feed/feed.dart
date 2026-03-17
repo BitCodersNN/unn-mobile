@@ -107,14 +107,16 @@ class FeedScreenViewState extends State<FeedScreenView>
                         slivers: [
                           if (model.pinnedPosts.isNotEmpty)
                             SliverAppBar(
+                              surfaceTintColor: theme.colorScheme.surfaceBright,
+                              floating: true,
                               primary: false,
-                              pinned: true,
+                              elevation: 10,
+                              shadowColor: theme.shadowColor,
                               title: GestureDetector(
                                 onTap: () => openPinned(context),
                                 child: Container(
                                   padding: const EdgeInsets.all(8.0),
                                   width: double.infinity,
-                                  color: Theme.of(context).cardColor,
                                   child: Row(
                                     children: [
                                       Expanded(
@@ -139,15 +141,15 @@ class FeedScreenViewState extends State<FeedScreenView>
                             _coloredTopMessage(
                               context,
                               'Не удалось загрузить посты',
-                              const Color(0xFFBB1111),
-                              const Color(0xFFFFFFFF),
+                              theme.colorScheme.error,
+                              theme.colorScheme.onError,
                             ),
                           if (!online && model.offlinePosts.isNotEmpty)
                             _coloredTopMessage(
                               context,
                               'Показаны последние загруженные посты',
-                              const Color(0xFF696969),
-                              const Color(0xFFFFFFFF),
+                              theme.colorScheme.secondary,
+                              theme.colorScheme.onSecondary,
                             ),
                           SliverToBoxAdapter(
                             child: ListView.builder(
@@ -157,7 +159,7 @@ class FeedScreenViewState extends State<FeedScreenView>
                               itemBuilder: (context, index) {
                                 if (index == model.numberUnreadMessages) {
                                   return Container(
-                                    color: Colors.white,
+                                    color: theme.colorScheme.surface,
                                     padding: const EdgeInsets.symmetric(
                                       vertical: 12.0,
                                       horizontal: 20.0,
@@ -176,7 +178,7 @@ class FeedScreenViewState extends State<FeedScreenView>
                                               .textTheme
                                               .labelMedium
                                               ?.copyWith(
-                                                color: Colors.grey[600],
+                                                color: theme.hintColor,
                                                 fontSize: 14.0,
                                               ),
                                         ),

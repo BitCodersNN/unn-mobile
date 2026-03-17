@@ -40,6 +40,7 @@ class TextFieldWithBoxShadow extends StatelessWidget {
           ..layout(maxWidth: constraints.maxWidth);
 
         final heightErrorMessage = textPainter.size.height + 8;
+        final theme = Theme.of(context);
         return Stack(
           children: [
             // Separate container with identical height of text field which is placed behind the actual textfield
@@ -71,15 +72,15 @@ class TextFieldWithBoxShadow extends StatelessWidget {
                 enableSuggestions: enableSuggestions,
                 obscureText: obscuredText,
                 decoration: InputDecoration(
-                  fillColor: Colors.white,
+                  fillColor: theme.cardColor,
                   filled: true,
                   errorStyle: errorStyle,
                   errorText: errorText,
                   labelText: labelText,
-                  labelStyle: const TextStyle(
+                  labelStyle: TextStyle(
                     fontFamily: 'Inter',
                     fontSize: 17,
-                    color: Color(0xFF717A84),
+                    color: theme.hintColor,
                   ),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(

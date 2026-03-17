@@ -15,8 +15,7 @@ import 'package:unn_mobile/ui/router.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
 import 'package:unn_mobile/ui/widgets/dialogs/changelog_dialog.dart';
 import 'package:unn_mobile/ui/widgets/text_field_with_shadow.dart';
-
-const _accentColor = Color(0xFF1A63B7);
+import 'package:unn_mobile/ui/widgets/wide_button.dart';
 
 class AuthPage extends StatefulWidget {
   const AuthPage({super.key});
@@ -57,7 +56,7 @@ class AuthPageWithState extends State<AuthPage> {
   @override
   Widget build(BuildContext context) => BaseView<AuthPageViewModel>(
         builder: (context, viewModel, child) {
-          final authTitle = _authTitle();
+          final authTitle = _authTitle(context);
           final authBody = _authBody(
             context,
             viewModel,
@@ -69,7 +68,6 @@ class AuthPageWithState extends State<AuthPage> {
           );
 
           return Scaffold(
-            backgroundColor: Colors.white,
             resizeToAvoidBottomInset: false,
             appBar: authTitle,
             body: authBody,
@@ -94,19 +92,21 @@ class AuthPageWithState extends State<AuthPage> {
     return math.min(baseAuthLogoHeightFactor, minimumAuthLogoHeightFactor);
   }
 
-  AppBar _authTitle() => AppBar(
-        backgroundColor: Colors.white,
-        title: Center(
-          child: Text(
-            'Авторизация',
-            style: _baseTextStyle(
-              textColor: _accentColor,
-              fontSize: 25,
-              fontWeight: FontWeight.bold,
-            ),
+  AppBar _authTitle(BuildContext context) {
+    final theme = Theme.of(context);
+    return AppBar(
+      title: Center(
+        child: Text(
+          'Авторизация',
+          style: _baseTextStyle(
+            textColor: theme.primaryColor,
+            fontSize: 25,
+            fontWeight: FontWeight.bold,
           ),
         ),
-      );
+      ),
+    );
+  }
 
   Widget _authBody(
     BuildContext context,
@@ -149,7 +149,7 @@ class AuthPageWithState extends State<AuthPage> {
         _authErrorMessageIfNeeded(context, viewModel),
         _authFormInputLogin(),
         _authFormInputPassword(),
-        _authFormForgetPassword(),
+        _authFormForgetPassword(context),
         _authFormLoginButton(context, viewModel),
       ],
     );
@@ -200,6 +200,7 @@ class AuthPageWithState extends State<AuthPage> {
       ),
     );
 
+    final theme = Theme.of(context);
     return Container(
       padding: const EdgeInsets.only(
         left: 20,
@@ -209,7 +210,7 @@ class AuthPageWithState extends State<AuthPage> {
       height: MediaQuery.of(context).size.height,
       width: double.infinity,
       decoration: BoxDecoration(
-        color: const Color(0xFFF9FAFF),
+        color: theme.colorScheme.surfaceContainerHighest,
         borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(50.0),
           topRight: Radius.circular(50.0),
@@ -218,7 +219,7 @@ class AuthPageWithState extends State<AuthPage> {
           BoxShadow(
             offset: Offset.zero,
             blurRadius: 10,
-            color: const Color(0xFF29293F).withValues(alpha: 0.2),
+            color: theme.shadowColor.withAlpha(51),
           ),
         ],
       ),
@@ -260,15 +261,18 @@ class AuthPageWithState extends State<AuthPage> {
         ),
       );
 
-  Widget _authFormForgetPassword() => Padding(
-        padding: const EdgeInsets.only(top: 12),
-        child: Text(
-          '', //"Забыли пароль?",
-          style: _baseTextStyle(
-            textColor: const Color(0xFF394756),
-          ),
+  Widget _authFormForgetPassword(BuildContext context) {
+    final theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.only(top: 12),
+      child: Text(
+        '', //"Забыли пароль?",
+        style: _baseTextStyle(
+          textColor: theme.primaryColor,
         ),
-      );
+      ),
+    );
+  }
 
   TextStyle _baseTextStyle({
     Color? textColor,
@@ -285,47 +289,58 @@ class AuthPageWithState extends State<AuthPage> {
   Widget _authFormLoginButton(
     BuildContext context,
     AuthPageViewModel viewModel,
-  ) =>
-      Center(
-        child: Padding(
-          padding: const EdgeInsets.only(top: 30),
-          child: Container(
-            width: double.infinity,
-            height: 56,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(50),
-              gradient: const LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-                  Color(0xFF1F70CD),
-                  Color(0xFF185BA7),
-                ],
-              ),
-            ),
-            child: ElevatedButton(
-              onPressed: () => _loginButtonTapHandler(context, viewModel),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.transparent,
-                shadowColor: Colors.transparent,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(50),
+  ) {
+    final theme = Theme.of(context);
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.only(top: 30),
+        child: WideButton(
+          onPressed: () => _loginButtonTapHandler(context, viewModel),
+          child: viewModel.state == ViewState.busy
+              ? SizedBox(
+                  height: 22,
+                  width: 22,
+                  child: CircularProgressIndicator(
+                    color: theme.colorScheme.onPrimary,
+                  ),
+                )
+              : Text(
+                  'Войти',
+                  style: _baseTextStyle(
+                    textColor: theme.colorScheme.onPrimary,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 17,
+                  ),
                 ),
-              ),
-              child: viewModel.state == ViewState.busy
-                  ? const CircularProgressIndicator(color: Colors.white)
-                  : Text(
-                      'Войти',
-                      style: _baseTextStyle(
-                        textColor: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 17,
-                      ),
-                    ),
-            ),
-          ),
         ),
-      );
+        // Container(
+        //   width: double.infinity,
+        //   height: 56,
+        //   decoration: BoxDecoration(
+        //     borderRadius: BorderRadius.circular(50),
+        //     gradient: LinearGradient(
+        //       begin: Alignment.topCenter,
+        //       end: Alignment.bottomCenter,
+        //       colors: [
+        //         theme.colorScheme.primaryFixedDim,
+        //         theme.primaryColor,
+        //       ],
+        //     ),
+        //   ),
+        //   child: ElevatedButton(
+        //     style: ElevatedButton.styleFrom(
+        //       backgroundColor: Colors.transparent,
+        //       shadowColor: Colors.transparent,
+        //       shape: RoundedRectangleBorder(
+        //         borderRadius: BorderRadius.circular(50),
+        //       ),
+        //     ),
+
+        //   ),
+        // ),
+      ),
+    );
+  }
 
   String? _validateInputOrElseReturnError(_InputType type) {
     final value = type == _InputType.login

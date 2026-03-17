@@ -23,7 +23,7 @@ class MainPageNavigationBar extends StatelessWidget {
         children: [
           Container(
             height: 0.3,
-            color: Colors.grey.withValues(alpha: 0.5),
+            color: Theme.of(context).dividerColor.withValues(alpha: 0.5),
           ),
           NavigationBar(
             destinations: _getNavbarDestinations(
@@ -57,7 +57,7 @@ class MainPageNavigationBar extends StatelessWidget {
           icon: Icon(route.unselectedIcon),
           selectedIcon: Icon(
             route.selectedIcon,
-            color: Theme.of(context).primaryColorDark,
+            color: Theme.of(context).primaryColor,
           ),
           label: route.pageTitle,
           enabled: !route.isDisabled,

@@ -10,18 +10,18 @@ class UnnMobileColors extends ThemeExtension<UnnMobileColors> {
   final Color? scheduleSubjectHighlight;
   final Color? defaultPostHighlight;
   final Color? importantPostHighlight;
-  final Color? newPostHighlight;
-  final Map<SubjectType, Color>? subjectTypeHighlight;
+  final Map<SubjectType, Color>? scheduleSubjectTypeColors;
   final Color? ligtherTextColor;
+  final Color? idkWhatColor;
 
   const UnnMobileColors({
     required this.scheduleDayHighlight,
     required this.scheduleSubjectHighlight,
     required this.defaultPostHighlight,
     required this.importantPostHighlight,
-    required this.newPostHighlight,
-    required this.subjectTypeHighlight,
+    required this.scheduleSubjectTypeColors,
     required this.ligtherTextColor,
+    required this.idkWhatColor,
   });
 
   @override
@@ -30,9 +30,9 @@ class UnnMobileColors extends ThemeExtension<UnnMobileColors> {
     Color? scheduleSubjectHighlight,
     Color? defaultPostHighlight,
     Color? importantPostHighlight,
-    Color? newPostHighlight,
-    Map<SubjectType, Color>? subjectTypeHighlight,
+    Map<SubjectType, Color>? scheduleSubjectTypeColors,
     Color? ligtherTextColor,
+    Color? idkWhatColor,
   }) =>
       UnnMobileColors(
         scheduleDayHighlight: scheduleDayHighlight ?? this.scheduleDayHighlight,
@@ -41,9 +41,10 @@ class UnnMobileColors extends ThemeExtension<UnnMobileColors> {
         defaultPostHighlight: defaultPostHighlight ?? this.defaultPostHighlight,
         importantPostHighlight:
             importantPostHighlight ?? this.importantPostHighlight,
-        newPostHighlight: newPostHighlight ?? this.newPostHighlight,
-        subjectTypeHighlight: subjectTypeHighlight ?? this.subjectTypeHighlight,
+        scheduleSubjectTypeColors:
+            scheduleSubjectTypeColors ?? this.scheduleSubjectTypeColors,
         ligtherTextColor: ligtherTextColor ?? this.ligtherTextColor,
+        idkWhatColor: idkWhatColor ?? this.idkWhatColor,
       );
 
   @override
@@ -78,16 +79,11 @@ class UnnMobileColors extends ThemeExtension<UnnMobileColors> {
         otherColors.importantPostHighlight,
         t,
       ),
-      newPostHighlight: Color.lerp(
-        newPostHighlight,
-        otherColors.newPostHighlight,
-        t,
-      ),
-      subjectTypeHighlight: Map.fromIterables(
-        subjectTypeHighlight!.keys,
-        subjectTypeHighlight!.keys.map((SubjectType key) {
-          final Color thisColor = subjectTypeHighlight![key]!;
-          final Color otherColor = otherColors.subjectTypeHighlight![key]!;
+      scheduleSubjectTypeColors: Map.fromIterables(
+        scheduleSubjectTypeColors!.keys,
+        scheduleSubjectTypeColors!.keys.map((SubjectType key) {
+          final Color thisColor = scheduleSubjectTypeColors![key]!;
+          final Color otherColor = otherColors.scheduleSubjectTypeColors![key]!;
 
           return Color.lerp(thisColor, otherColor, t) ?? thisColor;
         }),
@@ -97,6 +93,11 @@ class UnnMobileColors extends ThemeExtension<UnnMobileColors> {
         otherColors.ligtherTextColor,
         t,
       ),
+      idkWhatColor: Color.lerp(
+        idkWhatColor,
+        otherColors.idkWhatColor,
+        t,
+      ),
     );
   }
 }
@@ -104,10 +105,10 @@ class UnnMobileColors extends ThemeExtension<UnnMobileColors> {
 extension ThemeDataExtension on ThemeData {
   Color getColorOfSubjectType(SubjectType subjectType) {
     final extraColors = extension<UnnMobileColors>()!;
-    return extraColors.subjectTypeHighlight![subjectType] ?? primaryColor;
+    return extraColors.scheduleSubjectTypeColors![subjectType] ?? primaryColor;
   }
 
-  Color getTimeBasedSurfaceColor(
+  Color getScheduleSurfaceColor(
     DateTimeRange dateTimeRange, {
     bool isEven = false,
   }) {

@@ -124,27 +124,30 @@ class _ImagesCarouselDialogOverlayState
   }
 
   @override
-  Widget build(BuildContext context) => SafeArea(
-        child: Align(
-          alignment: Alignment.topCenter,
-          child: Material(
-            color: Colors.transparent,
-            child: Container(
-              padding: const EdgeInsets.all(12),
-              decoration: const BoxDecoration(
-                color: Colors.transparent,
-              ),
-              child: Text(
-                '${index + 1} из ${widget.initialIndex.max + 1}',
-                style: const TextStyle(
-                  color: Colors.black,
-                  fontSize: 24,
-                ),
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return SafeArea(
+      child: Align(
+        alignment: Alignment.topCenter,
+        child: Material(
+          color: Colors.transparent,
+          child: Container(
+            padding: const EdgeInsets.all(12),
+            decoration: const BoxDecoration(
+              color: Colors.transparent,
+            ),
+            child: Text(
+              '${index + 1} из ${widget.initialIndex.max + 1}',
+              style: TextStyle(
+                color: theme.colorScheme.onPrimaryContainer,
+                fontSize: 24,
               ),
             ),
           ),
         ),
-      );
+      ),
+    );
+  }
 }
 
 class ImagesCarousel extends StatefulWidget {
