@@ -1,4 +1,4 @@
-package ru.unn.unn_mobile
+package ru.bitcodersnn.unnstudenthub
 
 import android.content.Intent
 import android.net.Uri
@@ -15,9 +15,9 @@ const val FILE_PICKER_REQUEST = 1
 
 const val UPLOAD_FILE_PICKER_REQUEST = 2
 
-const val FILE_CHANNEL = "ru.unn.unn_mobile/files"
+const val FILE_CHANNEL = "ru.bitcodersnn.unnstudenthub/files"
 
-const val FILE_PICKER_EVENTS = "ru.unn.unn_mobile/file_events"
+const val FILE_PICKER_EVENTS = "ru.bitcodersnn.unnstudenthub/file_events"
 
 const val ARGUMENT_ERROR = "ARGUMENT_ERROR"
 
