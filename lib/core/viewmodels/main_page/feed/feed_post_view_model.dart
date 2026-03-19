@@ -4,6 +4,7 @@
 import 'package:event/event.dart';
 import 'package:html_unescape/html_unescape.dart';
 import 'package:injector/injector.dart';
+import 'package:unn_mobile/core/misc/demo_mode_status.dart';
 import 'package:unn_mobile/core/models/feed/blog_post.dart';
 import 'package:unn_mobile/core/models/feed/blog_post_data.dart';
 import 'package:unn_mobile/core/providers/interfaces/feed/last_feed_load_date_time_provider.dart';
@@ -123,6 +124,9 @@ class FeedPostViewModel extends BaseViewModel {
   }
 
   Future<void> togglePin() async {
+    if (DemoModeStatus.demoModeEnabled) {
+      return;
+    }
     final pinnedId = blogData.pinnedId ?? 0;
     final success = isPinned
         ? await _pinningService.unpin(pinnedId)
@@ -135,6 +139,9 @@ class FeedPostViewModel extends BaseViewModel {
   }
 
   Future<void> markReadIfImportant() async {
+    if (DemoModeStatus.demoModeEnabled) {
+      return;
+    }
     if (!isAnnouncement) {
       return;
     }

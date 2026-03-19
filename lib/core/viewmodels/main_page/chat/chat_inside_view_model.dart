@@ -8,6 +8,7 @@ import 'dart:math';
 import 'package:unn_mobile/core/aggregators/interfaces/message_service_aggregator.dart';
 import 'package:unn_mobile/core/misc/authorisation/try_login_and_retrieve_data.dart';
 import 'package:unn_mobile/core/misc/date_time_utilities/date_time_extensions.dart';
+import 'package:unn_mobile/core/misc/demo_mode_status.dart';
 import 'package:unn_mobile/core/misc/objects_with_pagination.dart';
 import 'package:unn_mobile/core/misc/user/current_user_sync_storage.dart';
 import 'package:unn_mobile/core/models/common/file_data.dart';
@@ -312,6 +313,9 @@ class ChatInsideViewModel extends BaseViewModel {
     int chatId,
     List<Message> messages,
   ) async {
+    if (DemoModeStatus.demoModeEnabled) {
+      return;
+    }
     await _messagesAggregator.readMessages(
       chatId: chatId,
       messageIds: messages.map((m) => m.messageId),
@@ -322,6 +326,9 @@ class ChatInsideViewModel extends BaseViewModel {
     FutureOr<T?> Function() sendFunction,
   ) async =>
       await typedBusyCallAsync<bool>(() async {
+        if (DemoModeStatus.demoModeEnabled) {
+          return false;
+        }
         if (_dialog == null) {
           return false;
         }
