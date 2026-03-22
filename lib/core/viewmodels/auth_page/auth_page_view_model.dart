@@ -36,14 +36,19 @@ class AuthPageViewModel extends BaseViewModel {
     final shouldEnableDemo =
         user.startsWith('53effbc2-242e-43c1-9046-6580b77cccdb-');
 
+    final actualUserName = shouldEnableDemo ? user.substring(37) : user;
+
     try {
-      authResult = await _authorisationService.auth(user, password);
+      authResult = await _authorisationService.auth(
+        actualUserName,
+        password,
+      );
     } catch (error, stackTrace) {
       _loggerService.logError(error, stackTrace);
     }
 
     if (authResult == AuthRequestResult.success) {
-      await _authDataProvider.saveData(AuthData(user, password));
+      await _authDataProvider.saveData(AuthData(actualUserName, password));
     } else {
       authResult != null
           ? _setAuthError(text: authResult.errorMessage)

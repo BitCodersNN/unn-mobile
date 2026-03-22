@@ -5,6 +5,7 @@ import 'dart:async';
 
 import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/aggregators/interfaces/message_reaction_service_aggregator.dart';
+import 'package:unn_mobile/core/misc/demo_mode_status.dart';
 import 'package:unn_mobile/core/models/feed/rating_list.dart';
 import 'package:unn_mobile/core/models/profile/user_short_info.dart';
 import 'package:unn_mobile/core/viewmodels/factories/message_reaction_view_model_factory.dart';
@@ -32,6 +33,9 @@ class MessageReactionViewModel extends ReactionViewModelBase {
 
   @override
   FutureOr<void> setReaction(ReactionType? reaction) async {
+    if (DemoModeStatus.demoModeEnabled) {
+      return;
+    }
     if (profileId == ReactionViewModelBase.noId) {
       return;
     }
