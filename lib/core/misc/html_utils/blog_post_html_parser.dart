@@ -13,8 +13,10 @@ import 'package:unn_mobile/core/misc/file_helpers/size_converter.dart';
 import 'package:unn_mobile/core/misc/html_utils/html_image_utils.dart';
 import 'package:unn_mobile/core/models/common/file_data.dart';
 import 'package:unn_mobile/core/models/feed/blog_post.dart';
+import 'package:unn_mobile/core/models/feed/blog_post_comment.dart';
 import 'package:unn_mobile/core/models/feed/blog_post_data.dart';
 import 'package:unn_mobile/core/models/feed/blog_post_type.dart';
+import 'package:unn_mobile/core/models/feed/important_blog_post.dart';
 import 'package:unn_mobile/core/models/feed/post_destination.dart';
 import 'package:unn_mobile/core/models/feed/rating_list.dart';
 import 'package:unn_mobile/core/models/profile/user_short_info.dart';
@@ -33,20 +35,17 @@ class BlogPostHtmlParser {
 
     for (final post in postElements) {
       final postType = _getPostType(post);
-      final blogPost = _parsePost(post, currentUserData);
 
-      switch (postType) {
-        case ExtendedBlogPostType.regular:
-          blogPosts.putIfAbsent(BlogPostType.regular, () => []).add(blogPost);
-        case ExtendedBlogPostType.pinned:
-          blogPosts.putIfAbsent(BlogPostType.pinned, () => []).add(blogPost);
-        case ExtendedBlogPostType.important:
-          blogPosts.putIfAbsent(BlogPostType.regular, () => []).add(blogPost);
-          blogPosts.putIfAbsent(BlogPostType.important, () => []).add(blogPost);
-        case ExtendedBlogPostType.importantPinned:
-          blogPosts.putIfAbsent(BlogPostType.pinned, () => []).add(blogPost);
-          blogPosts.putIfAbsent(BlogPostType.important, () => []).add(blogPost);
-      }
+      final blogPost = _parsePost(post, currentUserData, postType);
+
+      final targetKey = switch (postType) {
+        ExtendedBlogPostType.pinned ||
+        ExtendedBlogPostType.importantPinned =>
+          BlogPostType.pinned,
+        _ => BlogPostType.regular,
+      };
+
+      blogPosts.putIfAbsent(targetKey, () => []).add(blogPost);
     }
     return blogPosts;
   }
@@ -54,21 +53,37 @@ class BlogPostHtmlParser {
   static BlogPost _parsePost(
     Element postElement,
     UserShortInfo currentUserData,
+    ExtendedBlogPostType blogPostType,
   ) {
+    const emptyComments = <BlogPostComment>[];
     final (postData, attachFiles) = _parsePostData(postElement);
     final authorInfo = _parseAuthorInfo(postElement);
     final ratingList = _parseRatingList(postElement, currentUserData);
 
     final commentCount = _extractCommentCount(postElement);
 
-    return BlogPost(
-      data: postData,
-      ratingList: ratingList,
-      userShortInfo: authorInfo,
-      attachFiles: attachFiles,
-      comments: [],
-      commentCount: commentCount,
-    );
+    return switch (blogPostType) {
+      ExtendedBlogPostType.important ||
+      ExtendedBlogPostType.importantPinned =>
+        ImportantBlogPost(
+          data: postData,
+          ratingList: ratingList,
+          userShortInfo: authorInfo,
+          attachFiles: attachFiles,
+          comments: emptyComments,
+          commentCount: commentCount,
+          isRead: _isImportantPostRead(postElement),
+          readCount: _getImportantPostReadCount(postElement),
+        ),
+      _ => BlogPost(
+          data: postData,
+          ratingList: ratingList,
+          userShortInfo: authorInfo,
+          attachFiles: attachFiles,
+          comments: emptyComments,
+          commentCount: commentCount,
+        ),
+    };
   }
 
   static (BlogPostData, List<FileData>) _parsePostData(Element postElement) {
@@ -159,6 +174,32 @@ class BlogPostHtmlParser {
     );
 
     return (blogPostData, files);
+  }
+
+  static bool _isImportantPostRead(Element postElement) {
+    final footer = postElement.querySelector('.feed-imp-post-footer');
+    if (footer == null) {
+      return false;
+    }
+    final hasReadBlock = footer.querySelector('.have-read-text-block');
+    return hasReadBlock != null;
+  }
+
+  static int _getImportantPostReadCount(Element postElement) {
+    final footer = postElement.querySelector('.feed-imp-post-footer');
+    if (footer == null) {
+      return 0;
+    }
+
+    final countElement =
+        footer.querySelector('[id^="blog-post-readers-count-"]');
+    if (countElement == null) {
+      return 0;
+    }
+
+    final text = countElement.text;
+    final match = RegExp(r'(\d+)').firstMatch(text);
+    return match != null ? int.parse(match.group(1)!) : 0;
   }
 
   static UserShortInfo _parseAuthorInfo(Element postElement) {
@@ -441,21 +482,6 @@ class BlogPostHtmlParser {
 
     final isImportant = classes.contains('feed-imp-post') ||
         classes.contains('feed-post-block-important');
-
-    bool hasReadMessage = false;
-    if (isImportant) {
-      final importantFooter =
-          postElement.querySelector('.feed-imp-post-footer');
-      hasReadMessage =
-          importantFooter?.text.contains('С сообщением ознакомлен') ?? false;
-    }
-
-    if (hasReadMessage) {
-      if (isPinned) {
-        return ExtendedBlogPostType.pinned;
-      }
-      return ExtendedBlogPostType.regular;
-    }
 
     if (isImportant && isPinned) {
       return ExtendedBlogPostType.importantPinned;
