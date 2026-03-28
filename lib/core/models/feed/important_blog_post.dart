@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright 2026 BitCodersNN
+
 import 'package:unn_mobile/core/models/feed/blog_post.dart';
 
 class ImportantBlogPost extends BlogPost {

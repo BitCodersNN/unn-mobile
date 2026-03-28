@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright 2026 BitCodersNN
+
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:unn_mobile/core/api_helpers/api_helper.dart';

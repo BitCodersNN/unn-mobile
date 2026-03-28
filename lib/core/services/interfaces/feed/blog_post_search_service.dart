@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright 2026 BitCodersNN
+
 import 'package:flutter/material.dart';
 
 abstract interface class BlogPostSearchService {
