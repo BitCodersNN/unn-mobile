@@ -54,7 +54,7 @@ class _ScheduleItemNormalState extends State<ScheduleItemNormal>
               bottomRight: Radius.circular(16),
             ),
             shape: BoxShape.rectangle,
-            color: theme.getTimeBasedSurfaceColor(
+            color: theme.getScheduleSurfaceColor(
               widget.subject.dateTimeRange,
               isEven: widget.even,
             ),

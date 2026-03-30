@@ -35,7 +35,7 @@ class SourceWebinarView extends StatelessWidget {
                     bottomRight: Radius.circular(16.0),
                   ),
                   shape: BoxShape.rectangle,
-                  color: theme.getTimeBasedSurfaceColor(
+                  color: theme.getScheduleSurfaceColor(
                     model.dateTimeRange,
                     isEven: true,
                   ),

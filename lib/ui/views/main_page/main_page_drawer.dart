@@ -60,78 +60,82 @@ class _MainPageDrawerState extends State<MainPageDrawer> {
     return drawerChildren;
   }
 
-  Widget _getDrawerHeader(ThemeData theme, ProfileViewModel value) => Padding(
-        padding: const EdgeInsets.fromLTRB(0, 0, 0, 10),
-        child: SizedBox(
-          height: 120,
-          child: ColoredBox(
-            color: theme.colorScheme.primary,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              verticalDirection: VerticalDirection.up,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 0, 8, 0),
-                  child: SizedBox(
-                    width: 72,
-                    height: 72,
-                    child: CircleAvatar(
-                      backgroundImage: value.hasAvatar
-                          ? CachedNetworkImageProvider(value.avatarUrl!)
-                          : null,
-                      child: !value.hasAvatar
-                          ? Text(
-                              style: theme.textTheme.headlineLarge!.copyWith(
-                                color: theme.colorScheme.onSurface,
-                              ),
-                              value.initials,
-                            )
-                          : null,
+  Widget _getDrawerHeader(ThemeData theme, ProfileViewModel value) {
+    final theme = Theme.of(context);
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(0, 0, 0, 10),
+      child: SizedBox(
+        height: 120,
+        child: ColoredBox(
+          color: theme.colorScheme.primary,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            verticalDirection: VerticalDirection.up,
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 0, 8, 0),
+                child: SizedBox(
+                  width: 72,
+                  height: 72,
+                  child: CircleAvatar(
+                    backgroundImage: value.hasAvatar
+                        ? CachedNetworkImageProvider(value.avatarUrl!)
+                        : null,
+                    child: !value.hasAvatar
+                        ? Text(
+                            style: theme.textTheme.headlineLarge!.copyWith(
+                              color: theme.colorScheme.onSurface,
+                            ),
+                            value.initials,
+                          )
+                        : null,
+                  ),
+                ),
+              ),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(4.0),
+                      child: Text(
+                        value.fullname,
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 2,
+                        softWrap: true,
+                        textWidthBasis: TextWidthBasis.parent,
+                        textAlign: TextAlign.left,
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: theme.colorScheme.onPrimary,
+                          fontFamily: 'Inter',
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(4.0),
-                        child: Text(
-                          value.fullname,
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 2,
-                          softWrap: true,
-                          textWidthBasis: TextWidthBasis.parent,
-                          textAlign: TextAlign.left,
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            color: theme.colorScheme.onPrimary,
-                            fontFamily: 'Inter',
-                          ),
+                    Padding(
+                      padding: const EdgeInsets.all(4.0),
+                      child: Text(
+                        value.description,
+                        overflow: TextOverflow.fade,
+                        textAlign: TextAlign.left,
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          color: theme.colorScheme.surfaceBright,
+                          fontFamily: 'Inter',
                         ),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.all(4.0),
-                        child: Text(
-                          value.description,
-                          overflow: TextOverflow.fade,
-                          textAlign: TextAlign.left,
-                          style: const TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                            color: Color(0xFFFFFFFF),
-                            fontFamily: 'Inter',
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
-      );
+      ),
+    );
+  }
 }
