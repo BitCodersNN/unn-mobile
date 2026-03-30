@@ -16,8 +16,6 @@ class UnnMobile extends StatelessWidget {
           appBarTheme: const AppBarTheme(
             scrolledUnderElevation: 3,
             backgroundColor: Colors.white,
-            surfaceTintColor: Colors.transparent,
-            shadowColor: Colors.black,
           ),
           useMaterial3: true,
           colorScheme: ColorScheme.fromSeed(
@@ -32,8 +30,7 @@ class UnnMobile extends StatelessWidget {
               scheduleSubjectHighlight: Color(0xFFFFF6E8),
               defaultPostHighlight: Color(0xFFFFFFFF),
               importantPostHighlight: Color(0xFFFFE3AF),
-              newPostHighlight: Color(0xFFFFF6E8),
-              subjectTypeHighlight: {
+              scheduleSubjectTypeColors: {
                 SubjectType.lecture: Color(0xFF1CA49C),
                 SubjectType.practice: Color(0xFFCD7255),
                 SubjectType.lab: Color(0xFF0961FF),
@@ -42,6 +39,7 @@ class UnnMobile extends StatelessWidget {
                 SubjectType.unknown: Color(0xFF6E757C),
               },
               ligtherTextColor: Color(0xFF717A84),
+              idkWhatColor: Color(0xFF989EA9),
             ),
           ],
         ),

@@ -63,9 +63,7 @@ class _AttachedFileState extends State<AttachedFile> {
                           child: Icon(
                             iconData,
                             size: 30,
-                            color: const Color(
-                              0xE9A9C6EF,
-                            ), // Здесь можно задать любой цвет
+                            color: theme.primaryColorLight,
                           ),
                         ),
                         const SizedBox(width: 8),

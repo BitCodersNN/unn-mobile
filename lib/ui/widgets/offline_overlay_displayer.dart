@@ -70,68 +70,72 @@ class _OfflineOverlay extends StatefulWidget {
 class _OfflineOverlayState extends State<_OfflineOverlay> {
   Future<void>? refreshAction;
   @override
-  Widget build(BuildContext context) => Padding(
-        padding: EdgeInsets.only(bottom: widget.bottomOffset),
-        child: Align(
-          alignment: AlignmentDirectional.bottomStart,
-          child: AnimatedContainer(
-            color: const Color(0xFF323232),
-            duration: const Duration(milliseconds: 2000),
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: DefaultTextStyle(
-                      style: Theme.of(context)
-                              .textTheme
-                              .bodyLarge
-                              ?.copyWith(color: Colors.white) ??
-                          const TextStyle(color: Colors.white, fontSize: 14),
-                      child: const Text(
-                        'Нет соединения',
-                      ),
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Padding(
+      padding: EdgeInsets.only(bottom: widget.bottomOffset),
+      child: Align(
+        alignment: AlignmentDirectional.bottomStart,
+        child: AnimatedContainer(
+          color: theme.colorScheme.secondary,
+          duration: const Duration(milliseconds: 2000),
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              children: [
+                Expanded(
+                  child: DefaultTextStyle(
+                    style: theme.textTheme.bodyLarge
+                            ?.copyWith(color: theme.colorScheme.onSecondary) ??
+                        TextStyle(
+                          color: theme.colorScheme.onSecondary,
+                          fontSize: 14,
+                        ),
+                    child: const Text(
+                      'Нет соединения',
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(
-                      left: 8.0,
-                      right: 12.0,
-                    ),
-                    child: SizedBox(
-                      height: 48,
-                      width: 48,
-                      child: FutureBuilder(
-                        future: refreshAction,
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return const Padding(
-                              padding: EdgeInsets.all(8.0),
-                              child: CircularProgressIndicator(),
-                            );
-                          }
-                          return IconButton(
-                            onPressed: () {
-                              setState(() {
-                                refreshAction = Injector.appInstance
-                                    .get<AuthorisationRefreshService>()
-                                    .refreshLogin();
-                              });
-                            },
-                            icon: Icon(
-                              Icons.refresh,
-                              color: Theme.of(context).primaryColor,
-                            ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(
+                    left: 8.0,
+                    right: 12.0,
+                  ),
+                  child: SizedBox(
+                    height: 48,
+                    width: 48,
+                    child: FutureBuilder(
+                      future: refreshAction,
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const Padding(
+                            padding: EdgeInsets.all(8.0),
+                            child: CircularProgressIndicator(),
                           );
-                        },
-                      ),
+                        }
+                        return IconButton(
+                          onPressed: () {
+                            setState(() {
+                              refreshAction = Injector.appInstance
+                                  .get<AuthorisationRefreshService>()
+                                  .refreshLogin();
+                            });
+                          },
+                          icon: Icon(
+                            Icons.refresh,
+                            color: theme.primaryColor,
+                          ),
+                        );
+                      },
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),
-      );
+      ),
+    );
+  }
 }
