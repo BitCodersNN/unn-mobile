@@ -74,6 +74,7 @@ import 'package:unn_mobile/core/services/implementations/distance_learning/sessi
 import 'package:unn_mobile/core/services/implementations/distance_learning/webinar_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/feed/blog_post_receivers/blog_post_pagination_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/feed/blog_post_receivers/refresh_blog_post_service_impl.dart';
+import 'package:unn_mobile/core/services/implementations/feed/blog_post_search_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/feed/featured_blog_post_action/important_blog_post_acknowledgement_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/feed/featured_blog_post_action/important_blog_post_users_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/feed/featured_blog_post_action/pinning_blog_post_service_impl.dart';
@@ -127,6 +128,7 @@ import 'package:unn_mobile/core/services/interfaces/distance_learning/session_ch
 import 'package:unn_mobile/core/services/interfaces/distance_learning/webinar_service.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/blog_post_receivers/blog_post_pagination_service.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/blog_post_receivers/refresh_blog_post_service.dart';
+import 'package:unn_mobile/core/services/interfaces/feed/blog_post_search_service.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/featured_blog_post_action/important_blog_post_acknowledgement_service.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/featured_blog_post_action/important_blog_post_users_service.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/featured_blog_post_action/pinning_blog_post_service.dart';
@@ -665,6 +667,12 @@ void registerDependencies() {
         get<LoggerService>(),
         getApiHelper(HostType.unnPortal),
         get<CurrentUserSyncStorage>(),
+      ),
+    )
+    ..registerSingleton<BlogPostSearchService>(
+      () => BlogPostSearchServiceImpl(
+        get<LoggerService>(),
+        getApiHelper(HostType.unnPortal),
       ),
     )
     ..registerSingleton<BlogPostPaginationService>(
