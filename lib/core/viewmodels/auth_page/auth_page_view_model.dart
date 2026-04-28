@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2025 BitCodersNN
 
+import 'package:unn_mobile/core/constants/demo_mode.dart';
 import 'package:unn_mobile/core/misc/authorisation/authorisation_request_result.dart';
 import 'package:unn_mobile/core/misc/custom_errors/auth_error_messages.dart';
 import 'package:unn_mobile/core/misc/demo_mode_status.dart';
@@ -33,10 +34,13 @@ class AuthPageViewModel extends BaseViewModel {
     _resetAuthError();
 
     AuthRequestResult? authResult;
-    final shouldEnableDemo =
-        user.startsWith('53effbc2-242e-43c1-9046-6580b77cccdb-');
 
-    final actualUserName = shouldEnableDemo ? user.substring(37) : user;
+    const demoPrefixLength = DemoModeConstants.demoUserPrefix.length;
+
+    final shouldEnableDemo = user.startsWith(DemoModeConstants.demoUserPrefix);
+
+    final actualUserName =
+        shouldEnableDemo ? user.substring(demoPrefixLength) : user;
 
     try {
       authResult = await _authorisationService.auth(
@@ -48,7 +52,7 @@ class AuthPageViewModel extends BaseViewModel {
     }
 
     if (authResult == AuthRequestResult.success) {
-      await _authDataProvider.saveData(AuthData(actualUserName, password));
+      await _authDataProvider.saveData(AuthData(user, password));
     } else {
       authResult != null
           ? _setAuthError(text: authResult.errorMessage)
