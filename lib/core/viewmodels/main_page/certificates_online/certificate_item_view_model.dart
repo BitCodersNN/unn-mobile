@@ -6,6 +6,7 @@ import 'dart:io';
 
 import 'package:unn_mobile/core/constants/date_pattern.dart';
 import 'package:unn_mobile/core/misc/date_time_utilities/date_time_extensions.dart';
+import 'package:unn_mobile/core/misc/demo_mode_status.dart';
 import 'package:unn_mobile/core/models/certificate/certificate.dart';
 import 'package:unn_mobile/core/models/certificate/practice_order.dart';
 import 'package:unn_mobile/core/services/interfaces/certificate/certificate_downloader_service.dart';
@@ -68,6 +69,9 @@ class CertificateItemViewModel extends BaseViewModel {
   }
 
   Future<void> askForPath() async => await busyCallAsync(() async {
+        if (DemoModeStatus.demoModeEnabled) {
+          return;
+        }
         if (_certificate == null) {
           return;
         }

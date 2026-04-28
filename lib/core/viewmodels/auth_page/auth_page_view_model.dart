@@ -1,8 +1,10 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2025 BitCodersNN
 
+import 'package:unn_mobile/core/constants/demo_mode.dart';
 import 'package:unn_mobile/core/misc/authorisation/authorisation_request_result.dart';
 import 'package:unn_mobile/core/misc/custom_errors/auth_error_messages.dart';
+import 'package:unn_mobile/core/misc/demo_mode_status.dart';
 import 'package:unn_mobile/core/models/authorisation/auth_data.dart';
 import 'package:unn_mobile/core/providers/interfaces/authorisation/auth_data_provider.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation/unn_authorisation_service.dart';
@@ -33,8 +35,18 @@ class AuthPageViewModel extends BaseViewModel {
 
     AuthRequestResult? authResult;
 
+    const demoPrefixLength = DemoModeConstants.demoUserPrefix.length;
+
+    final shouldEnableDemo = user.startsWith(DemoModeConstants.demoUserPrefix);
+
+    final actualUserName =
+        shouldEnableDemo ? user.substring(demoPrefixLength) : user;
+
     try {
-      authResult = await _authorisationService.auth(user, password);
+      authResult = await _authorisationService.auth(
+        actualUserName,
+        password,
+      );
     } catch (error, stackTrace) {
       _loggerService.logError(error, stackTrace);
     }
@@ -45,6 +57,10 @@ class AuthPageViewModel extends BaseViewModel {
       authResult != null
           ? _setAuthError(text: authResult.errorMessage)
           : _setAuthError();
+    }
+
+    if (authResult == AuthRequestResult.success) {
+      DemoModeStatus.demoModeEnabled = shouldEnableDemo;
     }
 
     setState(ViewState.idle);

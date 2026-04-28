@@ -4,7 +4,9 @@
 import 'dart:async';
 
 import 'package:flutter/services.dart';
+import 'package:unn_mobile/core/constants/demo_mode.dart';
 import 'package:unn_mobile/core/misc/authorisation/authorisation_request_result.dart';
+import 'package:unn_mobile/core/misc/demo_mode_status.dart';
 import 'package:unn_mobile/core/models/authorisation/auth_data.dart';
 import 'package:unn_mobile/core/providers/interfaces/authorisation/auth_data_provider.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation/authorisation_refresh_service.dart';
@@ -48,6 +50,17 @@ class AuthorisationRefreshServiceImpl implements AuthorisationRefreshService {
     }
     final AuthData authData = await _authDataProvider.getData();
 
-    return _authorisationService.auth(authData.login, authData.password);
+    const demoPrefixLength = DemoModeConstants.demoUserPrefix.length;
+
+    final shouldEnableDemo =
+        authData.login.startsWith(DemoModeConstants.demoUserPrefix);
+
+    final actualLogin = shouldEnableDemo
+        ? authData.login.substring(demoPrefixLength)
+        : authData.login;
+
+    DemoModeStatus.demoModeEnabled = shouldEnableDemo;
+
+    return _authorisationService.auth(actualLogin, authData.password);
   }
 }

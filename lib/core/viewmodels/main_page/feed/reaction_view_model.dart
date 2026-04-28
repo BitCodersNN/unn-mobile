@@ -2,6 +2,7 @@
 // Copyright 2025 BitCodersNN
 
 import 'package:injector/injector.dart';
+import 'package:unn_mobile/core/misc/demo_mode_status.dart';
 import 'package:unn_mobile/core/models/feed/rating_list.dart';
 import 'package:unn_mobile/core/models/profile/user_short_info.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/legacy/getting_rating_list.dart';
@@ -70,6 +71,9 @@ class ReactionViewModel extends ReactionViewModelBase {
 
   @override
   Future<void> setReaction(ReactionType? reaction) async {
+    if (DemoModeStatus.demoModeEnabled) {
+      return;
+    }
     if (profileId == ReactionViewModelBase.noId) {
       return;
     }
