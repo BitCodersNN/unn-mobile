@@ -140,15 +140,16 @@ class ChatInsideViewModel extends BaseViewModel {
     final viewModel = _dialogsViewModel;
     final storedInfo = viewModel?.storedDialogInfo;
 
-    if (viewModel == null || storedInfo == null) {
+    if (viewModel == null && storedInfo == null) {
       _dialog = null;
       return;
     }
 
-    _dialog = viewModel.dialogs.cast<BaseDialogInfo>().firstWhere(
-          (d) => d is Dialog && d.chatId == chatId,
-          orElse: () => storedInfo,
-        );
+    _dialog = viewModel?.dialogs.cast<BaseDialogInfo>().firstWhere(
+              (d) => d is Dialog && d.chatId == chatId,
+              orElse: () => storedInfo!,
+            ) ??
+        storedInfo;
   }
 
   FutureOr<void> init(int? chatId) async {
