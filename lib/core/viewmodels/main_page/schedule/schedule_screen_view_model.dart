@@ -13,10 +13,10 @@ import 'package:unn_mobile/core/services/interfaces/schedule/export_schedule_ser
 import 'package:unn_mobile/core/services/interfaces/schedule/schedule_search_history_service.dart';
 import 'package:unn_mobile/core/services/interfaces/schedule/schedule_service.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
-import 'package:unn_mobile/core/viewmodels/main_page/schedule/schedule_tab_new_view_model.dart';
+import 'package:unn_mobile/core/viewmodels/main_page/schedule/schedule_tab_view_model.dart';
 import 'package:unn_mobile/ui/views/main_page/main_page_tab_state.dart';
 
-class ScheduleScreenViewmodel extends BaseViewModel
+class ScheduleScreenViewModel extends BaseViewModel
     implements MainPageTabState {
   final CurrentUserSyncStorage _userStorage;
   final SearchIdOnPortalService _searchIdOnPortalService;
@@ -60,7 +60,7 @@ class ScheduleScreenViewmodel extends BaseViewModel
 
   IdType _selectedUser = IdType.student;
 
-  ScheduleScreenViewmodel(
+  ScheduleScreenViewModel(
     this._userStorage,
     this._searchIdOnPortalService,
     this._scheduleService,

@@ -12,11 +12,11 @@ import 'package:unn_mobile/core/services/interfaces/common/search_id_on_portal_s
 import 'package:unn_mobile/core/services/interfaces/schedule/schedule_search_history_service.dart';
 import 'package:unn_mobile/core/services/interfaces/schedule/schedule_service.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
-import 'package:unn_mobile/core/viewmodels/main_page/schedule/schedule_new_viewmodel.dart';
+import 'package:unn_mobile/core/viewmodels/main_page/schedule/schedule_screen_view_model.dart';
 
 class ScheduleTabViewModel extends BaseViewModel {
   final IdType _userType;
-  final ScheduleScreenViewmodel _parent;
+  final ScheduleScreenViewModel _parent;
   final CurrentUserSyncStorage _userStorage;
   final SearchIdOnPortalService _searchIdService;
   final ScheduleService _scheduleService;

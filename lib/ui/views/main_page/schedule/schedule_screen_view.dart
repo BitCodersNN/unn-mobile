@@ -10,7 +10,7 @@ import 'package:unn_mobile/core/misc/date_time_utilities/date_time_extensions.da
 import 'package:unn_mobile/core/models/schedule/schedule_filter.dart';
 import 'package:unn_mobile/core/services/interfaces/schedule/export_schedule_service.dart';
 import 'package:unn_mobile/core/viewmodels/factories/main_page_routes_view_models_factory.dart';
-import 'package:unn_mobile/core/viewmodels/main_page/schedule/schedule_new_viewmodel.dart';
+import 'package:unn_mobile/core/viewmodels/main_page/schedule/schedule_screen_view_model.dart';
 import 'package:unn_mobile/ui/builders/online_status_builder.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
 import 'package:unn_mobile/ui/views/main_page/main_page.dart';
@@ -32,23 +32,23 @@ class ScheduleScreenView extends StatefulWidget {
 }
 
 class _ScheduleScreenViewState extends State<ScheduleScreenView> {
-  late ScheduleScreenViewmodel _viewModel;
+  late ScheduleScreenViewModel _viewModel;
 
   @override
   void initState() {
     super.initState();
     _viewModel = widget.bottomRouteIndex == null
-        ? Injector.appInstance.get<ScheduleScreenViewmodel>()
+        ? Injector.appInstance.get<ScheduleScreenViewModel>()
         : Injector.appInstance
             .get<MainPageRoutesViewModelsFactory>()
-            .getViewModelByRouteIndex<ScheduleScreenViewmodel>(
+            .getViewModelByRouteIndex<ScheduleScreenViewModel>(
               widget.bottomRouteIndex!,
             );
   }
 
   @override
   Widget build(BuildContext context) => OfflineOverlayDisplayer(
-        child: BaseView<ScheduleScreenViewmodel>(
+        child: BaseView<ScheduleScreenViewModel>(
           builder: (context, model, _) => OnlineStatusBuilder(
             builder: (context, online) => DefaultTabController(
               length: model.sortedUserTypeList.length,
@@ -182,7 +182,7 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView> {
 
   void exportScheduleCallback(
     BuildContext context,
-    ScheduleScreenViewmodel model,
+    ScheduleScreenViewModel model,
   ) async {
     final permission = await model.askForExportPermission();
     if (permission == RequestCalendarPermissionResult.permanentlyDenied) {
