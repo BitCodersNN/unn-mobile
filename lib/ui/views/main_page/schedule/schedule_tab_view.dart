@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright 2026 BitCodersNN
+
 import 'package:flutter/material.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/schedule/schedule_tab_new_view_model.dart';
 import 'package:unn_mobile/ui/builders/online_status_builder.dart';
