@@ -54,12 +54,10 @@ class ExportScheduleServiceImpl implements ExportScheduleService {
         case DioExceptionType.receiveTimeout:
         case DioExceptionType.connectionError:
           return ExportScheduleResult.timeout;
-        case DioExceptionType.badCertificate:
-        case DioExceptionType.cancel:
-        case DioExceptionType.unknown:
-          rethrow;
         case DioExceptionType.badResponse:
           return ExportScheduleResult.statusCodeIsntOk;
+        default:
+          rethrow;
       }
     }
 
