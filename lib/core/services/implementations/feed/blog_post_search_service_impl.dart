@@ -103,9 +103,9 @@ class BlogPostSearchServiceImpl implements BlogPostSearchService {
           ? _DataValues.dateSelNone
           : _DataValues.dateSelRange,
       _DataKeys.dataFieldsDateCreateFrom:
-          dateRange.formatStart(pattern: DatePattern.ddmmyyyy),
+          dateRange?.formatStart(pattern: DatePattern.ddmmyyyy) ?? '',
       _DataKeys.dataFieldsDateCreateTo:
-          dateRange.formatEnd(pattern: DatePattern.ddmmyyyy),
+          dateRange?.formatEnd(pattern: DatePattern.ddmmyyyy) ?? '',
       _DataKeys.dataFieldsDateCreateDays: _DataValues.empty,
       _DataKeys.dataFieldsDateCreateMonth: _DataValues.empty,
       _DataKeys.dataFieldsDateCreateQuarter: _DataValues.empty,

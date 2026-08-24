@@ -25,11 +25,21 @@ class ScheduleFilter {
   final DateTimeRange _dateTimeRange;
   late final IdForSchedule _id;
 
-  ScheduleFilter(idType, id, this._dateTimeRange) {
+  ScheduleFilter(IdType idType, String id, this._dateTimeRange) {
     _id = IdForSchedule(idType, id);
   }
 
   IdType get idType => _id._idType;
   String get id => _id._id;
   DateTimeRange get dateTimeRange => _dateTimeRange;
+}
+
+extension IdTypeExtensions on IdType {
+  String getDisplayName() => switch (this) {
+        IdType.group => 'Группа',
+        IdType.student => 'Студент',
+        IdType.lecturer => 'Преподаватель',
+        IdType.person => 'Преподаватель',
+        IdType.auditoriun => 'Аудитория',
+      };
 }
