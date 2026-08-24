@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2025 BitCodersNN
 
-import 'package:device_calendar/device_calendar.dart';
+import 'package:device_calendar_plus/device_calendar_plus.dart';
 import 'package:dio/dio.dart';
 import 'package:icalendar_parser/icalendar_parser.dart';
 import 'package:permission_handler_platform_interface/permission_handler_platform_interface.dart';
@@ -64,7 +64,7 @@ class ExportScheduleServiceImpl implements ExportScheduleService {
     final iCalendarData =
         ICalendar.fromString(response.data).data.skip(1).toList();
 
-    final deviceCalendarPlugin = DeviceCalendarPlugin();
+    final deviceCalendarPlugin = DeviceCalendar.instance;
 
     final isGranted = await PermissionHandlerPlatform.instance
         .checkPermissionStatus(Permission.calendarFullAccess)
@@ -77,7 +77,7 @@ class ExportScheduleServiceImpl implements ExportScheduleService {
     String? calendarID = await _findCalendarId(deviceCalendarPlugin);
 
     calendarID ??=
-        (await deviceCalendarPlugin.createCalendar(_calendarName)).data;
+        await deviceCalendarPlugin.createCalendar(name: _calendarName);
 
     return _addEventsInCalendar(
       deviceCalendarPlugin,
@@ -109,11 +109,11 @@ class ExportScheduleServiceImpl implements ExportScheduleService {
       PermissionHandlerPlatform.instance.openAppSettings();
 
   Future<String?> _findCalendarId(
-    DeviceCalendarPlugin deviceCalendarPlugin,
+    DeviceCalendar deviceCalendarPlugin,
   ) async {
-    final calendars = await deviceCalendarPlugin.retrieveCalendars();
+    final calendars = await deviceCalendarPlugin.listCalendars();
 
-    for (final calendar in calendars.data!) {
+    for (final calendar in calendars) {
       if (calendar.name == _calendarName) {
         return calendar.id;
       }
@@ -123,7 +123,7 @@ class ExportScheduleServiceImpl implements ExportScheduleService {
   }
 
   Future<ExportScheduleResult> _addEventsInCalendar(
-    DeviceCalendarPlugin deviceCalendarPlugin,
+    DeviceCalendar deviceCalendarPlugin,
     List<Map<String, dynamic>> iCalendarData,
     String? calendarID,
   ) async {
@@ -133,11 +133,6 @@ class ExportScheduleServiceImpl implements ExportScheduleService {
     const String dtend = 'dtend';
     const String description = 'description';
 
-    final timeZone = timeZoneDatabase.locations[_timeZone];
-    if (timeZone == null) {
-      throw StateError('Часовой пояс $_timeZone не поддерживается');
-    }
-
     final futures = iCalendarData.map((event) {
       final start = event[dtstart] as IcsDateTime?;
       final end = event[dtend] as IcsDateTime?;
@@ -146,15 +141,15 @@ class ExportScheduleServiceImpl implements ExportScheduleService {
         throw Exception('Пропущено время начала или окончания события: $event');
       }
 
-      return deviceCalendarPlugin.createOrUpdateEvent(
-        Event(
-          calendarID,
-          title: event[summary] as String?,
-          location: event[location] as String?,
-          description: event[description] as String?,
-          start: TZDateTime.parse(timeZone, start!.dt),
-          end: TZDateTime.parse(timeZone, end!.dt),
-        ),
+      return deviceCalendarPlugin.createEvent(
+        calendarId: calendarID,
+        title: event[summary] as String? ?? '',
+        startDate: start!.toDateTime()!,
+        endDate: end!.toDateTime()!,
+        location: event[location] as String?,
+        isAllDay: false,
+        timeZone: _timeZone,
+        description: event[description] as String?,
       );
     }).toList();
 
