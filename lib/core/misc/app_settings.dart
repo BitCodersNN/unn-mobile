@@ -23,7 +23,7 @@ class AppSettings {
   }
 
   static Future<T> _readValue<T>(
-    key, {
+    String key, {
     required T? Function(String val) parser,
     required T defaultValue,
   }) async {

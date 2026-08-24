@@ -19,7 +19,6 @@ final class DistanceLinkData extends DistanceMaterialData {
     required super.dateTime,
   });
 
-  @override
   factory DistanceLinkData.fromJson(JsonMap jsonMap) => DistanceLinkData(
         link: jsonMap[_LinkDataJsonKeys.link]! as String,
         comment: jsonMap[_LinkDataJsonKeys.comment]! as String,
