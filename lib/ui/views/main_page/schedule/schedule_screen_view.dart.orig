@@ -1,7 +1,9 @@
+<<<<<<< HEAD
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2026 BitCodersNN
-
+=======
 import 'dart:io';
+>>>>>>> ce3fa2b (Добавил экспорт расписания)
 
 import 'package:flutter/material.dart';
 import 'package:injector/injector.dart';

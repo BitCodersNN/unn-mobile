@@ -9,6 +9,7 @@ import 'package:unn_mobile/core/misc/user/current_user_sync_storage.dart';
 import 'package:unn_mobile/core/models/profile/employee/employee_data.dart';
 import 'package:unn_mobile/core/models/schedule/schedule_filter.dart';
 import 'package:unn_mobile/core/services/interfaces/common/search_id_on_portal_service.dart';
+import 'package:unn_mobile/core/services/interfaces/schedule/export_schedule_service.dart';
 import 'package:unn_mobile/core/services/interfaces/schedule/schedule_search_history_service.dart';
 import 'package:unn_mobile/core/services/interfaces/schedule/schedule_service.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
@@ -21,12 +22,19 @@ class ScheduleScreenViewmodel extends BaseViewModel
   final SearchIdOnPortalService _searchIdOnPortalService;
   final ScheduleService _scheduleService;
   final ScheduleSearchHistoryService _searchHistoryService;
+  final ExportScheduleService _exportScheduleService;
 
   IdType get selectedUser => _selectedUser;
   set selectedUser(IdType value) {
     _selectedUser = value;
     notifyListeners();
   }
+
+  Map<DateTimeRange, String> scheduleExportRanges = {
+    DateTimeRanges.untilEndOfWeek(): 'До конца этой недели',
+    DateTimeRanges.untilEndOfMonth(): 'До конца этого месяца',
+    DateTimeRanges.untilEndOfSemester(): 'До конца этого семестра',
+  };
 
   DateTimeRange selectedTimeRange = DateTimeRanges.currentWeek();
   final defaultTimeRange = DateTimeRanges.currentWeek();
@@ -57,8 +65,23 @@ class ScheduleScreenViewmodel extends BaseViewModel
     this._searchIdOnPortalService,
     this._scheduleService,
     this._searchHistoryService,
+    this._exportScheduleService,
   );
 
+  FutureOr<void> init() => busyCallAsync(() async {
+        selectedUser = sortedUserTypeList.first;
+        for (final type in sortedUserTypeList) {
+          modelsByType[type] = ScheduleTabViewModel(
+            type,
+            this,
+            _userStorage,
+            _searchIdOnPortalService,
+            _scheduleService,
+            _searchHistoryService,
+          );
+        }
+        await Future.wait(modelsByType.values.map((v) async => await v.init()));
+      });
   @override
   void refreshTab() {
     for (final vm in modelsByType.values) {
@@ -87,18 +110,21 @@ class ScheduleScreenViewmodel extends BaseViewModel
     );
   }
 
-  FutureOr<void> init() => busyCallAsync(() async {
-        selectedUser = sortedUserTypeList.first;
-        for (final type in sortedUserTypeList) {
-          modelsByType[type] = ScheduleTabViewModel(
-            type,
-            this,
-            _userStorage,
-            _searchIdOnPortalService,
-            _scheduleService,
-            _searchHistoryService,
-          );
-        }
-        await Future.wait(modelsByType.values.map((v) async => await v.init()));
-      });
+  Future<RequestCalendarPermissionResult> askForExportPermission() =>
+      _exportScheduleService.requestCalendarPermission();
+
+  Future<bool> exportSchedule(DateTimeRange range) async {
+    final exportScheduleFilter =
+        currentTab?.searchFilter?.copyWith(dateTimeRange: range);
+    if (exportScheduleFilter == null) {
+      return false;
+    }
+    final res =
+        await _exportScheduleService.exportSchedule(exportScheduleFilter);
+    return res == ExportScheduleResult.success;
+  }
+
+  Future openSettingsWindow() async {
+    await _exportScheduleService.openSettings();
+  }
 }

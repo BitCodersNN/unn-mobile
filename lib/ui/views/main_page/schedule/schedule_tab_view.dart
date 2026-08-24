@@ -37,7 +37,7 @@ class ScheduleTabView extends StatelessWidget {
 
           return OnlineStatusBuilder(
             builder: (context, isOnline) {
-              if (model.defaultId == null && model.selectedId == null) {
+              if (!model.hasAnyId) {
                 return Center(
                   child: Padding(
                     padding: const EdgeInsets.all(12.0),

@@ -32,6 +32,17 @@ class ScheduleFilter {
   IdType get idType => _id._idType;
   String get id => _id._id;
   DateTimeRange get dateTimeRange => _dateTimeRange;
+
+  ScheduleFilter copyWith({
+    IdType? idType,
+    String? id,
+    DateTimeRange? dateTimeRange,
+  }) =>
+      ScheduleFilter(
+        idType ?? this.idType,
+        id ?? this.id,
+        dateTimeRange ?? this.dateTimeRange,
+      );
 }
 
 extension IdTypeExtensions on IdType {

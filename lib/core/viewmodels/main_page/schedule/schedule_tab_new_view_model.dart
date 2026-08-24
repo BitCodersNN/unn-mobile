@@ -28,9 +28,11 @@ class ScheduleTabViewModel extends BaseViewModel {
 
   List<List<Subject>>? schedule;
 
-  ScheduleFilter? _searchFilter;
+  ScheduleFilter? searchFilter;
 
   bool needsDefaultIdRefresh = true;
+
+  bool get hasAnyId => defaultId != null || selectedId != null;
 
   ScheduleTabViewModel(
     this._userType,
@@ -74,9 +76,9 @@ class ScheduleTabViewModel extends BaseViewModel {
 
   void updateFilter() {
     if (selectedId == null && defaultId == null) {
-      _searchFilter = null;
+      searchFilter = null;
     }
-    _searchFilter = ScheduleFilter(
+    searchFilter = ScheduleFilter(
       _userType,
       selectedId ?? defaultId!,
       _parent.selectedTimeRange,
@@ -85,7 +87,7 @@ class ScheduleTabViewModel extends BaseViewModel {
 
   Future<void> loadSchedule() async {
     final List<Subject> foundSchedule = await tryLoginAndRetrieveData(
-          () => _scheduleService.getSchedule(_searchFilter!),
+          () => _scheduleService.getSchedule(searchFilter!),
           () => schedule?.expand((e) => e).toList(),
         ) ??
         []

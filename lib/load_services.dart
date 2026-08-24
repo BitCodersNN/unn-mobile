@@ -771,6 +771,7 @@ void registerDependencies() {
         get<SearchIdOnPortalService>(),
         get<ScheduleService>(),
         get<ScheduleSearchHistoryService>(),
+        get<ExportScheduleService>(),
       ),
     )
     ..registerDependency(
