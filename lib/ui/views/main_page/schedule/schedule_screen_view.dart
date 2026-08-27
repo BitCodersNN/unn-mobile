@@ -1,0 +1,254 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright 2026 BitCodersNN
+
+import 'dart:io';
+
+import 'package:flutter/material.dart';
+import 'package:injector/injector.dart';
+import 'package:unn_mobile/core/constants/date_pattern.dart';
+import 'package:unn_mobile/core/misc/date_time_utilities/date_time_extensions.dart';
+import 'package:unn_mobile/core/models/schedule/schedule_filter.dart';
+import 'package:unn_mobile/core/services/interfaces/schedule/export_schedule_service.dart';
+import 'package:unn_mobile/core/viewmodels/factories/main_page_routes_view_models_factory.dart';
+import 'package:unn_mobile/core/viewmodels/main_page/schedule/schedule_screen_view_model.dart';
+import 'package:unn_mobile/ui/builders/online_status_builder.dart';
+import 'package:unn_mobile/ui/views/base_view.dart';
+import 'package:unn_mobile/ui/views/main_page/main_page.dart';
+import 'package:unn_mobile/ui/views/main_page/schedule/schedule_tab_view.dart';
+import 'package:unn_mobile/ui/views/main_page/schedule/widgets/schedule_search_suggestion_item_view.dart';
+import 'package:unn_mobile/ui/widgets/dialogs/message_dialog.dart';
+import 'package:unn_mobile/ui/widgets/dialogs/radio_group_dialog.dart';
+import 'package:unn_mobile/ui/widgets/offline_overlay_displayer.dart';
+
+class ScheduleScreenView extends StatefulWidget {
+  final int? bottomRouteIndex;
+  const ScheduleScreenView({
+    super.key,
+    this.bottomRouteIndex,
+  });
+
+  @override
+  State<ScheduleScreenView> createState() => _ScheduleScreenViewState();
+}
+
+class _ScheduleScreenViewState extends State<ScheduleScreenView> {
+  late ScheduleScreenViewModel _viewModel;
+
+  @override
+  void initState() {
+    super.initState();
+    _viewModel = widget.bottomRouteIndex == null
+        ? Injector.appInstance.get<ScheduleScreenViewModel>()
+        : Injector.appInstance
+            .get<MainPageRoutesViewModelsFactory>()
+            .getViewModelByRouteIndex<ScheduleScreenViewModel>(
+              widget.bottomRouteIndex!,
+            );
+  }
+
+  @override
+  Widget build(BuildContext context) => OfflineOverlayDisplayer(
+        child: BaseView<ScheduleScreenViewModel>(
+          builder: (context, model, _) => OnlineStatusBuilder(
+            builder: (context, online) => DefaultTabController(
+              length: model.sortedUserTypeList.length,
+              initialIndex: 0,
+              child: Scaffold(
+                appBar: AppBar(
+                  leading: getSubpageLeading(widget.bottomRouteIndex),
+                  title: const Text('Расписание'),
+                  actions: [
+                    if (online)
+                      SearchAnchor(
+                        builder: (
+                          BuildContext context,
+                          SearchController controller,
+                        ) =>
+                            IconButton(
+                          icon: const Icon(Icons.search),
+                          onPressed: () {
+                            controller.openView();
+                          },
+                        ),
+                        suggestionsBuilder: (
+                          BuildContext context,
+                          SearchController controller,
+                        ) async {
+                          final suggestions = await model.currentTab
+                              ?.getSuggestions(controller.text);
+                          return suggestions?.map(
+                                (s) => ScheduleSearchSuggestionItemView(
+                                  model: s,
+                                  onSelected: () {
+                                    controller.closeView(s.label);
+                                    model.currentTab?.applySearchSuggestion(s);
+                                  },
+                                ),
+                              ) ??
+                              [];
+                        },
+                      ),
+                    PopupMenuButton<String>(
+                      icon: const Icon(Icons.more_vert),
+                      onSelected: (value) {
+                        switch (value) {
+                          case 'export':
+                            exportScheduleCallback(context, model);
+                            break;
+                        }
+                      },
+                      itemBuilder: (context) => [
+                        PopupMenuItem<String>(
+                          value: 'export',
+                          enabled:
+                              online && (model.currentTab?.hasAnyId ?? false),
+                          child: const Text('Экспорт в календарь'),
+                        ),
+                      ],
+                    ),
+                  ],
+                  bottom: PreferredSize(
+                    preferredSize: const Size.fromHeight(75.0),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Row(
+                            children: [
+                              IconButton(
+                                onPressed: online
+                                    ? () {
+                                        model.previousWeek();
+                                      }
+                                    : null,
+                                icon: const Icon(Icons.arrow_left),
+                                iconSize: 32.0,
+                              ),
+                              Expanded(
+                                child: Text(
+                                  '${model.selectedTimeRange.start.format(DatePattern.dMMMM)} - ${model.selectedTimeRange.end.format(DatePattern.dMMMM)}',
+                                  textAlign: TextAlign.center,
+                                  style: Theme.of(context).textTheme.titleLarge,
+                                ),
+                              ),
+                              IconButton(
+                                onPressed: online
+                                    ? () {
+                                        model.nextWeek();
+                                      }
+                                    : null,
+                                icon: const Icon(Icons.arrow_right),
+                                iconSize: 32.0,
+                              ),
+                            ],
+                          ),
+                          TabBar(
+                            tabAlignment: TabAlignment.center,
+                            tabs: model.sortedUserTypeList
+                                .map((t) => Tab(text: t.getDisplayName()))
+                                .toList(),
+                            isScrollable: true,
+                            onTap: (value) {
+                              model.selectedUser =
+                                  model.sortedUserTypeList[value];
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                body: TabBarView(
+                  children: model.sortedUserTypeList
+                      .map(
+                        (t) => ScheduleTabView(
+                          key: ValueKey(t),
+                          viewModel: model.modelsByType[t]!,
+                        ),
+                      )
+                      .toList(),
+                ),
+              ),
+            ),
+            statusChanged: (_) => Future.wait(
+              model.modelsByType.values.map((t) async => await t.refresh()),
+            ),
+          ),
+          model: _viewModel,
+          onModelReady: (model) => model.init(),
+        ),
+      );
+
+  void exportScheduleCallback(
+    BuildContext context,
+    ScheduleScreenViewModel model,
+  ) async {
+    final permission = await model.askForExportPermission();
+    if (permission == RequestCalendarPermissionResult.permanentlyDenied) {
+      if (context.mounted) {
+        await showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            actions: [
+              TextButton(
+                onPressed: () async {
+                  await model.openSettingsWindow();
+                  if (context.mounted) {
+                    Navigator.pop(context);
+                  }
+                },
+                child: const Text('Настройки'),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: const Text('Отмена'),
+              ),
+            ],
+            content: const Text(
+              'Приложению запрещён доступ к календарю. Разрешите его в настройках, чтобы экспортировать расписание.',
+            ),
+          ),
+        );
+      }
+    } else if (permission == RequestCalendarPermissionResult.allowed) {
+      int? selectedRange;
+      if (context.mounted) {
+        selectedRange = await showDialog(
+          context: context,
+          builder: (context) => RadioGroupDialog(
+            label: const Text(
+              'Экспортировать расписание: ',
+            ),
+            radioLabels:
+                model.scheduleExportRanges.values.map(Text.new).toList(),
+          ),
+        );
+      }
+      if (selectedRange != null) {
+        final bool result = await model.exportSchedule(
+          model.scheduleExportRanges.keys.toList()[selectedRange],
+        );
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Экспорт завершён'),
+            ),
+          );
+        }
+        if (Platform.isAndroid && context.mounted) {
+          await showMessage(
+            context,
+            result
+                ? 'Расписание экспортировано в календарь "Расписание ННГУ". \n'
+                    'Возможно, понадобится включить настройку Device Calendar в приложении календаря.'
+                : 'Не удалось экспортировать. Попробуйте снова.',
+            messageKey: result ? 'export_schedule_success' : null,
+          );
+        }
+      }
+    }
+  }
+}

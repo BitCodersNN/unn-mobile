@@ -1,51 +1,130 @@
 // SPDX-License-Identifier: Apache-2.0
-// Copyright 2025 BitCodersNN
+// Copyright 2026 BitCodersNN
 
-import 'package:injector/injector.dart';
+import 'dart:async';
+
+import 'package:flutter/material.dart';
+import 'package:unn_mobile/core/misc/date_time_utilities/date_time_ranges.dart';
 import 'package:unn_mobile/core/misc/user/current_user_sync_storage.dart';
 import 'package:unn_mobile/core/models/profile/employee/employee_data.dart';
 import 'package:unn_mobile/core/models/schedule/schedule_filter.dart';
+import 'package:unn_mobile/core/services/interfaces/common/search_id_on_portal_service.dart';
+import 'package:unn_mobile/core/services/interfaces/schedule/export_schedule_service.dart';
+import 'package:unn_mobile/core/services/interfaces/schedule/schedule_search_history_service.dart';
+import 'package:unn_mobile/core/services/interfaces/schedule/schedule_service.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
-import 'package:unn_mobile/core/viewmodels/main_page/main_page_route_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/schedule/schedule_tab_view_model.dart';
+import 'package:unn_mobile/ui/views/main_page/main_page_tab_state.dart';
 
 class ScheduleScreenViewModel extends BaseViewModel
-    implements MainPageRouteViewModel {
-  final CurrentUserSyncStorage _currentUserSyncStorage;
+    implements MainPageTabState {
+  final CurrentUserSyncStorage _userStorage;
+  final SearchIdOnPortalService _searchIdOnPortalService;
+  final ScheduleService _scheduleService;
+  final ScheduleSearchHistoryService _searchHistoryService;
+  final ExportScheduleService _exportScheduleService;
 
-  int selectedTab = 0;
+  IdType get selectedUser => _selectedUser;
+  set selectedUser(IdType value) {
+    _selectedUser = value;
+    notifyListeners();
+  }
 
-  late final List<ScheduleTabViewModel> _tabViewModels;
+  Map<DateTimeRange, String> scheduleExportRanges = {
+    DateTimeRanges.untilEndOfWeek(): 'До конца этой недели',
+    DateTimeRanges.untilEndOfMonth(): 'До конца этого месяца',
+    DateTimeRanges.untilEndOfSemester(): 'До конца этого семестра',
+  };
 
-  ScheduleScreenViewModel(this._currentUserSyncStorage);
+  DateTimeRange selectedTimeRange = DateTimeRanges.currentWeek();
+  final defaultTimeRange = DateTimeRanges.currentWeek();
 
-  List<IdType> get tabIdTypes => switch (_currentUserSyncStorage.typeOfUser) {
+  int weekOffset = 0;
+
+  List<IdType> get sortedUserTypeList => switch (_userStorage.typeOfUser) {
         const (EmployeeData) => [
             IdType.lecturer,
-            IdType.group,
+            IdType.auditoriun,
             IdType.student,
           ],
         _ => [
             IdType.student,
             IdType.group,
             IdType.lecturer,
-          ] // Объединяем результат для StudentData и всего остального
+          ]
       };
-  List<ScheduleTabViewModel> get tabViewModels => _tabViewModels;
 
-  void init() {
-    if (isInitialized) {
-      return;
+  ScheduleTabViewModel? get currentTab => modelsByType[selectedUser];
+
+  final Map<IdType, ScheduleTabViewModel> modelsByType = {};
+
+  IdType _selectedUser = IdType.student;
+
+  ScheduleScreenViewModel(
+    this._userStorage,
+    this._searchIdOnPortalService,
+    this._scheduleService,
+    this._searchHistoryService,
+    this._exportScheduleService,
+  );
+
+  FutureOr<void> init() => busyCallAsync(() async {
+        selectedUser = sortedUserTypeList.first;
+        for (final type in sortedUserTypeList) {
+          modelsByType[type] = ScheduleTabViewModel(
+            type,
+            this,
+            _userStorage,
+            _searchIdOnPortalService,
+            _scheduleService,
+            _searchHistoryService,
+          );
+        }
+        await Future.wait(modelsByType.values.map((v) async => await v.init()));
+      });
+  @override
+  void refreshTab() {
+    for (final vm in modelsByType.values) {
+      vm.refresh();
     }
-    isInitialized = true;
-    _tabViewModels = [
-      for (final _ in tabIdTypes)
-        Injector.appInstance.get<ScheduleTabViewModel>(),
-    ];
   }
 
-  @override
-  void refresh() {
-    _tabViewModels[selectedTab].refresh();
+  void nextWeek() {
+    weekOffset++;
+    recalculateDateTimeRange();
+    notifyListeners();
+    refreshTab();
+  }
+
+  void previousWeek() {
+    weekOffset--;
+    recalculateDateTimeRange();
+    notifyListeners();
+    refreshTab();
+  }
+
+  void recalculateDateTimeRange() {
+    selectedTimeRange = DateTimeRange(
+      start: defaultTimeRange.start.add(Duration(days: 7 * weekOffset)),
+      end: defaultTimeRange.end.add(Duration(days: 7 * weekOffset)),
+    );
+  }
+
+  Future<RequestCalendarPermissionResult> askForExportPermission() =>
+      _exportScheduleService.requestCalendarPermission();
+
+  Future<bool> exportSchedule(DateTimeRange range) async {
+    final exportScheduleFilter =
+        currentTab?.searchFilter?.copyWith(dateTimeRange: range);
+    if (exportScheduleFilter == null) {
+      return false;
+    }
+    final res =
+        await _exportScheduleService.exportSchedule(exportScheduleFilter);
+    return res == ExportScheduleResult.success;
+  }
+
+  Future openSettingsWindow() async {
+    await _exportScheduleService.openSettings();
   }
 }

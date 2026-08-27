@@ -14,7 +14,7 @@ import 'package:unn_mobile/ui/views/main_page/feed/widgets/announcements_page.da
 import 'package:unn_mobile/ui/views/main_page/feed/widgets/comments_page.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/widgets/pinned_posts_page.dart';
 import 'package:unn_mobile/ui/views/main_page/grades/grades.dart';
-import 'package:unn_mobile/ui/views/main_page/schedule/schedule.dart';
+import 'package:unn_mobile/ui/views/main_page/schedule/schedule_screen_view.dart';
 import 'package:unn_mobile/ui/views/main_page/settings/settings.dart';
 import 'package:unn_mobile/ui/views/main_page/source/source.dart';
 

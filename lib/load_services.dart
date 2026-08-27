@@ -169,7 +169,6 @@ import 'package:unn_mobile/core/viewmodels/main_page/feed/feed_screen_view_model
 import 'package:unn_mobile/core/viewmodels/main_page/grades/grades_screen_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/main_page_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/schedule/schedule_screen_view_model.dart';
-import 'package:unn_mobile/core/viewmodels/main_page/schedule/schedule_tab_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/settings/settings_screen_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/source/source_page_view_model.dart';
 
@@ -339,6 +338,7 @@ void registerDependencies() {
         get<ProfileOfCurrentUserService>(),
         get<LoggerService>(),
         getApiHelper(HostType.unnPortal),
+        get<CurrentUserSyncStorage>(),
       ),
     )
     ..registerSingleton<UserDataProvider>(
@@ -737,18 +737,6 @@ void registerDependencies() {
       ),
     )
     ..registerDependency(
-      () => ScheduleTabViewModel(
-        get<ScheduleService>(),
-        get<SearchIdOnPortalService>(),
-        get<OfflineScheduleProvider>(),
-        get<ProfileOfCurrentUserService>(),
-        get<ScheduleSearchHistoryService>(),
-        get<OnlineStatusData>(),
-        get<ExportScheduleService>(),
-        get<LoggerService>(),
-      ),
-    )
-    ..registerDependency(
       () => CertificatesViewModel(get<CertificatesService>()),
     )
     ..registerDependency(
@@ -780,6 +768,10 @@ void registerDependencies() {
     ..registerDependency(
       () => ScheduleScreenViewModel(
         get<CurrentUserSyncStorage>(),
+        get<SearchIdOnPortalService>(),
+        get<ScheduleService>(),
+        get<ScheduleSearchHistoryService>(),
+        get<ExportScheduleService>(),
       ),
     )
     ..registerDependency(
