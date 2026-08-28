@@ -93,21 +93,14 @@ class _RadioGroupDialogState extends State<RadioGroupDialog> {
         ),
       ),
       actions: [
-        TextButton(
+        AdaptiveDialogAction(
           onPressed: () => Navigator.pop(context),
           child: widget.cancelButtonChild,
         ),
-        TextButton(
+        AdaptiveDialogAction(
           onPressed: () => Navigator.pop(context, selectedValue),
           child: widget.okButtonChild,
-AdaptiveDialogAction(
-onPressed: () => Navigator.pop(context),
-child: widget.cancelButtonChild,
-),
-AdaptiveDialogAction(
-onPressed: () => Navigator.pop(context, selectedValue),
-child: widget.okButtonChild,
-),
+        )
       ],
     );
   }
