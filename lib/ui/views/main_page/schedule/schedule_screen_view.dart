@@ -214,23 +214,24 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView> {
         );
       }
     } else if (permission == RequestCalendarPermissionResult.allowed) {
-      int? selectedRange;
+      DateTimeRangeType? selectedType;
       if (context.mounted) {
-        selectedRange = await showDialog(
+        final index = await showDialog<int>(
           context: context,
           builder: (context) => RadioGroupDialog(
-            label: const Text(
-              'Экспортировать расписание: ',
-            ),
-            radioLabels:
-                model.scheduleExportRanges.values.map(Text.new).toList(),
+            label: const Text('Экспортировать расписание: '),
+            radioLabels: DateTimeRangeType.values
+                .map((type) => Text(type.label))
+                .toList(),
           ),
         );
+
+        if (index != null) {
+          selectedType = DateTimeRangeType.values[index];
+        }
       }
-      if (selectedRange != null) {
-        final bool result = await model.exportSchedule(
-          model.scheduleExportRanges.keys.toList()[selectedRange],
-        );
+      if (selectedType != null) {
+        final bool result = await model.exportScheduleByType(selectedType);
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(

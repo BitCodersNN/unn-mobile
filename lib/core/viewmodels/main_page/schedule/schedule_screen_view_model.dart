@@ -16,6 +16,16 @@ import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/schedule/schedule_tab_view_model.dart';
 import 'package:unn_mobile/ui/views/main_page/main_page_tab_state.dart';
 
+enum DateTimeRangeType {
+  untilEndOfWeek('До конца этой недели'),
+  untilEndOfMonth('До конца этого месяца'),
+  untilEndOfSemester('До конца этого семестра');
+
+  final String label;
+
+  const DateTimeRangeType(this.label);
+}
+
 class ScheduleScreenViewModel extends BaseViewModel
     implements MainPageTabState {
   final CurrentUserSyncStorage _userStorage;
@@ -30,10 +40,11 @@ class ScheduleScreenViewModel extends BaseViewModel
     notifyListeners();
   }
 
-  Map<DateTimeRange, String> scheduleExportRanges = {
-    DateTimeRanges.untilEndOfWeek(): 'До конца этой недели',
-    DateTimeRanges.untilEndOfMonth(): 'До конца этого месяца',
-    DateTimeRanges.untilEndOfSemester(): 'До конца этого семестра',
+  final Map<DateTimeRangeType, DateTimeRange Function({DateTime? startDate})>
+      rangeGetters = {
+    DateTimeRangeType.untilEndOfWeek: DateTimeRanges.untilEndOfWeek,
+    DateTimeRangeType.untilEndOfMonth: DateTimeRanges.untilEndOfMonth,
+    DateTimeRangeType.untilEndOfSemester: DateTimeRanges.untilEndOfSemester,
   };
 
   DateTimeRange selectedTimeRange = DateTimeRanges.currentWeek();
@@ -113,7 +124,9 @@ class ScheduleScreenViewModel extends BaseViewModel
   Future<RequestCalendarPermissionResult> askForExportPermission() =>
       _exportScheduleService.requestCalendarPermission();
 
-  Future<bool> exportSchedule(DateTimeRange range) async {
+  Future<bool> exportScheduleByType(DateTimeRangeType type) async {
+    final range = getRangeForExport(type);
+
     final exportScheduleFilter =
         currentTab?.searchFilter?.copyWith(dateTimeRange: range);
     if (exportScheduleFilter == null) {
@@ -122,6 +135,30 @@ class ScheduleScreenViewModel extends BaseViewModel
     final res =
         await _exportScheduleService.exportSchedule(exportScheduleFilter);
     return res == ExportScheduleResult.success;
+  }
+
+  DateTime? getStartDate() {
+    if (weekOffset == 0) {
+      return null;
+    }
+
+    final now = DateTime.now();
+    final currentMonday = now.subtract(
+      Duration(days: now.weekday - DateTime.monday),
+    );
+
+    return currentMonday.add(Duration(days: 7 * weekOffset)).copyWith(
+          hour: 0,
+          minute: 0,
+          second: 0,
+          millisecond: 0,
+          microsecond: 0,
+        );
+  }
+
+  DateTimeRange getRangeForExport(DateTimeRangeType type) {
+    final startDate = getStartDate();
+    return rangeGetters[type]!.call(startDate: startDate);
   }
 
   Future openSettingsWindow() async {
