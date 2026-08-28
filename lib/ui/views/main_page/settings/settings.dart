@@ -159,19 +159,21 @@ class SettingsScreenView extends StatelessWidget {
                       maxHeight: 400.0,
                     ),
                     child: SingleChildScrollView(
-                      child: Column(
-                        children: List.generate(
-                          model.navbarRouteCount,
-                          (index) => RadioListTile.adaptive(
-                            title: Text(
-                              model.activeNavbarRouteNames[index],
+                      child: RadioGroup<int>(
+                        groupValue: model.activeNavbarRouteIndex,
+                        onChanged: (value) {
+                          model.activeNavbarRouteIndex = value ?? 0;
+                          GoRouter.of(context).pop();
+                        },
+                        child: Column(
+                          children: List.generate(
+                            model.navbarRouteCount,
+                            (index) => RadioListTile.adaptive(
+                              title: Text(
+                                model.activeNavbarRouteNames[index],
+                              ),
+                              value: index,
                             ),
-                            value: index,
-                            groupValue: model.activeNavbarRouteIndex,
-                            onChanged: (value) {
-                              model.activeNavbarRouteIndex = value ?? 0;
-                              GoRouter.of(context).pop();
-                            },
                           ),
                         ),
                       ),

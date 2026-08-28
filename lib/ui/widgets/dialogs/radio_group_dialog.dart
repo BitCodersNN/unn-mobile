@@ -66,24 +66,26 @@ class _RadioGroupDialogState extends State<RadioGroupDialog> {
         child: ConstrainedBox(
           constraints: BoxConstraints(maxHeight: maxContentHeight),
           child: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: List.generate(
-                widget.radioLabels.length,
-                (index) => RadioListTile<int>(
-                  key: _itemKeys[index],
-                  title: widget.radioLabels[index],
-                  value: index,
-                  groupValue: selectedValue,
-                  onChanged: (value) {
-                    if (value != null) {
-                      setState(() {
-                        selectedValue = value;
-                      });
-                    }
-                  },
-                  contentPadding: const EdgeInsets.only(right: 32.0),
-                  dense: true,
+            child: RadioGroup(
+              groupValue: selectedValue,
+              onChanged: (value) {
+                if (value != null) {
+                  setState(() {
+                    selectedValue = value;
+                  });
+                }
+              },
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: List.generate(
+                  widget.radioLabels.length,
+                  (index) => RadioListTile<int>(
+                    key: _itemKeys[index],
+                    title: widget.radioLabels[index],
+                    value: index,
+                    contentPadding: const EdgeInsets.only(right: 32.0),
+                    dense: true,
+                  ),
                 ),
               ),
             ),
