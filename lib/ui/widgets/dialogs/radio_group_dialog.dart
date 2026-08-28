@@ -92,7 +92,6 @@ class _RadioGroupDialogState extends State<RadioGroupDialog> {
           ),
         ),
       ),
-      actionsAlignment: MainAxisAlignment.start,
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
