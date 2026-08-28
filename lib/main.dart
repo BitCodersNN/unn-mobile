@@ -17,10 +17,6 @@ import 'package:unn_mobile/firebase_options.dart';
 import 'package:unn_mobile/load_services.dart';
 
 void main() async {
-  registerDependencies();
-
-  await AppSettings.load();
-
   WidgetsFlutterBinding.ensureInitialized();
 
   final certificate = await PlatformAssetBundle().load('assets/ca/unn-ru.pem');
@@ -32,9 +28,20 @@ void main() async {
     [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown],
   );
 
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  try {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+  } on Exception catch (e) {
+    // On some Android devices/configurations Firebase initialization can fail
+    // because the Crashlytics component is not yet present.  We do not want
+    // that to freeze the whole app, so we continue startup without Firebase.
+    debugPrint('Firebase initialization failed: $e');
+  }
+
+  registerDependencies();
+  await AppSettings.load();
+
   if (!kDebugMode) {
     FlutterError.onError = (errorDetails) {
       Injector.appInstance
