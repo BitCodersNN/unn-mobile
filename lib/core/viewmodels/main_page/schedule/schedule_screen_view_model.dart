@@ -4,6 +4,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:unn_mobile/core/misc/date_time_utilities/date_time_range_type.dart';
 import 'package:unn_mobile/core/misc/date_time_utilities/date_time_ranges.dart';
 import 'package:unn_mobile/core/misc/user/current_user_sync_storage.dart';
 import 'package:unn_mobile/core/models/profile/employee/employee_data.dart';
@@ -15,16 +16,6 @@ import 'package:unn_mobile/core/services/interfaces/schedule/schedule_service.da
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/schedule/schedule_tab_view_model.dart';
 import 'package:unn_mobile/ui/views/main_page/main_page_tab_state.dart';
-
-enum DateTimeRangeType {
-  untilEndOfWeek('До конца этой недели'),
-  untilEndOfMonth('До конца этого месяца'),
-  untilEndOfSemester('До конца этого семестра');
-
-  final String label;
-
-  const DateTimeRangeType(this.label);
-}
 
 class ScheduleScreenViewModel extends BaseViewModel
     implements MainPageTabState {
