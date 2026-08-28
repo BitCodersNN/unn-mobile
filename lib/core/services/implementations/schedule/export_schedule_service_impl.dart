@@ -60,19 +60,11 @@ class ExportScheduleServiceImpl implements ExportScheduleService {
           rethrow;
       }
     }
-
     final iCalendarData =
         ICalendar.fromString(response.data).data.skip(1).toList();
 
-    final deviceCalendarPlugin = DeviceCalendar.instance;
-
-    final isGranted = await PermissionHandlerPlatform.instance
-        .checkPermissionStatus(Permission.calendarFullAccess)
-        .isGranted;
-
-    if (!isGranted) {
-      return ExportScheduleResult.noPermission;
-    }
+    final deviceCalendarPlugin = DeviceCalendar.instance
+      ..autoPermissions = AutoPermissionMode.asNeeded;
 
     String? calendarID = await _findCalendarId(deviceCalendarPlugin);
 
