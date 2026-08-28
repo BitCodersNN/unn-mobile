@@ -31,13 +31,6 @@ class ScheduleScreenViewModel extends BaseViewModel
     notifyListeners();
   }
 
-  final Map<DateTimeRangeType, DateTimeRange Function({DateTime? startDate})>
-      rangeGetters = {
-    DateTimeRangeType.untilEndOfWeek: DateTimeRanges.untilEndOfWeek,
-    DateTimeRangeType.untilEndOfMonth: DateTimeRanges.untilEndOfMonth,
-    DateTimeRangeType.untilEndOfSemester: DateTimeRanges.untilEndOfSemester,
-  };
-
   DateTimeRange selectedTimeRange = DateTimeRanges.currentWeek();
   final defaultTimeRange = DateTimeRanges.currentWeek();
 
@@ -115,11 +108,12 @@ class ScheduleScreenViewModel extends BaseViewModel
   Future<RequestCalendarPermissionResult> askForExportPermission() =>
       _exportScheduleService.requestCalendarPermission();
 
-  Future<bool> exportScheduleByType(DateTimeRangeType type) async {
-    final range = getRangeForExport(type);
+  Future<bool> exportSchedule(DateTimeRangeType type) async {
+    final range = type.getRange(startDate: getStartDate());
 
     final exportScheduleFilter =
         currentTab?.searchFilter?.copyWith(dateTimeRange: range);
+
     if (exportScheduleFilter == null) {
       return false;
     }
@@ -145,11 +139,6 @@ class ScheduleScreenViewModel extends BaseViewModel
           millisecond: 0,
           microsecond: 0,
         );
-  }
-
-  DateTimeRange getRangeForExport(DateTimeRangeType type) {
-    final startDate = getStartDate();
-    return rangeGetters[type]!.call(startDate: startDate);
   }
 
   Future openSettingsWindow() async {

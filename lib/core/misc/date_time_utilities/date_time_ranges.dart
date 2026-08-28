@@ -60,7 +60,6 @@ class DateTimeRanges {
 
   static DateTimeRange untilEndOfMonth({
     DateTime? startDate,
-    bool fromNow = false,
   }) {
     final startOfDay = (startDate ?? DateTime.now()).normalizeStartOfDay();
 

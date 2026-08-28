@@ -232,7 +232,7 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView> {
         }
       }
       if (selectedType != null) {
-        final bool result = await model.exportScheduleByType(selectedType);
+        final bool result = await model.exportSchedule(selectedType);
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
