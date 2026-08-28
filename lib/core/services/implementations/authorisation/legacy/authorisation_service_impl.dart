@@ -19,11 +19,13 @@ import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
 
 class LegacyAuthorizationServiceImpl extends ChangeNotifier
     implements UnnAuthorisationService {
-  late AuthorisationHelper _authorisationHelper;
-  late ApiHelper _apiHelper;
+  late final AuthorisationHelper _authorisationHelper;
+  late final ApiHelper _apiHelper;
+
   final OnlineStatusData _onlineStatus;
   final LoggerService _loggerService;
   final AuthDataProvider _authDataProvider;
+
   String? _sessionId;
   String? _csrf;
   bool _isAuthorised = false;
@@ -34,9 +36,7 @@ class LegacyAuthorizationServiceImpl extends ChangeNotifier
     this._loggerService,
   ) {
     _apiHelper = ApiHelper(
-      options: createBaseOptions(
-        host: Host.unn,
-      ),
+      options: createBaseOptions(host: Host.unn),
     );
 
     _authorisationHelper = AuthorisationHelper(
@@ -57,16 +57,28 @@ class LegacyAuthorizationServiceImpl extends ChangeNotifier
   String? get sessionId => _sessionId;
 
   @override
-  String? get guestId => throw UnimplementedError();
+  String? get guestId => null;
 
   @override
-  Map<String, dynamic>? get headers => {
-        SessionIdentifierKeys.csrfToken: csrf,
-        'Cookie': '${SessionIdentifierKeys.sessionIdCookieKey}=$sessionId',
-      };
+  Map<String, dynamic>? get headers {
+    if (_sessionId == null) {
+      return null;
+    }
+
+    final result = <String, dynamic>{
+      'Cookie': '${SessionIdentifierKeys.sessionIdCookieKey}=$_sessionId',
+    };
+
+    if (_csrf != null) {
+      result[SessionIdentifierKeys.csrfToken] = _csrf;
+    }
+
+    return result;
+  }
 
   Future<AuthRequestResult> _auth(Map<String, dynamic> formData) async {
     _isAuthorised = false;
+
     final authResult = await _authorisationHelper.auth(
       formData,
       additionalGoodStatusCodes: [302],
@@ -81,51 +93,46 @@ class LegacyAuthorizationServiceImpl extends ChangeNotifier
       return interResult;
     }
 
-    Response csrfResponse;
+    final Response csrfResponse;
     try {
       csrfResponse = await _apiHelper.get(
         path: ApiPath.ajax,
         queryParameters: {
           AjaxActionStrings.actionKey: AjaxActionStrings.getNextPage,
         },
-        options: Options(
-          headers: headers,
-        ),
+        options: Options(headers: headers),
       );
     } catch (error, stackTrace) {
       _loggerService.log(
-        'Не удалось получить CSRF-токен. Exception: $error\nStackTrace: $stackTrace',
+        'Не удалось выполнить запрос для получения CSRF-токена. Exception: $error\nStackTrace: $stackTrace',
       );
       return AuthRequestResult.unknown;
     }
-    final authequestResult = _extractCsrfToken(csrfResponse);
 
-    if (authequestResult == AuthRequestResult.success) {
+    final authRequestResult = _extractCsrfToken(csrfResponse);
+
+    if (authRequestResult == AuthRequestResult.success) {
       _isAuthorised = true;
       _onlineStatus.isOnline = true;
       _onlineStatus.timeOfLastOnline = DateTime.now();
     }
 
-    return authequestResult;
+    return authRequestResult;
   }
 
   @override
   Future<AuthRequestResult> auth(String login, String password) async {
     try {
-      return await _auth(
-        {
-          'AUTH_FORM': 'Y',
-          'TYPE': 'AUTH',
-          'backurl': '/',
-          'USER_LOGIN': login,
-          'USER_PASSWORD': password,
-        },
-      );
+      return await _auth({
+        'AUTH_FORM': 'Y',
+        'TYPE': 'AUTH',
+        'backurl': '/',
+        'USER_LOGIN': login,
+        'USER_PASSWORD': password,
+      });
     } finally {
-      // Сообщаем, что авторизация могла измениться
-      // Это надо делать независимо от того, как мы выйдем отсюда
-      // и ТОЛЬКО в конце, когда состояние isAuth уже не изменится
-      // до следующего вызова этого метода
+      // Сообщаем слушателям об изменении состояния авторизации.
+      // Это должно происходить строго в конце, когда состояние _isAuthorised уже стабилизировалось.
       notifyListeners();
     }
   }
@@ -141,24 +148,34 @@ class LegacyAuthorizationServiceImpl extends ChangeNotifier
 
   Future<AuthRequestResult> _extractSessionCookie(Response authResponse) async {
     try {
-      _sessionId = authResponse.headers.map['set-cookie']
-          ?.firstWhere(
-            (cookie) => cookie.startsWith('PHPSESSID='),
-            orElse: () => '',
-          )
-          .split(';')
-          .first
-          .split('=')
-          .last;
+      final cookies = authResponse.headers.map['set-cookie'];
+
+      if (cookies == null || cookies.isEmpty) {
+        _loggerService
+            .log('Отсутствуют заголовки set-cookie в ответе авторизации');
+        return AuthRequestResult.unknown;
+      }
+
+      final sessionCookie = cookies.firstWhere(
+        (cookie) => cookie.startsWith('PHPSESSID='),
+        orElse: () => '',
+      );
+
+      if (sessionCookie.isEmpty) {
+        _loggerService.log('PHPSESSID не найден в заголовках set-cookie');
+        return AuthRequestResult.unknown;
+      }
+
+      _sessionId = sessionCookie.split(';').first.split('=').last.trim();
+
+      if (_sessionId!.isEmpty) {
+        _loggerService.log('Значение PHPSESSID оказалось пустым');
+        return AuthRequestResult.unknown;
+      }
     } catch (error, stackTrace) {
       _loggerService.log(
         'Не удалось получить PHPSESSID. Exception: $error\nStackTrace: $stackTrace',
       );
-      return AuthRequestResult.unknown;
-    }
-
-    if (_sessionId == null) {
-      _loggerService.log('PHPSESSID is null');
       return AuthRequestResult.unknown;
     }
 
@@ -167,6 +184,8 @@ class LegacyAuthorizationServiceImpl extends ChangeNotifier
 
   AuthRequestResult _extractCsrfToken(Response csrfResponse) {
     try {
+      // Оставляем каскадное приведение типов, как вы и просили.
+      // Любая ошибка здесь будет перехвачена блоком catch ниже.
       _csrf = ((((csrfResponse.data as JsonMap)['errors']! as List).first
           as JsonMap)['customData']! as JsonMap)['csrf'] as String?;
     } catch (error, stackTrace) {
@@ -176,8 +195,8 @@ class LegacyAuthorizationServiceImpl extends ChangeNotifier
       return AuthRequestResult.unknown;
     }
 
-    if (_csrf == null) {
-      _loggerService.log('_csrf is null');
+    if (_csrf == null || _csrf!.isEmpty) {
+      _loggerService.log('_csrf is null or empty');
       return AuthRequestResult.unknown;
     }
 
