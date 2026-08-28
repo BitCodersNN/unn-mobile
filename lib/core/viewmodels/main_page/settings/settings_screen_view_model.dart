@@ -21,14 +21,6 @@ class SettingsScreenViewModel extends BaseViewModel {
     notifyListeners();
   }
 
-  List<String> get activeNavbarRouteNames =>
-      [for (final e in MainPageRouting.activeNavbarRoutes) e.pageTitle];
-
-  String get initialScreenName =>
-      MainPageRouting.activeNavbarRoutes[AppSettings.initialPage].pageTitle;
-
-  int get navbarRouteCount => activeNavbarRouteNames.length;
-
   bool get vibrationEnabled => AppSettings.vibrationEnabled;
 
   set vibrationEnabled(bool value) {
@@ -36,6 +28,14 @@ class SettingsScreenViewModel extends BaseViewModel {
     AppSettings.save();
     notifyListeners();
   }
+
+  List<String> get activeNavbarRouteNames =>
+      [for (final e in MainPageRouting.activeNavbarRoutes) e.pageTitle];
+
+  String get initialScreenName =>
+      MainPageRouting.activeNavbarRoutes[AppSettings.initialPage].pageTitle;
+
+  int get navbarRouteCount => activeNavbarRouteNames.length;
 
   Future<void> clearCache() async {
     await Future.wait([
