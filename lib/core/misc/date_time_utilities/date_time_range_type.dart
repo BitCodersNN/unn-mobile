@@ -12,10 +12,7 @@ typedef DateRangeBuilder = DateTimeRange Function({
 enum DateTimeRangeType {
   untilEndOfWeek('Выбранная неделя', DateTimeRanges.untilEndOfWeek),
   untilEndOfMonth('Выбранный месяц', DateTimeRanges.untilEndOfMonth),
-  untilEndOfSemester(
-    'Выбранный семестр',
-    DateTimeRanges.untilEndOfSemester,
-  );
+  untilEndOfSemester('Выбранный семестр', DateTimeRanges.untilEndOfSemester);
 
   final String label;
   final DateRangeBuilder _builder;
