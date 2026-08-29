@@ -29,6 +29,14 @@ class SettingsScreenViewModel extends BaseViewModel {
     notifyListeners();
   }
 
+  bool get analyticsEnabled => AppSettings.analyticsEnabled;
+
+  set analyticsEnabled(bool value) {
+    AppSettings.analyticsEnabled = value;
+    AppSettings.save();
+    notifyListeners();
+  }
+
   List<String> get activeNavbarRouteNames =>
       [for (final e in MainPageRouting.activeNavbarRoutes) e.pageTitle];
 

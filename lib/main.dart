@@ -5,6 +5,7 @@ import 'dart:io';
 
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -18,8 +19,6 @@ import 'package:unn_mobile/load_services.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  await AppSettings.load();
 
   final certificate = await PlatformAssetBundle().load('assets/ca/unn-ru.pem');
   SecurityContext.defaultContext.setTrustedCertificatesBytes(
@@ -40,13 +39,17 @@ void main() async {
 
   registerDependencies();
 
+  AppSettings.optionsSaved.subscribe((_) => updateAnalyticsSettings());
+
+  await AppSettings.load();
+
   if (!kDebugMode) {
     FlutterError.onError = (errorDetails) {
       Injector.appInstance
           .get<LoggerService>()
           .handleFlutterFatalError(errorDetails);
     };
-    // Pass all uncaught asynchronous errors that aren't handled by the Flutter framework to Crashlytics
+
     PlatformDispatcher.instance.onError = (error, stack) {
       Injector.appInstance
           .get<LoggerService>()
@@ -54,7 +57,18 @@ void main() async {
       return true;
     };
   }
-  await FirebaseAnalytics.instance.setAnalyticsCollectionEnabled(!kDebugMode);
+
   await initializeDateFormatting('ru_RU', null);
   runApp(const UnnMobile());
+}
+
+Future<void> updateAnalyticsSettings() async {
+  if (kDebugMode) {
+    await FirebaseAnalytics.instance.setAnalyticsCollectionEnabled(false);
+    await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(false);
+  } else {
+    final consent = AppSettings.analyticsEnabled;
+    await FirebaseAnalytics.instance.setAnalyticsCollectionEnabled(consent);
+    await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(consent);
+  }
 }

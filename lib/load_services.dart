@@ -18,6 +18,7 @@ import 'package:unn_mobile/core/api_helpers/implementations/web_unn_mobile_api_h
 import 'package:unn_mobile/core/api_helpers/implementations/web_unn_portal_api_helper.dart';
 import 'package:unn_mobile/core/api_helpers/implementations/web_unn_source_api_helper.dart';
 import 'package:unn_mobile/core/misc/app_open_tracker.dart';
+import 'package:unn_mobile/core/misc/app_settings.dart';
 import 'package:unn_mobile/core/misc/user/current_user_sync_storage.dart';
 import 'package:unn_mobile/core/models/common/online_status_data.dart';
 import 'package:unn_mobile/core/models/feed/blog_post_type.dart';
@@ -51,6 +52,7 @@ import 'package:unn_mobile/core/services/implementations/authorisation/unn_autho
 import 'package:unn_mobile/core/services/implementations/certificate/certificate_downloader_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/certificate/certificate_path_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/certificate/certificate_service_impl.dart';
+import 'package:unn_mobile/core/services/implementations/common/console_logger_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/common/file_data_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/common/firebase_logger_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/common/last_commit_sha_service_impl.dart';
@@ -202,7 +204,12 @@ void registerDependencies() {
   //
 
   injector
-    ..registerSingleton<LoggerService>(FirebaseLoggerServiceImpl.new)
+    ..registerSingleton<LoggerService>(() {
+      if (AppSettings.analyticsEnabled) {
+        return FirebaseLoggerServiceImpl();
+      }
+      return ConsoleLoggerServiceImpl();
+    })
     ..registerSingleton<OnlineStatusData>(OnlineStatusData.new)
     ..registerSingleton<StorageService>(StorageServiceImpl.new)
 
