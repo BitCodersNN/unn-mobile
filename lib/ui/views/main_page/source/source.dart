@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2025 BitCodersNN
 
+import 'package:adaptive_dialog/adaptive_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/constants/date_pattern.dart';
@@ -12,7 +13,6 @@ import 'package:unn_mobile/ui/views/base_view.dart';
 import 'package:unn_mobile/ui/views/main_page/main_page.dart';
 import 'package:unn_mobile/ui/views/main_page/source/source_course_view.dart';
 import 'package:unn_mobile/ui/views/main_page/source/source_webinar_view.dart';
-import 'package:unn_mobile/ui/widgets/dialogs/radio_group_dialog.dart';
 import 'package:unn_mobile/ui/widgets/offline_overlay_displayer.dart';
 
 class SourcePageView extends StatelessWidget {
@@ -60,20 +60,31 @@ class SourcePageView extends StatelessWidget {
                       onSelected: (value) async {
                         switch (value) {
                           case _selectSemesterKey:
-                            final selectedSem = await showDialog<int?>(
+                            final actions = model.semesters
+                                .asMap()
+                                .map(
+                                  (index, semester) => MapEntry(
+                                    index,
+                                    SheetAction<int>(
+                                      key: index,
+                                      label: semester.toString(),
+                                    ),
+                                  ),
+                                )
+                                .values
+                                .toList();
+
+                            final selectedSem = await showModalActionSheet<int>(
                               context: context,
-                              builder: (context) => RadioGroupDialog(
-                                label: const Text('Выберите семестр:'),
-                                initialIndex: model.currentSemesterIndex ?? 0,
-                                radioLabels: [
-                                  for (final s in model.semesters)
-                                    Text(s.toString()),
-                                ],
-                              ),
+                              title: 'Выберите семестр',
+                              actions: actions,
+                              cancelLabel: 'Отмена',
                             );
+
                             if (selectedSem == null) {
                               return;
                             }
+
                             model.setSemester(selectedSem);
                             break;
                         }

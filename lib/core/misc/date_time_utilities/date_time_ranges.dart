@@ -46,13 +46,14 @@ class DateTimeRanges {
 
   static DateTimeRange untilEndOfWeek({
     DateTime? startDate,
+    DateTime? referenceDate,
   }) {
-    final startOfDay = (startDate ?? DateTime.now()).normalizeStartOfDay();
+    final anchorDate = referenceDate ?? startDate ?? DateTime.now();
+    final startOfDay = (startDate ?? anchorDate).normalizeStartOfDay();
 
-    final endOfWeek = startOfDay
-        .add(
-          Duration(days: DateTime.daysPerWeek - startOfDay.weekday),
-        )
+    final endOfWeek = anchorDate
+        .normalizeStartOfDay()
+        .add(Duration(days: DateTime.daysPerWeek - anchorDate.weekday))
         .endOfDay();
 
     return DateTimeRange(start: startOfDay, end: endOfWeek);
@@ -60,31 +61,35 @@ class DateTimeRanges {
 
   static DateTimeRange untilEndOfMonth({
     DateTime? startDate,
+    DateTime? referenceDate,
   }) {
-    final startOfDay = (startDate ?? DateTime.now()).normalizeStartOfDay();
+    final anchorDate = referenceDate ?? startDate ?? DateTime.now();
+    final startOfDay = (startDate ?? anchorDate).normalizeStartOfDay();
 
     final lastDayOfMonth = DateTime(
-      startOfDay.year,
-      startOfDay.month + 1,
+      anchorDate.year,
+      anchorDate.month + 1,
       0,
     ).day;
-    final endOfMonth = startOfDay.copyWith(day: lastDayOfMonth).endOfDay();
+    final endOfMonth = anchorDate.copyWith(day: lastDayOfMonth).endOfDay();
 
     return DateTimeRange(start: startOfDay, end: endOfMonth);
   }
 
   static DateTimeRange untilEndOfSemester({
     DateTime? startDate,
+    DateTime? referenceDate,
   }) {
-    final startOfDay = (startDate ?? DateTime.now()).normalizeStartOfDay();
+    final anchorDate = referenceDate ?? startDate ?? DateTime.now();
+    final startOfDay = (startDate ?? anchorDate).normalizeStartOfDay();
 
-    final isSpringSummerSemester = startOfDay.month >= DateTime.february &&
-        startOfDay.month <= DateTime.august;
+    final isSpringSummerSemester = anchorDate.month >= DateTime.february &&
+        anchorDate.month <= DateTime.august;
 
     final endOfSemesterDate = isSpringSummerSemester
-        ? startOfDay.copyWith(month: DateTime.august, day: 31)
-        : startOfDay.copyWith(
-            year: startOfDay.year + 1,
+        ? anchorDate.copyWith(month: DateTime.august, day: 31)
+        : anchorDate.copyWith(
+            year: anchorDate.year + 1,
             month: DateTime.january,
             day: 31,
           );

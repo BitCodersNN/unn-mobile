@@ -109,7 +109,10 @@ class ScheduleScreenViewModel extends BaseViewModel
       _exportScheduleService.requestCalendarPermission();
 
   Future<bool> exportSchedule(DateTimeRangeType type) async {
-    final range = type.getRange(startDate: getStartDate());
+    final range = type.getRange(
+      startDate: getStartDate(),
+      referenceDate: geRefernceDate(),
+    );
 
     final exportScheduleFilter =
         currentTab?.searchFilter?.copyWith(dateTimeRange: range);
@@ -122,17 +125,25 @@ class ScheduleScreenViewModel extends BaseViewModel
     return res == ExportScheduleResult.success;
   }
 
-  DateTime? getStartDate() {
-    if (weekOffset == 0) {
-      return null;
-    }
-
+  DateTime getStartDate() {
     final now = DateTime.now();
     final currentMonday = now.subtract(
       Duration(days: now.weekday - DateTime.monday),
     );
 
     return currentMonday.add(Duration(days: 7 * weekOffset)).copyWith(
+          hour: 0,
+          minute: 0,
+          second: 0,
+          millisecond: 0,
+          microsecond: 0,
+        );
+  }
+
+  DateTime? geRefernceDate() {
+    final targetMonday = getStartDate();
+
+    return targetMonday.add(const Duration(days: 6)).copyWith(
           hour: 0,
           minute: 0,
           second: 0,

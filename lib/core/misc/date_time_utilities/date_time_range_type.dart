@@ -4,13 +4,16 @@
 import 'package:flutter/material.dart';
 import 'package:unn_mobile/core/misc/date_time_utilities/date_time_ranges.dart';
 
-typedef DateRangeBuilder = DateTimeRange Function({DateTime? startDate});
+typedef DateRangeBuilder = DateTimeRange Function({
+  DateTime? startDate,
+  DateTime? referenceDate,
+});
 
 enum DateTimeRangeType {
-  untilEndOfWeek('До конца этой недели', DateTimeRanges.untilEndOfWeek),
-  untilEndOfMonth('До конца этого месяца', DateTimeRanges.untilEndOfMonth),
+  untilEndOfWeek('Выбранная неделя', DateTimeRanges.untilEndOfWeek),
+  untilEndOfMonth('Выбранный месяц', DateTimeRanges.untilEndOfMonth),
   untilEndOfSemester(
-    'До конца этого семестра',
+    'Выбранный семестр',
     DateTimeRanges.untilEndOfSemester,
   );
 
@@ -19,6 +22,6 @@ enum DateTimeRangeType {
 
   const DateTimeRangeType(this.label, this._builder);
 
-  DateTimeRange getRange({DateTime? startDate}) =>
-      _builder(startDate: startDate);
+  DateTimeRange getRange({DateTime? startDate, DateTime? referenceDate}) =>
+      _builder(startDate: startDate, referenceDate: referenceDate);
 }
