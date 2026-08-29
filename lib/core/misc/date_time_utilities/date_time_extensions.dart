@@ -22,4 +22,20 @@ extension DateTimeExtensions on DateTime {
 
   bool isBetween(DateTime start, DateTime end) =>
       isAfter(start) && isBefore(end);
+
+  DateTime normalizeStartOfDay() => copyWith(
+        hour: 0,
+        minute: 0,
+        second: 0,
+        millisecond: 0,
+        microsecond: 0,
+      );
+
+  DateTime endOfDay() => copyWith(
+        hour: 23,
+        minute: 59,
+        second: 59,
+        millisecond: 999,
+        microsecond: 999,
+      );
 }
