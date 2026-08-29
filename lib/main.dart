@@ -63,12 +63,14 @@ void main() async {
 }
 
 Future<void> updateAnalyticsSettings() async {
-  if (kDebugMode) {
-    await FirebaseAnalytics.instance.setAnalyticsCollectionEnabled(false);
-    await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(false);
-  } else {
-    final consent = AppSettings.analyticsEnabled;
-    await FirebaseAnalytics.instance.setAnalyticsCollectionEnabled(consent);
-    await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(consent);
+  final isEnabled = !kDebugMode && AppSettings.analyticsEnabled;
+  final logger = Injector.appInstance.get<LoggerService>();
+  try {
+    await Future.wait([
+      FirebaseAnalytics.instance.setAnalyticsCollectionEnabled(isEnabled),
+      FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(isEnabled),
+    ]);
+  } catch (e) {
+    logger.logError(e, StackTrace.current);
   }
 }

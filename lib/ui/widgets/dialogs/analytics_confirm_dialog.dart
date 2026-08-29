@@ -36,8 +36,8 @@ class AnalyticsConfirmDialog extends StatelessWidget {
 }
 
 Future<void> showAnalyticsConfirmation(BuildContext context) async {
-  final messageIgnoreService = Injector.appInstance.get<MessageIgnoreService>();
   const analyticsConfirmKey = 'analyticsConfirmationShown';
+  final messageIgnoreService = Injector.appInstance.get<MessageIgnoreService>();
 
   if (await messageIgnoreService.isMessageIgnored(analyticsConfirmKey)) {
     return;
@@ -49,10 +49,13 @@ Future<void> showAnalyticsConfirmation(BuildContext context) async {
     context: context,
     builder: (context) => const AnalyticsConfirmDialog(),
   );
-  await messageIgnoreService.addIgnoreMessageKey(analyticsConfirmKey);
 
   if (result != null) {
     AppSettings.analyticsEnabled = result;
   }
-  await AppSettings.save();
+
+  await Future.wait([
+    AppSettings.save(),
+    messageIgnoreService.addIgnoreMessageKey(analyticsConfirmKey),
+  ]);
 }
