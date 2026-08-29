@@ -3,9 +3,9 @@
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:unn_mobile/core/viewmodels/main_page/common/profile_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/main_page_view_model.dart';
 import 'package:unn_mobile/ui/builders/online_status_builder.dart';
+import 'package:unn_mobile/ui/widgets/shimmer_loading.dart';
 
 class MainPageDrawer extends StatefulWidget {
   final MainPageViewModel model;
@@ -48,7 +48,7 @@ class _MainPageDrawerState extends State<MainPageDrawer> {
     final theme = Theme.of(context);
 
     final List<Widget> drawerChildren = [
-      _getDrawerHeader(theme, viewModel.profileViewModel),
+      _getDrawerHeader(theme, viewModel),
       for (final route in viewModel.routes)
         if (!route.onlineOnly || isOnline)
           NavigationDrawerDestination(
@@ -60,79 +60,101 @@ class _MainPageDrawerState extends State<MainPageDrawer> {
     return drawerChildren;
   }
 
-  Widget _getDrawerHeader(ThemeData theme, ProfileViewModel value) {
+  Widget _getDrawerHeader(ThemeData theme, MainPageViewModel model) {
     final theme = Theme.of(context);
 
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(0, 0, 0, 10),
-      child: SizedBox(
-        height: 120,
-        child: ColoredBox(
-          color: theme.colorScheme.primary,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            verticalDirection: VerticalDirection.up,
-            children: [
-              Padding(
-                padding: const EdgeInsets.fromLTRB(20, 0, 8, 0),
-                child: SizedBox(
-                  width: 72,
-                  height: 72,
-                  child: CircleAvatar(
-                    backgroundImage: value.hasAvatar
-                        ? CachedNetworkImageProvider(value.avatarUrl!)
-                        : null,
-                    child: !value.hasAvatar
-                        ? Text(
-                            style: theme.textTheme.headlineLarge!.copyWith(
-                              color: theme.colorScheme.onSurface,
-                            ),
-                            value.initials,
-                          )
-                        : null,
+    return ShimmerLoading(
+      isLoading: model.isBusy,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(0, 0, 0, 10),
+        child: SizedBox(
+          height: 120,
+          child: ColoredBox(
+            color: theme.colorScheme.primary,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              verticalDirection: VerticalDirection.up,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 0, 8, 0),
+                  child: SizedBox(
+                    width: 72,
+                    height: 72,
+                    child: model.profileViewModel == null
+                        ? const CircleAvatar(child: Text('?'))
+                        : CircleAvatar(
+                            backgroundImage: model.profileViewModel!.hasAvatar
+                                ? CachedNetworkImageProvider(
+                                    model.profileViewModel!.avatarUrl!,
+                                  )
+                                : null,
+                            child: !model.profileViewModel!.hasAvatar
+                                ? Text(
+                                    style:
+                                        theme.textTheme.headlineLarge!.copyWith(
+                                      color: theme.colorScheme.onSurface,
+                                    ),
+                                    model.profileViewModel!.initials,
+                                  )
+                                : null,
+                          ),
                   ),
                 ),
-              ),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(4.0),
-                      child: Text(
-                        value.fullname,
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 2,
-                        softWrap: true,
-                        textWidthBasis: TextWidthBasis.parent,
-                        textAlign: TextAlign.left,
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color: theme.colorScheme.onPrimary,
-                          fontFamily: 'Inter',
+                Expanded(
+                  child: model.profileViewModel == null
+                      ? Text(
+                          'Ошибка загрузки',
+                          maxLines: 2,
+                          softWrap: true,
+                          textWidthBasis: TextWidthBasis.parent,
+                          textAlign: TextAlign.left,
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: theme.colorScheme.onPrimary,
+                            fontFamily: 'Inter',
+                          ),
+                        )
+                      : Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.all(4.0),
+                              child: Text(
+                                model.profileViewModel!.fullname,
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 2,
+                                softWrap: true,
+                                textWidthBasis: TextWidthBasis.parent,
+                                textAlign: TextAlign.left,
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                  color: theme.colorScheme.onPrimary,
+                                  fontFamily: 'Inter',
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(4.0),
+                              child: Text(
+                                model.profileViewModel!.description,
+                                overflow: TextOverflow.fade,
+                                textAlign: TextAlign.left,
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500,
+                                  color: theme.colorScheme.surfaceBright,
+                                  fontFamily: 'Inter',
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(4.0),
-                      child: Text(
-                        value.description,
-                        overflow: TextOverflow.fade,
-                        textAlign: TextAlign.left,
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                          color: theme.colorScheme.surfaceBright,
-                          fontFamily: 'Inter',
-                        ),
-                      ),
-                    ),
-                  ],
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
