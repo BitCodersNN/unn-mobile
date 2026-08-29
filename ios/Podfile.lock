@@ -1,45 +1,27 @@
 PODS:
   - Flutter (1.0.0)
-  - flutter_file_dialog (0.0.1):
-    - Flutter
   - flutter_secure_storage (6.0.0):
     - Flutter
   - open_filex (0.0.2):
     - Flutter
-  - permission_handler_apple (9.3.0):
-    - Flutter
-  - wakelock_plus (0.0.1):
-    - Flutter
 
 DEPENDENCIES:
   - Flutter (from `Flutter`)
-  - flutter_file_dialog (from `.symlinks/plugins/flutter_file_dialog/ios`)
   - flutter_secure_storage (from `.symlinks/plugins/flutter_secure_storage/ios`)
   - open_filex (from `.symlinks/plugins/open_filex/ios`)
-  - permission_handler_apple (from `.symlinks/plugins/permission_handler_apple/ios`)
-  - wakelock_plus (from `.symlinks/plugins/wakelock_plus/ios`)
 
 EXTERNAL SOURCES:
   Flutter:
     :path: Flutter
-  flutter_file_dialog:
-    :path: ".symlinks/plugins/flutter_file_dialog/ios"
   flutter_secure_storage:
     :path: ".symlinks/plugins/flutter_secure_storage/ios"
   open_filex:
     :path: ".symlinks/plugins/open_filex/ios"
-  permission_handler_apple:
-    :path: ".symlinks/plugins/permission_handler_apple/ios"
-  wakelock_plus:
-    :path: ".symlinks/plugins/wakelock_plus/ios"
 
 SPEC CHECKSUMS:
   Flutter: 71a624a5bc0c04062bf19101d501e466baf2fb47
-  flutter_file_dialog: ca8d7fbd1772d4f0c2777b4ab20a7787ef4e7dd8
   flutter_secure_storage: 1ed9476fba7e7a782b22888f956cce43e2c62f13
   open_filex: 432f3cd11432da3e39f47fcc0df2b1603854eff1
-  permission_handler_apple: 4ed2196e43d0651e8ff7ca3483a069d469701f2d
-  wakelock_plus: 04623e3f525556020ebd4034310f20fe7fda8b49
 
 PODFILE CHECKSUM: baffdf1e3dcb2e27ac4a4eb1725a7f369df222ad
 
