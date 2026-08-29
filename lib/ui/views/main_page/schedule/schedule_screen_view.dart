@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/constants/date_pattern.dart';
 import 'package:unn_mobile/core/misc/date_time_utilities/date_time_extensions.dart';
+import 'package:unn_mobile/core/misc/date_time_utilities/date_time_range_type.dart';
 import 'package:unn_mobile/core/models/schedule/schedule_filter.dart';
 import 'package:unn_mobile/core/services/interfaces/schedule/export_schedule_service.dart';
 import 'package:unn_mobile/core/viewmodels/factories/main_page_routes_view_models_factory.dart';
@@ -214,23 +215,24 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView> {
         );
       }
     } else if (permission == RequestCalendarPermissionResult.allowed) {
-      int? selectedRange;
+      DateTimeRangeType? selectedType;
       if (context.mounted) {
-        selectedRange = await showDialog(
+        final index = await showDialog<int>(
           context: context,
           builder: (context) => RadioGroupDialog(
-            label: const Text(
-              'Экспортировать расписание: ',
-            ),
-            radioLabels:
-                model.scheduleExportRanges.values.map(Text.new).toList(),
+            label: const Text('Экспортировать расписание: '),
+            radioLabels: DateTimeRangeType.values
+                .map((type) => Text(type.label))
+                .toList(),
           ),
         );
+
+        if (index != null) {
+          selectedType = DateTimeRangeType.values[index];
+        }
       }
-      if (selectedRange != null) {
-        final bool result = await model.exportSchedule(
-          model.scheduleExportRanges.keys.toList()[selectedRange],
-        );
+      if (selectedType != null) {
+        final bool result = await model.exportSchedule(selectedType);
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(

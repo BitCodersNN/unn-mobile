@@ -4,6 +4,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:unn_mobile/core/misc/date_time_utilities/date_time_range_type.dart';
 import 'package:unn_mobile/core/misc/date_time_utilities/date_time_ranges.dart';
 import 'package:unn_mobile/core/misc/user/current_user_sync_storage.dart';
 import 'package:unn_mobile/core/models/profile/employee/employee_data.dart';
@@ -29,12 +30,6 @@ class ScheduleScreenViewModel extends BaseViewModel
     _selectedUser = value;
     notifyListeners();
   }
-
-  Map<DateTimeRange, String> scheduleExportRanges = {
-    DateTimeRanges.untilEndOfWeek(): 'До конца этой недели',
-    DateTimeRanges.untilEndOfMonth(): 'До конца этого месяца',
-    DateTimeRanges.untilEndOfSemester(): 'До конца этого семестра',
-  };
 
   DateTimeRange selectedTimeRange = DateTimeRanges.currentWeek();
   final defaultTimeRange = DateTimeRanges.currentWeek();
@@ -113,15 +108,37 @@ class ScheduleScreenViewModel extends BaseViewModel
   Future<RequestCalendarPermissionResult> askForExportPermission() =>
       _exportScheduleService.requestCalendarPermission();
 
-  Future<bool> exportSchedule(DateTimeRange range) async {
+  Future<bool> exportSchedule(DateTimeRangeType type) async {
+    final range = type.getRange(startDate: getStartDate());
+
     final exportScheduleFilter =
         currentTab?.searchFilter?.copyWith(dateTimeRange: range);
+
     if (exportScheduleFilter == null) {
       return false;
     }
     final res =
         await _exportScheduleService.exportSchedule(exportScheduleFilter);
     return res == ExportScheduleResult.success;
+  }
+
+  DateTime? getStartDate() {
+    if (weekOffset == 0) {
+      return null;
+    }
+
+    final now = DateTime.now();
+    final currentMonday = now.subtract(
+      Duration(days: now.weekday - DateTime.monday),
+    );
+
+    return currentMonday.add(Duration(days: 7 * weekOffset)).copyWith(
+          hour: 0,
+          minute: 0,
+          second: 0,
+          millisecond: 0,
+          microsecond: 0,
+        );
   }
 
   Future openSettingsWindow() async {

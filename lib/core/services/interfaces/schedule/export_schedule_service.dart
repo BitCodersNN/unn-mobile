@@ -19,8 +19,6 @@ enum RequestCalendarPermissionResult {
 abstract interface class ExportScheduleService {
   /// Экспортирует расписание в дефолтный календарь устройства
   ///
-  /// Перед вызовом необходимо вызвать [requestCalendarPermission] и убедиться, что разрешение на использование календаря есть
-  ///
   /// [scheduleFilter]: Фильтр, по которому происходит получение расписания
   ///
   /// Выбрасывает исключение:
