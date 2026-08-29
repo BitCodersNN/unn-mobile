@@ -13,6 +13,7 @@ import 'package:unn_mobile/core/viewmodels/auth_page/auth_page_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
 import 'package:unn_mobile/ui/router.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
+import 'package:unn_mobile/ui/widgets/dialogs/analytics_confirm_dialog.dart';
 import 'package:unn_mobile/ui/widgets/dialogs/changelog_dialog.dart';
 import 'package:unn_mobile/ui/widgets/text_field_with_shadow.dart';
 import 'package:unn_mobile/ui/widgets/wide_button.dart';
@@ -43,6 +44,9 @@ class AuthPageWithState extends State<AuthPage> {
       if (await Injector.appInstance
           .get<AppOpenTracker>()
           .isFirstTimeOpenOnVersion()) {
+        if (mounted) {
+          await showAnalyticsConfirmation(context);
+        }
         if (mounted) {
           await showDialog(
             context: context,

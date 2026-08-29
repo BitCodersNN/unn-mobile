@@ -35,7 +35,7 @@ class SettingsScreenView extends StatelessWidget {
                       SwitchListTile.adaptive(
                         title: const Text('Вибрация'),
                         value: model.vibrationEnabled,
-                        onChanged: (bool value) {
+                        onChanged: (value) {
                           model.vibrationEnabled = value;
                         },
                       ),
@@ -44,6 +44,13 @@ class SettingsScreenView extends StatelessWidget {
                         trailing: Text(model.initialScreenName),
                         onTap: () async {
                           await _showScreenChoiceModal(context, model);
+                        },
+                      ),
+                      SwitchListTile.adaptive(
+                        title: const Text('Сбор телеметрии'),
+                        value: model.analyticsEnabled,
+                        onChanged: (value) {
+                          model.analyticsEnabled = value;
                         },
                       ),
                       ListTile(

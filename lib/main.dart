@@ -5,6 +5,7 @@ import 'dart:io';
 
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -33,13 +34,13 @@ void main() async {
       options: DefaultFirebaseOptions.currentPlatform,
     );
   } on Exception catch (e) {
-    // On some Android devices/configurations Firebase initialization can fail
-    // because the Crashlytics component is not yet present.  We do not want
-    // that to freeze the whole app, so we continue startup without Firebase.
     debugPrint('Firebase initialization failed: $e');
   }
 
   registerDependencies();
+
+  AppSettings.optionsSaved.subscribe((_) => updateAnalyticsSettings());
+
   await AppSettings.load();
 
   if (!kDebugMode) {
@@ -48,7 +49,7 @@ void main() async {
           .get<LoggerService>()
           .handleFlutterFatalError(errorDetails);
     };
-    // Pass all uncaught asynchronous errors that aren't handled by the Flutter framework to Crashlytics
+
     PlatformDispatcher.instance.onError = (error, stack) {
       Injector.appInstance
           .get<LoggerService>()
@@ -56,7 +57,20 @@ void main() async {
       return true;
     };
   }
-  await FirebaseAnalytics.instance.setAnalyticsCollectionEnabled(!kDebugMode);
+
   await initializeDateFormatting('ru_RU', null);
   runApp(const UnnMobile());
+}
+
+Future<void> updateAnalyticsSettings() async {
+  final isEnabled = !kDebugMode && AppSettings.analyticsEnabled;
+  final logger = Injector.appInstance.get<LoggerService>();
+  try {
+    await Future.wait([
+      FirebaseAnalytics.instance.setAnalyticsCollectionEnabled(isEnabled),
+      FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(isEnabled),
+    ]);
+  } catch (e) {
+    logger.logError(e, StackTrace.current);
+  }
 }

@@ -70,8 +70,7 @@ Future<void> showMessage(
   String text, {
   String? messageKey,
 }) async {
-  final MessageIgnoreService messageIgnoreService =
-      Injector.appInstance.get<MessageIgnoreService>();
+  final messageIgnoreService = Injector.appInstance.get<MessageIgnoreService>();
   if (messageKey != null &&
       await messageIgnoreService.isMessageIgnored(messageKey)) {
     return;

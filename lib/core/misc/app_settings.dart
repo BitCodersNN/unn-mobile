@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2025 BitCodersNN
 
+import 'package:event/event.dart';
 import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/constants/string_keys/app_settings_keys.dart';
 import 'package:unn_mobile/core/services/interfaces/common/storage_service.dart';
@@ -8,6 +9,9 @@ import 'package:unn_mobile/core/services/interfaces/common/storage_service.dart'
 class AppSettings {
   static bool vibrationEnabled = true;
   static int initialPage = 0;
+  static bool analyticsEnabled = false;
+
+  static Event optionsSaved = Event('optionsSaved');
 
   static Future<void> load() async {
     vibrationEnabled = await _readValue(
@@ -20,6 +24,12 @@ class AppSettings {
       defaultValue: 0,
       parser: int.tryParse,
     );
+    analyticsEnabled = await _readValue(
+      AppSettingsKeys.analyticsEnabled,
+      defaultValue: false,
+      parser: bool.tryParse,
+    );
+    optionsSaved.broadcast();
   }
 
   static Future<T> _readValue<T>(
@@ -44,5 +54,11 @@ class AppSettings {
       key: AppSettingsKeys.initialPage,
       value: initialPage.toString(),
     );
+    await storage.write(
+      key: AppSettingsKeys.analyticsEnabled,
+      value: analyticsEnabled.toString(),
+    );
+
+    optionsSaved.broadcast();
   }
 }
