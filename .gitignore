@@ -79,3 +79,4 @@ devtools_options.yaml
 firebase.json
 GoogleService-Info.plist
 .vscode
+.widget_preview
