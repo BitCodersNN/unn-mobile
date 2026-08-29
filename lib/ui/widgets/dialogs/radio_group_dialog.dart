@@ -2,6 +2,7 @@
 // Copyright 2025 BitCodersNN
 
 import 'package:flutter/material.dart';
+import 'package:unn_mobile/ui/widgets/adaptive_dialog_action.dart';
 
 class RadioGroupDialog extends StatefulWidget {
   final List<Widget> radioLabels;
@@ -92,13 +93,12 @@ class _RadioGroupDialogState extends State<RadioGroupDialog> {
           ),
         ),
       ),
-      actionsAlignment: MainAxisAlignment.start,
       actions: [
-        TextButton(
+        AdaptiveDialogAction(
           onPressed: () => Navigator.pop(context),
           child: widget.cancelButtonChild,
         ),
-        TextButton(
+        AdaptiveDialogAction(
           onPressed: () => Navigator.pop(context, selectedValue),
           child: widget.okButtonChild,
         ),
