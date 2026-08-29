@@ -209,14 +209,15 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView> {
 
       final actions = DateTimeRangeType.values
           .map(
-            (type) => SheetAction<DateTimeRangeType>(
+            (type) => AlertDialogAction<DateTimeRangeType>(
               key: type,
               label: type.label,
+              isDefaultAction: type == DateTimeRangeType.untilEndOfWeek,
             ),
           )
           .toList();
 
-      final selectedType = await showModalActionSheet<DateTimeRangeType>(
+      final selectedType = await showConfirmationDialog<DateTimeRangeType>(
         context: context,
         title: 'Экспортировать расписание',
         actions: actions,

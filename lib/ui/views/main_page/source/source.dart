@@ -65,16 +65,19 @@ class SourcePageView extends StatelessWidget {
                                 .map(
                                   (index, semester) => MapEntry(
                                     index,
-                                    SheetAction<int>(
+                                    AlertDialogAction<int>(
                                       key: index,
                                       label: semester.toString(),
+                                      isDefaultAction:
+                                          index == model.currentSemesterIndex,
                                     ),
                                   ),
                                 )
                                 .values
                                 .toList();
 
-                            final selectedSem = await showModalActionSheet<int>(
+                            final selectedSem =
+                                await showConfirmationDialog<int>(
                               context: context,
                               title: 'Выберите семестр',
                               actions: actions,
