@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2025 BitCodersNN
 
+import 'package:adaptive_dialog/adaptive_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:unn_mobile/core/misc/app_version.dart';
@@ -8,7 +9,6 @@ import 'package:unn_mobile/core/viewmodels/main_page/settings/settings_screen_vi
 import 'package:unn_mobile/ui/router.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
 import 'package:unn_mobile/ui/views/main_page/main_page.dart';
-import 'package:unn_mobile/ui/widgets/adaptive_dialog_action.dart';
 
 class SettingsScreenView extends StatelessWidget {
   final int? bottomRouteIndex;
@@ -69,34 +69,23 @@ class SettingsScreenView extends StatelessWidget {
                       ListTile(
                         title: const Text('Выйти из аккаунта'),
                         onTap: () async {
-                          await showDialog(
-                            context: context,
-                            builder: (context) => AlertDialog.adaptive(
-                              title: const Text('Выйти из аккаунта?'),
-                              actions: [
-                                AdaptiveDialogAction(
-                                  onPressed: () async {
-                                    await model.logout();
-                                    if (context.mounted) {
-                                      GoRouter.of(context).go(loadingPageRoute);
-                                    }
-                                  },
-                                  child: Text(
-                                    'Выйти',
-                                    style: TextStyle(
-                                      color: theme.colorScheme.error,
-                                    ),
-                                  ),
-                                ),
-                                AdaptiveDialogAction(
-                                  onPressed: () {
-                                    GoRouter.of(context).pop();
-                                  },
-                                  child: const Text('Отмена'),
-                                ),
-                              ],
-                            ),
-                          );
+                          if (context.mounted) {
+                            final result = await showOkCancelAlertDialog(
+                              context: context,
+                              title: 'Выйти из аккаунта?',
+                              okLabel: 'Выйти',
+                              cancelLabel: 'Отмена',
+                              isDestructiveAction: true,
+                            );
+
+                            if (result == OkCancelResult.ok &&
+                                context.mounted) {
+                              await model.logout();
+                              if (context.mounted) {
+                                GoRouter.of(context).go(loadingPageRoute);
+                              }
+                            }
+                          }
                         },
                         textColor: theme.colorScheme.error,
                       ),

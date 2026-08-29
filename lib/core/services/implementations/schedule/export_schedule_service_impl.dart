@@ -68,8 +68,10 @@ class ExportScheduleServiceImpl implements ExportScheduleService {
 
     String? calendarID = await _findCalendarId(deviceCalendarPlugin);
 
-    calendarID ??=
-        await deviceCalendarPlugin.createCalendar(name: _calendarName);
+    calendarID ??= await deviceCalendarPlugin.createCalendar(
+      name: _calendarName,
+      colorHex: '#00BBB0',
+    );
 
     return _addEventsInCalendar(
       deviceCalendarPlugin,

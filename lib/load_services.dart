@@ -46,7 +46,7 @@ import 'package:unn_mobile/core/providers/interfaces/profile/user_data_provider.
 import 'package:unn_mobile/core/providers/interfaces/schedule/offline_schedule_provider.dart';
 import 'package:unn_mobile/core/services/implementations/about/authors_config_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/authorisation/legacy/authorisation_service_impl.dart';
-import 'package:unn_mobile/core/services/implementations/authorisation/source_authorisation_service_impl.dart';
+import 'package:unn_mobile/core/services/implementations/authorisation/legacy/source_authorisation_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/authorisation/stream_auth_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/authorisation/unn_authorisation_refresh_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/certificate/certificate_downloader_service_impl.dart';
@@ -222,7 +222,7 @@ void registerDependencies() {
       ),
     )
     ..registerSingleton<SourceAuthorisationService>(
-      () => SourceAuthorisationServiceImpl(
+      () => LegacySourceAuthorisationServiceImpl(
         get<OnlineStatusData>(),
         get<LoggerService>(),
       ),

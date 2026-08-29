@@ -3,6 +3,7 @@
 
 import 'dart:io';
 
+import 'package:adaptive_dialog/adaptive_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/constants/date_pattern.dart';
@@ -18,7 +19,6 @@ import 'package:unn_mobile/ui/views/main_page/main_page.dart';
 import 'package:unn_mobile/ui/views/main_page/schedule/schedule_tab_view.dart';
 import 'package:unn_mobile/ui/views/main_page/schedule/widgets/schedule_search_suggestion_item_view.dart';
 import 'package:unn_mobile/ui/widgets/dialogs/message_dialog.dart';
-import 'package:unn_mobile/ui/widgets/dialogs/radio_group_dialog.dart';
 import 'package:unn_mobile/ui/widgets/offline_overlay_displayer.dart';
 
 class ScheduleScreenView extends StatefulWidget {
@@ -186,53 +186,47 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView> {
     ScheduleScreenViewModel model,
   ) async {
     final permission = await model.askForExportPermission();
+
     if (permission == RequestCalendarPermissionResult.permanentlyDenied) {
       if (context.mounted) {
-        await showDialog(
+        final result = await showOkCancelAlertDialog(
           context: context,
-          builder: (context) => AlertDialog(
-            actions: [
-              TextButton(
-                onPressed: () async {
-                  await model.openSettingsWindow();
-                  if (context.mounted) {
-                    Navigator.pop(context);
-                  }
-                },
-                child: const Text('Настройки'),
-              ),
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: const Text('Отмена'),
-              ),
-            ],
-            content: const Text(
+          title: 'Доступ к календарю',
+          message:
               'Приложению запрещён доступ к календарю. Разрешите его в настройках, чтобы экспортировать расписание.',
-            ),
-          ),
-        );
-      }
-    } else if (permission == RequestCalendarPermissionResult.allowed) {
-      DateTimeRangeType? selectedType;
-      if (context.mounted) {
-        final index = await showDialog<int>(
-          context: context,
-          builder: (context) => RadioGroupDialog(
-            label: const Text('Экспортировать расписание: '),
-            radioLabels: DateTimeRangeType.values
-                .map((type) => Text(type.label))
-                .toList(),
-          ),
+          okLabel: 'Настройки',
+          cancelLabel: 'Отмена',
         );
 
-        if (index != null) {
-          selectedType = DateTimeRangeType.values[index];
+        if (result == OkCancelResult.ok && context.mounted) {
+          await model.openSettingsWindow();
         }
       }
+    } else if (permission == RequestCalendarPermissionResult.allowed) {
+      if (!context.mounted) {
+        return;
+      }
+
+      final actions = DateTimeRangeType.values
+          .map(
+            (type) => AlertDialogAction<DateTimeRangeType>(
+              key: type,
+              label: type.label,
+              isDefaultAction: type == DateTimeRangeType.untilEndOfWeek,
+            ),
+          )
+          .toList();
+
+      final selectedType = await showConfirmationDialog<DateTimeRangeType>(
+        context: context,
+        title: 'Экспортировать расписание',
+        actions: actions,
+        cancelLabel: 'Отмена',
+      );
+
       if (selectedType != null) {
         final bool result = await model.exportSchedule(selectedType);
+
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
@@ -240,6 +234,7 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView> {
             ),
           );
         }
+
         if (Platform.isAndroid && context.mounted) {
           await showMessage(
             context,

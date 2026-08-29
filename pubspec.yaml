@@ -2,7 +2,7 @@ name: unn_mobile
 description: A mobile application for UNN Portal website
 publish_to: 'none'
 
-version: 0.6.0+404
+version: 0.6.0+405
 
 environment:
   sdk: '>=3.1.2 <4.0.0'
@@ -58,6 +58,7 @@ dependencies:
   firebase_core: ^4.14.0
   firebase_analytics: ^12.5.0
   firebase_crashlytics: ^5.3.0
+  adaptive_dialog: ^2.8.0
 dev_dependencies:
   flutter_lints: ">=4.0.0 <7.0.0"
   flutter_launcher_icons: ">=0.13.1 <0.15.0"
