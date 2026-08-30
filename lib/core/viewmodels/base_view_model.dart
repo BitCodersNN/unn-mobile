@@ -10,11 +10,6 @@ class BaseViewModel extends ChangeNotifier {
 
   bool disposed = false;
 
-  @protected
-  bool isInitialized = false;
-
-  bool get initialized => isInitialized;
-
   bool get isBusy => _state == ViewState.busy;
 
   ViewState get state => _state;

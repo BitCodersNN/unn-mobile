@@ -105,7 +105,7 @@ class FeedScreenViewModel extends BaseViewModel
             pageNumber: _currentPage + 1,
             pinIds: _totalPosts
                 .skip(postsPerPage * (_currentPage - 1))
-                .map((t) => t.blogData.pinnedId)
+                .map((t) => t.blogData?.pinnedId)
                 .nonNulls
                 .toSet(),
             signedParameters: _streamAuthService.signedParameters ?? '',
@@ -194,9 +194,11 @@ class FeedScreenViewModel extends BaseViewModel
       });
 
   Future<void> refreshFeatured() => reload(updateMainPage: false);
-  bool isPostPinned(int id) => pinnedPosts.any((p) => p.blogData.id == id);
+  bool isPostPinned(int? id) =>
+      id != null && pinnedPosts.any((p) => p.blogData?.id == id);
 
-  bool isPostImportant(int id) => announcements.any((p) => p.blogData.id == id);
+  bool isPostImportant(int? id) =>
+      id != null && announcements.any((p) => p.blogData?.id == id);
 
   @override
   void refresh() {

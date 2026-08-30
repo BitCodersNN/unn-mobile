@@ -26,4 +26,6 @@ class ProfileViewModelFactory
 
   ProfileViewModel getCurrentUserViewModel() =>
       createViewModel(0)..init(loadCurrentUser: true);
+
+  ProfileViewModel getEmptyViewModel() => createViewModel(-1)..init();
 }

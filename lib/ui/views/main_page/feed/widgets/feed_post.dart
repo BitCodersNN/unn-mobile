@@ -116,7 +116,8 @@ class _FeedPostState extends State<FeedPost> {
                             Expanded(
                               child: _PostHeader(
                                 postTime: model.postTime,
-                                viewModel: model.profileViewModel,
+                                viewModel: model.profileViewModel ??
+                                    ProfileViewModel.empty(),
                               ),
                             ),
                             IconButton(
@@ -200,7 +201,8 @@ class _FeedPostState extends State<FeedPost> {
                           Row(
                             children: [
                               _ReactionCounterWithIcons(
-                                model: model.reactionViewModel,
+                                model: model.reactionViewModel ??
+                                    ReactionViewModel.empty(),
                                 reactionsSize: reactionsSize,
                                 background: unnColors!.idkWhatColor!,
                               ),
@@ -211,7 +213,8 @@ class _FeedPostState extends State<FeedPost> {
                           spacing: 12.0,
                           children: [
                             _ReactionButton(
-                              model.reactionViewModel,
+                              model.reactionViewModel ??
+                                  ReactionViewModel.empty(),
                               showCounter: !widget.showingComments,
                             ),
                             Container(
@@ -277,6 +280,9 @@ class _FeedPostState extends State<FeedPost> {
   // }
 
   Future<void> _sharePost(FeedPostViewModel model) async {
+    if (model.profileViewModel == null) {
+      return;
+    }
     final List<XFile> xFiles = [];
 
     for (final fileViewModel in model.attachedFileViewModels) {
@@ -297,7 +303,7 @@ class _FeedPostState extends State<FeedPost> {
       ShareParams(
         files: xFiles.isEmpty ? null : xFiles,
         text:
-            '${htmlToPlainText(model.postText)}\n\nИсточник: Портал ННГУ\nАвтор: ${model.profileViewModel.fullname}',
+            '${htmlToPlainText(model.postText)}\n\nИсточник: Портал ННГУ\nАвтор: ${model.profileViewModel!.fullname}',
       ),
     );
   }
@@ -347,7 +353,7 @@ class _FeedPostState extends State<FeedPost> {
 }
 
 class _PostHeader extends StatelessWidget {
-  final DateTime postTime;
+  final DateTime? postTime;
 
   final ProfileViewModel viewModel;
 
@@ -412,7 +418,10 @@ class _PostHeader extends StatelessWidget {
                         ),
                 ),
                 Text(
-                  DateFormat('d MMMM yyyy, HH:mm', 'ru_RU').format(postTime),
+                  postTime == null
+                      ? ''
+                      : DateFormat('d MMMM yyyy, HH:mm', 'ru_RU')
+                          .format(postTime!),
                   style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.normal,

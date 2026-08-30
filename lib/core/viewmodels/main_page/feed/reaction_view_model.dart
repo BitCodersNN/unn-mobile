@@ -29,11 +29,17 @@ class ReactionViewModel extends ReactionViewModelBase {
 
   factory ReactionViewModel.cached(ReactionCacheKey key) =>
       Injector.appInstance.get<ReactionViewModelFactory>().getViewModel(key);
+  factory ReactionViewModel.empty() =>
+      Injector.appInstance.get<ReactionViewModelFactory>().getEmptyViewModel();
 
   bool get isLoading => _isLoading;
 
   void init({String? voteKeySigned, int? postId, int? authorId}) {
     _isLoading = true;
+    if (postId == null && authorId == null && voteKeySigned == null) {
+      return;
+    }
+
     notifyListeners();
     _loadData(voteKeySigned: voteKeySigned, postId: postId, authorId: authorId)
         .whenComplete(() {

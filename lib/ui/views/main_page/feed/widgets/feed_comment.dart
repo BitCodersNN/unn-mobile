@@ -42,8 +42,8 @@ class FeedCommentView extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _CommentHeader(
-                  dateTime: model.comment.dateTime,
-                  viewModel: model.profileViewModel,
+                  dateTime: model.comment?.dateTime ?? '',
+                  viewModel: model.profileViewModel ?? ProfileViewModel.empty(),
                   hide: model.isBusy,
                 ),
                 Padding(
@@ -72,7 +72,10 @@ class FeedCommentView extends StatelessWidget {
                     padding: const EdgeInsets.only(left: 16),
                     child: AttachedFile(viewModel: file),
                   ),
-                _ReactionView(model: model.reactionViewModel, context: context),
+                _ReactionView(
+                  model: model.reactionViewModel ?? ReactionViewModel.empty(),
+                  context: context,
+                ),
               ],
             ),
           ),

@@ -16,21 +16,21 @@ class FeedCommentViewModel extends BaseViewModel {
 
   final List<AttachedFileViewModel> attachedFileViewModels = [];
 
-  late BlogPostCommentData comment;
+  BlogPostCommentData? comment;
 
-  late ReactionViewModel _reactionViewModel;
-  late ProfileViewModel _profileViewModel;
+  ReactionViewModel? _reactionViewModel;
+  ProfileViewModel? _profileViewModel;
 
   FeedCommentViewModel();
   factory FeedCommentViewModel.cached(FeedCommentCacheKey key) =>
       Injector.appInstance.get<FeedCommentViewModelFactory>().getViewModel(key);
 
-  String get message => _unescaper.convert(comment.message);
-  ProfileViewModel get profileViewModel => _profileViewModel;
+  String get message => _unescaper.convert(comment?.message ?? '');
+  ProfileViewModel? get profileViewModel => _profileViewModel;
 
-  ReactionViewModel get reactionViewModel => _reactionViewModel;
+  ReactionViewModel? get reactionViewModel => _reactionViewModel;
 
-  Iterable<String> get attachedImages => comment.imageUrls ?? [];
+  Iterable<String> get attachedImages => comment?.imageUrls ?? [];
 
   bool get renderMessage => !isBusy;
 

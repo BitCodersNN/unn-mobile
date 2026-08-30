@@ -25,27 +25,28 @@ class FeedPostViewModel extends BaseViewModel {
   final AuthorisationService _authorisationService;
   final BlogPostService _postsService;
   final LoggerService _loggerService;
-  final LastFeedLoadDateTimeProvider _lastFeedLoadDateTimeProvider;
+  final LastFeedLoadDateTimeProvider _feedUpdateTimeProvider;
   final ImportantBlogPostAcknowledgementService _postAcknowledgementService;
   final PinningBlogPostService _pinningService;
 
   final HtmlUnescape _unescaper = HtmlUnescape();
 
   final List<AttachedFileViewModel> attachedFileViewModels = [];
-  Iterable<String> get attachedImages => blogData.imageUrls ?? [];
+  Iterable<String> get attachedImages => blogData?.imageUrls ?? [];
 
   final onError = Event();
 
-  late BlogPostData blogData;
+  BlogPostData? blogData;
 
-  late ProfileViewModel _profileViewModel;
+  ProfileViewModel? _profileViewModel;
 
-  late ReactionViewModel _reactionViewModel;
+  ReactionViewModel? _reactionViewModel;
 
-  bool get isPinned => _feedScreenViewModel?.isPostPinned(blogData.id) ?? false;
+  bool get isPinned =>
+      _feedScreenViewModel?.isPostPinned(blogData?.id) ?? false;
 
   bool get isAnnouncement =>
-      _feedScreenViewModel?.isPostImportant(blogData.id) ?? false;
+      _feedScreenViewModel?.isPostImportant(blogData?.id) ?? false;
 
   Map<String, String> get authHeaders =>
       _authorisationService.headers
@@ -59,7 +60,7 @@ class FeedPostViewModel extends BaseViewModel {
   FeedPostViewModel(
     this._postsService,
     this._loggerService,
-    this._lastFeedLoadDateTimeProvider,
+    this._feedUpdateTimeProvider,
     this._postAcknowledgementService,
     this._pinningService,
     this._authorisationService,
@@ -67,23 +68,24 @@ class FeedPostViewModel extends BaseViewModel {
   factory FeedPostViewModel.cached(FeedPostCacheKey key) =>
       Injector.appInstance.get<FeedPostViewModelFactory>().getViewModel(key);
 
-  int get authorId => blogData.authorBitrixId;
+  int? get authorId => blogData?.authorBitrixId;
 
-  int get commentsCount => blogData.numberOfComments;
+  int get commentsCount => blogData?.numberOfComments ?? 0;
 
-  int get filesCount => blogData.fileIds?.length ?? 0;
+  int get filesCount => blogData?.fileIds?.length ?? 0;
+
+  DateTime? get lastUpdated => _feedUpdateTimeProvider.lastFeedLoadDateTime;
 
   bool get isNewPost =>
-      _lastFeedLoadDateTimeProvider.lastFeedLoadDateTime?.isBefore(postTime) ??
-      false;
+      postTime != null && (lastUpdated?.isBefore(postTime!) ?? false);
 
-  String get postText => _unescaper.convert(blogData.detailText.trim());
+  String get postText => _unescaper.convert(blogData?.detailText.trim() ?? '');
 
-  DateTime get postTime => blogData.datePublish.toLocal();
+  DateTime? get postTime => blogData?.datePublish.toLocal();
 
-  ProfileViewModel get profileViewModel => _profileViewModel;
+  ProfileViewModel? get profileViewModel => _profileViewModel;
 
-  ReactionViewModel get reactionViewModel => _reactionViewModel;
+  ReactionViewModel? get reactionViewModel => _reactionViewModel;
 
   void initFromFullInfo(BlogPost post, FeedScreenViewModel? feedVm) {
     _feedScreenViewModel = feedVm;
@@ -114,8 +116,12 @@ class FeedPostViewModel extends BaseViewModel {
   }
 
   Future<void> refresh() async {
+    if (blogData == null) {
+      _loggerService.log('Error: blog post tried to refresh while not loaded');
+      return;
+    }
     await _feedScreenViewModel?.refreshFeatured();
-    final post = await _postsService.getBlogPost(id: blogData.id);
+    final post = await _postsService.getBlogPost(id: blogData!.id);
     if (post == null) {
       _loggerService.log('Failed to refresh post');
       return;
@@ -127,7 +133,7 @@ class FeedPostViewModel extends BaseViewModel {
     if (DemoModeStatus.demoModeEnabled) {
       return;
     }
-    final pinnedId = blogData.pinnedId ?? 0;
+    final pinnedId = blogData?.pinnedId ?? 0;
     final success = isPinned
         ? await _pinningService.unpin(pinnedId)
         : await _pinningService.pin(pinnedId);
@@ -142,10 +148,13 @@ class FeedPostViewModel extends BaseViewModel {
     if (DemoModeStatus.demoModeEnabled) {
       return;
     }
+    if (blogData == null) {
+      return;
+    }
     if (!isAnnouncement) {
       return;
     }
-    if (await _postAcknowledgementService.read(blogData.id)) {
+    if (await _postAcknowledgementService.read(blogData!.id)) {
       await _feedScreenViewModel?.refreshFeatured();
       notifyListeners();
     }

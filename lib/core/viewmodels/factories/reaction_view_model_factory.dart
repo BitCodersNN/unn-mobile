@@ -23,4 +23,6 @@ class ReactionViewModelFactory
         getService<ReactionService>(),
         getService<CurrentUserSyncStorage>(),
       );
+
+  ReactionViewModel getEmptyViewModel() => createViewModel(0)..init();
 }
