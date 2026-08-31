@@ -60,6 +60,7 @@ class AuthPageWithState extends State<AuthPage> {
   @override
   Widget build(BuildContext context) => BaseView<AuthPageViewModel>(
         builder: (context, viewModel, child) {
+          final theme = Theme.of(context);
           final authTitle = _authTitle(context);
           final authBody = _authBody(
             context,
@@ -74,6 +75,7 @@ class AuthPageWithState extends State<AuthPage> {
           return Scaffold(
             resizeToAvoidBottomInset: false,
             appBar: authTitle,
+            backgroundColor: theme.colorScheme.surfaceContainerLowest,
             body: authBody,
           );
         },
@@ -99,11 +101,12 @@ class AuthPageWithState extends State<AuthPage> {
   AppBar _authTitle(BuildContext context) {
     final theme = Theme.of(context);
     return AppBar(
+      backgroundColor: theme.colorScheme.surfaceContainerLowest,
       title: Center(
         child: Text(
           'Авторизация',
           style: _baseTextStyle(
-            textColor: theme.primaryColor,
+            textColor: theme.colorScheme.primary,
             fontSize: 25,
             fontWeight: FontWeight.bold,
           ),
@@ -214,7 +217,7 @@ class AuthPageWithState extends State<AuthPage> {
       height: MediaQuery.of(context).size.height,
       width: double.infinity,
       decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceContainerHighest,
+        color: theme.colorScheme.surfaceContainer,
         borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(50.0),
           topRight: Radius.circular(50.0),

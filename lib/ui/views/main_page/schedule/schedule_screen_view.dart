@@ -58,6 +58,7 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView> {
                 appBar: AppBar(
                   leading: getSubpageLeading(widget.bottomRouteIndex),
                   title: const Text('Расписание'),
+                  forceMaterialTransparency: true,
                   actions: [
                     if (online)
                       SearchAnchor(

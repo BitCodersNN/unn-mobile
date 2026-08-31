@@ -72,7 +72,7 @@ class FeedScreenViewState extends State<FeedScreenView>
           builder: (context, model, child) => Scaffold(
             appBar: AppBar(
               title: const Text('Лента'),
-              forceMaterialTransparency: model.pinnedPosts.isNotEmpty,
+              forceMaterialTransparency: true,
               actions: [
                 PopupMenuButton(
                   itemBuilder: (context) => [
@@ -107,7 +107,8 @@ class FeedScreenViewState extends State<FeedScreenView>
                         slivers: [
                           if (model.pinnedPosts.isNotEmpty)
                             SliverAppBar(
-                              surfaceTintColor: theme.colorScheme.surfaceBright,
+                              backgroundColor: theme.colorScheme.surface,
+                              surfaceTintColor: theme.colorScheme.surface,
                               floating: true,
                               primary: false,
                               elevation: 10,

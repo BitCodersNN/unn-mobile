@@ -47,6 +47,7 @@ class _DonationsScreenViewState extends State<DonationsScreenView> {
       appBar: AppBar(
         leading: getSubpageLeading(widget.bottomRouteIndex),
         title: const Text('Поддержать'),
+        forceMaterialTransparency: true,
       ),
       body: WebViewWidget(
         controller: controller..setBackgroundColor(theme.colorScheme.surface),
