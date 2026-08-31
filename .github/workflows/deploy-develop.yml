@@ -20,7 +20,8 @@ concurrency:
   cancel-in-progress: true
   
 jobs:
-  build:
+  build-default:
+    name: Build standard app package
     runs-on: ubuntu-latest
     environment: develop-android
     steps:
@@ -72,27 +73,102 @@ jobs:
       - name: build
         run: |
           flutter doctor --verbose
-          flutter build appbundle
+          flutter build apk --flavor default
+          mv build/app/outputs/flutter-apk/app-default-release.apk build/unn-mobile-default.apk
+          sha1sum build/unn-mobile-default.apk > build/unn-mobile-default.apk.sha1
       - name: delete old build artifact
         uses: geekyeggo/delete-artifact@f275313e70c08f6120db482d7a6b98377786765b
         with:
-          name: unn-mobile.aab
+          name: unn-mobile-default.apk
+      - name: delete old hash artifact
+        uses: geekyeggo/delete-artifact@f275313e70c08f6120db482d7a6b98377786765b
+        with:
+          name: unn-mobile-default.apk.sha1
       - name: upload build artifact
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: unn-mobile.aab
+          name: unn-mobile-default.apk
+          path: "build/unn-mobile-default.apk"
+      - name: upload hash artifact
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: unn-mobile-default.apk.sha1
+          path: "build/unn-mobile-default.apk.sha1"
+      
+  build-google-play:
+    name: Build Google Play app package
+    runs-on: ubuntu-latest
+    environment: develop-android
+    steps:
+      - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955
+        with:
+          submodules: recursive
+      - uses: subosito/flutter-action@fd55f4c5af5b953cc57a2be44cb082c8f6635e8e
+        with:
+          flutter-version: '3.47.1'
+          channel: 'stable'
+          cache: true
+      - name: install java (?)
+        uses: actions/setup-java@c5195efecf7bdfc987ee8bae7a71cb8b11521c00
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+      - name: install ndk
+        uses: nttld/setup-ndk@afb4c9964b521afb97c864b7d40b11e6911bd410
+        id: setup-ndk
+        with:
+          ndk-version: r27
+          link-to-sdk: true
+          local-cache: true
+      - name: load certificate
+        uses: mobiledevops/secret-to-file-action@be5f14e82c235ccde011f6ab0f6c984b35dc34c6
+        with:
+          base64-encoded-secret: ${{ secrets.APP_CERTIFICATE }}
+          filename: "keystore.jks"
+          working-directory: ./android/app
+      - name: create credentials
+        env:
+          keystore_pass: ${{ secrets.KEYSTORE_PASS }}
+        run: |
+          echo -e "storePassword: $keystore_pass\nkeyPassword: $keystore_pass\nkeyAlias: upload-unn-mobile\nstoreFile=keystore.jks\n" >> ./android/key.properties
+      - name: install firebase
+        run: |
+          mkdir -p "$HOME/bin"
+          curl -fsSL -o "$HOME/bin/firebase" https://firebase.tools/bin/linux/latest
+          chmod +x "$HOME/bin/firebase"
+          echo "$HOME/bin" >> $GITHUB_PATH
+      - name: get dependencies
+        run: flutter pub get
+      - name: configure flutterfire
+        env: 
+          firebase_token: ${{ secrets.FIREBASE_TOKEN }}
+        run: |
+          dart pub global activate flutterfire_cli 1.3.1
+          flutterfire configure -t $firebase_token -y -p unn-mobile-1 --platforms=android --android-package-name=ru.bitcodersnn.unnstudenthub
+      - name: build
+        run: |
+          flutter doctor --verbose
+          flutter build appbundle --flavor GooglePlay
+      - name: delete old build artifact
+        uses: geekyeggo/delete-artifact@f275313e70c08f6120db482d7a6b98377786765b
+        with:
+          name: unn-mobile-google.aab
+      - name: upload build artifact
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: unn-mobile-google.aab
           path: "build/app/outputs/bundle/release/app-release.aab"
         
   deploy:
     runs-on: ubuntu-latest
     environment: develop-android
-    needs: build
+    needs: build-google-play
     steps:
       - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955
       - name: retrieve the binary
         uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0
         with:
-          name: unn-mobile.aab
+          name: unn-mobile-google.aab
       - name: install firebase
         run: curl -sL https://firebase.tools | bash
       - name: deploy (main)
