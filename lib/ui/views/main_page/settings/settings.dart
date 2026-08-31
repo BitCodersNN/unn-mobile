@@ -40,18 +40,26 @@ class SettingsScreenView extends StatelessWidget {
                           model.vibrationEnabled = value;
                         },
                       ),
-                      ListTile(
-                        title: const Text('Начальный экран'),
-                        trailing: Text(model.initialScreenName),
-                        onTap: () async {
-                          await _showScreenChoiceModal(context, model);
-                        },
-                      ),
                       SwitchListTile.adaptive(
                         title: const Text('Сбор телеметрии'),
                         value: model.analyticsEnabled,
                         onChanged: (value) {
                           model.analyticsEnabled = value;
+                        },
+                      ),
+                      ListTile(
+                        title: const Text('Начальный экран'),
+                        trailing: Padding(
+                          padding: const EdgeInsets.all(6.0),
+                          child: Text(
+                            model.initialScreenName,
+                            style: const TextStyle(fontSize: 16),
+                            softWrap: false,
+                            overflow: TextOverflow.visible,
+                          ),
+                        ),
+                        onTap: () async {
+                          await _showScreenChoiceModal(context, model);
                         },
                       ),
                       ListTile(
@@ -125,62 +133,37 @@ class SettingsScreenView extends StatelessWidget {
   Future<dynamic> _showScreenChoiceModal(
     BuildContext context,
     SettingsScreenViewModel model,
-  ) =>
-      showModalBottomSheet(
-        context: context,
-        useRootNavigator: true,
-        builder: (context) {
-          final theme = Theme.of(context);
-          return BaseView<SettingsScreenViewModel>(
-            model: model,
-            builder: (context, model, _) => Container(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    'Выберите экран',
-                    style: theme.textTheme.headlineSmall,
-                  ),
-                  const Padding(
-                    padding: EdgeInsets.only(top: 2),
-                    child: Divider(
-                      indent: 8,
-                      endIndent: 8,
-                      thickness: 0.5,
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  Container(
-                    constraints: const BoxConstraints(
-                      maxHeight: 400.0,
-                    ),
-                    child: SingleChildScrollView(
-                      child: RadioGroup<int>(
-                        groupValue: model.activeNavbarRouteIndex,
-                        onChanged: (value) {
-                          model.activeNavbarRouteIndex = value ?? 0;
-                          GoRouter.of(context).pop();
-                        },
-                        child: Column(
-                          children: List.generate(
-                            model.navbarRouteCount,
-                            (index) => RadioListTile.adaptive(
-                              title: Text(
-                                model.activeNavbarRouteNames[index],
-                              ),
-                              value: index,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                ],
-              ),
+  ) async {
+    final theme = Theme.of(context);
+    final currentIndex = model.activeNavbarRouteIndex;
+
+    final selectedIndex = await showModalActionSheet<int>(
+      context: context,
+      useRootNavigator: true,
+      title: 'Выберите экран',
+      cancelLabel: 'Отмена',
+      actions: List.generate(
+        model.navbarRouteCount,
+        (index) {
+          final isSelected = index == currentIndex;
+
+          return SheetAction<int>(
+            label: model.activeNavbarRouteNames[index],
+            key: index,
+            isDefaultAction: isSelected,
+            textStyle: TextStyle(
+              color: isSelected ? theme.colorScheme.primary : null,
+              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
             ),
           );
         },
-      );
+      ),
+    );
+
+    if (selectedIndex != null) {
+      model.activeNavbarRouteIndex = selectedIndex;
+    }
+
+    return selectedIndex;
+  }
 }
