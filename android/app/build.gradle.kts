@@ -60,6 +60,18 @@ android {
                 ?: signingConfigs.getByName("debug")
         }
     }
+
+    flavorDimensions += "default"
+    productFlavors {
+        create("default") {
+            dimension = "default"
+            applicationId = "ru.unn.unn_mobile"
+        }
+        create("GooglePlay") {
+            dimension = "default"
+            applicationId = "ru.bitcodersnn.unnstudenthub"
+        }
+    }
 }
 
 flutter {
