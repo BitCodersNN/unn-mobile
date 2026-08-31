@@ -80,12 +80,13 @@ class FeedScreenViewState extends State<FeedScreenView>
                     ? IconButton(
                         icon: const Icon(Icons.search_off),
                         onPressed: () {
+                          _textEditingController.clear();
                           model.resetSearch();
                         },
                       )
                     : IconButton(
                         icon: const Icon(Icons.search),
-                        onPressed: online
+                        onPressed: (online && !model.isBusy)
                             ? () async {
                                 await _showSearchBar(context, model);
                               }
@@ -254,52 +255,66 @@ class FeedScreenViewState extends State<FeedScreenView>
   Future<dynamic> _showSearchBar(
     BuildContext context,
     FeedScreenViewModel model,
-  ) =>
-      showDialog(
-        context: context,
-        builder: (context) => Stack(
-          children: [
-            Align(
-              alignment: AlignmentGeometry.topLeft,
-              child: SizedBox(
-                height: 60.0,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8.0,
-                  ),
-                  child: SearchBar(
-                    autoFocus: true,
-                    padding: const WidgetStatePropertyAll(
-                      EdgeInsets.symmetric(
-                        horizontal: 8.0,
-                      ),
+  ) {
+    void handleSearch(BuildContext dialogContext) {
+      final text = _textEditingController.text.trim();
+      if (text.isNotEmpty) {
+        model.submitSearch(text);
+      }
+      Navigator.of(dialogContext).pop();
+    }
+
+    return showDialog(
+      context: context,
+      builder: (dialogContext) => Stack(
+        children: [
+          Align(
+            alignment: AlignmentGeometry.topLeft,
+            child: SizedBox(
+              height: 60.0,
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 8.0,
+                ),
+                child: SearchBar(
+                  autoFocus: true,
+                  padding: const WidgetStatePropertyAll(
+                    EdgeInsets.symmetric(
+                      horizontal: 8.0,
                     ),
-                    controller: _textEditingController,
-                    onSubmitted: (value) {
-                      model.submitSearch(value);
-                      Navigator.of(context).pop();
-                    },
-                    trailing: [
-                      IconButton(
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                          if (_textEditingController.text.trim().isEmpty) {
-                            return;
-                          }
-                          model.submitSearch(
-                            _textEditingController.text,
-                          );
-                        },
-                        icon: const Icon(Icons.search),
-                      ),
-                    ],
                   ),
+                  controller: _textEditingController,
+                  onSubmitted: (value) {
+                    handleSearch(dialogContext);
+                  },
+                  trailing: [
+                    ValueListenableBuilder<TextEditingValue>(
+                      valueListenable: _textEditingController,
+                      builder: (context, value, child) {
+                        if (value.text.isEmpty) {
+                          return const SizedBox.shrink();
+                        }
+                        return IconButton(
+                          onPressed: _textEditingController.clear,
+                          icon: const Icon(Icons.clear),
+                        );
+                      },
+                    ),
+                    IconButton(
+                      onPressed: () {
+                        handleSearch(dialogContext);
+                      },
+                      icon: const Icon(Icons.search),
+                    ),
+                  ],
                 ),
               ),
             ),
-          ],
-        ),
-      );
+          ),
+        ],
+      ),
+    );
+  }
 
   void openPinned(BuildContext context) {
     GoRouter.of(context).go(
