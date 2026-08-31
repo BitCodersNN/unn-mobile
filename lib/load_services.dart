@@ -759,6 +759,7 @@ void registerDependencies() {
         get<StreamAuthService>(),
         get<RefreshBlogPostService>(),
         get<BlogPostPaginationService>(),
+        get<BlogPostSearchService>(),
       ),
     )
     ..registerDependency(

@@ -11,6 +11,7 @@ import 'package:unn_mobile/core/providers/interfaces/feed/last_feed_load_date_ti
 import 'package:unn_mobile/core/services/interfaces/authorisation/stream_auth_service.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/blog_post_receivers/blog_post_pagination_service.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/blog_post_receivers/refresh_blog_post_service.dart';
+import 'package:unn_mobile/core/services/interfaces/feed/blog_post_search_service.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/feed/feed_post_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/main_page_route_view_model.dart';
@@ -25,6 +26,8 @@ class FeedScreenViewModel extends BaseViewModel
   final StreamAuthService _streamAuthService;
   final RefreshBlogPostService _blogPostServiceImpl;
 
+  final BlogPostSearchService _searchService;
+
   final List<FeedPostViewModel> offlinePosts = [];
   final List<FeedPostViewModel> pinnedPosts = [];
   final List<FeedPostViewModel> announcements = [];
@@ -34,6 +37,7 @@ class FeedScreenViewModel extends BaseViewModel
   int _numberUnreadMessages = 0;
   int _currentPage = 0;
   bool _failedToLoad = false;
+  String? _searchQuery;
 
   List<FeedPostViewModel> get posts =>
       _totalPosts.take(postsPerPage * _currentPage).toList();
@@ -42,6 +46,9 @@ class FeedScreenViewModel extends BaseViewModel
 
   bool get failedToLoad => _failedToLoad;
   bool get loadingMore => _loadingMore;
+
+  String? get searchQuery => _searchQuery;
+  bool get hasSearch => _searchQuery != null;
 
   set failedToLoad(bool value) {
     _failedToLoad = value;
@@ -67,6 +74,7 @@ class FeedScreenViewModel extends BaseViewModel
     this._streamAuthService,
     this._blogPostServiceImpl,
     this._postPaginationService,
+    this._searchService,
   );
 
   FutureOr<void> init() {
@@ -143,25 +151,32 @@ class FeedScreenViewModel extends BaseViewModel
         final [posts as Map<BlogPostType, List<BlogPost>>?, _] =
             await Future.wait(
           [
-            _blogPostServiceImpl.refreshBlogPosts(
-              assetsCheckSum: _streamAuthService.sonetLAssetsCheckSum ?? '',
-              signedParameters: _streamAuthService.signedParameters ?? '',
-              commentFormUID: _streamAuthService.commentFormUID ?? '',
+            tryLoginAndRetrieveData(
+              () => _blogPostServiceImpl.refreshBlogPosts(
+                assetsCheckSum: _streamAuthService.sonetLAssetsCheckSum ?? '',
+                signedParameters: _streamAuthService.signedParameters ?? '',
+                commentFormUID: _streamAuthService.commentFormUID ?? '',
+              ),
+              () => null,
             ),
             _lastFeedLoadDateTimeProvider.getData(),
           ],
         );
 
+        if (posts == null) {
+          return;
+        }
+
         pinnedPosts.clear();
         _addPostsToList(
           pinnedPosts,
-          posts?[BlogPostType.pinned],
+          posts[BlogPostType.pinned],
           isRegularPost: false,
         );
         announcements.clear();
         _addPostsToList(
           announcements,
-          posts?[BlogPostType.important],
+          posts[BlogPostType.important],
           isRegularPost: false,
         );
 
@@ -169,7 +184,7 @@ class FeedScreenViewModel extends BaseViewModel
           return;
         }
 
-        final freshPosts = posts?[BlogPostType.regular];
+        final freshPosts = posts[BlogPostType.regular];
 
         if (freshPosts == null) {
           loadingMore = false;
@@ -204,4 +219,28 @@ class FeedScreenViewModel extends BaseViewModel
   void refresh() {
     scrollToTop?.call();
   }
+
+  FutureOr<void> submitSearch(String value) async =>
+      await busyCallAsync(() async {
+        if (value.trim().isEmpty) {
+          return;
+        }
+
+        final searchApplied =
+            await _searchService.setFilter(query: value.trim());
+        if (searchApplied) {
+          _searchQuery = value.trim();
+          await reload();
+          notifyListeners();
+        }
+      });
+
+  FutureOr<void> resetSearch() async => await busyCallAsync(() async {
+        final success = await _searchService.resetFilter();
+        if (success) {
+          _searchQuery = null;
+          await reload();
+          notifyListeners();
+        }
+      });
 }
