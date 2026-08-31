@@ -62,6 +62,7 @@ class ScheduleTabView extends StatelessWidget {
 
               final schedule = model.schedule ?? [];
 
+              final theme = Theme.of(context);
               return Stack(
                 children: [
                   if (schedule.every((d) => d.isEmpty))
@@ -100,6 +101,8 @@ class ScheduleTabView extends StatelessWidget {
                                   slivers: [
                                     SliverAppBar(
                                       title: Text(daysOfWeek[i]),
+                                      backgroundColor:
+                                          theme.colorScheme.surface,
                                       primary: false,
                                       pinned: true,
                                       scrolledUnderElevation: 0,
@@ -107,8 +110,11 @@ class ScheduleTabView extends StatelessWidget {
                                     SliverToBoxAdapter(
                                       child: Column(
                                         children: [
-                                          for (final subj in l)
-                                            ScheduleItemNormal(subject: subj),
+                                          for (final (si, subj) in l.indexed)
+                                            ScheduleItemNormal(
+                                              subject: subj,
+                                              even: si.isEven,
+                                            ),
                                         ],
                                       ),
                                     ),

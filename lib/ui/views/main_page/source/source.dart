@@ -38,6 +38,7 @@ class SourcePageView extends StatelessWidget {
             child: Scaffold(
               appBar: AppBar(
                 title: const Text('Материалы'),
+                forceMaterialTransparency: true,
                 bottom: const TabBar.secondary(
                   tabs: [
                     Tab(

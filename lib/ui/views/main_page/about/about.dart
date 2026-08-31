@@ -24,6 +24,7 @@ class AboutScreenView extends StatelessWidget {
           appBar: AppBar(
             leading: getSubpageLeading(bottomRouteIndex),
             title: const Text('О нас'),
+            forceMaterialTransparency: true,
           ),
           body: LayoutBuilder(
             builder: (context, constraints) {

@@ -57,7 +57,7 @@ class MainPageNavigationBar extends StatelessWidget {
           icon: Icon(route.unselectedIcon),
           selectedIcon: Icon(
             route.selectedIcon,
-            color: Theme.of(context).primaryColor,
+            color: Theme.of(context).colorScheme.primary,
           ),
           label: route.pageTitle,
           enabled: !route.isDisabled,
