@@ -40,6 +40,7 @@ class _ChatScreenViewState extends State<ChatScreenView> {
       builder: (context, model, child) => Scaffold(
         appBar: AppBar(
           title: const Text('Сообщения'),
+          forceMaterialTransparency: true,
           leading: getSubpageLeading(widget.bottomRouteIndex),
           actions: [
             if (!model.isBusy)

@@ -402,8 +402,11 @@ class UrlTag extends WrappedStyleTag {
   }
 }
 
-BBStylesheet getBBStyleSheet() => defaultBBStylesheet()
-    .copyWith(selectableText: true)
+BBStylesheet getBBStyleSheet({ThemeData? theme}) => defaultBBStylesheet()
+    .copyWith(
+      selectableText: true,
+      defaultTextStyle: theme?.textTheme.bodyMedium,
+    )
     .replaceTag(
       UrlTag(
         onTap: (url) async {

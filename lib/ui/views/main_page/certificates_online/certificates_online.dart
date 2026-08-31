@@ -26,6 +26,7 @@ class _OnlineCertificatesScreenViewState
         appBar: AppBar(
           leading: getSubpageLeading(widget.bottomRouteIndex),
           title: const Text('Справки онлайн'),
+          forceMaterialTransparency: true,
         ),
         body: BaseView<CertificatesViewModel>(
           builder: (context, model, _) {

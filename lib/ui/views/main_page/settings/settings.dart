@@ -21,6 +21,7 @@ class SettingsScreenView extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Настройки'),
+        forceMaterialTransparency: true,
         leading: getSubpageLeading(bottomRouteIndex),
       ),
       body: BaseView<SettingsScreenViewModel>(
