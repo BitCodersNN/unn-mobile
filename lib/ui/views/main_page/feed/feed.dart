@@ -74,7 +74,7 @@ class FeedScreenViewState extends State<FeedScreenView>
           builder: (context, model, child) => Scaffold(
             appBar: AppBar(
               title: const Text('Лента'),
-              forceMaterialTransparency: model.pinnedPosts.isNotEmpty,
+              forceMaterialTransparency: true,
               actions: [
                 model.hasSearch
                     ? IconButton(
@@ -98,158 +98,158 @@ class FeedScreenViewState extends State<FeedScreenView>
                 ? const Center(
                     child: CircularProgressIndicator(),
                   )
-                : Column(
-                    children: [
-                      Expanded(
-                        child: NotificationListener<ScrollEndNotification>(
-                          child: RefreshIndicator(
-                            onRefresh: model.reload,
-                            child: CustomScrollView(
-                              controller: _scrollController,
-                              physics: const AlwaysScrollableScrollPhysics(),
-                              slivers: [
-                                if (model.pinnedPosts.isNotEmpty)
-                                  SliverAppBar(
-                                    surfaceTintColor:
-                                        theme.colorScheme.surfaceBright,
-                                    floating: true,
-                                    primary: false,
-                                    elevation: 10,
-                                    shadowColor: theme.shadowColor,
-                                    title: GestureDetector(
-                                      onTap: () => openPinned(context),
-                                      child: Container(
-                                        padding: const EdgeInsets.all(8.0),
-                                        width: double.infinity,
-                                        child: Row(
-                                          children: [
-                                            Expanded(
-                                              child: Text(
-                                                'Закреплённые посты: ${model.pinnedPosts.length}',
-                                                style:
-                                                    theme.textTheme.bodyLarge,
-                                              ),
-                                            ),
-                                            TextButton(
-                                              onPressed: () =>
-                                                  openPinned(context),
-                                              child: const Text(
-                                                'Открыть',
-                                                style:
-                                                    TextStyle(fontSize: 14.0),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                if (model.failedToLoad)
-                                  _coloredTopMessage(
-                                    context,
-                                    'Не удалось загрузить посты',
-                                    theme.colorScheme.error,
-                                    theme.colorScheme.onError,
-                                  ),
-                                if (!online && model.offlinePosts.isNotEmpty)
-                                  _coloredTopMessage(
-                                    context,
-                                    'Показаны последние загруженные посты',
-                                    theme.colorScheme.secondary,
-                                    theme.colorScheme.onSecondary,
-                                  ),
-                                SliverToBoxAdapter(
-                                  child: ListView.builder(
-                                    shrinkWrap: true,
-                                    physics:
-                                        const NeverScrollableScrollPhysics(),
-                                    itemCount: model.posts.length,
-                                    itemBuilder: (context, index) {
-                                      if (!model.hasSearch &&
-                                          index == model.numberUnreadMessages) {
-                                        return Container(
-                                          color: theme.colorScheme.surface,
-                                          padding: const EdgeInsets.symmetric(
-                                            vertical: 12.0,
-                                            horizontal: 20.0,
-                                          ),
-                                          margin: const EdgeInsets.only(
-                                            top: 8.0,
-                                            bottom: 8.0,
-                                          ),
-                                          child: Column(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                              Text(
-                                                'ПРОЧИТАННЫЕ ПОСТЫ',
-                                                textAlign: TextAlign.center,
-                                                style: Theme.of(context)
-                                                    .textTheme
-                                                    .labelMedium
-                                                    ?.copyWith(
-                                                      color: theme.hintColor,
-                                                      fontSize: 14.0,
-                                                    ),
-                                              ),
-                                            ],
-                                          ),
-                                        );
-                                      }
-
-                                      final actualIndex =
-                                          index > model.numberUnreadMessages
-                                              ? index - 1
-                                              : index;
-                                      final post = model.posts[actualIndex];
-                                      return FeedPost(
-                                        key: ObjectKey(post),
-                                        post: post,
-                                        showingComments: false,
-                                      );
-                                    },
-                                  ),
-                                ),
-                                if (model.loadingMore &&
-                                    online &&
-                                    model.posts.isNotEmpty)
-                                  const SliverToBoxAdapter(
-                                    child: Padding(
-                                      padding: EdgeInsets.all(8.0),
-                                      child: Center(
-                                        child: SizedBox(
-                                          width: 24,
-                                          height: 24,
-                                          child: CircularProgressIndicator(),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                              ],
-                            ),
-                          ),
-                          onNotification: (scrollEnd) {
-                            if (!online) {
-                              return false;
-                            }
-                            final metrics = scrollEnd.metrics;
-
-                            if (metrics.pixels >=
-                                metrics.maxScrollExtent - 300) {
-                              model.loadMorePosts();
-                            }
-
-                            return true;
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
+                : _getFeedBody(model, theme, context, online),
           ),
           onModelReady: (model) => model.init(),
         ),
       ),
     );
   }
+
+  Column _getFeedBody(
+    FeedScreenViewModel model,
+    ThemeData theme,
+    BuildContext context,
+    bool online,
+  ) =>
+      Column(
+        children: [
+          Expanded(
+            child: NotificationListener<ScrollEndNotification>(
+              child: RefreshIndicator(
+                onRefresh: model.reload,
+                child: CustomScrollView(
+                  controller: _scrollController,
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  slivers: [
+                    if (model.pinnedPosts.isNotEmpty)
+                      SliverAppBar(
+                        backgroundColor: theme.colorScheme.surface,
+                        surfaceTintColor: theme.colorScheme.surface,
+                        floating: true,
+                        primary: false,
+                        elevation: 10,
+                        shadowColor: theme.shadowColor,
+                        title: GestureDetector(
+                          onTap: () => openPinned(context),
+                          child: Container(
+                            padding: const EdgeInsets.all(8.0),
+                            width: double.infinity,
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    'Закреплённые посты: ${model.pinnedPosts.length}',
+                                    style: theme.textTheme.bodyLarge,
+                                  ),
+                                ),
+                                TextButton(
+                                  onPressed: () => openPinned(context),
+                                  child: const Text(
+                                    'Открыть',
+                                    style: TextStyle(fontSize: 14.0),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    if (model.failedToLoad)
+                      _coloredTopMessage(
+                        context,
+                        'Не удалось загрузить посты',
+                        theme.colorScheme.error,
+                        theme.colorScheme.onError,
+                      ),
+                    if (!online && model.offlinePosts.isNotEmpty)
+                      _coloredTopMessage(
+                        context,
+                        'Показаны последние загруженные посты',
+                        theme.colorScheme.secondary,
+                        theme.colorScheme.onSecondary,
+                      ),
+                    SliverToBoxAdapter(
+                      child: ListView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: model.posts.length,
+                        itemBuilder: (context, index) {
+                          if (!model.hasSearch &&
+                              index == model.numberUnreadMessages) {
+                            return Container(
+                              color: theme.colorScheme.surface,
+                              padding: const EdgeInsets.symmetric(
+                                vertical: 12.0,
+                                horizontal: 20.0,
+                              ),
+                              margin: const EdgeInsets.only(
+                                top: 8.0,
+                                bottom: 8.0,
+                              ),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    'ПРОЧИТАННЫЕ ПОСТЫ',
+                                    textAlign: TextAlign.center,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .labelMedium
+                                        ?.copyWith(
+                                          color: theme.hintColor,
+                                          fontSize: 14.0,
+                                        ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }
+
+                          final actualIndex = index > model.numberUnreadMessages
+                              ? index - 1
+                              : index;
+                          final post = model.posts[actualIndex];
+                          return FeedPost(
+                            key: ObjectKey(post),
+                            post: post,
+                            showingComments: false,
+                          );
+                        },
+                      ),
+                    ),
+                    if (model.loadingMore && online && model.posts.isNotEmpty)
+                      const SliverToBoxAdapter(
+                        child: Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: Center(
+                            child: SizedBox(
+                              width: 24,
+                              height: 24,
+                              child: CircularProgressIndicator(),
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+              onNotification: (scrollEnd) {
+                if (!online) {
+                  return false;
+                }
+                final metrics = scrollEnd.metrics;
+
+                if (metrics.pixels >= metrics.maxScrollExtent - 300) {
+                  model.loadMorePosts();
+                }
+
+                return true;
+              },
+            ),
+          ),
+        ],
+      );
 
   Future<dynamic> _showSearchBar(
     BuildContext context,
