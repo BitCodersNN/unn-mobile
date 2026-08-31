@@ -36,7 +36,6 @@ class UnnMobile extends StatelessWidget {
         ),
         actionTextColor: primaryColor,
       ),
-      // textTheme: Typography.blackRedwoodCity,
       extensions: const [
         UnnMobileColors(
           scheduleDayHighlight: Color(0xFFEEEEEE),
