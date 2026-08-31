@@ -84,12 +84,12 @@ class FeedScreenViewState extends State<FeedScreenView>
                         },
                       )
                     : IconButton(
+                        icon: const Icon(Icons.search),
                         onPressed: online
                             ? () async {
                                 await _showSearchBar(context, model);
                               }
                             : null,
-                        icon: const Icon(Icons.search),
                       ),
               ],
               leading: getSubpageLeading(widget.bottomRouteIndex),
