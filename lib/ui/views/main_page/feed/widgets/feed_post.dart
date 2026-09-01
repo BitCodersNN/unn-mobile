@@ -86,7 +86,7 @@ class _FeedPostState extends State<FeedPost> {
               margin: const EdgeInsets.only(top: 12),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(0.0),
-                color: _getPostColor(context, model),
+                color: Theme.of(context).colorScheme.surface,
                 boxShadow: [
                   BoxShadow(
                     offset: Offset.zero,
@@ -97,19 +97,10 @@ class _FeedPostState extends State<FeedPost> {
               ),
               child: Column(
                 children: [
-                  if (model.isAnnouncement)
-                    Container(
-                      decoration: BoxDecoration(
-                        color: theme.colorScheme.inverseSurface.withAlpha(51),
-                      ),
-                      padding: const EdgeInsets.all(8.0),
-                      width: double.infinity,
-                      child: const Text('Важное сообщение'),
-                    ),
                   Padding(
                     padding: const EdgeInsets.all(18.0),
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         Row(
                           children: [
@@ -143,9 +134,8 @@ class _FeedPostState extends State<FeedPost> {
                                   begin: Alignment.bottomCenter,
                                   end: Alignment.topCenter,
                                   colors: [
-                                    _getPostColor(context, model)
-                                        .withAlpha(255),
-                                    _getPostColor(context, model).withAlpha(0),
+                                    theme.colorScheme.surface.withAlpha(255),
+                                    theme.colorScheme.surface.withAlpha(0),
                                   ],
                                   stops: const [
                                     0.2,
@@ -176,9 +166,15 @@ class _FeedPostState extends State<FeedPost> {
                         else
                           _buildPostContent(model),
                         if (model.isAnnouncement)
-                          FilledButton(
-                            onPressed: model.markReadIfImportant,
-                            child: const Text('Отметить прочитанным'),
+                          ElevatedButton(
+                            onPressed: model.isAnnouncementRead
+                                ? null
+                                : model.markReadIfImportant,
+                            child: Text(
+                              model.isAnnouncementRead
+                                  ? 'Сообщение прочитано'
+                                  : 'Отметить прочитанным',
+                            ),
                           )
                         else
                           const SizedBox(height: 16.0),
@@ -319,15 +315,6 @@ class _FeedPostState extends State<FeedPost> {
       data.bodyBytes,
       mimeType: mimeType,
     );
-  }
-
-  Color _getPostColor(BuildContext context, FeedPostViewModel model) {
-    final theme = Theme.of(context);
-    final unnMobileColors = theme.extension<UnnMobileColors>()!;
-    if (model.isAnnouncement) {
-      return unnMobileColors.importantPostHighlight!;
-    }
-    return theme.colorScheme.surface;
   }
 
   void _onPostRefreshError(EventArgs e) {

@@ -7,6 +7,7 @@ import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/misc/demo_mode_status.dart';
 import 'package:unn_mobile/core/models/feed/blog_post.dart';
 import 'package:unn_mobile/core/models/feed/blog_post_data.dart';
+import 'package:unn_mobile/core/models/feed/important_blog_post.dart';
 import 'package:unn_mobile/core/providers/interfaces/feed/last_feed_load_date_time_provider.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation/authorisation_service.dart';
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
@@ -32,8 +33,6 @@ class FeedPostViewModel extends BaseViewModel {
   final HtmlUnescape _unescaper = HtmlUnescape();
 
   final List<AttachedFileViewModel> attachedFileViewModels = [];
-  Iterable<String> get attachedImages => blogData?.imageUrls ?? [];
-
   final onError = Event();
 
   BlogPostData? blogData;
@@ -42,16 +41,11 @@ class FeedPostViewModel extends BaseViewModel {
 
   ReactionViewModel? _reactionViewModel;
 
-  bool get isPinned =>
-      _feedScreenViewModel?.isPostPinned(blogData?.id) ?? false;
+  bool _isAnnouncement = false;
 
-  bool get isAnnouncement =>
-      _feedScreenViewModel?.isPostImportant(blogData?.id) ?? false;
+  bool? _isAnnouncementRead;
 
-  Map<String, String> get authHeaders =>
-      _authorisationService.headers
-          ?.map((key, value) => MapEntry(key, value.toString())) ??
-      {};
+  int? _announcementReadCount;
 
   final List<FeedCommentViewModel> comments = [];
 
@@ -65,8 +59,16 @@ class FeedPostViewModel extends BaseViewModel {
     this._pinningService,
     this._authorisationService,
   );
+
   factory FeedPostViewModel.cached(FeedPostCacheKey key) =>
       Injector.appInstance.get<FeedPostViewModelFactory>().getViewModel(key);
+  Iterable<String> get attachedImages => blogData?.imageUrls ?? [];
+
+  // Нужны для подтягивания html и всякого содержимого поста на фронте
+  Map<String, String> get authHeaders =>
+      _authorisationService.headers
+          ?.map((key, value) => MapEntry(key, value.toString())) ??
+      {};
 
   int? get authorId => blogData?.authorBitrixId;
 
@@ -74,10 +76,19 @@ class FeedPostViewModel extends BaseViewModel {
 
   int get filesCount => blogData?.fileIds?.length ?? 0;
 
-  DateTime? get lastUpdated => _feedUpdateTimeProvider.lastFeedLoadDateTime;
-
   bool get isNewPost =>
       postTime != null && (lastUpdated?.isBefore(postTime!) ?? false);
+
+  bool get isAnnouncement => _isAnnouncement;
+
+  bool get isAnnouncementRead => _isAnnouncementRead ?? false;
+
+  int get announcementReadCount => _announcementReadCount ?? 0;
+
+  bool get isPinned =>
+      _feedScreenViewModel?.isPostPinned(blogData?.id) ?? false;
+
+  DateTime? get lastUpdated => _feedUpdateTimeProvider.lastFeedLoadDateTime;
 
   String get postText => _unescaper.convert(blogData?.detailText.trim() ?? '');
 
@@ -91,6 +102,12 @@ class FeedPostViewModel extends BaseViewModel {
     _feedScreenViewModel = feedVm;
 
     blogData = post.data;
+
+    if (post is ImportantBlogPost) {
+      _isAnnouncement = true;
+      _isAnnouncementRead = post.isRead;
+      _announcementReadCount = post.readCount;
+    }
     comments
       ..clear()
       ..addAll(
@@ -113,6 +130,22 @@ class FeedPostViewModel extends BaseViewModel {
       );
 
     notifyListeners();
+  }
+
+  Future<void> markReadIfImportant() async {
+    if (DemoModeStatus.demoModeEnabled) {
+      return;
+    }
+    if (blogData == null) {
+      return;
+    }
+    if (!isAnnouncement) {
+      return;
+    }
+    if (await _postAcknowledgementService.read(blogData!.id)) {
+      _isAnnouncementRead = true;
+      notifyListeners();
+    }
   }
 
   Future<void> refresh() async {
@@ -139,22 +172,6 @@ class FeedPostViewModel extends BaseViewModel {
         : await _pinningService.pin(pinnedId);
 
     if (success) {
-      await _feedScreenViewModel?.refreshFeatured();
-      notifyListeners();
-    }
-  }
-
-  Future<void> markReadIfImportant() async {
-    if (DemoModeStatus.demoModeEnabled) {
-      return;
-    }
-    if (blogData == null) {
-      return;
-    }
-    if (!isAnnouncement) {
-      return;
-    }
-    if (await _postAcknowledgementService.read(blogData!.id)) {
       await _feedScreenViewModel?.refreshFeatured();
       notifyListeners();
     }
