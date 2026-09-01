@@ -12,7 +12,7 @@ dependencies:
     sdk: flutter
 
   webview_flutter: ^4.9.0
-  flutter_secure_storage: ^9.2.2
+  flutter_secure_storage: ">=9.2.2 <11.0.0"
   dio: ^5.7.0
   injector: ^4.0.0
   provider: ^6.0.5
