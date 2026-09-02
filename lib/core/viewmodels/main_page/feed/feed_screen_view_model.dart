@@ -30,7 +30,6 @@ class FeedScreenViewModel extends BaseViewModel
 
   final List<FeedPostViewModel> offlinePosts = [];
   final List<FeedPostViewModel> pinnedPosts = [];
-  final List<FeedPostViewModel> announcements = [];
 
   final List<FeedPostViewModel> _totalPosts = [];
 
@@ -49,6 +48,7 @@ class FeedScreenViewModel extends BaseViewModel
 
   String? get searchQuery => _searchQuery;
   bool get hasSearch => _searchQuery != null;
+  bool get showOnlyImportant => _showOnlyImportant;
 
   set failedToLoad(bool value) {
     _failedToLoad = value;
@@ -67,6 +67,8 @@ class FeedScreenViewModel extends BaseViewModel
   void Function()? onRefresh;
 
   bool _loadingMore = false;
+
+  bool _showOnlyImportant = false;
 
   FeedScreenViewModel(
     this._lastFeedLoadDateTimeProvider,
@@ -129,11 +131,6 @@ class FeedScreenViewModel extends BaseViewModel
           return;
         }
         _addPostsToList(_totalPosts, freshPosts[BlogPostType.regular]);
-        _addPostsToList(
-          announcements,
-          freshPosts[BlogPostType.important],
-          isRegularPost: false,
-        );
 
         failedToLoad = false;
         _currentPage++;
@@ -173,12 +170,6 @@ class FeedScreenViewModel extends BaseViewModel
           posts[BlogPostType.pinned],
           isRegularPost: false,
         );
-        announcements.clear();
-        _addPostsToList(
-          announcements,
-          posts[BlogPostType.important],
-          isRegularPost: false,
-        );
 
         if (!updateMainPage) {
           return;
@@ -212,9 +203,6 @@ class FeedScreenViewModel extends BaseViewModel
   bool isPostPinned(int? id) =>
       id != null && pinnedPosts.any((p) => p.blogData?.id == id);
 
-  bool isPostImportant(int? id) =>
-      id != null && announcements.any((p) => p.blogData?.id == id);
-
   @override
   void refresh() {
     scrollToTop?.call();
@@ -226,8 +214,10 @@ class FeedScreenViewModel extends BaseViewModel
           return;
         }
 
-        final searchApplied =
-            await _searchService.setFilter(query: value.trim());
+        final searchApplied = await _searchService.setFilter(
+          query: value.trim(),
+          onlyImportant: showOnlyImportant,
+        );
         if (searchApplied) {
           _searchQuery = value.trim();
           await reload();
@@ -236,9 +226,25 @@ class FeedScreenViewModel extends BaseViewModel
       });
 
   FutureOr<void> resetSearch() async => await busyCallAsync(() async {
-        final success = await _searchService.resetFilter();
+        final success = await _searchService.setFilter(
+          query: '',
+          onlyImportant: showOnlyImportant,
+        );
         if (success) {
           _searchQuery = null;
+          await reload();
+          notifyListeners();
+        }
+      });
+
+  FutureOr<void> setShowingOnlyImportant({bool newStatus = true}) async =>
+      await busyCallAsync(() async {
+        final filterApplied = await _searchService.setFilter(
+          onlyImportant: newStatus,
+          query: _searchQuery ?? '',
+        );
+        if (filterApplied) {
+          _showOnlyImportant = newStatus;
           await reload();
           notifyListeners();
         }

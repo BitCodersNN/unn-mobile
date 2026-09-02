@@ -70,28 +70,34 @@ class FeedScreenViewState extends State<FeedScreenView>
     return OfflineOverlayDisplayer(
       child: OnlineStatusBuilder(
         builder: (context, online) => BaseView<FeedScreenViewModel>(
+          key: const ValueKey('feedscreen'),
           model: _viewModel,
           builder: (context, model, child) => Scaffold(
             appBar: AppBar(
               title: const Text('Лента'),
               forceMaterialTransparency: true,
               actions: [
-                model.hasSearch
-                    ? IconButton(
-                        icon: const Icon(Icons.search_off),
-                        onPressed: () {
-                          _textEditingController.clear();
-                          model.resetSearch();
-                        },
-                      )
-                    : IconButton(
-                        icon: const Icon(Icons.search),
-                        onPressed: (online && !model.isBusy)
-                            ? () async {
-                                await _showSearchBar(context, model);
-                              }
-                            : null,
-                      ),
+                _getSearchButton(model, online),
+                PopupMenuButton<String>(
+                  icon: const Icon(Icons.more_vert),
+                  onSelected: (value) {
+                    switch (value) {
+                      case 'onlyImportant':
+                        model.setShowingOnlyImportant(
+                          newStatus: !model.showOnlyImportant,
+                        );
+                        break;
+                    }
+                  },
+                  itemBuilder: (context) => [
+                    CheckedPopupMenuItem(
+                      checked: model.showOnlyImportant,
+                      enabled: online && !model.isBusy,
+                      value: 'onlyImportant',
+                      child: const Text('Показывать только важные'),
+                    ),
+                  ],
+                ),
               ],
               leading: getSubpageLeading(widget.bottomRouteIndex),
             ),
@@ -107,7 +113,32 @@ class FeedScreenViewState extends State<FeedScreenView>
     );
   }
 
-  Column _getFeedBody(
+  Widget _getSearchButton(FeedScreenViewModel model, bool online) {
+    if (model.hasSearch) {
+      return IconButton(
+        icon: const Icon(Icons.search_off),
+        onPressed: !model.isBusy
+            ? () {
+                _textEditingController.clear();
+                model.resetSearch();
+              }
+            : null,
+        tooltip: 'Сбросить поиск',
+      );
+    }
+
+    return IconButton(
+      icon: const Icon(Icons.search),
+      onPressed: (online && !model.isBusy)
+          ? () async {
+              await _showSearchBar(context, model);
+            }
+          : null,
+      tooltip: 'Поиск',
+    );
+  }
+
+  Widget _getFeedBody(
     FeedScreenViewModel model,
     ThemeData theme,
     BuildContext context,
