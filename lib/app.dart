@@ -40,8 +40,6 @@ class UnnMobile extends StatelessWidget {
         UnnMobileColors(
           scheduleDayHighlight: Color(0xFFEEEEEE),
           scheduleSubjectHighlight: Color(0xFFFFF6E8),
-          defaultPostHighlight: Color(0xFFFFFFFF),
-          importantPostHighlight: Color(0xFFFFE3AF),
           scheduleSubjectTypeColors: {
             SubjectType.lecture: Color(0xFF1CA49C),
             SubjectType.practice: Color(0xFFCD7255),

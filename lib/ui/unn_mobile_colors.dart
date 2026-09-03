@@ -8,8 +8,6 @@ import 'package:unn_mobile/core/models/schedule/subject_type.dart';
 class UnnMobileColors extends ThemeExtension<UnnMobileColors> {
   final Color? scheduleDayHighlight;
   final Color? scheduleSubjectHighlight;
-  final Color? defaultPostHighlight;
-  final Color? importantPostHighlight;
   final Map<SubjectType, Color>? scheduleSubjectTypeColors;
   final Color? ligtherTextColor;
   final Color? idkWhatColor;
@@ -17,8 +15,6 @@ class UnnMobileColors extends ThemeExtension<UnnMobileColors> {
   const UnnMobileColors({
     required this.scheduleDayHighlight,
     required this.scheduleSubjectHighlight,
-    required this.defaultPostHighlight,
-    required this.importantPostHighlight,
     required this.scheduleSubjectTypeColors,
     required this.ligtherTextColor,
     required this.idkWhatColor,
@@ -28,8 +24,6 @@ class UnnMobileColors extends ThemeExtension<UnnMobileColors> {
   ThemeExtension<UnnMobileColors> copyWith({
     Color? scheduleDayHighlight,
     Color? scheduleSubjectHighlight,
-    Color? defaultPostHighlight,
-    Color? importantPostHighlight,
     Map<SubjectType, Color>? scheduleSubjectTypeColors,
     Color? ligtherTextColor,
     Color? idkWhatColor,
@@ -38,9 +32,6 @@ class UnnMobileColors extends ThemeExtension<UnnMobileColors> {
         scheduleDayHighlight: scheduleDayHighlight ?? this.scheduleDayHighlight,
         scheduleSubjectHighlight:
             scheduleSubjectHighlight ?? this.scheduleSubjectHighlight,
-        defaultPostHighlight: defaultPostHighlight ?? this.defaultPostHighlight,
-        importantPostHighlight:
-            importantPostHighlight ?? this.importantPostHighlight,
         scheduleSubjectTypeColors:
             scheduleSubjectTypeColors ?? this.scheduleSubjectTypeColors,
         ligtherTextColor: ligtherTextColor ?? this.ligtherTextColor,
@@ -67,16 +58,6 @@ class UnnMobileColors extends ThemeExtension<UnnMobileColors> {
       scheduleSubjectHighlight: Color.lerp(
         scheduleSubjectHighlight,
         otherColors.scheduleSubjectHighlight,
-        t,
-      ),
-      defaultPostHighlight: Color.lerp(
-        defaultPostHighlight,
-        otherColors.defaultPostHighlight,
-        t,
-      ),
-      importantPostHighlight: Color.lerp(
-        importantPostHighlight,
-        otherColors.importantPostHighlight,
         t,
       ),
       scheduleSubjectTypeColors: Map.fromIterables(
