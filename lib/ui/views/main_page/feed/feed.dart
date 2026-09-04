@@ -207,8 +207,7 @@ class FeedScreenViewState extends State<FeedScreenView>
                         physics: const NeverScrollableScrollPhysics(),
                         itemCount: model.posts.length,
                         itemBuilder: (context, index) {
-                          if (!model.hasSearch &&
-                              index == model.numberUnreadMessages) {
+                          if (index == model.numberUnreadMessages) {
                             return Container(
                               color: theme.colorScheme.surface,
                               padding: const EdgeInsets.symmetric(

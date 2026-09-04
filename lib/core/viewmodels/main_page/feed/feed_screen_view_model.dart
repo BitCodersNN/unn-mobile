@@ -183,11 +183,13 @@ class FeedScreenViewModel extends BaseViewModel
           return;
         }
 
-        await Future.wait([
-          _blogPostProvider.saveData(freshPosts),
-          _lastFeedLoadDateTimeProvider
-              .saveData(freshPosts.first.data.datePublish),
-        ]);
+        if (!hasSearch) {
+          await Future.wait([
+            _blogPostProvider.saveData(freshPosts),
+            _lastFeedLoadDateTimeProvider
+                .saveData(freshPosts.first.data.datePublish),
+          ]);
+        }
 
         offlinePosts.clear();
         _totalPosts.clear();
