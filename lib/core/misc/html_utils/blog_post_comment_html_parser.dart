@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright 2026 BitCodersNN
+
 import 'package:html/dom.dart';
 import 'package:html/parser.dart' as parser;
 import 'package:unn_mobile/core/misc/html_utils/bitrix_html_parser.dart';
