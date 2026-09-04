@@ -14,9 +14,8 @@ class _RegularExpressionSource {
   static const leadingSlashes = r'^/+';
   static const phpsessid = r'PHPSESSID=([^;]+)';
   static const distanceCourseSemester =
-      r'selectedYear == (\d{4}) && selectedSemester == (\d)';
+      "href=[\"']#/\\{\\{base_path\\}\\}/(\\d{4})/(\\d)[\"']";
   static const upperCaseLetters = r'[A-Z]';
-
   static const sonetLAssetsCheckSum = r"sonetLAssetsCheckSum:\s*'([^']+)'";
   static const signedParameters = r"signedParameters:\s*'([^']+)'";
   static const commentFormUID = r"commentFormUID:\s*'([^']+)'";
