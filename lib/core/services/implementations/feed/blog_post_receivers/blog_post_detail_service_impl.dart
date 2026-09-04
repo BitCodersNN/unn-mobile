@@ -9,8 +9,9 @@ import 'package:unn_mobile/core/misc/user/current_user_sync_storage.dart';
 import 'package:unn_mobile/core/models/feed/blog_post.dart';
 import 'package:unn_mobile/core/models/profile/user_short_info.dart';
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
+import 'package:unn_mobile/core/services/interfaces/feed/blog_post_receivers/blog_post_detail_service.dart';
 
-class BlogPostDetailServiceImpl {
+class BlogPostDetailServiceImpl implements BlogPostDetailService {
   final LoggerService _loggerService;
   final ApiHelper _apiHelper;
   final CurrentUserSyncStorage _currentUserSync;
@@ -21,6 +22,7 @@ class BlogPostDetailServiceImpl {
     this._currentUserSync,
   );
 
+  @override
   Future<BlogPost?> getBlogPostById({
     required int postId,
   }) async {
