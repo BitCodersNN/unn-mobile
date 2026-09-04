@@ -197,9 +197,9 @@ class FeedScreenViewState extends State<FeedScreenView>
                     if (model.hasSearch && model.posts.isEmpty)
                       SliverFillRemaining(
                         child: Center(
-                          child: RichText(
-                            text: TextSpan(
-                              style: DefaultTextStyle.of(context).style,
+                          child: Text.rich(
+                            textAlign: TextAlign.center,
+                            TextSpan(
                               children: [
                                 const TextSpan(text: 'По запросу '),
                                 TextSpan(
