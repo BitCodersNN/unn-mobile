@@ -83,6 +83,9 @@ class SourcePageView extends StatelessWidget {
                               title: 'Выберите семестр',
                               actions: actions,
                               cancelLabel: 'Отмена',
+                              shrinkWrap: true,
+                              initialSelectedActionKey:
+                                  model.currentSemesterIndex,
                             );
 
                             if (selectedSem == null) {
