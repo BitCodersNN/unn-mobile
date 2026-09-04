@@ -194,6 +194,26 @@ class FeedScreenViewState extends State<FeedScreenView>
                         theme.colorScheme.error,
                         theme.colorScheme.onError,
                       ),
+                    if (model.hasSearch && model.posts.isEmpty)
+                      SliverFillRemaining(
+                        child: Center(
+                          child: RichText(
+                            text: TextSpan(
+                              style: DefaultTextStyle.of(context).style,
+                              children: [
+                                const TextSpan(text: 'По запросу '),
+                                TextSpan(
+                                  text: model.searchQuery,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const TextSpan(text: ' ничего не найдено'),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
                     if (!online && model.offlinePosts.isNotEmpty)
                       _coloredTopMessage(
                         context,
