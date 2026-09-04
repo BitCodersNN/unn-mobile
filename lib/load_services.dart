@@ -128,6 +128,7 @@ import 'package:unn_mobile/core/services/interfaces/distance_learning/distance_c
 import 'package:unn_mobile/core/services/interfaces/distance_learning/distance_learning_downloader_service.dart';
 import 'package:unn_mobile/core/services/interfaces/distance_learning/session_checker_service.dart';
 import 'package:unn_mobile/core/services/interfaces/distance_learning/webinar_service.dart';
+import 'package:unn_mobile/core/services/interfaces/feed/blog_post_comments_service.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/blog_post_receivers/blog_post_pagination_service.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/blog_post_receivers/refresh_blog_post_service.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/blog_post_search_service.dart';
@@ -138,7 +139,6 @@ import 'package:unn_mobile/core/services/interfaces/feed/feed_file_downloader_se
 import 'package:unn_mobile/core/services/interfaces/feed/legacy/blog_post_receivers/blog_post_service.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/legacy/blog_post_receivers/featured_blog_post_service.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/legacy/blog_post_receivers/regular_blog_posts_service.dart';
-import 'package:unn_mobile/core/services/interfaces/feed/legacy/getting_blog_post_comments.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/legacy/getting_blog_posts.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/legacy/getting_rating_list.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/legacy/getting_vote_key_signed.dart';
