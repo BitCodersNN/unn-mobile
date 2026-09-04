@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2025 BitCodersNN
 
-import 'package:unn_mobile/core/models/feed/blog_post_comment_data.dart';
+import 'package:unn_mobile/core/models/feed/blog_post_comment.dart';
 
-abstract interface class GettingBlogPostComments {
+abstract interface class BlogPostCommentsService {
   static const commentsPerPage = 20;
 
   /// Получает список комментариев к блог-посту
@@ -21,13 +21,13 @@ abstract interface class GettingBlogPostComments {
   /// пока ещё ни разу не натыкались на такое
   ///
   /// Возвращает
-  ///   - список из [BlogPostCommentData], если всё хорошо
+  ///   - список из [BlogPostComment], если всё хорошо
   ///   - пустой список, если комментариев нет
   ///   - null, если:
   ///     1. Не удалось получить ответ от портала
   ///     2. statusCode не равен 200
   ///     3. Не вышло декодировать ответ
-  Future<List<BlogPostCommentData>?> getBlogPostComments({
+  Future<List<BlogPostComment>?> getBlogPostComments({
     required int postId,
     int pageNumber = 1,
   });
