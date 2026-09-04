@@ -75,7 +75,6 @@ class DistanceCourseSemesterServiceImpl
         .toList();
 
     final seen = <String>{};
-    final a = parsed.where((s) => seen.add('${s.year}-${s.semester}')).toList();
-    return a;
+    return parsed.where((s) => seen.add('${s.year}-${s.semester}')).toList();
   }
 }
