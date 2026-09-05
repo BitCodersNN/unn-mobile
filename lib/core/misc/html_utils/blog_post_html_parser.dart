@@ -18,7 +18,25 @@ import 'package:unn_mobile/core/models/feed/post_destination.dart';
 import 'package:unn_mobile/core/models/profile/user_short_info.dart';
 
 class BlogPostHtmlParser {
-  static Map<BlogPostType, List<BlogPost>>? parse(
+  static BlogPost? parsePost(
+    String? htmlText,
+    UserShortInfo currentUserData,
+  ) {
+    final document = parser.parse(
+      htmlText,
+    );
+    final postElement = document.querySelector('.feed-item-wrap');
+
+    if (postElement == null) {
+      return null;
+    }
+
+    final postType = _getPostType(postElement);
+
+    return _parsePost(postElement, currentUserData, postType);
+  }
+
+  static Map<BlogPostType, List<BlogPost>>? parsePosts(
     String? htmlText,
     UserShortInfo currentUserData,
   ) {
