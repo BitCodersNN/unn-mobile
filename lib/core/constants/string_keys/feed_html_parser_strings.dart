@@ -67,16 +67,13 @@ class FeedHtmlParserStrings {
   ];
 
   static const List<String> imageSrcAttributesWithSrc = <String>[
-    attrDataSrc,
+    ...imageSrcAttributesShort,
     attrDataThumbSrc,
-    attrSrc,
   ];
 
   static const List<String> imageSrcAttributesFull = <String>[
-    attrDataSrc,
-    attrDataThumbSrc,
+    ...imageSrcAttributesWithSrc,
     attrDataBxSrc,
-    attrSrc,
   ];
 
   // ======== ОСТАЛЬНЫЕ CSS СЕЛЕКТОРЫ (Посты и Лента) ========
