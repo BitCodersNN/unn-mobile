@@ -197,19 +197,22 @@ class FeedScreenViewState extends State<FeedScreenView>
                     if (model.hasSearch && model.posts.isEmpty)
                       SliverFillRemaining(
                         child: Center(
-                          child: Text.rich(
-                            textAlign: TextAlign.center,
-                            TextSpan(
-                              children: [
-                                const TextSpan(text: 'По запросу '),
-                                TextSpan(
-                                  text: model.searchQuery,
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
+                          child: Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Text.rich(
+                              textAlign: TextAlign.center,
+                              TextSpan(
+                                children: [
+                                  const TextSpan(text: 'По запросу '),
+                                  TextSpan(
+                                    text: model.searchQuery,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
-                                ),
-                                const TextSpan(text: ' ничего не найдено'),
-                              ],
+                                  const TextSpan(text: ' ничего не найдено'),
+                                ],
+                              ),
                             ),
                           ),
                         ),
