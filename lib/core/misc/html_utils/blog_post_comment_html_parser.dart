@@ -3,6 +3,8 @@
 
 import 'package:html/dom.dart';
 import 'package:html/parser.dart' as parser;
+import 'package:unn_mobile/core/constants/regular_expressions.dart';
+import 'package:unn_mobile/core/constants/string_keys/feed_html_parser_strings.dart';
 import 'package:unn_mobile/core/misc/html_utils/bitrix_html_parser.dart';
 import 'package:unn_mobile/core/models/common/file_data.dart';
 import 'package:unn_mobile/core/models/feed/blog_post_comment.dart';
@@ -15,7 +17,8 @@ class BlogPostCommentHtmlParser {
     UserShortInfo currentUserData,
   ) {
     final document = parser.parse(htmlText);
-    final commentElements = document.querySelectorAll('.feed-com-block-cover');
+    final commentElements =
+        document.querySelectorAll(FeedHtmlParserStrings.feedComBlockCover);
 
     return commentElements
         .map((element) => _parseComment(element, currentUserData))
@@ -28,24 +31,27 @@ class BlogPostCommentHtmlParser {
   ) {
     final attachFiles = BitrixHtmlParserUtils.extractAttachedFiles(
       commentElement,
-      '.feed-com-files .feed-com-file-wrap, #disk-attach-block .feed-com-file-wrap',
+      FeedHtmlParserStrings.attachedFilesSelectorGeneral,
       skipIfInCommentsBlock: false,
     );
 
+    final authorInfo = BitrixHtmlParserUtils.parseAuthorInfo(
+      commentElement,
+      FeedHtmlParserStrings.selAuthorLink, // Обновлено: был authorLinkSelector
+      FeedHtmlParserStrings
+          .attrBxTooltipUserId, // Обновлено: был bxTooltipUserIdAttr
+      FeedHtmlParserStrings.unknownAuthor,
+    );
+
     return BlogPostComment(
-      data: _parseCommentData(commentElement, attachFiles),
+      data: _parseCommentData(commentElement, attachFiles, authorInfo),
       ratingList: BitrixHtmlParserUtils.parseRatingList(
         commentElement,
         currentUserData,
-        '.feed-post-emoji-container',
+        FeedHtmlParserStrings.feedPostEmojiContainerSimple,
         null,
       ),
-      userShortInfo: BitrixHtmlParserUtils.parseAuthorInfo(
-        commentElement,
-        'a[bx-tooltip-user-id]',
-        'bx-tooltip-user-id',
-        'Неизвестный автор',
-      ),
+      userShortInfo: authorInfo,
       attachFiles: attachFiles,
     );
   }
@@ -53,28 +59,27 @@ class BlogPostCommentHtmlParser {
   static BlogPostCommentData _parseCommentData(
     Element commentElement,
     List<FileData> attachFiles,
+    UserShortInfo authorInfo,
   ) {
-    final commentId = _extractCommentId(commentElement) ?? -1;
+    final commentId =
+        _extractCommentId(commentElement) ?? FeedHtmlParserStrings.unknownId;
 
     return BlogPostCommentData(
-      authorBitrixId: BitrixHtmlParserUtils.parseAuthorInfo(
-            commentElement,
-            'a[bx-tooltip-user-id]',
-            'bx-tooltip-user-id',
-            'Неизвестный автор',
-          ).bitrixId ??
-          -1,
+      authorBitrixId: authorInfo.bitrixId ?? FeedHtmlParserStrings.unknownId,
       id: commentId,
-      dateTime: commentElement.querySelector('.feed-com-time')?.text.trim() ??
-          'unknown',
+      dateTime: commentElement
+              .querySelector(FeedHtmlParserStrings.feedComTime)
+              ?.text
+              .trim() ??
+          FeedHtmlParserStrings.unknownValue,
       message: commentElement
-              .querySelector('.feed-com-text-inner-inner')
+              .querySelector(FeedHtmlParserStrings.feedComTextInnerInner)
               ?.innerHtml
               .trim() ??
-          'unknown',
+          FeedHtmlParserStrings.unknownValue,
       keySigned: BitrixHtmlParserUtils.extractKeySigned(
         commentElement,
-        'BLOG_COMMENT_',
+        FeedHtmlParserStrings.blogCommentPrefix,
         commentId.toString(),
       ),
       imageUrls: _extractImageUrls(commentElement),
@@ -83,25 +88,33 @@ class BlogPostCommentHtmlParser {
   }
 
   static int? _extractCommentId(Element element) {
-    final entityId = element.attributes['bx-mpl-entity-id'];
+    // Обновлено: bxMplEntityIdAttr -> attrBxMplEntityId
+    final entityId =
+        element.attributes[FeedHtmlParserStrings.attrBxMplEntityId];
     if (entityId != null) {
       return int.tryParse(entityId);
     }
 
-    final recordId = element.attributes['id'];
-    if (recordId != null) {
-      final match = RegExp(r'record-BLOG_\d+-(\d+)-cover').firstMatch(recordId);
-      return match != null ? int.tryParse(match.group(1)!) : null;
+    // Обновлено: idAttr -> attrId
+    final recordId = element.attributes[FeedHtmlParserStrings.attrId];
+    if (recordId == null) {
+      return null;
     }
-    return null;
+
+    final match = RegularExpressions.recordBlogRegExp.firstMatch(recordId);
+    if (match == null) {
+      return null;
+    }
+
+    return int.tryParse(match.group(1) ?? '');
   }
 
   static List<String> _extractImageUrls(Element element) {
     final urls = <String>{};
     BitrixHtmlParserUtils.extractImagesToSet(
       element,
-      '.feed-com-files img, .disk-ui-file-thumbnails-web-grid img, .feed-com-files-photo img',
-      ['data-src', 'data-thumb-src', 'data-bx-src', 'src'],
+      FeedHtmlParserStrings.imageSelector,
+      FeedHtmlParserStrings.imageSrcAttributesFull,
       urls,
     );
     return urls.toList();

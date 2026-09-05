@@ -6,6 +6,8 @@ import 'dart:convert';
 import 'package:html/dom.dart';
 import 'package:unn_mobile/core/constants/api/host.dart';
 import 'package:unn_mobile/core/constants/api/protocol_type.dart';
+import 'package:unn_mobile/core/constants/regular_expressions.dart';
+import 'package:unn_mobile/core/constants/string_keys/feed_html_parser_strings.dart';
 import 'package:unn_mobile/core/misc/file_helpers/size_converter.dart';
 import 'package:unn_mobile/core/models/common/file_data.dart';
 import 'package:unn_mobile/core/models/feed/rating_list.dart';
@@ -17,19 +19,29 @@ class BitrixHtmlParserUtils {
       return {};
     }
 
-    final iconContainer =
-        emojiContainer.querySelector('.feed-post-emoji-icon-container');
+    final iconContainer = emojiContainer.querySelector(
+      FeedHtmlParserStrings.feedPostEmojiIconContainer,
+    );
     if (iconContainer == null) {
       return {};
     }
 
-    final reactionsDataAttr = iconContainer.attributes['data-reactions-data'];
+    final reactionsDataAttr =
+        iconContainer.attributes[FeedHtmlParserStrings.attrDataReactionsData];
+
     if (reactionsDataAttr == null || reactionsDataAttr.isEmpty) {
       return {};
     }
 
-    final decodedData =
-        reactionsDataAttr.replaceAll('&quot;', '"').replaceAll('&amp;', '&');
+    final decodedData = reactionsDataAttr
+        .replaceAll(
+          FeedHtmlParserStrings.htmlEntityQuote,
+          FeedHtmlParserStrings.charQuote,
+        )
+        .replaceAll(
+          FeedHtmlParserStrings.htmlEntityAmp,
+          FeedHtmlParserStrings.charAmpersand,
+        );
 
     try {
       final jsonData = jsonDecode(decodedData);
@@ -47,9 +59,10 @@ class BitrixHtmlParserUtils {
         }
         return validReactions;
       }
-    } catch (e) {
+    } catch (_) {
       // Безопасное игнорирование ошибок парсинга JSON
     }
+
     return {};
   }
 
@@ -61,21 +74,30 @@ class BitrixHtmlParserUtils {
       return null;
     }
 
-    final myReactionElement =
-        emojiContainer.querySelector('[data-myreaction]') ??
-            (livefeedId != null
-                ? emojiContainer
-                    .querySelector('#bx-ilike-user-reaction-$livefeedId')
-                : null) ??
-            emojiContainer.querySelector('[data-value]');
+    Element? myReactionElement = emojiContainer.querySelector(
+      FeedHtmlParserStrings.selDataMyreaction,
+    );
 
-    if (myReactionElement != null) {
-      final reactionValue = myReactionElement.attributes['data-myreaction'] ??
-          myReactionElement.attributes['data-value'];
+    if (myReactionElement == null && livefeedId != null) {
+      myReactionElement = emojiContainer.querySelector(
+        '${FeedHtmlParserStrings.bxIlikeUserReactionPrefixSelector}$livefeedId',
+      );
+    }
 
-      if (reactionValue != null && reactionValue.isNotEmpty) {
-        return ReactionType.fromString(reactionValue);
-      }
+    myReactionElement ??= emojiContainer.querySelector(
+      FeedHtmlParserStrings.selDataValue,
+    );
+
+    if (myReactionElement == null) {
+      return null;
+    }
+
+    final reactionValue = myReactionElement
+            .attributes[FeedHtmlParserStrings.attrDataMyreaction] ??
+        myReactionElement.attributes[FeedHtmlParserStrings.attrDataValue];
+
+    if (reactionValue != null && reactionValue.isNotEmpty) {
+      return ReactionType.fromString(reactionValue);
     }
     return null;
   }
@@ -92,7 +114,7 @@ class BitrixHtmlParserUtils {
     }
 
     final targetContainer = emojiContainer.querySelector(
-          '.feed-post-emoji-container, .feed-post-emoji-top-panel-box',
+          FeedHtmlParserStrings.feedPostEmojiContainer,
         ) ??
         emojiContainer;
 
@@ -126,31 +148,46 @@ class BitrixHtmlParserUtils {
       if (skipIfInCommentsBlock) {
         final parent2 = fileWrap.parent?.parent;
         final parent3 = parent2?.parent;
-        if ((parent2?.classes.contains('feed-comments-block') ?? false) ||
-            (parent3?.classes.contains('feed-comments-block') ?? false)) {
+        final inComments = (parent2?.classes.contains(
+                  FeedHtmlParserStrings.feedCommentsBlock,
+                ) ??
+                false) ||
+            (parent3?.classes.contains(
+                  FeedHtmlParserStrings.feedCommentsBlock,
+                ) ??
+                false);
+        if (inComments) {
           continue;
         }
       }
 
-      final linkElement = fileWrap.querySelector('a[data-attached-object-id]');
+      final linkElement = fileWrap.querySelector(
+        FeedHtmlParserStrings.selAttachedFileLink,
+      );
       if (linkElement == null) {
         continue;
       }
 
-      final attachedId = linkElement.attributes['data-attached-object-id'];
+      final attachedId = linkElement
+          .attributes[FeedHtmlParserStrings.attrDataAttachedObjectId];
       if (attachedId == null || attachedId.isEmpty) {
         continue;
       }
 
-      final fileName = linkElement.attributes['title']?.trim();
+      final fileName =
+          linkElement.attributes[FeedHtmlParserStrings.attrTitle]?.trim();
       if (fileName == null || fileName.isEmpty) {
         continue;
       }
 
-      final sizeElement = fileWrap.querySelector('.feed-com-file-size');
-      final sizeText = sizeElement?.text.trim() ?? '0 Б';
+      final sizeElement = fileWrap.querySelector(
+        FeedHtmlParserStrings.feedComFileSize,
+      );
+      final sizeText =
+          sizeElement?.text.trim() ?? FeedHtmlParserStrings.defaultSize;
       final sizeInBytes = SizeConverter.parseFileSize(sizeText);
-      final downloadUrl = linkElement.attributes['href'] ?? '';
+      final downloadUrl =
+          linkElement.attributes[FeedHtmlParserStrings.attrHref] ?? '';
 
       fileDataList.add(
         FileData(
@@ -169,13 +206,14 @@ class BitrixHtmlParserUtils {
     String entityType,
     String entityId,
   ) {
-    final scripts = root.getElementsByTagName('script');
-    final searchPattern = "likeId: '$entityType$entityId-";
+    final scripts = root.getElementsByTagName(FeedHtmlParserStrings.scriptTag);
+    final searchPattern =
+        '${FeedHtmlParserStrings.likeIdPrefix}$entityType$entityId${FeedHtmlParserStrings.likeIdSuffix}';
 
     for (final script in scripts) {
       final content = script.text;
       if (content.contains(searchPattern)) {
-        final match = RegExp(r"keySigned:\s*'([^']+)'").firstMatch(content);
+        final match = RegularExpressions.keySignedRegExp.firstMatch(content);
         if (match != null) {
           return match.group(1) ?? '';
         }
@@ -197,7 +235,12 @@ class BitrixHtmlParserUtils {
           );
 
       if (src != null) {
-        result.add(src.replaceAll('action=download', 'action=show'));
+        result.add(
+          src.replaceAll(
+            FeedHtmlParserStrings.actionDownload,
+            FeedHtmlParserStrings.actionShow,
+          ),
+        );
       }
     }
   }
@@ -213,22 +256,28 @@ class BitrixHtmlParserUtils {
     final fullname = authorLink?.text.trim() ?? fallbackName;
 
     String? photoSrc;
-    final avatarContainer =
-        root.querySelector('.feed-com-avatar, .feed-user-avatar');
+    final avatarContainer = root.querySelector(
+      FeedHtmlParserStrings.avatarContainer,
+    );
 
     if (avatarContainer != null) {
-      final imgElement = avatarContainer.querySelector('img');
-      final rawSrc =
-          imgElement?.attributes['src'] ?? imgElement?.attributes['data-src'];
+      final imgElement = avatarContainer.querySelector(
+        FeedHtmlParserStrings.imgTag,
+      );
+      final rawSrc = imgElement?.attributes[FeedHtmlParserStrings.attrSrc] ??
+          imgElement?.attributes[FeedHtmlParserStrings.attrDataSrc];
 
-      if (rawSrc != null && rawSrc.isNotEmpty && rawSrc != '""') {
+      if (rawSrc != null &&
+          rawSrc.isNotEmpty &&
+          rawSrc != FeedHtmlParserStrings.emptyQuotes) {
         photoSrc = '${ProtocolType.https.name}://${Host.unn}$rawSrc';
       } else {
-        final iconElement = avatarContainer.querySelector('i');
-        final style = iconElement?.attributes['style'];
+        final iconElement = avatarContainer.querySelector(
+          FeedHtmlParserStrings.iconTag,
+        );
+        final style = iconElement?.attributes[FeedHtmlParserStrings.attrStyle];
         if (style != null) {
-          final urlMatch =
-              RegExp(r'''url\(['"]?([^'")]+)['"]?\)''').firstMatch(style);
+          final urlMatch = RegularExpressions.urlRegExp.firstMatch(style);
           if (urlMatch != null) {
             photoSrc =
                 '${ProtocolType.https.name}://${Host.unn}${urlMatch.group(1)}';

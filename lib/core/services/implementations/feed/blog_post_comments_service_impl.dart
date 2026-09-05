@@ -12,6 +12,14 @@ import 'package:unn_mobile/core/models/profile/user_short_info.dart';
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/blog_post_comments_service.dart';
 
+class _CommentsDataKeys {
+  static const String entityId = 'ENTITY_XML_ID';
+  static const String commentPostId = 'comment_post_id';
+  static const String ajaxPost = 'AJAX_POST';
+  static const String mode = 'MODE';
+  static const String page = 'PAGEN_1';
+}
+
 class _JsonKeys {
   static const _messageListKey = 'messageList';
 }
@@ -41,11 +49,11 @@ class BlogPostCommentsServiceImpl implements BlogPostCommentsService {
           AjaxActionStrings.c: AjaxActionStrings.comment,
         },
         data: {
-          'ENTITY_XML_ID': 'BLOG_$postId',
-          'AJAX_POST': 'Y',
-          'MODE': 'LIST',
-          'comment_post_id': postId.toString(),
-          'PAGEN_1': pageNumber.toString(),
+          _CommentsDataKeys.entityId: 'BLOG_$postId',
+          _CommentsDataKeys.ajaxPost: 'Y',
+          _CommentsDataKeys.mode: 'LIST',
+          _CommentsDataKeys.commentPostId: postId.toString(),
+          _CommentsDataKeys.page: pageNumber.toString(),
         },
         options: Options(
           sendTimeout: const Duration(seconds: 30),
