@@ -2,7 +2,7 @@
 // Copyright 2025 BitCodersNN
 
 class _RegularExpressionSource {
-  static const keySigned = r"keySigned: '.*',";
+  static const keySigned = r"keySigned:\s*'([^']+)'"; // r"keySigned: '.*',";
   static const commentIdAndMessage = r"top\.text\d+ = text(\d+) = '([^']*)'";
   static const author =
       r'<span class="feed-com-name.*?feed-author-name-(\d+)">([^<]+)<\/span>';
@@ -20,6 +20,12 @@ class _RegularExpressionSource {
   static const signedParameters = r"signedParameters:\s*'([^']+)'";
   static const commentFormUID = r"commentFormUID:\s*'([^']+)'";
   static const blogCommentFormUID = r"blogCommentFormUID:\s*'([^']+)'";
+  static const urlPattern = r'''url\(['"]?([^'")]+)['"]?\)''';
+  static const recordBlogPattern = r'record-BLOG_\d+-(\d+)-cover';
+  static const blogPostIdPattern = r'BLOG_POST-(\d+)';
+  static const digitsPattern = r'(\d+)';
+  static const fourDigitYearPattern = r'\b\d{4}\b';
+  static const timePattern = r'(\d{1,2}:\d{2})';
 }
 
 class RegularExpressions {
@@ -85,5 +91,26 @@ class RegularExpressions {
     _RegularExpressionSource.blogCommentFormUID,
     multiLine: true,
     caseSensitive: false,
+  );
+
+  static final urlRegExp = RegExp(
+    _RegularExpressionSource.urlPattern,
+  );
+
+  static final recordBlogRegExp = RegExp(
+    _RegularExpressionSource.recordBlogPattern,
+  );
+
+  static final blogPostIdRegExp = RegExp(
+    _RegularExpressionSource.blogPostIdPattern,
+  );
+  static final digitsRegExp = RegExp(
+    _RegularExpressionSource.digitsPattern,
+  );
+  static final fourDigitYearRegExp = RegExp(
+    _RegularExpressionSource.fourDigitYearPattern,
+  );
+  static final timeRexExp = RegExp(
+    _RegularExpressionSource.timePattern,
   );
 }

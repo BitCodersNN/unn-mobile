@@ -74,6 +74,7 @@ import 'package:unn_mobile/core/services/implementations/distance_learning/dista
 import 'package:unn_mobile/core/services/implementations/distance_learning/distance_learning_downloader_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/distance_learning/session_checker_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/distance_learning/webinar_service_impl.dart';
+import 'package:unn_mobile/core/services/implementations/feed/blog_post_comments_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/feed/blog_post_receivers/blog_post_detail_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/feed/blog_post_receivers/blog_post_pagination_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/feed/blog_post_receivers/refresh_blog_post_service_impl.dart';
@@ -85,7 +86,6 @@ import 'package:unn_mobile/core/services/implementations/feed/feed_file_download
 import 'package:unn_mobile/core/services/implementations/feed/legacy/blog_post_receivers/blog_post_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/feed/legacy/blog_post_receivers/featured_blog_posts_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/feed/legacy/blog_post_receivers/regular_blog_posts_service_impl.dart';
-import 'package:unn_mobile/core/services/implementations/feed/legacy/getting_blog_post_comments_impl.dart';
 import 'package:unn_mobile/core/services/implementations/feed/legacy/getting_blog_posts_impl.dart';
 import 'package:unn_mobile/core/services/implementations/feed/legacy/getting_rating_list_impl.dart';
 import 'package:unn_mobile/core/services/implementations/feed/legacy/getting_vote_key_signed_impl.dart';
@@ -129,6 +129,7 @@ import 'package:unn_mobile/core/services/interfaces/distance_learning/distance_c
 import 'package:unn_mobile/core/services/interfaces/distance_learning/distance_learning_downloader_service.dart';
 import 'package:unn_mobile/core/services/interfaces/distance_learning/session_checker_service.dart';
 import 'package:unn_mobile/core/services/interfaces/distance_learning/webinar_service.dart';
+import 'package:unn_mobile/core/services/interfaces/feed/blog_post_comments_service.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/blog_post_receivers/blog_post_detail_service.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/blog_post_receivers/blog_post_pagination_service.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/blog_post_receivers/refresh_blog_post_service.dart';
@@ -140,7 +141,6 @@ import 'package:unn_mobile/core/services/interfaces/feed/feed_file_downloader_se
 import 'package:unn_mobile/core/services/interfaces/feed/legacy/blog_post_receivers/blog_post_service.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/legacy/blog_post_receivers/featured_blog_post_service.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/legacy/blog_post_receivers/regular_blog_posts_service.dart';
-import 'package:unn_mobile/core/services/interfaces/feed/legacy/getting_blog_post_comments.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/legacy/getting_blog_posts.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/legacy/getting_rating_list.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/legacy/getting_vote_key_signed.dart';
@@ -420,9 +420,10 @@ void registerDependencies() {
         getApiHelper(HostType.unnPortal),
       ),
     )
-    ..registerSingleton<GettingBlogPostComments>(
-      () => GettingBlogPostCommentsImpl(
+    ..registerSingleton<BlogPostCommentsService>(
+      () => BlogPostCommentsServiceImpl(
         get<LoggerService>(),
+        get<CurrentUserSyncStorage>(),
         getApiHelper(HostType.unnPortal),
       ),
     );
