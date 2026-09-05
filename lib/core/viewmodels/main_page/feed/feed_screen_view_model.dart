@@ -175,15 +175,9 @@ class FeedScreenViewModel extends BaseViewModel
           return;
         }
 
-        final freshPosts = posts[BlogPostType.regular];
+        final freshPosts = posts[BlogPostType.regular] ?? [];
 
-        if (freshPosts == null) {
-          loadingMore = false;
-          failedToLoad = true;
-          return;
-        }
-
-        if (!hasSearch) {
+        if (!hasSearch && freshPosts.isNotEmpty) {
           await Future.wait([
             _blogPostProvider.saveData(freshPosts),
             _lastFeedLoadDateTimeProvider
