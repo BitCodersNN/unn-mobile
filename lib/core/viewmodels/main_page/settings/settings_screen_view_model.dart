@@ -37,6 +37,14 @@ class SettingsScreenViewModel extends BaseViewModel {
     notifyListeners();
   }
 
+  bool get reverseComments => AppSettings.reverseComments;
+
+  set reverseComments(bool value) {
+    AppSettings.reverseComments = value;
+    AppSettings.save();
+    notifyListeners();
+  }
+
   List<String> get activeNavbarRouteNames =>
       [for (final e in MainPageRouting.activeNavbarRoutes) e.pageTitle];
 

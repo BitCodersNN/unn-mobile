@@ -47,6 +47,16 @@ class SettingsScreenView extends StatelessWidget {
                           model.analyticsEnabled = value;
                         },
                       ),
+                      SwitchListTile.adaptive(
+                        title: const Text('Порядок комментариев'),
+                        subtitle: model.reverseComments
+                            ? const Text('Сначала новые')
+                            : const Text('Сначала старые'),
+                        value: model.reverseComments,
+                        onChanged: (value) {
+                          model.reverseComments = value;
+                        },
+                      ),
                       ListTile(
                         title: const Text('Начальный экран'),
                         trailing: Padding(

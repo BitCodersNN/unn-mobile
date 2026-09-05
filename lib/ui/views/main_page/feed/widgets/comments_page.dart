@@ -4,6 +4,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:unn_mobile/core/misc/app_settings.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/feed/feed_post_view_model.dart';
 import 'package:unn_mobile/ui/unn_mobile_colors.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
@@ -57,20 +58,23 @@ class CommentsPage extends StatelessWidget {
                           ),
                         ),
                       ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 18,
+                          vertical: 8,
+                        ),
+                        child: Divider(
+                          height: 1,
+                          thickness: 0.3,
+                          color: unnColors?.ligtherTextColor,
+                        ),
+                      ),
                       Column(
+                        verticalDirection: AppSettings.reverseComments
+                            ? VerticalDirection.up
+                            : VerticalDirection.down,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 18,
-                              vertical: 8,
-                            ),
-                            child: Divider(
-                              height: 1,
-                              thickness: 0.3,
-                              color: unnColors?.ligtherTextColor,
-                            ),
-                          ),
                           if (model.isBusy)
                             const Center(
                               child: SizedBox(
