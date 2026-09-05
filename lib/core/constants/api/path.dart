@@ -49,7 +49,7 @@ class ApiPath {
   /// Часть URL-адреса для получения VoteKeySigned
   static const String companyPersonalUser = 'company/personal/user';
 
-  /// Часть URL-адреса для получения кокнетного поста
+  /// Часть URL-адреса для получения конкретного поста
   static const String blogPost = '${ApiPath.companyPersonalUser}/_/blog/';
 
   /// Для получения профиля текущего пользователя
