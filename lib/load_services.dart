@@ -74,6 +74,7 @@ import 'package:unn_mobile/core/services/implementations/distance_learning/dista
 import 'package:unn_mobile/core/services/implementations/distance_learning/distance_learning_downloader_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/distance_learning/session_checker_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/distance_learning/webinar_service_impl.dart';
+import 'package:unn_mobile/core/services/implementations/feed/blog_post_receivers/blog_post_detail_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/feed/blog_post_receivers/blog_post_pagination_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/feed/blog_post_receivers/refresh_blog_post_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/feed/blog_post_search_service_impl.dart';
@@ -128,6 +129,7 @@ import 'package:unn_mobile/core/services/interfaces/distance_learning/distance_c
 import 'package:unn_mobile/core/services/interfaces/distance_learning/distance_learning_downloader_service.dart';
 import 'package:unn_mobile/core/services/interfaces/distance_learning/session_checker_service.dart';
 import 'package:unn_mobile/core/services/interfaces/distance_learning/webinar_service.dart';
+import 'package:unn_mobile/core/services/interfaces/feed/blog_post_receivers/blog_post_detail_service.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/blog_post_receivers/blog_post_pagination_service.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/blog_post_receivers/refresh_blog_post_service.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/blog_post_search_service.dart';
@@ -671,6 +673,13 @@ void registerDependencies() {
     )
     ..registerSingleton<RefreshBlogPostService>(
       () => RefreshBlogPostServiceImpl(
+        get<LoggerService>(),
+        getApiHelper(HostType.unnPortal),
+        get<CurrentUserSyncStorage>(),
+      ),
+    )
+    ..registerSingleton<BlogPostDetailService>(
+      () => BlogPostDetailServiceImpl(
         get<LoggerService>(),
         getApiHelper(HostType.unnPortal),
         get<CurrentUserSyncStorage>(),
