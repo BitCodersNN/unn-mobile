@@ -83,12 +83,6 @@ import 'package:unn_mobile/core/services/implementations/feed/featured_blog_post
 import 'package:unn_mobile/core/services/implementations/feed/featured_blog_post_action/important_blog_post_users_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/feed/featured_blog_post_action/pinning_blog_post_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/feed/feed_file_downloader_service_impl.dart';
-import 'package:unn_mobile/core/services/implementations/feed/legacy/blog_post_receivers/legacy_blog_post_service_impl.dart'
-    as portal2_blog_post_service;
-import 'package:unn_mobile/core/services/implementations/feed/legacy/blog_post_receivers/legacy_featured_blog_post_service_impl.dart';
-import 'package:unn_mobile/core/services/implementations/feed/legacy/blog_post_receivers/legacy_regular_blog_post_service_impl.dart';
-import 'package:unn_mobile/core/services/implementations/feed/legacy/legacy_blog_post_service_impl.dart'
-    as cascade_blog_post_service;
 import 'package:unn_mobile/core/services/implementations/feed/legacy/legacy_reaction_rating_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/feed/legacy/legacy_vote_key_signed_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/feed/reaction_service_impl.dart';
@@ -140,12 +134,6 @@ import 'package:unn_mobile/core/services/interfaces/feed/featured_blog_post_acti
 import 'package:unn_mobile/core/services/interfaces/feed/featured_blog_post_action/important_blog_post_users_service.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/featured_blog_post_action/pinning_blog_post_service.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/feed_file_downloader_service.dart';
-import 'package:unn_mobile/core/services/interfaces/feed/legacy/blog_post_receivers/legacy_blog_post_service.dart'
-    as portal2_blog_post_service;
-import 'package:unn_mobile/core/services/interfaces/feed/legacy/blog_post_receivers/legacy_featured_blog_post_service.dart';
-import 'package:unn_mobile/core/services/interfaces/feed/legacy/blog_post_receivers/legacy_regular_blog_post_service.dart';
-import 'package:unn_mobile/core/services/interfaces/feed/legacy/legacy_blog_post_service.dart'
-    as cascade_blog_post_service;
 import 'package:unn_mobile/core/services/interfaces/feed/legacy/legacy_reaction_rating_service.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/legacy/legacy_vote_key_signed_service.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/reaction_service.dart';
@@ -393,33 +381,8 @@ void registerDependencies() {
     )
 
     // Blog & feed
-    ..registerDependency<RegularBlogPostService>(
-      () => RegularBlogPostServiceImpl(
-        get<LoggerService>(),
-        getApiHelper(HostType.unnPortal),
-      ),
-    )
-    ..registerDependency<FeaturedBlogPostService>(
-      () => FeaturedBlogPostServiceImpl(
-        get<LoggerService>(),
-        getApiHelper(HostType.unnPortal),
-      ),
-    )
-    ..registerSingleton<portal2_blog_post_service.BlogPostService>(
-      () => portal2_blog_post_service.BlogPostServiceImpl(
-        get<LoggerService>(),
-        getApiHelper(HostType.unnPortal),
-      ),
-    )
     ..registerDependency<PinningBlogPostService>(
       () => PinningBlogPostServiceImpl(
-        get<LoggerService>(),
-        getApiHelper(HostType.unnPortal),
-      ),
-    )
-    ..registerSingleton<cascade_blog_post_service.BlogPostService>(
-      () => cascade_blog_post_service.BlogPostServiceImpl(
-        get<UnnAuthService>(),
         get<LoggerService>(),
         getApiHelper(HostType.unnPortal),
       ),
