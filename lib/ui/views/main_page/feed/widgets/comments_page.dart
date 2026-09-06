@@ -1,7 +1,10 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2025 BitCodersNN
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:unn_mobile/core/misc/app_settings.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/feed/feed_post_view_model.dart';
 import 'package:unn_mobile/ui/unn_mobile_colors.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
@@ -27,7 +30,7 @@ class CommentsPage extends StatelessWidget {
             final theme = Theme.of(context);
             final unnColors = theme.unnMobileColors;
             return RefreshIndicator(
-              onRefresh: () => model.refresh(),
+              onRefresh: () => model.refresh(loadComments: true),
               child: SingleChildScrollView(
                 physics: const AlwaysScrollableScrollPhysics(),
                 child: ConstrainedBox(
@@ -55,19 +58,45 @@ class CommentsPage extends StatelessWidget {
                           ),
                         ),
                       ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 18,
+                          vertical: 8,
+                        ),
+                        child: Divider(
+                          height: 1,
+                          thickness: 0.3,
+                          color: unnColors?.ligtherTextColor,
+                        ),
+                      ),
                       Column(
+                        verticalDirection: AppSettings.reverseComments
+                            ? VerticalDirection.up
+                            : VerticalDirection.down,
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 18,
-                              vertical: 10,
+                          if (model.isBusy)
+                            const Center(
+                              child: SizedBox(
+                                width: 32,
+                                height: 32,
+                                child: CircularProgressIndicator(),
+                              ),
+                            )
+                          else if (model.hasMoreComments)
+                            Padding(
+                              padding: const EdgeInsets.only(
+                                bottom: 8.0,
+                                left: 16.0,
+                                right: 16.0,
+                              ),
+                              child: TextButton(
+                                onPressed: () async {
+                                  await model.loadMoreComments();
+                                },
+                                child: const Text('Предыдущие комментарии'),
+                              ),
                             ),
-                            child: Divider(
-                              height: 1,
-                              thickness: 0.3,
-                              color: unnColors?.ligtherTextColor,
-                            ),
-                          ),
                           for (final comment in model.comments)
                             FeedCommentView(viewModel: comment),
                         ],
@@ -80,6 +109,9 @@ class CommentsPage extends StatelessWidget {
           },
         ),
         model: post,
+        onModelReady: (model) {
+          unawaited(model.reloadComments());
+        },
       ),
     );
   }
