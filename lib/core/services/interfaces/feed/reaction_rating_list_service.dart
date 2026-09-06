@@ -4,7 +4,7 @@
 import 'package:unn_mobile/core/models/feed/rating_list.dart';
 
 @Deprecated('Сервис использовался в старом способе получения постов.')
-abstract interface class ReactionRatingService {
+abstract interface class ReactionRatingListService {
   /// Получает [RatingList], содержащий одну реакцию и до 20 пользователей, поставившие эту реакцию
   ///
   /// [String] voteKeySigned: bitrix

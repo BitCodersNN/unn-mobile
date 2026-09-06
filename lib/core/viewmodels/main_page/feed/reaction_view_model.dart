@@ -5,23 +5,20 @@ import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/misc/demo_mode_status.dart';
 import 'package:unn_mobile/core/models/feed/rating_list.dart';
 import 'package:unn_mobile/core/models/profile/user_short_info.dart';
-import 'package:unn_mobile/core/services/interfaces/feed/legacy/legacy_reaction_rating_service.dart';
-import 'package:unn_mobile/core/services/interfaces/feed/legacy/legacy_vote_key_signed_service.dart';
-import 'package:unn_mobile/core/services/interfaces/feed/reaction_service.dart';
+import 'package:unn_mobile/core/services/interfaces/feed/reaction_action_service.dart';
+import 'package:unn_mobile/core/services/interfaces/feed/reaction_rating_list_service.dart';
 import 'package:unn_mobile/core/viewmodels/factories/reaction_view_model_factory.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/common/reaction_view_model_base.dart';
 
 class ReactionViewModel extends ReactionViewModelBase {
-  final VoteKeySignedService _gettingVoteKeySigned;
-  final ReactionRatingService _gettingRatingList;
-  final ReactionService _reactionManager;
+  final ReactionRatingListService _gettingRatingList;
+  final ReactionActionService _reactionManager;
 
   String? _voteKeySigned;
 
   bool _isLoading = true;
 
   ReactionViewModel(
-    this._gettingVoteKeySigned,
     this._gettingRatingList,
     this._reactionManager,
     super._currentUserSyncStorage,
@@ -62,10 +59,6 @@ class ReactionViewModel extends ReactionViewModelBase {
   }) async {
     assert((voteKeySigned == null) != (postId == null && authorId == null));
     _voteKeySigned = voteKeySigned;
-    _voteKeySigned ??= await _gettingVoteKeySigned.getVoteKeySigned(
-      authorId: authorId!,
-      postId: postId!,
-    );
 
     if (_voteKeySigned == null) {
       return;

@@ -9,19 +9,18 @@ import 'package:unn_mobile/core/constants/rating_list_strings.dart';
 import 'package:unn_mobile/core/misc/json/json_utils.dart';
 import 'package:unn_mobile/core/models/feed/rating_list.dart';
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
-import 'package:unn_mobile/core/services/interfaces/feed/legacy/legacy_reaction_rating_service.dart';
+import 'package:unn_mobile/core/services/interfaces/feed/reaction_rating_list_service.dart';
 
 class _JsonKeys {
   static const data = 'data';
   static const reactions = 'reactions';
 }
 
-@Deprecated('Сервис использовался в старом способе получения постов.')
-class ReactionRatingServiceImpl implements ReactionRatingService {
+class ReactionRatingListServiceImpl implements ReactionRatingListService {
   final LoggerService _loggerService;
   final ApiHelper _apiHelper;
 
-  ReactionRatingServiceImpl(
+  ReactionRatingListServiceImpl(
     this._loggerService,
     this._apiHelper,
   );
