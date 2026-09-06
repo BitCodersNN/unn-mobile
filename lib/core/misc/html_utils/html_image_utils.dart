@@ -4,12 +4,7 @@
 import 'package:html/dom.dart' as dom;
 import 'package:html/parser.dart' as parser;
 
-class ExtractImagesAndCleanHtmlTextMapKey {
-  static const String cleanedText = 'cleanedText';
-  static const String imageUrls = 'imageUrls';
-}
-
-Map<String, dynamic> extractImagesAndCleanHtmlText(
+({String cleanedText, List<String> imageUrls}) extractImagesAndCleanHtmlText(
   String htmlText, {
   int minWidth = 32,
   int minHeight = 32,
@@ -22,6 +17,8 @@ Map<String, dynamic> extractImagesAndCleanHtmlText(
   }
 
   _removeDiskAttachDivs(body);
+  _removeScripts(body);
+  _removeSmallImages(body, minWidth, minHeight);
 
   final nodes = body.nodes.toList();
   final trailingImages = <dom.Element>[];
@@ -36,11 +33,9 @@ Map<String, dynamic> extractImagesAndCleanHtmlText(
       break;
     }
 
-    final widthStr = node.attributes['width'];
-    final heightStr = node.attributes['height'];
-
-    final width = widthStr == null ? null : int.tryParse(widthStr);
-    final height = heightStr == null ? null : int.tryParse(heightStr);
+    final style = node.attributes['style'];
+    final width = _getImageSize(node, 'width', style);
+    final height = _getImageSize(node, 'height', style);
 
     if (width != null && width < minWidth) {
       continue;
@@ -114,6 +109,50 @@ void _removeDiskAttachDivs(dom.Element element) {
   }
 }
 
+void _removeScripts(dom.Element element) {
+  final scripts = element.querySelectorAll('script');
+  for (final script in scripts) {
+    script.remove();
+  }
+}
+
+void _removeSmallImages(dom.Element element, int minWidth, int minHeight) {
+  final images = element.querySelectorAll('img');
+  for (final img in images) {
+    final style = img.attributes['style'];
+    final width = _getImageSize(img, 'width', style);
+    final height = _getImageSize(img, 'height', style);
+
+    final isSmallWidth = width != null && width < minWidth;
+    final isSmallHeight = height != null && height < minHeight;
+
+    if (isSmallWidth || isSmallHeight) {
+      img.remove();
+    }
+  }
+}
+
+int? _getImageSize(dom.Element img, String dimension, String? style) {
+  var size = _parseSize(img.attributes[dimension]);
+
+  if (size == null && style != null) {
+    final regex = RegExp('$dimension\\s*:\\s*(\\d+)px', caseSensitive: false);
+    final match = regex.firstMatch(style);
+    if (match != null) {
+      size = int.tryParse(match.group(1)!);
+    }
+  }
+  return size;
+}
+
+int? _parseSize(String? value) {
+  if (value == null) {
+    return null;
+  }
+  final match = RegExp(r'^(\d+)').firstMatch(value.trim());
+  return match != null ? int.tryParse(match.group(1)!) : null;
+}
+
 dom.Document? _parseHtmlSafely(String htmlText) {
   try {
     return parser.parse(htmlText);
@@ -122,11 +161,11 @@ dom.Document? _parseHtmlSafely(String htmlText) {
   }
 }
 
-Map<String, dynamic> _buildResult(
+({String cleanedText, List<String> imageUrls}) _buildResult(
   String cleanedText,
   List<String>? imageUrls,
 ) =>
-    {
-      ExtractImagesAndCleanHtmlTextMapKey.cleanedText: cleanedText,
-      ExtractImagesAndCleanHtmlTextMapKey.imageUrls: imageUrls,
-    };
+    (
+      cleanedText: cleanedText,
+      imageUrls: imageUrls ?? const [],
+    );

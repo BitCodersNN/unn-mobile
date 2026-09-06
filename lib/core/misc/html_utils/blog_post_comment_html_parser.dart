@@ -37,9 +37,8 @@ class BlogPostCommentHtmlParser {
 
     final authorInfo = BitrixHtmlParserUtils.parseAuthorInfo(
       commentElement,
-      FeedHtmlParserStrings.selAuthorLink, // Обновлено: был authorLinkSelector
-      FeedHtmlParserStrings
-          .attrBxTooltipUserId, // Обновлено: был bxTooltipUserIdAttr
+      FeedHtmlParserStrings.selAuthorLink,
+      FeedHtmlParserStrings.attrBxTooltipUserId,
       FeedHtmlParserStrings.unknownAuthor,
     );
 
@@ -48,7 +47,7 @@ class BlogPostCommentHtmlParser {
       ratingList: BitrixHtmlParserUtils.parseRatingList(
         commentElement,
         currentUserData,
-        FeedHtmlParserStrings.feedPostEmojiContainerSimple,
+        FeedHtmlParserStrings.selEmojiContainerSimple,
         null,
       ),
       userShortInfo: authorInfo,
@@ -88,14 +87,12 @@ class BlogPostCommentHtmlParser {
   }
 
   static int? _extractCommentId(Element element) {
-    // Обновлено: bxMplEntityIdAttr -> attrBxMplEntityId
     final entityId =
         element.attributes[FeedHtmlParserStrings.attrBxMplEntityId];
     if (entityId != null) {
       return int.tryParse(entityId);
     }
 
-    // Обновлено: idAttr -> attrId
     final recordId = element.attributes[FeedHtmlParserStrings.attrId];
     if (recordId == null) {
       return null;
