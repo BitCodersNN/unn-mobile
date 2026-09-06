@@ -3,6 +3,7 @@
 
 import 'package:html/dom.dart' as dom;
 import 'package:html/parser.dart' as parser;
+import 'package:unn_mobile/core/constants/regular_expressions.dart';
 
 ({String cleanedText, List<String> imageUrls}) extractImagesAndCleanHtmlText(
   String htmlText, {
@@ -109,8 +110,8 @@ int? _getImageSize(dom.Element img, String dimension, String? style) {
   var size = _parseSize(img.attributes[dimension]);
 
   if (size == null && style != null) {
-    final regex = RegExp('$dimension\\s*:\\s*(\\d+)px', caseSensitive: false);
-    final match = regex.firstMatch(style);
+    final match =
+        RegularExpressions.dimensionValueRegExp(dimension).firstMatch(style);
     if (match != null) {
       size = int.tryParse(match.group(1)!);
     }
@@ -122,7 +123,7 @@ int? _parseSize(String? value) {
   if (value == null) {
     return null;
   }
-  final match = RegExp(r'^(\d+)').firstMatch(value.trim());
+  final match = RegularExpressions.leadingDigitsRegExp.firstMatch(value.trim());
   return match != null ? int.tryParse(match.group(1)!) : null;
 }
 
