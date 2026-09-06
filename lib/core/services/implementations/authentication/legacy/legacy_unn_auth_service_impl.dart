@@ -15,8 +15,8 @@ import 'package:unn_mobile/core/providers/interfaces/authorisation/auth_data_pro
 import 'package:unn_mobile/core/services/interfaces/authorisation/unn_authorisation_service.dart';
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
 
-class UnnAuthorisationServiceImpl extends ChangeNotifier
-    implements UnnAuthorisationService {
+@Deprecated('Данный способ авторизации отключен электронным порталом ННГУ.')
+class UnnAuthServiceImpl extends ChangeNotifier implements UnnAuthService {
   late AuthorisationHelper _authorisationHelper;
   final OnlineStatusData _onlineStatus;
   final LoggerService _loggerService;
@@ -46,7 +46,7 @@ class UnnAuthorisationServiceImpl extends ChangeNotifier
   @override
   String? get guestId => _headers?[_bxPortatlUnnGuestId];
 
-  UnnAuthorisationServiceImpl(
+  UnnAuthServiceImpl(
     this._onlineStatus,
     this._authDataProvider,
     this._loggerService,

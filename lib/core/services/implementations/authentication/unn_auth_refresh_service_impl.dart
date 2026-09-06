@@ -14,13 +14,13 @@ import 'package:unn_mobile/core/services/interfaces/authorisation/unn_authorisat
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
 import 'package:unn_mobile/core/services/interfaces/common/storage_service.dart';
 
-class AuthorisationRefreshServiceImpl implements AuthorisationRefreshService {
+class AuthRefreshServiceImpl implements AuthRefreshService {
   final AuthDataProvider _authDataProvider;
-  final UnnAuthorisationService _authorisationService;
+  final UnnAuthService _authorisationService;
   final StorageService _storage;
   final LoggerService _loggerService;
 
-  AuthorisationRefreshServiceImpl(
+  AuthRefreshServiceImpl(
     this._authDataProvider,
     this._authorisationService,
     this._storage,

@@ -25,7 +25,7 @@ class SourcePageViewModel extends BaseViewModel {
   final DistanceCourseSemesterService _semesterService;
   final DistanceCourseService _courseService;
   final AuthDataProvider _authDataProvider;
-  final SourceAuthorisationService _sourceAuthorisationService;
+  final SourceAuthService _sourceAuthorisationService;
   final WebinarService _webinarService;
   final DistanceLearningDownloaderService _downloader;
   final SessionCheckerService _sessionChecker;

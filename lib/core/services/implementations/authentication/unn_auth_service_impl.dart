@@ -17,8 +17,7 @@ import 'package:unn_mobile/core/providers/interfaces/authorisation/auth_data_pro
 import 'package:unn_mobile/core/services/interfaces/authorisation/unn_authorisation_service.dart';
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
 
-class LegacyAuthorizationServiceImpl extends ChangeNotifier
-    implements UnnAuthorisationService {
+class UnnAuthServiceImpl extends ChangeNotifier implements UnnAuthService {
   late final AuthorisationHelper _authorisationHelper;
   late final ApiHelper _apiHelper;
 
@@ -30,7 +29,7 @@ class LegacyAuthorizationServiceImpl extends ChangeNotifier
   String? _csrf;
   bool _isAuthorised = false;
 
-  LegacyAuthorizationServiceImpl(
+  UnnAuthServiceImpl(
     this._onlineStatus,
     this._authDataProvider,
     this._loggerService,

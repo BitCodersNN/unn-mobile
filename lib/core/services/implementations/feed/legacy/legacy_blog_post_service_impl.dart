@@ -10,20 +10,23 @@ import 'package:unn_mobile/core/misc/json/json_utils.dart';
 import 'package:unn_mobile/core/models/feed/blog_post_data.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation/unn_authorisation_service.dart';
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
-import 'package:unn_mobile/core/services/interfaces/feed/legacy/getting_blog_posts.dart';
+import 'package:unn_mobile/core/services/interfaces/feed/legacy/legacy_blog_post_service.dart';
 
 class _QueryParamNames {
   static const start = 'start';
   static const _postId = 'POST_ID';
 }
 
-class GettingBlogPostsImpl implements GettingBlogPosts {
-  final UnnAuthorisationService _authorizationService;
+@Deprecated(
+  'Устаревший способ получения постов, требующий каскадных запросов для полной информации.',
+)
+class BlogPostServiceImpl implements BlogPostService {
+  final UnnAuthService _authorizationService;
   final LoggerService _loggerService;
   final ApiHelper _apiHelper;
   final int _numberOfPostsPerPage = 50;
 
-  GettingBlogPostsImpl(
+  BlogPostServiceImpl(
     this._authorizationService,
     this._loggerService,
     this._apiHelper,

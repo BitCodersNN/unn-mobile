@@ -4,7 +4,10 @@
 import 'package:unn_mobile/core/models/feed/blog_post.dart';
 import 'package:unn_mobile/core/models/feed/blog_post_type.dart';
 
-abstract interface class FeaturedBlogPostsService {
+@Deprecated(
+  'Данный способ получения постов отключен электронным порталом ННГУ.',
+)
+abstract interface class FeaturedBlogPostService {
   /// Получает список избранных постов, сгруппированных по типу.
   ///
   /// Этот метод выполняет запрос к API для получения избранных записей блога

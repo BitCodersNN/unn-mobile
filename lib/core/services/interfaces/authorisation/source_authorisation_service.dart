@@ -3,5 +3,4 @@
 
 import 'package:unn_mobile/core/services/interfaces/authorisation/authorisation_service.dart';
 
-abstract interface class SourceAuthorisationService
-    implements AuthorisationService {}
+abstract interface class SourceAuthService implements AuthorisationService {}

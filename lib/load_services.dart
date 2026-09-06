@@ -45,10 +45,10 @@ import 'package:unn_mobile/core/providers/interfaces/loading_page/loading_page_p
 import 'package:unn_mobile/core/providers/interfaces/profile/user_data_provider.dart';
 import 'package:unn_mobile/core/providers/interfaces/schedule/offline_schedule_provider.dart';
 import 'package:unn_mobile/core/services/implementations/about/authors_config_service_impl.dart';
-import 'package:unn_mobile/core/services/implementations/authorisation/legacy/authorisation_service_impl.dart';
-import 'package:unn_mobile/core/services/implementations/authorisation/legacy/source_authorisation_service_impl.dart';
-import 'package:unn_mobile/core/services/implementations/authorisation/stream_auth_service_impl.dart';
-import 'package:unn_mobile/core/services/implementations/authorisation/unn_authorisation_refresh_service_impl.dart';
+import 'package:unn_mobile/core/services/implementations/authentication/source_auth_service_impl.dart';
+import 'package:unn_mobile/core/services/implementations/authentication/stream_auth_service_impl.dart';
+import 'package:unn_mobile/core/services/implementations/authentication/unn_auth_refresh_service_impl.dart';
+import 'package:unn_mobile/core/services/implementations/authentication/unn_auth_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/certificate/certificate_downloader_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/certificate/certificate_path_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/certificate/certificate_service_impl.dart';
@@ -83,12 +83,14 @@ import 'package:unn_mobile/core/services/implementations/feed/featured_blog_post
 import 'package:unn_mobile/core/services/implementations/feed/featured_blog_post_action/important_blog_post_users_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/feed/featured_blog_post_action/pinning_blog_post_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/feed/feed_file_downloader_service_impl.dart';
-import 'package:unn_mobile/core/services/implementations/feed/legacy/blog_post_receivers/blog_post_service_impl.dart';
-import 'package:unn_mobile/core/services/implementations/feed/legacy/blog_post_receivers/featured_blog_posts_service_impl.dart';
-import 'package:unn_mobile/core/services/implementations/feed/legacy/blog_post_receivers/regular_blog_posts_service_impl.dart';
-import 'package:unn_mobile/core/services/implementations/feed/legacy/getting_blog_posts_impl.dart';
-import 'package:unn_mobile/core/services/implementations/feed/legacy/getting_rating_list_impl.dart';
-import 'package:unn_mobile/core/services/implementations/feed/legacy/getting_vote_key_signed_impl.dart';
+import 'package:unn_mobile/core/services/implementations/feed/legacy/blog_post_receivers/legacy_blog_post_service_impl.dart'
+    as portal2_blog_post_service;
+import 'package:unn_mobile/core/services/implementations/feed/legacy/blog_post_receivers/legacy_featured_blog_post_service_impl.dart';
+import 'package:unn_mobile/core/services/implementations/feed/legacy/blog_post_receivers/legacy_regular_blog_post_service_impl.dart';
+import 'package:unn_mobile/core/services/implementations/feed/legacy/legacy_blog_post_service_impl.dart'
+    as cascade_blog_post_service;
+import 'package:unn_mobile/core/services/implementations/feed/legacy/legacy_reaction_rating_service_impl.dart';
+import 'package:unn_mobile/core/services/implementations/feed/legacy/legacy_vote_key_signed_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/feed/reaction_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/grade_book/grade_book_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/loading_page/loading_page_config_service_impl.dart';
@@ -138,12 +140,14 @@ import 'package:unn_mobile/core/services/interfaces/feed/featured_blog_post_acti
 import 'package:unn_mobile/core/services/interfaces/feed/featured_blog_post_action/important_blog_post_users_service.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/featured_blog_post_action/pinning_blog_post_service.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/feed_file_downloader_service.dart';
-import 'package:unn_mobile/core/services/interfaces/feed/legacy/blog_post_receivers/blog_post_service.dart';
-import 'package:unn_mobile/core/services/interfaces/feed/legacy/blog_post_receivers/featured_blog_post_service.dart';
-import 'package:unn_mobile/core/services/interfaces/feed/legacy/blog_post_receivers/regular_blog_posts_service.dart';
-import 'package:unn_mobile/core/services/interfaces/feed/legacy/getting_blog_posts.dart';
-import 'package:unn_mobile/core/services/interfaces/feed/legacy/getting_rating_list.dart';
-import 'package:unn_mobile/core/services/interfaces/feed/legacy/getting_vote_key_signed.dart';
+import 'package:unn_mobile/core/services/interfaces/feed/legacy/blog_post_receivers/legacy_blog_post_service.dart'
+    as portal2_blog_post_service;
+import 'package:unn_mobile/core/services/interfaces/feed/legacy/blog_post_receivers/legacy_featured_blog_post_service.dart';
+import 'package:unn_mobile/core/services/interfaces/feed/legacy/blog_post_receivers/legacy_regular_blog_post_service.dart';
+import 'package:unn_mobile/core/services/interfaces/feed/legacy/legacy_blog_post_service.dart'
+    as cascade_blog_post_service;
+import 'package:unn_mobile/core/services/interfaces/feed/legacy/legacy_reaction_rating_service.dart';
+import 'package:unn_mobile/core/services/interfaces/feed/legacy/legacy_vote_key_signed_service.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/reaction_service.dart';
 import 'package:unn_mobile/core/services/interfaces/grade_book/grade_book_service.dart';
 import 'package:unn_mobile/core/services/interfaces/loading_page/loading_page_config_service.dart';
@@ -216,15 +220,15 @@ void registerDependencies() {
     ..registerSingleton<StorageService>(StorageServiceImpl.new)
 
     // Authorization services
-    ..registerSingleton<UnnAuthorisationService>(
-      () => LegacyAuthorizationServiceImpl(
+    ..registerSingleton<UnnAuthService>(
+      () => UnnAuthServiceImpl(
         get<OnlineStatusData>(),
         get<AuthDataProvider>(),
         get<LoggerService>(),
       ),
     )
-    ..registerSingleton<SourceAuthorisationService>(
-      () => LegacySourceAuthorisationServiceImpl(
+    ..registerSingleton<SourceAuthService>(
+      () => SourceAuthServiceImpl(
         get<OnlineStatusData>(),
         get<LoggerService>(),
       ),
@@ -235,32 +239,32 @@ void registerDependencies() {
     ..registerSingleton<GitHubRawApiHelper>(GitHubRawApiHelper.new)
     ..registerSingleton<UnnPortalApiHelper>(
       () => UnnPortalApiHelper(
-        authorizationService: get<UnnAuthorisationService>(),
+        authorizationService: get<UnnAuthService>(),
       ),
     )
     ..registerSingleton<UnnMobileApiHelper>(
       () => UnnMobileApiHelper(
-        authorizationService: get<UnnAuthorisationService>(),
+        authorizationService: get<UnnAuthService>(),
       ),
     )
     ..registerSingleton<WebUnnPortalApiHelper>(
       () => WebUnnPortalApiHelper(
-        authorizationService: get<UnnAuthorisationService>(),
+        authorizationService: get<UnnAuthService>(),
       ),
     )
     ..registerSingleton<WebUnnMobileApiHelper>(
       () => WebUnnMobileApiHelper(
-        authorizationService: get<UnnAuthorisationService>(),
+        authorizationService: get<UnnAuthService>(),
       ),
     )
     ..registerSingleton<UnnSourceApiHelper>(
       () => UnnSourceApiHelper(
-        authorizationService: get<SourceAuthorisationService>(),
+        authorizationService: get<SourceAuthService>(),
       ),
     )
     ..registerSingleton<WebUnnSourceApiHelper>(
       () => WebUnnSourceApiHelper(
-        authorizationService: get<SourceAuthorisationService>(),
+        authorizationService: get<SourceAuthService>(),
       ),
     )
 
@@ -326,10 +330,10 @@ void registerDependencies() {
         get<StorageService>(),
       ),
     )
-    ..registerSingleton<AuthorisationRefreshService>(
-      () => AuthorisationRefreshServiceImpl(
+    ..registerSingleton<AuthRefreshService>(
+      () => AuthRefreshServiceImpl(
         get<AuthDataProvider>(),
-        get<UnnAuthorisationService>(),
+        get<UnnAuthService>(),
         get<StorageService>(),
         get<LoggerService>(),
       ),
@@ -389,20 +393,20 @@ void registerDependencies() {
     )
 
     // Blog & feed
-    ..registerDependency<RegularBlogPostsService>(
-      () => RegularBlogPostsServiceImpl(
+    ..registerDependency<RegularBlogPostService>(
+      () => RegularBlogPostServiceImpl(
         get<LoggerService>(),
         getApiHelper(HostType.unnPortal),
       ),
     )
-    ..registerDependency<FeaturedBlogPostsService>(
-      () => FeaturedBlogPostsServiceImpl(
+    ..registerDependency<FeaturedBlogPostService>(
+      () => FeaturedBlogPostServiceImpl(
         get<LoggerService>(),
         getApiHelper(HostType.unnPortal),
       ),
     )
-    ..registerSingleton<BlogPostService>(
-      () => BlogPostServiceImpl(
+    ..registerSingleton<portal2_blog_post_service.BlogPostService>(
+      () => portal2_blog_post_service.BlogPostServiceImpl(
         get<LoggerService>(),
         getApiHelper(HostType.unnPortal),
       ),
@@ -413,9 +417,9 @@ void registerDependencies() {
         getApiHelper(HostType.unnPortal),
       ),
     )
-    ..registerSingleton<GettingBlogPosts>(
-      () => GettingBlogPostsImpl(
-        get<UnnAuthorisationService>(),
+    ..registerSingleton<cascade_blog_post_service.BlogPostService>(
+      () => cascade_blog_post_service.BlogPostServiceImpl(
+        get<UnnAuthService>(),
         get<LoggerService>(),
         getApiHelper(HostType.unnPortal),
       ),
@@ -464,21 +468,21 @@ void registerDependencies() {
     )
     ..registerSingleton<FileDataService>(
       () => FileDataServiceImpl(
-        get<UnnAuthorisationService>(),
+        get<UnnAuthService>(),
         get<LoggerService>(),
         getApiHelper(HostType.unnPortal),
       ),
     )
 
     // Ratings & voting
-    ..registerSingleton<GettingRatingList>(
-      () => GettingRatingListImpl(
+    ..registerSingleton<ReactionRatingService>(
+      () => ReactionRatingServiceImpl(
         get<LoggerService>(),
         getApiHelper(HostType.unnPortal),
       ),
     )
-    ..registerSingleton<GettingVoteKeySigned>(
-      () => GettingVoteKeySignedImpl(
+    ..registerSingleton<VoteKeySignedService>(
+      () => VoteKeySignedImplServiceImpl(
         get<LoggerService>(),
         getApiHelper(HostType.unnPortal),
       ),
@@ -717,7 +721,7 @@ void registerDependencies() {
     )
     ..registerSingleton<MainPageRoutesViewModelsFactory>(
       () => MainPageRoutesViewModelsFactory(
-        get<UnnAuthorisationService>(),
+        get<UnnAuthService>(),
       ),
     )
 
@@ -727,7 +731,7 @@ void registerDependencies() {
     ..registerDependency(
       () => LoadingPageViewModel(
         get<LoggerService>(),
-        get<AuthorisationRefreshService>(),
+        get<AuthRefreshService>(),
         get<LastCommitShaService>(),
         get<LoadingPageConfigService>(),
         get<LogoDownloaderService>(),
@@ -743,7 +747,7 @@ void registerDependencies() {
     ..registerDependency(
       () => AuthPageViewModel(
         get<AuthDataProvider>(),
-        get<UnnAuthorisationService>(),
+        get<UnnAuthService>(),
         get<LoggerService>(),
       ),
     )
@@ -797,7 +801,7 @@ void registerDependencies() {
         get<DistanceCourseSemesterService>(),
         get<DistanceCourseService>(),
         get<AuthDataProvider>(),
-        get<SourceAuthorisationService>(),
+        get<SourceAuthService>(),
         get<DistanceLearningDownloaderService>(),
         get<WebinarService>(),
         get<SessionCheckerService>(),

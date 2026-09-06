@@ -61,7 +61,7 @@ class _OfflineOverlayState extends State<OfflineOverlay> {
                           onPressed: () {
                             setState(() {
                               refreshAction = Injector.appInstance
-                                  .get<AuthorisationRefreshService>()
+                                  .get<AuthRefreshService>()
                                   .refreshLogin();
                             });
                           },

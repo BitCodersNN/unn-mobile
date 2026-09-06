@@ -6,7 +6,7 @@ import 'package:unn_mobile/core/services/interfaces/authorisation/unn_authorisat
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/featured_blog_post_action/important_blog_post_acknowledgement_service.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/featured_blog_post_action/pinning_blog_post_service.dart';
-import 'package:unn_mobile/core/services/interfaces/feed/legacy/blog_post_receivers/blog_post_service.dart';
+import 'package:unn_mobile/core/services/interfaces/feed/legacy/blog_post_receivers/legacy_blog_post_service.dart';
 import 'package:unn_mobile/core/viewmodels/factories/cached_view_model_factory_base.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/feed/feed_post_view_model.dart';
 
@@ -23,6 +23,6 @@ class FeedPostViewModelFactory
         getService<LastFeedLoadDateTimeProvider>(),
         getService<ImportantBlogPostAcknowledgementService>(),
         getService<PinningBlogPostService>(),
-        getService<UnnAuthorisationService>(),
+        getService<UnnAuthService>(),
       );
 }

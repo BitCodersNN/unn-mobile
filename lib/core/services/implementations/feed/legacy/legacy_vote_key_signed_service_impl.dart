@@ -6,17 +6,18 @@ import 'package:unn_mobile/core/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/constants/api/path.dart';
 import 'package:unn_mobile/core/constants/regular_expressions.dart';
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
-import 'package:unn_mobile/core/services/interfaces/feed/legacy/getting_vote_key_signed.dart';
+import 'package:unn_mobile/core/services/interfaces/feed/legacy/legacy_vote_key_signed_service.dart';
 
 class _PathParts {
   static const blog = 'blog';
 }
 
-class GettingVoteKeySignedImpl implements GettingVoteKeySigned {
+@Deprecated('Сервис использовался в старом способе получения постов.')
+class VoteKeySignedImplServiceImpl implements VoteKeySignedService {
   final LoggerService _loggerService;
   final ApiHelper _apiHelper;
 
-  GettingVoteKeySignedImpl(
+  VoteKeySignedImplServiceImpl(
     this._loggerService,
     this._apiHelper,
   );

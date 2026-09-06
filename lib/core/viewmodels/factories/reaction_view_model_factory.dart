@@ -3,8 +3,8 @@
 
 import 'package:flutter/foundation.dart';
 import 'package:unn_mobile/core/misc/user/current_user_sync_storage.dart';
-import 'package:unn_mobile/core/services/interfaces/feed/legacy/getting_rating_list.dart';
-import 'package:unn_mobile/core/services/interfaces/feed/legacy/getting_vote_key_signed.dart';
+import 'package:unn_mobile/core/services/interfaces/feed/legacy/legacy_reaction_rating_service.dart';
+import 'package:unn_mobile/core/services/interfaces/feed/legacy/legacy_vote_key_signed_service.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/reaction_service.dart';
 import 'package:unn_mobile/core/viewmodels/factories/cached_view_model_factory_base.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/feed/reaction_view_model.dart';
@@ -18,8 +18,8 @@ class ReactionViewModelFactory
   @override
   @protected
   ReactionViewModel createViewModel(ReactionCacheKey key) => ReactionViewModel(
-        getService<GettingVoteKeySigned>(),
-        getService<GettingRatingList>(),
+        getService<VoteKeySignedService>(),
+        getService<ReactionRatingService>(),
         getService<ReactionService>(),
         getService<CurrentUserSyncStorage>(),
       );

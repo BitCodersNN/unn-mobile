@@ -5,15 +5,15 @@ import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/misc/demo_mode_status.dart';
 import 'package:unn_mobile/core/models/feed/rating_list.dart';
 import 'package:unn_mobile/core/models/profile/user_short_info.dart';
-import 'package:unn_mobile/core/services/interfaces/feed/legacy/getting_rating_list.dart';
-import 'package:unn_mobile/core/services/interfaces/feed/legacy/getting_vote_key_signed.dart';
+import 'package:unn_mobile/core/services/interfaces/feed/legacy/legacy_reaction_rating_service.dart';
+import 'package:unn_mobile/core/services/interfaces/feed/legacy/legacy_vote_key_signed_service.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/reaction_service.dart';
 import 'package:unn_mobile/core/viewmodels/factories/reaction_view_model_factory.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/common/reaction_view_model_base.dart';
 
 class ReactionViewModel extends ReactionViewModelBase {
-  final GettingVoteKeySigned _gettingVoteKeySigned;
-  final GettingRatingList _gettingRatingList;
+  final VoteKeySignedService _gettingVoteKeySigned;
+  final ReactionRatingService _gettingRatingList;
   final ReactionService _reactionManager;
 
   String? _voteKeySigned;
