@@ -18,48 +18,37 @@ import 'package:html/parser.dart' as parser;
 
   _removeDiskAttachDivs(body);
   _removeScripts(body);
-  _removeSmallImages(body, minWidth, minHeight);
 
-  final nodes = body.nodes.toList();
-  final trailingImages = <dom.Element>[];
+  final allImages = body.querySelectorAll('img');
+  final imagesToRemove = <dom.Element>[];
   final imageUrls = <String>[];
 
-  for (final node in nodes.reversed) {
-    if (node is dom.Text && node.text.trim().isEmpty) {
+  for (final img in allImages) {
+    final style = img.attributes['style'];
+    final width = _getImageSize(img, 'width', style);
+    final height = _getImageSize(img, 'height', style);
+
+    final isSmallWidth = width != null && width < minWidth;
+    final isSmallHeight = height != null && height < minHeight;
+
+    if (isSmallWidth && isSmallHeight) {
       continue;
     }
 
-    if (node is! dom.Element || node.localName != 'img') {
-      break;
+    final imageSource = img.attributes['src']?.trim();
+    if (imageSource != null && imageSource.isNotEmpty) {
+      imageUrls.add(imageSource);
+      imagesToRemove.add(img);
     }
-
-    final style = node.attributes['style'];
-    final width = _getImageSize(node, 'width', style);
-    final height = _getImageSize(node, 'height', style);
-
-    if (width != null && width < minWidth) {
-      continue;
-    }
-    if (height != null && height < minHeight) {
-      continue;
-    }
-
-    final imageSource = node.attributes['src']?.trim();
-    if (imageSource == null || imageSource.isEmpty) {
-      continue;
-    }
-
-    trailingImages.add(node);
-    imageUrls.add(imageSource);
   }
 
-  for (final img in trailingImages) {
+  for (final img in imagesToRemove) {
     img.remove();
   }
 
   return _buildResult(
     body.innerHtml,
-    imageUrls.isNotEmpty ? imageUrls.reversed.toList() : null,
+    imageUrls.isNotEmpty ? imageUrls : null,
   );
 }
 
@@ -113,22 +102,6 @@ void _removeScripts(dom.Element element) {
   final scripts = element.querySelectorAll('script');
   for (final script in scripts) {
     script.remove();
-  }
-}
-
-void _removeSmallImages(dom.Element element, int minWidth, int minHeight) {
-  final images = element.querySelectorAll('img');
-  for (final img in images) {
-    final style = img.attributes['style'];
-    final width = _getImageSize(img, 'width', style);
-    final height = _getImageSize(img, 'height', style);
-
-    final isSmallWidth = width != null && width < minWidth;
-    final isSmallHeight = height != null && height < minHeight;
-
-    if (isSmallWidth || isSmallHeight) {
-      img.remove();
-    }
   }
 }
 
