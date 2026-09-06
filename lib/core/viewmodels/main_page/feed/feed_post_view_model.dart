@@ -11,9 +11,10 @@ import 'package:unn_mobile/core/models/feed/important_blog_post.dart';
 import 'package:unn_mobile/core/providers/interfaces/feed/last_feed_load_date_time_provider.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation/authorisation_service.dart';
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
+import 'package:unn_mobile/core/services/interfaces/feed/blog_post_comments_service.dart';
+import 'package:unn_mobile/core/services/interfaces/feed/blog_post_receivers/blog_post_detail_service.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/featured_blog_post_action/important_blog_post_acknowledgement_service.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/featured_blog_post_action/pinning_blog_post_service.dart';
-import 'package:unn_mobile/core/services/interfaces/feed/legacy/blog_post_receivers/blog_post_service.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/factories/feed_post_view_model_factory.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/common/profile_view_model.dart';
@@ -24,11 +25,12 @@ import 'package:unn_mobile/core/viewmodels/main_page/feed/reaction_view_model.da
 
 class FeedPostViewModel extends BaseViewModel {
   final AuthorisationService _authorisationService;
-  final BlogPostService _postsService;
+  final BlogPostDetailService _postsService;
   final LoggerService _loggerService;
   final LastFeedLoadDateTimeProvider _feedUpdateTimeProvider;
   final ImportantBlogPostAcknowledgementService _postAcknowledgementService;
   final PinningBlogPostService _pinningService;
+  final BlogPostCommentsService _commentsService;
 
   final HtmlUnescape _unescaper = HtmlUnescape();
 
@@ -45,7 +47,11 @@ class FeedPostViewModel extends BaseViewModel {
 
   bool? _isAnnouncementRead;
 
+  bool _commentsError = false;
+
   int? _announcementReadCount;
+
+  int _currentCommentsPage = 1;
 
   final List<FeedCommentViewModel> comments = [];
 
@@ -58,6 +64,7 @@ class FeedPostViewModel extends BaseViewModel {
     this._postAcknowledgementService,
     this._pinningService,
     this._authorisationService,
+    this._commentsService,
   );
 
   factory FeedPostViewModel.cached(FeedPostCacheKey key) =>
@@ -91,6 +98,10 @@ class FeedPostViewModel extends BaseViewModel {
   DateTime? get lastUpdated => _feedUpdateTimeProvider.lastFeedLoadDateTime;
 
   String get postText => _unescaper.convert(blogData?.detailText.trim() ?? '');
+
+  bool get hasMoreComments => commentsCount != comments.length;
+
+  bool get commentsError => _commentsError;
 
   DateTime? get postTime => blogData?.datePublish.toLocal();
 
@@ -148,19 +159,55 @@ class FeedPostViewModel extends BaseViewModel {
     }
   }
 
-  Future<void> refresh() async {
+  Future<void> refresh({bool loadComments = false}) async {
     if (blogData == null) {
       _loggerService.log('Error: blog post tried to refresh while not loaded');
       return;
     }
     await _feedScreenViewModel?.refreshFeatured();
-    final post = await _postsService.getBlogPost(id: blogData!.id);
+    final post = await _postsService.getBlogPostById(postId: blogData!.id);
     if (post == null) {
       _loggerService.log('Failed to refresh post');
       return;
     }
     initFromFullInfo(post, _feedScreenViewModel);
+    if (loadComments) {
+      await reloadComments();
+    }
   }
+
+  Future<void> reloadComments() async => busyCallAsync(() async {
+        comments.clear();
+        _currentCommentsPage = 1;
+        await loadCommentsPage();
+      });
+
+  Future<void> loadCommentsPage({int page = 1}) async {
+    _commentsError = false;
+    final newComments = await _commentsService.getBlogPostComments(
+      postId: blogData!.id,
+      pageNumber: page,
+    );
+    if (newComments == null) {
+      _commentsError = true;
+    }
+    comments.insertAll(
+      0,
+      newComments!.map(
+        (c) => FeedCommentViewModel.cached(c.data.id)..initFromFullInfo(c),
+      ),
+    );
+  }
+
+  Future<void> loadMoreComments() async => busyCallAsync(() async {
+        if (!hasMoreComments) {
+          return;
+        }
+        await loadCommentsPage(page: _currentCommentsPage + 1);
+        if (!commentsError) {
+          _currentCommentsPage++;
+        }
+      });
 
   Future<void> togglePin() async {
     if (DemoModeStatus.demoModeEnabled) {

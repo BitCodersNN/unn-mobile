@@ -10,6 +10,7 @@ class AppSettings {
   static bool vibrationEnabled = true;
   static int initialPage = 0;
   static bool analyticsEnabled = false;
+  static bool reverseComments = true;
 
   static Event optionsSaved = Event('optionsSaved');
 
@@ -27,6 +28,11 @@ class AppSettings {
     analyticsEnabled = await _readValue(
       AppSettingsKeys.analyticsEnabled,
       defaultValue: false,
+      parser: bool.tryParse,
+    );
+    reverseComments = await _readValue(
+      AppSettingsKeys.reverseComments,
+      defaultValue: true,
       parser: bool.tryParse,
     );
     optionsSaved.broadcast();
@@ -57,6 +63,10 @@ class AppSettings {
     await storage.write(
       key: AppSettingsKeys.analyticsEnabled,
       value: analyticsEnabled.toString(),
+    );
+    await storage.write(
+      key: AppSettingsKeys.reverseComments,
+      value: reverseComments.toString(),
     );
 
     optionsSaved.broadcast();
