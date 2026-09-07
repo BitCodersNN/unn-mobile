@@ -5,7 +5,7 @@ import 'package:html/dom.dart' as dom;
 import 'package:html/parser.dart' as parser;
 import 'package:unn_mobile/core/constants/regular_expressions.dart';
 
-({String cleanedText, List<String> imageUrls}) extractImagesAndCleanHtmlText(
+({String cleanedText, List<String> imageUrls}) extractImagesAndCleanHtmlString(
   String htmlText, {
   int minWidth = 32,
   int minHeight = 32,
@@ -14,13 +14,30 @@ import 'package:unn_mobile/core/constants/regular_expressions.dart';
   final body = document?.body;
 
   if (body == null) {
-    return _buildResult(htmlText, null);
+    return (
+      cleanedText: htmlText,
+      imageUrls: const [],
+    );
   }
 
-  _removeDiskAttachDivs(body);
-  _removeScripts(body);
+  return extractImagesAndCleanHtmlElement(
+    body,
+    minHeight: minHeight,
+    minWidth: minWidth,
+  );
+}
 
-  final allImages = body.querySelectorAll('img');
+({String cleanedText, List<String> imageUrls}) extractImagesAndCleanHtmlElement(
+  dom.Element element, {
+  int minWidth = 32,
+  int minHeight = 32,
+}) {
+  final clone = element.clone(true);
+
+  _removeDiskAttachDivs(clone);
+  _removeScripts(clone);
+
+  final allImages = clone.querySelectorAll('img');
   final imagesToRemove = <dom.Element>[];
   final imageUrls = <String>[];
 
@@ -47,9 +64,9 @@ import 'package:unn_mobile/core/constants/regular_expressions.dart';
     img.remove();
   }
 
-  return _buildResult(
-    body.innerHtml,
-    imageUrls.isNotEmpty ? imageUrls : null,
+  return (
+    cleanedText: clone.innerHtml,
+    imageUrls: imageUrls.isNotEmpty ? imageUrls : [],
   );
 }
 
@@ -73,29 +90,20 @@ String restoreHtmlText(
 }
 
 void _removeDiskAttachDivs(dom.Element element) {
-  final children = List<dom.Element>.from(element.children);
-
-  for (final child in children) {
-    if (child.parent != element) {
+  final diskAttachElements = element.querySelectorAll('[id^="disk-attach-"]');
+  for (final child in diskAttachElements) {
+    if (child.parent == null) {
       continue;
     }
-
-    final id = child.attributes['id'] ?? '';
-    if (id.startsWith('disk-attach-')) {
-      final prev = child.previousElementSibling;
-      if (prev?.localName == 'br') {
-        prev!.remove();
-      }
-
-      final next = child.nextElementSibling;
-      if (next?.localName == 'br') {
-        next!.remove();
-      }
-
-      child.remove();
-    } else {
-      _removeDiskAttachDivs(child);
+    final prev = child.previousElementSibling;
+    if (prev?.localName == 'br') {
+      prev!.remove();
     }
+    final next = child.nextElementSibling;
+    if (next?.localName == 'br') {
+      next!.remove();
+    }
+    child.remove();
   }
 }
 
@@ -134,12 +142,3 @@ dom.Document? _parseHtmlSafely(String htmlText) {
     return null;
   }
 }
-
-({String cleanedText, List<String> imageUrls}) _buildResult(
-  String cleanedText,
-  List<String>? imageUrls,
-) =>
-    (
-      cleanedText: cleanedText,
-      imageUrls: imageUrls ?? const [],
-    );

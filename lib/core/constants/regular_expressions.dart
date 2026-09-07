@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2025 BitCodersNN
 
+import 'package:unn_mobile/core/misc/lru_cache.dart';
+
 class _RegularExpressionSource {
   static const keySigned = r"keySigned:\s*'([^']+)'";
   static const commentIdAndMessage = r"top\.text\d+ = text(\d+) = '([^']*)'";
@@ -15,7 +17,7 @@ class _RegularExpressionSource {
   static const leadingDigits = r'^(\d+)';
   static const phpsessid = r'PHPSESSID=([^;]+)';
   static const distanceCourseSemester =
-      "href=[\"']#/\\{\\{base_path\\}\\}/(\\d{4})/(\\d)[\"']";
+      r'''href=["']#/\{\{base_path\}\}/(\d{4})/(\d)["']''';
   static const upperCaseLetters = r'[A-Z]';
   static const sonetLAssetsCheckSum = r"sonetLAssetsCheckSum:\s*'([^']+)'";
   static const signedParameters = r"signedParameters:\s*'([^']+)'";
@@ -25,6 +27,7 @@ class _RegularExpressionSource {
   static const recordBlogPattern = r'record-BLOG_\d+-(\d+)-cover';
   static const blogPostIdPattern = r'BLOG_POST-(\d+)';
   static const digitsPattern = r'(\d+)';
+  static const nonDigitsPattern = r'\D';
   static const fourDigitYearPattern = r'\b\d{4}\b';
   static const timePattern = r'(\d{1,2}:\d{2})';
 }
@@ -114,14 +117,22 @@ class RegularExpressions {
     _RegularExpressionSource.digitsPattern,
   );
 
+  static final nonDigitsRegExp = RegExp(
+    _RegularExpressionSource.nonDigitsPattern,
+  );
+
   static final fourDigitYearRegExp = RegExp(
     _RegularExpressionSource.fourDigitYearPattern,
   );
 
-  static final timeRexExp = RegExp(
+  static final timeRegExp = RegExp(
     _RegularExpressionSource.timePattern,
   );
 
+  static final _dimensionRegExpCache = LRUCache<String, RegExp>(100);
   static RegExp dimensionValueRegExp(String dimension) =>
-      RegExp('$dimension\\s*:\\s*(\\d+)px', caseSensitive: false);
+      _dimensionRegExpCache.putIfAbsent(
+        dimension,
+        () => RegExp('$dimension\\s*:\\s*(\\d+)px', caseSensitive: false),
+      );
 }

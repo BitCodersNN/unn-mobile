@@ -66,7 +66,7 @@ class BlogPostData {
 
   factory BlogPostData.fromJson(JsonMap jsonMap) {
     final fullText = jsonMap[_BlogPostDataJsonKeys.fulltext]! as String;
-    final result = extractImagesAndCleanHtmlText(fullText);
+    final result = extractImagesAndCleanHtmlString(fullText);
     return BlogPostData(
       id: int.parse(
         jsonMap[_BlogPostDataJsonKeys.id]! as String,
