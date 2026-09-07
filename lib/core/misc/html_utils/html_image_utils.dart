@@ -135,6 +135,34 @@ int? _parseSize(String? value) {
   return match != null ? int.tryParse(match.group(1)!) : null;
 }
 
+void _removeScripts(dom.Element element) {
+  final scripts = element.querySelectorAll('script');
+  for (final script in scripts) {
+    script.remove();
+  }
+}
+
+int? _getImageSize(dom.Element img, String dimension, String? style) {
+  var size = _parseSize(img.attributes[dimension]);
+
+  if (size == null && style != null) {
+    final match =
+        RegularExpressions.dimensionValueRegExp(dimension).firstMatch(style);
+    if (match != null) {
+      size = int.tryParse(match.group(1)!);
+    }
+  }
+  return size;
+}
+
+int? _parseSize(String? value) {
+  if (value == null) {
+    return null;
+  }
+  final match = RegularExpressions.leadingDigitsRegExp.firstMatch(value.trim());
+  return match != null ? int.tryParse(match.group(1)!) : null;
+}
+
 dom.Document? _parseHtmlSafely(String htmlText) {
   try {
     return parser.parse(htmlText);
