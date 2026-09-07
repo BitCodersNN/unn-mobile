@@ -22,9 +22,11 @@ class BlogPostHtmlParser {
     String? htmlText,
     UserShortInfo currentUserData,
   ) {
-    final document = parser.parse(
-      htmlText,
-    );
+    if (htmlText == null || htmlText.isEmpty) {
+      return null;
+    }
+
+    final document = parser.parse(htmlText);
     final postElement =
         document.querySelector(FeedHtmlParserStrings.feedItemWrap);
 
@@ -41,6 +43,10 @@ class BlogPostHtmlParser {
     String? htmlText,
     UserShortInfo currentUserData,
   ) {
+    if (htmlText == null || htmlText.isEmpty) {
+      return null;
+    }
+
     final document = parser.parse(htmlText);
     final postElements =
         document.querySelectorAll(FeedHtmlParserStrings.feedItemWrap);
@@ -134,36 +140,41 @@ class BlogPostHtmlParser {
             .trim() ??
         FeedHtmlParserStrings.emptyString;
 
-    final textElement =
-        postElement.querySelector(FeedHtmlParserStrings.feedPostText);
-    final parsedTextResult = extractImagesAndCleanHtmlText(
-      textElement?.innerHtml ?? FeedHtmlParserStrings.emptyString,
-    );
-
-    final cleanedText = parsedTextResult.cleanedText;
-    final uniqueUrls = parsedTextResult.imageUrls.toSet();
-
     final postContent =
-        postElement.querySelector(FeedHtmlParserStrings.selPostContWrap)!;
+        postElement.querySelector(FeedHtmlParserStrings.selPostContWrap);
 
-    BitrixHtmlParserUtils.extractImagesToSet(
-      postContent,
-      FeedHtmlParserStrings.diskUiFileThumbnailsWebGridImgItem,
-      FeedHtmlParserStrings.imageSrcAttributesShort,
-      uniqueUrls,
-    );
-    BitrixHtmlParserUtils.extractImagesToSet(
-      postContent,
-      FeedHtmlParserStrings.diskUiFileThumbnailsWebGridImg,
-      FeedHtmlParserStrings.imageSrcAttributesFull,
-      uniqueUrls,
-    );
-    BitrixHtmlParserUtils.extractImagesToSet(
-      postContent,
-      FeedHtmlParserStrings.selFeedComFilesPhotoImg,
-      FeedHtmlParserStrings.imageSrcAttributesWithSrc,
-      uniqueUrls,
-    );
+    String cleanedText = FeedHtmlParserStrings.emptyString;
+    final uniqueUrls = <String>{};
+
+    if (postContent != null) {
+      final textElement =
+          postContent.querySelector(FeedHtmlParserStrings.feedPostText);
+
+      if (textElement != null) {
+        final result = extractImagesAndCleanHtmlElement(textElement);
+        cleanedText = result.cleanedText;
+        uniqueUrls.addAll(result.imageUrls);
+      }
+
+      BitrixHtmlParserUtils.extractImagesToSet(
+        postContent,
+        FeedHtmlParserStrings.diskUiFileThumbnailsWebGridImgItem,
+        FeedHtmlParserStrings.imageSrcAttributesShort,
+        uniqueUrls,
+      );
+      BitrixHtmlParserUtils.extractImagesToSet(
+        postContent,
+        FeedHtmlParserStrings.diskUiFileThumbnailsWebGridImg,
+        FeedHtmlParserStrings.imageSrcAttributesFull,
+        uniqueUrls,
+      );
+      BitrixHtmlParserUtils.extractImagesToSet(
+        postContent,
+        FeedHtmlParserStrings.selFeedComFilesPhotoImg,
+        FeedHtmlParserStrings.imageSrcAttributesWithSrc,
+        uniqueUrls,
+      );
+    }
 
     final datePublish = _parseDateTime(
       postElement
@@ -247,9 +258,8 @@ class BlogPostHtmlParser {
       return 0;
     }
 
-    final match = RegularExpressions.digitsRegExp.firstMatch(countElement.text);
-    return int.tryParse(match?.group(1) ?? FeedHtmlParserStrings.emptyString) ??
-        0;
+    final digits = countElement.text.replaceAll(RegExp(r'\D'), '');
+    return int.tryParse(digits) ?? 0;
   }
 
   static List<PostDestination>? _extractDestinations(Element postElement) {
@@ -285,7 +295,7 @@ class BlogPostHtmlParser {
       return ExtendedBlogPostType.regular;
     }
 
-    final classes = postBlock.className;
+    final classes = postBlock.classes;
     final isPinned = postBlock
                 .attributes[FeedHtmlParserStrings.attrDataLivefeedPostPinned] ==
             FeedHtmlParserStrings.yesValue ||
@@ -350,16 +360,24 @@ class BlogPostHtmlParser {
       '$dateStr ${now.year}',
       DatePattern.dmmmmhhmmyyyy,
     );
-    return parsed.isAfter(now)
-        ? parsed.subtract(const Duration(days: 365))
-        : parsed;
+
+    if (parsed.isAfter(now)) {
+      return DateTime(
+        parsed.year - 1,
+        parsed.month,
+        parsed.day,
+        parsed.hour,
+        parsed.minute,
+      );
+    }
+    return parsed;
   }
 
   static bool _hasYear(String dateStr) =>
       RegularExpressions.fourDigitYearRegExp.hasMatch(dateStr);
 
   static String? _extractTime(String dateStr) {
-    final timeMatch = RegularExpressions.timeRexExp.firstMatch(dateStr);
+    final timeMatch = RegularExpressions.timeRegExp.firstMatch(dateStr);
     return timeMatch?.group(1);
   }
 

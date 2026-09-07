@@ -43,7 +43,7 @@ class BlogPostCommentData {
 
   factory BlogPostCommentData.fromJson(JsonMap jsonMap) {
     final text = jsonMap[_BlogPostCommentDataJsonKeys.text]! as String;
-    final result = extractImagesAndCleanHtmlText(text);
+    final result = extractImagesAndCleanHtmlString(text);
     return BlogPostCommentData(
       id: int.parse(
         jsonMap[_BlogPostCommentDataJsonKeys.id]! as String,

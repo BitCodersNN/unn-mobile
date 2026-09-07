@@ -15,7 +15,7 @@ class _RegularExpressionSource {
   static const leadingDigits = r'^(\d+)';
   static const phpsessid = r'PHPSESSID=([^;]+)';
   static const distanceCourseSemester =
-      "href=[\"']#/\\{\\{base_path\\}\\}/(\\d{4})/(\\d)[\"']";
+      r'''href=["']#/\{\{base_path\}\}/(\d{4})/(\d)["']''';
   static const upperCaseLetters = r'[A-Z]';
   static const sonetLAssetsCheckSum = r"sonetLAssetsCheckSum:\s*'([^']+)'";
   static const signedParameters = r"signedParameters:\s*'([^']+)'";
@@ -118,7 +118,7 @@ class RegularExpressions {
     _RegularExpressionSource.fourDigitYearPattern,
   );
 
-  static final timeRexExp = RegExp(
+  static final timeRegExp = RegExp(
     _RegularExpressionSource.timePattern,
   );
 

@@ -207,16 +207,19 @@ class BitrixHtmlParserUtils {
     String entityId,
   ) {
     final scripts = root.getElementsByTagName(FeedHtmlParserStrings.scriptTag);
+    if (scripts.isEmpty) {
+      return '';
+    }
+
+    final combinedScripts = scripts.map((s) => s.text).join('\n');
     final searchPattern =
         '${FeedHtmlParserStrings.likeIdPrefix}$entityType$entityId${FeedHtmlParserStrings.likeIdSuffix}';
 
-    for (final script in scripts) {
-      final content = script.text;
-      if (content.contains(searchPattern)) {
-        final match = RegularExpressions.keySignedRegExp.firstMatch(content);
-        if (match != null) {
-          return match.group(1) ?? '';
-        }
+    if (combinedScripts.contains(searchPattern)) {
+      final match =
+          RegularExpressions.keySignedRegExp.firstMatch(combinedScripts);
+      if (match != null) {
+        return match.group(1) ?? '';
       }
     }
     return '';
