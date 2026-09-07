@@ -1,6 +1,11 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2025 BitCodersNN
 
+// SPDX-License-Identifier: Apache-2.0
+// Copyright 2025 BitCodersNN
+
+import 'package:unn_mobile/core/misc/lru_cache.dart';
+
 class _RegularExpressionSource {
   static const keySigned = r"keySigned:\s*'([^']+)'";
   static const commentIdAndMessage = r"top\.text\d+ = text(\d+) = '([^']*)'";
@@ -122,6 +127,10 @@ class RegularExpressions {
     _RegularExpressionSource.timePattern,
   );
 
+  static final _dimensionRegExpCache = LRUCache<String, RegExp>(100);
   static RegExp dimensionValueRegExp(String dimension) =>
-      RegExp('$dimension\\s*:\\s*(\\d+)px', caseSensitive: false);
+      _dimensionRegExpCache.putIfAbsent(
+        dimension,
+        () => RegExp('$dimension\\s*:\\s*(\\d+)px', caseSensitive: false),
+      );
 }

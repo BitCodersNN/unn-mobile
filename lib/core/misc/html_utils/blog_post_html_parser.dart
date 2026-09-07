@@ -65,6 +65,7 @@ class BlogPostHtmlParser {
 
       blogPosts.putIfAbsent(targetKey, () => []).add(blogPost);
     }
+
     return blogPosts;
   }
 
@@ -73,13 +74,14 @@ class BlogPostHtmlParser {
     UserShortInfo currentUserData,
     ExtendedBlogPostType blogPostType,
   ) {
-    final (postData, attachFiles) = _parsePostData(postElement);
     final authorInfo = BitrixHtmlParserUtils.parseAuthorInfo(
       postElement,
       FeedHtmlParserStrings.feedPostUserName,
       FeedHtmlParserStrings.attrBxPostAuthorId,
       FeedHtmlParserStrings.unknownAuthor,
     );
+
+    final (postData, attachFiles) = _parsePostData(postElement, authorInfo);
     final ratingList = BitrixHtmlParserUtils.parseRatingList(
       postElement,
       currentUserData,
@@ -112,7 +114,10 @@ class BlogPostHtmlParser {
     };
   }
 
-  static (BlogPostData, List<FileData>) _parsePostData(Element postElement) {
+  static (BlogPostData, List<FileData>) _parsePostData(
+    Element postElement,
+    UserShortInfo authorInfo,
+  ) {
     final contentView = postElement
             .attributes[FeedHtmlParserStrings.attrBxContentViewKeySigned] ??
         FeedHtmlParserStrings.emptyString;
@@ -126,13 +131,7 @@ class BlogPostHtmlParser {
       postId.toString(),
     );
 
-    final authorBitrixId = int.tryParse(
-          postElement
-                  .querySelector(FeedHtmlParserStrings.feedPostUserName)
-                  ?.attributes[FeedHtmlParserStrings.attrBxPostAuthorId] ??
-              FeedHtmlParserStrings.zeroString,
-        ) ??
-        0;
+    final authorBitrixId = authorInfo.bitrixId ?? 0;
 
     final title = postElement
             .querySelector(FeedHtmlParserStrings.feedPostPinnedTitle)
@@ -158,20 +157,8 @@ class BlogPostHtmlParser {
 
       BitrixHtmlParserUtils.extractImagesToSet(
         postContent,
-        FeedHtmlParserStrings.diskUiFileThumbnailsWebGridImgItem,
-        FeedHtmlParserStrings.imageSrcAttributesShort,
-        uniqueUrls,
-      );
-      BitrixHtmlParserUtils.extractImagesToSet(
-        postContent,
-        FeedHtmlParserStrings.diskUiFileThumbnailsWebGridImg,
+        FeedHtmlParserStrings.postImagesSelector,
         FeedHtmlParserStrings.imageSrcAttributesFull,
-        uniqueUrls,
-      );
-      BitrixHtmlParserUtils.extractImagesToSet(
-        postContent,
-        FeedHtmlParserStrings.selFeedComFilesPhotoImg,
-        FeedHtmlParserStrings.imageSrcAttributesWithSrc,
         uniqueUrls,
       );
     }
@@ -360,7 +347,6 @@ class BlogPostHtmlParser {
       '$dateStr ${now.year}',
       DatePattern.dmmmmhhmmyyyy,
     );
-
     if (parsed.isAfter(now)) {
       return DateTime(
         parsed.year - 1,

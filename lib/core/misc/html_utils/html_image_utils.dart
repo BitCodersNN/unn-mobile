@@ -90,29 +90,20 @@ String restoreHtmlText(
 }
 
 void _removeDiskAttachDivs(dom.Element element) {
-  final children = List<dom.Element>.from(element.children);
-
-  for (final child in children) {
-    if (child.parent != element) {
+  final diskAttachElements = element.querySelectorAll('[id^="disk-attach-"]');
+  for (final child in diskAttachElements) {
+    if (child.parent == null) {
       continue;
     }
-
-    final id = child.attributes['id'] ?? '';
-    if (id.startsWith('disk-attach-')) {
-      final prev = child.previousElementSibling;
-      if (prev?.localName == 'br') {
-        prev!.remove();
-      }
-
-      final next = child.nextElementSibling;
-      if (next?.localName == 'br') {
-        next!.remove();
-      }
-
-      child.remove();
-    } else {
-      _removeDiskAttachDivs(child);
+    final prev = child.previousElementSibling;
+    if (prev?.localName == 'br') {
+      prev!.remove();
     }
+    final next = child.nextElementSibling;
+    if (next?.localName == 'br') {
+      next!.remove();
+    }
+    child.remove();
   }
 }
 

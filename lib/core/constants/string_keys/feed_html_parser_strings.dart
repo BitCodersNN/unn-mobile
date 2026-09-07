@@ -60,6 +60,11 @@ class FeedHtmlParserStrings {
   static const String feedPostEmojiContainer =
       '$selEmojiContainerSimple, $selEmojiTopPanelBox';
 
+  static const String postImagesSelector =
+      '$diskUiFileThumbnailsWebGridImgItem, '
+      '$diskUiFileThumbnailsWebGridImg, '
+      '$selFeedComFilesPhotoImg';
+
   // ======== СПИСКИ АТРИБУТОВ (Ссылки на базовые константы) ========
   static const List<String> imageSrcAttributesShort = <String>[
     attrDataSrc,
