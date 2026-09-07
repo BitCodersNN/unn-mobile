@@ -30,6 +30,7 @@ class _RegularExpressionSource {
   static const recordBlogPattern = r'record-BLOG_\d+-(\d+)-cover';
   static const blogPostIdPattern = r'BLOG_POST-(\d+)';
   static const digitsPattern = r'(\d+)';
+  static const nonDigitsPattern = r'\D';
   static const fourDigitYearPattern = r'\b\d{4}\b';
   static const timePattern = r'(\d{1,2}:\d{2})';
 }
@@ -117,6 +118,10 @@ class RegularExpressions {
 
   static final digitsRegExp = RegExp(
     _RegularExpressionSource.digitsPattern,
+  );
+
+  static final nonDigitsRegExp = RegExp(
+    _RegularExpressionSource.nonDigitsPattern,
   );
 
   static final fourDigitYearRegExp = RegExp(

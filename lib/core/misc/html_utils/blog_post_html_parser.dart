@@ -245,8 +245,10 @@ class BlogPostHtmlParser {
       return 0;
     }
 
-    final digits = countElement.text.replaceAll(RegExp(r'\D'), '');
-    return int.tryParse(digits) ?? 0;
+    return int.tryParse(
+          countElement.text.replaceAll(RegularExpressions.nonDigitsRegExp, ''),
+        ) ??
+        0;
   }
 
   static List<PostDestination>? _extractDestinations(Element postElement) {
