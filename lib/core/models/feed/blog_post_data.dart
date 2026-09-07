@@ -66,7 +66,7 @@ class BlogPostData {
 
   factory BlogPostData.fromJson(JsonMap jsonMap) {
     final fullText = jsonMap[_BlogPostDataJsonKeys.fulltext]! as String;
-    final result = extractImagesAndCleanHtmlText(fullText);
+    final result = extractImagesAndCleanHtmlString(fullText);
     return BlogPostData(
       id: int.parse(
         jsonMap[_BlogPostDataJsonKeys.id]! as String,
@@ -77,8 +77,8 @@ class BlogPostData {
             as JsonMap)[_BlogPostDataJsonKeys.id]! as String,
       ),
       title: jsonMap[_BlogPostDataJsonKeys.title]! as String,
-      detailText: result[ExtractImagesAndCleanHtmlTextMapKey.cleanedText],
-      imageUrls: result[ExtractImagesAndCleanHtmlTextMapKey.imageUrls],
+      detailText: result.cleanedText,
+      imageUrls: result.imageUrls,
       datePublish: DateTimeParser.parse(
         jsonMap[_BlogPostDataJsonKeys.time]! as String,
         DatePattern.ddmmyyyyhhmmss,
@@ -109,7 +109,8 @@ class BlogPostData {
           _BlogPostDataJsonKeys.id: authorBitrixId.toString(),
         },
         _BlogPostDataJsonKeys.title: title,
-        _BlogPostDataJsonKeys.fulltext: restoreHtmlText(detailText, imageUrls),
+        _BlogPostDataJsonKeys.fulltext:
+            restoreHtmlText(detailText, imageUrls ?? const []),
         _BlogPostDataJsonKeys.time:
             datePublish.format(DatePattern.ddmmyyyyhhmmss),
         _BlogPostDataJsonKeys.commentsNum: numberOfComments.toString(),

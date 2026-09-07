@@ -60,6 +60,11 @@ class FeedHtmlParserStrings {
   static const String feedPostEmojiContainer =
       '$selEmojiContainerSimple, $selEmojiTopPanelBox';
 
+  static const String postImagesSelector =
+      '$diskUiFileThumbnailsWebGridImgItem, '
+      '$diskUiFileThumbnailsWebGridImg, '
+      '$selFeedComFilesPhotoImg';
+
   // ======== СПИСКИ АТРИБУТОВ (Ссылки на базовые константы) ========
   static const List<String> imageSrcAttributesShort = <String>[
     attrDataSrc,
@@ -111,12 +116,6 @@ class FeedHtmlParserStrings {
   static const String feedComTextInnerInner = '.feed-com-text-inner-inner';
   static const String feedComFileSize = '.feed-com-file-size';
   static const String avatarContainer = '.feed-com-avatar, .feed-user-avatar';
-
-  // Алиасы для обратной совместимости (если использовались в старом коде)
-  static const String feedComFilesPhotoImg = selFeedComFilesPhotoImg;
-  static const String feedPostEmojiContainerSimple = selEmojiContainerSimple;
-  static const String dataMyreactionSelector = selDataMyreaction;
-  static const String dataValueSelector = selDataValue;
 
   // ======== HTML ТЕГИ ========
   static const String scriptTag = 'script';

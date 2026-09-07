@@ -11,11 +11,9 @@ class LRUCache<Key, Value> {
 
   Value? get(Key key) {
     final Value? value = cache.remove(key);
-
     if (value != null) {
       cache[key] = value;
     }
-
     return value;
   }
 
@@ -29,5 +27,15 @@ class LRUCache<Key, Value> {
       }
       cache[key] = newValue;
     }
+  }
+
+  Value putIfAbsent(Key key, Value Function() ifAbsent) {
+    final existing = get(key);
+    if (existing != null) {
+      return existing;
+    }
+    final newValue = ifAbsent();
+    save(key, newValue);
+    return newValue;
   }
 }

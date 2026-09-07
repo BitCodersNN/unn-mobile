@@ -22,10 +22,13 @@ class BlogPostHtmlParser {
     String? htmlText,
     UserShortInfo currentUserData,
   ) {
-    final document = parser.parse(
-      htmlText,
-    );
-    final postElement = document.querySelector('.feed-item-wrap');
+    if (htmlText == null || htmlText.isEmpty) {
+      return null;
+    }
+
+    final document = parser.parse(htmlText);
+    final postElement =
+        document.querySelector(FeedHtmlParserStrings.feedItemWrap);
 
     if (postElement == null) {
       return null;
@@ -40,6 +43,10 @@ class BlogPostHtmlParser {
     String? htmlText,
     UserShortInfo currentUserData,
   ) {
+    if (htmlText == null || htmlText.isEmpty) {
+      return null;
+    }
+
     final document = parser.parse(htmlText);
     final postElements =
         document.querySelectorAll(FeedHtmlParserStrings.feedItemWrap);
@@ -58,6 +65,7 @@ class BlogPostHtmlParser {
 
       blogPosts.putIfAbsent(targetKey, () => []).add(blogPost);
     }
+
     return blogPosts;
   }
 
@@ -66,20 +74,19 @@ class BlogPostHtmlParser {
     UserShortInfo currentUserData,
     ExtendedBlogPostType blogPostType,
   ) {
-    final (postData, attachFiles) = _parsePostData(postElement);
     final authorInfo = BitrixHtmlParserUtils.parseAuthorInfo(
       postElement,
       FeedHtmlParserStrings.feedPostUserName,
-      FeedHtmlParserStrings
-          .attrBxPostAuthorId, // Обновлено: был bxPostAuthorIdAttr
+      FeedHtmlParserStrings.attrBxPostAuthorId,
       FeedHtmlParserStrings.unknownAuthor,
     );
+
+    final (postData, attachFiles) = _parsePostData(postElement, authorInfo);
     final ratingList = BitrixHtmlParserUtils.parseRatingList(
       postElement,
       currentUserData,
       FeedHtmlParserStrings.feedPostEmojiTopPanelOuter,
-      postElement.attributes[FeedHtmlParserStrings
-          .attrDataLivefeedId], // Обновлено: был dataLivefeedIdAttr
+      postElement.attributes[FeedHtmlParserStrings.attrDataLivefeedId],
     );
     final commentCount = _extractCommentCount(postElement);
 
@@ -107,9 +114,12 @@ class BlogPostHtmlParser {
     };
   }
 
-  static (BlogPostData, List<FileData>) _parsePostData(Element postElement) {
-    final contentView = postElement.attributes[FeedHtmlParserStrings
-            .attrBxContentViewKeySigned] ?? // Обновлено: был bxContentViewKeySignedAttr
+  static (BlogPostData, List<FileData>) _parsePostData(
+    Element postElement,
+    UserShortInfo authorInfo,
+  ) {
+    final contentView = postElement
+            .attributes[FeedHtmlParserStrings.attrBxContentViewKeySigned] ??
         FeedHtmlParserStrings.emptyString;
     final postIdMatch =
         RegularExpressions.blogPostIdRegExp.firstMatch(contentView);
@@ -121,15 +131,7 @@ class BlogPostHtmlParser {
       postId.toString(),
     );
 
-    final authorBitrixId = int.tryParse(
-          postElement
-                      .querySelector(FeedHtmlParserStrings.feedPostUserName)
-                      ?.attributes[
-                  FeedHtmlParserStrings
-                      .attrBxPostAuthorId] ?? // Обновлено: был bxPostAuthorIdAttr
-              FeedHtmlParserStrings.zeroString,
-        ) ??
-        0;
+    final authorBitrixId = authorInfo.bitrixId ?? 0;
 
     final title = postElement
             .querySelector(FeedHtmlParserStrings.feedPostPinnedTitle)
@@ -137,39 +139,29 @@ class BlogPostHtmlParser {
             .trim() ??
         FeedHtmlParserStrings.emptyString;
 
-    final textElement =
-        postElement.querySelector(FeedHtmlParserStrings.feedPostText);
-    final parsedTextResult = extractImagesAndCleanHtmlText(
-      textElement?.innerHtml ?? FeedHtmlParserStrings.emptyString,
-    );
+    final postContent =
+        postElement.querySelector(FeedHtmlParserStrings.selPostContWrap);
 
-    final extractedUrls =
-        (parsedTextResult[FeedHtmlParserStrings.imageUrlsKey] as List?)
-                ?.cast<String>() ??
-            <String>[];
-    final cleanedText =
-        parsedTextResult[FeedHtmlParserStrings.cleanedTextKey] as String?;
+    String cleanedText = FeedHtmlParserStrings.emptyString;
+    final uniqueUrls = <String>{};
 
-    final uniqueUrls = extractedUrls.toSet();
+    if (postContent != null) {
+      final textElement =
+          postContent.querySelector(FeedHtmlParserStrings.feedPostText);
 
-    BitrixHtmlParserUtils.extractImagesToSet(
-      postElement,
-      FeedHtmlParserStrings.diskUiFileThumbnailsWebGridImgItem,
-      FeedHtmlParserStrings.imageSrcAttributesShort,
-      uniqueUrls,
-    );
-    BitrixHtmlParserUtils.extractImagesToSet(
-      postElement,
-      FeedHtmlParserStrings.diskUiFileThumbnailsWebGridImg,
-      FeedHtmlParserStrings.imageSrcAttributesFull,
-      uniqueUrls,
-    );
-    BitrixHtmlParserUtils.extractImagesToSet(
-      postElement,
-      FeedHtmlParserStrings.feedComFilesPhotoImg,
-      FeedHtmlParserStrings.imageSrcAttributesWithSrc,
-      uniqueUrls,
-    );
+      if (textElement != null) {
+        final result = extractImagesAndCleanHtmlElement(textElement);
+        cleanedText = result.cleanedText;
+        uniqueUrls.addAll(result.imageUrls);
+      }
+
+      BitrixHtmlParserUtils.extractImagesToSet(
+        postContent,
+        FeedHtmlParserStrings.postImagesSelector,
+        FeedHtmlParserStrings.imageSrcAttributesFull,
+        uniqueUrls,
+      );
+    }
 
     final datePublish = _parseDateTime(
       postElement
@@ -199,8 +191,8 @@ class BlogPostHtmlParser {
         ) ??
         0;
 
-    final livefeedId = postElement.attributes[FeedHtmlParserStrings
-        .attrDataLivefeedId]; // Обновлено: был dataLivefeedIdAttr
+    final livefeedId =
+        postElement.attributes[FeedHtmlParserStrings.attrDataLivefeedId];
     final pinnedId =
         int.tryParse(livefeedId ?? FeedHtmlParserStrings.emptyString);
 
@@ -216,7 +208,7 @@ class BlogPostHtmlParser {
       blogId: null,
       authorBitrixId: authorBitrixId,
       title: title,
-      detailText: cleanedText ?? '',
+      detailText: cleanedText,
       imageUrls: uniqueUrls.toList(),
       datePublish: datePublish ?? DateTime.now(),
       numberOfComments: numberOfComments,
@@ -253,8 +245,9 @@ class BlogPostHtmlParser {
       return 0;
     }
 
-    final match = RegularExpressions.digitsRegExp.firstMatch(countElement.text);
-    return int.tryParse(match?.group(1) ?? FeedHtmlParserStrings.emptyString) ??
+    return int.tryParse(
+          countElement.text.replaceAll(RegularExpressions.nonDigitsRegExp, ''),
+        ) ??
         0;
   }
 
@@ -264,10 +257,10 @@ class BlogPostHtmlParser {
         .querySelectorAll(FeedHtmlParserStrings.feedAddPostDestinationNew);
 
     for (final dest in destinationElements) {
-      final entityType = dest.attributes[FeedHtmlParserStrings
-          .attrDataBxEntityType]; // Обновлено: был dataBxEntityTypeAttr
-      final entityId = dest.attributes[FeedHtmlParserStrings
-          .attrDataBxEntityId]; // Обновлено: был dataBxEntityIdAttr
+      final entityType =
+          dest.attributes[FeedHtmlParserStrings.attrDataBxEntityType];
+      final entityId =
+          dest.attributes[FeedHtmlParserStrings.attrDataBxEntityId];
       final name = dest.text.trim();
 
       if (entityType == null || entityId == null || name.isEmpty) {
@@ -291,9 +284,9 @@ class BlogPostHtmlParser {
       return ExtendedBlogPostType.regular;
     }
 
-    final classes = postBlock.className;
-    final isPinned = postBlock.attributes[FeedHtmlParserStrings
-                .attrDataLivefeedPostPinned] == // Обновлено: был dataLivefeedPostPinnedAttr
+    final classes = postBlock.classes;
+    final isPinned = postBlock
+                .attributes[FeedHtmlParserStrings.attrDataLivefeedPostPinned] ==
             FeedHtmlParserStrings.yesValue ||
         classes.contains(FeedHtmlParserStrings.feedPostBlockPinnedClass);
     final isImportant =
@@ -356,16 +349,23 @@ class BlogPostHtmlParser {
       '$dateStr ${now.year}',
       DatePattern.dmmmmhhmmyyyy,
     );
-    return parsed.isAfter(now)
-        ? parsed.subtract(const Duration(days: 365))
-        : parsed;
+    if (parsed.isAfter(now)) {
+      return DateTime(
+        parsed.year - 1,
+        parsed.month,
+        parsed.day,
+        parsed.hour,
+        parsed.minute,
+      );
+    }
+    return parsed;
   }
 
   static bool _hasYear(String dateStr) =>
       RegularExpressions.fourDigitYearRegExp.hasMatch(dateStr);
 
   static String? _extractTime(String dateStr) {
-    final timeMatch = RegularExpressions.timeRexExp.firstMatch(dateStr);
+    final timeMatch = RegularExpressions.timeRegExp.firstMatch(dateStr);
     return timeMatch?.group(1);
   }
 
