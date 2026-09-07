@@ -112,12 +112,6 @@ class FeedHtmlParserStrings {
   static const String feedComFileSize = '.feed-com-file-size';
   static const String avatarContainer = '.feed-com-avatar, .feed-user-avatar';
 
-  // Алиасы для обратной совместимости (если использовались в старом коде)
-  static const String feedComFilesPhotoImg = selFeedComFilesPhotoImg;
-  static const String feedPostEmojiContainerSimple = selEmojiContainerSimple;
-  static const String dataMyreactionSelector = selDataMyreaction;
-  static const String dataValueSelector = selDataValue;
-
   // ======== HTML ТЕГИ ========
   static const String scriptTag = 'script';
   static const String imgTag = 'img';

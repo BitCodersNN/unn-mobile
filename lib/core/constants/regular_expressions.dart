@@ -2,7 +2,7 @@
 // Copyright 2025 BitCodersNN
 
 class _RegularExpressionSource {
-  static const keySigned = r"keySigned:\s*'([^']+)'"; // r"keySigned: '.*',";
+  static const keySigned = r"keySigned:\s*'([^']+)'";
   static const commentIdAndMessage = r"top\.text\d+ = text(\d+) = '([^']*)'";
   static const author =
       r'<span class="feed-com-name.*?feed-author-name-(\d+)">([^<]+)<\/span>';
@@ -12,6 +12,7 @@ class _RegularExpressionSource {
       r'top\.arComDFiles(\d+) = BX\.util\.array_merge\(\(top\.arComDFiles\d+ \|\| \[\]\), \[(.*?)\]';
   static const cookieCleanup = r'^;+|;+$';
   static const leadingSlashes = r'^/+';
+  static const leadingDigits = r'^(\d+)';
   static const phpsessid = r'PHPSESSID=([^;]+)';
   static const distanceCourseSemester =
       "href=[\"']#/\\{\\{base_path\\}\\}/(\\d{4})/(\\d)[\"']";
@@ -55,6 +56,10 @@ class RegularExpressions {
 
   static final leadingSlashesRegExp = RegExp(
     _RegularExpressionSource.leadingSlashes,
+  );
+
+  static final leadingDigitsRegExp = RegExp(
+    _RegularExpressionSource.leadingDigits,
   );
 
   static final phpsessidRegExp = RegExp(
@@ -104,13 +109,19 @@ class RegularExpressions {
   static final blogPostIdRegExp = RegExp(
     _RegularExpressionSource.blogPostIdPattern,
   );
+
   static final digitsRegExp = RegExp(
     _RegularExpressionSource.digitsPattern,
   );
+
   static final fourDigitYearRegExp = RegExp(
     _RegularExpressionSource.fourDigitYearPattern,
   );
+
   static final timeRexExp = RegExp(
     _RegularExpressionSource.timePattern,
   );
+
+  static RegExp dimensionValueRegExp(String dimension) =>
+      RegExp('$dimension\\s*:\\s*(\\d+)px', caseSensitive: false);
 }

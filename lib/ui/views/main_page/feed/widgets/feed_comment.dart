@@ -64,7 +64,7 @@ class FeedCommentView extends StatelessWidget {
                   ),
                   child: PackedPostImages(
                     attachedImages: model.attachedImages,
-                    authorizationHeaders: const {},
+                    authorizationHeaders: model.authHeaders,
                   ),
                 ),
                 for (final file in model.attachedFileViewModels)
