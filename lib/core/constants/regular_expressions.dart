@@ -15,6 +15,7 @@ class _RegularExpressionSource {
   static const cookieCleanup = r'^;+|;+$';
   static const leadingSlashes = r'^/+';
   static const leadingDigits = r'^(\d+)';
+  static const errorText = r'class="errortext"[^>]*>([^<]+)';
   static const phpsessid = r'PHPSESSID=([^;]+)';
   static const distanceCourseSemester =
       r'''href=["']#/\{\{base_path\}\}/(\d{4})/(\d)["']''';
@@ -63,6 +64,10 @@ class RegularExpressions {
 
   static final leadingDigitsRegExp = RegExp(
     _RegularExpressionSource.leadingDigits,
+  );
+
+  static final errorRegex = RegExp(
+    _RegularExpressionSource.errorText,
   );
 
   static final phpsessidRegExp = RegExp(

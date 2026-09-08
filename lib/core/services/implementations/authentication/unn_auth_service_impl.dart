@@ -8,6 +8,7 @@ import 'package:unn_mobile/core/api_helpers/base_options_factory.dart';
 import 'package:unn_mobile/core/constants/api/ajax_action.dart';
 import 'package:unn_mobile/core/constants/api/host.dart';
 import 'package:unn_mobile/core/constants/api/path.dart';
+import 'package:unn_mobile/core/constants/regular_expressions.dart';
 import 'package:unn_mobile/core/constants/string_keys/session_identifier_keys.dart';
 import 'package:unn_mobile/core/misc/authorisation/authorisation_helper.dart';
 import 'package:unn_mobile/core/misc/authorisation/authorisation_request_result.dart';
@@ -85,7 +86,7 @@ class UnnAuthServiceImpl extends ChangeNotifier implements UnnAuthService {
 
     final interResult = await authResult.fold<Future<AuthRequestResult>>(
       _handleAuthResult,
-      _extractSessionCookie,
+      _processAuthResponse,
     );
 
     if (interResult != AuthRequestResult.success) {
@@ -145,35 +146,61 @@ class UnnAuthServiceImpl extends ChangeNotifier implements UnnAuthService {
     return authResult;
   }
 
-  Future<AuthRequestResult> _extractSessionCookie(Response authResponse) async {
+  Future<AuthRequestResult> _processAuthResponse(Response authResponse) async {
     try {
-      final cookies = authResponse.headers.map['set-cookie'];
-
-      if (cookies == null || cookies.isEmpty) {
-        _loggerService
-            .log('Отсутствуют заголовки set-cookie в ответе авторизации');
-        return AuthRequestResult.unknown;
-      }
-
-      final sessionCookie = cookies.firstWhere(
-        (cookie) => cookie.startsWith('PHPSESSID='),
-        orElse: () => '',
-      );
-
-      if (sessionCookie.isEmpty) {
-        _loggerService.log('PHPSESSID не найден в заголовках set-cookie');
-        return AuthRequestResult.unknown;
-      }
-
-      _sessionId = sessionCookie.split(';').first.split('=').last.trim();
-
-      if (_sessionId!.isEmpty) {
-        _loggerService.log('Значение PHPSESSID оказалось пустым');
-        return AuthRequestResult.unknown;
-      }
+      return _parseAuthResponseData(authResponse);
     } catch (error, stackTrace) {
       _loggerService.log(
-        'Не удалось получить PHPSESSID. Exception: $error\nStackTrace: $stackTrace',
+        'Критическая ошибка при обработке ответа авторизации. Exception: $error\nStackTrace: $stackTrace',
+      );
+      return AuthRequestResult.unknown;
+    }
+  }
+
+  AuthRequestResult _parseAuthResponseData(Response authResponse) {
+    final body = authResponse.data ?? '';
+    final errorMatch = RegularExpressions.errorRegex.firstMatch(body);
+
+    if (errorMatch != null) {
+      final errorText = errorMatch.group(1)?.toLowerCase().trim() ?? '';
+
+      if (errorText.contains('неверный логин или пароль')) {
+        _loggerService
+            .log('Авторизация отклонена сервером: неверный логин или пароль');
+        return AuthRequestResult.wrongCredentials;
+      }
+
+      return AuthRequestResult.unknown;
+    }
+
+    final cookies = authResponse.headers.map['set-cookie'];
+
+    if (cookies == null || cookies.isEmpty) {
+      _loggerService.log(
+        'Отсутствуют заголовки set-cookie в ответе авторизации',
+      );
+      return AuthRequestResult.unknown;
+    }
+
+    final sessionCookie = cookies.firstWhere(
+      (cookie) => cookie.startsWith(
+        '${SessionIdentifierKeys.sessionIdCookieKey}=',
+      ),
+      orElse: () => '',
+    );
+
+    if (sessionCookie.isEmpty) {
+      _loggerService.log(
+        '${SessionIdentifierKeys.sessionIdCookieKey} не найден в заголовках set-cookie',
+      );
+      return AuthRequestResult.unknown;
+    }
+
+    _sessionId = sessionCookie.split(';').first.split('=').last.trim();
+
+    if (_sessionId == null || _sessionId!.isEmpty) {
+      _loggerService.log(
+        'Значение ${SessionIdentifierKeys.sessionIdCookieKey} оказалось пустым после парсинга',
       );
       return AuthRequestResult.unknown;
     }
@@ -186,7 +213,8 @@ class UnnAuthServiceImpl extends ChangeNotifier implements UnnAuthService {
       // Оставляем каскадное приведение типов, как вы и просили.
       // Любая ошибка здесь будет перехвачена блоком catch ниже.
       _csrf = ((((csrfResponse.data as JsonMap)['errors']! as List).first
-          as JsonMap)['customData']! as JsonMap)['csrf'] as String?;
+              as JsonMap)['customData']! as JsonMap)[SessionIdentifierKeys.csrf]
+          as String?;
     } catch (error, stackTrace) {
       _loggerService.log(
         'Не удалось получить CSRF-токен. Exception: $error\nStackTrace: $stackTrace',
