@@ -45,10 +45,10 @@ import 'package:unn_mobile/core/providers/interfaces/loading_page/loading_page_p
 import 'package:unn_mobile/core/providers/interfaces/profile/user_data_provider.dart';
 import 'package:unn_mobile/core/providers/interfaces/schedule/offline_schedule_provider.dart';
 import 'package:unn_mobile/core/services/implementations/about/authors_config_service_impl.dart';
-import 'package:unn_mobile/core/services/implementations/authorisation/legacy/authorisation_service_impl.dart';
-import 'package:unn_mobile/core/services/implementations/authorisation/legacy/source_authorisation_service_impl.dart';
-import 'package:unn_mobile/core/services/implementations/authorisation/stream_auth_service_impl.dart';
-import 'package:unn_mobile/core/services/implementations/authorisation/unn_authorisation_refresh_service_impl.dart';
+import 'package:unn_mobile/core/services/implementations/authentication/source_auth_service_impl.dart';
+import 'package:unn_mobile/core/services/implementations/authentication/stream_auth_service_impl.dart';
+import 'package:unn_mobile/core/services/implementations/authentication/unn_auth_refresh_service_impl.dart';
+import 'package:unn_mobile/core/services/implementations/authentication/unn_auth_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/certificate/certificate_downloader_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/certificate/certificate_path_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/certificate/certificate_service_impl.dart';
@@ -83,13 +83,8 @@ import 'package:unn_mobile/core/services/implementations/feed/featured_blog_post
 import 'package:unn_mobile/core/services/implementations/feed/featured_blog_post_action/important_blog_post_users_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/feed/featured_blog_post_action/pinning_blog_post_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/feed/feed_file_downloader_service_impl.dart';
-import 'package:unn_mobile/core/services/implementations/feed/legacy/blog_post_receivers/blog_post_service_impl.dart';
-import 'package:unn_mobile/core/services/implementations/feed/legacy/blog_post_receivers/featured_blog_posts_service_impl.dart';
-import 'package:unn_mobile/core/services/implementations/feed/legacy/blog_post_receivers/regular_blog_posts_service_impl.dart';
-import 'package:unn_mobile/core/services/implementations/feed/legacy/getting_blog_posts_impl.dart';
-import 'package:unn_mobile/core/services/implementations/feed/legacy/getting_rating_list_impl.dart';
-import 'package:unn_mobile/core/services/implementations/feed/legacy/getting_vote_key_signed_impl.dart';
-import 'package:unn_mobile/core/services/implementations/feed/reaction_service_impl.dart';
+import 'package:unn_mobile/core/services/implementations/feed/reaction_action_service_impl.dart';
+import 'package:unn_mobile/core/services/implementations/feed/reaction_rating_list_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/grade_book/grade_book_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/loading_page/loading_page_config_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/loading_page/logo_downloader_service_impl.dart';
@@ -138,13 +133,8 @@ import 'package:unn_mobile/core/services/interfaces/feed/featured_blog_post_acti
 import 'package:unn_mobile/core/services/interfaces/feed/featured_blog_post_action/important_blog_post_users_service.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/featured_blog_post_action/pinning_blog_post_service.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/feed_file_downloader_service.dart';
-import 'package:unn_mobile/core/services/interfaces/feed/legacy/blog_post_receivers/blog_post_service.dart';
-import 'package:unn_mobile/core/services/interfaces/feed/legacy/blog_post_receivers/featured_blog_post_service.dart';
-import 'package:unn_mobile/core/services/interfaces/feed/legacy/blog_post_receivers/regular_blog_posts_service.dart';
-import 'package:unn_mobile/core/services/interfaces/feed/legacy/getting_blog_posts.dart';
-import 'package:unn_mobile/core/services/interfaces/feed/legacy/getting_rating_list.dart';
-import 'package:unn_mobile/core/services/interfaces/feed/legacy/getting_vote_key_signed.dart';
-import 'package:unn_mobile/core/services/interfaces/feed/reaction_service.dart';
+import 'package:unn_mobile/core/services/interfaces/feed/reaction_action_service.dart';
+import 'package:unn_mobile/core/services/interfaces/feed/reaction_rating_list_service.dart';
 import 'package:unn_mobile/core/services/interfaces/grade_book/grade_book_service.dart';
 import 'package:unn_mobile/core/services/interfaces/loading_page/loading_page_config_service.dart';
 import 'package:unn_mobile/core/services/interfaces/loading_page/logo_downloader_service.dart';
@@ -182,9 +172,9 @@ void registerDependencies() {
   T get<T>({String dependencyName = ''}) =>
       injector.get<T>(dependencyName: dependencyName);
 
-  ApiHelper getPlatformSpecificHelper //
-      <TWeb extends ApiHelper, TDefault extends ApiHelper>() =>
-          kIsWeb ? get<TWeb>() : get<TDefault>();
+  ApiHelper getPlatformSpecificHelper<TWeb extends ApiHelper,
+          TDefault extends ApiHelper>() =>
+      kIsWeb ? get<TWeb>() : get<TDefault>();
 
   final apiHelperFactories = {
     HostType.github: () => get<GithubApiHelper>(),
@@ -199,13 +189,10 @@ void registerDependencies() {
 
   ApiHelper getApiHelper(HostType hostType) => apiHelperFactories[hostType]!();
 
-  // register all the dependencies here:
-
-  //
-  // Services
-  //
-
   injector
+    // =========================================================================
+    // 1. БАЗОВАЯ ИНФРАСТРУКТУРА И УТИЛИТЫ
+    // =========================================================================
     ..registerSingleton<LoggerService>(() {
       if (AppSettings.analyticsEnabled) {
         return FirebaseLoggerServiceImpl();
@@ -214,57 +201,72 @@ void registerDependencies() {
     })
     ..registerSingleton<OnlineStatusData>(OnlineStatusData.new)
     ..registerSingleton<StorageService>(StorageServiceImpl.new)
+    ..registerSingleton<AppOpenTracker>(
+      () => AppOpenTracker(get<StorageService>()),
+    )
 
-    // Authorization services
-    ..registerSingleton<UnnAuthorisationService>(
-      () => LegacyAuthorizationServiceImpl(
+    // =========================================================================
+    // 2. СЕТЕВЫЕ ПОМОЩНИКИ (API HELPERS)
+    // =========================================================================
+    ..registerSingleton<GithubApiHelper>(GithubApiHelper.new)
+    ..registerSingleton<GitHubRawApiHelper>(GitHubRawApiHelper.new)
+    ..registerSingleton<UnnPortalApiHelper>(
+      () => UnnPortalApiHelper(authorizationService: get<UnnAuthService>()),
+    )
+    ..registerSingleton<UnnMobileApiHelper>(
+      () => UnnMobileApiHelper(authorizationService: get<UnnAuthService>()),
+    )
+    ..registerSingleton<WebUnnPortalApiHelper>(
+      () => WebUnnPortalApiHelper(authorizationService: get<UnnAuthService>()),
+    )
+    ..registerSingleton<WebUnnMobileApiHelper>(
+      () => WebUnnMobileApiHelper(authorizationService: get<UnnAuthService>()),
+    )
+    ..registerSingleton<UnnSourceApiHelper>(
+      () => UnnSourceApiHelper(authorizationService: get<SourceAuthService>()),
+    )
+    ..registerSingleton<WebUnnSourceApiHelper>(
+      () =>
+          WebUnnSourceApiHelper(authorizationService: get<SourceAuthService>()),
+    )
+
+    // =========================================================================
+    // 3. АУТЕНТИФИКАЦИЯ И АВТОРИЗАЦИЯ
+    // =========================================================================
+    ..registerSingleton<UnnAuthService>(
+      () => UnnAuthServiceImpl(
         get<OnlineStatusData>(),
         get<AuthDataProvider>(),
         get<LoggerService>(),
       ),
     )
-    ..registerSingleton<SourceAuthorisationService>(
-      () => LegacySourceAuthorisationServiceImpl(
+    ..registerSingleton<SourceAuthService>(
+      () => SourceAuthServiceImpl(
         get<OnlineStatusData>(),
         get<LoggerService>(),
       ),
     )
-
-    // API Helpers
-    ..registerSingleton<GithubApiHelper>(GithubApiHelper.new)
-    ..registerSingleton<GitHubRawApiHelper>(GitHubRawApiHelper.new)
-    ..registerSingleton<UnnPortalApiHelper>(
-      () => UnnPortalApiHelper(
-        authorizationService: get<UnnAuthorisationService>(),
+    ..registerSingleton<AuthDataProvider>(
+      () => AuthorisationDataProviderImpl(get<StorageService>()),
+    )
+    ..registerSingleton<AuthRefreshService>(
+      () => AuthRefreshServiceImpl(
+        get<AuthDataProvider>(),
+        get<UnnAuthService>(),
+        get<StorageService>(),
+        get<LoggerService>(),
       ),
     )
-    ..registerSingleton<UnnMobileApiHelper>(
-      () => UnnMobileApiHelper(
-        authorizationService: get<UnnAuthorisationService>(),
-      ),
-    )
-    ..registerSingleton<WebUnnPortalApiHelper>(
-      () => WebUnnPortalApiHelper(
-        authorizationService: get<UnnAuthorisationService>(),
-      ),
-    )
-    ..registerSingleton<WebUnnMobileApiHelper>(
-      () => WebUnnMobileApiHelper(
-        authorizationService: get<UnnAuthorisationService>(),
-      ),
-    )
-    ..registerSingleton<UnnSourceApiHelper>(
-      () => UnnSourceApiHelper(
-        authorizationService: get<SourceAuthorisationService>(),
-      ),
-    )
-    ..registerSingleton<WebUnnSourceApiHelper>(
-      () => WebUnnSourceApiHelper(
-        authorizationService: get<SourceAuthorisationService>(),
+    ..registerSingleton<StreamAuthService>(
+      () => StreamAuthServiceImpl(
+        get<LoggerService>(),
+        getApiHelper(HostType.unnPortal),
       ),
     )
 
-    // Config & metadata services
+    // =========================================================================
+    // 4. КОНФИГУРАЦИЯ И МЕТАДАННЫЕ
+    // =========================================================================
     ..registerSingleton<LastCommitShaService>(
       () => LastCommitShaServiceImpl(
         get<LoggerService>(),
@@ -289,12 +291,8 @@ void registerDependencies() {
         getApiHelper(HostType.githubRaw),
       ),
     )
-
-    // Storage-based providers
     ..registerSingleton<LastCommitShaAuthorsProvider>(
-      () => LastCommitShaAuthorsProviderImpl(
-        get<StorageService>(),
-      ),
+      () => LastCommitShaAuthorsProviderImpl(get<StorageService>()),
     )
     ..registerSingleton<AuthorsProvider>(
       () => AuthorsProviderImpl(
@@ -302,16 +300,8 @@ void registerDependencies() {
         get<LoggerService>(),
       ),
     )
-    ..registerSingleton<FeedFileDownloaderService>(
-      () => FeedFileDownloaderServiceImpl(
-        get<LoggerService>(),
-        getApiHelper(HostType.unnPortal),
-      ),
-    )
     ..registerSingleton<LastCommitShaLoadingPageProvider>(
-      () => LastCommitShaLoadingPageProviderImpl(
-        get<StorageService>(),
-      ),
+      () => LastCommitShaLoadingPageProviderImpl(get<StorageService>()),
     )
     ..registerSingleton<LoadingPageProvider>(
       () => LoadingPageProviderImpl(
@@ -320,22 +310,9 @@ void registerDependencies() {
       ),
     )
 
-    // Auth data & refresh
-    ..registerSingleton<AuthDataProvider>(
-      () => AuthorisationDataProviderImpl(
-        get<StorageService>(),
-      ),
-    )
-    ..registerSingleton<AuthorisationRefreshService>(
-      () => AuthorisationRefreshServiceImpl(
-        get<AuthDataProvider>(),
-        get<UnnAuthorisationService>(),
-        get<StorageService>(),
-        get<LoggerService>(),
-      ),
-    )
-
-    // User & profile
+    // =========================================================================
+    // 5. ПОЛЬЗОВАТЕЛЬ И ПРОФИЛЬ
+    // =========================================================================
     ..registerSingleton<ProfileOfCurrentUserService>(
       () => ProfileOfCurrentUserServiceImpl(
         get<LoggerService>(),
@@ -362,8 +339,36 @@ void registerDependencies() {
         get<ProfileOfCurrentUserService>(),
       ),
     )
+    ..registerSingleton<ProfileService>(
+      () => ProfileServiceImpl(
+        get<LoggerService>(),
+        getApiHelper(HostType.unnPortal),
+      ),
+    )
+    ..registerSingleton<FileDataService>(
+      () => FileDataServiceImpl(
+        get<UnnAuthService>(),
+        get<LoggerService>(),
+        getApiHelper(HostType.unnPortal),
+      ),
+    )
+    ..registerSingleton<ProfileSearchService>(
+      () => ProfileSearchServiceImpl(
+        get<LoggerService>(),
+        getApiHelper(HostType.unnPortal),
+      ),
+    )
+    ..registerSingleton<LecturerProfileService>(
+      () => LecturerProfileServiceImpl(
+        get<LoggerService>(),
+        get<ProfileSearchService>(),
+        get<ProfileService>(),
+      ),
+    )
 
-    // Schedule
+    // =========================================================================
+    // 6. РАСПИСАНИЕ И УСПЕВАЕМОСТЬ
+    // =========================================================================
     ..registerSingleton<ScheduleService>(
       () => ScheduleServiceImpl(
         get<LoggerService>(),
@@ -371,9 +376,7 @@ void registerDependencies() {
       ),
     )
     ..registerSingleton<ExportScheduleService>(
-      () => ExportScheduleServiceImpl(
-        getApiHelper(HostType.unnPortal),
-      ),
+      () => ExportScheduleServiceImpl(getApiHelper(HostType.unnPortal)),
     )
     ..registerSingleton<OfflineScheduleProvider>(
       () => OfflineScheduleProviderImpl(
@@ -387,114 +390,6 @@ void registerDependencies() {
         get<LoggerService>(),
       ),
     )
-
-    // Blog & feed
-    ..registerDependency<RegularBlogPostsService>(
-      () => RegularBlogPostsServiceImpl(
-        get<LoggerService>(),
-        getApiHelper(HostType.unnPortal),
-      ),
-    )
-    ..registerDependency<FeaturedBlogPostsService>(
-      () => FeaturedBlogPostsServiceImpl(
-        get<LoggerService>(),
-        getApiHelper(HostType.unnPortal),
-      ),
-    )
-    ..registerSingleton<BlogPostService>(
-      () => BlogPostServiceImpl(
-        get<LoggerService>(),
-        getApiHelper(HostType.unnPortal),
-      ),
-    )
-    ..registerDependency<PinningBlogPostService>(
-      () => PinningBlogPostServiceImpl(
-        get<LoggerService>(),
-        getApiHelper(HostType.unnPortal),
-      ),
-    )
-    ..registerSingleton<GettingBlogPosts>(
-      () => GettingBlogPostsImpl(
-        get<UnnAuthorisationService>(),
-        get<LoggerService>(),
-        getApiHelper(HostType.unnPortal),
-      ),
-    )
-    ..registerSingleton<BlogPostCommentsService>(
-      () => BlogPostCommentsServiceImpl(
-        get<LoggerService>(),
-        get<CurrentUserSyncStorage>(),
-        getApiHelper(HostType.unnPortal),
-      ),
-    );
-
-  // BlogPostProvider per type
-  for (final type in BlogPostType.values) {
-    injector.registerDependency<BlogPostProvider>(
-      () => BlogPostProviderImpl(
-        get<StorageService>(),
-        get<LoggerService>(),
-        type,
-      ),
-      dependencyName: type.stringValue,
-    );
-  }
-
-  // Important blog posts
-  injector
-    ..registerDependency<ImportantBlogPostAcknowledgementService>(
-      () => ImportantBlogPostAcknowledgementServiceImpl(
-        get<LoggerService>(),
-        getApiHelper(HostType.unnPortal),
-      ),
-    )
-    ..registerDependency<ImportantBlogPostUsersService>(
-      () => ImportantBlogPostUsersServiceImpl(
-        get<LoggerService>(),
-        getApiHelper(HostType.unnPortal),
-      ),
-    )
-
-    // Profile & files
-    ..registerSingleton<ProfileService>(
-      () => ProfileServiceImpl(
-        get<LoggerService>(),
-        getApiHelper(HostType.unnPortal),
-      ),
-    )
-    ..registerSingleton<FileDataService>(
-      () => FileDataServiceImpl(
-        get<UnnAuthorisationService>(),
-        get<LoggerService>(),
-        getApiHelper(HostType.unnPortal),
-      ),
-    )
-
-    // Ratings & voting
-    ..registerSingleton<GettingRatingList>(
-      () => GettingRatingListImpl(
-        get<LoggerService>(),
-        getApiHelper(HostType.unnPortal),
-      ),
-    )
-    ..registerSingleton<GettingVoteKeySigned>(
-      () => GettingVoteKeySignedImpl(
-        get<LoggerService>(),
-        getApiHelper(HostType.unnPortal),
-      ),
-    )
-
-    // Feed & tracking
-    ..registerSingleton<LastFeedLoadDateTimeProvider>(
-      () => LastFeedLoadDateTimeProviderImpl(
-        get<StorageService>(),
-      ),
-    )
-    ..registerSingleton<AppOpenTracker>(
-      () => AppOpenTracker(get<StorageService>()),
-    )
-
-    // Grades
     ..registerSingleton<GradeBookService>(
       () => GradeBookServiceImpl(
         get<LoggerService>(),
@@ -508,16 +403,74 @@ void registerDependencies() {
       ),
     )
 
-    // Reactions
-    ..registerSingleton<ReactionService>(
-      () => ReactionServiceImpl(
-        get<CurrentUserSyncStorage>(),
+    // =========================================================================
+    // 7. БЛОГ, ЛЕНТА И КОНТЕНТ
+    // =========================================================================
+    ..registerSingleton<FeedFileDownloaderService>(
+      () => FeedFileDownloaderServiceImpl(
         get<LoggerService>(),
         getApiHelper(HostType.unnPortal),
       ),
     )
+    ..registerSingleton<LastFeedLoadDateTimeProvider>(
+      () => LastFeedLoadDateTimeProviderImpl(get<StorageService>()),
+    )
+    ..registerDependency<PinningBlogPostService>(
+      () => PinningBlogPostServiceImpl(
+        get<LoggerService>(),
+        getApiHelper(HostType.unnPortal),
+      ),
+    )
+    ..registerSingleton<BlogPostCommentsService>(
+      () => BlogPostCommentsServiceImpl(
+        get<LoggerService>(),
+        get<CurrentUserSyncStorage>(),
+        getApiHelper(HostType.unnPortal),
+      ),
+    )
+    ..registerDependency<ImportantBlogPostAcknowledgementService>(
+      () => ImportantBlogPostAcknowledgementServiceImpl(
+        get<LoggerService>(),
+        getApiHelper(HostType.unnPortal),
+      ),
+    )
+    ..registerDependency<ImportantBlogPostUsersService>(
+      () => ImportantBlogPostUsersServiceImpl(
+        get<LoggerService>(),
+        getApiHelper(HostType.unnPortal),
+      ),
+    )
+    ..registerSingleton<RefreshBlogPostService>(
+      () => RefreshBlogPostServiceImpl(
+        get<LoggerService>(),
+        getApiHelper(HostType.unnPortal),
+        get<CurrentUserSyncStorage>(),
+      ),
+    )
+    ..registerSingleton<BlogPostDetailService>(
+      () => BlogPostDetailServiceImpl(
+        get<LoggerService>(),
+        getApiHelper(HostType.unnPortal),
+        get<CurrentUserSyncStorage>(),
+      ),
+    )
+    ..registerSingleton<BlogPostSearchService>(
+      () => BlogPostSearchServiceImpl(
+        get<LoggerService>(),
+        getApiHelper(HostType.unnPortal),
+      ),
+    )
+    ..registerSingleton<BlogPostPaginationService>(
+      () => BlogPostPaginationServiceImpl(
+        get<LoggerService>(),
+        getApiHelper(HostType.unnPortal),
+        get<CurrentUserSyncStorage>(),
+      ),
+    )
 
-    // Certificates
+    // =========================================================================
+    // 8. СЕРТИФИКАТЫ
+    // =========================================================================
     ..registerSingleton<CertificatesService>(
       () => CertificatesServiceImpl(
         get<LoggerService>(),
@@ -537,7 +490,9 @@ void registerDependencies() {
       ),
     )
 
-    // Distance learning (UNN Source)
+    // =========================================================================
+    // 9. ДИСТАНЦИОННОЕ ОБУЧЕНИЕ (UNN SOURCE)
+    // =========================================================================
     ..registerSingleton<DistanceCourseSemesterService>(
       () => DistanceCourseSemesterServiceImpl(
         get<LoggerService>(),
@@ -569,7 +524,9 @@ void registerDependencies() {
       ),
     )
 
-    // Messages & dialogs
+    // =========================================================================
+    // 10. СООБЩЕНИЯ И ДИАЛОГИ
+    // =========================================================================
     ..registerSingleton<MessageIgnoredKeysProvider>(
       () => MessageIgnoredKeysProviderImpl(get<StorageService>()),
     )
@@ -653,56 +610,28 @@ void registerDependencies() {
         getApiHelper(HostType.unnPortal),
       ),
     )
-    ..registerSingleton<ProfileSearchService>(
-      () => ProfileSearchServiceImpl(
+
+    // =========================================================================
+    // 11. РЕЙТИНГИ И РЕАКЦИИ (ОБЩИЕ)
+    // Управление реакциями и рейтингами вне контекста сообщений
+    // =========================================================================
+    ..registerSingleton<ReactionRatingListService>(
+      () => ReactionRatingListServiceImpl(
         get<LoggerService>(),
         getApiHelper(HostType.unnPortal),
       ),
     )
-    ..registerSingleton<LecturerProfileService>(
-      () => LecturerProfileServiceImpl(
-        get<LoggerService>(),
-        get<ProfileSearchService>(),
-        get<ProfileService>(),
-      ),
-    )
-    ..registerSingleton<StreamAuthService>(
-      () => StreamAuthServiceImpl(
-        get<LoggerService>(),
-        getApiHelper(HostType.unnPortal),
-      ),
-    )
-    ..registerSingleton<RefreshBlogPostService>(
-      () => RefreshBlogPostServiceImpl(
-        get<LoggerService>(),
-        getApiHelper(HostType.unnPortal),
+    ..registerSingleton<ReactionActionService>(
+      () => ReactionActionServiceImpl(
         get<CurrentUserSyncStorage>(),
-      ),
-    )
-    ..registerSingleton<BlogPostDetailService>(
-      () => BlogPostDetailServiceImpl(
         get<LoggerService>(),
         getApiHelper(HostType.unnPortal),
-        get<CurrentUserSyncStorage>(),
-      ),
-    )
-    ..registerSingleton<BlogPostSearchService>(
-      () => BlogPostSearchServiceImpl(
-        get<LoggerService>(),
-        getApiHelper(HostType.unnPortal),
-      ),
-    )
-    ..registerSingleton<BlogPostPaginationService>(
-      () => BlogPostPaginationServiceImpl(
-        get<LoggerService>(),
-        getApiHelper(HostType.unnPortal),
-        get<CurrentUserSyncStorage>(),
       ),
     )
 
-    //
-    // Factories
-    //
+    // =========================================================================
+    // 12. ФАБРИКИ VIEWMODEL
+    // =========================================================================
     ..registerSingleton<AttachedFileViewModelFactory>(
       AttachedFileViewModelFactory.new,
     )
@@ -716,18 +645,16 @@ void registerDependencies() {
       FeedCommentViewModelFactory.new,
     )
     ..registerSingleton<MainPageRoutesViewModelsFactory>(
-      () => MainPageRoutesViewModelsFactory(
-        get<UnnAuthorisationService>(),
-      ),
+      () => MainPageRoutesViewModelsFactory(get<UnnAuthService>()),
     )
 
-    //
-    // ViewModels
-    //
+    // =========================================================================
+    // 13. VIEWMODELS ЭКРАНОВ И КОМПОНЕНТОВ
+    // =========================================================================
     ..registerDependency(
       () => LoadingPageViewModel(
         get<LoggerService>(),
-        get<AuthorisationRefreshService>(),
+        get<AuthRefreshService>(),
         get<LastCommitShaService>(),
         get<LoadingPageConfigService>(),
         get<LogoDownloaderService>(),
@@ -743,7 +670,7 @@ void registerDependencies() {
     ..registerDependency(
       () => AuthPageViewModel(
         get<AuthDataProvider>(),
-        get<UnnAuthorisationService>(),
+        get<UnnAuthService>(),
         get<LoggerService>(),
       ),
     )
@@ -779,9 +706,7 @@ void registerDependencies() {
       ),
     )
     ..registerDependency(
-      () => SettingsScreenViewModel(
-        get<StorageService>(),
-      ),
+      () => SettingsScreenViewModel(get<StorageService>()),
     )
     ..registerDependency(
       () => ScheduleScreenViewModel(
@@ -797,7 +722,7 @@ void registerDependencies() {
         get<DistanceCourseSemesterService>(),
         get<DistanceCourseService>(),
         get<AuthDataProvider>(),
-        get<SourceAuthorisationService>(),
+        get<SourceAuthService>(),
         get<DistanceLearningDownloaderService>(),
         get<WebinarService>(),
         get<SessionCheckerService>(),
@@ -825,4 +750,18 @@ void registerDependencies() {
         get<LastCommitShaAuthorsProvider>(),
       ),
     );
+
+  // =========================================================================
+  // 14. ДИНАМИЧЕСКАЯ РЕГИСТРАЦИЯ
+  // =========================================================================
+  for (final type in BlogPostType.values) {
+    injector.registerDependency<BlogPostProvider>(
+      () => BlogPostProviderImpl(
+        get<StorageService>(),
+        get<LoggerService>(),
+        type,
+      ),
+      dependencyName: type.stringValue,
+    );
+  }
 }

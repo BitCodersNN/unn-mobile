@@ -3,6 +3,9 @@
 
 import 'package:unn_mobile/core/models/feed/blog_post.dart';
 
+@Deprecated(
+  'Данный способ получения постов отключен электронным порталом ННГУ.',
+)
 abstract interface class BlogPostService {
   /// Получает пост по его идентификатору.
   ///

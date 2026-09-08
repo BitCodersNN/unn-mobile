@@ -3,7 +3,10 @@
 
 import 'package:unn_mobile/core/models/feed/blog_post.dart';
 
-abstract interface class RegularBlogPostsService {
+@Deprecated(
+  'Данный способ получения постов отключен электронным порталом ННГУ.',
+)
+abstract interface class RegularBlogPostService {
   /// Получает [postsPerPage] постов на странице [pageNumber]
   ///
   /// [pageNumber]: номер страницы, с которой возьмутся посты

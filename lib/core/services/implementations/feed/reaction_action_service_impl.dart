@@ -15,19 +15,19 @@ import 'package:unn_mobile/core/misc/user/current_user_sync_storage.dart';
 import 'package:unn_mobile/core/models/feed/rating_list.dart';
 import 'package:unn_mobile/core/models/profile/user_short_info.dart';
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
-import 'package:unn_mobile/core/services/interfaces/feed/reaction_service.dart';
+import 'package:unn_mobile/core/services/interfaces/feed/reaction_action_service.dart';
 
 class _KeysForReactionManagerJsonConverter {
   static const String data = 'data';
   static const String userData = 'user_data';
 }
 
-class ReactionServiceImpl implements ReactionService {
+class ReactionActionServiceImpl implements ReactionActionService {
   final LoggerService _loggerService;
   final CurrentUserSyncStorage _currentUserSync;
   final ApiHelper _apiHelper;
 
-  ReactionServiceImpl(
+  ReactionActionServiceImpl(
     this._currentUserSync,
     this._loggerService,
     this._apiHelper,

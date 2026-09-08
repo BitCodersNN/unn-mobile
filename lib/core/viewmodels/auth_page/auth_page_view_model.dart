@@ -13,7 +13,7 @@ import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
 
 class AuthPageViewModel extends BaseViewModel {
   final AuthDataProvider _authDataProvider;
-  final UnnAuthorisationService _authorisationService;
+  final UnnAuthService _authorisationService;
   final LoggerService _loggerService;
 
   bool _hasAuthError = false;

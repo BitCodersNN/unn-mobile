@@ -14,6 +14,6 @@ class FeedCommentViewModelFactory extends CachedViewModelFactoryBase<
   @override
   FeedCommentViewModel createViewModel(FeedCommentCacheKey key) =>
       FeedCommentViewModel(
-        getService<UnnAuthorisationService>(),
+        getService<UnnAuthService>(),
       );
 }

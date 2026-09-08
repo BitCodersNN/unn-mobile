@@ -24,7 +24,7 @@ class FeedPostViewModelFactory
         getService<LastFeedLoadDateTimeProvider>(),
         getService<ImportantBlogPostAcknowledgementService>(),
         getService<PinningBlogPostService>(),
-        getService<UnnAuthorisationService>(),
+        getService<UnnAuthService>(),
         getService<BlogPostCommentsService>(),
       );
 }

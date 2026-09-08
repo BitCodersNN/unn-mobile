@@ -3,7 +3,10 @@
 
 import 'package:unn_mobile/core/models/feed/blog_post_data.dart';
 
-abstract interface class GettingBlogPosts {
+@Deprecated(
+  'Устаревший способ получения постов, требующий каскадных запросов для полной информации.',
+)
+abstract interface class BlogPostService {
   /// Получает 50 записей из живой ленты или 1 запись по конкретному postId
   ///
   /// [pageNumber]: номер страницы, с которой возьмутся записи (поумолчанию 0)

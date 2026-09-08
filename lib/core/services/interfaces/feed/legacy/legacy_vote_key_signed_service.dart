@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2025 BitCodersNN
 
-abstract interface class GettingVoteKeySigned {
+@Deprecated('Сервис использовался в старом способе получения постов.')
+abstract interface class VoteKeySignedService {
   /// Получает voteKeySigned для поста
   ///
   /// [int] authorId: id автора
