@@ -207,8 +207,7 @@ jobs:
 
       - name: Fix Crashlytics SPM CI bug
         run: |
-          sed -i '' 's/flutterfire upload-crashlytics-symbols/echo "Skipping Crashlytics dSYM upload in CI" \&\& exit 0/g' ios/Runner.xcodeproj/project.pbxproj
-          grep "Skipping Crashlytics" ios/Runner.xcodeproj/project.pbxproj || echo "Warning: Patch might not have applied"
+          sed -i '' 's/flutterfire upload-crashlytics-symbols/true #/g' ios/Runner.xcodeproj/project.pbxproj
 
       - name: build ios (no codesign)
         run: |
