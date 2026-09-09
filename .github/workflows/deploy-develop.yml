@@ -198,7 +198,13 @@ jobs:
           firebase_token: ${{ secrets.FIREBASE_TOKEN }}
         run: |
           dart pub global activate flutterfire_cli
-          flutterfire configure -t $firebase_token -y -p unn-mobile-1 --platforms=ios --ios-bundle-id=ru.bitcodersnn.unnstudenthub
+          flutterfire configure \
+            --token=$firebase_token \
+            --yes \
+            --project=unn-mobile-1 \
+            --platforms=ios \
+            --ios-bundle-id=ru.bitcodersnn.unnstudenthub
+
       - name: build ios (no codesign)
         run: |
           flutter doctor --verbose
