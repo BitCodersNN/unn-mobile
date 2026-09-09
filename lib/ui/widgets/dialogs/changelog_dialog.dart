@@ -12,9 +12,8 @@ class ChangelogDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => AlertDialog.adaptive(
-        title: const Text('Список изменений: '),
+        title: const Text('Список изменений'),
         content: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,
           children: [
             Flexible(

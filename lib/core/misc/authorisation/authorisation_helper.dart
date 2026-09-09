@@ -51,16 +51,16 @@ class AuthorisationHelper {
           return Left(await _getOfflineResult());
         case DioExceptionType.badCertificate:
         case DioExceptionType.cancel:
-        case DioExceptionType.unknown:
-          _loggerService.logError(
-            exception.error,
-            exception.stackTrace,
-          );
-          return const Left(AuthRequestResult.unknown);
         case DioExceptionType.badResponse:
           if (exception.response!.statusCode == 401) {
             return const Left(AuthRequestResult.wrongCredentials);
           }
+          return const Left(AuthRequestResult.unknown);
+        default:
+          _loggerService.logError(
+            exception.error,
+            exception.stackTrace,
+          );
           return const Left(AuthRequestResult.unknown);
       }
     }

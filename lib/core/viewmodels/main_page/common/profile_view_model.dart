@@ -42,6 +42,9 @@ class ProfileViewModel extends BaseViewModel {
   factory ProfileViewModel.currentUser() => Injector.appInstance
       .get<ProfileViewModelFactory>()
       .getCurrentUserViewModel();
+  factory ProfileViewModel.empty() =>
+      Injector.appInstance.get<ProfileViewModelFactory>().getEmptyViewModel();
+
   String? get avatarUrl => _loadedData?.photoSrc;
 
   String get description => _description ?? '';
@@ -67,7 +70,10 @@ class ProfileViewModel extends BaseViewModel {
     bool setBusy = true,
     int retryAttempt = 0,
   }) {
-    assert((userId != null) || loadCurrentUser);
+    if (!loadCurrentUser && userId == null) {
+      setState(ViewState.busy); // Пустая вьюмодель никогда не загрузится...
+      return;
+    }
     if (force || _loadedData == null) {
       _isLoading = setBusy;
       _hasError = false;

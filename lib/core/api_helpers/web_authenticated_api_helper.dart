@@ -12,6 +12,7 @@ import 'package:unn_mobile/core/constants/api/host_with_base_path.dart';
 import 'package:unn_mobile/core/constants/api/protocol_type.dart';
 import 'package:unn_mobile/core/constants/regular_expressions.dart';
 import 'package:unn_mobile/core/constants/string_keys/session_identifier_keys.dart';
+import 'package:unn_mobile/core/services/interfaces/authorisation/authorisation_service.dart';
 
 class _HttpHeaders {
   static const String cookieKey = 'Cookie';
@@ -28,8 +29,8 @@ abstract class WebAuthenticatedApiHelper extends AuthenticatedApiHelper {
   String? _dioCookie;
 
   WebAuthenticatedApiHelper({
-    required host,
-    required authorizationService,
+    required String host,
+    required AuthorisationService authorizationService,
     List<Interceptor> interceptors = const [],
     ProtocolType protocol = ProtocolType.https,
   })  : _baseUrl = '${protocol.name}://$host/',

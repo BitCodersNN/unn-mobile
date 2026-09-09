@@ -43,7 +43,6 @@ final class DistanceFileData extends DistanceMaterialData {
   int get sizeInBytes => _fileData.sizeInBytes;
   String get downloadUrl => _fileData.downloadUrl;
 
-  @override
   factory DistanceFileData.fromJson(JsonMap jsonMap) => DistanceFileData(
         comment: jsonMap[_FileDataJsonKeys.comment]! as String,
         dateTime: DateTime.parse(

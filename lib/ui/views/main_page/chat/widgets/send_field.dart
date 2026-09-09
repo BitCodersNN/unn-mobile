@@ -51,7 +51,10 @@ class _SendFieldState extends State<SendField> {
                 onPressed: () {
                   widget.model.replyMessage = null;
                 },
-                icon: const Icon(Icons.close),
+                icon: Icon(
+                  Icons.close,
+                  color: theme.colorScheme.primary,
+                ),
               ),
             ],
           ),
@@ -132,7 +135,7 @@ class _SendFieldState extends State<SendField> {
                         _textController.text = text;
                       }
                     },
-              color: theme.primaryColorDark,
+              color: theme.colorScheme.primary,
               disabledColor: theme.disabledColor,
               icon: const Icon(
                 Icons.send,

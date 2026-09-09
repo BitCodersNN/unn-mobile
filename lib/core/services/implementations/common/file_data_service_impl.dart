@@ -14,7 +14,7 @@ import 'package:unn_mobile/core/services/interfaces/common/file_data_service.dar
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
 
 class FileDataServiceImpl implements FileDataService {
-  final UnnAuthorisationService _authorizationService;
+  final UnnAuthService _authorizationService;
   final LoggerService _loggerService;
   final ApiHelper _apiHelper;
   final String _id = 'id';

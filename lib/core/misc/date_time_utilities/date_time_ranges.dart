@@ -3,6 +3,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:unn_mobile/core/constants/academic_year.dart';
+import 'package:unn_mobile/core/misc/date_time_utilities/date_time_extensions.dart';
 
 class DateTimeRanges {
   static DateTimeRange currentWeek() {
@@ -43,48 +44,58 @@ class DateTimeRanges {
     }
   }
 
-  static DateTimeRange untilEndOfWeek() {
-    final DateTime now = DateTime.now();
-    final DateTime endOfWeek = now
-        .add(
-          Duration(days: DateTime.daysPerWeek - now.weekday),
-        )
-        .copyWith(
-          hour: 23,
-          minute: 59,
-          second: 59,
-        );
+  static DateTimeRange untilEndOfWeek({
+    DateTime? startDate,
+    DateTime? referenceDate,
+  }) {
+    final anchorDate = referenceDate ?? startDate ?? DateTime.now();
+    final startOfDay = (startDate ?? anchorDate).normalizeStartOfDay();
 
-    return DateTimeRange(start: now, end: endOfWeek);
+    final endOfWeek = anchorDate
+        .normalizeStartOfDay()
+        .add(Duration(days: DateTime.daysPerWeek - anchorDate.weekday))
+        .endOfDay();
+
+    return DateTimeRange(start: startOfDay, end: endOfWeek);
   }
 
-  static DateTimeRange untilEndOfMonth() {
-    final DateTime now = DateTime.now();
-    final DateTime endOfMonth = DateTime(now.year, now.month + 1, 1)
-        .subtract(const Duration(days: 1))
-        .copyWith(
-          hour: 23,
-          minute: 59,
-          second: 59,
-        );
+  static DateTimeRange untilEndOfMonth({
+    DateTime? startDate,
+    DateTime? referenceDate,
+  }) {
+    final anchorDate = referenceDate ?? startDate ?? DateTime.now();
+    final startOfDay = (startDate ?? anchorDate).normalizeStartOfDay();
 
-    return DateTimeRange(start: now, end: endOfMonth);
+    final lastDayOfMonth = DateTime(
+      anchorDate.year,
+      anchorDate.month + 1,
+      0,
+    ).day;
+    final endOfMonth = anchorDate.copyWith(day: lastDayOfMonth).endOfDay();
+
+    return DateTimeRange(start: startOfDay, end: endOfMonth);
   }
 
-  static DateTimeRange untilEndOfSemester() {
-    final now = DateTime.now();
-    final currentYear = now.year;
+  static DateTimeRange untilEndOfSemester({
+    DateTime? startDate,
+    DateTime? referenceDate,
+  }) {
+    final anchorDate = referenceDate ?? startDate ?? DateTime.now();
+    final startOfDay = (startDate ?? anchorDate).normalizeStartOfDay();
 
-    DateTime endOfSemester;
+    final isSpringSummerSemester = anchorDate.month >= DateTime.february &&
+        anchorDate.month <= DateTime.august;
 
-    if (now.month >= DateTime.february && now.month <= DateTime.august) {
-      endOfSemester = DateTime(currentYear, DateTime.august, 30)
-          .subtract(const Duration(milliseconds: 1));
-    } else {
-      endOfSemester = DateTime(currentYear + 1, DateTime.february, 1)
-          .subtract(const Duration(milliseconds: 1));
-    }
+    final endOfSemesterDate = isSpringSummerSemester
+        ? anchorDate.copyWith(month: DateTime.august, day: 31)
+        : anchorDate.copyWith(
+            year: anchorDate.year + 1,
+            month: DateTime.january,
+            day: 31,
+          );
 
-    return DateTimeRange(start: now, end: endOfSemester);
+    final endOfSemester = endOfSemesterDate.endOfDay();
+
+    return DateTimeRange(start: startOfDay, end: endOfSemester);
   }
 }

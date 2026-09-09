@@ -7,6 +7,7 @@ import 'package:unn_mobile/core/constants/api/path.dart';
 import 'package:unn_mobile/core/misc/dio_options_factory/options_with_expected_type_factory.dart';
 import 'package:unn_mobile/core/misc/json/json_iterable_parser.dart';
 import 'package:unn_mobile/core/misc/json/json_utils.dart';
+import 'package:unn_mobile/core/misc/user/current_user_sync_storage.dart';
 import 'package:unn_mobile/core/models/profile/employee/employee_data.dart';
 import 'package:unn_mobile/core/models/profile/student/student_data.dart';
 import 'package:unn_mobile/core/models/schedule/schedule_filter.dart';
@@ -27,6 +28,7 @@ class _JsonKeys {
 
 class SearchIdOnPortalServiceImpl implements SearchIdOnPortalService {
   final ProfileOfCurrentUserService _gettingProfileOfCurrentUser;
+  final CurrentUserSyncStorage _userSyncStorage;
   final LoggerService _loggerService;
   final ApiHelper _apiHelper;
 
@@ -34,6 +36,7 @@ class SearchIdOnPortalServiceImpl implements SearchIdOnPortalService {
     this._gettingProfileOfCurrentUser,
     this._loggerService,
     this._apiHelper,
+    this._userSyncStorage,
   );
 
   @Deprecated('unn portal больше не поддерживает "ruzapi/studentinfo/"')
@@ -56,8 +59,10 @@ class SearchIdOnPortalServiceImpl implements SearchIdOnPortalService {
 
   @override
   Future<IdForSchedule?> getIdOfLoggedInUser() async {
+    // При резкой смене на онлайн авторизация иногда не проходит, поэтому пробуем тянуть из синхронного хранилища
     final userData =
-        await _gettingProfileOfCurrentUser.getProfileOfCurrentUser();
+        await _gettingProfileOfCurrentUser.getProfileOfCurrentUser() ??
+            _userSyncStorage.currentUserData;
 
     if (userData is EmployeeData) {
       return IdForSchedule(IdType.person, userData.syncId);

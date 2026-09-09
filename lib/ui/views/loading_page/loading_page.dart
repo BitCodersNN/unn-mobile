@@ -13,11 +13,14 @@ class LoadingPage extends StatelessWidget {
         builder: (context, model, child) => FutureBuilder<void>(
           future: model.initLoadingPages(),
           builder: (context, snapshot) {
+            final theme = Theme.of(context);
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Scaffold(backgroundColor: Colors.white);
+              return Scaffold(
+                backgroundColor: theme.colorScheme.surfaceContainerLowest,
+              );
             } else {
               return Scaffold(
-                backgroundColor: Colors.white,
+                backgroundColor: theme.colorScheme.surfaceContainerLowest,
                 body: SafeArea(child: _buildContent(context, model)),
               );
             }

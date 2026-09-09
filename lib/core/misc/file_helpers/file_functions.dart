@@ -13,7 +13,8 @@ import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
 
-const MethodChannel _fileChannel = MethodChannel('ru.unn.unn_mobile/files');
+const MethodChannel _fileChannel =
+    MethodChannel('ru.bitcodersnn.unnstudenthub/files');
 
 Future<String?> openFilePicker(String fileName, String mimeType) async {
   await _fileChannel.invokeMethod(
@@ -23,7 +24,7 @@ Future<String?> openFilePicker(String fileName, String mimeType) async {
       'mimeType': mimeType,
     },
   );
-  const pickerEvents = EventChannel('ru.unn.unn_mobile/file_events');
+  const pickerEvents = EventChannel('ru.bitcodersnn.unnstudenthub/file_events');
   final pickerStream = pickerEvents.receiveBroadcastStream();
   final location = await pickerStream.first as String?;
   return location;
@@ -32,7 +33,8 @@ Future<String?> openFilePicker(String fileName, String mimeType) async {
 Future<Iterable<String>?> openUploadFilePicker({required bool gallery}) async {
   if (Platform.isAndroid) {
     await _fileChannel.invokeMethod('pickUploadFiles', {'gallery': gallery});
-    const pickerEvents = EventChannel('ru.unn.unn_mobile/file_events');
+    const pickerEvents =
+        EventChannel('ru.bitcodersnn.unnstudenthub/file_events');
     final pickerStream = pickerEvents.receiveBroadcastStream();
     final locations = await pickerStream.first as List<Object?>?;
     final uriStrings = locations?.cast<String>() ?? [];

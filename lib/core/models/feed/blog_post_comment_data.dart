@@ -43,7 +43,7 @@ class BlogPostCommentData {
 
   factory BlogPostCommentData.fromJson(JsonMap jsonMap) {
     final text = jsonMap[_BlogPostCommentDataJsonKeys.text]! as String;
-    final result = extractImagesAndCleanHtmlText(text);
+    final result = extractImagesAndCleanHtmlString(text);
     return BlogPostCommentData(
       id: int.parse(
         jsonMap[_BlogPostCommentDataJsonKeys.id]! as String,
@@ -53,8 +53,8 @@ class BlogPostCommentData {
             as Map)[_BlogPostCommentDataJsonKeys.id] as String,
       ),
       dateTime: jsonMap[_BlogPostCommentDataJsonKeys.time]! as String,
-      message: result[ExtractImagesAndCleanHtmlTextMapKey.cleanedText],
-      imageUrls: result[ExtractImagesAndCleanHtmlTextMapKey.imageUrls],
+      message: result.cleanedText,
+      imageUrls: result.imageUrls,
       keySigned: jsonMap[_BlogPostCommentDataJsonKeys.keysigned]! as String,
       attachedFiles: [
         for (final element
@@ -70,7 +70,8 @@ class BlogPostCommentData {
           _BlogPostCommentDataJsonKeys.id: authorBitrixId.toString(),
         },
         _BlogPostCommentDataJsonKeys.time: dateTime,
-        _BlogPostCommentDataJsonKeys.text: restoreHtmlText(message, imageUrls),
+        _BlogPostCommentDataJsonKeys.text:
+            restoreHtmlText(message, imageUrls ?? const []),
         _BlogPostCommentDataJsonKeys.keysigned: keySigned,
         _BlogPostCommentDataJsonKeys.attach: [
           for (final hashCode in attachedFiles) hashCode.toString(),

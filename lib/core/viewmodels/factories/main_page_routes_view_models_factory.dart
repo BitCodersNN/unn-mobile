@@ -6,7 +6,7 @@ import 'package:unn_mobile/core/services/interfaces/authorisation/unn_authorisat
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
 
 class MainPageRoutesViewModelsFactory {
-  final UnnAuthorisationService _authorizationService;
+  final UnnAuthService _authorizationService;
 
   final Map<int, BaseViewModel> _viewModels = {};
 

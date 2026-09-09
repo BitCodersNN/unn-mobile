@@ -5,6 +5,7 @@ import 'package:html_unescape/html_unescape.dart';
 import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/models/feed/blog_post_comment.dart';
 import 'package:unn_mobile/core/models/feed/blog_post_comment_data.dart';
+import 'package:unn_mobile/core/services/interfaces/authorisation/authorisation_service.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/factories/feed_comment_view_model_factory.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/common/profile_view_model.dart';
@@ -12,25 +13,35 @@ import 'package:unn_mobile/core/viewmodels/main_page/feed/attached_file_view_mod
 import 'package:unn_mobile/core/viewmodels/main_page/feed/reaction_view_model.dart';
 
 class FeedCommentViewModel extends BaseViewModel {
+  final AuthorisationService _authorisationService;
+
   final HtmlUnescape _unescaper = HtmlUnescape();
 
   final List<AttachedFileViewModel> attachedFileViewModels = [];
 
-  late BlogPostCommentData comment;
+  BlogPostCommentData? comment;
 
-  late ReactionViewModel _reactionViewModel;
-  late ProfileViewModel _profileViewModel;
+  ReactionViewModel? _reactionViewModel;
+  ProfileViewModel? _profileViewModel;
 
-  FeedCommentViewModel();
+  FeedCommentViewModel(
+    this._authorisationService,
+  );
   factory FeedCommentViewModel.cached(FeedCommentCacheKey key) =>
       Injector.appInstance.get<FeedCommentViewModelFactory>().getViewModel(key);
 
-  String get message => _unescaper.convert(comment.message);
-  ProfileViewModel get profileViewModel => _profileViewModel;
+  // Нужны для подтягивания html и всякого содержимого поста на фронте
+  Map<String, String> get authHeaders =>
+      _authorisationService.headers
+          ?.map((key, value) => MapEntry(key, value.toString())) ??
+      {};
 
-  ReactionViewModel get reactionViewModel => _reactionViewModel;
+  String get message => _unescaper.convert(comment?.message ?? '');
+  ProfileViewModel? get profileViewModel => _profileViewModel;
 
-  Iterable<String> get attachedImages => comment.imageUrls ?? [];
+  ReactionViewModel? get reactionViewModel => _reactionViewModel;
+
+  Iterable<String> get attachedImages => comment?.imageUrls ?? [];
 
   bool get renderMessage => !isBusy;
 

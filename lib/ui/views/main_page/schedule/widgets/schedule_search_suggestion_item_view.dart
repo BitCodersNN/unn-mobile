@@ -18,7 +18,7 @@ class ScheduleSearchSuggestionItemView extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return ListTile(
-      shape: const Border(bottom: BorderSide(color: Colors.black12)),
+      shape: Border(bottom: BorderSide(color: theme.dividerColor)),
       visualDensity: VisualDensity.compact,
       title: Text(model.label),
       subtitle: Text(

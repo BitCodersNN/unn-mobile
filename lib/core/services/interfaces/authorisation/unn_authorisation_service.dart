@@ -3,8 +3,7 @@
 
 import 'package:unn_mobile/core/services/interfaces/authorisation/authorisation_service.dart';
 
-abstract interface class UnnAuthorisationService
-    implements AuthorisationService {
+abstract interface class UnnAuthService implements AuthorisationService {
   String? get csrf;
   String? get guestId;
 }

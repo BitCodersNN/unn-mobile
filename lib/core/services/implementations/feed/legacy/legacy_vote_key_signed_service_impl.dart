@@ -1,0 +1,67 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright 2025 BitCodersNN
+
+import 'package:dio/dio.dart';
+import 'package:unn_mobile/core/api_helpers/api_helper.dart';
+import 'package:unn_mobile/core/constants/api/path.dart';
+import 'package:unn_mobile/core/constants/regular_expressions.dart';
+import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
+import 'package:unn_mobile/core/services/interfaces/feed/legacy/legacy_vote_key_signed_service.dart';
+
+class _PathParts {
+  static const blog = 'blog';
+}
+
+@Deprecated('Сервис использовался в старом способе получения постов.')
+class VoteKeySignedImplServiceImpl implements VoteKeySignedService {
+  final LoggerService _loggerService;
+  final ApiHelper _apiHelper;
+
+  VoteKeySignedImplServiceImpl(
+    this._loggerService,
+    this._apiHelper,
+  );
+
+  @override
+  Future<String?> getVoteKeySigned({
+    required int authorId,
+    required int postId,
+  }) async {
+    final path =
+        '${ApiPath.companyPersonalUser}/$authorId/${_PathParts.blog}/$postId/';
+
+    final Response response;
+
+    try {
+      response = await _apiHelper.get(
+        path: path,
+        options: Options(
+          sendTimeout: const Duration(seconds: 60),
+          receiveTimeout: const Duration(seconds: 60),
+        ),
+      );
+    } catch (error, stackTrace) {
+      _loggerService.log('Exception: $error\nStackTrace: $stackTrace');
+      return null;
+    }
+
+    String? keySignedMatches;
+    try {
+      keySignedMatches = RegularExpressions.keySignedRegExp
+          .firstMatch(response.data)!
+          .group(0);
+    } catch (error, stackTrace) {
+      _loggerService.logError(error, stackTrace);
+      return null;
+    }
+    if (keySignedMatches == null) {
+      _loggerService.logError(
+        Exception('Failed to get keysigned: no regexp matches'),
+        StackTrace.current,
+      );
+      return null;
+    }
+
+    return keySignedMatches.split(' \'')[1].split('\'')[0];
+  }
+}

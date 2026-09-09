@@ -25,6 +25,7 @@ class PostsListPage extends StatelessWidget {
   Widget build(BuildContext context) => Scaffold(
         appBar: AppBar(
           title: Text(title),
+          forceMaterialTransparency: true,
         ),
         body: OnlineStatusBuilder(
           builder: (context, online) => LayoutBuilder(

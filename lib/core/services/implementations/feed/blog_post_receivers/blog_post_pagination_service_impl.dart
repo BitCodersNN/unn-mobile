@@ -77,7 +77,7 @@ class BlogPostPaginationServiceImpl implements BlogPostPaginationService {
     final htmlText =
         ((response.data as JsonMap)['data']! as JsonMap)['html'] as String?;
 
-    return BlogPostHtmlParser.parse(
+    return BlogPostHtmlParser.parsePosts(
       htmlText,
       _currentUserSync.currentUserData ?? UserShortInfo(),
     );

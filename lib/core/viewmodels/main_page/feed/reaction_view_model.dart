@@ -2,25 +2,23 @@
 // Copyright 2025 BitCodersNN
 
 import 'package:injector/injector.dart';
+import 'package:unn_mobile/core/misc/demo_mode_status.dart';
 import 'package:unn_mobile/core/models/feed/rating_list.dart';
 import 'package:unn_mobile/core/models/profile/user_short_info.dart';
-import 'package:unn_mobile/core/services/interfaces/feed/legacy/getting_rating_list.dart';
-import 'package:unn_mobile/core/services/interfaces/feed/legacy/getting_vote_key_signed.dart';
-import 'package:unn_mobile/core/services/interfaces/feed/reaction_service.dart';
+import 'package:unn_mobile/core/services/interfaces/feed/reaction_action_service.dart';
+import 'package:unn_mobile/core/services/interfaces/feed/reaction_rating_list_service.dart';
 import 'package:unn_mobile/core/viewmodels/factories/reaction_view_model_factory.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/common/reaction_view_model_base.dart';
 
 class ReactionViewModel extends ReactionViewModelBase {
-  final GettingVoteKeySigned _gettingVoteKeySigned;
-  final GettingRatingList _gettingRatingList;
-  final ReactionService _reactionManager;
+  final ReactionRatingListService _gettingRatingList;
+  final ReactionActionService _reactionManager;
 
   String? _voteKeySigned;
 
   bool _isLoading = true;
 
   ReactionViewModel(
-    this._gettingVoteKeySigned,
     this._gettingRatingList,
     this._reactionManager,
     super._currentUserSyncStorage,
@@ -28,11 +26,17 @@ class ReactionViewModel extends ReactionViewModelBase {
 
   factory ReactionViewModel.cached(ReactionCacheKey key) =>
       Injector.appInstance.get<ReactionViewModelFactory>().getViewModel(key);
+  factory ReactionViewModel.empty() =>
+      Injector.appInstance.get<ReactionViewModelFactory>().getEmptyViewModel();
 
   bool get isLoading => _isLoading;
 
   void init({String? voteKeySigned, int? postId, int? authorId}) {
     _isLoading = true;
+    if (postId == null && authorId == null && voteKeySigned == null) {
+      return;
+    }
+
     notifyListeners();
     _loadData(voteKeySigned: voteKeySigned, postId: postId, authorId: authorId)
         .whenComplete(() {
@@ -55,10 +59,6 @@ class ReactionViewModel extends ReactionViewModelBase {
   }) async {
     assert((voteKeySigned == null) != (postId == null && authorId == null));
     _voteKeySigned = voteKeySigned;
-    _voteKeySigned ??= await _gettingVoteKeySigned.getVoteKeySigned(
-      authorId: authorId!,
-      postId: postId!,
-    );
 
     if (_voteKeySigned == null) {
       return;
@@ -70,6 +70,9 @@ class ReactionViewModel extends ReactionViewModelBase {
 
   @override
   Future<void> setReaction(ReactionType? reaction) async {
+    if (DemoModeStatus.demoModeEnabled) {
+      return;
+    }
     if (profileId == ReactionViewModelBase.noId) {
       return;
     }

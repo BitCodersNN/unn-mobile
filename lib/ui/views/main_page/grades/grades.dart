@@ -25,6 +25,7 @@ class _GradesScreenViewState extends State<GradesScreenView> {
           appBar: AppBar(
             leading: getSubpageLeading(widget.bottomRouteIndex),
             title: const Text('Зачётная книжка'),
+            forceMaterialTransparency: true,
           ),
           body: BaseView<GradesScreenViewModel>(
             builder: (context, value, child) =>

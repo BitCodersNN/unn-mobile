@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2025 BitCodersNN
 
+import 'package:adaptive_dialog/adaptive_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:unn_mobile/core/misc/app_version.dart';
@@ -8,7 +9,6 @@ import 'package:unn_mobile/core/viewmodels/main_page/settings/settings_screen_vi
 import 'package:unn_mobile/ui/router.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
 import 'package:unn_mobile/ui/views/main_page/main_page.dart';
-import 'package:unn_mobile/ui/widgets/adaptive_dialog_action.dart';
 
 class SettingsScreenView extends StatelessWidget {
   final int? bottomRouteIndex;
@@ -21,6 +21,7 @@ class SettingsScreenView extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Настройки'),
+        forceMaterialTransparency: true,
         leading: getSubpageLeading(bottomRouteIndex),
       ),
       body: BaseView<SettingsScreenViewModel>(
@@ -35,13 +36,38 @@ class SettingsScreenView extends StatelessWidget {
                       SwitchListTile.adaptive(
                         title: const Text('Вибрация'),
                         value: model.vibrationEnabled,
-                        onChanged: (bool value) {
+                        onChanged: (value) {
                           model.vibrationEnabled = value;
+                        },
+                      ),
+                      SwitchListTile.adaptive(
+                        title: const Text('Сбор телеметрии'),
+                        value: model.analyticsEnabled,
+                        onChanged: (value) {
+                          model.analyticsEnabled = value;
+                        },
+                      ),
+                      SwitchListTile.adaptive(
+                        title: const Text('Порядок комментариев'),
+                        subtitle: model.reverseComments
+                            ? const Text('Сначала новые')
+                            : const Text('Сначала старые'),
+                        value: model.reverseComments,
+                        onChanged: (value) {
+                          model.reverseComments = value;
                         },
                       ),
                       ListTile(
                         title: const Text('Начальный экран'),
-                        trailing: Text(model.initialScreenName),
+                        trailing: Padding(
+                          padding: const EdgeInsets.all(6.0),
+                          child: Text(
+                            model.initialScreenName,
+                            style: const TextStyle(fontSize: 16),
+                            softWrap: false,
+                            overflow: TextOverflow.visible,
+                          ),
+                        ),
                         onTap: () async {
                           await _showScreenChoiceModal(context, model);
                         },
@@ -62,34 +88,23 @@ class SettingsScreenView extends StatelessWidget {
                       ListTile(
                         title: const Text('Выйти из аккаунта'),
                         onTap: () async {
-                          await showDialog(
-                            context: context,
-                            builder: (context) => AlertDialog.adaptive(
-                              title: const Text('Выйти из аккаунта?'),
-                              actions: [
-                                AdaptiveDialogAction(
-                                  onPressed: () async {
-                                    await model.logout();
-                                    if (context.mounted) {
-                                      GoRouter.of(context).go(loadingPageRoute);
-                                    }
-                                  },
-                                  child: Text(
-                                    'Выйти',
-                                    style: TextStyle(
-                                      color: theme.colorScheme.error,
-                                    ),
-                                  ),
-                                ),
-                                AdaptiveDialogAction(
-                                  onPressed: () {
-                                    GoRouter.of(context).pop();
-                                  },
-                                  child: const Text('Отмена'),
-                                ),
-                              ],
-                            ),
-                          );
+                          if (context.mounted) {
+                            final result = await showOkCancelAlertDialog(
+                              context: context,
+                              title: 'Выйти из аккаунта?',
+                              okLabel: 'Выйти',
+                              cancelLabel: 'Отмена',
+                              isDestructiveAction: true,
+                            );
+
+                            if (result == OkCancelResult.ok &&
+                                context.mounted) {
+                              await model.logout();
+                              if (context.mounted) {
+                                GoRouter.of(context).go(loadingPageRoute);
+                              }
+                            }
+                          }
                         },
                         textColor: theme.colorScheme.error,
                       ),
@@ -128,61 +143,37 @@ class SettingsScreenView extends StatelessWidget {
   Future<dynamic> _showScreenChoiceModal(
     BuildContext context,
     SettingsScreenViewModel model,
-  ) =>
-      showModalBottomSheet(
-        context: context,
-        useRootNavigator: true,
-        builder: (context) {
-          final theme = Theme.of(context);
-          return BaseView<SettingsScreenViewModel>(
-            model: model,
-            builder: (context, model, _) => Container(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    'Выберите экран',
-                    style: theme.textTheme.headlineSmall,
-                  ),
-                  const Padding(
-                    padding: EdgeInsets.only(top: 2),
-                    child: Divider(
-                      indent: 8,
-                      endIndent: 8,
-                      thickness: 0.5,
-                      color: Color(0xE5A2A2A2),
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  Container(
-                    constraints: const BoxConstraints(
-                      maxHeight: 400.0,
-                    ),
-                    child: SingleChildScrollView(
-                      child: Column(
-                        children: List.generate(
-                          model.navbarRouteCount,
-                          (index) => RadioListTile.adaptive(
-                            title: Text(
-                              model.activeNavbarRouteNames[index],
-                            ),
-                            value: index,
-                            groupValue: model.activeNavbarRouteIndex,
-                            onChanged: (value) {
-                              model.activeNavbarRouteIndex = value ?? 0;
-                              GoRouter.of(context).pop();
-                            },
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                ],
-              ),
+  ) async {
+    final theme = Theme.of(context);
+    final currentIndex = model.activeNavbarRouteIndex;
+
+    final selectedIndex = await showModalActionSheet<int>(
+      context: context,
+      useRootNavigator: true,
+      title: 'Выберите экран',
+      cancelLabel: 'Отмена',
+      actions: List.generate(
+        model.navbarRouteCount,
+        (index) {
+          final isSelected = index == currentIndex;
+
+          return SheetAction<int>(
+            label: model.activeNavbarRouteNames[index],
+            key: index,
+            isDefaultAction: isSelected,
+            textStyle: TextStyle(
+              color: isSelected ? theme.colorScheme.primary : null,
+              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
             ),
           );
         },
-      );
+      ),
+    );
+
+    if (selectedIndex != null) {
+      model.activeNavbarRouteIndex = selectedIndex;
+    }
+
+    return selectedIndex;
+  }
 }

@@ -81,7 +81,8 @@ class MessageWidget extends StatefulWidget {
                   ),
                 BBCodeText(
                   data: msgText,
-                  stylesheet: getBBStyleSheet().copyWith(selectableText: false),
+                  stylesheet: getBBStyleSheet(theme: theme)
+                      .copyWith(selectableText: false),
                 ),
               ],
             ),
@@ -105,6 +106,7 @@ class MessageWidget extends StatefulWidget {
     Message msg, {
     bool isSystem = false,
   }) {
+    final theme = Theme.of(context);
     final msgText = isSystem
         ? msg.text
             .split(
@@ -119,7 +121,8 @@ class MessageWidget extends StatefulWidget {
             alignment: Alignment.centerLeft,
             child: BBCodeText(
               data: msgText ?? '',
-              stylesheet: getBBStyleSheet().copyWith(selectableText: false),
+              stylesheet:
+                  getBBStyleSheet(theme: theme).copyWith(selectableText: false),
             ),
           ),
           const SizedBox(
@@ -193,7 +196,7 @@ class MessageWidget extends StatefulWidget {
         style: theme.textTheme.bodySmall?.copyWith(
           fontWeight: FontWeight.w700,
           fontSize: 13,
-          color: theme.primaryColorDark,
+          color: theme.colorScheme.primary,
         ),
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
@@ -214,7 +217,7 @@ class MessageWidget extends StatefulWidget {
             ? 'Переслано системное сообщение'
             : 'Переслано от ${forwardInfo?.forwardAuthor?.fullname}',
         style: theme.textTheme.bodySmall?.copyWith(
-          color: theme.primaryColorDark,
+          color: theme.colorScheme.primary,
         ),
         softWrap: true,
       ),

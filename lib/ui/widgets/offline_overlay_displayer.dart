@@ -4,7 +4,7 @@
 import 'package:flutter/material.dart';
 import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/models/common/online_status_data.dart';
-import 'package:unn_mobile/core/services/interfaces/authorisation/authorisation_refresh_service.dart';
+import 'package:unn_mobile/ui/widgets/offline_overlay.dart';
 
 class OfflineOverlayDisplayer extends StatefulWidget {
   final Widget child;
@@ -31,7 +31,7 @@ class _OfflineOverlayDisplayerState extends State<OfflineOverlayDisplayer> {
   Widget build(BuildContext context) => Stack(
         children: [
           widget.child,
-          if (!_isOnline) _OfflineOverlay(bottomOffset: widget.bottomOffset),
+          if (!_isOnline) OfflineOverlay(bottomOffset: widget.bottomOffset),
         ],
       );
 
@@ -55,83 +55,4 @@ class _OfflineOverlayDisplayerState extends State<OfflineOverlayDisplayer> {
     _onlineStatusData.notifier.removeListener(_onOnlineChanged);
     super.dispose();
   }
-}
-
-class _OfflineOverlay extends StatefulWidget {
-  final double bottomOffset;
-  const _OfflineOverlay({
-    this.bottomOffset = 0,
-  });
-
-  @override
-  State<_OfflineOverlay> createState() => _OfflineOverlayState();
-}
-
-class _OfflineOverlayState extends State<_OfflineOverlay> {
-  Future<void>? refreshAction;
-  @override
-  Widget build(BuildContext context) => Padding(
-        padding: EdgeInsets.only(bottom: widget.bottomOffset),
-        child: Align(
-          alignment: AlignmentDirectional.bottomStart,
-          child: AnimatedContainer(
-            color: const Color(0xFF323232),
-            duration: const Duration(milliseconds: 2000),
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: DefaultTextStyle(
-                      style: Theme.of(context)
-                              .textTheme
-                              .bodyLarge
-                              ?.copyWith(color: Colors.white) ??
-                          const TextStyle(color: Colors.white, fontSize: 14),
-                      child: const Text(
-                        'Нет соединения',
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(
-                      left: 8.0,
-                      right: 12.0,
-                    ),
-                    child: SizedBox(
-                      height: 48,
-                      width: 48,
-                      child: FutureBuilder(
-                        future: refreshAction,
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return const Padding(
-                              padding: EdgeInsets.all(8.0),
-                              child: CircularProgressIndicator(),
-                            );
-                          }
-                          return IconButton(
-                            onPressed: () {
-                              setState(() {
-                                refreshAction = Injector.appInstance
-                                    .get<AuthorisationRefreshService>()
-                                    .refreshLogin();
-                              });
-                            },
-                            icon: Icon(
-                              Icons.refresh,
-                              color: Theme.of(context).primaryColor,
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      );
 }

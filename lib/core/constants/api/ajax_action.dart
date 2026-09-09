@@ -71,6 +71,12 @@ class AjaxActionStrings {
   /// Для обновления живой ленты
   static const String refreshBlogPosts = 'socialnetwork.api.livefeed.refresh';
 
+  /// Для установки фильтра в живой ленты
+  static const String setFilter = 'setFilter';
+
+  /// Для установки фильтра в живой ленты
+  static const String filter = 'bitrix:main.ui.filter';
+
   /// Для получения постов из живой ленты
   static const String logBlogPosts = 'bitrix:socialnetwork.log.ex';
 }

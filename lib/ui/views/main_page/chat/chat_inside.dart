@@ -55,6 +55,7 @@ class _ChatInsideState extends State<ChatInside> {
                 FloatingActionButtonLocation.startFloat,
             appBar: AppBar(
               automaticallyImplyLeading: false,
+              forceMaterialTransparency: true,
               actions: [
                 model.isBusy
                     ? const Padding(

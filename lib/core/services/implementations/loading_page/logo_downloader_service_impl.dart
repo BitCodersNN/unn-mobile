@@ -3,16 +3,18 @@
 
 import 'dart:io';
 
+import 'package:unn_mobile/core/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/constants/api/path.dart';
 import 'package:unn_mobile/core/misc/file_helpers/file_downloader.dart';
+import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
 import 'package:unn_mobile/core/services/interfaces/loading_page/logo_downloader_service.dart';
 
 class LogoDownloaderServiceImpl implements LogoDownloaderService {
   final FileDownloader _fileDownloader;
 
   LogoDownloaderServiceImpl(
-    loggerService,
-    apiHelper,
+    LoggerService loggerService,
+    ApiHelper apiHelper,
   ) : _fileDownloader = FileDownloader(
           loggerService,
           apiHelper,

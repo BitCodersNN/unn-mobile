@@ -24,13 +24,13 @@ void showReactionChoicePanel(
             'Выбор реакции',
             style: theme.textTheme.headlineSmall,
           ),
-          const Padding(
-            padding: EdgeInsets.only(top: 2),
+          Padding(
+            padding: const EdgeInsets.only(top: 2),
             child: Divider(
               indent: 8,
               endIndent: 8,
               thickness: 0.5,
-              color: Color(0xE5A2A2A2),
+              color: Theme.of(context).dividerColor,
             ),
           ),
           const SizedBox(height: 10),
@@ -61,37 +61,39 @@ Widget _circleAvatarWithCaption(
   ReactionType reaction,
   BuildContext context,
   ReactionViewModelBase model,
-) =>
-    Padding(
-      padding: const EdgeInsets.all(4.0),
-      child: GestureDetector(
-        onTap: () {
-          triggerHaptic(HapticIntensity.selection);
-          model.toggleReaction(reaction);
-          Navigator.of(context).pop();
-        },
-        child: Padding(
-          padding: EdgeInsets.zero,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Row(
-                children: [
-                  const SizedBox(width: 4),
-                  CircleAvatar(
-                    radius: 21,
-                    backgroundImage: AssetImage(reaction.assetName),
-                  ),
-                  const SizedBox(width: 5),
-                ],
-              ),
-              const SizedBox(height: 4),
-              Text(
-                reaction.caption,
-                style: const TextStyle(fontSize: 12, color: Colors.grey),
-              ),
-            ],
-          ),
+) {
+  final theme = Theme.of(context);
+  return Padding(
+    padding: const EdgeInsets.all(4.0),
+    child: GestureDetector(
+      onTap: () {
+        triggerHaptic(HapticIntensity.selection);
+        model.toggleReaction(reaction);
+        Navigator.of(context).pop();
+      },
+      child: Padding(
+        padding: EdgeInsets.zero,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Row(
+              children: [
+                const SizedBox(width: 4),
+                CircleAvatar(
+                  radius: 21,
+                  backgroundImage: AssetImage(reaction.assetName),
+                ),
+                const SizedBox(width: 5),
+              ],
+            ),
+            const SizedBox(height: 4),
+            Text(
+              reaction.caption,
+              style: TextStyle(fontSize: 12, color: theme.hintColor),
+            ),
+          ],
         ),
       ),
-    );
+    ),
+  );
+}

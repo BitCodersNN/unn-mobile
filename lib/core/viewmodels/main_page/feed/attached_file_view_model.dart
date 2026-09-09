@@ -40,8 +40,6 @@ class AttachedFileViewModel extends BaseViewModel {
 
   final SizeConverter sizeConverter = SizeConverter();
 
-  late int _fileId;
-
   FileData? _loadedData;
 
   bool _isLoadingData = false;
@@ -84,7 +82,8 @@ class AttachedFileViewModel extends BaseViewModel {
   bool get hasError => _hasError;
 
   /// Статус скачивания файла
-  bool get isDownloadingFile => _pendingFileDownloads.containsKey(_fileId);
+  bool get isDownloadingFile =>
+      _pendingFileDownloads.containsKey(_loadedData?.id);
 
   /// Статус получения информации о файле
   bool get isLoadingData => _isLoadingData;
@@ -122,12 +121,10 @@ class AttachedFileViewModel extends BaseViewModel {
   }
 
   void initFromFileData(FileData data) {
-    _fileId = data.id;
     _loadedData = data;
   }
 
   void init(int fileId) {
-    _fileId = fileId;
     _isLoadingData = true;
     _loadData(fileId).then((file) {
       _loadedData = file;

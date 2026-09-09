@@ -1,0 +1,188 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright 2025 BitCodersNN
+
+import 'package:dio/dio.dart';
+import 'package:unn_mobile/core/api_helpers/api_helper.dart';
+import 'package:unn_mobile/core/constants/api/ajax_action.dart';
+import 'package:unn_mobile/core/constants/api/path.dart';
+import 'package:unn_mobile/core/constants/rating_list_strings.dart';
+import 'package:unn_mobile/core/misc/json/json_utils.dart';
+import 'package:unn_mobile/core/models/feed/rating_list.dart';
+import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
+import 'package:unn_mobile/core/services/interfaces/feed/reaction_rating_list_service.dart';
+
+class _JsonKeys {
+  static const data = 'data';
+  static const reactions = 'reactions';
+}
+
+class ReactionRatingListServiceImpl implements ReactionRatingListService {
+  final LoggerService _loggerService;
+  final ApiHelper _apiHelper;
+
+  ReactionRatingListServiceImpl(
+    this._loggerService,
+    this._apiHelper,
+  );
+
+  @override
+  Future<RatingList?> getReactionListByReaction({
+    required String voteKeySigned,
+    required ReactionType reactionType,
+    int pageNumber = 0,
+  }) async {
+    final Map<String, dynamic> body = {
+      RatingListStrings.voteTypeId: voteKeySigned.split('-')[0],
+      RatingListStrings.voteKeySigned: voteKeySigned,
+      RatingListStrings.voteEntityId: voteKeySigned.split('-')[1].split('.')[0],
+      RatingListStrings.voteListPage: pageNumber.toString(),
+      RatingListStrings.voteReaction: reactionType.name,
+      RatingListStrings.pathToUserProfile:
+          RatingListStrings.valueOfpathToUserProfile,
+    };
+
+    final Response response;
+
+    try {
+      response = await _apiHelper.post(
+        path: ApiPath.ajax,
+        queryParameters: {
+          AjaxActionStrings.actionKey: AjaxActionStrings.ratingList,
+        },
+        data: body,
+        options: Options(
+          sendTimeout: const Duration(seconds: 60),
+          receiveTimeout: const Duration(seconds: 60),
+        ),
+      );
+    } catch (error, stackTrace) {
+      _loggerService.log('Exception: $error\nStackTrace: $stackTrace');
+      return null;
+    }
+
+    JsonMap jsonMap;
+    try {
+      jsonMap = (response.data as JsonMap)[_JsonKeys.data]! as JsonMap;
+    } catch (error, stackTrace) {
+      _loggerService.logError(error, stackTrace);
+      return null;
+    }
+
+    final json = {
+      reactionType.toString(): [
+        for (final item in jsonMap['items']! as Iterable)
+          if (item is Map<String, Object?>) item,
+      ],
+    };
+
+    RatingList? ratingList;
+    try {
+      ratingList = RatingList.fromBitrixJson(json);
+    } catch (e, stackTrace) {
+      _loggerService.logError(e, stackTrace);
+    }
+
+    return ratingList;
+  }
+
+  @override
+  Future<Map<ReactionType, int>?> getNumbersOfReactions({
+    required String voteKeySigned,
+  }) async {
+    final Map<String, dynamic> body = {
+      RatingListStrings.voteTypeId: voteKeySigned.split('-')[0],
+      RatingListStrings.voteKeySigned: voteKeySigned,
+      RatingListStrings.voteEntityId: voteKeySigned.split('-')[1].split('.')[0],
+      RatingListStrings.pathToUserProfile:
+          RatingListStrings.valueOfpathToUserProfile,
+    };
+
+    final Response response;
+
+    try {
+      response = await _apiHelper.post(
+        path: ApiPath.ajax,
+        queryParameters: {
+          AjaxActionStrings.actionKey: AjaxActionStrings.ratingList,
+        },
+        data: body,
+        options: Options(
+          sendTimeout: const Duration(seconds: 60),
+          receiveTimeout: const Duration(seconds: 60),
+        ),
+      );
+    } catch (error, stackTrace) {
+      _loggerService.log('Exception: $error\nStackTrace: $stackTrace');
+      return null;
+    }
+
+    JsonMap jsonMap;
+    try {
+      jsonMap = ((response.data as JsonMap)[_JsonKeys.data]!
+          as JsonMap)[_JsonKeys.reactions]! as JsonMap;
+    } catch (error, stackTrace) {
+      _loggerService.logError(error, stackTrace);
+      return null;
+    }
+
+    if (jsonMap is List) {
+      return null;
+    }
+
+    final numbersOfReactions = jsonMap.map<ReactionType, int>(
+      (key, value) => MapEntry(
+        ReactionType.values.firstWhere(
+          (e) => e.toString().split('.').last == key,
+        ),
+        value! as int,
+      ),
+    );
+
+    return numbersOfReactions;
+  }
+
+  @override
+  Future<RatingList?> getRatingList({
+    required String voteKeySigned,
+  }) async {
+    const int reactionCountPerPage = 20;
+
+    if (voteKeySigned == '') {
+      return null;
+    }
+
+    final numbersOfReactions =
+        await getNumbersOfReactions(voteKeySigned: voteKeySigned);
+
+    if (numbersOfReactions == null) {
+      return null;
+    }
+
+    final futures = <Future<RatingList?>>[];
+
+    numbersOfReactions.forEach((key, value) {
+      for (var pageNumber = 1;
+          pageNumber <= value ~/ reactionCountPerPage + 1;
+          pageNumber++) {
+        futures.add(
+          getReactionListByReaction(
+            voteKeySigned: voteKeySigned,
+            reactionType: key,
+            pageNumber: pageNumber,
+          ),
+        );
+      }
+    });
+
+    final ratingLists = await Future.wait(futures);
+
+    final combinedList = RatingList();
+    for (final ratingList in ratingLists) {
+      ratingList?.ratingList.forEach(
+        combinedList.addReactions,
+      );
+    }
+
+    return combinedList;
+  }
+}

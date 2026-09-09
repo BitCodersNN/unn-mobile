@@ -32,25 +32,20 @@ class AboutViewModel extends BaseViewModel {
     this.lastCommitShaProvider,
   );
 
-  Future<void> init() async {
-    if (isInitialized) {
-      return;
-    }
-    _authors = await authorsProvider.getData() ??
-        await authorsConfigService.getAuthors();
+  FutureOr<void> init() => busyCallAsync(() async {
+        _authors = await authorsProvider.getData() ??
+            await authorsConfigService.getAuthors();
 
-    unawaited(
-      updateLastCommitShaAndConfigIfChanged(
-        lastCommitShaProvider: lastCommitShaProvider,
-        lastCommitShaService: lastCommitShaService,
-        gitPath: GitPath.authors,
-        saveConfig: _saveAuthorsConfigFromGit,
-      ),
-    );
-
-    isInitialized = true;
-    notifyListeners();
-  }
+        unawaited(
+          updateLastCommitShaAndConfigIfChanged(
+            lastCommitShaProvider: lastCommitShaProvider,
+            lastCommitShaService: lastCommitShaService,
+            gitPath: GitPath.authors,
+            saveConfig: _saveAuthorsConfigFromGit,
+          ),
+        );
+        notifyListeners();
+      });
 
   Future<void> _saveAuthorsConfigFromGit() async {
     final authors = await authorsConfigService.getAuthors();

@@ -5,6 +5,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider_plus/carousel_slider_plus.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
+import 'package:unn_mobile/core/constants/api/host.dart';
+import 'package:unn_mobile/core/constants/api/protocol_type.dart';
 import 'package:unn_mobile/core/misc/custom_types/bounded_int.dart';
 import 'package:unn_mobile/ui/widgets/dismissable_image.dart';
 import 'package:unn_mobile/ui/widgets/packed_images_view.dart';
@@ -31,14 +33,33 @@ class PackedPostImages extends StatelessWidget {
             ),
           );
         },
-        children: attachedImages
-            .map(
-              (e) => CachedNetworkImage(
-                imageUrl: e.startsWith('/') ? 'https://portal.unn.ru$e' : e,
-                httpHeaders: authorizationHeaders,
-              ),
-            )
-            .toList(),
+        children: attachedImages.map((e) {
+          final imageUrl = e.startsWith('/')
+              ? '${ProtocolType.https.name}://${Host.unn}$e'
+              : e;
+          final isInternal = imageUrl.startsWith(
+            '${ProtocolType.https.name}://${Host.unn}',
+          );
+          final headers = isInternal
+              ? authorizationHeaders
+              : {
+                  'User-Agent':
+                      'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                  'Referer': Uri.parse(imageUrl).origin,
+                  'Accept':
+                      'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8',
+                };
+
+          return CachedNetworkImage(
+            imageUrl: imageUrl,
+            httpHeaders: headers,
+            placeholder: (context, url) =>
+                const Center(child: CircularProgressIndicator()),
+            errorWidget: (context, url, error) => const Center(
+              child: Icon(Icons.broken_image, color: Colors.grey, size: 40),
+            ),
+          );
+        }).toList(),
       );
 }
 
@@ -130,27 +151,30 @@ class _ImagesCarouselDialogOverlayState
   }
 
   @override
-  Widget build(BuildContext context) => SafeArea(
-        child: Align(
-          alignment: Alignment.topCenter,
-          child: Material(
-            color: Colors.transparent,
-            child: Container(
-              padding: const EdgeInsets.all(12),
-              decoration: const BoxDecoration(
-                color: Colors.transparent,
-              ),
-              child: Text(
-                '${index + 1} из ${widget.initialIndex.max + 1}',
-                style: const TextStyle(
-                  color: Colors.black,
-                  fontSize: 24,
-                ),
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return SafeArea(
+      child: Align(
+        alignment: Alignment.topCenter,
+        child: Material(
+          color: Colors.transparent,
+          child: Container(
+            padding: const EdgeInsets.all(12),
+            decoration: const BoxDecoration(
+              color: Colors.transparent,
+            ),
+            child: Text(
+              '${index + 1} из ${widget.initialIndex.max + 1}',
+              style: TextStyle(
+                color: theme.colorScheme.onPrimaryContainer,
+                fontSize: 24,
               ),
             ),
           ),
         ),
-      );
+      ),
+    );
+  }
 }
 
 class ImagesCarousel extends StatefulWidget {

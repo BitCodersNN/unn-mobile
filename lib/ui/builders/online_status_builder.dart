@@ -1,6 +1,11 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2025 BitCodersNN
 
+// Для билдеров и колбэков вообще не стоит named параметры использовать
+// ignore_for_file: avoid_positional_boolean_parameters
+
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/models/common/online_status_data.dart';
@@ -21,15 +26,15 @@ import 'package:unn_mobile/core/models/common/online_status_data.dart';
 class OnlineStatusBuilder extends StatefulWidget {
   final Widget? onlineWidget;
   final Widget? offlineWidget;
-  // для билдеров все аргументы позиционные
-  // ignore: avoid_positional_boolean_parameters
   final Widget Function(BuildContext context, bool isOnline)? builder;
+  final FutureOr<void> Function(bool isOnline)? statusChanged;
 
   const OnlineStatusBuilder({
     super.key,
     this.onlineWidget,
     this.offlineWidget,
     this.builder,
+    this.statusChanged,
   });
 
   @override
@@ -41,10 +46,26 @@ class _OnlineStatusBuilderState extends State<OnlineStatusBuilder> {
       Injector.appInstance.get<OnlineStatusData>();
 
   @override
+  void initState() {
+    super.initState();
+    onlineStatusData.notifier.addListener(callStatusChanged);
+  }
+
+  FutureOr<void> callStatusChanged() async {
+    await widget.statusChanged?.call(onlineStatusData.isOnline);
+  }
+
+  @override
   Widget build(BuildContext context) => ValueListenableBuilder<bool>(
         valueListenable: onlineStatusData.notifier,
         builder: (context, value, _) =>
             widget.builder?.call(context, value) ??
             (value ? widget.onlineWidget! : widget.offlineWidget!),
       );
+
+  @override
+  void dispose() {
+    onlineStatusData.notifier.removeListener(callStatusChanged);
+    super.dispose();
+  }
 }

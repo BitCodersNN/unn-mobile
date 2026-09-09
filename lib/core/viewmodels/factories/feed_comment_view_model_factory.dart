@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2025 BitCodersNN
 
+import 'package:unn_mobile/core/services/interfaces/authorisation/unn_authorisation_service.dart';
 import 'package:unn_mobile/core/viewmodels/factories/cached_view_model_factory_base.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/feed/feed_comment_view_model.dart';
 
@@ -12,5 +13,7 @@ class FeedCommentViewModelFactory extends CachedViewModelFactoryBase<
 
   @override
   FeedCommentViewModel createViewModel(FeedCommentCacheKey key) =>
-      FeedCommentViewModel();
+      FeedCommentViewModel(
+        getService<UnnAuthService>(),
+      );
 }

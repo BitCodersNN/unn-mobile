@@ -11,6 +11,7 @@ import 'package:unn_mobile/ui/views/base_view.dart';
 import 'package:unn_mobile/ui/views/main_page/main_page_drawer.dart';
 import 'package:unn_mobile/ui/views/main_page/main_page_navigation_bar.dart';
 import 'package:unn_mobile/ui/views/main_page/main_page_routing.dart';
+import 'package:unn_mobile/ui/widgets/dialogs/analytics_confirm_dialog.dart';
 import 'package:unn_mobile/ui/widgets/dialogs/changelog_dialog.dart';
 
 class MainPage extends StatefulWidget {
@@ -50,6 +51,9 @@ class MainPageState extends State<MainPage> {
       if (await Injector.appInstance
           .get<AppOpenTracker>()
           .isFirstTimeOpenOnVersion()) {
+        if (mounted) {
+          await showAnalyticsConfirmation(context);
+        }
         if (mounted) {
           await showDialog(
             context: context,

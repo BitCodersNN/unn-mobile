@@ -4,4 +4,6 @@
 class AppSettingsKeys {
   static const String vibrationEnabled = 'vibrationEnabled';
   static const String initialPage = 'initialPage';
+  static const String analyticsEnabled = 'analyticsEnabled';
+  static const String reverseComments = 'reverseComments';
 }

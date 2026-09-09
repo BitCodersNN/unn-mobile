@@ -29,7 +29,7 @@ import 'package:unn_mobile/ui/router.dart';
 
 class LoadingPageViewModel extends BaseViewModel {
   final LoggerService _loggerService;
-  final AuthorisationRefreshService _initializingApplicationService;
+  final AuthRefreshService _initializingApplicationService;
   final LastCommitShaService _lastCommitShaService;
   final LoadingPageConfigService _loadingPageConfigService;
   final LogoDownloaderService _logoDownloaderService;
@@ -118,7 +118,6 @@ class LoadingPageViewModel extends BaseViewModel {
 
   Future<_TypeScreen> _init() async {
     AuthRequestResult? authRequestResult;
-    late _TypeScreen typeScreen;
 
     unawaited(
       updateLastCommitShaAndConfigIfChanged(
@@ -134,7 +133,7 @@ class LoadingPageViewModel extends BaseViewModel {
     } catch (error, stackTrace) {
       _loggerService.logError(error, stackTrace);
     }
-    typeScreen = switch (authRequestResult) {
+    final typeScreen = switch (authRequestResult) {
       null => _TypeScreen.authScreen,
       AuthRequestResult.success => _TypeScreen.mainScreen,
       AuthRequestResult.noInternet => _TypeScreen.mainScreen,
