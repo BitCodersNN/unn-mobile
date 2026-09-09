@@ -77,6 +77,7 @@ class ScheduleTabViewModel extends BaseViewModel {
   void updateFilter() {
     if (selectedId == null && defaultId == null) {
       searchFilter = null;
+      return;
     }
     searchFilter = ScheduleFilter(
       _userType,
@@ -86,6 +87,9 @@ class ScheduleTabViewModel extends BaseViewModel {
   }
 
   Future<void> loadSchedule() async {
+    if (searchFilter == null) {
+      return;
+    }
     final List<Subject> foundSchedule = await tryLoginAndRetrieveData(
           () => _scheduleService.getSchedule(searchFilter!),
           () => schedule?.expand((e) => e).toList(),
