@@ -203,7 +203,6 @@ jobs:
             --yes \
             --project=unn-mobile-1 \
             --platforms=ios \
-            --ios-bundle-id=ru.bitcodersnn.unnstudenthub
 
       - name: Fix Crashlytics SPM CI bug
         run: |
@@ -232,7 +231,7 @@ jobs:
           echo "ipa_filename=$IPA_FILENAME" >> $GITHUB_OUTPUT
           
           mkdir -p Payload
-          cp -r build/ios/iphoneos/Runner.app Payload/
+          cp -r build/ios/archive/Runner.xcarchive/Products/Applications/Runner.app Payload/
           zip -r "$IPA_FILENAME" Payload
           rm -rf Payload
 
