@@ -238,11 +238,11 @@ jobs:
       - name: delete old iOS artifact
         uses: geekyeggo/delete-artifact@f275313e70c08f6120db482d7a6b98377786765b
         with:
-          name: unsigned-ipa
+          name: unn-hub-ios
       - name: Upload IPA Artifact
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: unsigned-ipa
+          name: unn-hub-ios
           path: ${{ steps.pack_ipa.outputs.ipa_filename }}
 
   # ==========================================
@@ -286,25 +286,3 @@ jobs:
           app_id: ${{ secrets.FIREBASE_A_APP_ID }}
         run: |
           firebase --project unn-mobile-1 --token $firebase_token appdistribution:distribute --groups "testers" --app "$app_id" --release-notes "$TITLE" "${GITHUB_WORKSPACE}/app-GooglePlay-release.aab"
-
-      # --- iOS Deploy ---
-      - name: deploy ios (main)
-        if: github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/main'
-        env:
-          firebase_token: ${{ secrets.FIREBASE_TOKEN }}
-          ios_app_id: ${{ secrets.FIREBASE_IOS_APP_ID }}
-          IPA_PATH: "./ios-build/${{ needs.build-ios.outputs.ipa_filename }}"
-        run: |
-          echo "Деплой iOS: $IPA_PATH"
-          firebase --project unn-mobile-1 --token $firebase_token appdistribution:distribute --groups "testers" --app "$ios_app_id" --release-notes "$(git log -1 --pretty=%B)" "$IPA_PATH"
-          
-      - name: deploy ios (PR)
-        if: github.ref != 'refs/heads/develop' && github.ref != 'refs/heads/main'
-        env:
-          TITLE: ${{ github.head_ref || github.ref_name }}
-          firebase_token: ${{ secrets.FIREBASE_TOKEN }}
-          ios_app_id: ${{ secrets.FIREBASE_IOS_APP_ID }}
-          IPA_PATH: "./ios-build/${{ needs.build-ios.outputs.ipa_filename }}"
-        run: |
-          echo "Деплой iOS (PR): $IPA_PATH"
-          firebase --project unn-mobile-1 --token $firebase_token appdistribution:distribute --groups "testers" --app "$ios_app_id" --release-notes "$TITLE" "$IPA_PATH"
