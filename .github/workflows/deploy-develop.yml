@@ -90,7 +90,9 @@ jobs:
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: unn-mobile-default
-          path: build/unn-mobile-default.* 
+          path: |
+            build/unn-mobile-default.apk
+            build/unn-mobile-default.apk.sha1
       
   # ==========================================
   # ANDROID: Google Play AAB
