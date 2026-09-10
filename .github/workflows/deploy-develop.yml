@@ -216,7 +216,7 @@ jobs:
       - name: Pack IPA
         id: pack_ipa
         run: |
-          INFO_PLIST="ios/Runner/Info.plist"
+          INFO_PLIST="build/ios/archive/Runner.xcarchive/Products/Applications/Runner.app/Info.plist"
           
           APP_NAME=$(/usr/libexec/PlistBuddy -c "Print :CFBundleDisplayName" "$INFO_PLIST" 2>/dev/null || /usr/libexec/PlistBuddy -c "Print :CFBundleName" "$INFO_PLIST")
           
