@@ -206,7 +206,7 @@ jobs:
 
       - name: Fix Crashlytics SPM CI bug
         run: |
-          sed -i '' 's/flutterfire upload-crashlytics-symbols/true #/g' ios/Runner.xcodeproj/project.pbxproj
+          sed -i '' 's|\${DERIVED_DATA_PATH}/SourcePackages|\${SRCROOT}/../build/ios/SourcePackages|g' ios/Runner.xcodeproj/project.pbxproj
 
       - name: build ios (no codesign)
         run: |
@@ -234,14 +234,6 @@ jobs:
           cp -r build/ios/archive/Runner.xcarchive/Products/Applications/Runner.app Payload/
           zip -r "$IPA_FILENAME" Payload
           rm -rf Payload
-
-      - name: Upload dSYM to Firebase Crashlytics
-        env:
-          firebase_token: ${{ secrets.FIREBASE_TOKEN }}
-          ios_app_id: ${{ secrets.FIREBASE_IOS_APP_ID }}
-        run: |
-          echo "Загрузка dSYM в Firebase Crashlytics..."
-          firebase --project unn-mobile-1 --token $firebase_token crashlytics:symbols:upload --app="$ios_app_id" build/ios/archive/Runner.xcarchive/dSYMs
 
       - name: delete old iOS artifact
         uses: geekyeggo/delete-artifact@f275313e70c08f6120db482d7a6b98377786765b
