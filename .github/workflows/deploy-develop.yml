@@ -77,26 +77,20 @@ jobs:
         run: |
           flutter doctor --verbose
           flutter build apk --flavor default
+          
           mv build/app/outputs/flutter-apk/app-default-release.apk build/unn-mobile-default.apk
           sha1sum build/unn-mobile-default.apk > build/unn-mobile-default.apk.sha1
-      - name: delete old build artifact
+          
+      - name: delete old build artifacts
         uses: geekyeggo/delete-artifact@f275313e70c08f6120db482d7a6b98377786765b
         with:
-          name: unn-mobile-default.apk
-      - name: delete old hash artifact
-        uses: geekyeggo/delete-artifact@f275313e70c08f6120db482d7a6b98377786765b
-        with:
-          name: unn-mobile-default.apk.sha1
-      - name: upload build artifact
+          name: unn-mobile-default
+          
+      - name: upload build artifacts
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: unn-mobile-default.apk
-          path: "build/unn-mobile-default.apk"
-      - name: upload hash artifact
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
-        with:
-          name: unn-mobile-default.apk.sha1
-          path: "build/unn-mobile-default.apk.sha1"
+          name: unn-mobile-default
+          path: build/unn-mobile-default.* 
       
   # ==========================================
   # ANDROID: Google Play AAB
@@ -158,11 +152,11 @@ jobs:
       - name: delete old build artifact
         uses: geekyeggo/delete-artifact@f275313e70c08f6120db482d7a6b98377786765b
         with:
-          name: unn-mobile-google.aab
+          name: unn-mobile-googleplay
       - name: upload build artifact
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: unn-mobile-google.aab
+          name: unn-mobile-googleplay
           path: "build/app/outputs/bundle/GooglePlayRelease/app-GooglePlay-release.aab"
         
   # ==========================================
@@ -258,7 +252,7 @@ jobs:
       - name: retrieve Android binary
         uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0
         with:
-          name: unn-mobile-google.aab
+          name: unn-mobile-googleplay
           
       - name: retrieve iOS binary
         uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0
