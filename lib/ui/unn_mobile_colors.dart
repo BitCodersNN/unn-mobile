@@ -8,6 +8,7 @@ import 'package:unn_mobile/core/models/schedule/subject_type.dart';
 class UnnMobileColors extends ThemeExtension<UnnMobileColors> {
   final Color? scheduleDayHighlight;
   final Color? scheduleSubjectHighlight;
+  final Color? scheduleAlternatingColor;
   final Map<SubjectType, Color>? scheduleSubjectTypeColors;
   final Color? ligtherTextColor;
   final Color? idkWhatColor;
@@ -15,6 +16,7 @@ class UnnMobileColors extends ThemeExtension<UnnMobileColors> {
   const UnnMobileColors({
     required this.scheduleDayHighlight,
     required this.scheduleSubjectHighlight,
+    required this.scheduleAlternatingColor,
     required this.scheduleSubjectTypeColors,
     required this.ligtherTextColor,
     required this.idkWhatColor,
@@ -24,6 +26,7 @@ class UnnMobileColors extends ThemeExtension<UnnMobileColors> {
   ThemeExtension<UnnMobileColors> copyWith({
     Color? scheduleDayHighlight,
     Color? scheduleSubjectHighlight,
+    Color? scheduleAlternatingColor,
     Map<SubjectType, Color>? scheduleSubjectTypeColors,
     Color? ligtherTextColor,
     Color? idkWhatColor,
@@ -32,6 +35,8 @@ class UnnMobileColors extends ThemeExtension<UnnMobileColors> {
         scheduleDayHighlight: scheduleDayHighlight ?? this.scheduleDayHighlight,
         scheduleSubjectHighlight:
             scheduleSubjectHighlight ?? this.scheduleSubjectHighlight,
+        scheduleAlternatingColor:
+            scheduleAlternatingColor ?? this.scheduleAlternatingColor,
         scheduleSubjectTypeColors:
             scheduleSubjectTypeColors ?? this.scheduleSubjectTypeColors,
         ligtherTextColor: ligtherTextColor ?? this.ligtherTextColor,
@@ -58,6 +63,11 @@ class UnnMobileColors extends ThemeExtension<UnnMobileColors> {
       scheduleSubjectHighlight: Color.lerp(
         scheduleSubjectHighlight,
         otherColors.scheduleSubjectHighlight,
+        t,
+      ),
+      scheduleAlternatingColor: Color.lerp(
+        scheduleAlternatingColor,
+        otherColors.scheduleAlternatingColor,
         t,
       ),
       scheduleSubjectTypeColors: Map.fromIterables(
@@ -101,7 +111,7 @@ extension ThemeDataExtension on ThemeData {
       return extraColors.scheduleSubjectHighlight!;
     }
 
-    return isEven ? colorScheme.surfaceContainerHighest : colorScheme.surface;
+    return isEven ? extraColors.scheduleAlternatingColor! : colorScheme.surface;
   }
 
   UnnMobileColors? get unnMobileColors => extension<UnnMobileColors>();
