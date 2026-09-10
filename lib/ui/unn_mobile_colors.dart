@@ -101,7 +101,7 @@ extension ThemeDataExtension on ThemeData {
       return extraColors.scheduleSubjectHighlight!;
     }
 
-    return isEven ? colorScheme.surfaceContainerHighest : colorScheme.surface;
+    return isEven ? colorScheme.primary.withAlpha(20) : colorScheme.surface;
   }
 
   UnnMobileColors? get unnMobileColors => extension<UnnMobileColors>();
