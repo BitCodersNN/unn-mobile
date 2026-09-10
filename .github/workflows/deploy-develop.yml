@@ -234,11 +234,11 @@ jobs:
       - name: delete old iOS artifact
         uses: geekyeggo/delete-artifact@f275313e70c08f6120db482d7a6b98377786765b
         with:
-          name: unn-hub-ios
+          name: unn-mobile-ios
       - name: Upload IPA Artifact
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: unn-hub-ios
+          name: unn-mobile-ios
           path: ${{ steps.pack_ipa.outputs.ipa_filename }}
 
   # ==========================================
@@ -259,7 +259,7 @@ jobs:
       - name: retrieve iOS binary
         uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0
         with:
-          name: unn-hub-ios
+          name: unn-mobile-ios
 
       - name: install firebase
         run: curl -sL https://firebase.tools | bash
