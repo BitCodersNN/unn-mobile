@@ -1,5 +1,5 @@
-name: deploy-develop-android
-run-name: Build and deploy develop build for Android
+name: deploy-develop-mobile
+run-name: Build and deploy develop build for Android & iOS
 on:
   pull_request:
     branches:
@@ -10,16 +10,19 @@ on:
     paths:
       - ".github/**"
       - "android/**"
+      - "ios/**"
       - "lib/**"
       - "pubspec.yaml"
   workflow_dispatch:
       
-
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
   
 jobs:
+  # ==========================================
+  # ANDROID: Standard APK
+  # ==========================================
   build-default:
     name: Build standard app package
     runs-on: ubuntu-latest
@@ -33,7 +36,7 @@ jobs:
           flutter-version: '3.47.1'
           channel: 'stable'
           cache: true
-      - name: install java (?)
+      - name: install java
         uses: actions/setup-java@c5195efecf7bdfc987ee8bae7a71cb8b11521c00
         with:
           distribution: 'zulu'
@@ -74,27 +77,26 @@ jobs:
         run: |
           flutter doctor --verbose
           flutter build apk --flavor default
+          
           mv build/app/outputs/flutter-apk/app-default-release.apk build/unn-mobile-default.apk
           sha1sum build/unn-mobile-default.apk > build/unn-mobile-default.apk.sha1
-      - name: delete old build artifact
+          
+      - name: delete old build artifacts
         uses: geekyeggo/delete-artifact@f275313e70c08f6120db482d7a6b98377786765b
         with:
-          name: unn-mobile-default.apk
-      - name: delete old hash artifact
-        uses: geekyeggo/delete-artifact@f275313e70c08f6120db482d7a6b98377786765b
-        with:
-          name: unn-mobile-default.apk.sha1
-      - name: upload build artifact
+          name: unn-mobile-default
+          
+      - name: upload build artifacts
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: unn-mobile-default.apk
-          path: "build/unn-mobile-default.apk"
-      - name: upload hash artifact
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
-        with:
-          name: unn-mobile-default.apk.sha1
-          path: "build/unn-mobile-default.apk.sha1"
+          name: unn-mobile-default
+          path: |
+            build/unn-mobile-default.apk
+            build/unn-mobile-default.apk.sha1
       
+  # ==========================================
+  # ANDROID: Google Play AAB
+  # ==========================================
   build-google-play:
     name: Build Google Play app package
     runs-on: ubuntu-latest
@@ -108,7 +110,7 @@ jobs:
           flutter-version: '3.47.1'
           channel: 'stable'
           cache: true
-      - name: install java (?)
+      - name: install java
         uses: actions/setup-java@c5195efecf7bdfc987ee8bae7a71cb8b11521c00
         with:
           distribution: 'zulu'
@@ -152,33 +154,126 @@ jobs:
       - name: delete old build artifact
         uses: geekyeggo/delete-artifact@f275313e70c08f6120db482d7a6b98377786765b
         with:
-          name: unn-mobile-google.aab
+          name: unn-mobile-googleplay
       - name: upload build artifact
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: unn-mobile-google.aab
+          name: unn-mobile-googleplay
           path: "build/app/outputs/bundle/GooglePlayRelease/app-GooglePlay-release.aab"
         
+  # ==========================================
+  # iOS: Unsigned IPA + dSYM
+  # ==========================================
+  build-ios:
+    name: Build iOS app package (no codesign)
+    runs-on: macos-latest
+    environment: develop-ios
+    outputs:
+      ipa_filename: ${{ steps.pack_ipa.outputs.ipa_filename }}
+    steps:
+      - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955
+        with:
+          submodules: recursive
+      - uses: subosito/flutter-action@fd55f4c5af5b953cc57a2be44cb082c8f6635e8e
+        with:
+          flutter-version: '3.47.1'
+          channel: 'stable'
+          cache: true
+      - name: get dependencies
+        run: flutter pub get
+
+      - name: install firebase
+        run: |
+          mkdir -p "$HOME/bin"
+          curl -fsSL -o "$HOME/bin/firebase" https://firebase.tools/bin/macos/latest
+          chmod +x "$HOME/bin/firebase"
+          echo "$HOME/bin" >> $GITHUB_PATH
+
+      - name: configure flutterfire (iOS)
+        env: 
+          firebase_token: ${{ secrets.FIREBASE_TOKEN }}
+        run: |
+          dart pub global activate flutterfire_cli
+          flutterfire configure \
+            --token=$firebase_token \
+            --yes \
+            --project=unn-mobile-1 \
+            --platforms=ios \
+
+      - name: Fix Crashlytics SPM CI bug
+        run: |
+          sed -i '' 's|\${DERIVED_DATA_PATH}/SourcePackages|\${SRCROOT}/../build/ios/SourcePackages|g' ios/Runner.xcodeproj/project.pbxproj
+
+      - name: build ios (no codesign)
+        run: |
+          flutter doctor --verbose
+          flutter build ipa --no-codesign
+          
+      - name: Pack IPA
+        id: pack_ipa
+        run: |
+          INFO_PLIST="build/ios/archive/Runner.xcarchive/Products/Applications/Runner.app/Info.plist"
+          
+          APP_NAME=$(/usr/libexec/PlistBuddy -c "Print :CFBundleDisplayName" "$INFO_PLIST" 2>/dev/null || /usr/libexec/PlistBuddy -c "Print :CFBundleName" "$INFO_PLIST")
+          
+          SAFE_APP_NAME=$(echo "$APP_NAME" | tr ' ' '-' | tr -cd '[:alnum:]-_.')
+          
+          VERSION=$(/usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" "$INFO_PLIST")
+          BUILD=$(/usr/libexec/PlistBuddy -c "Print :CFBundleVersion" "$INFO_PLIST")
+          
+          IPA_FILENAME="${SAFE_APP_NAME}-${VERSION}-${BUILD}.ipa"
+          
+          echo "Формируем IPA с именем: $IPA_FILENAME"
+          echo "ipa_filename=$IPA_FILENAME" >> $GITHUB_OUTPUT
+          
+          mkdir -p Payload
+          cp -r build/ios/archive/Runner.xcarchive/Products/Applications/Runner.app Payload/
+          zip -r "$IPA_FILENAME" Payload
+          rm -rf Payload
+
+      - name: delete old iOS artifact
+        uses: geekyeggo/delete-artifact@f275313e70c08f6120db482d7a6b98377786765b
+        with:
+          name: unn-mobile-ios
+      - name: Upload IPA Artifact
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: unn-mobile-ios
+          path: ${{ steps.pack_ipa.outputs.ipa_filename }}
+
+  # ==========================================
+  # DEPLOY: Firebase App Distribution
+  # ==========================================
   deploy:
     runs-on: ubuntu-latest
     environment: develop-android
-    needs: build-google-play
+    needs: [build-google-play, build-ios]
     steps:
       - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955
-      - name: retrieve the binary
+      
+      - name: retrieve Android binary
         uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0
         with:
-          name: unn-mobile-google.aab
+          name: unn-mobile-googleplay
+          
+      - name: retrieve iOS binary
+        uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0
+        with:
+          name: unn-mobile-ios
+
       - name: install firebase
         run: curl -sL https://firebase.tools | bash
-      - name: deploy (main)
+
+      # --- Android Deploy ---
+      - name: deploy android (main)
         if: github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/main'
         env:
           firebase_token: ${{ secrets.FIREBASE_TOKEN }}
           app_id: ${{ secrets.FIREBASE_A_APP_ID }}
         run: |
           firebase --project unn-mobile-1 --token $firebase_token appdistribution:distribute --groups "testers" --app "$app_id" --release-notes "$(git log -1 --pretty=%B)" "${GITHUB_WORKSPACE}/app-GooglePlay-release.aab"
-      - name: deploy (PR)
+          
+      - name: deploy android (PR)
         if: github.ref != 'refs/heads/develop' && github.ref != 'refs/heads/main'
         env:
           TITLE: ${{ github.head_ref || github.ref_name }}
@@ -186,4 +281,3 @@ jobs:
           app_id: ${{ secrets.FIREBASE_A_APP_ID }}
         run: |
           firebase --project unn-mobile-1 --token $firebase_token appdistribution:distribute --groups "testers" --app "$app_id" --release-notes "$TITLE" "${GITHUB_WORKSPACE}/app-GooglePlay-release.aab"
-
