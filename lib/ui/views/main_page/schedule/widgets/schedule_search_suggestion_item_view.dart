@@ -36,7 +36,6 @@ class ScheduleSearchSuggestionItemView extends StatelessWidget {
     );
   }
 
-  // Подсветка совпадения запроса в названии, как в макете
   Widget _highlightedTitle(ThemeData theme) {
     final base =
         theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w500);

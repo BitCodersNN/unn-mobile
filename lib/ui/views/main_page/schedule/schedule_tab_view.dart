@@ -2,24 +2,99 @@
 // Copyright 2026 BitCodersNN
 
 import 'package:flutter/material.dart';
+import 'package:unn_mobile/core/models/schedule/subject.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/schedule/schedule_tab_view_model.dart';
 import 'package:unn_mobile/ui/builders/online_status_builder.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
 import 'package:unn_mobile/ui/views/main_page/schedule/widgets/schedule_item_normal.dart';
 
-class ScheduleTabView extends StatelessWidget {
+class ScheduleTabView extends StatefulWidget {
   final ScheduleTabViewModel viewModel;
   final DateTimeRange selectedTimeRange;
+  final int weekOffset;
 
-  static const daysOfWeek = [
-    'Понедельник',
-    'Вторник',
-    'Среда',
-    'Четверг',
-    'Пятница',
-    'Суббота',
-    'Воскресенье',
-  ];
+  const ScheduleTabView({
+    required this.viewModel,
+    required this.selectedTimeRange,
+    required this.weekOffset,
+    super.key,
+  });
+
+  @override
+  State<ScheduleTabView> createState() => _ScheduleTabViewState();
+}
+
+class _ScheduleTabViewState extends State<ScheduleTabView> {
+  final List<GlobalKey> _dayAnchorKeys = List.generate(6, (_) => GlobalKey());
+
+  bool _pendingScrollToToday = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _pendingScrollToToday = widget.weekOffset == 0;
+  }
+
+  @override
+  void didUpdateWidget(covariant ScheduleTabView oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.weekOffset == 0 && oldWidget.weekOffset != 0) {
+      _pendingScrollToToday = true;
+    } else if (widget.weekOffset != 0) {
+      _pendingScrollToToday = false;
+    }
+  }
+
+  int? _targetDayIndex(List<List<Subject>> schedule) {
+    final todayIndex = DateTime.now().weekday - 1;
+    if (todayIndex > 5) {
+      return null;
+    }
+    for (var i = todayIndex; i < schedule.length && i < 6; i++) {
+      if (schedule[i].isNotEmpty) {
+        return i;
+      }
+    }
+    return null;
+  }
+
+  void _maybeScrollToToday(ScheduleTabViewModel model) {
+    if (!_pendingScrollToToday || model.isBusy) {
+      return;
+    }
+    final schedule = model.schedule;
+    if (schedule == null) {
+      return;
+    }
+    _pendingScrollToToday = false;
+    final target = _targetDayIndex(schedule);
+    if (target == null) {
+      return;
+    }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) {
+        return;
+      }
+      final anchorContext = _dayAnchorKeys[target].currentContext;
+      if (anchorContext == null) {
+        return;
+      }
+      Scrollable.ensureVisible(
+        anchorContext,
+        alignment: 0.0,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
+    });
+  }
+
+  bool _isSameDate(DateTime date1, DateTime date2) =>
+      date1.year == date2.year &&
+      date1.month == date2.month &&
+      date1.day == date2.day;
+
+  static String _formatDate(DateTime d) =>
+      '${d.day} ${_shortMonths[d.month - 1]}';
 
   static const _shortMonths = [
     'янв',
@@ -35,20 +110,6 @@ class ScheduleTabView extends StatelessWidget {
     'ноя',
     'дек',
   ];
-
-  const ScheduleTabView({
-    required this.viewModel,
-    required this.selectedTimeRange,
-    super.key,
-  });
-
-  bool _isSameDate(DateTime date1, DateTime date2) =>
-      date1.year == date2.year &&
-      date1.month == date2.month &&
-      date1.day == date2.day;
-
-  static String _formatDate(DateTime d) =>
-      '${d.day} ${_shortMonths[d.month - 1]}';
 
   Widget _emptyState(
     BuildContext context, {
@@ -117,7 +178,7 @@ class ScheduleTabView extends StatelessWidget {
                   icon: Icons.search_outlined,
                   title: 'Расписание не выбрано',
                   caption: isOnline
-                      ? 'Введите запрос для поиска, '
+                      ? 'Введите группу, фамилию или предмет в поиске, '
                           'чтобы посмотреть расписание'
                       : 'Нет сохранённого расписания',
                 );
@@ -135,6 +196,8 @@ class ScheduleTabView extends StatelessWidget {
               final schedule = model.schedule ?? [];
               final theme = Theme.of(context);
               final now = DateTime.now();
+
+              _maybeScrollToToday(model);
 
               if (schedule.every((d) => d.isEmpty)) {
                 return Center(
@@ -171,10 +234,16 @@ class ScheduleTabView extends StatelessWidget {
                         if (l.isNotEmpty)
                           SliverMainAxisGroup(
                             slivers: [
+                              SliverToBoxAdapter(
+                                child: SizedBox(
+                                  height: 0,
+                                  key: _dayAnchorKeys[i],
+                                ),
+                              ),
                               SliverAppBar(
                                 title: Builder(
                                   builder: (context) {
-                                    final date = selectedTimeRange.start
+                                    final date = widget.selectedTimeRange.start
                                         .add(Duration(days: i));
                                     final isToday = _isSameDate(date, now);
 
@@ -189,9 +258,7 @@ class ScheduleTabView extends StatelessWidget {
                                             fontWeight: FontWeight.bold,
                                           ),
                                         ),
-                                        const SizedBox(width: 6),
-                                        const Text('·'),
-                                        const SizedBox(width: 6),
+                                        const SizedBox(width: 12),
                                         Text(
                                           _formatDate(date),
                                           style: theme.textTheme.titleMedium!
@@ -284,6 +351,15 @@ class ScheduleTabView extends StatelessWidget {
             },
           );
         },
-        model: viewModel,
+        model: widget.viewModel,
       );
+
+  static const daysOfWeek = [
+    'Понедельник',
+    'Вторник',
+    'Среда',
+    'Четверг',
+    'Пятница',
+    'Суббота',
+  ];
 }

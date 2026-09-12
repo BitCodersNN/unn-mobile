@@ -42,7 +42,6 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView> {
   bool _suggestionsLoading = false;
   int _searchRequestId = 0;
 
-  // Вкладка, для которой загружены подсказки (чтобы обновлять при смене)
   Object? _suggestionsTab;
 
   static final DateTime _semesterStart = DateTime(2026, 8, 31);
@@ -68,7 +67,6 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView> {
     super.dispose();
   }
 
-  // Синхронный rebuild на каждое нажатие + асинхронная дозагрузка подсказок
   void _onSearchChanged() {
     if (!_searchOpen) {
       return;
@@ -100,7 +98,7 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView> {
       _suggestions = const [];
       _suggestionsTab = null;
     });
-    _loadSuggestions(); // сразу подтянуть историю поиска
+    _loadSuggestions();
   }
 
   void _closeSearch() {
@@ -128,7 +126,6 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView> {
   int _weekNumber(ScheduleScreenViewModel model) =>
       model.selectedTimeRange.start.difference(_semesterStart).inDays ~/ 7 + 1;
 
-  // Подзаголовок = активный запрос
   Widget _buildSubtitle(BuildContext context, ScheduleScreenViewModel model) {
     final theme = Theme.of(context);
     final foundName = model.currentTab?.foundName;
@@ -164,7 +161,6 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView> {
     );
   }
 
-  // Поле поиска встаёт НА МЕСТО блока выбора недели (под словом «Расписание»)
   Widget _buildSearchField(BuildContext context) {
     final theme = Theme.of(context);
     return Container(
@@ -210,7 +206,6 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView> {
     );
   }
 
-  // Карточка подсказок поверх ленты; высота ограничена доступным местом
   Widget _buildSuggestionsOverlay(BuildContext context) {
     final theme = Theme.of(context);
     return Positioned(
@@ -438,8 +433,6 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView> {
   Widget build(BuildContext context) => OfflineOverlayDisplayer(
         child: BaseView<ScheduleScreenViewModel>(
           builder: (context, model, _) {
-            // Пользователь сменил вкладку (тип расписания) с открытым поиском —
-            // перезапрашиваем подсказки под тот же введённый текст
             if (_searchOpen && _suggestionsTab != model.currentTab) {
               WidgetsBinding.instance.addPostFrameCallback((_) {
                 if (mounted && _searchOpen) {
@@ -498,7 +491,6 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            // Поиск встаёт взамен блока выбора недели
                             if (_searchOpen)
                               Padding(
                                 padding: const EdgeInsets.symmetric(
@@ -523,8 +515,9 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView> {
                                     child: Text(
                                       '${model.selectedTimeRange.start.format(DatePattern.dMMMM)} - ${model.selectedTimeRange.end.format(DatePattern.dMMMM)}',
                                       textAlign: TextAlign.center,
-                                      style:
-                                          Theme.of(context).textTheme.titleLarge,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleLarge,
                                     ),
                                   ),
                                   IconButton(
@@ -591,12 +584,12 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView> {
                                 key: ValueKey(t),
                                 viewModel: model.modelsByType[t]!,
                                 selectedTimeRange: model.selectedTimeRange,
+                                weekOffset: model.weekOffset,
                               ),
                             )
                             .toList(),
                       ),
                       if (_searchOpen) ...[
-                        // Затемнение ленты; тап вне подсказок закрывает поиск
                         GestureDetector(
                           onTap: _closeSearch,
                           child: Container(
