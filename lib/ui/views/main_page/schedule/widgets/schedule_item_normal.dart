@@ -30,8 +30,12 @@ class _ScheduleItemNormalState extends State<ScheduleItemNormal>
     final theme = Theme.of(context);
     final extraColors = theme.extension<UnnMobileColors>()!;
     final DateFormat timeFormatter = DateFormat('HH:mm');
+    final subjectType = widget.subject.subjectTypeEnum;
+    final typeColor = theme.getColorOfSubjectType(subjectType);
     const verticalPadding = 4.0;
     const horizontalPadding = 8.0;
+    const cardRadius = 12.0;
+
     return Padding(
       padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 8.0),
       child: GestureDetector(
@@ -50,26 +54,26 @@ class _ScheduleItemNormalState extends State<ScheduleItemNormal>
         child: Container(
           decoration: BoxDecoration(
             borderRadius: const BorderRadius.only(
-              topRight: Radius.circular(16),
-              bottomRight: Radius.circular(16),
+              topRight: Radius.circular(cardRadius),
+              bottomRight: Radius.circular(cardRadius),
             ),
-            shape: BoxShape.rectangle,
             color: theme.getScheduleSurfaceColor(
               widget.subject.dateTimeRange,
               isEven: widget.even,
             ),
           ),
+          clipBehavior: Clip.antiAlias,
           child: IntrinsicHeight(
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                AnimatedContainer(
-                  duration: const Duration(milliseconds: 500),
-                  width: 6,
+                Container(
+                  width: 4,
                   decoration: BoxDecoration(
-                    borderRadius: const BorderRadius.all(Radius.circular(3)),
-                    color: theme.getColorOfSubjectType(
-                      widget.subject.subjectTypeEnum,
+                    color: typeColor,
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(cardRadius),
+                      bottomLeft: Radius.circular(cardRadius),
                     ),
                   ),
                 ),
@@ -112,9 +116,7 @@ class _ScheduleItemNormalState extends State<ScheduleItemNormal>
                         Text(
                           widget.subject.subjectType,
                           style: theme.textTheme.labelLarge!.copyWith(
-                            color: theme.getColorOfSubjectType(
-                              widget.subject.subjectTypeEnum,
-                            ),
+                            color: typeColor,
                             fontStyle: FontStyle.italic,
                             overflow: TextOverflow.ellipsis,
                           ),
@@ -129,15 +131,14 @@ class _ScheduleItemNormalState extends State<ScheduleItemNormal>
                     horizontal: horizontalPadding,
                   ),
                   child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       Text(
                         timeFormatter
                             .format(widget.subject.dateTimeRange.start),
                         style: theme.textTheme.titleMedium!
                             .copyWith(fontWeight: FontWeight.bold),
-                      ),
-                      Expanded(
-                        child: Container(),
                       ),
                       Text(
                         timeFormatter.format(widget.subject.dateTimeRange.end),
