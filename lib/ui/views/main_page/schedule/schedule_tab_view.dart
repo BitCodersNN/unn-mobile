@@ -12,11 +12,13 @@ class ScheduleTabView extends StatefulWidget {
   final ScheduleTabViewModel viewModel;
   final DateTimeRange selectedTimeRange;
   final int weekOffset;
+  final VoidCallback? onSearchRequested;
 
   const ScheduleTabView({
     required this.viewModel,
     required this.selectedTimeRange,
     required this.weekOffset,
+    this.onSearchRequested,
     super.key,
   });
 
@@ -124,27 +126,35 @@ class _ScheduleTabViewState extends State<ScheduleTabView> {
     required IconData icon,
     required String title,
     required String caption,
+    VoidCallback? onIconTap,
   }) {
     final theme = Theme.of(context);
+    final circle = Container(
+      width: 96,
+      height: 96,
+      decoration: BoxDecoration(
+        color: theme.colorScheme.primaryContainer,
+        shape: BoxShape.circle,
+      ),
+      child: Icon(
+        icon,
+        size: 40,
+        color: theme.colorScheme.primary,
+      ),
+    );
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(32.0),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Container(
-              width: 96,
-              height: 96,
-              decoration: BoxDecoration(
-                color: theme.colorScheme.primaryContainer,
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                icon,
-                size: 40,
-                color: theme.colorScheme.primary,
-              ),
-            ),
+            onIconTap == null
+                ? circle
+                : InkWell(
+                    onTap: onIconTap,
+                    borderRadius: BorderRadius.circular(48),
+                    child: circle,
+                  ),
             const SizedBox(height: 16),
             Text(
               title,
@@ -186,9 +196,10 @@ class _ScheduleTabViewState extends State<ScheduleTabView> {
                   icon: Icons.search_outlined,
                   title: 'Расписание не выбрано',
                   caption: isOnline
-                      ? 'Введите группу, фамилию или предмет в поиске, '
+                      ? 'Введите группу или фамилию в поиске, '
                           'чтобы посмотреть расписание'
                       : 'Нет сохранённого расписания',
+                  onIconTap: isOnline ? widget.onSearchRequested : null,
                 );
               }
 

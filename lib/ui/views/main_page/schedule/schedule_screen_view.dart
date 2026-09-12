@@ -601,6 +601,7 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView> {
                                 viewModel: model.modelsByType[t]!,
                                 selectedTimeRange: model.selectedTimeRange,
                                 weekOffset: model.weekOffset,
+                                onSearchRequested: _openSearch,
                               ),
                             )
                             .toList(),
