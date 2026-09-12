@@ -28,21 +28,18 @@ class _ScheduleTabViewState extends State<ScheduleTabView> {
   final List<GlobalKey> _dayAnchorKeys = List.generate(6, (_) => GlobalKey());
 
   bool _pendingScrollToToday = false;
+  String? _scrollContextKey;
 
-  @override
-  void initState() {
-    super.initState();
-    _pendingScrollToToday = widget.weekOffset == 0;
-  }
+  String _contextKey(ScheduleTabViewModel model) =>
+      '${widget.weekOffset}|${model.selectedId ?? ''}|${model.foundName ?? ''}';
 
-  @override
-  void didUpdateWidget(covariant ScheduleTabView oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (widget.weekOffset == 0 && oldWidget.weekOffset != 0) {
-      _pendingScrollToToday = true;
-    } else if (widget.weekOffset != 0) {
-      _pendingScrollToToday = false;
+  void _updateScrollTrigger(ScheduleTabViewModel model) {
+    final key = _contextKey(model);
+    if (key == _scrollContextKey) {
+      return;
     }
+    _scrollContextKey = key;
+    _pendingScrollToToday = widget.weekOffset == 0;
   }
 
   int? _targetDayIndex(List<List<Subject>> schedule) {
@@ -59,6 +56,7 @@ class _ScheduleTabViewState extends State<ScheduleTabView> {
   }
 
   void _maybeScrollToToday(ScheduleTabViewModel model) {
+    _updateScrollTrigger(model);
     if (!_pendingScrollToToday || model.isBusy) {
       return;
     }
@@ -109,6 +107,16 @@ class _ScheduleTabViewState extends State<ScheduleTabView> {
     'окт',
     'ноя',
     'дек',
+  ];
+
+  static const daysOfWeek = [
+    'Понедельник',
+    'Вторник',
+    'Среда',
+    'Четверг',
+    'Пятница',
+    'Суббота',
+    'Воскресенье',
   ];
 
   Widget _emptyState(
@@ -258,7 +266,9 @@ class _ScheduleTabViewState extends State<ScheduleTabView> {
                                             fontWeight: FontWeight.bold,
                                           ),
                                         ),
-                                        const SizedBox(width: 12),
+                                        const SizedBox(width: 6),
+                                        const Text('·'),
+                                        const SizedBox(width: 6),
                                         Text(
                                           _formatDate(date),
                                           style: theme.textTheme.titleMedium!
@@ -353,13 +363,4 @@ class _ScheduleTabViewState extends State<ScheduleTabView> {
         },
         model: widget.viewModel,
       );
-
-  static const daysOfWeek = [
-    'Понедельник',
-    'Вторник',
-    'Среда',
-    'Четверг',
-    'Пятница',
-    'Суббота',
-  ];
 }

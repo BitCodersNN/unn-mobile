@@ -41,7 +41,6 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView> {
   List<ScheduleSearchSuggestionItem> _suggestions = const [];
   bool _suggestionsLoading = false;
   int _searchRequestId = 0;
-
   Object? _suggestionsTab;
 
   static final DateTime _semesterStart = DateTime(2026, 8, 31);
@@ -123,8 +122,12 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView> {
       .map((p) => p.$1 == 0 ? p.$2 : '${p.$2[0]}.')
       .join(' ');
 
-  int _weekNumber(ScheduleScreenViewModel model) =>
-      model.selectedTimeRange.start.difference(_semesterStart).inDays ~/ 7 + 1;
+  int _weekNumber(ScheduleScreenViewModel model) {
+    final week =
+        model.selectedTimeRange.start.difference(_semesterStart).inDays ~/ 7 +
+            1;
+    return week < 1 ? 1 : week;
+  }
 
   Widget _buildSubtitle(BuildContext context, ScheduleScreenViewModel model) {
     final theme = Theme.of(context);
@@ -187,7 +190,7 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView> {
               decoration: InputDecoration(
                 isCollapsed: true,
                 border: InputBorder.none,
-                hintText: 'Группа, фамилия, предмет...',
+                hintText: 'Группа, фамилия...',
                 hintStyle: theme.textTheme.bodyLarge?.copyWith(
                   color: theme.colorScheme.onSurfaceVariant,
                   fontWeight: FontWeight.normal,
@@ -206,7 +209,10 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView> {
     );
   }
 
-  Widget _buildSuggestionsOverlay(BuildContext context) {
+  Widget _buildSuggestionsOverlay(
+    BuildContext context,
+    ScheduleScreenViewModel model,
+  ) {
     final theme = Theme.of(context);
     return Positioned(
       top: 8,
@@ -257,6 +263,7 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView> {
                             final suggestion = _suggestions[index];
                             return ScheduleSearchSuggestionItemView(
                               model: suggestion,
+                              searchType: model.selectedUser,
                               query: _searchController.text,
                               onSelected: () => _applySuggestion(suggestion),
                             );
@@ -499,6 +506,14 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView> {
                                 ),
                                 child: _buildSearchField(context),
                               )
+                            else if (_searchOpen)
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8.0,
+                                  vertical: 4.0,
+                                ),
+                                child: _buildSearchField(context),
+                              )
                             else ...[
                               Row(
                                 children: [
@@ -599,7 +614,7 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView> {
                         if (_suggestions.isNotEmpty ||
                             _suggestionsLoading ||
                             _searchController.text.isNotEmpty)
-                          _buildSuggestionsOverlay(context),
+                          _buildSuggestionsOverlay(context, model),
                       ],
                     ],
                   ),

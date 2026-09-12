@@ -2,15 +2,18 @@
 // Copyright 2026 BitCodersNN
 
 import 'package:flutter/material.dart';
+import 'package:unn_mobile/core/models/schedule/schedule_filter.dart';
 import 'package:unn_mobile/core/models/schedule/schedule_search_suggestion_item.dart';
 
 class ScheduleSearchSuggestionItemView extends StatelessWidget {
   final ScheduleSearchSuggestionItem model;
+  final IdType searchType;
   final String query;
   final void Function() onSelected;
 
   const ScheduleSearchSuggestionItemView({
     required this.model,
+    required this.searchType,
     required this.onSelected,
     this.query = '',
     super.key,
@@ -22,7 +25,7 @@ class ScheduleSearchSuggestionItemView extends StatelessWidget {
     return ListTile(
       visualDensity: VisualDensity.compact,
       leading: Icon(
-        _getIconForType(model.description),
+        _iconForType(searchType),
         color: theme.colorScheme.primary,
       ),
       title: _highlightedTitle(theme),
@@ -35,6 +38,14 @@ class ScheduleSearchSuggestionItemView extends StatelessWidget {
       onTap: onSelected,
     );
   }
+
+  IconData _iconForType(IdType type) => switch (type) {
+        IdType.student => Icons.person_outline,
+        IdType.lecturer => Icons.person_outline,
+        IdType.group => Icons.groups_outlined,
+        IdType.auditoriun => Icons.location_on_outlined,
+        _ => Icons.search,
+      };
 
   Widget _highlightedTitle(ThemeData theme) {
     final base =
@@ -70,20 +81,5 @@ class ScheduleSearchSuggestionItemView extends StatelessWidget {
       start = index + queryLower.length;
     }
     return Text.rich(TextSpan(children: spans), style: base);
-  }
-
-  IconData _getIconForType(String description) {
-    final lowerDesc = description.toLowerCase();
-    if (lowerDesc.contains('препод') ||
-        lowerDesc.contains('студент') ||
-        lowerDesc.contains('группа')) {
-      return Icons.person_outline;
-    } else if (lowerDesc.contains('предмет') || lowerDesc.contains('пара')) {
-      return Icons.book_outlined;
-    } else if (lowerDesc.contains('аудитория') ||
-        lowerDesc.contains('корпус')) {
-      return Icons.location_on_outlined;
-    }
-    return Icons.search;
   }
 }
