@@ -123,6 +123,7 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView> {
       .join(' ');
 
   int _weekNumber(ScheduleScreenViewModel model) {
+    // TODO: Переделать логику номера недели
     final week =
         model.selectedTimeRange.start.difference(_semesterStart).inDays ~/ 7 +
             1;
