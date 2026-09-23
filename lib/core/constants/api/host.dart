@@ -16,4 +16,7 @@ class Host {
 
   /// Доменное имя unn source
   static const String unnSource = 'source.unn.ru';
+
+  /// Доменное имя rasp unn
+  static const String unnRasp = 'rasp.unn.ru';
 }

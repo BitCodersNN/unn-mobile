@@ -11,6 +11,7 @@ import 'package:unn_mobile/core/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/api_helpers/implementations/github_api_helper.dart';
 import 'package:unn_mobile/core/api_helpers/implementations/github_raw_api_helper.dart';
 import 'package:unn_mobile/core/api_helpers/implementations/host_type.dart';
+import 'package:unn_mobile/core/api_helpers/implementations/rasp_api_helper.dart';
 import 'package:unn_mobile/core/api_helpers/implementations/unn_mobile_api_helper.dart';
 import 'package:unn_mobile/core/api_helpers/implementations/unn_portal_api_helper.dart';
 import 'package:unn_mobile/core/api_helpers/implementations/unn_source_api_helper.dart';
@@ -185,6 +186,7 @@ void registerDependencies() {
         getPlatformSpecificHelper<WebUnnPortalApiHelper, UnnPortalApiHelper>(),
     HostType.unnSource: () =>
         getPlatformSpecificHelper<WebUnnSourceApiHelper, UnnSourceApiHelper>(),
+    HostType.unnRasp: () => get<RaspApiHelper>(),
   };
 
   ApiHelper getApiHelper(HostType hostType) => apiHelperFactories[hostType]!();
@@ -210,6 +212,7 @@ void registerDependencies() {
     // =========================================================================
     ..registerSingleton<GithubApiHelper>(GithubApiHelper.new)
     ..registerSingleton<GitHubRawApiHelper>(GitHubRawApiHelper.new)
+    ..registerSingleton<RaspApiHelper>(RaspApiHelper.new)
     ..registerSingleton<UnnPortalApiHelper>(
       () => UnnPortalApiHelper(authorizationService: get<UnnAuthService>()),
     )
@@ -373,6 +376,7 @@ void registerDependencies() {
       () => ScheduleServiceImpl(
         get<LoggerService>(),
         getApiHelper(HostType.unnPortal),
+        getApiHelper(HostType.unnRasp),
       ),
     )
     ..registerSingleton<ExportScheduleService>(
