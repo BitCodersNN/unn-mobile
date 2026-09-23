@@ -38,6 +38,21 @@ class SearchOverlay<T> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (!controller.isOpen) {
+      return const SizedBox.shrink();
+    }
+
+    final hasSuggestions = controller.suggestions.isNotEmpty;
+    final isQueryEmpty = controller.query.isEmpty;
+
+    if (!hasSuggestions && controller.isLoading) {
+      return const SizedBox.shrink();
+    }
+
+    if (!hasSuggestions && isQueryEmpty) {
+      return const SizedBox.shrink();
+    }
+
     final theme = Theme.of(context);
     return Positioned(
       top: 8,
@@ -54,7 +69,7 @@ class SearchOverlay<T> extends StatelessWidget {
               elevation: 6,
               borderRadius: BorderRadius.circular(16),
               clipBehavior: Clip.antiAlias,
-              child: controller.isLoading && controller.suggestions.isEmpty
+              child: controller.isLoading
                   ? (loadingState ??
                       const Padding(
                         padding: EdgeInsets.all(16.0),
@@ -66,18 +81,8 @@ class SearchOverlay<T> extends StatelessWidget {
                           ),
                         ),
                       ))
-                  : controller.suggestions.isEmpty
-                      ? (emptyState ??
-                          Padding(
-                            padding: const EdgeInsets.all(16.0),
-                            child: Text(
-                              'Ничего не найдено',
-                              style: theme.textTheme.bodyMedium?.copyWith(
-                                color: theme.colorScheme.onSurfaceVariant,
-                              ),
-                            ),
-                          ))
-                      : ListView.separated(
+                  : hasSuggestions
+                      ? ListView.separated(
                           shrinkWrap: true,
                           padding: const EdgeInsets.symmetric(vertical: 4),
                           itemCount: controller.suggestions.length,
@@ -95,7 +100,17 @@ class SearchOverlay<T> extends StatelessWidget {
                               () => controller.applySuggestion(suggestion),
                             );
                           },
-                        ),
+                        )
+                      : (emptyState ??
+                          Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Text(
+                              'Ничего не найдено',
+                              style: theme.textTheme.bodyMedium?.copyWith(
+                                color: theme.colorScheme.onSurfaceVariant,
+                              ),
+                            ),
+                          )),
             ),
           ),
         ),
