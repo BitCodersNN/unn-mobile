@@ -14,11 +14,11 @@ import 'package:unn_mobile/core/services/interfaces/schedule/export_schedule_ser
 import 'package:unn_mobile/core/services/interfaces/schedule/schedule_search_history_service.dart';
 import 'package:unn_mobile/core/services/interfaces/schedule/schedule_service.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
+import 'package:unn_mobile/core/viewmodels/main_page/main_page_route_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/schedule/schedule_tab_view_model.dart';
-import 'package:unn_mobile/ui/views/main_page/main_page_tab_state.dart';
 
 class ScheduleScreenViewModel extends BaseViewModel
-    implements MainPageTabState {
+    implements MainPageRouteViewModel {
   final CurrentUserSyncStorage _userStorage;
   final SearchIdOnPortalService _searchIdOnPortalService;
   final ScheduleService _scheduleService;
@@ -77,7 +77,7 @@ class ScheduleScreenViewModel extends BaseViewModel
         }
         await Future.wait(modelsByType.values.map((v) async => await v.init()));
       });
-  @override
+
   void refreshTab() {
     for (final vm in modelsByType.values) {
       vm.refresh();
@@ -154,5 +154,18 @@ class ScheduleScreenViewModel extends BaseViewModel
 
   Future openSettingsWindow() async {
     await _exportScheduleService.openSettings();
+  }
+
+  @override
+  void refresh() {
+    if (weekOffset == 0) {
+      #TODO;
+      // Скрол на текущий день
+      return;
+    }
+    weekOffset = 0;
+    recalculateDateTimeRange();
+    notifyListeners();
+    refreshTab();
   }
 }

@@ -17,6 +17,7 @@ import 'package:unn_mobile/core/viewmodels/main_page/schedule/schedule_screen_vi
 import 'package:unn_mobile/ui/builders/online_status_builder.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
 import 'package:unn_mobile/ui/views/main_page/main_page.dart';
+import 'package:unn_mobile/ui/views/main_page/main_page_tab_state.dart';
 import 'package:unn_mobile/ui/views/main_page/schedule/schedule_tab_view.dart';
 import 'package:unn_mobile/ui/views/main_page/schedule/widgets/schedule_search_suggestion_item_view.dart';
 import 'package:unn_mobile/ui/widgets/dialogs/message_dialog.dart';
@@ -33,7 +34,8 @@ class ScheduleScreenView extends StatefulWidget {
   State<ScheduleScreenView> createState() => _ScheduleScreenViewState();
 }
 
-class _ScheduleScreenViewState extends State<ScheduleScreenView> {
+class _ScheduleScreenViewState extends State<ScheduleScreenView>
+    implements MainPageTabState {
   late ScheduleScreenViewModel _viewModel;
 
   final SearchController _searchController = SearchController();
@@ -534,6 +536,7 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView> {
                                       style: Theme.of(context)
                                           .textTheme
                                           .titleLarge,
+                                      textScaler: TextScaler.noScaling,
                                     ),
                                   ),
                                   IconButton(
@@ -698,5 +701,10 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView> {
         }
       }
     }
+  }
+
+  @override
+  void refreshTab() {
+    _viewModel.refreshTab();
   }
 }

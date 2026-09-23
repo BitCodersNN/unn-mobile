@@ -288,6 +288,7 @@ class _ScheduleTabViewState extends State<ScheduleTabView> {
                                                 .colorScheme.onSurfaceVariant,
                                             fontWeight: FontWeight.normal,
                                           ),
+                                          textScaler: TextScaler.noScaling,
                                         ),
                                         const SizedBox(width: 10),
                                         Container(
