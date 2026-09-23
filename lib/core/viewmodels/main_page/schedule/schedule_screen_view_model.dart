@@ -4,8 +4,11 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:unn_mobile/core/constants/academic_year.dart';
+import 'package:unn_mobile/core/misc/date_time_utilities/date_time_extensions.dart';
 import 'package:unn_mobile/core/misc/date_time_utilities/date_time_range_type.dart';
 import 'package:unn_mobile/core/misc/date_time_utilities/date_time_ranges.dart';
+import 'package:unn_mobile/core/misc/date_time_utilities/week_range.dart';
 import 'package:unn_mobile/core/misc/user/current_user_sync_storage.dart';
 import 'package:unn_mobile/core/models/profile/employee/employee_data.dart';
 import 'package:unn_mobile/core/models/schedule/schedule_filter.dart';
@@ -14,11 +17,11 @@ import 'package:unn_mobile/core/services/interfaces/schedule/export_schedule_ser
 import 'package:unn_mobile/core/services/interfaces/schedule/schedule_search_history_service.dart';
 import 'package:unn_mobile/core/services/interfaces/schedule/schedule_service.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
+import 'package:unn_mobile/core/viewmodels/main_page/main_page_route_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/schedule/schedule_tab_view_model.dart';
-import 'package:unn_mobile/ui/views/main_page/main_page_tab_state.dart';
 
 class ScheduleScreenViewModel extends BaseViewModel
-    implements MainPageTabState {
+    implements MainPageRouteViewModel {
   final CurrentUserSyncStorage _userStorage;
   final SearchIdOnPortalService _searchIdOnPortalService;
   final ScheduleService _scheduleService;
@@ -51,6 +54,14 @@ class ScheduleScreenViewModel extends BaseViewModel
 
   ScheduleTabViewModel? get currentTab => modelsByType[selectedUser];
 
+  bool get canExport => currentTab?.hasAnyId ?? false;
+
+  int get weekNumber {
+    final monday = selectedTimeRange.start;
+    final semester = _semesterForWeek(monday);
+    return _weeksFromSemester(semester, monday);
+  }
+
   final Map<IdType, ScheduleTabViewModel> modelsByType = {};
 
   IdType _selectedUser = IdType.student;
@@ -77,7 +88,7 @@ class ScheduleScreenViewModel extends BaseViewModel
         }
         await Future.wait(modelsByType.values.map((v) async => await v.init()));
       });
-  @override
+
   void refreshTab() {
     for (final vm in modelsByType.values) {
       vm.refresh();
@@ -99,9 +110,10 @@ class ScheduleScreenViewModel extends BaseViewModel
   }
 
   void recalculateDateTimeRange() {
+    final weekRange = WeekRange(weekOffset: weekOffset);
     selectedTimeRange = DateTimeRange(
-      start: defaultTimeRange.start.add(Duration(days: 7 * weekOffset)),
-      end: defaultTimeRange.end.add(Duration(days: 7 * weekOffset)),
+      start: weekRange.start,
+      end: weekRange.end,
     );
   }
 
@@ -109,9 +121,11 @@ class ScheduleScreenViewModel extends BaseViewModel
       _exportScheduleService.requestCalendarPermission();
 
   Future<bool> exportSchedule(DateTimeRangeType type) async {
+    final week = WeekRange(weekOffset: weekOffset);
+
     final range = type.getRange(
-      startDate: getStartDate(),
-      referenceDate: geRefernceDate(),
+      startDate: week.start,
+      referenceDate: week.end,
     );
 
     final exportScheduleFilter =
@@ -120,39 +134,59 @@ class ScheduleScreenViewModel extends BaseViewModel
     if (exportScheduleFilter == null) {
       return false;
     }
+
     final res =
         await _exportScheduleService.exportSchedule(exportScheduleFilter);
     return res == ExportScheduleResult.success;
   }
 
-  DateTime getStartDate() {
-    final now = DateTime.now();
-    final currentMonday = now.subtract(
-      Duration(days: now.weekday - DateTime.monday),
-    );
-
-    return currentMonday.add(Duration(days: 7 * weekOffset)).copyWith(
-          hour: 0,
-          minute: 0,
-          second: 0,
-          millisecond: 0,
-          microsecond: 0,
-        );
-  }
-
-  DateTime? geRefernceDate() {
-    final targetMonday = getStartDate();
-
-    return targetMonday.add(const Duration(days: 6)).copyWith(
-          hour: 0,
-          minute: 0,
-          second: 0,
-          millisecond: 0,
-          microsecond: 0,
-        );
-  }
-
   Future openSettingsWindow() async {
     await _exportScheduleService.openSettings();
+  }
+
+  static DateTimeRange _semesterForWeek(DateTime monday) {
+    final semester = _semesterFor(monday);
+    final nextStart = _nextSemester(semester).start;
+    if (!monday.isBefore(nextStart) ||
+        monday.addWeeks(1).startOfWeek.isSameDate(nextStart)) {
+      return _nextSemester(semester);
+    }
+    return semester;
+  }
+
+  static DateTimeRange _semesterFor(DateTime date) {
+    if (date.month >= DateTime.september) {
+      return AcademicYear.firstSemester(date.year);
+    }
+    if (date.month == DateTime.january) {
+      return AcademicYear.firstSemester(date.year - 1);
+    }
+    return AcademicYear.secondSemester(date.year);
+  }
+
+  static DateTimeRange _nextSemester(DateTimeRange semester) =>
+      semester.start.month == DateTime.september
+          ? AcademicYear.secondSemester(semester.start.year + 1)
+          : AcademicYear.firstSemester(semester.start.year);
+
+  static int _weeksFromSemester(DateTimeRange semester, DateTime monday) {
+    final semesterMonday = semester.start.startOfWeek;
+    return monday.difference(semesterMonday).inDays ~/ 7 + 1;
+  }
+
+  @override
+  void refresh() {
+    if (weekOffset == 0) {
+      for (final vm in modelsByType.values) {
+        vm.triggerScrollToToday = true;
+      }
+      notifyListeners();
+      return;
+    }
+
+    weekOffset = 0;
+    recalculateDateTimeRange();
+    notifyListeners();
+    refreshTab();
   }
 }

@@ -2,13 +2,46 @@
 // Copyright 2026 BitCodersNN
 
 import 'package:flutter/material.dart';
+import 'package:unn_mobile/core/constants/date_pattern.dart';
+import 'package:unn_mobile/core/misc/date_time_utilities/date_time_extensions.dart';
+import 'package:unn_mobile/core/misc/date_time_utilities/date_time_parser.dart';
+import 'package:unn_mobile/core/misc/user/user_functions.dart';
+import 'package:unn_mobile/core/models/schedule/subject.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/schedule/schedule_tab_view_model.dart';
 import 'package:unn_mobile/ui/builders/online_status_builder.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
+import 'package:unn_mobile/ui/views/main_page/schedule/widgets/day_header.dart';
 import 'package:unn_mobile/ui/views/main_page/schedule/widgets/schedule_item_normal.dart';
+import 'package:unn_mobile/ui/widgets/empty_state_widget.dart';
 
-class ScheduleTabView extends StatelessWidget {
+class ScheduleTabView extends StatefulWidget {
   final ScheduleTabViewModel viewModel;
+  final DateTimeRange selectedTimeRange;
+  final int weekOffset;
+
+  final VoidCallback? onSearchRequested;
+
+  const ScheduleTabView({
+    required this.viewModel,
+    required this.selectedTimeRange,
+    required this.weekOffset,
+    this.onSearchRequested,
+    super.key,
+  });
+
+  @override
+  State<ScheduleTabView> createState() => _ScheduleTabViewState();
+}
+
+class _ScheduleTabViewState extends State<ScheduleTabView> {
+  final List<GlobalKey> _dayAnchorKeys = List.generate(6, (_) => GlobalKey());
+
+  final GlobalKey _scrollAreaKey = GlobalKey();
+
+  int _topDayIndex = 0;
+
+  bool _pendingScrollToToday = false;
+  String? _scrollContextKey;
 
   static const daysOfWeek = [
     'Понедельник',
@@ -17,10 +50,178 @@ class ScheduleTabView extends StatelessWidget {
     'Четверг',
     'Пятница',
     'Суббота',
-    'Воскресенье',
   ];
 
-  const ScheduleTabView({required this.viewModel, super.key});
+  void _updateScrollTrigger(ScheduleTabViewModel model) {
+    if (model.triggerScrollToToday) {
+      model.triggerScrollToToday = false;
+      _pendingScrollToToday = true;
+      return;
+    }
+
+    final key = model.scrollContextKey(widget.weekOffset);
+    if (key == _scrollContextKey) {
+      return;
+    }
+    _scrollContextKey = key;
+    _pendingScrollToToday = widget.weekOffset == 0;
+  }
+
+  void _maybeScrollToToday(ScheduleTabViewModel model) {
+    _updateScrollTrigger(model);
+    if (!_pendingScrollToToday || model.isBusy) {
+      return;
+    }
+    if (model.schedule == null) {
+      return;
+    }
+    _pendingScrollToToday = false;
+    final target = model.todayOrNextDayIndex;
+    if (target == null) {
+      return;
+    }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) {
+        return;
+      }
+      final anchorContext = _dayAnchorKeys[target].currentContext;
+      if (anchorContext == null) {
+        return;
+      }
+      Scrollable.ensureVisible(
+        anchorContext,
+        alignment: 0.0,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
+    });
+  }
+
+  void _updateTopDay() {
+    final scrollContext = _scrollAreaKey.currentContext;
+    if (scrollContext == null) {
+      return;
+    }
+    final scrollBox = scrollContext.findRenderObject() as RenderBox?;
+    if (scrollBox == null) {
+      return;
+    }
+    final viewportTop = scrollBox.localToGlobal(Offset.zero).dy;
+    int top = _topDayIndex;
+    for (int i = 0; i < 6; i++) {
+      final anchorContext = _dayAnchorKeys[i].currentContext;
+      if (anchorContext == null) {
+        continue;
+      }
+      final anchorBox = anchorContext.findRenderObject() as RenderBox?;
+      if (anchorBox == null) {
+        continue;
+      }
+      if (anchorBox.localToGlobal(Offset.zero).dy <= viewportTop + 1) {
+        top = i;
+      }
+    }
+    if (top != _topDayIndex && mounted) {
+      setState(() => _topDayIndex = top);
+    }
+  }
+
+  Widget _dayGroup(
+    int i,
+    List<Subject> l,
+    ScheduleTabViewModel model,
+    ThemeData theme,
+    DateTime now,
+    int? chipDay,
+  ) {
+    final date = widget.selectedTimeRange.start.add(Duration(days: i));
+    return SliverMainAxisGroup(
+      slivers: [
+        SliverToBoxAdapter(
+          child: SizedBox(
+            height: 0,
+            key: _dayAnchorKeys[i],
+          ),
+        ),
+        SliverAppBar(
+          title: DayHeader(
+            dayOfWeek: daysOfWeek[i],
+            formattedDate: DateTimeParser.format(date, DatePattern.dMMM)
+                .replaceAll('.', ''),
+            pairsCount: l.length,
+            isToday: date.isSameDate(now),
+            showQueryChip: i == chipDay,
+            queryLabel: model.foundName,
+            onClearQuery: () => model.clearSearch(),
+          ),
+          backgroundColor: theme.colorScheme.surface,
+          primary: false,
+          pinned: true,
+          scrolledUnderElevation: 0,
+        ),
+        SliverToBoxAdapter(
+          child: Column(
+            children: [
+              for (final (si, subj) in l.indexed)
+                ScheduleItemNormal(
+                  subject: subj,
+                  even: si.isEven,
+                ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _queryResetChip(BuildContext context, ScheduleTabViewModel model) {
+    final theme = Theme.of(context);
+    return Tooltip(
+      message: 'Сбросить запрос',
+      child: InkWell(
+        onTap: () => model.clearSearch(),
+        borderRadius: BorderRadius.circular(12),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          decoration: BoxDecoration(
+            color: theme.colorScheme.primary.withValues(alpha: 0.08),
+            border: Border.all(
+              color: theme.colorScheme.primary.withValues(alpha: 0.25),
+            ),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'Запрос: ',
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
+              ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 200),
+                child: Text(
+                  shortName(model.foundName!),
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: theme.colorScheme.primary,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Icon(
+                Icons.close,
+                size: 16,
+                color: theme.colorScheme.primary,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) => BaseView<ScheduleTabViewModel>(
@@ -38,121 +239,95 @@ class ScheduleTabView extends StatelessWidget {
           return OnlineStatusBuilder(
             builder: (context, isOnline) {
               if (!model.hasAnyId) {
-                return Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(12.0),
-                    child: isOnline
-                        ? const Text('Введите запрос для поиска')
-                        : const Text('Нет сохранённого расписания'),
-                  ),
+                return EmptyStateWidget(
+                  icon: Icons.search_outlined,
+                  title: 'Расписание не выбрано',
+                  caption: isOnline
+                      ? 'Введите группу, фамилию или предмет в поиске, '
+                          'чтобы посмотреть расписание'
+                      : 'Нет сохранённого расписания',
+                  onIconTap: isOnline ? widget.onSearchRequested : null,
                 );
               }
 
               if (!isOnline && model.schedule == null) {
-                return const Center(
+                return const EmptyStateWidget(
+                  icon: Icons.cloud_off_outlined,
+                  title: 'Нет сохранённого расписания',
+                  caption: 'Подключитесь к сети, чтобы загрузить расписание',
+                );
+              }
+
+              final schedule = model.schedule ?? [];
+              final theme = Theme.of(context);
+              final now = DateTime.now();
+              final chipDay = model.chipDayFor(_topDayIndex);
+
+              _maybeScrollToToday(model);
+
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (mounted) {
+                  _updateTopDay();
+                }
+              });
+
+              if (schedule.every((d) => d.isEmpty)) {
+                return Center(
                   child: Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: Text(
-                      'Нет сохранённого расписания',
-                      softWrap: true,
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Text(
+                          'На этой неделе занятий нет :)',
+                          softWrap: true,
+                        ),
+                        if (model.foundName != null) ...[
+                          const SizedBox(height: 12),
+                          _queryResetChip(context, model),
+                          const SizedBox(height: 4),
+                        ],
+                        TextButton(
+                          onPressed: () async {
+                            await model.refresh();
+                          },
+                          child: const Text('Обновить'),
+                        ),
+                      ],
                     ),
                   ),
                 );
               }
 
-              final schedule = model.schedule ?? [];
-
-              final theme = Theme.of(context);
-              return Stack(
-                children: [
-                  if (schedule.every((d) => d.isEmpty))
-                    Center(
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const Text(
-                              'На этой неделе занятий нет :)',
-                              softWrap: true,
-                            ),
-                            TextButton(
-                              onPressed: () async {
-                                await model.refresh();
-                              },
-                              child: const Text('Обновить'),
-                            ),
-                          ],
+              return NotificationListener<ScrollNotification>(
+                onNotification: (_) {
+                  _updateTopDay();
+                  return false;
+                },
+                child: RefreshIndicator(
+                  onRefresh: () async {
+                    await model.refresh();
+                  },
+                  child: CustomScrollView(
+                    key: _scrollAreaKey,
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    slivers: [
+                      if (schedule.any((d) => d.isNotEmpty))
+                        for (final (i, l) in schedule.indexed)
+                          if (l.isNotEmpty)
+                            _dayGroup(i, l, model, theme, now, chipDay),
+                      const SliverToBoxAdapter(
+                        child: SizedBox(
+                          height: 20.0,
                         ),
                       ),
-                    )
-                  else
-                    RefreshIndicator(
-                      onRefresh: () async {
-                        await model.refresh();
-                      },
-                      child: CustomScrollView(
-                        physics: const AlwaysScrollableScrollPhysics(),
-                        slivers: [
-                          if (schedule.any((d) => d.isNotEmpty))
-                            for (final (i, l) in schedule.indexed)
-                              if (l.isNotEmpty)
-                                SliverMainAxisGroup(
-                                  slivers: [
-                                    SliverAppBar(
-                                      title: Text(daysOfWeek[i]),
-                                      backgroundColor:
-                                          theme.colorScheme.surface,
-                                      primary: false,
-                                      pinned: true,
-                                      scrolledUnderElevation: 0,
-                                    ),
-                                    SliverToBoxAdapter(
-                                      child: Column(
-                                        children: [
-                                          for (final (si, subj) in l.indexed)
-                                            ScheduleItemNormal(
-                                              subject: subj,
-                                              even: si.isEven,
-                                            ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                          const SliverToBoxAdapter(
-                            child: SizedBox(
-                              height: 20.0,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  if (model.foundName != null)
-                    Positioned(
-                      top: 4.0,
-                      right: 12.0,
-                      child: Chip(
-                        label: Text(
-                          model.foundName!
-                              .split(' ')
-                              .indexed
-                              .map(
-                                (p) => p.$1 == 0 ? p.$2 : '${p.$2[0]}.',
-                              )
-                              .join(' '),
-                        ),
-                        deleteIcon: const Icon(Icons.close),
-                        onDeleted: () async {
-                          await model.clearSearch();
-                        },
-                      ),
-                    ),
-                ],
+                    ],
+                  ),
+                ),
               );
             },
           );
         },
-        model: viewModel,
+        model: widget.viewModel,
       );
 }

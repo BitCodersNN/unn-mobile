@@ -30,6 +30,9 @@ class DatePattern {
   /// Пример: 5 января
   static const dMMMM = 'd MMMM';
 
+  /// Пример: 5 янв.
+  static const dMMM = 'd MMM';
+
   /// Пример: Пт
   static const e = 'E';
 
