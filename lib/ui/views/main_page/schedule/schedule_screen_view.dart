@@ -117,54 +117,13 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView>
     _viewModel.currentTab?.applySearchSuggestion(suggestion);
   }
 
-  static String _shortName(String full) => full
-      .split(' ')
-      .where((s) => s.isNotEmpty)
-      .indexed
-      .map((p) => p.$1 == 0 ? p.$2 : '${p.$2[0]}.')
-      .join(' ');
-
   int _weekNumber(ScheduleScreenViewModel model) {
-    // TODO: Переделать логику номера недели
+    #TODO;
+    // Переделать логику номера недели
     final week =
         model.selectedTimeRange.start.difference(_semesterStart).inDays ~/ 7 +
             1;
     return week < 1 ? 1 : week;
-  }
-
-  Widget _buildSubtitle(BuildContext context, ScheduleScreenViewModel model) {
-    final theme = Theme.of(context);
-    final foundName = model.currentTab?.foundName;
-    if (foundName == null) {
-      return const SizedBox.shrink();
-    }
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Flexible(
-          child: Text(
-            _shortName(foundName),
-            overflow: TextOverflow.ellipsis,
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
-            ),
-          ),
-        ),
-        const SizedBox(width: 4),
-        InkWell(
-          onTap: () => model.currentTab?.clearSearch(),
-          borderRadius: BorderRadius.circular(12),
-          child: Padding(
-            padding: const EdgeInsets.all(2.0),
-            child: Icon(
-              Icons.close,
-              size: 14,
-              color: theme.colorScheme.onSurfaceVariant,
-            ),
-          ),
-        ),
-      ],
-    );
   }
 
   Widget _buildSearchField(BuildContext context) {
@@ -464,18 +423,7 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView>
                             onPressed: _closeSearch,
                           )
                         : getSubpageLeading(widget.bottomRouteIndex),
-                    title: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Text('Расписание'),
-                        AnimatedBuilder(
-                          animation: model.currentTab ?? model,
-                          builder: (context, _) =>
-                              _buildSubtitle(context, model),
-                        ),
-                      ],
-                    ),
+                    title: const Text('Расписание'),
                     forceMaterialTransparency: true,
                     actions: [
                       if (online && !_searchOpen)
