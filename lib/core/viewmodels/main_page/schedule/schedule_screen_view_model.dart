@@ -4,8 +4,11 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:unn_mobile/core/constants/academic_year.dart';
+import 'package:unn_mobile/core/misc/date_time_utilities/date_time_extensions.dart';
 import 'package:unn_mobile/core/misc/date_time_utilities/date_time_range_type.dart';
 import 'package:unn_mobile/core/misc/date_time_utilities/date_time_ranges.dart';
+import 'package:unn_mobile/core/misc/date_time_utilities/week_range.dart';
 import 'package:unn_mobile/core/misc/user/current_user_sync_storage.dart';
 import 'package:unn_mobile/core/models/profile/employee/employee_data.dart';
 import 'package:unn_mobile/core/models/schedule/schedule_filter.dart';
@@ -50,6 +53,8 @@ class ScheduleScreenViewModel extends BaseViewModel
       };
 
   ScheduleTabViewModel? get currentTab => modelsByType[selectedUser];
+
+  bool get canExport => currentTab?.hasAnyId ?? false;
 
   final Map<IdType, ScheduleTabViewModel> modelsByType = {};
 
@@ -109,9 +114,11 @@ class ScheduleScreenViewModel extends BaseViewModel
       _exportScheduleService.requestCalendarPermission();
 
   Future<bool> exportSchedule(DateTimeRangeType type) async {
+    final week = WeekRange(weekOffset: weekOffset);
+
     final range = type.getRange(
-      startDate: getStartDate(),
-      referenceDate: geRefernceDate(),
+      startDate: week.start,
+      referenceDate: week.end,
     );
 
     final exportScheduleFilter =
@@ -120,49 +127,54 @@ class ScheduleScreenViewModel extends BaseViewModel
     if (exportScheduleFilter == null) {
       return false;
     }
+
     final res =
         await _exportScheduleService.exportSchedule(exportScheduleFilter);
     return res == ExportScheduleResult.success;
-  }
-
-  DateTime getStartDate() {
-    final now = DateTime.now();
-    final currentMonday = now.subtract(
-      Duration(days: now.weekday - DateTime.monday),
-    );
-
-    return currentMonday.add(Duration(days: 7 * weekOffset)).copyWith(
-          hour: 0,
-          minute: 0,
-          second: 0,
-          millisecond: 0,
-          microsecond: 0,
-        );
-  }
-
-  DateTime? geRefernceDate() {
-    final targetMonday = getStartDate();
-
-    return targetMonday.add(const Duration(days: 6)).copyWith(
-          hour: 0,
-          minute: 0,
-          second: 0,
-          millisecond: 0,
-          microsecond: 0,
-        );
   }
 
   Future openSettingsWindow() async {
     await _exportScheduleService.openSettings();
   }
 
+  int get weekNumber {
+    final monday = selectedTimeRange.start.startOfWeek;
+    final current = DateTimeRanges.currentSemester();
+
+    if (monday.isBefore(current.start)) {
+      return _weeksFromSemester(current, monday);
+    }
+
+    DateTimeRange<DateTime> semester = current;
+    while (!monday.isBefore(semester.end)) {
+      final next = _nextSemester(semester);
+      if (monday.isBefore(next.start)) {
+        break;
+      }
+      semester = next;
+    }
+
+    return _weeksFromSemester(semester, monday);
+  }
+
+  static int _weeksFromSemester(DateTimeRange semester, DateTime monday) =>
+      (monday.difference(semester.start.startOfWeek).inDays / 7).floor() + 1;
+
+  static DateTimeRange _nextSemester(DateTimeRange semester) =>
+      semester.start.month == DateTime.september
+          ? AcademicYear.secondSemester(semester.start.year + 1)
+          : AcademicYear.firstSemester(semester.start.year);
+
   @override
   void refresh() {
     if (weekOffset == 0) {
-      #TODO;
-      // Скрол на текущий день
+      for (final vm in modelsByType.values) {
+        vm.triggerScrollToToday = true;
+      }
+      notifyListeners();
       return;
     }
+
     weekOffset = 0;
     recalculateDateTimeRange();
     notifyListeners();

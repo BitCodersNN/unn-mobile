@@ -1,25 +1,21 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2026 BitCodersNN
 
-import 'dart:io';
-
-import 'package:adaptive_dialog/adaptive_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/constants/date_pattern.dart';
 import 'package:unn_mobile/core/misc/date_time_utilities/date_time_extensions.dart';
-import 'package:unn_mobile/core/misc/date_time_utilities/date_time_range_type.dart';
 import 'package:unn_mobile/core/models/schedule/schedule_filter.dart';
 import 'package:unn_mobile/core/models/schedule/schedule_search_suggestion_item.dart';
-import 'package:unn_mobile/core/services/interfaces/schedule/export_schedule_service.dart';
 import 'package:unn_mobile/core/viewmodels/factories/main_page_routes_view_models_factory.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/schedule/schedule_screen_view_model.dart';
 import 'package:unn_mobile/ui/builders/online_status_builder.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
 import 'package:unn_mobile/ui/views/main_page/main_page.dart';
+import 'package:unn_mobile/ui/views/main_page/schedule/export_schedule_flow.dart';
 import 'package:unn_mobile/ui/views/main_page/schedule/schedule_tab_view.dart';
+import 'package:unn_mobile/ui/views/main_page/schedule/widgets/export_menu_button.dart';
 import 'package:unn_mobile/ui/views/main_page/schedule/widgets/schedule_search_suggestion_item_view.dart';
-import 'package:unn_mobile/ui/widgets/dialogs/message_dialog.dart';
 import 'package:unn_mobile/ui/widgets/offline_overlay_displayer.dart';
 import 'package:unn_mobile/ui/widgets/search/search_controller.dart';
 import 'package:unn_mobile/ui/widgets/search/search_field.dart';
@@ -41,8 +37,6 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView> {
   late AppSearchController<ScheduleSearchSuggestionItem> _search;
 
   Object? _suggestionsTab;
-
-  static final DateTime _semesterStart = DateTime(2026, 8, 31);
 
   @override
   void initState() {
@@ -75,174 +69,6 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView> {
   void _onSearchNotify() {
     if (mounted) {
       setState(() {});
-    }
-  }
-
-  int _weekNumber(ScheduleScreenViewModel model) {
-    #TODO;
-    final week =
-        model.selectedTimeRange.start.difference(_semesterStart).inDays ~/ 7 +
-            1;
-    return week < 1 ? 1 : week;
-  }
-
-  PopupMenuItem<String> _exportMenuItem({
-    required String value,
-    required IconData icon,
-    required String title,
-    required bool enabled,
-    required ThemeData theme,
-    String? subtitle,
-  }) =>
-      PopupMenuItem<String>(
-        value: value,
-        enabled: enabled,
-        height: subtitle == null ? 48 : 60,
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        child: Opacity(
-          opacity: enabled ? 1.0 : 0.38,
-          child: Row(
-            children: [
-              Icon(icon, size: 24, color: theme.colorScheme.primary),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      title,
-                      overflow: TextOverflow.ellipsis,
-                      style: theme.textTheme.bodyLarge?.copyWith(
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    if (subtitle != null)
-                      Text(
-                        subtitle,
-                        overflow: TextOverflow.ellipsis,
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant,
-                        ),
-                      ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
-
-  List<PopupMenuEntry<String>> _exportMenuItems(
-    ThemeData theme,
-    bool canExport,
-  ) =>
-      [
-        PopupMenuItem<String>(
-          enabled: false,
-          height: 40,
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Align(
-            alignment: AlignmentDirectional.centerStart,
-            child: Text(
-              'Экспорт расписания',
-              style: theme.textTheme.titleSmall?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
-            ),
-          ),
-        ),
-        const PopupMenuDivider(height: 9),
-        _exportMenuItem(
-          value: 'calendar',
-          icon: Icons.calendar_month,
-          title: 'Экспорт в календарь',
-          enabled: canExport,
-          theme: theme,
-        ),
-      ];
-
-  Future<void> _showExportMenu(
-    BuildContext buttonContext,
-    ScheduleScreenViewModel model,
-    bool online,
-  ) async {
-    final renderBox = buttonContext.findRenderObject()! as RenderBox;
-    final buttonRect = renderBox.localToGlobal(Offset.zero) & renderBox.size;
-    final screenSize = MediaQuery.of(buttonContext).size;
-    final theme = Theme.of(buttonContext);
-    final canExport = online && (model.currentTab?.hasAnyId ?? false);
-
-    const menuWidth = 300.0;
-    final menuRight = buttonRect.right.clamp(12.0, screenSize.width - 12.0);
-    final menuLeft = menuRight - menuWidth;
-    final menuTop =
-        (buttonRect.bottom + 4.0).clamp(12.0, screenSize.height - 12.0);
-
-    final anchorFraction =
-        ((buttonRect.center.dx - menuLeft) / menuWidth).clamp(0.0, 1.0);
-    final scaleAlignment = Alignment(anchorFraction * 2 - 1, -1.0);
-
-    final value = await showGeneralDialog<String>(
-      context: buttonContext,
-      barrierDismissible: true,
-      barrierLabel:
-          MaterialLocalizations.of(buttonContext).modalBarrierDismissLabel,
-      barrierColor: Colors.black.withAlpha(80),
-      transitionDuration: const Duration(milliseconds: 180),
-      pageBuilder: (context, animation, secondaryAnimation) => Stack(
-        children: [
-          Positioned(
-            top: menuTop,
-            right: screenSize.width - menuRight,
-            width: menuWidth,
-            child: FadeTransition(
-              opacity:
-                  CurvedAnimation(parent: animation, curve: Curves.easeOut),
-              child: ScaleTransition(
-                scale:
-                    CurvedAnimation(parent: animation, curve: Curves.easeOut),
-                alignment: scaleAlignment,
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(
-                    maxHeight: screenSize.height - menuTop - 8.0,
-                  ),
-                  child: SingleChildScrollView(
-                    child: Material(
-                      color: theme.colorScheme.surface,
-                      elevation: 6,
-                      borderRadius: BorderRadius.circular(16),
-                      clipBehavior: Clip.antiAlias,
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: _exportMenuItems(theme, canExport),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-
-    if (value == null || !mounted) {
-      return;
-    }
-    _onExportMenuSelected(context, model, value);
-  }
-
-  void _onExportMenuSelected(
-    BuildContext context,
-    ScheduleScreenViewModel model,
-    String value,
-  ) {
-    switch (value) {
-      case 'calendar':
-        exportScheduleCallback(context, model);
-        break;
     }
   }
 
@@ -282,13 +108,13 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView> {
                           onPressed: _search.open,
                         ),
                       if (!_search.isOpen)
-                        Builder(
-                          builder: (buttonContext) => IconButton(
-                            icon: const Icon(Icons.more_vert),
-                            tooltip: 'Экспорт расписания',
-                            onPressed: () =>
-                                _showExportMenu(buttonContext, model, online),
-                          ),
+                        ExportMenuButton(
+                          enabled: online && model.canExport,
+                          onSelected: (value) {
+                            if (value == 'calendar') {
+                              runExportFlow(context, model);
+                            }
+                          },
                         ),
                     ],
                     bottom: PreferredSize(
@@ -346,7 +172,7 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView> {
                                 TextSpan(
                                   children: [
                                     TextSpan(
-                                      text: 'неделя ${_weekNumber(model)}',
+                                      text: 'неделя ${model.weekNumber}',
                                     ),
                                     if (model.weekOffset == 0)
                                       TextSpan(
@@ -373,7 +199,7 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView> {
                             TabBar(
                               tabAlignment: TabAlignment.center,
                               tabs: model.sortedUserTypeList
-                                  .map((t) => Tab(text: t.getDisplayName()))
+                                  .map((t) => Tab(text: t.getDisplayName))
                                   .toList(),
                               isScrollable: true,
                               onTap: (value) {
@@ -436,72 +262,4 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView> {
           onModelReady: (model) => model.init(),
         ),
       );
-
-  void exportScheduleCallback(
-    BuildContext context,
-    ScheduleScreenViewModel model,
-  ) async {
-    final permission = await model.askForExportPermission();
-
-    if (permission == RequestCalendarPermissionResult.permanentlyDenied) {
-      if (context.mounted) {
-        final result = await showOkCancelAlertDialog(
-          context: context,
-          title: 'Доступ к календарю',
-          message:
-              'Приложению запрещён доступ к календарю. Разрешите его в настройках, чтобы экспортировать расписание.',
-          okLabel: 'Настройки',
-          cancelLabel: 'Отмена',
-        );
-
-        if (result == OkCancelResult.ok && context.mounted) {
-          await model.openSettingsWindow();
-        }
-      }
-    } else if (permission == RequestCalendarPermissionResult.allowed) {
-      if (!context.mounted) {
-        return;
-      }
-
-      final actions = DateTimeRangeType.values
-          .map(
-            (type) => AlertDialogAction<DateTimeRangeType>(
-              key: type,
-              label: type.label,
-              isDefaultAction: type == DateTimeRangeType.untilEndOfWeek,
-            ),
-          )
-          .toList();
-
-      final selectedType = await showConfirmationDialog<DateTimeRangeType>(
-        context: context,
-        title: 'Экспортировать расписание',
-        actions: actions,
-        cancelLabel: 'Отмена',
-      );
-
-      if (selectedType != null) {
-        final bool result = await model.exportSchedule(selectedType);
-
-        if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Экспорт завершён'),
-            ),
-          );
-        }
-
-        if (Platform.isAndroid && context.mounted) {
-          await showMessage(
-            context,
-            result
-                ? 'Расписание экспортировано в календарь "Расписание ННГУ". \n'
-                    'Возможно, понадобится включить настройку Device Calendar в приложении календаря.'
-                : 'Не удалось экспортировать. Попробуйте снова.',
-            messageKey: result ? 'export_schedule_success' : null,
-          );
-        }
-      }
-    }
-  }
 }

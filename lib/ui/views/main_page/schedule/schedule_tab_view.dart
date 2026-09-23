@@ -2,6 +2,7 @@
 // Copyright 2026 BitCodersNN
 
 import 'package:flutter/material.dart';
+import 'package:unn_mobile/core/misc/date_time_utilities/date_time_extensions.dart';
 import 'package:unn_mobile/core/models/schedule/subject.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/schedule/schedule_tab_view_model.dart';
 import 'package:unn_mobile/ui/builders/online_status_builder.dart';
@@ -48,11 +49,14 @@ class _ScheduleTabViewState extends State<ScheduleTabView> {
     'Суббота',
   ];
 
-  String _contextKey(ScheduleTabViewModel model) =>
-      '${widget.weekOffset}|${model.selectedId ?? ''}|${model.foundName ?? ''}';
-
   void _updateScrollTrigger(ScheduleTabViewModel model) {
-    final key = _contextKey(model);
+    if (model.triggerScrollToToday) {
+      model.triggerScrollToToday = false;
+      _pendingScrollToToday = true;
+      return;
+    }
+
+    final key = model.scrollContextKey(widget.weekOffset);
     if (key == _scrollContextKey) {
       return;
     }
@@ -60,30 +64,16 @@ class _ScheduleTabViewState extends State<ScheduleTabView> {
     _pendingScrollToToday = widget.weekOffset == 0;
   }
 
-  int? _targetDayIndex(List<List<Subject>> schedule) {
-    final todayIndex = DateTime.now().weekday - 1;
-    if (todayIndex > 5) {
-      return null;
-    }
-    for (var i = todayIndex; i < schedule.length && i < 6; i++) {
-      if (schedule[i].isNotEmpty) {
-        return i;
-      }
-    }
-    return null;
-  }
-
   void _maybeScrollToToday(ScheduleTabViewModel model) {
     _updateScrollTrigger(model);
     if (!_pendingScrollToToday || model.isBusy) {
       return;
     }
-    final schedule = model.schedule;
-    if (schedule == null) {
+    if (model.schedule == null) {
       return;
     }
     _pendingScrollToToday = false;
-    final target = _targetDayIndex(schedule);
+    final target = model.todayOrNextDayIndex;
     if (target == null) {
       return;
     }
@@ -114,8 +104,8 @@ class _ScheduleTabViewState extends State<ScheduleTabView> {
       return;
     }
     final viewportTop = scrollBox.localToGlobal(Offset.zero).dy;
-    var top = _topDayIndex;
-    for (var i = 0; i < 6; i++) {
+    int top = _topDayIndex;
+    for (int i = 0; i < 6; i++) {
       final anchorContext = _dayAnchorKeys[i].currentContext;
       if (anchorContext == null) {
         continue;
@@ -132,30 +122,6 @@ class _ScheduleTabViewState extends State<ScheduleTabView> {
       setState(() => _topDayIndex = top);
     }
   }
-
-  int? _chipDayIndex(
-    ScheduleTabViewModel model,
-    List<List<Subject>> schedule,
-  ) {
-    if (model.foundName == null) {
-      return null;
-    }
-    final todayIndex = DateTime.now().weekday - 1;
-    if (_topDayIndex != todayIndex) {
-      return _topDayIndex;
-    }
-    for (var i = todayIndex + 1; i < schedule.length && i < 6; i++) {
-      if (schedule[i].isNotEmpty) {
-        return i;
-      }
-    }
-    return null;
-  }
-
-  bool _isSameDate(DateTime date1, DateTime date2) =>
-      date1.year == date2.year &&
-      date1.month == date2.month &&
-      date1.day == date2.day;
 
   Widget _dayGroup(
     int i,
@@ -179,7 +145,7 @@ class _ScheduleTabViewState extends State<ScheduleTabView> {
             dayOfWeek: daysOfWeek[i],
             formattedDate: DayHeader.formatDate(date),
             pairsCount: l.length,
-            isToday: _isSameDate(date, now),
+            isToday: date.isSameDate(now),
             showQueryChip: i == chipDay,
             queryLabel: model.foundName,
             onClearQuery: () => model.clearSearch(),
@@ -242,7 +208,7 @@ class _ScheduleTabViewState extends State<ScheduleTabView> {
               final schedule = model.schedule ?? [];
               final theme = Theme.of(context);
               final now = DateTime.now();
-              final chipDay = _chipDayIndex(model, schedule);
+              final chipDay = model.chipDayFor(_topDayIndex);
 
               _maybeScrollToToday(model);
 

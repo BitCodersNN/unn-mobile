@@ -46,7 +46,7 @@ class ScheduleFilter {
 }
 
 extension IdTypeExtensions on IdType {
-  String getDisplayName() => switch (this) {
+  String get getDisplayName => switch (this) {
         IdType.group => 'Группа',
         IdType.student => 'Студент',
         IdType.lecturer => 'Преподаватель',
