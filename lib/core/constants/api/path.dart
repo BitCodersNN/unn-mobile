@@ -30,6 +30,9 @@ class ApiPath {
   /// Для получения расписания
   static const String schedule = 'ruzapi/schedule/';
 
+  /// Для получения расписания
+  static const String raspSchedule = 'schedule.php';
+
   /// Для получения записей из живой ленты
   static const String blogPostGet = 'rest/log.blogpost.get.json';
 

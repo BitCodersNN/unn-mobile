@@ -11,4 +11,12 @@ abstract interface class ScheduleService {
   ///
   /// Возвращает список предметов или 'null', если не вышло получить ответ от портала или statusCode не равен 200
   Future<List<Subject>?> getSchedule(ScheduleFilter scheduleFilter);
+
+  /// Получение расписания текущего пользователя
+  ///
+  /// [date]: Дата, по которой определяется неделя
+  /// [login]: Логин пользователя
+  ///
+  /// Возвращает список предметов или 'null', если не вышло получить ответ от портала или statusCode не равен 200
+  Future<List<Subject>?> getCurrentUserSchedule(DateTime date, String login);
 }

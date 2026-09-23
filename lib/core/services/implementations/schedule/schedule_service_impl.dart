@@ -4,6 +4,8 @@
 import 'package:dio/dio.dart';
 import 'package:unn_mobile/core/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/constants/api/path.dart';
+import 'package:unn_mobile/core/constants/date_pattern.dart';
+import 'package:unn_mobile/core/misc/date_time_utilities/date_time_parser.dart';
 import 'package:unn_mobile/core/misc/dio_options_factory/options_with_expected_type_factory.dart';
 import 'package:unn_mobile/core/misc/json/json_iterable_parser.dart';
 import 'package:unn_mobile/core/models/schedule/schedule_filter.dart';
@@ -17,13 +19,21 @@ class _QueryParameterKeys {
   static const String _lng = 'lng';
 }
 
+class _DataKeys {
+  static const String _json = 'json';
+  static const String _date = 'date';
+  static const String _login = 'login';
+}
+
 class ScheduleServiceImpl implements ScheduleService {
   final LoggerService _loggerService;
-  final ApiHelper _apiHelper;
+  final ApiHelper _unnApiHelper;
+  final ApiHelper _raspApiHelper;
 
   ScheduleServiceImpl(
     this._loggerService,
-    this._apiHelper,
+    this._unnApiHelper,
+    this._raspApiHelper,
   );
 
   @override
@@ -33,7 +43,7 @@ class ScheduleServiceImpl implements ScheduleService {
 
     Response response;
     try {
-      response = await _apiHelper.get(
+      response = await _unnApiHelper.get(
         path: path,
         queryParameters: {
           _QueryParameterKeys._start: scheduleFilter.dateTimeRange.start
@@ -56,6 +66,34 @@ class ScheduleServiceImpl implements ScheduleService {
     return parseJsonIterable<Subject>(
       response.data,
       Subject.fromJson,
+      _loggerService,
+    );
+  }
+
+  @override
+  Future<List<Subject>?> getCurrentUserSchedule(
+    DateTime date,
+    String login,
+  ) async {
+    Response response;
+    try {
+      response = await _raspApiHelper.post(
+        path: ApiPath.raspSchedule,
+        data: {
+          _DataKeys._json: _DataKeys._json,
+          _DataKeys._date:
+              DateTimeParser.format(date, DatePattern.yyyymmddDash),
+          _DataKeys._login: login,
+        },
+        options: OptionsWithExpectedTypeFactory.jsonMap,
+      );
+    } catch (error, stackTrace) {
+      _loggerService.logError(error, stackTrace);
+      return null;
+    }
+    return parseJsonIterable<Subject>(
+      (response.data as Map)['Schedule'],
+      Subject.fromRaspJson,
       _loggerService,
     );
   }
