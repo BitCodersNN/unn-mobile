@@ -98,7 +98,10 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView> {
                             onPressed: _search.close,
                           )
                         : getSubpageLeading(widget.bottomRouteIndex),
-                    title: const Text('Расписание'),
+                    title: const Text(
+                      'Расписание',
+                      textScaler: TextScaler.noScaling,
+                    ),
                     forceMaterialTransparency: true,
                     actions: [
                       if (online && !_search.isOpen)
@@ -155,6 +158,7 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView> {
                                       style: Theme.of(context)
                                           .textTheme
                                           .titleLarge,
+                                      textScaler: TextScaler.noScaling,
                                     ),
                                   ),
                                   IconButton(
