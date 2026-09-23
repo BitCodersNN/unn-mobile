@@ -24,24 +24,6 @@ class DayHeader extends StatelessWidget {
     super.key,
   });
 
-  static const _shortMonths = [
-    'янв',
-    'фев',
-    'мар',
-    'апр',
-    'мая',
-    'июн',
-    'июл',
-    'авг',
-    'сен',
-    'окт',
-    'ноя',
-    'дек',
-  ];
-
-  static String formatDate(DateTime d) =>
-      '${d.day} ${_shortMonths[d.month - 1]}';
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);

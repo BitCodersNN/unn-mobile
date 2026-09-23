@@ -56,6 +56,12 @@ class ScheduleScreenViewModel extends BaseViewModel
 
   bool get canExport => currentTab?.hasAnyId ?? false;
 
+  int get weekNumber {
+    final monday = selectedTimeRange.start;
+    final semester = _semesterForWeek(monday);
+    return _weeksFromSemester(semester, monday);
+  }
+
   final Map<IdType, ScheduleTabViewModel> modelsByType = {};
 
   IdType _selectedUser = IdType.student;
@@ -104,9 +110,10 @@ class ScheduleScreenViewModel extends BaseViewModel
   }
 
   void recalculateDateTimeRange() {
+    final weekRange = WeekRange(weekOffset: weekOffset);
     selectedTimeRange = DateTimeRange(
-      start: defaultTimeRange.start.add(Duration(days: 7 * weekOffset)),
-      end: defaultTimeRange.end.add(Duration(days: 7 * weekOffset)),
+      start: weekRange.start,
+      end: weekRange.end,
     );
   }
 
@@ -137,33 +144,35 @@ class ScheduleScreenViewModel extends BaseViewModel
     await _exportScheduleService.openSettings();
   }
 
-  int get weekNumber {
-    final monday = selectedTimeRange.start.startOfWeek;
-    final current = DateTimeRanges.currentSemester();
-
-    if (monday.isBefore(current.start)) {
-      return _weeksFromSemester(current, monday);
+  static DateTimeRange _semesterForWeek(DateTime monday) {
+    final semester = _semesterFor(monday);
+    final nextStart = _nextSemester(semester).start;
+    if (!monday.isBefore(nextStart) ||
+        monday.addWeeks(1).startOfWeek.isSameDate(nextStart)) {
+      return _nextSemester(semester);
     }
-
-    DateTimeRange<DateTime> semester = current;
-    while (!monday.isBefore(semester.end)) {
-      final next = _nextSemester(semester);
-      if (monday.isBefore(next.start)) {
-        break;
-      }
-      semester = next;
-    }
-
-    return _weeksFromSemester(semester, monday);
+    return semester;
   }
 
-  static int _weeksFromSemester(DateTimeRange semester, DateTime monday) =>
-      (monday.difference(semester.start.startOfWeek).inDays / 7).floor() + 1;
+  static DateTimeRange _semesterFor(DateTime date) {
+    if (date.month >= DateTime.september) {
+      return AcademicYear.firstSemester(date.year);
+    }
+    if (date.month == DateTime.january) {
+      return AcademicYear.firstSemester(date.year - 1);
+    }
+    return AcademicYear.secondSemester(date.year);
+  }
 
   static DateTimeRange _nextSemester(DateTimeRange semester) =>
       semester.start.month == DateTime.september
           ? AcademicYear.secondSemester(semester.start.year + 1)
           : AcademicYear.firstSemester(semester.start.year);
+
+  static int _weeksFromSemester(DateTimeRange semester, DateTime monday) {
+    final semesterMonday = semester.start.startOfWeek;
+    return monday.difference(semesterMonday).inDays ~/ 7 + 1;
+  }
 
   @override
   void refresh() {
