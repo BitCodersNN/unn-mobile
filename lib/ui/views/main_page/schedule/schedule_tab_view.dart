@@ -6,7 +6,9 @@ import 'package:unn_mobile/core/models/schedule/subject.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/schedule/schedule_tab_view_model.dart';
 import 'package:unn_mobile/ui/builders/online_status_builder.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
+import 'package:unn_mobile/ui/views/main_page/schedule/widgets/day_header.dart';
 import 'package:unn_mobile/ui/views/main_page/schedule/widgets/schedule_item_normal.dart';
+import 'package:unn_mobile/ui/widgets/empty_state_widget.dart';
 
 class ScheduleTabView extends StatefulWidget {
   final ScheduleTabViewModel viewModel;
@@ -45,31 +47,6 @@ class _ScheduleTabViewState extends State<ScheduleTabView> {
     'Пятница',
     'Суббота',
   ];
-
-  static const _shortMonths = [
-    'янв',
-    'фев',
-    'мар',
-    'апр',
-    'мая',
-    'июн',
-    'июл',
-    'авг',
-    'сен',
-    'окт',
-    'ноя',
-    'дек',
-  ];
-
-  static String _formatDate(DateTime d) =>
-      '${d.day} ${_shortMonths[d.month - 1]}';
-
-  static String _shortName(String full) => full
-      .split(' ')
-      .where((s) => s.isNotEmpty)
-      .indexed
-      .map((p) => p.$1 == 0 ? p.$2 : '${p.$2[0]}.')
-      .join(' ');
 
   String _contextKey(ScheduleTabViewModel model) =>
       '${widget.weekOffset}|${model.selectedId ?? ''}|${model.foundName ?? ''}';
@@ -180,57 +157,50 @@ class _ScheduleTabViewState extends State<ScheduleTabView> {
       date1.month == date2.month &&
       date1.day == date2.day;
 
-  Widget _emptyState(
-    BuildContext context, {
-    required IconData icon,
-    required String title,
-    required String caption,
-    VoidCallback? onIconTap,
-  }) {
-    final theme = Theme.of(context);
-    final circle = Container(
-      width: 96,
-      height: 96,
-      decoration: BoxDecoration(
-        color: theme.colorScheme.primaryContainer,
-        shape: BoxShape.circle,
-      ),
-      child: Icon(
-        icon,
-        size: 40,
-        color: theme.colorScheme.primary,
-      ),
-    );
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(32.0),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            onIconTap == null
-                ? circle
-                : InkWell(
-                    onTap: onIconTap,
-                    borderRadius: BorderRadius.circular(48),
-                    child: circle,
-                  ),
-            const SizedBox(height: 16),
-            Text(
-              title,
-              style: theme.textTheme.titleLarge,
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              caption,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ],
+  Widget _dayGroup(
+    int i,
+    List<Subject> l,
+    ScheduleTabViewModel model,
+    ThemeData theme,
+    DateTime now,
+    int? chipDay,
+  ) {
+    final date = widget.selectedTimeRange.start.add(Duration(days: i));
+    return SliverMainAxisGroup(
+      slivers: [
+        SliverToBoxAdapter(
+          child: SizedBox(
+            height: 0,
+            key: _dayAnchorKeys[i],
+          ),
         ),
-      ),
+        SliverAppBar(
+          title: DayHeader(
+            dayOfWeek: daysOfWeek[i],
+            formattedDate: DayHeader.formatDate(date),
+            pairsCount: l.length,
+            isToday: _isSameDate(date, now),
+            showQueryChip: i == chipDay,
+            queryLabel: model.foundName,
+            onClearQuery: () => model.clearSearch(),
+          ),
+          backgroundColor: theme.colorScheme.surface,
+          primary: false,
+          pinned: true,
+          scrolledUnderElevation: 0,
+        ),
+        SliverToBoxAdapter(
+          child: Column(
+            children: [
+              for (final (si, subj) in l.indexed)
+                ScheduleItemNormal(
+                  subject: subj,
+                  even: si.isEven,
+                ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 
@@ -250,8 +220,7 @@ class _ScheduleTabViewState extends State<ScheduleTabView> {
           return OnlineStatusBuilder(
             builder: (context, isOnline) {
               if (!model.hasAnyId) {
-                return _emptyState(
-                  context,
+                return EmptyStateWidget(
                   icon: Icons.search_outlined,
                   title: 'Расписание не выбрано',
                   caption: isOnline
@@ -263,8 +232,7 @@ class _ScheduleTabViewState extends State<ScheduleTabView> {
               }
 
               if (!isOnline && model.schedule == null) {
-                return _emptyState(
-                  context,
+                return const EmptyStateWidget(
                   icon: Icons.cloud_off_outlined,
                   title: 'Нет сохранённого расписания',
                   caption: 'Подключитесь к сети, чтобы загрузить расписание',
@@ -323,137 +291,7 @@ class _ScheduleTabViewState extends State<ScheduleTabView> {
                       if (schedule.any((d) => d.isNotEmpty))
                         for (final (i, l) in schedule.indexed)
                           if (l.isNotEmpty)
-                            SliverMainAxisGroup(
-                              slivers: [
-                                SliverToBoxAdapter(
-                                  child: SizedBox(
-                                    height: 0,
-                                    key: _dayAnchorKeys[i],
-                                  ),
-                                ),
-                                SliverAppBar(
-                                  title: Builder(
-                                    builder: (context) {
-                                      final date = widget
-                                          .selectedTimeRange.start
-                                          .add(Duration(days: i));
-                                      final isToday = _isSameDate(date, now);
-
-                                      return MediaQuery(
-                                        data: MediaQuery.of(context).copyWith(
-                                          textScaler: TextScaler.noScaling,
-                                        ),
-                                        child: Row(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.center,
-                                          children: [
-                                            Text(
-                                              daysOfWeek[i].toUpperCase(),
-                                              style: theme
-                                                  .textTheme.titleMedium!
-                                                  .copyWith(
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                            const SizedBox(width: 12),
-                                            Text(
-                                              _formatDate(date),
-                                              style: theme
-                                                  .textTheme.titleMedium!
-                                                  .copyWith(
-                                                color: theme.colorScheme
-                                                    .onSurfaceVariant,
-                                                fontWeight: FontWeight.normal,
-                                              ),
-                                            ),
-                                            const SizedBox(width: 10),
-                                            Container(
-                                              width: 24,
-                                              height: 24,
-                                              decoration: BoxDecoration(
-                                                shape: BoxShape.circle,
-                                                color: theme.colorScheme.primary
-                                                    .withValues(alpha: 0.12),
-                                              ),
-                                              alignment: Alignment.center,
-                                              child: Text(
-                                                '${l.length}',
-                                                style: theme
-                                                    .textTheme.labelMedium!
-                                                    .copyWith(
-                                                  color:
-                                                      theme.colorScheme.primary,
-                                                  fontWeight: FontWeight.w600,
-                                                ),
-                                              ),
-                                            ),
-                                            const SizedBox(width: 12),
-                                            Expanded(
-                                              child: Container(
-                                                height: 1.0,
-                                                color: theme.dividerColor
-                                                    .withValues(alpha: 0.25),
-                                              ),
-                                            ),
-                                            if (isToday) ...[
-                                              const SizedBox(width: 12),
-                                              Container(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                  horizontal: 8,
-                                                  vertical: 2,
-                                                ),
-                                                decoration: BoxDecoration(
-                                                  color:
-                                                      theme.colorScheme.primary,
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                    12,
-                                                  ),
-                                                ),
-                                                child: Text(
-                                                  'Сегодня',
-                                                  style: TextStyle(
-                                                    color: theme
-                                                        .colorScheme.onPrimary,
-                                                    fontSize: 12,
-                                                    fontWeight: FontWeight.w500,
-                                                  ),
-                                                ),
-                                              ),
-                                            ] else if (i == chipDay) ...[
-                                              const SizedBox(width: 12),
-                                              _QueryChip(
-                                                label: _shortName(
-                                                  model.foundName!,
-                                                ),
-                                                onClear: () =>
-                                                    model.clearSearch(),
-                                              ),
-                                            ],
-                                          ],
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                  backgroundColor: theme.colorScheme.surface,
-                                  primary: false,
-                                  pinned: true,
-                                  scrolledUnderElevation: 0,
-                                ),
-                                SliverToBoxAdapter(
-                                  child: Column(
-                                    children: [
-                                      for (final (si, subj) in l.indexed)
-                                        ScheduleItemNormal(
-                                          subject: subj,
-                                          even: si.isEven,
-                                        ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
+                            _dayGroup(i, l, model, theme, now, chipDay),
                       const SliverToBoxAdapter(
                         child: SizedBox(
                           height: 20.0,
@@ -468,97 +306,4 @@ class _ScheduleTabViewState extends State<ScheduleTabView> {
         },
         model: widget.viewModel,
       );
-}
-
-/// Чип запроса с плавной анимацией появления
-class _QueryChip extends StatefulWidget {
-  final String label;
-  final VoidCallback onClear;
-
-  const _QueryChip({
-    required this.label,
-    required this.onClear,
-  });
-
-  @override
-  State<_QueryChip> createState() => _QueryChipState();
-}
-
-class _QueryChipState extends State<_QueryChip>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _controller = AnimationController(
-    duration: const Duration(milliseconds: 220),
-    vsync: this,
-  );
-
-  late final Animation<double> _fade = CurvedAnimation(
-    parent: _controller,
-    curve: Curves.easeOut,
-  );
-
-  late final Animation<double> _scale =
-      Tween<double>(begin: 0.8, end: 1.0).animate(
-    CurvedAnimation(parent: _controller, curve: Curves.easeOutBack),
-  );
-
-  @override
-  void initState() {
-    super.initState();
-    _controller.forward();
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return FadeTransition(
-      opacity: _fade,
-      child: ScaleTransition(
-        alignment: Alignment.centerRight,
-        scale: _scale,
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-          decoration: BoxDecoration(
-            color: theme.colorScheme.primary.withValues(alpha: 0.12),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 140),
-                child: Text(
-                  widget.label,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
-                    color: theme.colorScheme.primary,
-                  ),
-                ),
-              ),
-              const SizedBox(width: 4),
-              InkWell(
-                onTap: widget.onClear,
-                borderRadius: BorderRadius.circular(10),
-                child: Padding(
-                  padding: const EdgeInsets.all(2.0),
-                  child: Icon(
-                    Icons.close,
-                    size: 12,
-                    color: theme.colorScheme.primary,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
 }

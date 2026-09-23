@@ -17,11 +17,13 @@ import 'package:unn_mobile/core/viewmodels/main_page/schedule/schedule_screen_vi
 import 'package:unn_mobile/ui/builders/online_status_builder.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
 import 'package:unn_mobile/ui/views/main_page/main_page.dart';
-import 'package:unn_mobile/ui/views/main_page/main_page_tab_state.dart';
 import 'package:unn_mobile/ui/views/main_page/schedule/schedule_tab_view.dart';
 import 'package:unn_mobile/ui/views/main_page/schedule/widgets/schedule_search_suggestion_item_view.dart';
 import 'package:unn_mobile/ui/widgets/dialogs/message_dialog.dart';
 import 'package:unn_mobile/ui/widgets/offline_overlay_displayer.dart';
+import 'package:unn_mobile/ui/widgets/search/search_controller.dart';
+import 'package:unn_mobile/ui/widgets/search/search_field.dart';
+import 'package:unn_mobile/ui/widgets/search/search_overlay.dart';
 
 class ScheduleScreenView extends StatefulWidget {
   final int? bottomRouteIndex;
@@ -34,15 +36,10 @@ class ScheduleScreenView extends StatefulWidget {
   State<ScheduleScreenView> createState() => _ScheduleScreenViewState();
 }
 
-class _ScheduleScreenViewState extends State<ScheduleScreenView>
-    implements MainPageTabState {
+class _ScheduleScreenViewState extends State<ScheduleScreenView> {
   late ScheduleScreenViewModel _viewModel;
+  late AppSearchController<ScheduleSearchSuggestionItem> _search;
 
-  final SearchController _searchController = SearchController();
-  bool _searchOpen = false;
-  List<ScheduleSearchSuggestionItem> _suggestions = const [];
-  bool _suggestionsLoading = false;
-  int _searchRequestId = 0;
   Object? _suggestionsTab;
 
   static final DateTime _semesterStart = DateTime(2026, 8, 31);
@@ -57,185 +54,36 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView>
             .getViewModelByRouteIndex<ScheduleScreenViewModel>(
               widget.bottomRouteIndex!,
             );
-    _searchController.addListener(_onSearchChanged);
+    _search = AppSearchController<ScheduleSearchSuggestionItem>(
+      loader: (query) async =>
+          (await _viewModel.currentTab?.getSuggestions(query)) ??
+          const <ScheduleSearchSuggestionItem>[],
+      applier: (suggestion) =>
+          _viewModel.currentTab?.applySearchSuggestion(suggestion),
+    );
+    _search.addListener(_onSearchNotify);
   }
 
   @override
   void dispose() {
-    _searchController
-      ..removeListener(_onSearchChanged)
+    _search
+      ..removeListener(_onSearchNotify)
       ..dispose();
     super.dispose();
   }
 
-  void _onSearchChanged() {
-    if (!_searchOpen) {
-      return;
+  void _onSearchNotify() {
+    if (mounted) {
+      setState(() {});
     }
-    setState(() {});
-    _loadSuggestions();
-  }
-
-  Future<void> _loadSuggestions() async {
-    final requestId = ++_searchRequestId;
-    final tab = _viewModel.currentTab;
-    setState(() {
-      _suggestionsLoading = true;
-      _suggestionsTab = tab;
-    });
-    final suggestions = (await tab?.getSuggestions(_searchController.text)) ??
-        const <ScheduleSearchSuggestionItem>[];
-    if (requestId == _searchRequestId && mounted) {
-      setState(() {
-        _suggestions = suggestions;
-        _suggestionsLoading = false;
-      });
-    }
-  }
-
-  void _openSearch() {
-    setState(() {
-      _searchOpen = true;
-      _suggestions = const [];
-      _suggestionsTab = null;
-    });
-    _loadSuggestions();
-  }
-
-  void _closeSearch() {
-    setState(() {
-      _searchOpen = false;
-      _suggestions = const [];
-      _suggestionsLoading = false;
-      _suggestionsTab = null;
-    });
-    _searchController.clear();
-  }
-
-  void _applySuggestion(ScheduleSearchSuggestionItem suggestion) {
-    _closeSearch();
-    _viewModel.currentTab?.applySearchSuggestion(suggestion);
   }
 
   int _weekNumber(ScheduleScreenViewModel model) {
     #TODO;
-    // Переделать логику номера недели
     final week =
         model.selectedTimeRange.start.difference(_semesterStart).inDays ~/ 7 +
             1;
     return week < 1 ? 1 : week;
-  }
-
-  Widget _buildSearchField(BuildContext context) {
-    final theme = Theme.of(context);
-    return Container(
-      height: 48,
-      decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceContainerHighest,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      padding: const EdgeInsets.symmetric(horizontal: 12),
-      child: Row(
-        children: [
-          Icon(
-            Icons.search,
-            size: 20,
-            color: theme.colorScheme.onSurfaceVariant,
-          ),
-          const SizedBox(width: 8),
-          Expanded(
-            child: TextField(
-              controller: _searchController,
-              autofocus: true,
-              textInputAction: TextInputAction.search,
-              style: theme.textTheme.bodyLarge,
-              decoration: InputDecoration(
-                isCollapsed: true,
-                border: InputBorder.none,
-                hintText: 'Группа, фамилия...',
-                hintStyle: theme.textTheme.bodyLarge?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
-                  fontWeight: FontWeight.normal,
-                ),
-              ),
-            ),
-          ),
-          if (_searchController.text.isNotEmpty)
-            IconButton(
-              icon: const Icon(Icons.close, size: 18),
-              tooltip: 'Очистить',
-              onPressed: _searchController.clear,
-            ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildSuggestionsOverlay(
-    BuildContext context,
-    ScheduleScreenViewModel model,
-  ) {
-    final theme = Theme.of(context);
-    return Positioned(
-      top: 8,
-      left: 8,
-      right: 8,
-      bottom: 8,
-      child: LayoutBuilder(
-        builder: (context, constraints) => Align(
-          alignment: Alignment.topCenter,
-          child: ConstrainedBox(
-            constraints: BoxConstraints(maxHeight: constraints.maxHeight),
-            child: Material(
-              color: theme.colorScheme.surface,
-              elevation: 6,
-              borderRadius: BorderRadius.circular(16),
-              clipBehavior: Clip.antiAlias,
-              child: _suggestionsLoading && _suggestions.isEmpty
-                  ? const Padding(
-                      padding: EdgeInsets.all(16.0),
-                      child: Center(
-                        child: SizedBox(
-                          width: 24,
-                          height: 24,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        ),
-                      ),
-                    )
-                  : _suggestions.isEmpty
-                      ? Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Text(
-                            'Ничего не найдено',
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                              color: theme.colorScheme.onSurfaceVariant,
-                            ),
-                          ),
-                        )
-                      : ListView.separated(
-                          shrinkWrap: true,
-                          padding: const EdgeInsets.symmetric(vertical: 4),
-                          itemCount: _suggestions.length,
-                          separatorBuilder: (_, __) => Divider(
-                            height: 1,
-                            thickness: 1,
-                            color: theme.dividerColor.withAlpha(51),
-                          ),
-                          itemBuilder: (context, index) {
-                            final suggestion = _suggestions[index];
-                            return ScheduleSearchSuggestionItemView(
-                              model: suggestion,
-                              searchType: model.selectedUser,
-                              query: _searchController.text,
-                              onSelected: () => _applySuggestion(suggestion),
-                            );
-                          },
-                        ),
-            ),
-          ),
-        ),
-      ),
-    );
   }
 
   PopupMenuItem<String> _exportMenuItem({
@@ -402,10 +250,11 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView>
   Widget build(BuildContext context) => OfflineOverlayDisplayer(
         child: BaseView<ScheduleScreenViewModel>(
           builder: (context, model, _) {
-            if (_searchOpen && _suggestionsTab != model.currentTab) {
+            if (_search.isOpen && _suggestionsTab != model.currentTab) {
+              _suggestionsTab = model.currentTab;
               WidgetsBinding.instance.addPostFrameCallback((_) {
-                if (mounted && _searchOpen) {
-                  _loadSuggestions();
+                if (mounted && _search.isOpen) {
+                  _search.loadSuggestions();
                 }
               });
             }
@@ -416,23 +265,23 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView>
                 initialIndex: 0,
                 child: Scaffold(
                   appBar: AppBar(
-                    leading: _searchOpen
+                    leading: _search.isOpen
                         ? IconButton(
                             icon: const Icon(Icons.arrow_back),
                             tooltip: 'Закрыть поиск',
-                            onPressed: _closeSearch,
+                            onPressed: _search.close,
                           )
                         : getSubpageLeading(widget.bottomRouteIndex),
                     title: const Text('Расписание'),
                     forceMaterialTransparency: true,
                     actions: [
-                      if (online && !_searchOpen)
+                      if (online && !_search.isOpen)
                         IconButton(
                           icon: const Icon(Icons.search),
                           tooltip: 'Поиск',
-                          onPressed: _openSearch,
+                          onPressed: _search.open,
                         ),
-                      if (!_searchOpen)
+                      if (!_search.isOpen)
                         Builder(
                           builder: (buttonContext) => IconButton(
                             icon: const Icon(Icons.more_vert),
@@ -449,21 +298,17 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView>
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            if (_searchOpen)
+                            if (_search.isOpen)
                               Padding(
                                 padding: const EdgeInsets.symmetric(
                                   horizontal: 8.0,
                                   vertical: 4.0,
                                 ),
-                                child: _buildSearchField(context),
-                              )
-                            else if (_searchOpen)
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 8.0,
-                                  vertical: 4.0,
+                                child:
+                                    SearchField<ScheduleSearchSuggestionItem>(
+                                  controller: _search,
+                                  hintText: 'Группа, фамилия, предмет...',
                                 ),
-                                child: _buildSearchField(context),
                               )
                             else ...[
                               Row(
@@ -484,7 +329,6 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView>
                                       style: Theme.of(context)
                                           .textTheme
                                           .titleLarge,
-                                      textScaler: TextScaler.noScaling,
                                     ),
                                   ),
                                   IconButton(
@@ -552,22 +396,32 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView>
                                 viewModel: model.modelsByType[t]!,
                                 selectedTimeRange: model.selectedTimeRange,
                                 weekOffset: model.weekOffset,
-                                onSearchRequested: _openSearch,
+                                onSearchRequested: _search.open,
                               ),
                             )
                             .toList(),
                       ),
-                      if (_searchOpen) ...[
+                      if (_search.isOpen) ...[
                         GestureDetector(
-                          onTap: _closeSearch,
+                          onTap: _search.close,
                           child: Container(
                             color: Colors.black.withAlpha(80),
                           ),
                         ),
-                        if (_suggestions.isNotEmpty ||
-                            _suggestionsLoading ||
-                            _searchController.text.isNotEmpty)
-                          _buildSuggestionsOverlay(context, model),
+                        if (_search.suggestions.isNotEmpty ||
+                            _search.isLoading ||
+                            _search.query.isNotEmpty)
+                          SearchOverlay<ScheduleSearchSuggestionItem>(
+                            controller: _search,
+                            suggestionBuilder:
+                                (context, suggestion, query, onTap) =>
+                                    ScheduleSearchSuggestionItemView(
+                              model: suggestion,
+                              searchType: model.selectedUser,
+                              query: query,
+                              onSelected: onTap,
+                            ),
+                          ),
                       ],
                     ],
                   ),
@@ -649,10 +503,5 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView>
         }
       }
     }
-  }
-
-  @override
-  void refreshTab() {
-    _viewModel.refreshTab();
   }
 }
