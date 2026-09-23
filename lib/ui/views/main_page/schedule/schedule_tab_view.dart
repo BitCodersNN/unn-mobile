@@ -2,7 +2,10 @@
 // Copyright 2026 BitCodersNN
 
 import 'package:flutter/material.dart';
+import 'package:unn_mobile/core/constants/date_pattern.dart';
 import 'package:unn_mobile/core/misc/date_time_utilities/date_time_extensions.dart';
+import 'package:unn_mobile/core/misc/date_time_utilities/date_time_parser.dart';
+import 'package:unn_mobile/core/misc/user/user_functions.dart';
 import 'package:unn_mobile/core/models/schedule/subject.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/schedule/schedule_tab_view_model.dart';
 import 'package:unn_mobile/ui/builders/online_status_builder.dart';
@@ -143,7 +146,8 @@ class _ScheduleTabViewState extends State<ScheduleTabView> {
         SliverAppBar(
           title: DayHeader(
             dayOfWeek: daysOfWeek[i],
-            formattedDate: DayHeader.formatDate(date),
+            formattedDate: DateTimeParser.format(date, DatePattern.dMMM)
+                .replaceAll('.', ''),
             pairsCount: l.length,
             isToday: date.isSameDate(now),
             showQueryChip: i == chipDay,
@@ -167,6 +171,55 @@ class _ScheduleTabViewState extends State<ScheduleTabView> {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _queryResetChip(BuildContext context, ScheduleTabViewModel model) {
+    final theme = Theme.of(context);
+    return Tooltip(
+      message: 'Сбросить запрос',
+      child: InkWell(
+        onTap: () => model.clearSearch(),
+        borderRadius: BorderRadius.circular(12),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          decoration: BoxDecoration(
+            color: theme.colorScheme.primary.withValues(alpha: 0.08),
+            border: Border.all(
+              color: theme.colorScheme.primary.withValues(alpha: 0.25),
+            ),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'Запрос: ',
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
+              ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 200),
+                child: Text(
+                  shortName(model.foundName!),
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: theme.colorScheme.primary,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Icon(
+                Icons.close,
+                size: 16,
+                color: theme.colorScheme.primary,
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 
@@ -229,6 +282,11 @@ class _ScheduleTabViewState extends State<ScheduleTabView> {
                           'На этой неделе занятий нет :)',
                           softWrap: true,
                         ),
+                        if (model.foundName != null) ...[
+                          const SizedBox(height: 12),
+                          _queryResetChip(context, model),
+                          const SizedBox(height: 4),
+                        ],
                         TextButton(
                           onPressed: () async {
                             await model.refresh();

@@ -2,6 +2,7 @@
 // Copyright 2026 BitCodersNN
 
 import 'package:flutter/material.dart';
+import 'package:unn_mobile/core/misc/user/user_functions.dart';
 
 class QueryChip extends StatefulWidget {
   final String label;
@@ -46,13 +47,6 @@ class _QueryChipState extends State<QueryChip>
     super.dispose();
   }
 
-  static String _shortName(String full) => full
-      .split(' ')
-      .where((s) => s.isNotEmpty)
-      .indexed
-      .map((p) => p.$1 == 0 ? p.$2 : '${p.$2[0]}.')
-      .join(' ');
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -73,7 +67,7 @@ class _QueryChipState extends State<QueryChip>
               ConstrainedBox(
                 constraints: const BoxConstraints(maxWidth: 140),
                 child: Text(
-                  _shortName(widget.label),
+                  shortName(widget.label),
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                     fontSize: 12,
