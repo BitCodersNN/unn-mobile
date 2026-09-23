@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright 2026 BitCodersNN
+
 import 'package:unn_mobile/core/misc/date_time_utilities/date_time_extensions.dart';
 
 class WeekRange {
