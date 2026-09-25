@@ -10,33 +10,52 @@ class _ScheduleSearchSuggestionJsonKeys {
 }
 
 class ScheduleSearchSuggestionItem {
-  final String _id;
-  final String _label;
-  final String _description;
+  final String id;
+  final String label;
+  final String description;
+  final bool isHistory;
 
-  const ScheduleSearchSuggestionItem(this._id, this._label, this._description);
-
-  String get id => _id;
-  String get label => _label;
-  String get description => _description;
+  const ScheduleSearchSuggestionItem(
+    this.id,
+    this.label,
+    this.description, {
+    this.isHistory = false,
+  });
 
   @override
   bool operator ==(Object other) =>
-      other is ScheduleSearchSuggestionItem && (_id == other._id);
+      other is ScheduleSearchSuggestionItem && (id == other.id);
 
   @override
-  int get hashCode => Object.hash(_id, _label, _description);
+  int get hashCode => Object.hash(id, label, description);
 
-  factory ScheduleSearchSuggestionItem.fromJson(JsonMap jsonMap) =>
+  factory ScheduleSearchSuggestionItem.fromJson(
+    JsonMap jsonMap, {
+    bool isHistory = false,
+  }) =>
       ScheduleSearchSuggestionItem(
         jsonMap[_ScheduleSearchSuggestionJsonKeys.id]! as String,
         jsonMap[_ScheduleSearchSuggestionJsonKeys.label]! as String,
         jsonMap[_ScheduleSearchSuggestionJsonKeys.description]! as String,
+        isHistory: isHistory,
       );
 
   JsonMap toJson() => {
-        _ScheduleSearchSuggestionJsonKeys.id: _id,
-        _ScheduleSearchSuggestionJsonKeys.label: _label,
-        _ScheduleSearchSuggestionJsonKeys.description: _description,
+        _ScheduleSearchSuggestionJsonKeys.id: id,
+        _ScheduleSearchSuggestionJsonKeys.label: label,
+        _ScheduleSearchSuggestionJsonKeys.description: description,
       };
+
+  ScheduleSearchSuggestionItem copyWith({
+    String? id,
+    String? label,
+    String? description,
+    bool? isHistory,
+  }) =>
+      ScheduleSearchSuggestionItem(
+        id ?? this.id,
+        label ?? this.label,
+        description ?? this.description,
+        isHistory: isHistory ?? this.isHistory,
+      );
 }

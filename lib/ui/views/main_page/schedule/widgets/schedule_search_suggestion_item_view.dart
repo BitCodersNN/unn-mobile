@@ -29,6 +29,7 @@ class ScheduleSearchSuggestionItemView extends StatelessWidget {
         color: theme.colorScheme.primary,
       ),
       title: _highlightedTitle(theme),
+      trailing: model.isHistory ? const Icon(Icons.history) : null,
       subtitle: Text(
         model.description,
         style: theme.textTheme.bodySmall?.copyWith(
