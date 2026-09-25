@@ -13,74 +13,61 @@ class ExportMenuButton extends StatelessWidget {
     super.key,
   });
 
-  PopupMenuItem<String> _item({
+  PopupMenuItem<String> _item(
+    BuildContext context, {
     required String value,
     required IconData icon,
     required String title,
-    required ThemeData theme,
     String? subtitle,
-  }) =>
-      PopupMenuItem<String>(
-        value: value,
-        enabled: enabled,
-        height: subtitle == null ? 48 : 60,
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        child: Opacity(
-          opacity: enabled ? 1.0 : 0.38,
-          child: Row(
-            children: [
-              Icon(icon, size: 24, color: theme.colorScheme.primary),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
+  }) {
+    final theme = Theme.of(context);
+    return PopupMenuItem<String>(
+      value: value,
+      enabled: enabled,
+      height: subtitle == null ? 48 : 60,
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Opacity(
+        opacity: enabled ? 1.0 : 0.38,
+        child: Row(
+          children: [
+            Icon(icon, size: 24, color: theme.colorScheme.primary),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    title,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.bodyLarge?.copyWith(
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  if (subtitle != null)
                     Text(
-                      title,
+                      subtitle,
                       overflow: TextOverflow.ellipsis,
-                      style: theme.textTheme.bodyLarge?.copyWith(
-                        fontWeight: FontWeight.w500,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
                       ),
                     ),
-                    if (subtitle != null)
-                      Text(
-                        subtitle,
-                        overflow: TextOverflow.ellipsis,
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant,
-                        ),
-                      ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
-
-  List<PopupMenuEntry<String>> _items(ThemeData theme) => [
-        PopupMenuItem<String>(
-          enabled: false,
-          height: 40,
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Align(
-            alignment: AlignmentDirectional.centerStart,
-            child: Text(
-              'Экспорт расписания',
-              style: theme.textTheme.titleSmall?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
+                ],
               ),
             ),
-          ),
+          ],
         ),
-        const PopupMenuDivider(height: 9),
+      ),
+    );
+  }
+
+  List<PopupMenuEntry<String>> _items(BuildContext context) => [
         _item(
+          context,
           value: 'calendar',
           icon: Icons.calendar_month,
           title: 'Экспорт в календарь',
-          theme: theme,
         ),
       ];
 
@@ -130,7 +117,7 @@ class ExportMenuButton extends StatelessWidget {
                       clipBehavior: Clip.antiAlias,
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
-                        children: _items(theme),
+                        children: _items(context),
                       ),
                     ),
                   ),

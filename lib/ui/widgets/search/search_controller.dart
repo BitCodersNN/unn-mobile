@@ -6,18 +6,14 @@ import 'package:flutter/material.dart';
 typedef SuggestionsLoader<T> = Future<List<T>> Function(String query);
 typedef SuggestionApplier<T> = void Function(T suggestion);
 
-void _noopApplier(Object? _) {}
-
-void Function(Object?) _wrapApplier<T>(SuggestionApplier<T>? applier) =>
-    applier == null ? _noopApplier : (Object? s) => applier(s as T);
-
 class AppSearchController<T> extends ChangeNotifier {
   final TextEditingController textController = TextEditingController();
 
   final SuggestionsLoader<T> _loader;
 
-  /// Стёртая сигнатура: без T в контравариантной позиции
-  final void Function(Object?) _applier;
+  // Для приватного поля можно игнорить: https://dart.dev/tools/diagnostics/unsafe_variance#common-fixes
+  // ignore: unsafe_variance
+  final SuggestionApplier<T>? _applier;
 
   List<T> _suggestions = [];
   bool _isLoading = false;
@@ -28,7 +24,7 @@ class AppSearchController<T> extends ChangeNotifier {
     required SuggestionsLoader<T> loader,
     SuggestionApplier<T>? applier,
   })  : _loader = loader,
-        _applier = _wrapApplier(applier) {
+        _applier = applier {
     textController.addListener(_onTextChanged);
   }
 
@@ -66,6 +62,7 @@ class AppSearchController<T> extends ChangeNotifier {
   }
 
   void open() {
+    _requestId = 0;
     _isOpen = true;
     notifyListeners();
     loadSuggestions();
@@ -85,7 +82,7 @@ class AppSearchController<T> extends ChangeNotifier {
 
   void applySuggestion(T suggestion) {
     close();
-    _applier(suggestion);
+    _applier?.call(suggestion);
   }
 
   @override
