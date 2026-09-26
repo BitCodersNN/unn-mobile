@@ -15,8 +15,8 @@ import 'package:unn_mobile/ui/views/base_view.dart';
 import 'package:unn_mobile/ui/views/main_page/main_page.dart';
 import 'package:unn_mobile/ui/views/main_page/schedule/export_schedule_flow.dart';
 import 'package:unn_mobile/ui/views/main_page/schedule/schedule_tab_view.dart';
-import 'package:unn_mobile/ui/views/main_page/schedule/widgets/export_menu_button.dart';
 import 'package:unn_mobile/ui/views/main_page/schedule/widgets/schedule_search_suggestion_item_view.dart';
+import 'package:unn_mobile/ui/widgets/menu_button.dart';
 import 'package:unn_mobile/ui/widgets/offline_overlay_displayer.dart';
 import 'package:unn_mobile/ui/widgets/search/search_controller.dart';
 import 'package:unn_mobile/ui/widgets/search/search_field.dart';
@@ -111,8 +111,15 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView> {
                           onPressed: _search.open,
                         ),
                       if (!_search.isOpen)
-                        ExportMenuButton(
+                        MenuButton(
                           enabled: online && model.canExport,
+                          items: const [
+                            SideMenuItemWithIcon(
+                              value: 'calendar',
+                              icon: Icons.calendar_month,
+                              title: 'Экспорт в календарь',
+                            ),
+                          ],
                           onSelected: (value) {
                             if (value == 'calendar') {
                               runExportFlow(context, model);
