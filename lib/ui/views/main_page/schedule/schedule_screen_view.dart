@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2026 BitCodersNN
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/constants/date_pattern.dart';
@@ -53,7 +55,8 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView> {
       loader: (query) async =>
           (await _viewModel.currentTab?.getSuggestions(query)) ??
           const <ScheduleSearchSuggestionItem>[],
-      applier: _viewModel.currentTab?.applySearchSuggestion,
+      applier: (suggestion) =>
+          unawaited(_viewModel.currentTab?.applySearchSuggestion(suggestion)),
     );
     _search.addListener(_onSearchNotify);
   }
