@@ -56,7 +56,7 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView> {
           (await _viewModel.currentTab?.getSuggestions(query)) ??
           const <ScheduleSearchSuggestionItem>[],
       applier: (suggestion) =>
-          unawaited(_viewModel.currentTab?.applySearchSuggestion(suggestion)),
+          unawaited(_suggestionsTab?.applySearchSuggestion(suggestion)),
     );
     _search.addListener(_onSearchNotify);
   }
