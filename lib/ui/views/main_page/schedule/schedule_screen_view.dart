@@ -89,7 +89,9 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView> {
             }
 
             return OnlineStatusBuilder(
-              builder: (context, online) => DefaultTabController(
+              builder: (context, online) {
+                final theme = Theme.of(context);
+                return DefaultTabController(
                 length: model.sortedUserTypeList.length,
                 initialIndex: 0,
                 child: Scaffold(
@@ -163,12 +165,12 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView> {
                                   ),
                                   Expanded(
                                     child: Text(
-                                      '${model.selectedTimeRange.start.format(DatePattern.dMMMM)} - ${model.selectedTimeRange.end.format(DatePattern.dMMMM)}',
+                                      '${model.selectedTimeRange.start.format(DatePattern.dMMM)} - ${model.selectedTimeRange.end.format(DatePattern.dMMM)}',
                                       textAlign: TextAlign.center,
-                                      style: Theme.of(context)
+                                      style: theme
                                           .textTheme
                                           .titleLarge,
-                                      textScaler: TextScaler.noScaling,
+                                      textScaler: MediaQuery.of(context).textScaler.clamp(maxScaleFactor: 1.3),
                                     ),
                                   ),
                                   IconButton(
@@ -266,7 +268,8 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView> {
                     ],
                   ),
                 ),
-              ),
+              );
+              },
               statusChanged: (_) => Future.wait(
                 model.modelsByType.values.map((t) async => await t.refresh()),
               ),

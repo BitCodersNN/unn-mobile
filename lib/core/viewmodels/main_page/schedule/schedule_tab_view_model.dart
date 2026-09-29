@@ -144,17 +144,6 @@ class ScheduleTabViewModel extends BaseViewModel {
   String scrollContextKey(int weekOffset) =>
       '$weekOffset|${selectedId ?? ''}|${foundName ?? ''}';
 
-  int? chipDayFor(int topDayIndex) {
-    if (foundName == null) {
-      return null;
-    }
-    final todayIndex = DateTime.now().weekdayIndex;
-    if (topDayIndex != todayIndex) {
-      return topDayIndex;
-    }
-    return _firstNonEmptyDayIndex(todayIndex + 1);
-  }
-
   int? _firstNonEmptyDayIndex(int start, {int end = 6}) {
     final currentSchedule = schedule;
     if (currentSchedule == null) {

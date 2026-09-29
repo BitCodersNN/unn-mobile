@@ -11,6 +11,7 @@ import 'package:unn_mobile/core/viewmodels/main_page/schedule/schedule_tab_view_
 import 'package:unn_mobile/ui/builders/online_status_builder.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
 import 'package:unn_mobile/ui/views/main_page/schedule/widgets/day_header.dart';
+import 'package:unn_mobile/ui/views/main_page/schedule/widgets/query_chip.dart';
 import 'package:unn_mobile/ui/views/main_page/schedule/widgets/schedule_item_normal.dart';
 import 'package:unn_mobile/ui/widgets/empty_state_widget.dart';
 
@@ -38,10 +39,36 @@ class _ScheduleTabViewState extends State<ScheduleTabView> {
 
   final GlobalKey _scrollAreaKey = GlobalKey();
 
-  int _topDayIndex = 0;
-
   bool _pendingScrollToToday = false;
   String? _scrollContextKey;
+  int _pinnedDayIndex = -1;
+
+  void _updatePinnedDay(ScrollNotification notification) {
+    if (notification is! ScrollUpdateNotification) return;
+    final scrollableContext = _scrollAreaKey.currentContext;
+    if (scrollableContext == null) return;
+    final renderBox = scrollableContext.findRenderObject() as RenderBox?;
+    if (renderBox == null) return;
+    final viewportHeight = renderBox.size.height;
+    final scrollOffset = notification.metrics.pixels;
+
+    int newPinnedIndex = -1;
+    for (int i = 5; i >= 0; i--) {
+      final anchorContext = _dayAnchorKeys[i].currentContext;
+      if (anchorContext == null) continue;
+      final anchorBox = anchorContext.findRenderObject() as RenderBox?;
+      if (anchorBox == null) continue;
+      final anchorPosition = anchorBox.localToGlobal(Offset.zero);
+      if (anchorPosition.dy <= kToolbarHeight + 8) {
+        newPinnedIndex = i;
+        break;
+      }
+    }
+
+    if (newPinnedIndex != _pinnedDayIndex) {
+      setState(() => _pinnedDayIndex = newPinnedIndex);
+    }
+  }
 
   static const daysOfWeek = [
     'Понедельник',
@@ -97,42 +124,12 @@ class _ScheduleTabViewState extends State<ScheduleTabView> {
     });
   }
 
-  void _updateTopDay() {
-    final scrollContext = _scrollAreaKey.currentContext;
-    if (scrollContext == null) {
-      return;
-    }
-    final scrollBox = scrollContext.findRenderObject() as RenderBox?;
-    if (scrollBox == null) {
-      return;
-    }
-    final viewportTop = scrollBox.localToGlobal(Offset.zero).dy;
-    int top = _topDayIndex;
-    for (int i = 0; i < 6; i++) {
-      final anchorContext = _dayAnchorKeys[i].currentContext;
-      if (anchorContext == null) {
-        continue;
-      }
-      final anchorBox = anchorContext.findRenderObject() as RenderBox?;
-      if (anchorBox == null) {
-        continue;
-      }
-      if (anchorBox.localToGlobal(Offset.zero).dy <= viewportTop + 1) {
-        top = i;
-      }
-    }
-    if (top != _topDayIndex && mounted) {
-      setState(() => _topDayIndex = top);
-    }
-  }
-
   Widget _dayGroup(
     int i,
     List<Subject> l,
     ScheduleTabViewModel model,
     ThemeData theme,
     DateTime now,
-    int? chipDay,
   ) {
     final date = widget.selectedTimeRange.start.add(Duration(days: i));
     return SliverMainAxisGroup(
@@ -148,11 +145,8 @@ class _ScheduleTabViewState extends State<ScheduleTabView> {
             dayOfWeek: daysOfWeek[i],
             formattedDate: DateTimeParser.format(date, DatePattern.dMMM)
                 .replaceAll('.', ''),
-            pairsCount: l.length,
+            lessonsCount: l.length,
             isToday: date.isSameDate(now),
-            showQueryChip: i == chipDay,
-            queryLabel: model.foundName,
-            onClearQuery: () => model.clearSearch(),
           ),
           backgroundColor: theme.colorScheme.surface,
           primary: false,
@@ -261,15 +255,8 @@ class _ScheduleTabViewState extends State<ScheduleTabView> {
               final schedule = model.schedule ?? [];
               final theme = Theme.of(context);
               final now = DateTime.now();
-              final chipDay = model.chipDayFor(_topDayIndex);
 
               _maybeScrollToToday(model);
-
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                if (mounted) {
-                  _updateTopDay();
-                }
-              });
 
               if (schedule.every((d) => d.isEmpty)) {
                 return Center(
@@ -299,31 +286,38 @@ class _ScheduleTabViewState extends State<ScheduleTabView> {
                 );
               }
 
-              return NotificationListener<ScrollNotification>(
-                onNotification: (_) {
-                  _updateTopDay();
-                  return false;
-                },
-                child: RefreshIndicator(
-                  onRefresh: () async {
-                    await model.refresh();
-                  },
-                  child: CustomScrollView(
-                    key: _scrollAreaKey,
-                    physics: const AlwaysScrollableScrollPhysics(),
-                    slivers: [
-                      if (schedule.any((d) => d.isNotEmpty))
-                        for (final (i, l) in schedule.indexed)
-                          if (l.isNotEmpty)
-                            _dayGroup(i, l, model, theme, now, chipDay),
-                      const SliverToBoxAdapter(
-                        child: SizedBox(
-                          height: 20.0,
+              return Stack(
+                children: [
+                  RefreshIndicator(
+                    onRefresh: () async {
+                      await model.refresh();
+                    },
+                    child: CustomScrollView(
+                      key: _scrollAreaKey,
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      slivers: [
+                        if (schedule.any((d) => d.isNotEmpty))
+                          for (final (i, l) in schedule.indexed)
+                            if (l.isNotEmpty)
+                              _dayGroup(i, l, model, theme, now),
+                        const SliverToBoxAdapter(
+                          child: SizedBox(
+                            height: 20.0,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
+                  if (model.foundName != null)
+                    Positioned(
+                      right: 16.0,
+                      top: 16.0,
+                      child: QueryChip(
+                        label: model.foundName!,
+                        onClear: model.clearSearch,
+                      ),
+                    ),
+                ],
               );
             },
           );
