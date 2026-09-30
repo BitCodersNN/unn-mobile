@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 extension DateTimeExtensions on DateTime {
-  DateTime get normalizeStartOfDay => copyWith(
+  DateTime get startOfDay => copyWith(
         hour: 0,
         minute: 0,
         second: 0,
@@ -22,10 +22,9 @@ extension DateTimeExtensions on DateTime {
       );
 
   DateTime get startOfWeek =>
-      subtract(Duration(days: weekday - DateTime.monday)).normalizeStartOfDay;
+      subtract(Duration(days: weekday - DateTime.monday)).startOfDay;
 
-  DateTime get endOfWeek =>
-      startOfWeek.add(const Duration(days: 6)).normalizeStartOfDay;
+  DateTime get endOfWeek => startOfWeek.add(const Duration(days: 6)).startOfDay;
 
   int get weekdayIndex => weekday - DateTime.monday;
 

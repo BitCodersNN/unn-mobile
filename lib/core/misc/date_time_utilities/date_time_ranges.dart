@@ -49,9 +49,9 @@ class DateTimeRanges {
     DateTime? referenceDate,
   }) {
     final anchorDate = referenceDate ?? startDate ?? DateTime.now();
-    final startOfDay = (startDate ?? anchorDate).normalizeStartOfDay;
+    final startOfDay = (startDate ?? anchorDate).startOfDay;
 
-    final endOfWeek = anchorDate.normalizeStartOfDay
+    final endOfWeek = anchorDate.startOfDay
         .add(Duration(days: DateTime.daysPerWeek - anchorDate.weekday))
         .endOfDay;
 
@@ -63,7 +63,7 @@ class DateTimeRanges {
     DateTime? referenceDate,
   }) {
     final anchorDate = referenceDate ?? startDate ?? DateTime.now();
-    final startOfDay = (startDate ?? anchorDate).normalizeStartOfDay;
+    final startOfDay = (startDate ?? anchorDate).startOfDay;
 
     final lastDayOfMonth = DateTime(
       anchorDate.year,
@@ -80,7 +80,7 @@ class DateTimeRanges {
     DateTime? referenceDate,
   }) {
     final anchorDate = referenceDate ?? startDate ?? DateTime.now();
-    final startOfDay = (startDate ?? anchorDate).normalizeStartOfDay;
+    final startOfDay = (startDate ?? anchorDate).startOfDay;
 
     final isSpringSummerSemester = anchorDate.month >= DateTime.february &&
         anchorDate.month <= DateTime.august;

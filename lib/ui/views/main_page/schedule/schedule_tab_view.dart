@@ -17,15 +17,10 @@ import 'package:unn_mobile/ui/widgets/empty_state_widget.dart';
 
 class ScheduleTabView extends StatefulWidget {
   final ScheduleTabViewModel viewModel;
-  final DateTimeRange selectedTimeRange;
-  final int weekOffset;
-
   final VoidCallback? onSearchRequested;
 
   const ScheduleTabView({
     required this.viewModel,
-    required this.selectedTimeRange,
-    required this.weekOffset,
     this.onSearchRequested,
     super.key,
   });
@@ -48,8 +43,8 @@ class _ScheduleTabViewState extends State<ScheduleTabView> {
     if (_pinnedDayIndex < 0 || _pinnedDayIndex >= 6) {
       return false;
     }
-    final date =
-        widget.selectedTimeRange.start.add(Duration(days: _pinnedDayIndex));
+    final date = widget.viewModel.selectedWeek.start
+        .add(Duration(days: _pinnedDayIndex));
     return date.isSameDate(now);
   }
 
@@ -112,12 +107,12 @@ class _ScheduleTabViewState extends State<ScheduleTabView> {
       return;
     }
 
-    final key = model.scrollContextKey(widget.weekOffset);
+    final key = model.scrollContextKey(widget.viewModel.weekOffset);
     if (key == _scrollContextKey) {
       return;
     }
     _scrollContextKey = key;
-    _pendingScrollToToday = widget.weekOffset == 0;
+    _pendingScrollToToday = widget.viewModel.weekOffset == 0;
   }
 
   void _maybeScrollToToday(ScheduleTabViewModel model) {
@@ -157,7 +152,7 @@ class _ScheduleTabViewState extends State<ScheduleTabView> {
     ThemeData theme,
     DateTime now,
   ) {
-    final date = widget.selectedTimeRange.start.add(Duration(days: i));
+    final date = widget.viewModel.selectedWeek.start.add(Duration(days: i));
     return SliverMainAxisGroup(
       slivers: [
         SliverToBoxAdapter(

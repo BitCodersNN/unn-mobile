@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:unn_mobile/core/constants/academic_year.dart';
 import 'package:unn_mobile/core/misc/date_time_utilities/date_time_extensions.dart';
 import 'package:unn_mobile/core/misc/date_time_utilities/date_time_range_type.dart';
-import 'package:unn_mobile/core/misc/date_time_utilities/date_time_ranges.dart';
 import 'package:unn_mobile/core/misc/date_time_utilities/week_range.dart';
 import 'package:unn_mobile/core/misc/user/current_user_sync_storage.dart';
 import 'package:unn_mobile/core/models/profile/employee/employee_data.dart';
@@ -34,8 +33,8 @@ class ScheduleScreenViewModel extends BaseViewModel
     notifyListeners();
   }
 
-  DateTimeRange selectedTimeRange = DateTimeRanges.currentWeek();
-  final defaultTimeRange = DateTimeRanges.currentWeek();
+  WeekRange selectedWeek = WeekRange(weekOffset: 0);
+  final defaultTimeRange = WeekRange(weekOffset: 0);
 
   int weekOffset = 0;
 
@@ -57,8 +56,8 @@ class ScheduleScreenViewModel extends BaseViewModel
   bool get canExport => currentTab?.hasAnyId ?? false;
 
   int get weekNumber {
-    final monday = selectedTimeRange.start;
-    final semester = _semesterForWeek(monday);
+    final monday = selectedWeek.start;
+    final semester = _semesterForWeek(selectedWeek);
     return _weeksFromSemester(semester, monday);
   }
 
@@ -110,22 +109,17 @@ class ScheduleScreenViewModel extends BaseViewModel
   }
 
   void recalculateDateTimeRange() {
-    final weekRange = WeekRange(weekOffset: weekOffset);
-    selectedTimeRange = DateTimeRange(
-      start: weekRange.start,
-      end: weekRange.end,
-    );
+    selectedWeek =
+        WeekRange(weekOffset: weekOffset, reference: selectedWeek.reference);
   }
 
   Future<RequestCalendarPermissionResult> askForExportPermission() =>
       _exportScheduleService.requestCalendarPermission();
 
   Future<bool> exportSchedule(DateTimeRangeType type) async {
-    final week = WeekRange(weekOffset: weekOffset);
-
     final range = type.getRange(
-      startDate: week.start,
-      referenceDate: week.end,
+      startDate: selectedWeek.start,
+      referenceDate: selectedWeek.end,
     );
 
     final exportScheduleFilter =
@@ -144,11 +138,12 @@ class ScheduleScreenViewModel extends BaseViewModel
     await _exportScheduleService.openSettings();
   }
 
-  static DateTimeRange _semesterForWeek(DateTime monday) {
+  static DateTimeRange _semesterForWeek(WeekRange range) {
+    final monday = range.start;
     final semester = _semesterFor(monday);
     final nextStart = _nextSemester(semester).start;
     if (!monday.isBefore(nextStart) ||
-        monday.addWeeks(1).startOfWeek.isSameDate(nextStart)) {
+        range.endExclusive.isSameDate(nextStart)) {
       return _nextSemester(semester);
     }
     return semester;
