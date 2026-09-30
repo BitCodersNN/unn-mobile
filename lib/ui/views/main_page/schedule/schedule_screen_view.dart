@@ -88,6 +88,8 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView> {
               });
             }
 
+            final bottomHeight = 130.0;
+
             return OnlineStatusBuilder(
               builder: (context, online) {
                 final theme = Theme.of(context);
@@ -105,7 +107,6 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView> {
                           : getSubpageLeading(widget.bottomRouteIndex),
                       title: const Text(
                         'Расписание',
-                        textScaler: TextScaler.noScaling,
                       ),
                       forceMaterialTransparency: true,
                       actions: [
@@ -133,97 +134,101 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView> {
                           ),
                       ],
                       bottom: PreferredSize(
-                        preferredSize: const Size.fromHeight(95.0),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              if (_search.isOpen)
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 8.0,
-                                    vertical: 4.0,
-                                  ),
-                                  child:
-                                      SearchField<ScheduleSearchSuggestionItem>(
-                                    controller: _search,
-                                    hintText: 'Группа, фамилия, предмет...',
-                                  ),
-                                )
-                              else ...[
-                                Row(
-                                  children: [
-                                    IconButton(
-                                      onPressed: online
-                                          ? () {
-                                              model.previousWeek();
-                                            }
-                                          : null,
-                                      icon: const Icon(Icons.arrow_left),
-                                      iconSize: 32.0,
+                        preferredSize: Size.fromHeight(bottomHeight),
+                        child: SizedBox(
+                          height: bottomHeight,
+                          child: Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 8.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                if (_search.isOpen)
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 8.0,
+                                      vertical: 4.0,
                                     ),
-                                    Expanded(
-                                      child: Text(
-                                        '${model.selectedWeek.start.format(DatePattern.dMMM)} - ${model.selectedWeek.end.format(DatePattern.dMMM)}',
-                                        textAlign: TextAlign.center,
-                                        style: theme.textTheme.titleLarge,
-                                        textScaler: MediaQuery.of(context)
-                                            .textScaler
-                                            .clamp(maxScaleFactor: 1.3),
-                                      ),
+                                    child: SearchField<
+                                        ScheduleSearchSuggestionItem>(
+                                      controller: _search,
+                                      hintText: 'Группа, фамилия, предмет...',
                                     ),
-                                    IconButton(
-                                      onPressed: online
-                                          ? () {
-                                              model.nextWeek();
-                                            }
-                                          : null,
-                                      icon: const Icon(Icons.arrow_right),
-                                      iconSize: 32.0,
-                                    ),
-                                  ],
-                                ),
-                                Text.rich(
-                                  TextSpan(
+                                  )
+                                else ...[
+                                  Row(
                                     children: [
-                                      TextSpan(
-                                        text: 'неделя ${model.weekNumber}',
+                                      IconButton(
+                                        onPressed: online
+                                            ? () {
+                                                model.previousWeek();
+                                              }
+                                            : null,
+                                        icon: const Icon(Icons.arrow_left),
+                                        iconSize: 32.0,
                                       ),
-                                      if (model.weekOffset == 0)
-                                        TextSpan(
-                                          text: ' · текущая',
-                                          style: TextStyle(
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .primary,
-                                            fontWeight: FontWeight.w600,
-                                          ),
+                                      Expanded(
+                                        child: Text(
+                                          '${model.selectedWeek.start.format(DatePattern.dMMM)} - ${model.selectedWeek.end.format(DatePattern.dMMM)}',
+                                          textAlign: TextAlign.center,
+                                          style: theme.textTheme.titleLarge,
+                                          textScaler: MediaQuery.of(context)
+                                              .textScaler
+                                              .clamp(maxScaleFactor: 1.3),
                                         ),
+                                      ),
+                                      IconButton(
+                                        onPressed: online
+                                            ? () {
+                                                model.nextWeek();
+                                              }
+                                            : null,
+                                        icon: const Icon(Icons.arrow_right),
+                                        iconSize: 32.0,
+                                      ),
                                     ],
                                   ),
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodySmall
-                                      ?.copyWith(
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .onSurfaceVariant,
-                                      ),
+                                  Text.rich(
+                                    TextSpan(
+                                      children: [
+                                        TextSpan(
+                                          text: 'неделя ${model.weekNumber}',
+                                        ),
+                                        if (model.weekOffset == 0)
+                                          TextSpan(
+                                            text: ' · текущая',
+                                            style: TextStyle(
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .primary,
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
+                                      ],
+                                    ),
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodySmall
+                                        ?.copyWith(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .onSurfaceVariant,
+                                        ),
+                                  ),
+                                ],
+                                TabBar(
+                                  tabAlignment: TabAlignment.center,
+                                  tabs: model.sortedUserTypeList
+                                      .map((t) => Tab(text: t.displayName))
+                                      .toList(),
+                                  isScrollable: true,
+                                  onTap: (value) {
+                                    model.selectedUser =
+                                        model.sortedUserTypeList[value];
+                                  },
                                 ),
                               ],
-                              TabBar(
-                                tabAlignment: TabAlignment.center,
-                                tabs: model.sortedUserTypeList
-                                    .map((t) => Tab(text: t.displayName))
-                                    .toList(),
-                                isScrollable: true,
-                                onTap: (value) {
-                                  model.selectedUser =
-                                      model.sortedUserTypeList[value];
-                                },
-                              ),
-                            ],
+                            ),
                           ),
                         ),
                       ),
