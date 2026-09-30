@@ -1,7 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-// Copyright 2025 BitCodersNN
-
-import 'dart:math' as math;
+// Copyright 2026 BitCodersNN
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -12,22 +10,57 @@ import 'package:unn_mobile/core/misc/app_open_tracker.dart';
 import 'package:unn_mobile/core/viewmodels/auth_page/auth_page_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
 import 'package:unn_mobile/ui/router.dart';
+import 'package:unn_mobile/ui/views/auth_page/widgets/auth_error_text.dart';
+import 'package:unn_mobile/ui/views/auth_page/widgets/auth_text_field.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
 import 'package:unn_mobile/ui/widgets/dialogs/analytics_confirm_dialog.dart';
 import 'package:unn_mobile/ui/widgets/dialogs/changelog_dialog.dart';
-import 'package:unn_mobile/ui/widgets/text_field_with_shadow.dart';
 import 'package:unn_mobile/ui/widgets/wide_button.dart';
+
+enum _InputType {
+  login,
+  password,
+}
 
 class AuthPage extends StatefulWidget {
   const AuthPage({super.key});
 
   @override
-  State<StatefulWidget> createState() => AuthPageWithState();
+  State<AuthPage> createState() => _AuthPageState();
 }
 
-class AuthPageWithState extends State<AuthPage> {
+class _AuthPageState extends State<AuthPage> {
+  static const String _title = 'Авторизация';
+  static const String _buttonText = 'Войти';
+  static const String _logoAssetPath = 'assets/images/auth-logo.svg';
+  static const double _logoAspectRatio = 338 / 178;
+  static const double _maxLogoHeight = 178;
+  static const double _titleFontSize = 25;
+  static const double _titleHeightFactor = 1.2;
+  static const double _titleTopPadding = 32;
+  static const double _logoTopPadding = 32;
+  static const double _titleBlockHeight =
+      _titleTopPadding + _titleFontSize * _titleHeightFactor + _logoTopPadding;
+  static const double _minCardHeight = 360;
+  static const double _cardTopRadius = 50;
+  static const double _cardTopPadding = 20;
+  static const double _cardBottomPadding = 20;
+  static const double _cardHorizontalPadding = 20;
+  static const double _errorToFieldPadding = 27;
+  static const double _buttonTopPadding = 56;
+  static const Duration _scrollDuration = Duration(milliseconds: 250);
+  static const Duration _resizeDuration = Duration(milliseconds: 250);
+  static const Duration _keyboardAppearanceDelay = Duration(milliseconds: 300);
+  static const Curve _scrollCurve = Curves.easeOutCubic;
+  static const Curve _resizeCurve = Curves.easeOutCubic;
+
   final _loginTextController = TextEditingController();
   final _passwordTextController = TextEditingController();
+  final _loginFocusNode = FocusNode();
+  final _passwordFocusNode = FocusNode();
+  final _loginFieldKey = GlobalKey();
+  final _passwordFieldKey = GlobalKey();
+  final _formScrollController = ScrollController();
 
   bool _hasSubmittedOnce = false;
 
@@ -35,318 +68,290 @@ class AuthPageWithState extends State<AuthPage> {
   void initState() {
     super.initState();
 
-    stateUpdater() => setState(() => {});
+    _loginTextController.addListener(_handleInputChanged);
+    _passwordTextController.addListener(_handleInputChanged);
+    _loginFocusNode.addListener(_handleLoginFocusChanged);
+    _passwordFocusNode.addListener(_handlePasswordFocusChanged);
 
-    _loginTextController.addListener(stateUpdater);
-    _passwordTextController.addListener(stateUpdater);
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) => _showFirstTimeOpenDialogs(),
+    );
+  }
 
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      if (await Injector.appInstance
-          .get<AppOpenTracker>()
-          .isFirstTimeOpenOnVersion()) {
-        if (mounted) {
-          await showAnalyticsConfirmation(context);
-        }
-        if (mounted) {
-          await showDialog(
-            context: context,
-            builder: (context) => const ChangelogDialog(),
-          );
-        }
-      }
-    });
+  @override
+  void dispose() {
+    _loginTextController
+      ..removeListener(_handleInputChanged)
+      ..dispose();
+    _passwordTextController
+      ..removeListener(_handleInputChanged)
+      ..dispose();
+    _loginFocusNode
+      ..removeListener(_handleLoginFocusChanged)
+      ..dispose();
+    _passwordFocusNode
+      ..removeListener(_handlePasswordFocusChanged)
+      ..dispose();
+    _formScrollController.dispose();
+    super.dispose();
+  }
+
+  void _handleInputChanged() => setState(() {});
+
+  void _handleLoginFocusChanged() {
+    if (_loginFocusNode.hasFocus) {
+      _revealField(
+        _loginFieldKey,
+        _loginFocusNode,
+        alignment: 0,
+      );
+    }
+  }
+
+  void _handlePasswordFocusChanged() {
+    if (_passwordFocusNode.hasFocus) {
+      _revealField(
+        _passwordFieldKey,
+        _passwordFocusNode,
+        alignment: 1,
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) => BaseView<AuthPageViewModel>(
         builder: (context, viewModel, child) {
           final theme = Theme.of(context);
-          final authTitle = _authTitle(context);
-          final authBody = _authBody(
-            context,
-            viewModel,
-            _evaluateAuthLogoHeightFactor(
-              context,
-              0.25,
-              authTitle.preferredSize.height,
-            ),
-          );
+          final isKeyboardVisible = MediaQuery.viewInsetsOf(context).bottom > 0;
 
           return Scaffold(
-            resizeToAvoidBottomInset: false,
-            appBar: authTitle,
             backgroundColor: theme.colorScheme.surfaceContainerLowest,
-            body: authBody,
+            body: SafeArea(
+              bottom: false,
+              child: LayoutBuilder(
+                builder: (context, constraints) => Column(
+                  children: [
+                    const SizedBox(height: _titleTopPadding),
+                    Text(
+                      _title,
+                      style: TextStyle(
+                        fontFamily: 'Inter',
+                        fontSize: _titleFontSize,
+                        height: _titleHeightFactor,
+                        fontWeight: FontWeight.bold,
+                        color: theme.colorScheme.primary,
+                      ),
+                    ),
+                    const SizedBox(height: _logoTopPadding),
+                    AnimatedContainer(
+                      duration: _resizeDuration,
+                      curve: _resizeCurve,
+                      height: isKeyboardVisible
+                          ? 0
+                          : _logoHeight(constraints.maxHeight),
+                      child: AspectRatio(
+                        aspectRatio: _logoAspectRatio,
+                        child: SvgPicture.asset(
+                          _logoAssetPath,
+                          fit: BoxFit.contain,
+                        ),
+                      ),
+                    ),
+                    Expanded(child: _formCard(context, viewModel)),
+                  ],
+                ),
+              ),
+            ),
           );
         },
       );
 
-  double _evaluateAuthLogoHeightFactor(
-    BuildContext context,
-    double minimumAuthLogoHeightFactor,
-    double titleHeight,
-  ) {
-    // Вычисленная экспериментальным путём высота формы,
-    // с учётом высоты всех ошибок валидации и ошибки ответа от auth model
-    const maximumFormHeight = 452.0;
-
-    final double screenHeight = context.heightByFactor(1);
-
-    final double baseAuthLogoHeightFactor =
-        (screenHeight - maximumFormHeight - titleHeight) / screenHeight;
-
-    return math.min(baseAuthLogoHeightFactor, minimumAuthLogoHeightFactor);
-  }
-
-  AppBar _authTitle(BuildContext context) {
+  Widget _formCard(BuildContext context, AuthPageViewModel viewModel) {
     final theme = Theme.of(context);
-    return AppBar(
-      backgroundColor: theme.colorScheme.surfaceContainerLowest,
-      title: Center(
-        child: Text(
-          'Авторизация',
-          style: _baseTextStyle(
-            textColor: theme.colorScheme.primary,
-            fontSize: 25,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ),
-    );
-  }
+    final authErrorText = viewModel.authErrorText;
+    final authError = authErrorText.isEmpty ? null : '$authErrorText!';
 
-  Widget _authBody(
-    BuildContext context,
-    AuthPageViewModel viewModel,
-    double authLogoHeightFactor,
-  ) =>
-      Center(
-        child: Column(
-          children: [
-            _authLogo(context, authLogoHeightFactor),
-            _authForm(context, viewModel),
-          ],
-        ),
-      );
-
-  Widget _authLogo(BuildContext context, double heightFactor) {
-    const double logoHeightFactor = 0.8;
-    const double paddingHeightFactor = (1 - logoHeightFactor) / 2;
-
-    final double logoHeight =
-        context.heightByFactor(logoHeightFactor * heightFactor);
-    final double paddingHeight =
-        context.heightByFactor(paddingHeightFactor * heightFactor);
-
-    return Padding(
-      padding: EdgeInsets.symmetric(vertical: paddingHeight),
-      child: _authLogoPic(logoHeight),
-    );
-  }
-
-  Widget _authLogoPic(double height) => SvgPicture.asset(
-        'assets/images/auth-logo.svg',
-        height: height,
-      );
-
-  Widget _authForm(BuildContext context, AuthPageViewModel viewModel) {
-    final formContainer = _authFormContainer(
-      context,
-      elements: [
-        _authErrorMessageIfNeeded(context, viewModel),
-        _authFormInputLogin(),
-        _authFormInputPassword(),
-        _authFormForgetPassword(context),
-        _authFormLoginButton(context, viewModel),
-      ],
-    );
-
-    return Flexible(
-      child: formContainer,
-    );
-  }
-
-  Widget _authErrorMessageIfNeeded(
-    BuildContext context,
-    AuthPageViewModel viewModel,
-  ) {
-    final authErrorMessage = viewModel.authErrorText;
-
-    if (authErrorMessage.isEmpty) {
-      return const Text('');
-    }
-
-    return Center(
-      child: RichText(
-        text: TextSpan(
-          style: _baseTextStyle(
-            textColor: Theme.of(context).colorScheme.error,
-            fontSize: 15,
-          ),
-          children: [
-            const TextSpan(
-              text: 'Ошибка: ',
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-            TextSpan(text: '$authErrorMessage!'),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Container _authFormContainer(
-    BuildContext context, {
-    List<Widget> elements = const [],
-  }) {
-    final columnForm = AutofillGroup(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: elements,
-      ),
-    );
-
-    final theme = Theme.of(context);
-    return Container(
-      padding: const EdgeInsets.only(
-        left: 20,
-        right: 20,
-        top: 20,
-      ),
-      height: MediaQuery.of(context).size.height,
-      width: double.infinity,
+    return DecoratedBox(
       decoration: BoxDecoration(
         color: theme.colorScheme.surfaceContainer,
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(50.0),
-          topRight: Radius.circular(50.0),
+        borderRadius: const BorderRadius.vertical(
+          top: Radius.circular(_cardTopRadius),
         ),
         boxShadow: [
           BoxShadow(
             offset: Offset.zero,
             blurRadius: 10,
-            color: theme.shadowColor.withAlpha(51),
+            color: theme.shadowColor.withValues(alpha: 0.2),
           ),
         ],
       ),
-      child: columnForm,
+      child: SingleChildScrollView(
+        controller: _formScrollController,
+        padding: const EdgeInsets.fromLTRB(
+          _cardHorizontalPadding,
+          _cardTopPadding,
+          _cardHorizontalPadding,
+          _cardBottomPadding,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            AuthErrorText(
+              text: authError,
+              boldPrefix: 'Ошибка: ',
+            ),
+            const SizedBox(height: _errorToFieldPadding),
+            AutofillGroup(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  _loginField(),
+                  _passwordField(viewModel),
+                  const SizedBox(height: _buttonTopPadding),
+                  _loginButton(context, viewModel),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
-  Widget _authFormInputLogin() => _inputField(
+  Widget _loginField() => AuthTextField(
+        key: _loginFieldKey,
+        controller: _loginTextController,
+        focusNode: _loginFocusNode,
         labelText: 'Логин',
         errorText: _validateInputOrElseReturnError(_InputType.login),
-        textEditingController: _loginTextController,
-        autofillHints: [AutofillHints.username],
+        obscured: false,
+        autofillHints: const [AutofillHints.username],
+        textInputAction: TextInputAction.next,
+        onSubmitted: (value) => _passwordFocusNode.requestFocus(),
       );
 
-  Widget _authFormInputPassword() => _inputField(
-        obscuredText: true,
+  Widget _passwordField(AuthPageViewModel viewModel) => AuthTextField(
+        key: _passwordFieldKey,
+        controller: _passwordTextController,
+        focusNode: _passwordFocusNode,
         labelText: 'Пароль',
         errorText: _validateInputOrElseReturnError(_InputType.password),
-        textEditingController: _passwordTextController,
-        autofillHints: [AutofillHints.password],
+        obscured: true,
+        autofillHints: const [AutofillHints.password],
+        textInputAction: TextInputAction.done,
+        onSubmitted: (value) => _submit(viewModel),
       );
 
-  Container _inputField({
-    required String labelText,
-    required TextEditingController textEditingController,
-    bool obscuredText = false,
-    String? errorText,
-    Iterable<String>? autofillHints,
-  }) =>
-      Container(
-        padding: const EdgeInsets.only(top: 30),
-        child: TextFieldWithBoxShadow(
-          obscuredText: obscuredText,
-          height: 56,
-          errorText: errorText,
-          labelText: labelText,
-          controller: textEditingController,
-          autofillHints: autofillHints,
-        ),
-      );
-
-  Widget _authFormForgetPassword(BuildContext context) {
+  Widget _loginButton(BuildContext context, AuthPageViewModel viewModel) {
     final theme = Theme.of(context);
-    return Padding(
-      padding: const EdgeInsets.only(top: 12),
-      child: Text(
-        '', //"Забыли пароль?",
-        style: _baseTextStyle(
-          textColor: theme.primaryColor,
-        ),
-      ),
+
+    return WideButton(
+      onPressed: () => _submit(viewModel),
+      child: viewModel.state == ViewState.busy
+          ? SizedBox(
+              height: 22,
+              width: 22,
+              child: CircularProgressIndicator(
+                color: theme.colorScheme.onPrimary,
+                strokeWidth: 2.5,
+              ),
+            )
+          : Text(
+              _buttonText,
+              style: TextStyle(
+                fontFamily: 'Inter',
+                fontSize: 17,
+                fontWeight: FontWeight.bold,
+                color: theme.colorScheme.onPrimary,
+              ),
+            ),
     );
   }
 
-  TextStyle _baseTextStyle({
-    Color? textColor,
-    double? fontSize = 17,
-    FontWeight? fontWeight,
-  }) =>
-      TextStyle(
-        fontFamily: 'Inter',
-        fontSize: fontSize,
-        fontWeight: fontWeight,
-        color: textColor,
-      );
+  double _logoHeight(double availableHeight) =>
+      (availableHeight - _titleBlockHeight - _minCardHeight)
+          .clamp(0, _maxLogoHeight)
+          .toDouble();
 
-  Widget _authFormLoginButton(
-    BuildContext context,
-    AuthPageViewModel viewModel,
-  ) {
-    final theme = Theme.of(context);
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.only(top: 30),
-        child: WideButton(
-          onPressed: () => _loginButtonTapHandler(context, viewModel),
-          child: viewModel.state == ViewState.busy
-              ? SizedBox(
-                  height: 22,
-                  width: 22,
-                  child: CircularProgressIndicator(
-                    color: theme.colorScheme.onPrimary,
-                  ),
-                )
-              : Text(
-                  'Войти',
-                  style: _baseTextStyle(
-                    textColor: theme.colorScheme.onPrimary,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 17,
-                  ),
-                ),
-        ),
-        // Container(
-        //   width: double.infinity,
-        //   height: 56,
-        //   decoration: BoxDecoration(
-        //     borderRadius: BorderRadius.circular(50),
-        //     gradient: LinearGradient(
-        //       begin: Alignment.topCenter,
-        //       end: Alignment.bottomCenter,
-        //       colors: [
-        //         theme.colorScheme.primaryFixedDim,
-        //         theme.primaryColor,
-        //       ],
-        //     ),
-        //   ),
-        //   child: ElevatedButton(
-        //     style: ElevatedButton.styleFrom(
-        //       backgroundColor: Colors.transparent,
-        //       shadowColor: Colors.transparent,
-        //       shape: RoundedRectangleBorder(
-        //         borderRadius: BorderRadius.circular(50),
-        //       ),
-        //     ),
-
-        //   ),
-        // ),
-      ),
+  void _revealField(
+    GlobalKey fieldKey,
+    FocusNode fieldFocusNode, {
+    required double alignment,
+  }) {
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) => _scrollFieldIntoView(fieldKey, fieldFocusNode, alignment),
     );
+    Future<void>.delayed(
+      _keyboardAppearanceDelay,
+      () => _scrollFieldIntoView(fieldKey, fieldFocusNode, alignment),
+    );
+  }
+
+  void _scrollFieldIntoView(
+    GlobalKey fieldKey,
+    FocusNode fieldFocusNode,
+    double alignment,
+  ) {
+    final fieldContext = fieldKey.currentContext;
+    if (!mounted || fieldContext == null || !fieldFocusNode.hasFocus) {
+      return;
+    }
+
+    Scrollable.ensureVisible(
+      fieldContext,
+      alignment: alignment,
+      duration: _scrollDuration,
+      curve: _scrollCurve,
+    );
+  }
+
+  void _scrollFormToTop() {
+    if (!_formScrollController.hasClients) {
+      return;
+    }
+
+    _formScrollController.animateTo(
+      0,
+      duration: _scrollDuration,
+      curve: _scrollCurve,
+    );
+  }
+
+  Future<void> _submit(AuthPageViewModel viewModel) async {
+    if (viewModel.state == ViewState.busy) {
+      return;
+    }
+
+    setState(() {
+      _hasSubmittedOnce = true;
+    });
+
+    if (_validateInputOrElseReturnError(_InputType.login) != null) {
+      _loginFocusNode.requestFocus();
+      return;
+    }
+
+    if (_validateInputOrElseReturnError(_InputType.password) != null) {
+      _passwordFocusNode.requestFocus();
+      return;
+    }
+
+    final isLoginSuccess = await viewModel.login(
+      _loginTextController.text,
+      _passwordTextController.text,
+    );
+
+    if (!mounted) {
+      return;
+    }
+
+    if (!isLoginSuccess) {
+      _scrollFormToTop();
+      return;
+    }
+
+    TextInput.finishAutofillContext(shouldSave: true);
+    GoRouter.of(context).go(loadingPageRoute);
   }
 
   String? _validateInputOrElseReturnError(_InputType type) {
@@ -355,7 +360,7 @@ class AuthPageWithState extends State<AuthPage> {
         : _passwordTextController.text;
 
     if (_hasSubmittedOnce && value.isEmpty) {
-      return "Введите ${type == _InputType.login ? "логин" : "пароль"}!";
+      return 'Введите ${type == _InputType.login ? 'логин' : 'пароль'}!';
     }
 
     if (type == _InputType.login && value.contains(' ')) {
@@ -365,45 +370,26 @@ class AuthPageWithState extends State<AuthPage> {
     return null;
   }
 
-  void _loginButtonTapHandler(
-    BuildContext context,
-    AuthPageViewModel viewModel,
-  ) {
-    if (viewModel.state == ViewState.busy) {
+  Future<void> _showFirstTimeOpenDialogs() async {
+    if (!await Injector.appInstance
+        .get<AppOpenTracker>()
+        .isFirstTimeOpenOnVersion()) {
       return;
     }
 
-    setState(() {
-      _hasSubmittedOnce = true;
-    });
-
-    if (_validateInputOrElseReturnError(_InputType.login) != null ||
-        _validateInputOrElseReturnError(_InputType.password) != null) {
+    if (!mounted) {
       return;
     }
 
-    viewModel
-        .login(
-      _loginTextController.text,
-      _passwordTextController.text,
-    )
-        .then((isLoginSuccess) {
-      if (isLoginSuccess) {
-        if (context.mounted) {
-          TextInput.finishAutofillContext(shouldSave: true);
-          GoRouter.of(context).go(loadingPageRoute);
-        }
-      }
-    });
+    await showAnalyticsConfirmation(context);
+
+    if (!mounted) {
+      return;
+    }
+
+    await showDialog<void>(
+      context: context,
+      builder: (context) => const ChangelogDialog(),
+    );
   }
-}
-
-extension on BuildContext {
-  double heightByFactor(double factor) =>
-      MediaQuery.of(this).size.height * factor;
-}
-
-enum _InputType {
-  login,
-  password,
 }
