@@ -3,6 +3,7 @@
 
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:unn_mobile/ui/unn_mobile_colors.dart';
 
 class WideButton extends StatelessWidget {
   final FutureOr<void> Function()? onPressed;
@@ -16,6 +17,7 @@ class WideButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final extraColors = theme.unnMobileColors!;
     return SizedBox(
       width: double.infinity,
       child: DecoratedBox(
@@ -24,8 +26,8 @@ class WideButton extends StatelessWidget {
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              theme.colorScheme.primaryFixedDim,
-              theme.primaryColor,
+              extraColors.wideButtonTopColor!,
+              extraColors.wideButtonBottomColor!,
             ],
           ),
           borderRadius: BorderRadius.circular(50.0),
