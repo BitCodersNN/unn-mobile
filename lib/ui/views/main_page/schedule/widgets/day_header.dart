@@ -55,12 +55,6 @@ class DayHeader extends StatelessWidget {
           ),
         ),
         const SizedBox(width: 12),
-        Expanded(
-          child: Container(
-            height: 1.0,
-            color: theme.dividerColor.withValues(alpha: 0.25),
-          ),
-        ),
         if (isToday) ...[
           const SizedBox(width: 12),
           Container(
@@ -82,6 +76,12 @@ class DayHeader extends StatelessWidget {
             ),
           ),
         ],
+        Expanded(
+          child: Container(
+            height: 1.0,
+            color: theme.dividerColor.withValues(alpha: 0.25),
+          ),
+        ),
       ],
     );
   }

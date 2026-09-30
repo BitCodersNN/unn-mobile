@@ -36,68 +36,14 @@ class _ScheduleTabViewState extends State<ScheduleTabView> {
 
   bool _pendingScrollToToday = false;
   String? _scrollContextKey;
-  int _pinnedDayIndex = -1;
-
-  bool get _isTodayPinned {
-    final now = DateTime.now();
-    if (_pinnedDayIndex < 0 || _pinnedDayIndex >= 6) {
-      return false;
-    }
-    final date = widget.viewModel.selectedWeek.start
-        .add(Duration(days: _pinnedDayIndex));
-    return date.isSameDate(now);
-  }
-
-  bool _updatePinnedDay(ScrollNotification notification) {
-    if (notification is! ScrollUpdateNotification) {
-      return false;
-    }
-    final scrollableContext = _scrollAreaKey.currentContext;
-    if (scrollableContext == null) {
-      return false;
-    }
-    final renderBox = scrollableContext.findRenderObject() as RenderBox?;
-    if (renderBox == null) {
-      return false;
-    }
-
-    int newPinnedIndex = -1;
-    var minDy = double.infinity;
-    const double minPinThreshold = kToolbarHeight;
-    const double maxPinThreshold = minPinThreshold + 160.0;
-    for (int i = 0; i < 6; i++) {
-      final anchorContext = _dayAnchorKeys[i].currentContext;
-      if (anchorContext == null) {
-        continue;
-      }
-      final anchorBox = anchorContext.findRenderObject() as RenderBox?;
-      if (anchorBox == null) {
-        continue;
-      }
-      final anchorPosition = anchorBox.localToGlobal(Offset.zero);
-
-      if (anchorPosition.dy <= maxPinThreshold &&
-          anchorPosition.dy > minPinThreshold &&
-          anchorPosition.dy < minDy) {
-        minDy = anchorPosition.dy;
-        newPinnedIndex = i;
-      }
-    }
-
-    if (newPinnedIndex != _pinnedDayIndex) {
-      //debugPrint('$maxDy, $newPinnedIndex');
-      setState(() => _pinnedDayIndex = newPinnedIndex);
-    }
-    return false;
-  }
 
   static const daysOfWeek = [
-    'Понедельник',
-    'Вторник',
-    'Среда',
-    'Четверг',
-    'Пятница',
-    'Суббота',
+    'ПН',
+    'ВТ',
+    'СР',
+    'ЧТ',
+    'ПТ',
+    'СБ',
   ];
 
   void _updateScrollTrigger(ScheduleTabViewModel model) {
@@ -309,35 +255,29 @@ class _ScheduleTabViewState extends State<ScheduleTabView> {
 
               return Stack(
                 children: [
-                  NotificationListener<ScrollNotification>(
-                    onNotification: _updatePinnedDay,
-                    child: RefreshIndicator(
-                      onRefresh: () async {
-                        await model.refresh();
-                      },
-                      child: CustomScrollView(
-                        key: _scrollAreaKey,
-                        physics: const AlwaysScrollableScrollPhysics(),
-                        slivers: [
-                          if (schedule.any((d) => d.isNotEmpty))
-                            for (final (i, l) in schedule.indexed)
-                              if (l.isNotEmpty)
-                                _dayGroup(i, l, model, theme, now),
-                          const SliverToBoxAdapter(
-                            child: SizedBox(
-                              height: 20.0,
-                            ),
+                  RefreshIndicator(
+                    onRefresh: () async {
+                      await model.refresh();
+                    },
+                    child: CustomScrollView(
+                      key: _scrollAreaKey,
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      slivers: [
+                        if (schedule.any((d) => d.isNotEmpty))
+                          for (final (i, l) in schedule.indexed)
+                            if (l.isNotEmpty)
+                              _dayGroup(i, l, model, theme, now),
+                        const SliverToBoxAdapter(
+                          child: SizedBox(
+                            height: 20.0,
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ),
                   if (model.foundName != null)
-                    AnimatedAlign(
-                      duration: const Duration(milliseconds: 150),
-                      alignment: _isTodayPinned
-                          ? AlignmentGeometry.topCenter
-                          : AlignmentGeometry.topRight,
+                    Align(
+                      alignment: AlignmentGeometry.topRight,
                       child: Container(
                         constraints: const BoxConstraints(
                           maxWidth: 200.0,
