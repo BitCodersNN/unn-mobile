@@ -43,31 +43,57 @@ class _ScheduleTabViewState extends State<ScheduleTabView> {
   String? _scrollContextKey;
   int _pinnedDayIndex = -1;
 
-  void _updatePinnedDay(ScrollNotification notification) {
-    if (notification is! ScrollUpdateNotification) return;
+  bool get _isTodayPinned {
+    final now = DateTime.now();
+    if (_pinnedDayIndex < 0 || _pinnedDayIndex >= 6) {
+      return false;
+    }
+    final date =
+        widget.selectedTimeRange.start.add(Duration(days: _pinnedDayIndex));
+    return date.isSameDate(now);
+  }
+
+  bool _updatePinnedDay(ScrollNotification notification) {
+    if (notification is! ScrollUpdateNotification) {
+      return false;
+    }
     final scrollableContext = _scrollAreaKey.currentContext;
-    if (scrollableContext == null) return;
+    if (scrollableContext == null) {
+      return false;
+    }
     final renderBox = scrollableContext.findRenderObject() as RenderBox?;
-    if (renderBox == null) return;
-    final viewportHeight = renderBox.size.height;
-    final scrollOffset = notification.metrics.pixels;
+    if (renderBox == null) {
+      return false;
+    }
 
     int newPinnedIndex = -1;
-    for (int i = 5; i >= 0; i--) {
+    var minDy = double.infinity;
+    const double minPinThreshold = kToolbarHeight;
+    const double maxPinThreshold = minPinThreshold + 160.0;
+    for (int i = 0; i < 6; i++) {
       final anchorContext = _dayAnchorKeys[i].currentContext;
-      if (anchorContext == null) continue;
+      if (anchorContext == null) {
+        continue;
+      }
       final anchorBox = anchorContext.findRenderObject() as RenderBox?;
-      if (anchorBox == null) continue;
+      if (anchorBox == null) {
+        continue;
+      }
       final anchorPosition = anchorBox.localToGlobal(Offset.zero);
-      if (anchorPosition.dy <= kToolbarHeight + 8) {
+
+      if (anchorPosition.dy <= maxPinThreshold &&
+          anchorPosition.dy > minPinThreshold &&
+          anchorPosition.dy < minDy) {
+        minDy = anchorPosition.dy;
         newPinnedIndex = i;
-        break;
       }
     }
 
     if (newPinnedIndex != _pinnedDayIndex) {
+      //debugPrint('$maxDy, $newPinnedIndex');
       setState(() => _pinnedDayIndex = newPinnedIndex);
     }
+    return false;
   }
 
   static const daysOfWeek = [
@@ -136,7 +162,7 @@ class _ScheduleTabViewState extends State<ScheduleTabView> {
       slivers: [
         SliverToBoxAdapter(
           child: SizedBox(
-            height: 0,
+            height: 4,
             key: _dayAnchorKeys[i],
           ),
         ),
@@ -288,33 +314,47 @@ class _ScheduleTabViewState extends State<ScheduleTabView> {
 
               return Stack(
                 children: [
-                  RefreshIndicator(
-                    onRefresh: () async {
-                      await model.refresh();
-                    },
-                    child: CustomScrollView(
-                      key: _scrollAreaKey,
-                      physics: const AlwaysScrollableScrollPhysics(),
-                      slivers: [
-                        if (schedule.any((d) => d.isNotEmpty))
-                          for (final (i, l) in schedule.indexed)
-                            if (l.isNotEmpty)
-                              _dayGroup(i, l, model, theme, now),
-                        const SliverToBoxAdapter(
-                          child: SizedBox(
-                            height: 20.0,
+                  NotificationListener<ScrollNotification>(
+                    onNotification: _updatePinnedDay,
+                    child: RefreshIndicator(
+                      onRefresh: () async {
+                        await model.refresh();
+                      },
+                      child: CustomScrollView(
+                        key: _scrollAreaKey,
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        slivers: [
+                          if (schedule.any((d) => d.isNotEmpty))
+                            for (final (i, l) in schedule.indexed)
+                              if (l.isNotEmpty)
+                                _dayGroup(i, l, model, theme, now),
+                          const SliverToBoxAdapter(
+                            child: SizedBox(
+                              height: 20.0,
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                   if (model.foundName != null)
-                    Positioned(
-                      right: 16.0,
-                      top: 16.0,
-                      child: QueryChip(
-                        label: model.foundName!,
-                        onClear: model.clearSearch,
+                    AnimatedAlign(
+                      duration: const Duration(milliseconds: 150),
+                      alignment: _isTodayPinned
+                          ? AlignmentGeometry.topCenter
+                          : AlignmentGeometry.topRight,
+                      child: Container(
+                        constraints: const BoxConstraints(
+                          maxWidth: 200.0,
+                          maxHeight: 60.0,
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: QueryChip(
+                            label: model.foundName!,
+                            onClear: model.clearSearch,
+                          ),
+                        ),
                       ),
                     ),
                 ],
