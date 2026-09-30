@@ -61,4 +61,7 @@ class ApiHelper implements GetApiHelper, PostApiHelper, ApiOptionsHelper {
   void updateHeaders(Map<String, dynamic> newHeaders) {
     dio.options.headers.addAll(newHeaders);
   }
+
+  @override
+  BaseOptions get options => dio.options;
 }

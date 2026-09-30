@@ -7,4 +7,5 @@ enum HostType {
   unnMobile,
   unnPortal,
   unnSource,
+  unnRasp,
 }
