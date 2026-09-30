@@ -86,15 +86,15 @@ class _AuthTextFieldState extends State<AuthTextField> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    final labelStyle = const TextStyle(
+    final labelStyle = TextStyle(
       fontSize: _FieldMetrics.labelFontSize,
-      color: _labelColor,
+      color: theme.hintColor,
     );
 
-    const valueStyle = TextStyle(
+    final valueStyle = TextStyle(
       //fontFamily: 'Inter',
       fontSize: _FieldMetrics.valueFontSize,
-      color: _valueColor,
+      color: theme.colorScheme.onSurface,
     );
 
     final labelWidth = _measureLabelWidth(context, labelStyle);
@@ -272,14 +272,13 @@ class _AuthTextFieldState extends State<AuthTextField> {
       return theme.colorScheme.primary;
     }
 
-    return widget.controller.text.isEmpty ? Colors.transparent : _filledColor;
+    return widget.controller.text.isEmpty
+        ? Colors.transparent
+        : theme.colorScheme.outlineVariant;
   }
 
   static const Duration _animationDuration = Duration(milliseconds: 250);
   static const Curve _animationCurve = Curves.easeOutCubic;
-  static const Color _valueColor = Color(0xFF283252);
-  static const Color _labelColor = Color(0xFF8D9299);
-  static const Color _filledColor = Color(0xFFD3D6DA);
 }
 
 class _FieldBoxPainter extends CustomPainter {
