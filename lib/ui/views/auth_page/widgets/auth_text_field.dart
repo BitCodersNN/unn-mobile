@@ -92,7 +92,6 @@ class _AuthTextFieldState extends State<AuthTextField> {
     );
 
     final valueStyle = TextStyle(
-      //fontFamily: 'Inter',
       fontSize: _FieldMetrics.valueFontSize,
       color: theme.colorScheme.onSurface,
     );
