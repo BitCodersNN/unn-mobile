@@ -11,6 +11,7 @@ class UnnMobileColors extends ThemeExtension<UnnMobileColors> {
   final Map<SubjectType, Color>? scheduleSubjectTypeColors;
   final Color? ligtherTextColor;
   final Color? idkWhatColor;
+  final Color? wideButtonBottomColor;
 
   const UnnMobileColors({
     required this.scheduleDayHighlight,
@@ -18,6 +19,7 @@ class UnnMobileColors extends ThemeExtension<UnnMobileColors> {
     required this.scheduleSubjectTypeColors,
     required this.ligtherTextColor,
     required this.idkWhatColor,
+    required this.wideButtonBottomColor,
   });
 
   @override
@@ -27,6 +29,8 @@ class UnnMobileColors extends ThemeExtension<UnnMobileColors> {
     Map<SubjectType, Color>? scheduleSubjectTypeColors,
     Color? ligtherTextColor,
     Color? idkWhatColor,
+    Color? wideButtonTopColor,
+    Color? wideButtonBottomColor,
   }) =>
       UnnMobileColors(
         scheduleDayHighlight: scheduleDayHighlight ?? this.scheduleDayHighlight,
@@ -36,6 +40,8 @@ class UnnMobileColors extends ThemeExtension<UnnMobileColors> {
             scheduleSubjectTypeColors ?? this.scheduleSubjectTypeColors,
         ligtherTextColor: ligtherTextColor ?? this.ligtherTextColor,
         idkWhatColor: idkWhatColor ?? this.idkWhatColor,
+        wideButtonBottomColor:
+            wideButtonBottomColor ?? this.wideButtonBottomColor,
       );
 
   @override
@@ -65,7 +71,6 @@ class UnnMobileColors extends ThemeExtension<UnnMobileColors> {
         scheduleSubjectTypeColors!.keys.map((SubjectType key) {
           final Color thisColor = scheduleSubjectTypeColors![key]!;
           final Color otherColor = otherColors.scheduleSubjectTypeColors![key]!;
-
           return Color.lerp(thisColor, otherColor, t) ?? thisColor;
         }),
       ),
@@ -77,6 +82,11 @@ class UnnMobileColors extends ThemeExtension<UnnMobileColors> {
       idkWhatColor: Color.lerp(
         idkWhatColor,
         otherColors.idkWhatColor,
+        t,
+      ),
+      wideButtonBottomColor: Color.lerp(
+        wideButtonBottomColor,
+        otherColors.wideButtonBottomColor,
         t,
       ),
     );
