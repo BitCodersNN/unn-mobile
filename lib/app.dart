@@ -50,6 +50,7 @@ class UnnMobile extends StatelessWidget {
           },
           ligtherTextColor: Color(0xFF717A84),
           idkWhatColor: Color(0xFF989EA9),
+          wideButtonBottomColor: Color(0xFF006254),
         ),
       ],
     );
