@@ -11,7 +11,6 @@ class UnnMobileColors extends ThemeExtension<UnnMobileColors> {
   final Map<SubjectType, Color>? scheduleSubjectTypeColors;
   final Color? ligtherTextColor;
   final Color? idkWhatColor;
-  final Color? wideButtonTopColor;
   final Color? wideButtonBottomColor;
 
   const UnnMobileColors({
@@ -20,7 +19,6 @@ class UnnMobileColors extends ThemeExtension<UnnMobileColors> {
     required this.scheduleSubjectTypeColors,
     required this.ligtherTextColor,
     required this.idkWhatColor,
-    required this.wideButtonTopColor,
     required this.wideButtonBottomColor,
   });
 
@@ -42,7 +40,6 @@ class UnnMobileColors extends ThemeExtension<UnnMobileColors> {
             scheduleSubjectTypeColors ?? this.scheduleSubjectTypeColors,
         ligtherTextColor: ligtherTextColor ?? this.ligtherTextColor,
         idkWhatColor: idkWhatColor ?? this.idkWhatColor,
-        wideButtonTopColor: wideButtonTopColor ?? this.wideButtonTopColor,
         wideButtonBottomColor:
             wideButtonBottomColor ?? this.wideButtonBottomColor,
       );
@@ -85,11 +82,6 @@ class UnnMobileColors extends ThemeExtension<UnnMobileColors> {
       idkWhatColor: Color.lerp(
         idkWhatColor,
         otherColors.idkWhatColor,
-        t,
-      ),
-      wideButtonTopColor: Color.lerp(
-        wideButtonTopColor,
-        otherColors.wideButtonTopColor,
         t,
       ),
       wideButtonBottomColor: Color.lerp(

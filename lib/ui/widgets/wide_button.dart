@@ -26,7 +26,7 @@ class WideButton extends StatelessWidget {
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              extraColors.wideButtonTopColor!,
+              theme.primaryColor,
               extraColors.wideButtonBottomColor!,
             ],
           ),
@@ -36,6 +36,7 @@ class WideButton extends StatelessWidget {
           style: ElevatedButton.styleFrom(
             backgroundColor: Colors.transparent,
             shadowColor: Colors.transparent,
+            disabledBackgroundColor: theme.colorScheme.secondaryFixedDim,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(50.0),
             ),
