@@ -153,11 +153,12 @@ class ScheduleTabViewModel extends BaseViewModel {
     if (currentSchedule == null) {
       return null;
     }
-    for (int i = start; i < currentSchedule.length && i < end; i++) {
-      if (currentSchedule[i].isNotEmpty) {
-        return i;
-      }
+
+    final index = currentSchedule.indexWhere((item) => item.isNotEmpty, start);
+
+    if (index == -1 || index >= end) {
+      return null;
     }
-    return null;
+    return index;
   }
 }
