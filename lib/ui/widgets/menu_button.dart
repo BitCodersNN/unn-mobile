@@ -46,9 +46,9 @@ class MenuButton extends StatelessWidget {
   final ValueChanged<String> onSelected;
 
   const MenuButton({
-    required this.enabled,
     required this.items,
     required this.onSelected,
+    this.enabled = true,
     super.key,
   });
 
