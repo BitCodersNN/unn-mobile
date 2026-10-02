@@ -148,7 +148,7 @@ class ScheduleTabViewModel extends BaseViewModel {
   String scrollContextKey(int weekOffset) =>
       '$weekOffset|${selectedId ?? ''}|${foundName ?? ''}';
 
-  int? _firstNonEmptyDayIndex(int start, {int end = 6}) {
+  int? _firstNonEmptyDayIndex(int start) {
     final currentSchedule = schedule;
     if (currentSchedule == null) {
       return null;
@@ -156,7 +156,7 @@ class ScheduleTabViewModel extends BaseViewModel {
 
     final index = currentSchedule.indexWhere((item) => item.isNotEmpty, start);
 
-    if (index == -1 || index >= end) {
+    if (index == -1) {
       return null;
     }
     return index;
