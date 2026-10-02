@@ -21,7 +21,7 @@ class MainPageRouteData {
   final IconData selectedIcon;
   final IconData unselectedIcon;
   final String pageTitle;
-  final String pageRoute;
+  final String pagePath;
   final Widget Function(BuildContext, GoRouterState) builder;
   final bool isDisabled;
   final List<Type> userTypes;
@@ -32,7 +32,7 @@ class MainPageRouteData {
     this.selectedIcon,
     this.unselectedIcon,
     this.pageTitle,
-    this.pageRoute, {
+    this.pagePath, {
     required this.userTypes,
     required this.builder,
     this.onlineOnly = false,
@@ -44,7 +44,7 @@ class MainPageRouteData {
     IconData? selectedIcon,
     IconData? unselectedIcon,
     String? pageTitle,
-    String? pageRoute,
+    String? pagePath,
     Widget Function(BuildContext, GoRouterState)? builder,
     bool? isDisabled,
     List<Type>? userTypes,
@@ -55,7 +55,7 @@ class MainPageRouteData {
         selectedIcon ?? this.selectedIcon,
         unselectedIcon ?? this.unselectedIcon,
         pageTitle ?? this.pageTitle,
-        pageRoute ?? this.pageRoute,
+        pagePath ?? this.pagePath,
         onlineOnly: onlineOnly ?? this.onlineOnly,
         subroutes: subroutes ?? this.subroutes,
         isDisabled: isDisabled ?? this.isDisabled,

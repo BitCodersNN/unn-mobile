@@ -15,11 +15,18 @@ import 'package:unn_mobile/ui/views/auth_page/widgets/auth_text_field.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
 import 'package:unn_mobile/ui/widgets/dialogs/analytics_confirm_dialog.dart';
 import 'package:unn_mobile/ui/widgets/dialogs/changelog_dialog.dart';
+import 'package:unn_mobile/ui/widgets/menu_button.dart';
 import 'package:unn_mobile/ui/widgets/wide_button.dart';
 
 enum _InputType {
   login,
   password,
+}
+
+class _MenuItemValues {
+  static const settings = 'settings';
+  static const about = 'about';
+  static const support = 'support';
 }
 
 class AuthPage extends StatefulWidget {
@@ -126,22 +133,55 @@ class _AuthPageState extends State<AuthPage> {
 
           return Scaffold(
             backgroundColor: theme.colorScheme.surfaceContainerLowest,
+            appBar: AppBar(
+              titleTextStyle: TextStyle(
+                fontSize: _titleFontSize,
+                height: _titleHeightFactor,
+                fontWeight: FontWeight.bold,
+                color: theme.colorScheme.primary,
+              ),
+              centerTitle: true,
+              title: const Text(
+                _title,
+              ),
+              actions: [
+                MenuButton(
+                  enabled: true,
+                  items: [
+                    const SideMenuItem(
+                      title: 'Настройки',
+                      value: _MenuItemValues.settings,
+                    ),
+                    const SideMenuItem(
+                      title: 'Поддержать',
+                      value: _MenuItemValues.support,
+                    ),
+                    const SideMenuItem(
+                      title: 'О нас',
+                      value: _MenuItemValues.about,
+                    ),
+                  ],
+                  onSelected: (item) {
+                    switch (item) {
+                      case _MenuItemValues.settings:
+                        GoRouter.of(context).go('$authPageRoute/$settingsPath');
+                        break;
+                      case _MenuItemValues.about:
+                        GoRouter.of(context).go('$authPageRoute/$aboutPath');
+                        break;
+                      case _MenuItemValues.support:
+                        GoRouter.of(context).go('$authPageRoute/$supportPath');
+                        break;
+                    }
+                  },
+                ),
+              ],
+            ),
             body: SafeArea(
               bottom: false,
               child: LayoutBuilder(
                 builder: (context, constraints) => Column(
                   children: [
-                    const SizedBox(height: _titleTopPadding),
-                    Text(
-                      _title,
-                      style: TextStyle(
-                        fontFamily: 'Inter',
-                        fontSize: _titleFontSize,
-                        height: _titleHeightFactor,
-                        fontWeight: FontWeight.bold,
-                        color: theme.colorScheme.primary,
-                      ),
-                    ),
                     const SizedBox(height: _logoTopPadding),
                     AnimatedContainer(
                       duration: _resizeDuration,

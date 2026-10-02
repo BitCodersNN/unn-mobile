@@ -281,7 +281,7 @@ class _FeedPostState extends State<FeedPost> {
     }
     GoRouter.of(context).go(
       '${GoRouter.of(context).routeInformationProvider.value.uri.path}/'
-      '${postCommentsRoute.pageRoute.replaceAll(':postId', post.blogData!.id.toString())}',
+      '${postCommentsRoute.pagePath.replaceAll(':postId', post.blogData!.id.toString())}',
     );
   }
 

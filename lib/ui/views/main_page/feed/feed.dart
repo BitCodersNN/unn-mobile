@@ -372,7 +372,7 @@ class FeedScreenViewState extends State<FeedScreenView>
   void openPinned(BuildContext context) {
     GoRouter.of(context).go(
       '${GoRouter.of(context).routeInformationProvider.value.uri.path}/'
-      '${pinnedPostsRoute.pageRoute}',
+      '${pinnedPostsRoute.pagePath}',
     );
   }
 
