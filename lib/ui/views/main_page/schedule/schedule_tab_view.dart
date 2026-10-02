@@ -82,12 +82,16 @@ class _ScheduleTabViewState extends State<ScheduleTabView> {
       if (anchorContext == null) {
         return;
       }
-      Scrollable.ensureVisible(
-        anchorContext,
-        alignment: 0.0,
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
-      );
+      final anchor = anchorContext.findRenderObject();
+      if (anchor == null) {
+        return;
+      }
+      Scrollable.of(anchorContext).position.ensureVisible(
+            anchor,
+            alignment: 0.0,
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeInOut,
+          );
     });
   }
 
