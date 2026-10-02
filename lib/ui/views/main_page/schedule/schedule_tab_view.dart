@@ -37,15 +37,6 @@ class _ScheduleTabViewState extends State<ScheduleTabView> {
   bool _pendingScrollToToday = false;
   String? _scrollContextKey;
 
-  static const daysOfWeek = [
-    'ПН',
-    'ВТ',
-    'СР',
-    'ЧТ',
-    'ПТ',
-    'СБ',
-  ];
-
   void _updateScrollTrigger(ScheduleTabViewModel model) {
     if (model.triggerScrollToToday) {
       model.triggerScrollToToday = false;
@@ -113,7 +104,9 @@ class _ScheduleTabViewState extends State<ScheduleTabView> {
         ),
         SliverAppBar(
           title: DayHeader(
-            dayOfWeek: daysOfWeek[i],
+            dayOfWeek:
+                l.firstOrNull?.dateTimeRange.start.format(DatePattern.e) ??
+                    '(ಠ_ಠ)',
             formattedDate: DateTimeParser.format(date, DatePattern.dMMM)
                 .replaceAll('.', ''),
             lessonsCount: l.length,
