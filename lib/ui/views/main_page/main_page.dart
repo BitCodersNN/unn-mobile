@@ -66,7 +66,8 @@ class MainPageState extends State<MainPage> {
 
   bool isRootScreen(BuildContext context) {
     final location = GoRouterState.of(context).uri.path;
-    return MainPageRouting.navbarRoutes.any((r) => r.pageRoute == location);
+    return MainPageRouting.navbarRoutes
+        .any((r) => mainPageRoute + r.pagePath == location);
   }
 
   @override
@@ -83,12 +84,13 @@ class MainPageState extends State<MainPage> {
                     onDestinationSelected: (value) {
                       Scaffold.of(context).closeDrawer();
                       final selectedBarIndex = widget.shell.currentIndex;
-                      final currentPageRoute = MainPageRouting
-                          .navbarRoutes[selectedBarIndex].pageRoute;
+                      final currentPageRoute = mainPageRoute +
+                          MainPageRouting
+                              .navbarRoutes[selectedBarIndex].pagePath;
                       final destinationSubroute = model.routes
                           .where((r) => model.isOnline || !r.onlineOnly)
                           .elementAt(value)
-                          .pageRoute;
+                          .pagePath;
                       GoRouter.of(context).go(
                         '$currentPageRoute/$drawerRoutePrefix/$destinationSubroute',
                       );
@@ -127,6 +129,6 @@ class MainPageState extends State<MainPage> {
 
   void goToRootScreen(BuildContext context, int currentRouteIndex) {
     GoRouter.of(context)
-        .go(MainPageRouting.navbarRoutes[currentRouteIndex].pageRoute);
+        .go(MainPageRouting.navbarRoutes[currentRouteIndex].pagePath);
   }
 }

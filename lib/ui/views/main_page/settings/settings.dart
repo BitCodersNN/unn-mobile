@@ -12,8 +12,13 @@ import 'package:unn_mobile/ui/views/main_page/main_page.dart';
 
 class SettingsScreenView extends StatelessWidget {
   final int? bottomRouteIndex;
+  final bool hasAccount;
 
-  const SettingsScreenView({super.key, this.bottomRouteIndex});
+  const SettingsScreenView({
+    super.key,
+    this.bottomRouteIndex,
+    this.hasAccount = true,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -47,31 +52,33 @@ class SettingsScreenView extends StatelessWidget {
                           model.analyticsEnabled = value;
                         },
                       ),
-                      SwitchListTile.adaptive(
-                        title: const Text('Порядок комментариев'),
-                        subtitle: model.reverseComments
-                            ? const Text('Сначала новые')
-                            : const Text('Сначала старые'),
-                        value: model.reverseComments,
-                        onChanged: (value) {
-                          model.reverseComments = value;
-                        },
-                      ),
-                      ListTile(
-                        title: const Text('Начальный экран'),
-                        trailing: Padding(
-                          padding: const EdgeInsets.all(6.0),
-                          child: Text(
-                            model.initialScreenName,
-                            style: const TextStyle(fontSize: 16),
-                            softWrap: false,
-                            overflow: TextOverflow.visible,
-                          ),
+                      if (hasAccount) ...[
+                        SwitchListTile.adaptive(
+                          title: const Text('Порядок комментариев'),
+                          subtitle: model.reverseComments
+                              ? const Text('Сначала новые')
+                              : const Text('Сначала старые'),
+                          value: model.reverseComments,
+                          onChanged: (value) {
+                            model.reverseComments = value;
+                          },
                         ),
-                        onTap: () async {
-                          await _showScreenChoiceModal(context, model);
-                        },
-                      ),
+                        ListTile(
+                          title: const Text('Начальный экран'),
+                          trailing: Padding(
+                            padding: const EdgeInsets.all(6.0),
+                            child: Text(
+                              model.initialScreenName,
+                              style: const TextStyle(fontSize: 16),
+                              softWrap: false,
+                              overflow: TextOverflow.visible,
+                            ),
+                          ),
+                          onTap: () async {
+                            await _showScreenChoiceModal(context, model);
+                          },
+                        ),
+                      ],
                       ListTile(
                         title: const Text('Очистить кэш'),
                         onTap: () async {
@@ -85,29 +92,30 @@ class SettingsScreenView extends StatelessWidget {
                           }
                         },
                       ),
-                      ListTile(
-                        title: const Text('Выйти из аккаунта'),
-                        onTap: () async {
-                          if (context.mounted) {
-                            final result = await showOkCancelAlertDialog(
-                              context: context,
-                              title: 'Выйти из аккаунта?',
-                              okLabel: 'Выйти',
-                              cancelLabel: 'Отмена',
-                              isDestructiveAction: true,
-                            );
+                      if (hasAccount)
+                        ListTile(
+                          title: const Text('Выйти из аккаунта'),
+                          onTap: () async {
+                            if (context.mounted) {
+                              final result = await showOkCancelAlertDialog(
+                                context: context,
+                                title: 'Выйти из аккаунта?',
+                                okLabel: 'Выйти',
+                                cancelLabel: 'Отмена',
+                                isDestructiveAction: true,
+                              );
 
-                            if (result == OkCancelResult.ok &&
-                                context.mounted) {
-                              await model.logout();
-                              if (context.mounted) {
-                                GoRouter.of(context).go(loadingPageRoute);
+                              if (result == OkCancelResult.ok &&
+                                  context.mounted) {
+                                await model.logout();
+                                if (context.mounted) {
+                                  GoRouter.of(context).go(loadingPageRoute);
+                                }
                               }
                             }
-                          }
-                        },
-                        textColor: theme.colorScheme.error,
-                      ),
+                          },
+                          textColor: theme.colorScheme.error,
+                        ),
                     ],
                   ),
                 ],

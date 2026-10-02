@@ -6,13 +6,20 @@ import 'package:go_router/go_router.dart';
 import 'package:unn_mobile/core/misc/app_settings.dart';
 import 'package:unn_mobile/ui/views/auth_page/auth_page.dart';
 import 'package:unn_mobile/ui/views/loading_page/loading_page.dart';
+import 'package:unn_mobile/ui/views/main_page/about/about.dart';
+import 'package:unn_mobile/ui/views/main_page/donations/donations.dart';
 import 'package:unn_mobile/ui/views/main_page/main_page.dart';
 import 'package:unn_mobile/ui/views/main_page/main_page_routing.dart';
+import 'package:unn_mobile/ui/views/main_page/settings/settings.dart';
 
-const loadingPageRoute = '/loading';
-const mainPageRoute = '/';
+const loadingPageRoute = '/';
+const mainPageRoute = '/main';
 const authPageRoute = '/auth';
 const drawerRoutePrefix = 'drawer';
+
+const settingsPath = 'settings';
+const aboutPath = 'about';
+const supportPath = 'support';
 
 final shellBranchKeys = [
   for (final route in MainPageRouting.navbarRoutes)
@@ -25,6 +32,36 @@ final mainRouter = GoRouter(
   initialLocation: loadingPageRoute,
   initialExtra: <String, Object>{},
   routes: [
+    GoRoute(
+      path: loadingPageRoute,
+      pageBuilder: (context, state) => const NoTransitionPage(
+        child: LoadingPage(),
+      ),
+    ),
+    GoRoute(
+      path: authPageRoute,
+      name: 'auth',
+      builder: (context, state) => const AuthPage(),
+      routes: [
+        GoRoute(
+          path: settingsPath,
+          name: 'settings',
+          builder: (_, __) => const SettingsScreenView(
+            hasAccount: false,
+          ),
+        ),
+        GoRoute(
+          path: aboutPath,
+          name: 'about',
+          builder: (_, __) => const AboutScreenView(),
+        ),
+        GoRoute(
+          path: supportPath,
+          name: 'support',
+          builder: (_, __) => const DonationsScreenView(),
+        ),
+      ],
+    ),
     StatefulShellRoute.indexedStack(
       builder: (context, state, shell) => MainPage(
         key: mainPageKey,
@@ -36,7 +73,7 @@ final mainRouter = GoRouter(
             navigatorKey: route.key,
             routes: [
               GoRoute(
-                path: route.route.pageRoute,
+                path: '$mainPageRoute${route.route.pagePath}',
                 name: route.route.pageTitle,
                 pageBuilder: (context, state) => NoTransitionPage(
                   child: route.route.builder(context, state),
@@ -53,17 +90,6 @@ final mainRouter = GoRouter(
           ),
       ],
     ),
-    GoRoute(
-      path: authPageRoute,
-      name: 'auth',
-      builder: (context, state) => const AuthPage(),
-    ),
-    GoRoute(
-      path: loadingPageRoute,
-      pageBuilder: (context, state) => const NoTransitionPage(
-        child: LoadingPage(),
-      ),
-    ),
   ],
   redirect: (context, state) {
     if (state.uri.path == mainPageRoute) {
@@ -71,10 +97,11 @@ final mainRouter = GoRouter(
           AppSettings.initialPage < MainPageRouting.activeNavbarRoutes.length
               ? AppSettings.initialPage
               : 0;
-      return MainPageRouting.navbarRoutes
-          .where((r) => !r.isDisabled)
-          .toList()[pageIndex]
-          .pageRoute;
+      return mainPageRoute +
+          MainPageRouting.navbarRoutes
+              .where((r) => !r.isDisabled)
+              .toList()[pageIndex]
+              .pagePath;
     }
     return null;
   },
@@ -87,7 +114,7 @@ List<GoRoute> _buildSubroutes(
     routes
         .map(
           (route) => GoRoute(
-            path: '$prefix${route.pageRoute}',
+            path: '$prefix${route.pagePath}',
             builder: (context, state) => route.builder(context, state),
             routes: _buildSubroutes(route.subroutes),
           ),
