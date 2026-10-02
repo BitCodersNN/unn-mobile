@@ -14,7 +14,7 @@ class DateTimeParser {
   static String format(
     DateTime dateTime,
     String pattern, {
-    String local = 'ru_RU',
+    String locale = 'ru_RU',
   }) =>
-      DateFormat(pattern, local).format(dateTime);
+      DateFormat(pattern, locale).format(dateTime);
 }

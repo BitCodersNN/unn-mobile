@@ -3,6 +3,8 @@
 
 import 'dart:async';
 import 'package:unn_mobile/core/misc/authorisation/try_login_and_retrieve_data.dart';
+import 'package:unn_mobile/core/misc/date_time_utilities/date_time_extensions.dart';
+import 'package:unn_mobile/core/misc/date_time_utilities/week_range.dart';
 import 'package:unn_mobile/core/misc/user/current_user_sync_storage.dart';
 import 'package:unn_mobile/core/models/profile/student/student_data.dart';
 import 'package:unn_mobile/core/models/schedule/schedule_filter.dart';
@@ -31,8 +33,15 @@ class ScheduleTabViewModel extends BaseViewModel {
   ScheduleFilter? searchFilter;
 
   bool needsDefaultIdRefresh = true;
+  bool triggerScrollToToday = false;
 
   bool get hasAnyId => defaultId != null || selectedId != null;
+
+  int? get todayOrNextDayIndex =>
+      _firstNonEmptyDayIndex(DateTime.now().weekdayIndex);
+
+  WeekRange get selectedWeek => _parent.selectedWeek;
+  int get weekOffset => _parent.weekOffset;
 
   ScheduleTabViewModel(
     this._userType,
@@ -82,7 +91,7 @@ class ScheduleTabViewModel extends BaseViewModel {
     searchFilter = ScheduleFilter(
       _userType,
       selectedId ?? defaultId!,
-      _parent.selectedTimeRange,
+      _parent.selectedWeek.dateTimeRange,
     );
   }
 
@@ -134,5 +143,22 @@ class ScheduleTabViewModel extends BaseViewModel {
     selectedId = null;
     foundName = null;
     await refresh();
+  }
+
+  String scrollContextKey(int weekOffset) =>
+      '$weekOffset|${selectedId ?? ''}|${foundName ?? ''}';
+
+  int? _firstNonEmptyDayIndex(int start) {
+    final currentSchedule = schedule;
+    if (currentSchedule == null) {
+      return null;
+    }
+
+    final index = currentSchedule.indexWhere((item) => item.isNotEmpty, start);
+
+    if (index == -1) {
+      return null;
+    }
+    return index;
   }
 }

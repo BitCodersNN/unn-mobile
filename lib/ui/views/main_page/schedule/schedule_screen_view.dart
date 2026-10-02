@@ -1,25 +1,28 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2026 BitCodersNN
 
-import 'dart:io';
+import 'dart:async';
 
-import 'package:adaptive_dialog/adaptive_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/constants/date_pattern.dart';
 import 'package:unn_mobile/core/misc/date_time_utilities/date_time_extensions.dart';
-import 'package:unn_mobile/core/misc/date_time_utilities/date_time_range_type.dart';
 import 'package:unn_mobile/core/models/schedule/schedule_filter.dart';
-import 'package:unn_mobile/core/services/interfaces/schedule/export_schedule_service.dart';
+import 'package:unn_mobile/core/models/schedule/schedule_search_suggestion_item.dart';
 import 'package:unn_mobile/core/viewmodels/factories/main_page_routes_view_models_factory.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/schedule/schedule_screen_view_model.dart';
+import 'package:unn_mobile/core/viewmodels/main_page/schedule/schedule_tab_view_model.dart';
 import 'package:unn_mobile/ui/builders/online_status_builder.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
 import 'package:unn_mobile/ui/views/main_page/main_page.dart';
+import 'package:unn_mobile/ui/views/main_page/schedule/export_schedule_flow.dart';
 import 'package:unn_mobile/ui/views/main_page/schedule/schedule_tab_view.dart';
 import 'package:unn_mobile/ui/views/main_page/schedule/widgets/schedule_search_suggestion_item_view.dart';
-import 'package:unn_mobile/ui/widgets/dialogs/message_dialog.dart';
+import 'package:unn_mobile/ui/widgets/menu_button.dart';
 import 'package:unn_mobile/ui/widgets/offline_overlay_displayer.dart';
+import 'package:unn_mobile/ui/widgets/search/search_controller.dart';
+import 'package:unn_mobile/ui/widgets/search/search_field.dart';
+import 'package:unn_mobile/ui/widgets/search/search_overlay.dart';
 
 class ScheduleScreenView extends StatefulWidget {
   final int? bottomRouteIndex;
@@ -34,6 +37,9 @@ class ScheduleScreenView extends StatefulWidget {
 
 class _ScheduleScreenViewState extends State<ScheduleScreenView> {
   late ScheduleScreenViewModel _viewModel;
+  late AppSearchController<ScheduleSearchSuggestionItem> _search;
+
+  ScheduleTabViewModel? _suggestionsTab;
 
   @override
   void initState() {
@@ -45,208 +51,237 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView> {
             .getViewModelByRouteIndex<ScheduleScreenViewModel>(
               widget.bottomRouteIndex!,
             );
+    _search = AppSearchController<ScheduleSearchSuggestionItem>(
+      loader: (query) async =>
+          (await _viewModel.currentTab?.getSuggestions(query)) ??
+          const <ScheduleSearchSuggestionItem>[],
+      applier: (suggestion) =>
+          unawaited(_suggestionsTab?.applySearchSuggestion(suggestion)),
+    );
+    _search.addListener(_onSearchNotify);
+  }
+
+  @override
+  void dispose() {
+    _search
+      ..removeListener(_onSearchNotify)
+      ..dispose();
+    super.dispose();
+  }
+
+  void _onSearchNotify() {
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   @override
   Widget build(BuildContext context) => OfflineOverlayDisplayer(
         child: BaseView<ScheduleScreenViewModel>(
-          builder: (context, model, _) => OnlineStatusBuilder(
-            builder: (context, online) => DefaultTabController(
-              length: model.sortedUserTypeList.length,
-              initialIndex: 0,
-              child: Scaffold(
-                appBar: AppBar(
-                  leading: getSubpageLeading(widget.bottomRouteIndex),
-                  title: const Text('Расписание'),
-                  forceMaterialTransparency: true,
-                  actions: [
-                    if (online)
-                      SearchAnchor(
-                        builder: (
-                          BuildContext context,
-                          SearchController controller,
-                        ) =>
-                            IconButton(
-                          icon: const Icon(Icons.search),
-                          onPressed: () {
-                            controller.openView();
-                          },
-                        ),
-                        suggestionsBuilder: (
-                          BuildContext context,
-                          SearchController controller,
-                        ) async {
-                          final suggestions = await model.currentTab
-                              ?.getSuggestions(controller.text);
-                          return suggestions?.map(
-                                (s) => ScheduleSearchSuggestionItemView(
-                                  model: s,
-                                  onSelected: () {
-                                    controller.closeView(s.label);
-                                    model.currentTab?.applySearchSuggestion(s);
-                                  },
-                                ),
-                              ) ??
-                              [];
-                        },
+          builder: (context, model, _) {
+            if (_search.isOpen && _suggestionsTab != model.currentTab) {
+              _suggestionsTab = model.currentTab;
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (mounted && _search.isOpen) {
+                  _search.loadSuggestions();
+                }
+              });
+            }
+
+            final bottomHeight = 112.0;
+
+            return OnlineStatusBuilder(
+              builder: (context, online) {
+                final theme = Theme.of(context);
+                return DefaultTabController(
+                  length: model.sortedUserTypeList.length,
+                  initialIndex: 0,
+                  child: Scaffold(
+                    appBar: AppBar(
+                      leading: _search.isOpen
+                          ? IconButton(
+                              icon: const Icon(Icons.arrow_back),
+                              tooltip: 'Закрыть поиск',
+                              onPressed: _search.close,
+                            )
+                          : getSubpageLeading(widget.bottomRouteIndex),
+                      title: const Text(
+                        'Расписание',
                       ),
-                    PopupMenuButton<String>(
-                      icon: const Icon(Icons.more_vert),
-                      onSelected: (value) {
-                        switch (value) {
-                          case 'export':
-                            exportScheduleCallback(context, model);
-                            break;
-                        }
-                      },
-                      itemBuilder: (context) => [
-                        PopupMenuItem<String>(
-                          value: 'export',
-                          enabled:
-                              online && (model.currentTab?.hasAnyId ?? false),
-                          child: const Text('Экспорт в календарь'),
-                        ),
-                      ],
-                    ),
-                  ],
-                  bottom: PreferredSize(
-                    preferredSize: const Size.fromHeight(75.0),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Row(
-                            children: [
-                              IconButton(
-                                onPressed: online
-                                    ? () {
-                                        model.previousWeek();
-                                      }
-                                    : null,
-                                icon: const Icon(Icons.arrow_left),
-                                iconSize: 32.0,
-                              ),
-                              Expanded(
-                                child: Text(
-                                  '${model.selectedTimeRange.start.format(DatePattern.dMMMM)} - ${model.selectedTimeRange.end.format(DatePattern.dMMMM)}',
-                                  textAlign: TextAlign.center,
-                                  style: Theme.of(context).textTheme.titleLarge,
-                                ),
-                              ),
-                              IconButton(
-                                onPressed: online
-                                    ? () {
-                                        model.nextWeek();
-                                      }
-                                    : null,
-                                icon: const Icon(Icons.arrow_right),
-                                iconSize: 32.0,
+                      forceMaterialTransparency: true,
+                      actions: [
+                        if (online && !_search.isOpen)
+                          IconButton(
+                            icon: const Icon(Icons.search),
+                            tooltip: 'Поиск',
+                            onPressed: _search.open,
+                          ),
+                        if (!_search.isOpen)
+                          MenuButton(
+                            enabled: online && model.canExport,
+                            items: const [
+                              SideMenuItemWithIcon(
+                                value: 'calendar',
+                                icon: Icons.calendar_month,
+                                title: 'Экспорт в календарь',
                               ),
                             ],
-                          ),
-                          TabBar(
-                            tabAlignment: TabAlignment.center,
-                            tabs: model.sortedUserTypeList
-                                .map((t) => Tab(text: t.getDisplayName()))
-                                .toList(),
-                            isScrollable: true,
-                            onTap: (value) {
-                              model.selectedUser =
-                                  model.sortedUserTypeList[value];
+                            onSelected: (value) {
+                              if (value == 'calendar') {
+                                runExportFlow(context, model);
+                              }
                             },
                           ),
-                        ],
+                      ],
+                      bottom: PreferredSize(
+                        preferredSize: Size.fromHeight(bottomHeight),
+                        child: MediaQuery.withNoTextScaling(
+                          child: SizedBox(
+                            height: bottomHeight,
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 8.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  if (_search.isOpen)
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 8.0,
+                                        vertical: 4.0,
+                                      ),
+                                      child: SearchField<
+                                          ScheduleSearchSuggestionItem>(
+                                        controller: _search,
+                                        hintText: 'Группа, фамилия, предмет...',
+                                      ),
+                                    )
+                                  else ...[
+                                    Row(
+                                      children: [
+                                        IconButton(
+                                          onPressed: online
+                                              ? () {
+                                                  model.previousWeek();
+                                                }
+                                              : null,
+                                          icon: const Icon(Icons.arrow_left),
+                                          iconSize: 32.0,
+                                        ),
+                                        Expanded(
+                                          child: Text(
+                                            '${model.selectedWeek.start.format(DatePattern.dMMM)} - ${model.selectedWeek.end.format(DatePattern.dMMM)}',
+                                            textAlign: TextAlign.center,
+                                            style: theme.textTheme.titleLarge,
+                                            textScaler: MediaQuery.of(context)
+                                                .textScaler
+                                                .clamp(maxScaleFactor: 1.3),
+                                          ),
+                                        ),
+                                        IconButton(
+                                          onPressed: online
+                                              ? () {
+                                                  model.nextWeek();
+                                                }
+                                              : null,
+                                          icon: const Icon(Icons.arrow_right),
+                                          iconSize: 32.0,
+                                        ),
+                                      ],
+                                    ),
+                                    Text.rich(
+                                      TextSpan(
+                                        children: [
+                                          TextSpan(
+                                            text: 'неделя ${model.weekNumber}',
+                                          ),
+                                          if (model.weekOffset == 0)
+                                            TextSpan(
+                                              text: ' · текущая',
+                                              style: TextStyle(
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .primary,
+                                                fontWeight: FontWeight.w600,
+                                              ),
+                                            ),
+                                        ],
+                                      ),
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodySmall
+                                          ?.copyWith(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .onSurfaceVariant,
+                                          ),
+                                    ),
+                                  ],
+                                  TabBar(
+                                    tabAlignment: TabAlignment.center,
+                                    tabs: model.sortedUserTypeList
+                                        .map((t) => Tab(text: t.displayName))
+                                        .toList(),
+                                    isScrollable: true,
+                                    onTap: (value) {
+                                      model.selectedUser =
+                                          model.sortedUserTypeList[value];
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
                       ),
                     ),
-                  ),
-                ),
-                body: TabBarView(
-                  children: model.sortedUserTypeList
-                      .map(
-                        (t) => ScheduleTabView(
-                          key: ValueKey(t),
-                          viewModel: model.modelsByType[t]!,
+                    body: Stack(
+                      children: [
+                        TabBarView(
+                          children: model.sortedUserTypeList
+                              .map(
+                                (t) => ScheduleTabView(
+                                  key: ValueKey(t),
+                                  viewModel: model.modelsByType[t]!,
+                                  onSearchRequested: _search.open,
+                                ),
+                              )
+                              .toList(),
                         ),
-                      )
-                      .toList(),
-                ),
+                        if (_search.isOpen) ...[
+                          GestureDetector(
+                            onTap: _search.close,
+                            child: Container(
+                              color: Colors.black.withAlpha(80),
+                            ),
+                          ),
+                          if (_search.suggestions.isNotEmpty ||
+                              _search.isLoading ||
+                              _search.query.isNotEmpty)
+                            SearchOverlay<ScheduleSearchSuggestionItem>(
+                              controller: _search,
+                              suggestionBuilder:
+                                  (context, suggestion, query, onTap) =>
+                                      ScheduleSearchSuggestionItemView(
+                                model: suggestion,
+                                searchType: model.selectedUser,
+                                query: query,
+                                onSelected: onTap,
+                              ),
+                            ),
+                        ],
+                      ],
+                    ),
+                  ),
+                );
+              },
+              statusChanged: (_) => Future.wait(
+                model.modelsByType.values.map((t) async => await t.refresh()),
               ),
-            ),
-            statusChanged: (_) => Future.wait(
-              model.modelsByType.values.map((t) async => await t.refresh()),
-            ),
-          ),
+            );
+          },
           model: _viewModel,
           onModelReady: (model) => model.init(),
         ),
       );
-
-  void exportScheduleCallback(
-    BuildContext context,
-    ScheduleScreenViewModel model,
-  ) async {
-    final permission = await model.askForExportPermission();
-
-    if (permission == RequestCalendarPermissionResult.permanentlyDenied) {
-      if (context.mounted) {
-        final result = await showOkCancelAlertDialog(
-          context: context,
-          title: 'Доступ к календарю',
-          message:
-              'Приложению запрещён доступ к календарю. Разрешите его в настройках, чтобы экспортировать расписание.',
-          okLabel: 'Настройки',
-          cancelLabel: 'Отмена',
-        );
-
-        if (result == OkCancelResult.ok && context.mounted) {
-          await model.openSettingsWindow();
-        }
-      }
-    } else if (permission == RequestCalendarPermissionResult.allowed) {
-      if (!context.mounted) {
-        return;
-      }
-
-      final actions = DateTimeRangeType.values
-          .map(
-            (type) => AlertDialogAction<DateTimeRangeType>(
-              key: type,
-              label: type.label,
-              isDefaultAction: type == DateTimeRangeType.untilEndOfWeek,
-            ),
-          )
-          .toList();
-
-      final selectedType = await showConfirmationDialog<DateTimeRangeType>(
-        context: context,
-        title: 'Экспортировать расписание',
-        actions: actions,
-        cancelLabel: 'Отмена',
-      );
-
-      if (selectedType != null) {
-        final bool result = await model.exportSchedule(selectedType);
-
-        if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Экспорт завершён'),
-            ),
-          );
-        }
-
-        if (Platform.isAndroid && context.mounted) {
-          await showMessage(
-            context,
-            result
-                ? 'Расписание экспортировано в календарь "Расписание ННГУ". \n'
-                    'Возможно, понадобится включить настройку Device Calendar в приложении календаря.'
-                : 'Не удалось экспортировать. Попробуйте снова.',
-            messageKey: result ? 'export_schedule_success' : null,
-          );
-        }
-      }
-    }
-  }
 }

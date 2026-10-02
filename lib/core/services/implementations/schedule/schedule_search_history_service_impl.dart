@@ -65,7 +65,9 @@ class ScheduleSearchHistoryServiceImpl implements ScheduleSearchHistoryService {
   ) async {
     final rawHistory = jsonDecode(rawHistoryJson) as List<dynamic>;
     return Queue<ScheduleSearchSuggestionItem>.from(
-      rawHistory.map((h) => ScheduleSearchSuggestionItem.fromJson(h)),
+      rawHistory.map(
+        (h) => ScheduleSearchSuggestionItem.fromJson(h, isHistory: true),
+      ),
     );
   }
 
@@ -89,8 +91,9 @@ class ScheduleSearchHistoryServiceImpl implements ScheduleSearchHistoryService {
     IdType type,
     ScheduleSearchSuggestionItem item,
   ) async {
-    _historyQueues[type]!.remove(item);
-    _historyQueues[type]!.addFirst(item);
+    final historyItem = item.copyWith(isHistory: true);
+    _historyQueues[type]!.remove(historyItem);
+    _historyQueues[type]!.addFirst(historyItem);
     if (_historyQueues[type]!.length > _maxHistoryItems) {
       _historyQueues[type]!.removeLast();
     }

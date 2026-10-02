@@ -80,3 +80,5 @@ firebase.json
 GoogleService-Info.plist
 .vscode
 .widget_preview
+# Widget Preview related
+.widget_preview/

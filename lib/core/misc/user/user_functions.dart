@@ -20,3 +20,10 @@ String generateInitials(List<String> names) {
   }
   return '${nonEmpty.first[0]}${nonEmpty.last[0]}'.toUpperCase();
 }
+
+String shortName(String fullName) => fullName
+    .split(' ')
+    .where((s) => s.isNotEmpty)
+    .indexed
+    .map((p) => p.$1 == 0 ? p.$2 : '${p.$2[0]}.')
+    .join(' ');
