@@ -13,6 +13,7 @@ import 'package:unn_mobile/ui/views/main_page/feed/feed.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/widgets/comments_page.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/widgets/pinned_posts_page.dart';
 import 'package:unn_mobile/ui/views/main_page/grades/grades.dart';
+import 'package:unn_mobile/ui/views/main_page/profile/profile_page.dart';
 import 'package:unn_mobile/ui/views/main_page/schedule/schedule_screen_view.dart';
 import 'package:unn_mobile/ui/views/main_page/settings/settings.dart';
 import 'package:unn_mobile/ui/views/main_page/source/source.dart';
@@ -87,6 +88,18 @@ final MainPageRouteData pinnedPostsRoute = MainPageRouteData(
   ],
 );
 
+final MainPageRouteData feedUserProfileRoute = MainPageRouteData(
+  Icons.person,
+  Icons.person_outline,
+  'Профиль',
+  'profile/:userId',
+  userTypes: [],
+  builder: (_, state) => ProfilePage(
+    userId: int.tryParse(state.pathParameters['userId'] ?? '0') ?? 0,
+    loadFromPost: true,
+  ),
+);
+
 class MainPageRouting {
   static final List<MainPageRouteData> navbarRoutes = [
     MainPageRouteData(
@@ -101,6 +114,7 @@ class MainPageRouting {
       subroutes: [
         postCommentsRoute,
         pinnedPostsRoute,
+        feedUserProfileRoute,
       ],
     ),
     MainPageRouteData(
@@ -158,6 +172,14 @@ class MainPageRouting {
   ];
 
   static final List<MainPageRouteData> drawerRoutes = [
+    MainPageRouteData(
+      Icons.person,
+      Icons.person_outline,
+      'Мой профиль',
+      'myProfile',
+      userTypes: [],
+      builder: (_, __) => const ProfilePage(isMe: true),
+    ),
     MainPageRouteData(
       Icons.book,
       Icons.book_outlined,
