@@ -3,7 +3,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:unn_mobile/core/misc/app_settings.dart';
 import 'package:unn_mobile/ui/main_page_locations.dart';
 import 'package:unn_mobile/ui/views/auth_page/auth_page.dart';
 import 'package:unn_mobile/ui/views/loading_page/loading_page.dart';
@@ -14,13 +13,6 @@ import 'package:unn_mobile/ui/views/main_page/main_page_routing.dart';
 import 'package:unn_mobile/ui/views/main_page/settings/settings.dart';
 
 export 'package:unn_mobile/ui/main_page_locations.dart';
-
-String mainPageTabLocation(String pagePath) => '$mainPageRoute/$pagePath';
-
-String mainPageDestinationLocation(String pagePath) =>
-    MainPageRouting.navbarRoutes.any((route) => route.pagePath == pagePath)
-        ? mainPageTabLocation(pagePath)
-        : '$mainPageRoute/more/$drawerRoutePrefix/$pagePath';
 
 final shellBranchKeys = [
   for (final route in MainPageRouting.navbarRoutes)
@@ -94,14 +86,9 @@ final mainRouter = GoRouter(
   ],
   redirect: (context, state) {
     if (state.uri.path == mainPageRoute) {
-      final pageIndex =
-          AppSettings.initialPage < MainPageRouting.activeNavbarRoutes.length
-              ? AppSettings.initialPage
-              : 0;
       return mainPageTabLocation(
         MainPageRouting.navbarRoutes
-            .where((r) => !r.isDisabled)
-            .toList()[pageIndex]
+            .firstWhere((route) => !route.isDisabled)
             .pagePath,
       );
     }
