@@ -47,7 +47,7 @@ class MainPageState extends State<MainPage> {
   bool isRootScreen(BuildContext context) {
     final location = GoRouterState.of(context).uri.path;
     return MainPageRouting.navbarRoutes
-        .any((r) => mainPageRoute + r.pagePath == location);
+        .any((r) => mainPageTabLocation(r.pagePath) == location);
   }
 
   @override
@@ -66,7 +66,7 @@ class MainPageState extends State<MainPage> {
                   return;
                 }
                 context.go(
-                  '$mainPageRoute/more/$drawerRoutePrefix/${route.pagePath}',
+                  mainPageDestinationLocation(route.pagePath),
                 );
                 return;
               }

@@ -3,11 +3,11 @@
 
 class TabBarPreferences {
   static const defaultPaths = [
-    '/feed',
-    '/schedule',
-    '/chats',
-    '/source',
-    '/more',
+    'feed',
+    'schedule',
+    'chats',
+    'source',
+    'more',
   ];
   static const availablePaths = [
     ...defaultPaths,
@@ -23,7 +23,7 @@ class TabBarPreferences {
     Iterable<String> allowed = availablePaths,
   }) {
     final result = paths
-        .where((path) => path != '/more' && allowed.contains(path))
+        .where((path) => path != 'more' && allowed.contains(path))
         .toSet()
         .take(4)
         .toList();
@@ -31,11 +31,11 @@ class TabBarPreferences {
       if (result.length >= 2) {
         break;
       }
-      if (path != '/more' && allowed.contains(path) && !result.contains(path)) {
+      if (path != 'more' && allowed.contains(path) && !result.contains(path)) {
         result.add(path);
       }
     }
-    result.add('/more');
+    result.add('more');
     return List.unmodifiable(result);
   }
 }

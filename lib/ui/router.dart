@@ -21,6 +21,13 @@ const settingsPath = 'settings';
 const aboutPath = 'about';
 const supportPath = 'support';
 
+String mainPageTabLocation(String pagePath) => '$mainPageRoute/$pagePath';
+
+String mainPageDestinationLocation(String pagePath) =>
+    MainPageRouting.navbarRoutes.any((route) => route.pagePath == pagePath)
+        ? mainPageTabLocation(pagePath)
+        : '$mainPageRoute/more/$drawerRoutePrefix/$pagePath';
+
 final shellBranchKeys = [
   for (final route in MainPageRouting.navbarRoutes)
     (key: GlobalKey<NavigatorState>(), route: route),
@@ -73,7 +80,7 @@ final mainRouter = GoRouter(
             navigatorKey: route.key,
             routes: [
               GoRoute(
-                path: '$mainPageRoute${route.route.pagePath}',
+                path: mainPageTabLocation(route.route.pagePath),
                 name: route.route.pageTitle,
                 pageBuilder: (context, state) => NoTransitionPage(
                   child: route.route.builder(context, state),
@@ -97,11 +104,12 @@ final mainRouter = GoRouter(
           AppSettings.initialPage < MainPageRouting.activeNavbarRoutes.length
               ? AppSettings.initialPage
               : 0;
-      return mainPageRoute +
-          MainPageRouting.navbarRoutes
-              .where((r) => !r.isDisabled)
-              .toList()[pageIndex]
-              .pagePath;
+      return mainPageTabLocation(
+        MainPageRouting.navbarRoutes
+            .where((r) => !r.isDisabled)
+            .toList()[pageIndex]
+            .pagePath,
+      );
     }
     return null;
   },
