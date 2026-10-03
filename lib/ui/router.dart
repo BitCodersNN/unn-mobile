@@ -15,6 +15,13 @@ import 'package:unn_mobile/ui/views/main_page/settings/settings.dart';
 
 export 'package:unn_mobile/ui/main_page_locations.dart';
 
+String mainPageTabLocation(String pagePath) => '$mainPageRoute/$pagePath';
+
+String mainPageDestinationLocation(String pagePath) =>
+    MainPageRouting.navbarRoutes.any((route) => route.pagePath == pagePath)
+        ? mainPageTabLocation(pagePath)
+        : '$mainPageRoute/more/$drawerRoutePrefix/$pagePath';
+
 final shellBranchKeys = [
   for (final route in MainPageRouting.navbarRoutes)
     (key: GlobalKey<NavigatorState>(), route: route),
