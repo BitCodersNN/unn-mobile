@@ -1,10 +1,8 @@
-// SPDX-License-Identifier: Apache-2.0
-// Copyright 2026 BitCodersNN
-
 import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:unn_mobile/ui/views/main_page/tab_bar_item_content.dart';
 
 Future<bool?> showTabBarContextMenu(
   BuildContext context, {
@@ -128,37 +126,21 @@ class _TabBarContextMenu extends StatelessWidget {
                         color: background,
                         borderRadius: BorderRadius.circular(16),
                       ),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 4),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              icon,
-                              size: 24,
-                              color: CupertinoDynamicColor.resolve(
-                                CupertinoColors.secondaryLabel,
-                                context,
-                              ),
+                      child: Center(
+                        child: TabBarItemContent(
+                          icon: icon,
+                          label: label,
+                          color: CupertinoDynamicColor.resolve(
+                            CupertinoColors.secondaryLabel,
+                            context,
+                          ),
+                          labelStyle: TextStyle(
+                            fontSize: 10,
+                            color: CupertinoDynamicColor.resolve(
+                              CupertinoColors.secondaryLabel,
+                              context,
                             ),
-                            const SizedBox(height: 4),
-                            SizedBox(
-                              height: 14,
-                              child: FittedBox(
-                                fit: BoxFit.scaleDown,
-                                child: Text(
-                                  label,
-                                  style: TextStyle(
-                                    fontSize: 10,
-                                    color: CupertinoDynamicColor.resolve(
-                                      CupertinoColors.secondaryLabel,
-                                      context,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
+                          ),
                         ),
                       ),
                     ),
