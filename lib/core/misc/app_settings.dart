@@ -1,12 +1,29 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2025 BitCodersNN
 
+import 'dart:convert';
+
 import 'package:event/event.dart';
+import 'package:flutter/foundation.dart';
 import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/constants/string_keys/app_settings_keys.dart';
+import 'package:unn_mobile/core/misc/tab_bar_preferences.dart';
 import 'package:unn_mobile/core/services/interfaces/common/storage_service.dart';
 
 class AppSettings {
+  static final tabBarPaths =
+      ValueNotifier<List<String>>(TabBarPreferences.defaultPaths);
+
+  static Future<void> updateTabBarPaths(List<String> paths) async {
+    final normalized = TabBarPreferences.normalize(paths);
+    await Injector.appInstance.get<StorageService>().write(
+          key: AppSettingsKeys.tabBarPaths,
+          value: jsonEncode(normalized),
+        );
+    tabBarPaths.value = normalized;
+    optionsSaved.broadcast();
+  }
+
   static bool vibrationEnabled = true;
   static int initialPage = 0;
   static bool analyticsEnabled = false;
@@ -34,6 +51,20 @@ class AppSettings {
       AppSettingsKeys.reverseComments,
       defaultValue: true,
       parser: bool.tryParse,
+    );
+    tabBarPaths.value = await _readValue(
+      AppSettingsKeys.tabBarPaths,
+      defaultValue: TabBarPreferences.defaultPaths,
+      parser: (value) {
+        try {
+          final decoded = jsonDecode(value);
+          return decoded is List
+              ? TabBarPreferences.normalize(decoded.whereType<String>())
+              : null;
+        } on FormatException {
+          return null;
+        }
+      },
     );
     optionsSaved.broadcast();
   }
