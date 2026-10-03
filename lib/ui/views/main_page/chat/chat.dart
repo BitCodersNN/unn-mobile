@@ -15,7 +15,6 @@ import 'package:unn_mobile/core/viewmodels/factories/main_page_routes_view_model
 import 'package:unn_mobile/core/viewmodels/main_page/chat/chat_screen_view_model.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
 import 'package:unn_mobile/ui/views/main_page/chat/widgets/unread_badge.dart';
-import 'package:unn_mobile/ui/views/main_page/main_page.dart';
 
 class ChatScreenView extends StatefulWidget {
   const ChatScreenView({super.key, this.bottomRouteIndex = 2});
@@ -41,7 +40,6 @@ class _ChatScreenViewState extends State<ChatScreenView> {
         appBar: AppBar(
           title: const Text('Сообщения'),
           forceMaterialTransparency: true,
-          leading: getSubpageLeading(widget.bottomRouteIndex),
           actions: [
             if (!model.isBusy)
               SearchAnchor(

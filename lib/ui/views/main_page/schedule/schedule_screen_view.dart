@@ -15,7 +15,6 @@ import 'package:unn_mobile/core/viewmodels/main_page/schedule/schedule_screen_vi
 import 'package:unn_mobile/core/viewmodels/main_page/schedule/schedule_tab_view_model.dart';
 import 'package:unn_mobile/ui/builders/online_status_builder.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
-import 'package:unn_mobile/ui/views/main_page/main_page.dart';
 import 'package:unn_mobile/ui/views/main_page/schedule/export_schedule_flow.dart';
 import 'package:unn_mobile/ui/views/main_page/schedule/schedule_tab_view.dart';
 import 'package:unn_mobile/ui/views/main_page/schedule/widgets/schedule_search_suggestion_item_view.dart';
@@ -115,7 +114,7 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView> {
                               tooltip: 'Закрыть поиск',
                               onPressed: _search.close,
                             )
-                          : getSubpageLeading(widget.bottomRouteIndex),
+                          : null,
                       title: const Text(
                         'Расписание',
                       ),
