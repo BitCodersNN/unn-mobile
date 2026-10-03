@@ -2,6 +2,7 @@
 // Copyright 2025 BitCodersNN
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:unn_mobile/core/misc/app_settings.dart';
@@ -84,10 +85,24 @@ class MainPageNavigationBar extends StatelessWidget {
     List<String> paths,
   ) =>
       Builder(
-        builder: (context) => GestureDetector(
+        builder: (context) => RawGestureDetector(
           behavior: HitTestBehavior.opaque,
-          onTap: () => onDestinationSelected?.call(route),
-          onLongPress: () => _showCustomizationMenu(context, route, paths),
+          gestures: {
+            TapGestureRecognizer:
+                GestureRecognizerFactoryWithHandlers<TapGestureRecognizer>(
+              TapGestureRecognizer.new,
+              (recognizer) =>
+                  recognizer.onTap = () => onDestinationSelected?.call(route),
+            ),
+            LongPressGestureRecognizer: GestureRecognizerFactoryWithHandlers<
+                LongPressGestureRecognizer>(
+              () => LongPressGestureRecognizer(
+                duration: const Duration(milliseconds: 350),
+              ),
+              (recognizer) => recognizer.onLongPress =
+                  () => _showCustomizationMenu(context, route, paths),
+            ),
+          },
           child: SizedBox.expand(
             child: Center(child: _buildTabContent(icon, route.pageTitle)),
           ),
@@ -117,18 +132,12 @@ class MainPageNavigationBar extends StatelessWidget {
   }
 
   static int getSelectedBarIndex(BuildContext context, List<String> paths) {
-    final location = GoRouterState.of(context).uri.path;
-    final drawerPosition = location.indexOf('/$drawerRoutePrefix/');
-    final menuPath = drawerPosition < 0
-        ? null
-        : location.substring(drawerPosition + '/$drawerRoutePrefix/'.length);
-    final index = paths.indexWhere(
-      (path) => path.startsWith('/')
-          ? drawerPosition < 0 &&
-              (location == mainPageRoute + path ||
-                  location.startsWith('$mainPageRoute$path/'))
-          : menuPath == path || (menuPath?.startsWith('$path/') ?? false),
-    );
-    return index < 0 ? paths.indexOf('/more') : index;
+    final segments = GoRouterState.of(context).uri.pathSegments;
+    final drawerIndex = segments.indexOf(drawerRoutePrefix);
+    final destinationIndex = drawerIndex < 0 ? 1 : drawerIndex + 1;
+    final destination =
+        destinationIndex < segments.length ? segments[destinationIndex] : null;
+    final index = destination == null ? -1 : paths.indexOf(destination);
+    return index < 0 ? paths.indexOf('more') : index;
   }
 }

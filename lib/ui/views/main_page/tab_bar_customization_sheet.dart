@@ -61,7 +61,7 @@ class _TabBarCustomizationSheetState extends State<TabBarCustomizationSheet> {
       allowed: widget.routes.map((route) => route.pagePath),
     );
     _slots = List<String?>.filled(4, null);
-    final editable = normalized.where((path) => path != '/more').toList();
+    final editable = normalized.where((path) => path != 'more').toList();
     for (var index = 0; index < editable.length; index++) {
       _slots[index] = editable[index];
     }
@@ -76,7 +76,7 @@ class _TabBarCustomizationSheetState extends State<TabBarCustomizationSheet> {
   }
 
   void _choose(String path) {
-    if (path == '/more') {
+    if (path == 'more') {
       return;
     }
     setState(() {
@@ -98,7 +98,7 @@ class _TabBarCustomizationSheetState extends State<TabBarCustomizationSheet> {
     }
     setState(() => _saving = true);
     try {
-      final paths = [..._slots.whereType<String>(), '/more'];
+      final paths = [..._slots.whereType<String>(), 'more'];
       await AppSettings.updateTabBarPaths(paths);
       if (mounted) {
         Navigator.of(context).pop(paths);
@@ -157,8 +157,9 @@ class _TabBarCustomizationSheetState extends State<TabBarCustomizationSheet> {
                         ),
                         Align(
                           alignment: Alignment.centerRight,
-                          child: IconButton.filledTonal(
+                          child: IconButton(
                             tooltip: 'Закрыть',
+                            color: theme.colorScheme.onSurfaceVariant,
                             onPressed: () => Navigator.of(context).pop(),
                             icon: const Icon(Icons.close),
                           ),
@@ -191,7 +192,7 @@ class _TabBarCustomizationSheetState extends State<TabBarCustomizationSheet> {
                               runSpacing: 12,
                               children: [
                                 for (final route in widget.routes.where(
-                                  (route) => route.pagePath != '/more',
+                                  (route) => route.pagePath != 'more',
                                 ))
                                   SizedBox(
                                     width: width,

@@ -111,7 +111,7 @@ class MainPageRouting {
       Icons.star,
       Icons.star_border,
       'Лента',
-      '/feed',
+      'feed',
       builder: (_, __) => const FeedScreenView(
         bottomRouteIndex: 0,
       ),
@@ -126,7 +126,7 @@ class MainPageRouting {
       Icons.calendar_month,
       Icons.calendar_month_outlined,
       'Расписание',
-      '/schedule',
+      'schedule',
       builder: (_, __) => const ScheduleScreenView(
         bottomRouteIndex: 1,
       ),
@@ -136,7 +136,7 @@ class MainPageRouting {
       Icons.chat,
       Icons.chat_bubble_outline,
       'Сообщения',
-      '/chats',
+      'chats',
       builder: (_, __) => const ChatScreenView(
         bottomRouteIndex: 2,
       ),
@@ -167,7 +167,7 @@ class MainPageRouting {
       Icons.menu_book,
       Icons.menu_book_outlined,
       'Материалы',
-      '/source',
+      'source',
       builder: (_, __) => const SourcePageView(
         bottomRouteIndex: 3,
       ),
@@ -178,7 +178,7 @@ class MainPageRouting {
       Icons.menu,
       Icons.menu,
       'Ещё',
-      '/more',
+      'more',
       builder: (context, _) => MainPageMenu(
         model: context.read<MainPageViewModel>(),
       ),

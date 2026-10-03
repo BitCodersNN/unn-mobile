@@ -25,10 +25,13 @@ Future<bool?> showTabBarContextMenu(
     barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
     barrierColor: Colors.transparent,
     transitionDuration: const Duration(milliseconds: 180),
-    transitionBuilder: (context, animation, secondaryAnimation, child) =>
-        FadeTransition(opacity: animation, child: child),
-    pageBuilder: (context, animation, secondaryAnimation) =>
-        _TabBarContextMenu(anchor: rect, icon: icon, label: label),
+    transitionBuilder: (context, animation, secondaryAnimation, child) => child,
+    pageBuilder: (context, animation, secondaryAnimation) => _TabBarContextMenu(
+      anchor: rect,
+      icon: icon,
+      label: label,
+      animation: animation,
+    ),
   );
 }
 
@@ -36,15 +39,25 @@ class _TabBarContextMenu extends StatelessWidget {
   final Rect anchor;
   final IconData icon;
   final String label;
+  final Animation<double> animation;
 
   const _TabBarContextMenu({
     required this.anchor,
     required this.icon,
     required this.label,
+    required this.animation,
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) => AnimatedBuilder(
+        animation: animation,
+        builder: (context, _) => _buildMenu(
+          context,
+          Curves.easeOutCubic.transform(animation.value),
+        ),
+      );
+
+  Widget _buildMenu(BuildContext context, double progress) {
     final background = CupertinoDynamicColor.resolve(
       CupertinoColors.tertiarySystemBackground,
       context,
@@ -58,25 +71,23 @@ class _TabBarContextMenu extends StatelessWidget {
           final left = (anchor.right - menuWidth)
               .clamp(16.0, constraints.maxWidth - menuWidth - 16);
           const previewSize = 64.0;
-          final previewLeft = (anchor.center.dx - previewSize / 2)
-              .clamp(16.0, constraints.maxWidth - previewSize - 16);
-          final previewTop = (anchor.center.dy - previewSize / 2).clamp(
-            MediaQuery.paddingOf(context).top + 16,
-            constraints.maxHeight -
-                MediaQuery.paddingOf(context).bottom -
-                previewSize,
-          );
+          final previewLeft = anchor.center.dx - previewSize / 2;
+          final previewTop = anchor.center.dy - previewSize / 2;
           final menuTop = previewTop - 96;
           return Stack(
             children: [
               Positioned.fill(
                 child: BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+                  filter: ImageFilter.blur(
+                    sigmaX: 5 * progress,
+                    sigmaY: 5 * progress,
+                  ),
                   child: GestureDetector(
                     behavior: HitTestBehavior.opaque,
                     onTap: () => Navigator.of(context).pop(false),
-                    child:
-                        ColoredBox(color: Colors.black.withValues(alpha: 0.2)),
+                    child: ColoredBox(
+                      color: Colors.black.withValues(alpha: 0.2 * progress),
+                    ),
                   ),
                 ),
               ),
@@ -85,16 +96,19 @@ class _TabBarContextMenu extends StatelessWidget {
                 top: menuTop,
                 width: menuWidth,
                 height: 80,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(16),
-                  child: ColoredBox(
-                    color: background,
-                    child: CupertinoContextMenuAction(
-                      onPressed: () => Navigator.of(context).pop(true),
-                      trailingIcon: CupertinoIcons.gear,
-                      child: Text(
-                        'Настроить нижнее меню',
-                        style: TextStyle(color: foreground, fontSize: 17),
+                child: Opacity(
+                  opacity: progress,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(16),
+                    child: ColoredBox(
+                      color: background,
+                      child: CupertinoContextMenuAction(
+                        onPressed: () => Navigator.of(context).pop(true),
+                        trailingIcon: CupertinoIcons.gear,
+                        child: Text(
+                          'Настроить нижнее меню',
+                          style: TextStyle(color: foreground, fontSize: 17),
+                        ),
                       ),
                     ),
                   ),
@@ -105,44 +119,47 @@ class _TabBarContextMenu extends StatelessWidget {
                 top: previewTop,
                 width: previewSize,
                 height: previewSize,
-                child: Semantics(
-                  label: label,
-                  child: DecoratedBox(
-                    decoration: BoxDecoration(
-                      color: background,
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 4),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            icon,
-                            size: 24,
-                            color: CupertinoDynamicColor.resolve(
-                              CupertinoColors.secondaryLabel,
-                              context,
+                child: Opacity(
+                  opacity: progress,
+                  child: Semantics(
+                    label: label,
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: background,
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 4),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              icon,
+                              size: 24,
+                              color: CupertinoDynamicColor.resolve(
+                                CupertinoColors.secondaryLabel,
+                                context,
+                              ),
                             ),
-                          ),
-                          const SizedBox(height: 4),
-                          SizedBox(
-                            height: 14,
-                            child: FittedBox(
-                              fit: BoxFit.scaleDown,
-                              child: Text(
-                                label,
-                                style: TextStyle(
-                                  fontSize: 10,
-                                  color: CupertinoDynamicColor.resolve(
-                                    CupertinoColors.secondaryLabel,
-                                    context,
+                            const SizedBox(height: 4),
+                            SizedBox(
+                              height: 14,
+                              child: FittedBox(
+                                fit: BoxFit.scaleDown,
+                                child: Text(
+                                  label,
+                                  style: TextStyle(
+                                    fontSize: 10,
+                                    color: CupertinoDynamicColor.resolve(
+                                      CupertinoColors.secondaryLabel,
+                                      context,
+                                    ),
                                   ),
                                 ),
                               ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   ),
