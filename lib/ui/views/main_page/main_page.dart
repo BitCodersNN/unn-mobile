@@ -58,7 +58,18 @@ class MainPageState extends State<MainPage> {
             builder: (context) => widget.shell,
           ),
           bottomNavigationBar: MainPageNavigationBar(
-            onDestinationSelected: (value) {
+            routes: [...MainPageRouting.navbarRoutes, ...model.routes],
+            onDestinationSelected: (route) {
+              final value = MainPageRouting.navbarRoutes.indexOf(route);
+              if (value < 0) {
+                if (route.isDisabled || (route.onlineOnly && !model.isOnline)) {
+                  return;
+                }
+                context.go(
+                  '$mainPageRoute/more/$drawerRoutePrefix/${route.pagePath}',
+                );
+                return;
+              }
               final currentRouteIndex = widget.shell.currentIndex;
               if (value == currentRouteIndex && isRootScreen(context)) {
                 if (value != MainPageRouting.moreTabIndex) {

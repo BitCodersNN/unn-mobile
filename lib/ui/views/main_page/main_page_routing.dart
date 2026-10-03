@@ -175,8 +175,8 @@ class MainPageRouting {
       userTypes: [],
     ),
     MainPageRouteData(
-      Icons.more_horiz,
-      Icons.more_horiz,
+      Icons.menu,
+      Icons.menu,
       'Ещё',
       '/more',
       builder: (context, _) => MainPageMenu(

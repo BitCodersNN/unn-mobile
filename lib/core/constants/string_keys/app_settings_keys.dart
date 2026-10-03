@@ -2,6 +2,7 @@
 // Copyright 2025 BitCodersNN
 
 class AppSettingsKeys {
+  static const String tabBarPaths = 'tabBarPaths';
   static const String vibrationEnabled = 'vibrationEnabled';
   static const String initialPage = 'initialPage';
   static const String analyticsEnabled = 'analyticsEnabled';
