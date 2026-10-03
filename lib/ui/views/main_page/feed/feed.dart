@@ -9,7 +9,6 @@ import 'package:unn_mobile/core/viewmodels/main_page/feed/feed_screen_view_model
 import 'package:unn_mobile/ui/builders/online_status_builder.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/widgets/feed_post.dart';
-import 'package:unn_mobile/ui/views/main_page/main_page.dart';
 import 'package:unn_mobile/ui/views/main_page/main_page_routing.dart';
 import 'package:unn_mobile/ui/views/main_page/main_page_tab_state.dart';
 import 'package:unn_mobile/ui/widgets/offline_overlay_displayer.dart';
@@ -99,7 +98,6 @@ class FeedScreenViewState extends State<FeedScreenView>
                   ],
                 ),
               ],
-              leading: getSubpageLeading(widget.bottomRouteIndex),
             ),
             body: model.isBusy
                 ? const Center(

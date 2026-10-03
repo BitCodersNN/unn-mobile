@@ -6,7 +6,6 @@ import 'package:unn_mobile/core/viewmodels/main_page/certificates_online/certifi
 import 'package:unn_mobile/core/viewmodels/main_page/certificates_online/certificates_view_model.dart';
 import 'package:unn_mobile/ui/functions.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
-import 'package:unn_mobile/ui/views/main_page/main_page.dart';
 import 'package:unn_mobile/ui/widgets/wide_button.dart';
 
 class OnlineCertificatesScreenView extends StatefulWidget {
@@ -24,7 +23,6 @@ class _OnlineCertificatesScreenViewState
   @override
   Widget build(BuildContext context) => Scaffold(
         appBar: AppBar(
-          leading: getSubpageLeading(widget.bottomRouteIndex),
           title: const Text('Справки онлайн'),
           forceMaterialTransparency: true,
         ),

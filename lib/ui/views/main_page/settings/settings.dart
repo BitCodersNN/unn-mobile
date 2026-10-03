@@ -8,7 +8,6 @@ import 'package:unn_mobile/core/misc/app_version.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/settings/settings_screen_view_model.dart';
 import 'package:unn_mobile/ui/router.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
-import 'package:unn_mobile/ui/views/main_page/main_page.dart';
 
 class SettingsScreenView extends StatelessWidget {
   final int? bottomRouteIndex;
@@ -27,7 +26,6 @@ class SettingsScreenView extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Настройки'),
         forceMaterialTransparency: true,
-        leading: getSubpageLeading(bottomRouteIndex),
       ),
       body: BaseView<SettingsScreenViewModel>(
         builder: (context, model, _) => Column(
