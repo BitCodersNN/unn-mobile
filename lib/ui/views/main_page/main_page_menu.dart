@@ -4,9 +4,11 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:unn_mobile/core/misc/app_settings.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/main_page_view_model.dart';
 import 'package:unn_mobile/ui/builders/online_status_builder.dart';
 import 'package:unn_mobile/ui/router.dart';
+import 'package:unn_mobile/ui/views/main_page/main_page_routing.dart';
 import 'package:unn_mobile/ui/widgets/shimmer_loading.dart';
 
 class MainPageMenu extends StatelessWidget {
@@ -34,6 +36,23 @@ class MainPageMenu extends StatelessWidget {
                 children: [
                   _buildProfile(context),
                   const SizedBox(height: 16),
+                  ValueListenableBuilder<List<String>>(
+                    valueListenable: AppSettings.tabBarPaths,
+                    builder: (context, paths, _) => Column(
+                      children: [
+                        for (final route in MainPageRouting.navbarRoutes)
+                          if (!paths.contains(route.pagePath) &&
+                              route.pagePath != '/more')
+                            ListTile(
+                              leading: Icon(route.unselectedIcon),
+                              title: Text(route.pageTitle),
+                              trailing: const Icon(Icons.chevron_right),
+                              onTap: () =>
+                                  context.go(mainPageRoute + route.pagePath),
+                            ),
+                      ],
+                    ),
+                  ),
                   Material(
                     color: theme.colorScheme.surfaceContainerLow,
                     borderRadius: BorderRadius.circular(16),

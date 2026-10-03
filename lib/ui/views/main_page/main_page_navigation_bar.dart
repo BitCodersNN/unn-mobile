@@ -4,36 +4,58 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:unn_mobile/core/misc/app_settings.dart';
+import 'package:unn_mobile/core/misc/haptic_utils.dart';
+import 'package:unn_mobile/core/misc/tab_bar_preferences.dart';
 import 'package:unn_mobile/ui/router.dart';
 import 'package:unn_mobile/ui/views/main_page/main_page_routing.dart';
+import 'package:unn_mobile/ui/views/main_page/tab_bar_context_menu.dart';
+import 'package:unn_mobile/ui/views/main_page/tab_bar_customization_sheet.dart';
 
 class MainPageNavigationBar extends StatelessWidget {
-  final ValueChanged<int>? onDestinationSelected;
+  final ValueChanged<MainPageRouteData>? onDestinationSelected;
+  final List<MainPageRouteData> routes;
 
   static const navbarHeight = 60.0;
 
-  const MainPageNavigationBar({super.key, this.onDestinationSelected});
+  const MainPageNavigationBar({
+    required this.routes,
+    super.key,
+    this.onDestinationSelected,
+  });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return MediaQuery.withNoTextScaling(
-      child: CupertinoTabBar(
-        height: navbarHeight,
-        backgroundColor: theme.colorScheme.surface,
-        activeColor: theme.colorScheme.primary,
-        inactiveColor: theme.colorScheme.onSurfaceVariant,
-        iconSize: 24,
-        currentIndex: getSelectedBarIndex(context),
-        onTap: onDestinationSelected,
-        items: [
-          for (final route in MainPageRouting.navbarRoutes)
-            BottomNavigationBarItem(
-              icon: _buildTabContent(route.unselectedIcon, route.pageTitle),
-              activeIcon: _buildTabContent(route.selectedIcon, route.pageTitle),
-            ),
-        ],
-      ),
+    return ValueListenableBuilder<List<String>>(
+      valueListenable: AppSettings.tabBarPaths,
+      builder: (context, savedPaths, _) {
+        final paths = TabBarPreferences.normalize(
+          savedPaths,
+          allowed: routes.map((route) => route.pagePath),
+        );
+        final visible = paths
+            .map((path) => routes.firstWhere((route) => route.pagePath == path))
+            .toList();
+        return MediaQuery.withNoTextScaling(
+          child: CupertinoTabBar(
+            height: navbarHeight,
+            backgroundColor: theme.colorScheme.surface,
+            activeColor: theme.colorScheme.primary,
+            inactiveColor: theme.colorScheme.onSurfaceVariant,
+            iconSize: 24,
+            currentIndex: getSelectedBarIndex(context, paths),
+            onTap: (index) => onDestinationSelected?.call(visible[index]),
+            items: [
+              for (final route in visible)
+                BottomNavigationBarItem(
+                  icon: _tabButton(route, route.unselectedIcon, paths),
+                  activeIcon: _tabButton(route, route.selectedIcon, paths),
+                ),
+            ],
+          ),
+        );
+      },
     );
   }
 
@@ -56,14 +78,57 @@ class MainPageNavigationBar extends StatelessWidget {
         ],
       );
 
-  static int getSelectedBarIndex(BuildContext context) {
-    final location = GoRouterState.of(context).uri.path;
-    if (location.contains('/$drawerRoutePrefix/')) {
-      return MainPageRouting.moreTabIndex;
-    }
-    final index = MainPageRouting.navbarRoutes.indexWhere(
-      (route) => location.startsWith(mainPageRoute + route.pagePath),
+  Widget _tabButton(
+    MainPageRouteData route,
+    IconData icon,
+    List<String> paths,
+  ) =>
+      Builder(
+        builder: (context) => GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTap: () => onDestinationSelected?.call(route),
+          onLongPress: () => _showCustomizationMenu(context, route, paths),
+          child: SizedBox.expand(
+            child: Center(child: _buildTabContent(icon, route.pageTitle)),
+          ),
+        ),
+      );
+
+  Future<void> _showCustomizationMenu(
+    BuildContext context,
+    MainPageRouteData route,
+    List<String> paths,
+  ) async {
+    triggerHaptic(HapticIntensity.medium);
+    final customize = await showTabBarContextMenu(
+      context,
+      icon: route.unselectedIcon,
+      label: route.pageTitle,
     );
-    return index < 0 ? 0 : index;
+    if (customize != true || !context.mounted) {
+      return;
+    }
+    await showTabBarCustomizationSheet(
+      context,
+      routes: routes,
+      initialPaths: paths,
+      selectedPath: route.pagePath,
+    );
+  }
+
+  static int getSelectedBarIndex(BuildContext context, List<String> paths) {
+    final location = GoRouterState.of(context).uri.path;
+    final drawerPosition = location.indexOf('/$drawerRoutePrefix/');
+    final menuPath = drawerPosition < 0
+        ? null
+        : location.substring(drawerPosition + '/$drawerRoutePrefix/'.length);
+    final index = paths.indexWhere(
+      (path) => path.startsWith('/')
+          ? drawerPosition < 0 &&
+              (location == mainPageRoute + path ||
+                  location.startsWith('$mainPageRoute$path/'))
+          : menuPath == path || (menuPath?.startsWith('$path/') ?? false),
+    );
+    return index < 0 ? paths.indexOf('/more') : index;
   }
 }
