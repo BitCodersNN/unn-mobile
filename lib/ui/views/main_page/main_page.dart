@@ -60,7 +60,9 @@ class MainPageState extends State<MainPage> {
           bottomNavigationBar: MainPageNavigationBar(
             routes: [...MainPageRouting.navbarRoutes, ...model.routes],
             onDestinationSelected: (route) {
-              final value = MainPageRouting.navbarRoutes.indexOf(route);
+              final value = MainPageRouting.navbarRoutes.indexWhere(
+                (destination) => destination.pagePath == route.pagePath,
+              );
               if (value < 0) {
                 if (route.isDisabled || (route.onlineOnly && !model.isOnline)) {
                   return;
