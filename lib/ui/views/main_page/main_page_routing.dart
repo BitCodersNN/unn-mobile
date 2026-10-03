@@ -3,7 +3,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import 'package:unn_mobile/core/models/profile/student/student_data.dart';
+import 'package:unn_mobile/core/viewmodels/main_page/main_page_view_model.dart';
 import 'package:unn_mobile/ui/views/main_page/about/about.dart';
 import 'package:unn_mobile/ui/views/main_page/certificates_online/certificates_online.dart';
 import 'package:unn_mobile/ui/views/main_page/chat/chat.dart';
@@ -13,6 +15,7 @@ import 'package:unn_mobile/ui/views/main_page/feed/feed.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/widgets/comments_page.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/widgets/pinned_posts_page.dart';
 import 'package:unn_mobile/ui/views/main_page/grades/grades.dart';
+import 'package:unn_mobile/ui/views/main_page/main_page_menu.dart';
 import 'package:unn_mobile/ui/views/main_page/profile/profile_page.dart';
 import 'package:unn_mobile/ui/views/main_page/schedule/schedule_screen_view.dart';
 import 'package:unn_mobile/ui/views/main_page/settings/settings.dart';
@@ -101,6 +104,8 @@ final MainPageRouteData feedUserProfileRoute = MainPageRouteData(
 );
 
 class MainPageRouting {
+  static const moreTabIndex = 4;
+
   static final List<MainPageRouteData> navbarRoutes = [
     MainPageRouteData(
       Icons.star,
@@ -167,6 +172,16 @@ class MainPageRouting {
         bottomRouteIndex: 3,
       ),
       isDisabled: false,
+      userTypes: [],
+    ),
+    MainPageRouteData(
+      Icons.more_horiz,
+      Icons.more_horiz,
+      'Ещё',
+      '/more',
+      builder: (context, _) => MainPageMenu(
+        model: context.read<MainPageViewModel>(),
+      ),
       userTypes: [],
     ),
   ];
