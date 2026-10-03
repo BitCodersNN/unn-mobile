@@ -1,47 +1,53 @@
-// SPDX-License-Identifier: Apache-2.0
-// Copyright 2026 BitCodersNN
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:unn_mobile/core/misc/app_settings.dart';
 import 'package:unn_mobile/core/misc/tab_bar_preferences.dart';
+import 'package:unn_mobile/core/viewmodels/main_page/tab_bar_customization_view_model.dart';
 import 'package:unn_mobile/ui/views/main_page/main_page_routing.dart';
+import 'package:unn_mobile/ui/views/main_page/tab_bar_item_content.dart';
 
 Future<List<String>?> showTabBarCustomizationSheet(
   BuildContext context, {
   required List<MainPageRouteData> routes,
-  required List<String> initialPaths,
-  required String selectedPath,
-}) =>
-    showModalBottomSheet<List<String>>(
-      context: context,
-      useRootNavigator: true,
-      isScrollControlled: true,
-      useSafeArea: true,
-      showDragHandle: true,
-      enableDrag: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+  List<String>? initialPaths,
+  String? selectedPath,
+}) {
+  final paths = TabBarPreferences.normalize(
+    initialPaths ?? AppSettings.tabBarPaths.value,
+    allowed: routes.map((route) => route.pagePath),
+  );
+  return showModalBottomSheet<List<String>>(
+    context: context,
+    useRootNavigator: true,
+    isScrollControlled: true,
+    useSafeArea: true,
+    showDragHandle: true,
+    enableDrag: true,
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+    ),
+    builder: (_) => FractionallySizedBox(
+      heightFactor: 0.94,
+      child: TabBarCustomizationSheet(
+        routes: routes,
+        initialPaths: paths,
+        selectedPath: selectedPath ?? paths.first,
       ),
-      builder: (_) => FractionallySizedBox(
-        heightFactor: 0.94,
-        child: TabBarCustomizationSheet(
-          routes: routes,
-          initialPaths: initialPaths,
-          selectedPath: selectedPath,
-        ),
-      ),
-    );
+    ),
+  );
+}
 
 class TabBarCustomizationSheet extends StatefulWidget {
   final List<MainPageRouteData> routes;
   final List<String> initialPaths;
   final String selectedPath;
+  final Future<void> Function(List<String>) savePaths;
 
   const TabBarCustomizationSheet({
     required this.routes,
     required this.initialPaths,
     required this.selectedPath,
+    this.savePaths = AppSettings.updateTabBarPaths,
     super.key,
   });
 
@@ -51,56 +57,31 @@ class TabBarCustomizationSheet extends StatefulWidget {
 }
 
 class _TabBarCustomizationSheetState extends State<TabBarCustomizationSheet> {
-  late List<String?> _slots;
-  late int _selectedSlot;
-  bool _saving = false;
-
-  void _resetSlots(Iterable<String> paths) {
-    final normalized = TabBarPreferences.normalize(
-      paths,
-      allowed: widget.routes.map((route) => route.pagePath),
-    );
-    _slots = List<String?>.filled(4, null);
-    final editable = normalized.where((path) => path != 'more').toList();
-    for (var index = 0; index < editable.length; index++) {
-      _slots[index] = editable[index];
-    }
-  }
+  late final TabBarCustomizationViewModel _model;
+  late final Map<String, MainPageRouteData> _routesByPath;
 
   @override
   void initState() {
     super.initState();
-    _resetSlots(widget.initialPaths);
-    final index = _slots.indexOf(widget.selectedPath);
-    _selectedSlot = index < 0 ? 0 : index;
+    _routesByPath = {for (final route in widget.routes) route.pagePath: route};
+    _model = TabBarCustomizationViewModel(
+      allowedPaths: _routesByPath.keys,
+      initialPaths: widget.initialPaths,
+      selectedPath: widget.selectedPath,
+      savePaths: widget.savePaths,
+    );
   }
 
-  void _choose(String path) {
-    if (path == 'more') {
-      return;
-    }
-    setState(() {
-      final existing = _slots.indexOf(path);
-      if (existing >= 0 && existing != _selectedSlot) {
-        if (_slots[_selectedSlot] == null && existing < 2) {
-          _selectedSlot = existing;
-          return;
-        }
-        _slots[existing] = _slots[_selectedSlot];
-      }
-      _slots[_selectedSlot] = path;
-    });
+  @override
+  void dispose() {
+    _model.dispose();
+    super.dispose();
   }
 
   Future<void> _save() async {
-    if (_saving) {
-      return;
-    }
-    setState(() => _saving = true);
     try {
-      final paths = [..._slots.whereType<String>(), 'more'];
-      await AppSettings.updateTabBarPaths(paths);
-      if (mounted) {
+      final paths = await _model.save();
+      if (mounted && paths != null) {
         Navigator.of(context).pop(paths);
       }
     } catch (_) {
@@ -108,21 +89,25 @@ class _TabBarCustomizationSheetState extends State<TabBarCustomizationSheet> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Не удалось сохранить нижнее меню')),
         );
-        setState(() => _saving = false);
       }
     }
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) => ListenableBuilder(
+        listenable: _model,
+        builder: (context, _) => _buildSheet(context),
+      );
+
+  Widget _buildSheet(BuildContext context) {
     final theme = Theme.of(context);
-    final adding = _slots[_selectedSlot] == null;
-    final canRemove = _selectedSlot >= 2;
+    final adding = _model.selectedPath == null;
+    final canRemove = _model.canRemove;
     return MediaQuery.withNoTextScaling(
       child: PopScope(
-        canPop: !_saving,
+        canPop: !_model.isSaving,
         child: AbsorbPointer(
-          absorbing: _saving,
+          absorbing: _model.isSaving,
           child: SafeArea(
             top: false,
             child: Column(
@@ -148,10 +133,7 @@ class _TabBarCustomizationSheetState extends State<TabBarCustomizationSheet> {
                         Align(
                           alignment: Alignment.centerLeft,
                           child: TextButton(
-                            onPressed: () => setState(() {
-                              _resetSlots(TabBarPreferences.defaultPaths);
-                              _selectedSlot = 0;
-                            }),
+                            onPressed: _model.reset,
                             child: const Text('Сброс'),
                           ),
                         ),
@@ -192,7 +174,9 @@ class _TabBarCustomizationSheetState extends State<TabBarCustomizationSheet> {
                               runSpacing: 12,
                               children: [
                                 for (final route in widget.routes.where(
-                                  (route) => route.pagePath != 'more',
+                                  (route) =>
+                                      route.pagePath !=
+                                      TabBarPreferences.morePath,
                                 ))
                                   SizedBox(
                                     width: width,
@@ -201,11 +185,10 @@ class _TabBarCustomizationSheetState extends State<TabBarCustomizationSheet> {
                                       icon: route.unselectedIcon,
                                       label: route.pageTitle,
                                       selected: !adding &&
-                                          _slots[_selectedSlot] ==
-                                              route.pagePath,
+                                          _model.selectedPath == route.pagePath,
                                       onTap: route.isDisabled
                                           ? null
-                                          : () => _choose(route.pagePath),
+                                          : () => _model.choose(route.pagePath),
                                     ),
                                   ),
                                 SizedBox(
@@ -216,9 +199,7 @@ class _TabBarCustomizationSheetState extends State<TabBarCustomizationSheet> {
                                     label: 'Не показывать',
                                     selected: adding,
                                     onTap: canRemove
-                                        ? () => setState(() {
-                                              _slots[_selectedSlot] = null;
-                                            })
+                                        ? _model.removeSelected
                                         : null,
                                   ),
                                 ),
@@ -245,7 +226,9 @@ class _TabBarCustomizationSheetState extends State<TabBarCustomizationSheet> {
                       ),
                       child: Row(
                         children: [
-                          for (var index = 0; index < 4; index++)
+                          for (var index = 0;
+                              index < TabBarPreferences.editableSlotCount;
+                              index++)
                             Expanded(child: _previewSlot(context, index)),
                           Expanded(
                             child: Semantics(
@@ -255,31 +238,15 @@ class _TabBarCustomizationSheetState extends State<TabBarCustomizationSheet> {
                                   vertical: 10,
                                   horizontal: 2,
                                 ),
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Icon(
-                                      Icons.menu,
-                                      color: theme.colorScheme.onSurface
-                                          .withValues(alpha: 0.35),
-                                    ),
-                                    const SizedBox(height: 4),
-                                    SizedBox(
-                                      height: 14,
-                                      child: FittedBox(
-                                        fit: BoxFit.scaleDown,
-                                        child: Text(
-                                          'Ещё',
-                                          style: TextStyle(
-                                            color: theme.colorScheme.onSurface
-                                                .withValues(
-                                              alpha: 0.35,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
+                                child: TabBarItemContent(
+                                  icon: Icons.menu,
+                                  label: 'Ещё',
+                                  color: theme.colorScheme.onSurface
+                                      .withValues(alpha: 0.35),
+                                  labelStyle: TextStyle(
+                                    color: theme.colorScheme.onSurface
+                                        .withValues(alpha: 0.35),
+                                  ),
                                 ),
                               ),
                             ),
@@ -294,11 +261,11 @@ class _TabBarCustomizationSheetState extends State<TabBarCustomizationSheet> {
                   child: SizedBox(
                     width: double.infinity,
                     child: FilledButton(
-                      onPressed: _saving ? null : _save,
+                      onPressed: _model.isSaving ? null : _save,
                       style: FilledButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 16),
                       ),
-                      child: Text(_saving ? 'Сохранение…' : 'Готово'),
+                      child: Text(_model.isSaving ? 'Сохранение…' : 'Готово'),
                     ),
                   ),
                 ),
@@ -311,64 +278,40 @@ class _TabBarCustomizationSheetState extends State<TabBarCustomizationSheet> {
   }
 
   Widget _previewSlot(BuildContext context, int index) {
-    final path = _slots[index];
-    final route = path == null
-        ? null
-        : widget.routes.firstWhere((route) => route.pagePath == path);
+    final path = _model.slots[index];
+    final route = path == null ? null : _routesByPath[path];
     final theme = Theme.of(context);
-    final selected = _selectedSlot == index;
+    final selected = _model.selectedSlot == index;
     final content = Material(
       color: Colors.transparent,
       borderRadius: BorderRadius.circular(14),
       child: InkWell(
         key: ValueKey('quick-access-slot-$index'),
         borderRadius: BorderRadius.circular(14),
-        onTap: () => setState(() => _selectedSlot = index),
+        onTap: () => _model.selectSlot(index),
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 2),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                (selected ? route?.selectedIcon : route?.unselectedIcon) ??
-                    (selected ? Icons.block : Icons.add),
-                color: selected
-                    ? theme.colorScheme.primary
-                    : theme.colorScheme.onSurfaceVariant,
-              ),
-              const SizedBox(height: 4),
-              SizedBox(
-                height: 14,
-                child: FittedBox(
-                  fit: BoxFit.scaleDown,
-                  child: Text(
-                    route?.pageTitle ??
-                        (selected ? 'Не показывать' : 'Добавить'),
-                    style: CupertinoTheme.of(context)
-                        .textTheme
-                        .tabLabelTextStyle
-                        .copyWith(
-                          color: selected
-                              ? theme.colorScheme.primary
-                              : theme.colorScheme.onSurfaceVariant,
-                        ),
-                  ),
-                ),
-              ),
-            ],
+          child: TabBarItemContent(
+            icon: (selected ? route?.selectedIcon : route?.unselectedIcon) ??
+                (selected ? Icons.block : Icons.add),
+            label:
+                route?.pageTitle ?? (selected ? 'Не показывать' : 'Добавить'),
+            color: selected
+                ? theme.colorScheme.primary
+                : theme.colorScheme.onSurfaceVariant,
+            labelStyle:
+                CupertinoTheme.of(context).textTheme.tabLabelTextStyle.copyWith(
+                      color: selected
+                          ? theme.colorScheme.primary
+                          : theme.colorScheme.onSurfaceVariant,
+                    ),
           ),
         ),
       ),
     );
     return DragTarget<int>(
-      onWillAcceptWithDetails: (details) =>
-          details.data != index && !(details.data < 2 && _slots[index] == null),
-      onAcceptWithDetails: (details) => setState(() {
-        final moved = _slots[details.data];
-        _slots[details.data] = _slots[index];
-        _slots[index] = moved;
-        _selectedSlot = index;
-      }),
+      onWillAcceptWithDetails: (details) => _model.canMove(details.data, index),
+      onAcceptWithDetails: (details) => _model.move(details.data, index),
       builder: (context, candidates, rejected) => path == null
           ? content
           : LongPressDraggable<int>(

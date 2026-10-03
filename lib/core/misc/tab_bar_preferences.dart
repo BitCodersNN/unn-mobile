@@ -1,13 +1,16 @@
-// SPDX-License-Identifier: Apache-2.0
-// Copyright 2026 BitCodersNN
-
 class TabBarPreferences {
+  static const morePath = 'more';
+  static const minTabs = 3;
+  static const maxTabs = 5;
+  static const editableSlotCount = maxTabs - 1;
+  static const requiredSlotCount = minTabs - 1;
+
   static const defaultPaths = [
     'feed',
     'schedule',
     'chats',
     'source',
-    'more',
+    morePath,
   ];
   static const availablePaths = [
     ...defaultPaths,
@@ -22,20 +25,23 @@ class TabBarPreferences {
     Iterable<String> paths, {
     Iterable<String> allowed = availablePaths,
   }) {
+    final allowedPaths = allowed.toSet();
     final result = paths
-        .where((path) => path != 'more' && allowed.contains(path))
+        .where((path) => path != morePath && allowedPaths.contains(path))
         .toSet()
-        .take(4)
+        .take(editableSlotCount)
         .toList();
     for (final path in defaultPaths) {
-      if (result.length >= 2) {
+      if (result.length >= requiredSlotCount) {
         break;
       }
-      if (path != 'more' && allowed.contains(path) && !result.contains(path)) {
+      if (path != morePath &&
+          allowedPaths.contains(path) &&
+          !result.contains(path)) {
         result.add(path);
       }
     }
-    result.add('more');
+    result.add(morePath);
     return List.unmodifiable(result);
   }
 }

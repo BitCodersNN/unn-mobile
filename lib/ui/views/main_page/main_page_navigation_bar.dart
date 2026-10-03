@@ -8,10 +8,11 @@ import 'package:go_router/go_router.dart';
 import 'package:unn_mobile/core/misc/app_settings.dart';
 import 'package:unn_mobile/core/misc/haptic_utils.dart';
 import 'package:unn_mobile/core/misc/tab_bar_preferences.dart';
-import 'package:unn_mobile/ui/router.dart';
+import 'package:unn_mobile/ui/main_page_locations.dart';
 import 'package:unn_mobile/ui/views/main_page/main_page_routing.dart';
 import 'package:unn_mobile/ui/views/main_page/tab_bar_context_menu.dart';
 import 'package:unn_mobile/ui/views/main_page/tab_bar_customization_sheet.dart';
+import 'package:unn_mobile/ui/views/main_page/tab_bar_item_content.dart';
 
 class MainPageNavigationBar extends StatelessWidget {
   final ValueChanged<MainPageRouteData>? onDestinationSelected;
@@ -31,13 +32,14 @@ class MainPageNavigationBar extends StatelessWidget {
     return ValueListenableBuilder<List<String>>(
       valueListenable: AppSettings.tabBarPaths,
       builder: (context, savedPaths, _) {
+        final routesByPath = {
+          for (final route in routes) route.pagePath: route,
+        };
         final paths = TabBarPreferences.normalize(
           savedPaths,
-          allowed: routes.map((route) => route.pagePath),
+          allowed: routesByPath.keys,
         );
-        final visible = paths
-            .map((path) => routes.firstWhere((route) => route.pagePath == path))
-            .toList();
+        final visible = paths.map((path) => routesByPath[path]!).toList();
         return MediaQuery.withNoTextScaling(
           child: CupertinoTabBar(
             height: navbarHeight,
@@ -59,25 +61,6 @@ class MainPageNavigationBar extends StatelessWidget {
       },
     );
   }
-
-  Widget _buildTabContent(IconData icon, String label) => Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Icon(icon),
-          const SizedBox(height: 4),
-          SizedBox(
-            height: 14,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 4),
-              child: FittedBox(
-                fit: BoxFit.scaleDown,
-                child: Text(label, maxLines: 1),
-              ),
-            ),
-          ),
-        ],
-      );
 
   Widget _tabButton(
     MainPageRouteData route,
@@ -104,7 +87,9 @@ class MainPageNavigationBar extends StatelessWidget {
             ),
           },
           child: SizedBox.expand(
-            child: Center(child: _buildTabContent(icon, route.pageTitle)),
+            child: Center(
+              child: TabBarItemContent(icon: icon, label: route.pageTitle),
+            ),
           ),
         ),
       );
@@ -132,12 +117,8 @@ class MainPageNavigationBar extends StatelessWidget {
   }
 
   static int getSelectedBarIndex(BuildContext context, List<String> paths) {
-    final segments = GoRouterState.of(context).uri.pathSegments;
-    final drawerIndex = segments.indexOf(drawerRoutePrefix);
-    final destinationIndex = drawerIndex < 0 ? 1 : drawerIndex + 1;
-    final destination =
-        destinationIndex < segments.length ? segments[destinationIndex] : null;
+    final destination = mainPageDestinationPath(GoRouterState.of(context).uri);
     final index = destination == null ? -1 : paths.indexOf(destination);
-    return index < 0 ? paths.indexOf('more') : index;
+    return index < 0 ? paths.indexOf(TabBarPreferences.morePath) : index;
   }
 }

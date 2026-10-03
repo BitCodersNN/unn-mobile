@@ -5,9 +5,7 @@ import 'package:adaptive_dialog/adaptive_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:unn_mobile/core/misc/app_settings.dart';
 import 'package:unn_mobile/core/misc/app_version.dart';
-import 'package:unn_mobile/core/misc/tab_bar_preferences.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/main_page_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/settings/settings_screen_view_model.dart';
 import 'package:unn_mobile/ui/router.dart';
@@ -79,15 +77,9 @@ class SettingsScreenView extends StatelessWidget {
                                 ...MainPageRouting.navbarRoutes,
                                 ...mainModel.routes,
                               ];
-                              final paths = TabBarPreferences.normalize(
-                                AppSettings.tabBarPaths.value,
-                                allowed: routes.map((route) => route.pagePath),
-                              );
                               await showTabBarCustomizationSheet(
                                 context,
                                 routes: routes,
-                                initialPaths: paths,
-                                selectedPath: paths.first,
                               );
                             },
                           ),
