@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright 2026 BitCodersNN
+
 import 'package:unn_mobile/ui/views/main_page/main_page_routing.dart';
 
 const loadingPageRoute = '/';
