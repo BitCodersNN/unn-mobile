@@ -1,22 +1,23 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2025 BitCodersNN
 
-import 'package:unn_mobile/core/models/schedule/subject.dart';
+import 'package:unn_mobile/core/models/schedule/offline_schedule.dart';
+import 'package:unn_mobile/core/models/schedule/schedule_filter.dart';
 import 'package:unn_mobile/core/providers/interfaces/data_provider.dart';
 
 abstract interface class OfflineScheduleProvider
-    implements DataProvider<List<Subject>?> {
+    implements DataProvider<Map<IdType, OfflineSchedule>> {
   /// Загрузка расписания из хранилища
   ///
   /// Возвращает список предметов или 'null', если нет сохранённого расписания в хранилище
   @override
-  Future<List<Subject>?> getData();
+  Future<Map<IdType, OfflineSchedule>> getData();
 
   /// Сохраняет расписание в хранилище. Если расписание уже сохранено в хранилище, то старое удаляется и записывается новое
   ///
   /// [schedule]: Список предметов
   @override
-  Future<void> saveData(List<Subject>? schedule);
+  Future<void> saveData(Map<IdType, OfflineSchedule>? schedule);
 
   /// Проверяет наличие расписания в хранилище
   @override

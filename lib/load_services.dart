@@ -385,7 +385,6 @@ void registerDependencies() {
     ..registerSingleton<OfflineScheduleProvider>(
       () => OfflineScheduleProviderImpl(
         get<StorageService>(),
-        get<LoggerService>(),
       ),
     )
     ..registerSingleton<ScheduleSearchHistoryService>(
@@ -719,6 +718,7 @@ void registerDependencies() {
         get<ScheduleService>(),
         get<ScheduleSearchHistoryService>(),
         get<ExportScheduleService>(),
+        get<OfflineScheduleProvider>(),
       ),
     )
     ..registerDependency(
