@@ -83,21 +83,6 @@ class SettingsScreenView extends StatelessWidget {
                               );
                             },
                           ),
-                          ListTile(
-                            title: const Text('Начальный экран'),
-                            trailing: Padding(
-                              padding: const EdgeInsets.all(6.0),
-                              child: Text(
-                                model.initialScreenName,
-                                style: const TextStyle(fontSize: 16),
-                                softWrap: false,
-                                overflow: TextOverflow.visible,
-                              ),
-                            ),
-                            onTap: () async {
-                              await _showScreenChoiceModal(context, model);
-                            },
-                          ),
                         ],
                         ListTile(
                           title: const Text('Очистить кэш'),
@@ -164,42 +149,5 @@ class SettingsScreenView extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  Future<dynamic> _showScreenChoiceModal(
-    BuildContext context,
-    SettingsScreenViewModel model,
-  ) async {
-    final theme = Theme.of(context);
-    final currentIndex = model.activeNavbarRouteIndex;
-
-    final selectedIndex = await showModalActionSheet<int>(
-      context: context,
-      useRootNavigator: true,
-      title: 'Выберите экран',
-      cancelLabel: 'Отмена',
-      actions: List.generate(
-        model.navbarRouteCount,
-        (index) {
-          final isSelected = index == currentIndex;
-
-          return SheetAction<int>(
-            label: model.activeNavbarRouteNames[index],
-            key: index,
-            isDefaultAction: isSelected,
-            textStyle: TextStyle(
-              color: isSelected ? theme.colorScheme.primary : null,
-              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-            ),
-          );
-        },
-      ),
-    );
-
-    if (selectedIndex != null) {
-      model.activeNavbarRouteIndex = selectedIndex;
-    }
-
-    return selectedIndex;
   }
 }
