@@ -72,8 +72,8 @@ class ScheduleServiceImpl implements ScheduleService {
 
   @override
   Future<List<Subject>?> getCurrentUserSchedule(
-    DateTime date,
     String login,
+    DateTime date,
   ) async {
     Response response;
     try {

@@ -44,7 +44,7 @@ class ScheduleSearchSuggestionItemView extends StatelessWidget {
         IdType.student => Icons.person_outline,
         IdType.lecturer => Icons.person_outline,
         IdType.group => Icons.groups_outlined,
-        IdType.auditoriun => Icons.location_on_outlined,
+        IdType.auditorium => Icons.location_on_outlined,
         _ => Icons.search,
       };
 
