@@ -15,6 +15,7 @@ import 'package:unn_mobile/core/misc/haptic_utils.dart';
 import 'package:unn_mobile/core/misc/html_utils/html_to_plain_text.dart';
 import 'package:unn_mobile/core/models/feed/rating_list.dart';
 import 'package:unn_mobile/core/viewmodels/factories/feed_post_view_model_factory.dart';
+import 'package:unn_mobile/core/viewmodels/factories/profile_view_model_factory.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/common/profile_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/feed/feed_post_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/feed/reaction_view_model.dart';
@@ -364,71 +365,89 @@ class _PostHeader extends StatelessWidget {
     final theme = Theme.of(context);
     return BaseView<ProfileViewModel>(
       model: viewModel,
-      builder: (context, model, _) => Row(
-        children: [
-          SizedBox(
-            width: 45,
-            height: 45,
-            child: ShimmerLoading(
-              isLoading: model.isLoading,
-              child: CircleAvatar(
-                backgroundImage: model.hasAvatar
-                    ? CachedNetworkImageProvider(model.avatarUrl!)
-                    : null,
-                child: model.hasAvatar
-                    ? null
-                    : Text(
-                        style: theme.textTheme.headlineSmall!.copyWith(
-                          color: theme.colorScheme.onSurface,
+      builder: (context, model, _) => GestureDetector(
+        onTap: () {
+          if (model.isLoading) {
+            return;
+          }
+          final bitrixId = model.userData?.bitrixId;
+          if (bitrixId == null) {
+            return;
+          }
+          Injector.appInstance
+              .get<ProfileViewModelFactory>()
+              .putInCache(bitrixId, model);
+          GoRouter.of(context).go(
+            '${GoRouter.of(context).routeInformationProvider.value.uri.path}/'
+            '${feedUserProfileRoute.pagePath.replaceAll(':userId', bitrixId.toString())}',
+          );
+        },
+        child: Row(
+          children: [
+            SizedBox(
+              width: 45,
+              height: 45,
+              child: ShimmerLoading(
+                isLoading: model.isLoading,
+                child: CircleAvatar(
+                  backgroundImage: model.hasAvatar
+                      ? CachedNetworkImageProvider(model.avatarUrl!)
+                      : null,
+                  child: model.hasAvatar
+                      ? null
+                      : Text(
+                          style: theme.textTheme.headlineSmall!.copyWith(
+                            color: theme.colorScheme.onSurface,
+                          ),
+                          model.initials,
                         ),
-                        model.initials,
-                      ),
+                ),
               ),
             ),
-          ),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                ShimmerLoading(
-                  isLoading: model.isLoading,
-                  child: model.isLoading
-                      ? Container(
-                          width: double.infinity,
-                          height: MediaQuery.of(context)
-                              .textScaler
-                              .clamp(maxScaleFactor: 1.5)
-                              .scale(16),
-                          decoration: BoxDecoration(
-                            color: Colors.black,
-                            borderRadius: BorderRadius.circular(16),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  ShimmerLoading(
+                    isLoading: model.isLoading,
+                    child: model.isLoading
+                        ? Container(
+                            width: double.infinity,
+                            height: MediaQuery.of(context)
+                                .textScaler
+                                .clamp(maxScaleFactor: 1.5)
+                                .scale(16),
+                            decoration: BoxDecoration(
+                              color: Colors.black,
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                          )
+                        : Text(
+                            model.fullname,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: theme.primaryColor,
+                            ),
                           ),
-                        )
-                      : Text(
-                          model.fullname,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: theme.primaryColor,
-                          ),
-                        ),
-                ),
-                Text(
-                  postTime == null
-                      ? ''
-                      : DateFormat('d MMMM yyyy, HH:mm', 'ru_RU')
-                          .format(postTime!),
-                  style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.normal,
-                    color: theme.colorScheme.onSurfaceVariant,
                   ),
-                ),
-              ],
+                  Text(
+                    postTime == null
+                        ? ''
+                        : DateFormat('d MMMM yyyy, HH:mm', 'ru_RU')
+                            .format(postTime!),
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.normal,
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

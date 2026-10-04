@@ -6,6 +6,7 @@ import 'dart:async';
 import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/misc/user/current_user_sync_storage.dart';
 import 'package:unn_mobile/core/misc/user/user_functions.dart';
+import 'package:unn_mobile/core/models/profile/employee/employee_data.dart';
 import 'package:unn_mobile/core/models/profile/student/student_data.dart';
 import 'package:unn_mobile/core/models/profile/user_data.dart';
 import 'package:unn_mobile/core/models/profile/user_short_info.dart';
@@ -30,6 +31,8 @@ class ProfileViewModel extends BaseViewModel {
 
   String? _description;
 
+  bool isMe = false;
+
   ProfileViewModel(
     this._getCurrentUserService,
     this._getProfileService,
@@ -47,6 +50,14 @@ class ProfileViewModel extends BaseViewModel {
 
   String? get avatarUrl => _loadedData?.photoSrc;
 
+  UserData? get userData => _loadedData;
+
+  EmployeeData? get employeeData =>
+      _loadedData is EmployeeData ? _loadedData! as EmployeeData : null;
+
+  StudentData? get studentData =>
+      _loadedData is StudentData ? _loadedData! as StudentData : null;
+
   String get description => _description ?? '';
 
   String get fullname =>
@@ -62,14 +73,15 @@ class ProfileViewModel extends BaseViewModel {
 
   bool get isLoading => _isLoading;
 
-  void init({
+  FutureOr<void> init({
     bool force = false,
     int? userId,
     bool loadCurrentUser = false,
     bool loadFromPost = false,
     bool setBusy = true,
     int retryAttempt = 0,
-  }) {
+  }) async {
+    isMe = loadCurrentUser;
     if (!loadCurrentUser && userId == null) {
       setState(ViewState.busy); // Пустая вьюмодель никогда не загрузится...
       return;
@@ -78,7 +90,9 @@ class ProfileViewModel extends BaseViewModel {
       _isLoading = setBusy;
       _hasError = false;
       notifyListeners();
-      (loadCurrentUser ? _getCurrentUser() : _getProfile(userId!, loadFromPost))
+      await (loadCurrentUser
+              ? _getCurrentUser()
+              : _getProfile(userId!, loadFromPost))
           .then((data) {
         _loadedData = data;
         _description = switch (data.runtimeType) {

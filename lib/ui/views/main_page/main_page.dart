@@ -112,9 +112,8 @@ class MainPageState extends State<MainPage> {
                   goToRootScreen(context, currentRouteIndex);
                 }
               } else {
-                if (GoRouterState.of(context).uri.path.contains('drawer')) {
-                  goToRootScreen(context, currentRouteIndex);
-                }
+                goToRootScreen(context, currentRouteIndex);
+
                 // Без делея эта хрень не работает >:(
                 Future.delayed(
                   const Duration(milliseconds: 10),
@@ -128,7 +127,8 @@ class MainPageState extends State<MainPage> {
       );
 
   void goToRootScreen(BuildContext context, int currentRouteIndex) {
-    GoRouter.of(context)
-        .go(MainPageRouting.navbarRoutes[currentRouteIndex].pagePath);
+    GoRouter.of(context).go(
+      mainPageRoute + MainPageRouting.navbarRoutes[currentRouteIndex].pagePath,
+    );
   }
 }
