@@ -2,11 +2,11 @@ import 'dart:async';
 import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:unn_mobile/ui/views/main_page/main_page_routing.dart';
 import 'package:unn_mobile/ui/views/main_page/tab_bar_context_menu_session.dart';
 import 'package:unn_mobile/ui/views/main_page/tab_bar_drag_feedback.dart';
+import 'package:unn_mobile/ui/views/main_page/tab_bar_gesture_detector.dart';
 import 'package:unn_mobile/ui/views/main_page/tab_bar_item_content.dart';
 
 Future<TabBarContextMenuResult?> showTabBarContextMenu(
@@ -17,20 +17,34 @@ Future<TabBarContextMenuResult?> showTabBarContextMenu(
   final completion = Completer<TabBarContextMenuResult?>();
   late final OverlayEntry entry;
   LocalHistoryEntry? history;
+  TabBarContextMenuResult? dismissedResult;
+  var removed = false;
+  void removeOverlay() {
+    if (removed) {
+      return;
+    }
+    removed = true;
+    history?.remove();
+    entry
+      ..remove()
+      ..dispose();
+  }
+
   entry = OverlayEntry(
     builder: (_) => _TabBarContextMenu(
       session: session,
       routes: routes,
       onDismiss: (result) {
-        history?.remove();
-        entry
-          ..remove()
-          ..dispose();
-        completion.complete(result);
+        dismissedResult = result;
+        removeOverlay();
+      },
+      onClosed: () {
+        removeOverlay();
+        completion.complete(dismissedResult);
       },
     ),
   );
-  history = LocalHistoryEntry(onRemove: () => session.onCancel?.call());
+  history = LocalHistoryEntry(onRemove: session.cancel);
   ModalRoute.of(context)?.addLocalHistoryEntry(history);
   Navigator.of(context, rootNavigator: true).overlay!.insert(entry);
   return completion.future;
@@ -40,11 +54,13 @@ class _TabBarContextMenu extends StatefulWidget {
   final TabBarContextMenuSession session;
   final List<MainPageRouteData> routes;
   final ValueChanged<TabBarContextMenuResult?> onDismiss;
+  final VoidCallback onClosed;
 
   const _TabBarContextMenu({
     required this.session,
     required this.routes,
     required this.onDismiss,
+    required this.onClosed,
   });
 
   @override
@@ -66,27 +82,33 @@ class _TabBarContextMenuState extends State<_TabBarContextMenu>
       vsync: this,
       duration: const Duration(milliseconds: 180),
     )..forward();
-    session.onDrop = _finishDrag;
-    session.onCancel = () => _dismiss(null);
+    session.addListener(_onSessionChanged);
   }
 
   @override
   void dispose() {
-    session.onDrop = null;
-    session.onCancel = null;
-    session.dispose();
+    session.removeListener(_onSessionChanged);
     _animation.dispose();
     super.dispose();
+    widget.onClosed();
   }
 
-  void _finishDrag() => _dismiss(TabBarContextMenuResult(paths: session.paths));
+  void _onSessionChanged() {
+    if (session.closeRequested) {
+      _dismiss(session.result);
+    }
+  }
 
   Future<void> _dismiss(TabBarContextMenuResult? result) async {
     if (_closing) {
       return;
     }
     _closing = true;
-    await _animation.reverse();
+    try {
+      await _animation.reverse().orCancel;
+    } on TickerCanceled {
+      return;
+    }
     if (mounted) {
       widget.onDismiss(result);
     }
@@ -207,32 +229,16 @@ class _TabBarContextMenuState extends State<_TabBarContextMenu>
       top: session.contentRect.top - (dragging ? 8 : 0),
       width: session.itemWidth,
       height: session.contentRect.height,
-      child: RawGestureDetector(
-        behavior: HitTestBehavior.opaque,
-        gestures: {
-          TapGestureRecognizer:
-              GestureRecognizerFactoryWithHandlers<TapGestureRecognizer>(
-            TapGestureRecognizer.new,
-            (recognizer) => recognizer.onTap = () => _dismiss(
-                  TabBarContextMenuResult(
-                    paths: session.paths,
-                    destinationPath: path,
-                  ),
-                ),
+      child: TabBarGestureDetector(
+        onTap: () => _dismiss(
+          TabBarContextMenuResult(
+            paths: session.paths,
+            destinationPath: path,
           ),
-          LongPressGestureRecognizer:
-              GestureRecognizerFactoryWithHandlers<LongPressGestureRecognizer>(
-            () => LongPressGestureRecognizer(
-              duration: const Duration(milliseconds: 350),
-            ),
-            (recognizer) => recognizer
-              ..onLongPressStart =
-                  ((details) => session.begin(path, details.globalPosition))
-              ..onLongPressMoveUpdate =
-                  ((details) => session.move(details.globalPosition))
-              ..onLongPressEnd = ((_) => session.end()),
-          ),
-        },
+        ),
+        onHoldStart: (pointer) => session.begin(path, pointer),
+        onHoldMove: session.move,
+        onHoldEnd: session.end,
         child: TabBarDragFeedback(
           dragging: dragging,
           backgroundColor: held
