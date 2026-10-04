@@ -2,6 +2,7 @@
 // Copyright 2026 BitCodersNN
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:unn_mobile/core/misc/app_settings.dart';
@@ -46,7 +47,18 @@ class MainPageMenu extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        _buildProfile(context),
+                        Semantics(
+                          button: true,
+                          label: 'Открыть мой профиль',
+                          child: CupertinoButton(
+                            padding: EdgeInsets.zero,
+                            pressedOpacity: 0.75,
+                            onPressed: () => context.go(
+                              mainPageDestinationLocation('myProfile'),
+                            ),
+                            child: _buildProfile(context),
+                          ),
+                        ),
                         const SizedBox(height: 36),
                         Material(
                           color: theme.colorScheme.surfaceContainerLow,
