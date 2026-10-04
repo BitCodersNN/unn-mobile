@@ -2,6 +2,7 @@
 // Copyright 2025 BitCodersNN
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -11,10 +12,11 @@ import 'package:unn_mobile/core/misc/tab_bar_preferences.dart';
 import 'package:unn_mobile/ui/main_page_locations.dart';
 import 'package:unn_mobile/ui/views/main_page/main_page_routing.dart';
 import 'package:unn_mobile/ui/views/main_page/tab_bar_context_menu.dart';
+import 'package:unn_mobile/ui/views/main_page/tab_bar_context_menu_session.dart';
 import 'package:unn_mobile/ui/views/main_page/tab_bar_customization_sheet.dart';
 import 'package:unn_mobile/ui/views/main_page/tab_bar_item_content.dart';
 
-class MainPageNavigationBar extends StatelessWidget {
+class MainPageNavigationBar extends StatefulWidget {
   final ValueChanged<MainPageRouteData>? onDestinationSelected;
   final List<MainPageRouteData> routes;
 
@@ -27,13 +29,27 @@ class MainPageNavigationBar extends StatelessWidget {
   });
 
   @override
+  State<MainPageNavigationBar> createState() => _MainPageNavigationBarState();
+
+  static int getSelectedBarIndex(BuildContext context, List<String> paths) {
+    final destination = mainPageDestinationPath(GoRouterState.of(context).uri);
+    final index = destination == null ? -1 : paths.indexOf(destination);
+    return index < 0 ? paths.indexOf(TabBarPreferences.morePath) : index;
+  }
+}
+
+class _MainPageNavigationBarState extends State<MainPageNavigationBar> {
+  final _barKey = GlobalKey();
+  TabBarContextMenuSession? _session;
+
+  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return ValueListenableBuilder<List<String>>(
       valueListenable: AppSettings.tabBarPaths,
       builder: (context, savedPaths, _) {
         final routesByPath = {
-          for (final route in routes) route.pagePath: route,
+          for (final route in widget.routes) route.pagePath: route,
         };
         final paths = TabBarPreferences.normalize(
           savedPaths,
@@ -42,13 +58,16 @@ class MainPageNavigationBar extends StatelessWidget {
         final visible = paths.map((path) => routesByPath[path]!).toList();
         return MediaQuery.withNoTextScaling(
           child: CupertinoTabBar(
-            height: navbarHeight,
+            key: _barKey,
+            height: MainPageNavigationBar.navbarHeight,
             backgroundColor: theme.colorScheme.surface,
             activeColor: theme.colorScheme.primary,
             inactiveColor: theme.colorScheme.onSurfaceVariant,
             iconSize: 24,
-            currentIndex: getSelectedBarIndex(context, paths),
-            onTap: (index) => onDestinationSelected?.call(visible[index]),
+            currentIndex:
+                MainPageNavigationBar.getSelectedBarIndex(context, paths),
+            onTap: (index) =>
+                widget.onDestinationSelected?.call(visible[index]),
             items: [
               for (final route in visible)
                 BottomNavigationBarItem(
@@ -74,16 +93,24 @@ class MainPageNavigationBar extends StatelessWidget {
             TapGestureRecognizer:
                 GestureRecognizerFactoryWithHandlers<TapGestureRecognizer>(
               TapGestureRecognizer.new,
-              (recognizer) =>
-                  recognizer.onTap = () => onDestinationSelected?.call(route),
+              (recognizer) => recognizer.onTap =
+                  () => widget.onDestinationSelected?.call(route),
             ),
             LongPressGestureRecognizer: GestureRecognizerFactoryWithHandlers<
                 LongPressGestureRecognizer>(
               () => LongPressGestureRecognizer(
                 duration: const Duration(milliseconds: 350),
               ),
-              (recognizer) => recognizer.onLongPress =
-                  () => _showCustomizationMenu(context, route, paths),
+              (recognizer) => recognizer
+                ..onLongPressStart = ((details) => _showCustomizationMenu(
+                      context,
+                      route,
+                      paths,
+                      details.globalPosition,
+                    ))
+                ..onLongPressMoveUpdate =
+                    ((details) => _session?.move(details.globalPosition))
+                ..onLongPressEnd = ((_) => _session?.end()),
             ),
           },
           child: SizedBox.expand(
@@ -98,27 +125,67 @@ class MainPageNavigationBar extends StatelessWidget {
     BuildContext context,
     MainPageRouteData route,
     List<String> paths,
+    Offset pointerOrigin,
   ) async {
-    triggerHaptic(HapticIntensity.medium);
-    final customize = await showTabBarContextMenu(
-      context,
-      icon: route.unselectedIcon,
-      label: route.pageTitle,
-    );
-    if (customize != true || !context.mounted) {
+    if (_session != null) {
       return;
     }
-    await showTabBarCustomizationSheet(
-      context,
-      routes: routes,
-      initialPaths: paths,
-      selectedPath: route.pagePath,
+    final overlay = Navigator.of(context, rootNavigator: true)
+        .overlay!
+        .context
+        .findRenderObject()! as RenderBox;
+    final anchor = context.findRenderObject()! as RenderBox;
+    final bar = _barKey.currentContext!.findRenderObject()! as RenderBox;
+    final session = TabBarContextMenuSession(
+      paths: paths,
+      barRect: bar.localToGlobal(Offset.zero, ancestor: overlay) & bar.size,
+      anchor:
+          anchor.localToGlobal(Offset.zero, ancestor: overlay) & anchor.size,
+      heldPath: route.pagePath,
+      selectedPath:
+          paths[MainPageNavigationBar.getSelectedBarIndex(context, paths)],
+      pointerOrigin: pointerOrigin,
+      textDirection: Directionality.of(context),
     );
-  }
-
-  static int getSelectedBarIndex(BuildContext context, List<String> paths) {
-    final destination = mainPageDestinationPath(GoRouterState.of(context).uri);
-    final index = destination == null ? -1 : paths.indexOf(destination);
-    return index < 0 ? paths.indexOf(TabBarPreferences.morePath) : index;
+    _session = session;
+    triggerHaptic(HapticIntensity.medium);
+    try {
+      final result = await showTabBarContextMenu(
+        context,
+        session: session,
+        routes: widget.routes,
+      );
+      if (result == null) {
+        return;
+      }
+      if (!listEquals(result.paths, paths)) {
+        await AppSettings.updateTabBarPaths(result.paths);
+      }
+      if (!context.mounted) {
+        return;
+      }
+      if (result.destinationPath != null) {
+        widget.onDestinationSelected?.call(
+          widget.routes.firstWhere(
+            (destination) => destination.pagePath == result.destinationPath,
+          ),
+        );
+      }
+      if (result.customize) {
+        await showTabBarCustomizationSheet(
+          context,
+          routes: widget.routes,
+          selectedPath: session.heldPath,
+        );
+      }
+    } catch (_) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Не удалось сохранить нижнее меню')),
+        );
+      }
+    } finally {
+      _session = null;
+    }
   }
 }
