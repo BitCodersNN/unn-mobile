@@ -33,6 +33,7 @@ class ScheduleTabViewModel extends BaseViewModel {
   String? foundName;
 
   List<List<Subject>>? schedule;
+  WeekRange? scheduleWeek;
 
   ScheduleFilter? searchFilter;
 
@@ -128,6 +129,8 @@ class ScheduleTabViewModel extends BaseViewModel {
   }
 
   Future<void> loadSchedule({bool useRasp = false}) async {
+    final week = selectedWeek;
+    final filter = searchFilter;
     if (useRasp) {
       if (_userStorage.currentUserData?.login == null) {
         return;
@@ -135,29 +138,31 @@ class ScheduleTabViewModel extends BaseViewModel {
 
       final foundSchedule = await _scheduleService.getCurrentUserSchedule(
             _userStorage.currentUserData!.login!,
-            _parent.selectedWeek.start,
+            week.start,
           ) ??
           [];
       schedule = partitionSchedule(foundSchedule);
+      scheduleWeek = week;
       return;
     }
 
-    if (searchFilter == null) {
+    if (filter == null) {
       return;
     }
 
     final List<Subject> foundSchedule = await tryLoginAndRetrieveData(
-          () => _scheduleService.getSchedule(searchFilter!),
+          () => _scheduleService.getSchedule(filter),
           () => schedule?.expand((e) => e).toList(),
         ) ??
         []
       ..sort((a, b) => a.dateTimeRange.start.compareTo(b.dateTimeRange.start));
 
-    if (defaultId != null && searchFilter!.id == defaultId) {
-      offlineSchedule = OfflineSchedule(_parent.selectedWeek, foundSchedule);
+    if (defaultId != null && filter.id == defaultId) {
+      offlineSchedule = OfflineSchedule(week, foundSchedule);
     }
 
     schedule = partitionSchedule(foundSchedule);
+    scheduleWeek = week;
   }
 
   List<List<Subject>> partitionSchedule(List<Subject> schedule) =>
