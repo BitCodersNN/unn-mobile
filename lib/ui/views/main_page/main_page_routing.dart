@@ -3,7 +3,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import 'package:unn_mobile/core/models/profile/student/student_data.dart';
+import 'package:unn_mobile/core/viewmodels/main_page/main_page_view_model.dart';
 import 'package:unn_mobile/ui/views/main_page/about/about.dart';
 import 'package:unn_mobile/ui/views/main_page/certificates_online/certificates_online.dart';
 import 'package:unn_mobile/ui/views/main_page/chat/chat.dart';
@@ -13,6 +15,7 @@ import 'package:unn_mobile/ui/views/main_page/feed/feed.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/widgets/comments_page.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/widgets/pinned_posts_page.dart';
 import 'package:unn_mobile/ui/views/main_page/grades/grades.dart';
+import 'package:unn_mobile/ui/views/main_page/main_page_menu.dart';
 import 'package:unn_mobile/ui/views/main_page/profile/profile_page.dart';
 import 'package:unn_mobile/ui/views/main_page/schedule/schedule_screen_view.dart';
 import 'package:unn_mobile/ui/views/main_page/settings/settings.dart';
@@ -101,12 +104,14 @@ final MainPageRouteData feedUserProfileRoute = MainPageRouteData(
 );
 
 class MainPageRouting {
+  static const moreTabIndex = 4;
+
   static final List<MainPageRouteData> navbarRoutes = [
     MainPageRouteData(
       Icons.star,
       Icons.star_border,
       'Лента',
-      '/feed',
+      'feed',
       builder: (_, __) => const FeedScreenView(
         bottomRouteIndex: 0,
       ),
@@ -121,7 +126,7 @@ class MainPageRouting {
       Icons.calendar_month,
       Icons.calendar_month_outlined,
       'Расписание',
-      '/schedule',
+      'schedule',
       builder: (_, __) => const ScheduleScreenView(
         bottomRouteIndex: 1,
       ),
@@ -131,7 +136,7 @@ class MainPageRouting {
       Icons.chat,
       Icons.chat_bubble_outline,
       'Сообщения',
-      '/chats',
+      'chats',
       builder: (_, __) => const ChatScreenView(
         bottomRouteIndex: 2,
       ),
@@ -162,11 +167,21 @@ class MainPageRouting {
       Icons.menu_book,
       Icons.menu_book_outlined,
       'Материалы',
-      '/source',
+      'source',
       builder: (_, __) => const SourcePageView(
         bottomRouteIndex: 3,
       ),
       isDisabled: false,
+      userTypes: [],
+    ),
+    MainPageRouteData(
+      Icons.menu,
+      Icons.menu,
+      'Ещё',
+      'more',
+      builder: (context, _) => MainPageMenu(
+        model: context.read<MainPageViewModel>(),
+      ),
       userTypes: [],
     ),
   ];
@@ -222,8 +237,4 @@ class MainPageRouting {
       userTypes: [],
     ),
   ];
-  static final List<MainPageRouteData> _activeNavbarRoutes =
-      navbarRoutes.where((e) => !e.isDisabled).toList();
-
-  static List<MainPageRouteData> get activeNavbarRoutes => _activeNavbarRoutes;
 }
