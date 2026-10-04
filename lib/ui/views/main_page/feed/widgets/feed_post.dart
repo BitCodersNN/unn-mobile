@@ -171,7 +171,10 @@ class _FeedPostState extends State<FeedPost> {
                                       ),
                                     ),
                                   IconButton(
-                                    onPressed: model.togglePin,
+                                    onPressed: () {
+                                      triggerHaptic(HapticIntensity.selection);
+                                      model.togglePin();
+                                    },
                                     tooltip: model.isPinned
                                         ? 'Открепить пост'
                                         : 'Закрепить пост',
@@ -238,7 +241,12 @@ class _FeedPostState extends State<FeedPost> {
                                     ),
                                     onPressed: model.isAnnouncementRead
                                         ? null
-                                        : model.markReadIfImportant,
+                                        : () {
+                                            triggerHaptic(
+                                              HapticIntensity.light,
+                                            );
+                                            model.markReadIfImportant();
+                                          },
                                     child: Text(
                                       model.isAnnouncementRead
                                           ? 'Сообщение прочитано'
@@ -322,6 +330,9 @@ class _FeedPostState extends State<FeedPost> {
                                   Expanded(child: Container()),
                                   IconButton(
                                     onPressed: () async {
+                                      triggerHaptic(
+                                        HapticIntensity.light,
+                                      );
                                       await _sharePost(model);
                                     },
                                     tooltip: 'Поделиться постом',
@@ -358,6 +369,7 @@ class _FeedPostState extends State<FeedPost> {
     if (model.blogData == null) {
       return;
     }
+    triggerHaptic(HapticIntensity.light);
     Injector.appInstance
         .get<FeedPostViewModelFactory>()
         .putInCache(model.blogData!.id, model);
@@ -443,7 +455,13 @@ class _PostExpansionButton extends StatelessWidget {
             child: Divider(color: Theme.of(context).colorScheme.outlineVariant),
           ),
           const SizedBox(width: 8),
-          TextButton(onPressed: onPressed, child: Text(label)),
+          TextButton(
+            onPressed: () {
+              triggerHaptic(HapticIntensity.light);
+              onPressed();
+            },
+            child: Text(label),
+          ),
           const SizedBox(width: 8),
           Expanded(
             child: Divider(color: Theme.of(context).colorScheme.outlineVariant),

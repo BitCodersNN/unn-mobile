@@ -312,6 +312,7 @@ class _FeedItemMenuRoute extends PopupRoute<VoidCallback> {
                               onSelected: (action) {
                                 if (ModalRoute.of(context)?.isCurrent ??
                                     false) {
+                                  triggerHaptic(HapticIntensity.light);
                                   Navigator.of(context).pop(action.onTap);
                                 }
                               },

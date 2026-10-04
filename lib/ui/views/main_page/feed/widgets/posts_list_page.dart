@@ -2,6 +2,7 @@
 // Copyright 2025 BitCodersNN
 
 import 'package:flutter/material.dart';
+import 'package:unn_mobile/core/misc/haptic_utils.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/feed/feed_post_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/feed/feed_screen_view_model.dart';
 import 'package:unn_mobile/ui/builders/online_status_builder.dart';
@@ -33,7 +34,8 @@ class PostsListPage extends StatelessWidget {
           builder: (context, online) => LayoutBuilder(
             builder: (context, constraints) => RefreshIndicator.adaptive(
               onRefresh: () async {
-                if (online) {
+                if (online && viewModel != null) {
+                  triggerHaptic(HapticIntensity.light);
                   await viewModel?.refreshFeatured();
                 }
               },

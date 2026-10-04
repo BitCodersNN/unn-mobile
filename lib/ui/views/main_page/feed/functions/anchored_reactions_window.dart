@@ -17,8 +17,11 @@ Future<void> showAnchoredReactionChoice(
       selected: model.currentReaction,
       elevation: 8,
       onSelected: (reaction) {
-        triggerHaptic(HapticIntensity.selection);
-        dismissAnchoredPopup(context, reaction);
+        dismissAnchoredPopup(
+          context,
+          reaction,
+          hapticIntensity: HapticIntensity.selection,
+        );
       },
     ),
   );
