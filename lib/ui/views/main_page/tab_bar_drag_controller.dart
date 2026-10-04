@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright 2026 BitCodersNN
+
 import 'package:flutter/widgets.dart';
 import 'package:unn_mobile/core/misc/tab_bar_preferences.dart';
 
