@@ -3,7 +3,6 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:unn_mobile/core/misc/app_settings.dart';
@@ -14,11 +13,14 @@ import 'package:unn_mobile/ui/views/main_page/main_page_routing.dart';
 import 'package:unn_mobile/ui/views/main_page/tab_bar_context_menu.dart';
 import 'package:unn_mobile/ui/views/main_page/tab_bar_context_menu_session.dart';
 import 'package:unn_mobile/ui/views/main_page/tab_bar_customization_sheet.dart';
+import 'package:unn_mobile/ui/views/main_page/tab_bar_gesture_detector.dart';
 import 'package:unn_mobile/ui/views/main_page/tab_bar_item_content.dart';
 
 class MainPageNavigationBar extends StatefulWidget {
   final ValueChanged<MainPageRouteData>? onDestinationSelected;
   final List<MainPageRouteData> routes;
+  final ValueListenable<List<String>>? paths;
+  final TabBarPathsSaver savePaths;
 
   static const navbarHeight = 60.0;
 
@@ -26,6 +28,8 @@ class MainPageNavigationBar extends StatefulWidget {
     required this.routes,
     super.key,
     this.onDestinationSelected,
+    this.paths,
+    this.savePaths = AppSettings.updateTabBarPaths,
   });
 
   @override
@@ -46,7 +50,7 @@ class _MainPageNavigationBarState extends State<MainPageNavigationBar> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return ValueListenableBuilder<List<String>>(
-      valueListenable: AppSettings.tabBarPaths,
+      valueListenable: widget.paths ?? AppSettings.tabBarPaths,
       builder: (context, savedPaths, _) {
         final routesByPath = {
           for (final route in widget.routes) route.pagePath: route,
@@ -87,32 +91,12 @@ class _MainPageNavigationBarState extends State<MainPageNavigationBar> {
     List<String> paths,
   ) =>
       Builder(
-        builder: (context) => RawGestureDetector(
-          behavior: HitTestBehavior.opaque,
-          gestures: {
-            TapGestureRecognizer:
-                GestureRecognizerFactoryWithHandlers<TapGestureRecognizer>(
-              TapGestureRecognizer.new,
-              (recognizer) => recognizer.onTap =
-                  () => widget.onDestinationSelected?.call(route),
-            ),
-            LongPressGestureRecognizer: GestureRecognizerFactoryWithHandlers<
-                LongPressGestureRecognizer>(
-              () => LongPressGestureRecognizer(
-                duration: const Duration(milliseconds: 350),
-              ),
-              (recognizer) => recognizer
-                ..onLongPressStart = ((details) => _showCustomizationMenu(
-                      context,
-                      route,
-                      paths,
-                      details.globalPosition,
-                    ))
-                ..onLongPressMoveUpdate =
-                    ((details) => _session?.move(details.globalPosition))
-                ..onLongPressEnd = ((_) => _session?.end()),
-            ),
-          },
+        builder: (context) => TabBarGestureDetector(
+          onTap: () => widget.onDestinationSelected?.call(route),
+          onHoldStart: (pointer) =>
+              _showCustomizationMenu(context, route, paths, pointer),
+          onHoldMove: (pointer) => _session?.move(pointer),
+          onHoldEnd: () => _session?.end(),
           child: SizedBox.expand(
             child: Center(
               child: TabBarItemContent(icon: icon, label: route.pageTitle),
@@ -159,7 +143,9 @@ class _MainPageNavigationBarState extends State<MainPageNavigationBar> {
         return;
       }
       if (!listEquals(result.paths, paths)) {
-        await AppSettings.updateTabBarPaths(result.paths);
+        if (!await _saveOrder(result.paths)) {
+          return;
+        }
       }
       if (!context.mounted) {
         return;
@@ -176,16 +162,27 @@ class _MainPageNavigationBarState extends State<MainPageNavigationBar> {
           context,
           routes: widget.routes,
           selectedPath: session.heldPath,
-        );
-      }
-    } catch (_) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Не удалось сохранить нижнее меню')),
+          initialPaths: widget.paths?.value,
+          savePaths: widget.savePaths,
         );
       }
     } finally {
       _session = null;
+      session.dispose();
+    }
+  }
+
+  Future<bool> _saveOrder(List<String> paths) async {
+    try {
+      await widget.savePaths(paths);
+      return true;
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Не удалось сохранить нижнее меню')),
+        );
+      }
+      return false;
     }
   }
 }

@@ -15,6 +15,7 @@ Future<List<String>?> showTabBarCustomizationSheet(
   required List<MainPageRouteData> routes,
   List<String>? initialPaths,
   String? selectedPath,
+  TabBarPathsSaver savePaths = AppSettings.updateTabBarPaths,
 }) {
   final paths = TabBarPreferences.normalize(
     initialPaths ?? AppSettings.tabBarPaths.value,
@@ -36,6 +37,7 @@ Future<List<String>?> showTabBarCustomizationSheet(
         routes: routes,
         initialPaths: paths,
         selectedPath: selectedPath ?? paths.first,
+        savePaths: savePaths,
       ),
     ),
   );
@@ -45,7 +47,7 @@ class TabBarCustomizationSheet extends StatefulWidget {
   final List<MainPageRouteData> routes;
   final List<String> initialPaths;
   final String selectedPath;
-  final Future<void> Function(List<String>) savePaths;
+  final TabBarPathsSaver savePaths;
 
   const TabBarCustomizationSheet({
     required this.routes,
