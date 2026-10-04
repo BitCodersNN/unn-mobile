@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:unn_mobile/core/misc/haptic_utils.dart';
 import 'package:unn_mobile/ui/widgets/anchored_popup.dart';
 import 'package:unn_mobile/ui/widgets/context_menu/context_menu_action.dart';
 import 'package:unn_mobile/ui/widgets/context_menu/context_menu_actions.dart';
@@ -49,7 +50,11 @@ class _LinkContextMenuState extends State<LinkContextMenu> {
           key: const ValueKey('link-menu-card'),
           elevation: 8,
           actions: actions,
-          onSelected: (action) => dismissAnchoredPopup(context, action),
+          onSelected: (action) => dismissAnchoredPopup(
+            context,
+            action,
+            hapticIntensity: HapticIntensity.light,
+          ),
           header: LinkPreview(url: widget.url, label: widget.label),
         ),
       );
@@ -63,7 +68,10 @@ class _LinkContextMenuState extends State<LinkContextMenu> {
 
   @override
   Widget build(BuildContext context) => GestureDetector(
-        onTap: widget.onOpen,
+        onTap: () {
+          triggerHaptic(HapticIntensity.light);
+          widget.onOpen();
+        },
         onLongPress: _showMenu,
         child: widget.child,
       );

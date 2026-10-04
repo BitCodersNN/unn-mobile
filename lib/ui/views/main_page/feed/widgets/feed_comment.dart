@@ -2,6 +2,7 @@
 // Copyright 2025 BitCodersNN
 
 import 'package:flutter/material.dart';
+import 'package:unn_mobile/core/misc/haptic_utils.dart';
 import 'package:unn_mobile/core/models/feed/rating_list.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/common/profile_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/feed/feed_comment_view_model.dart';
@@ -135,6 +136,7 @@ class _ReactionView extends StatelessWidget {
                   borderSide: BorderSide.none,
                   isSelected: model.currentReaction == reaction,
                   onPressed: () {
+                    triggerHaptic(HapticIntensity.selection);
                     model.toggleReaction(reaction);
                   },
                   icon: Image.asset(reaction.assetName),

@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:unn_mobile/core/constants/api/host.dart';
 import 'package:unn_mobile/core/constants/api/protocol_type.dart';
+import 'package:unn_mobile/core/misc/haptic_utils.dart';
 import 'package:unn_mobile/ui/widgets/image_viewer_sheet.dart';
 
 String feedImageUrl(String image) => image.startsWith('/')
@@ -28,15 +29,20 @@ Future<void> showFeedImages(
   required Iterable<String> images,
   Map<String, String>? headers,
   int initialIndex = 0,
-}) =>
-    showImageViewerSheet(
-      context,
-      initialIndex: initialIndex,
-      images: [
-        for (final image in images)
-          CachedNetworkImageProvider(
-            feedImageUrl(image),
-            headers: feedImageHeaders(feedImageUrl(image), headers),
-          ),
-      ],
-    );
+}) {
+  if (images.isEmpty) {
+    return Future<void>.value();
+  }
+  triggerHaptic(HapticIntensity.light);
+  return showImageViewerSheet(
+    context,
+    initialIndex: initialIndex,
+    images: [
+      for (final image in images)
+        CachedNetworkImageProvider(
+          feedImageUrl(image),
+          headers: feedImageHeaders(feedImageUrl(image), headers),
+        ),
+    ],
+  );
+}

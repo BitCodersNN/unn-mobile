@@ -5,6 +5,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:unn_mobile/core/misc/app_settings.dart';
+import 'package:unn_mobile/core/misc/haptic_utils.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/feed/feed_post_view_model.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/widgets/feed_comment.dart';
@@ -83,7 +84,10 @@ class _CommentsPageState extends State<CommentsPage> {
         key: ValueKey(widget.postId),
         builder: (context, model, child) => LayoutBuilder(
           builder: (context, constraints) => RefreshIndicator.adaptive(
-            onRefresh: () => model.refresh(loadComments: true),
+            onRefresh: () async {
+              triggerHaptic(HapticIntensity.light);
+              await model.refresh(loadComments: true);
+            },
             child: SingleChildScrollView(
               physics: const AlwaysScrollableScrollPhysics(),
               child: ConstrainedBox(
@@ -129,6 +133,7 @@ class _CommentsPageState extends State<CommentsPage> {
                             ),
                             child: TextButton(
                               onPressed: () async {
+                                triggerHaptic(HapticIntensity.light);
                                 await model.loadMoreComments();
                               },
                               child: const Text('Предыдущие комментарии'),

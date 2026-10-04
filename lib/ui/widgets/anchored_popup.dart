@@ -43,8 +43,15 @@ Future<T?> showAnchoredPopup<T>(
   return context.mounted ? result : null;
 }
 
-void dismissAnchoredPopup<T>(BuildContext context, T result) {
+void dismissAnchoredPopup<T>(
+  BuildContext context,
+  T result, {
+  HapticIntensity? hapticIntensity,
+}) {
   if (ModalRoute.of(context)?.isCurrent ?? false) {
+    if (hapticIntensity != null) {
+      triggerHaptic(hapticIntensity);
+    }
     Navigator.of(context).pop(result);
   }
 }

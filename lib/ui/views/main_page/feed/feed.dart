@@ -6,6 +6,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:unn_mobile/core/misc/haptic_utils.dart';
 import 'package:unn_mobile/core/misc/html_utils/html_to_plain_text.dart';
 import 'package:unn_mobile/core/models/feed/feed_filter.dart';
 import 'package:unn_mobile/core/viewmodels/factories/main_page_routes_view_models_factory.dart';
@@ -62,6 +63,7 @@ class FeedScreenViewState extends State<FeedScreenView>
   }
 
   void _openSearch() {
+    triggerHaptic(HapticIntensity.light);
     refreshTab();
     _search.textController.text = _viewModel.searchQuery ?? '';
     _search.open();
@@ -84,6 +86,7 @@ class FeedScreenViewState extends State<FeedScreenView>
     if (_viewModel.isBusy) {
       return;
     }
+    triggerHaptic(HapticIntensity.light);
     FocusScope.of(context).unfocus();
     refreshTab();
     final clearing = query.trim().isEmpty;
@@ -107,6 +110,9 @@ class FeedScreenViewState extends State<FeedScreenView>
   }
 
   void _selectFilter(FeedFilter filter) {
+    if (filter != _viewModel.filter) {
+      triggerHaptic(HapticIntensity.selection);
+    }
     refreshTab();
     unawaited(Future.sync(() => _viewModel.setFilter(filter)));
   }
@@ -221,6 +227,7 @@ class FeedScreenViewState extends State<FeedScreenView>
           child: RefreshIndicator.adaptive(
             onRefresh: () async {
               if (online) {
+                triggerHaptic(HapticIntensity.light);
                 await model.reload();
               }
             },

@@ -209,6 +209,9 @@ class _AttachedFileState extends State<AttachedFile> {
     if (model.isLoadingData || model.isDownloadingFile) {
       return;
     }
+    if (!force) {
+      triggerHaptic(HapticIntensity.light);
+    }
     final file = await model.getFile(force: force);
     if (file == null) {
       return;

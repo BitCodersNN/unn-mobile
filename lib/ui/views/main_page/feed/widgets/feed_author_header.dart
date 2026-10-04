@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:injector/injector.dart';
 import 'package:intl/intl.dart';
+import 'package:unn_mobile/core/misc/haptic_utils.dart';
 import 'package:unn_mobile/core/viewmodels/factories/profile_view_model_factory.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/common/profile_view_model.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
@@ -122,6 +123,7 @@ class FeedAuthorHeader extends StatelessWidget {
     if (id == null) {
       return;
     }
+    triggerHaptic(HapticIntensity.light);
     Injector.appInstance.get<ProfileViewModelFactory>().putInCache(id, model);
     final router = GoRouter.of(context);
     router.go(
