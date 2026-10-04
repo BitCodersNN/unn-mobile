@@ -28,10 +28,11 @@ List<ContextMenuAction> createPostActions({
   required BuildContext context,
   required FeedPostViewModel model,
   required Function(FeedPostViewModel) onShare,
+  bool includeReactions = true,
 }) =>
     _createActions(
       context: context,
-      reactionViewModel: model.reactionViewModel,
+      reactionViewModel: includeReactions ? model.reactionViewModel : null,
       textToCopy: htmlToPlainText(model.postText),
       onTogglePin: model.togglePin,
       isPinned: model.isPinned,
@@ -41,10 +42,11 @@ List<ContextMenuAction> createPostActions({
 List<ContextMenuAction> createCommentActions({
   required BuildContext context,
   required FeedCommentViewModel model,
+  bool includeReactions = true,
 }) =>
     _createActions(
       context: context,
-      reactionViewModel: model.reactionViewModel,
+      reactionViewModel: includeReactions ? model.reactionViewModel : null,
       textToCopy: htmlToPlainText(model.message),
     );
 

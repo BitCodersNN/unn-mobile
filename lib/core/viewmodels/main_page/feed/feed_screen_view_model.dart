@@ -6,6 +6,7 @@ import 'dart:async';
 import 'package:unn_mobile/core/misc/authorisation/try_login_and_retrieve_data.dart';
 import 'package:unn_mobile/core/models/feed/blog_post.dart';
 import 'package:unn_mobile/core/models/feed/blog_post_type.dart';
+import 'package:unn_mobile/core/models/feed/feed_filter.dart';
 import 'package:unn_mobile/core/providers/interfaces/feed/blog_post_provider.dart';
 import 'package:unn_mobile/core/providers/interfaces/feed/last_feed_load_date_time_provider.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation/stream_auth_service.dart';
@@ -39,6 +40,10 @@ class FeedScreenViewModel extends BaseViewModel
   int _currentPage = 0;
   bool _failedToLoad = false;
   String? _searchQuery;
+  DateTime? _lastReadAt;
+  bool _isReplacingPosts = false;
+
+  DateTime? get lastReadAt => _lastReadAt;
 
   List<FeedPostViewModel> get posts =>
       _totalPosts.take(postsPerPage * _currentPage).toList();
@@ -47,10 +52,12 @@ class FeedScreenViewModel extends BaseViewModel
 
   bool get failedToLoad => _failedToLoad;
   bool get loadingMore => _loadingMore;
+  bool get isReplacingPosts => _isReplacingPosts;
 
   String? get searchQuery => _searchQuery;
   bool get hasSearch => _searchQuery != null;
-  bool get showOnlyImportant => _showOnlyImportant;
+  bool get showOnlyImportant => _filter == FeedFilter.important;
+  FeedFilter get filter => _filter;
 
   set failedToLoad(bool value) {
     _failedToLoad = value;
@@ -70,7 +77,7 @@ class FeedScreenViewModel extends BaseViewModel
 
   bool _loadingMore = false;
 
-  bool _showOnlyImportant = false;
+  FeedFilter _filter = FeedFilter.all;
 
   FeedScreenViewModel(
     this._lastFeedLoadDateTimeProvider,
@@ -81,12 +88,20 @@ class FeedScreenViewModel extends BaseViewModel
     this._searchService,
   );
 
-  Future<void> init() =>
-      _initialization ??= _blogPostProvider.getData().then((posts) {
-        if (!disposed && offlinePosts.isEmpty) {
-          _addPostsToList(offlinePosts, posts);
-        }
-      }).whenComplete(reload);
+  Future<void> init() => _initialization ??= _initialize();
+
+  Future<void> _initialize() async {
+    final lastReadAt = await _lastFeedLoadDateTimeProvider.getData();
+    final cachedPosts = await _blogPostProvider.getData();
+    if (disposed) {
+      return;
+    }
+    _lastReadAt = lastReadAt;
+    offlinePosts.clear();
+    _addPostsToList(offlinePosts, cachedPosts);
+    notifyListeners();
+    await reload();
+  }
 
   void _addPostsToList(
     List<FeedPostViewModel> posts,
@@ -147,22 +162,20 @@ class FeedScreenViewModel extends BaseViewModel
           _numberUnreadMessages = 0;
         }
 
-        final [posts as Map<BlogPostType, List<BlogPost>>?, _] =
-            await Future.wait(
-          [
-            tryLoginAndRetrieveData(
-              () => _blogPostServiceImpl.refreshBlogPosts(
-                assetsCheckSum: _streamAuthService.sonetLAssetsCheckSum ?? '',
-                signedParameters: _streamAuthService.signedParameters ?? '',
-                commentFormUID: _streamAuthService.commentFormUID ?? '',
-              ),
-              () => null,
-            ),
-            _lastFeedLoadDateTimeProvider.getData(),
-          ],
+        final posts = await tryLoginAndRetrieveData(
+          () => _blogPostServiceImpl.refreshBlogPosts(
+            assetsCheckSum: _streamAuthService.sonetLAssetsCheckSum ?? '',
+            signedParameters: _streamAuthService.signedParameters ?? '',
+            commentFormUID: _streamAuthService.commentFormUID ?? '',
+          ),
+          () => null,
         );
 
         if (posts == null) {
+          if (updateMainPage) {
+            failedToLoad = true;
+            loadingMore = false;
+          }
           return;
         }
 
@@ -179,7 +192,7 @@ class FeedScreenViewModel extends BaseViewModel
 
         final freshPosts = posts[BlogPostType.regular] ?? [];
 
-        if (!hasSearch && freshPosts.isNotEmpty) {
+        if (!hasSearch && !showOnlyImportant && freshPosts.isNotEmpty) {
           await Future.wait([
             _blogPostProvider.saveData(freshPosts),
             _lastFeedLoadDateTimeProvider
@@ -212,39 +225,49 @@ class FeedScreenViewModel extends BaseViewModel
           return;
         }
 
-        final searchApplied = await _searchService.setFilter(
-          query: value.trim(),
-          onlyImportant: showOnlyImportant,
-        );
-        if (searchApplied) {
-          _searchQuery = value.trim();
-          await reload();
-          notifyListeners();
-        }
+        await _applySelection(filter: _filter, query: value.trim());
       });
 
   FutureOr<void> resetSearch() async => await busyCallAsync(() async {
-        final success = await _searchService.setFilter(
-          query: '',
-          onlyImportant: showOnlyImportant,
-        );
-        if (success) {
-          _searchQuery = null;
-          await reload();
-          notifyListeners();
-        }
+        await _applySelection(filter: _filter, query: null);
       });
 
-  FutureOr<void> setShowingOnlyImportant({bool newStatus = true}) async =>
+  FutureOr<void> setFilter(FeedFilter value) async =>
       await busyCallAsync(() async {
-        final filterApplied = await _searchService.setFilter(
-          onlyImportant: newStatus,
-          query: _searchQuery ?? '',
-        );
-        if (filterApplied) {
-          _showOnlyImportant = newStatus;
-          await reload();
-          notifyListeners();
+        if (value == _filter) {
+          return;
         }
+        final onlyImportant = value == FeedFilter.important;
+        if (onlyImportant == showOnlyImportant) {
+          _filter = value;
+          notifyListeners();
+          return;
+        }
+        await _applySelection(filter: value, query: _searchQuery);
       });
+
+  Future<void> _applySelection({
+    required FeedFilter filter,
+    required String? query,
+  }) async {
+    _isReplacingPosts = true;
+    notifyListeners();
+    try {
+      final applied = await _searchService.setFilter(
+        onlyImportant: filter == FeedFilter.important,
+        query: query ?? '',
+      );
+      if (applied) {
+        _filter = filter;
+        _searchQuery = query;
+        _totalPosts.clear();
+        offlinePosts.clear();
+        _currentPage = 0;
+        await reload();
+      }
+    } finally {
+      _isReplacingPosts = false;
+      notifyListeners();
+    }
+  }
 }

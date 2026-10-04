@@ -84,7 +84,7 @@ class FeedPostViewModel extends BaseViewModel {
   int get filesCount => blogData?.fileIds?.length ?? 0;
 
   bool get isNewPost =>
-      postTime != null && (lastUpdated?.isBefore(postTime!) ?? false);
+      postTime != null && (lastUpdated?.isBefore(postTime!) ?? true);
 
   bool get isAnnouncement => _isAnnouncement;
 
@@ -95,7 +95,9 @@ class FeedPostViewModel extends BaseViewModel {
   bool get isPinned =>
       _feedScreenViewModel?.isPostPinned(blogData?.id) ?? false;
 
-  DateTime? get lastUpdated => _feedUpdateTimeProvider.lastFeedLoadDateTime;
+  DateTime? get lastUpdated => _feedScreenViewModel == null
+      ? _feedUpdateTimeProvider.lastFeedLoadDateTime
+      : _feedScreenViewModel!.lastReadAt;
 
   String get postText => _unescaper.convert(blogData?.detailText.trim() ?? '');
 
@@ -190,10 +192,11 @@ class FeedPostViewModel extends BaseViewModel {
     );
     if (newComments == null) {
       _commentsError = true;
+      return;
     }
     comments.insertAll(
       0,
-      newComments!.map(
+      newComments.map(
         (c) => FeedCommentViewModel.cached(c.data.id)..initFromFullInfo(c),
       ),
     );
