@@ -1,7 +1,7 @@
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:unn_mobile/core/misc/tab_bar_preferences.dart';
+import 'package:unn_mobile/ui/views/main_page/tab_bar_drag_controller.dart';
 import 'package:unn_mobile/ui/views/main_page/tab_bar_drag_feedback.dart';
+import 'package:unn_mobile/ui/views/main_page/tab_bar_gesture_detector.dart';
 
 class TabBarReorderPreview extends StatefulWidget {
   final int itemCount;
@@ -28,72 +28,50 @@ class TabBarReorderPreview extends StatefulWidget {
 }
 
 class _TabBarReorderPreviewState extends State<TabBarReorderPreview> {
-  int? _source;
-  int? _target;
-  Offset _pointerOrigin = Offset.zero;
-  double _dragOffset = 0;
-  bool _dragging = false;
+  late TabBarDragController _drag;
+
+  @override
+  void initState() {
+    super.initState();
+    _createController();
+  }
+
+  void _createController() {
+    _drag = TabBarDragController(
+      itemCount: widget.itemCount,
+      editableCount: widget.itemCount - 1,
+    )..addListener(_onDragChanged);
+  }
+
+  void _onDragChanged() => setState(() {});
+
+  @override
+  void didUpdateWidget(TabBarReorderPreview oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.itemCount != widget.itemCount) {
+      _drag.dispose();
+      _createController();
+    }
+  }
+
+  @override
+  void dispose() {
+    _drag.dispose();
+    super.dispose();
+  }
 
   void _begin(int index, Offset pointer) {
-    setState(() {
-      _source = index;
-      _target = index;
-      _pointerOrigin = pointer;
-      _dragOffset = 0;
-      _dragging = false;
-    });
+    _drag.begin(index, pointer.dx);
     widget.onSelected(index);
   }
 
-  void _move(Offset pointer, double itemWidth, TextDirection direction) {
-    final source = _source;
-    if (source == null) {
-      return;
-    }
-    final delta = pointer.dx - _pointerOrigin.dx;
-    if (!_dragging && delta.abs() < 8) {
-      return;
-    }
-    final physicalSource =
-        direction == TextDirection.ltr ? source : widget.itemCount - 1 - source;
-    final first = direction == TextDirection.ltr ? 0 : 1;
-    final last = direction == TextDirection.ltr
-        ? widget.itemCount - 2
-        : widget.itemCount - 1;
-    final center = (physicalSource * itemWidth + itemWidth / 2 + delta).clamp(
-      first * itemWidth + itemWidth / 2,
-      last * itemWidth + itemWidth / 2,
-    );
-    final physicalTarget = (center / itemWidth).floor().clamp(first, last);
-    final target = direction == TextDirection.ltr
-        ? physicalTarget
-        : widget.itemCount - 1 - physicalTarget;
-    setState(() {
-      _dragging = true;
-      _dragOffset = center - physicalSource * itemWidth - itemWidth / 2;
-      _target =
-          target == source || widget.canMove(source, target) ? target : source;
-    });
-  }
-
   void _end() {
-    final source = _source;
-    final target = _target;
-    if (_dragging &&
-        source != null &&
-        target != null &&
-        widget.canMove(source, target)) {
-      widget.onMove(source, target);
+    final move = _drag.finish();
+    if (move != null && widget.canMove(move.from, move.to)) {
+      widget.onMove(move.from, move.to);
     }
-    _cancel();
+    _drag.cancel();
   }
-
-  void _cancel() => setState(() {
-        _source = null;
-        _target = null;
-        _dragOffset = 0;
-        _dragging = false;
-      });
 
   @override
   Widget build(BuildContext context) => SizedBox(
@@ -102,20 +80,11 @@ class _TabBarReorderPreviewState extends State<TabBarReorderPreview> {
           builder: (context, constraints) {
             final itemWidth = constraints.maxWidth / widget.itemCount;
             final direction = Directionality.of(context);
-            final indices =
-                List<int>.generate(widget.itemCount, (index) => index);
-            final visualOrder = _dragging
-                ? TabBarPreferences.reordered(indices, _source!, _target!)
-                : indices;
+            final visualOrder = _drag.visualOrder;
             Widget item(int index) {
-              final dragging = _dragging && index == _source;
+              final dragging = _drag.isDragging && index == _drag.heldIndex;
               final visualIndex = visualOrder.indexOf(index);
-              final physicalIndex = direction == TextDirection.ltr
-                  ? visualIndex
-                  : widget.itemCount - 1 - visualIndex;
-              final physicalSource = direction == TextDirection.ltr
-                  ? index
-                  : widget.itemCount - 1 - index;
+              final physicalIndex = _drag.physicalIndex(visualIndex, direction);
               return AnimatedPositioned(
                 key: ValueKey(widget.itemKey(index)),
                 duration: dragging
@@ -123,37 +92,26 @@ class _TabBarReorderPreviewState extends State<TabBarReorderPreview> {
                     : const Duration(milliseconds: 180),
                 curve: Curves.easeOutCubic,
                 left: dragging
-                    ? physicalSource * itemWidth + _dragOffset
+                    ? _drag.draggedLeft(itemWidth, direction)
                     : physicalIndex * itemWidth,
                 top: dragging ? -8 : 0,
                 width: itemWidth,
                 height: 62,
-                child: RawGestureDetector(
-                  behavior: HitTestBehavior.opaque,
-                  gestures: widget.canDrag(index)
-                      ? {
-                          LongPressGestureRecognizer:
-                              GestureRecognizerFactoryWithHandlers<
-                                  LongPressGestureRecognizer>(
-                            () => LongPressGestureRecognizer(
-                              duration: const Duration(milliseconds: 350),
-                            ),
-                            (recognizer) => recognizer
-                              ..onLongPressStart = ((details) =>
-                                  _begin(index, details.globalPosition))
-                              ..onLongPressMoveUpdate = ((details) => _move(
-                                    details.globalPosition,
-                                    itemWidth,
-                                    direction,
-                                  ))
-                              ..onLongPressEnd = ((_) => _end())
-                              ..onLongPressCancel = _cancel,
-                          ),
-                        }
-                      : {},
+                child: TabBarGestureDetector(
+                  onHoldStart: widget.canDrag(index)
+                      ? (pointer) => _begin(index, pointer)
+                      : null,
+                  onHoldMove: (pointer) => _drag.update(
+                    pointerX: pointer.dx,
+                    itemWidth: itemWidth,
+                    direction: direction,
+                    canMove: widget.canMove,
+                  ),
+                  onHoldEnd: _end,
+                  onHoldCancel: _drag.cancel,
                   child: TabBarDragFeedback(
                     dragging: dragging,
-                    backgroundColor: index == _source
+                    backgroundColor: index == _drag.heldIndex
                         ? TabBarDragFeedback.highlightColor(context)
                         : Colors.transparent,
                     child: widget.itemBuilder(context, index),
@@ -166,8 +124,9 @@ class _TabBarReorderPreviewState extends State<TabBarReorderPreview> {
               clipBehavior: Clip.none,
               children: [
                 for (var index = 0; index < widget.itemCount; index++)
-                  if (!_dragging || index != _source) item(index),
-                if (_dragging) item(_source!),
+                  if (!_drag.isDragging || index != _drag.heldIndex)
+                    item(index),
+                if (_drag.isDragging) item(_drag.heldIndex!),
               ],
             );
           },

@@ -1,5 +1,5 @@
 import 'package:flutter/widgets.dart';
-import 'package:unn_mobile/core/misc/tab_bar_preferences.dart';
+import 'package:unn_mobile/ui/views/main_page/tab_bar_drag_controller.dart';
 
 class TabBarContextMenuResult {
   final List<String> paths;
@@ -18,14 +18,10 @@ class TabBarContextMenuSession extends ChangeNotifier {
   final Rect contentRect;
   final TextDirection textDirection;
   final String selectedPath;
-  late List<String> _paths;
-  late List<String> _beforeDrag;
-  late String _heldPath;
-  late Offset _pointerOrigin;
-  double _dragOffset = 0;
-  bool _dragging = false;
-  VoidCallback? onDrop;
-  VoidCallback? onCancel;
+  final TabBarDragController _drag;
+  List<String> _basePaths;
+  bool _closeRequested = false;
+  TabBarContextMenuResult? _result;
 
   TabBarContextMenuSession({
     required List<String> paths,
@@ -35,7 +31,12 @@ class TabBarContextMenuSession extends ChangeNotifier {
     required this.selectedPath,
     required Offset pointerOrigin,
     required this.textDirection,
-  }) : contentRect = Rect.fromLTWH(
+  })  : _basePaths = List.unmodifiable(paths),
+        _drag = TabBarDragController(
+          itemCount: paths.length,
+          editableCount: paths.length - 1,
+        ),
+        contentRect = Rect.fromLTWH(
           anchor.left -
               (textDirection == TextDirection.ltr
                       ? paths.indexOf(heldPath)
@@ -45,75 +46,65 @@ class TabBarContextMenuSession extends ChangeNotifier {
           anchor.width * paths.length,
           anchor.height,
         ) {
-    _paths = List.of(paths);
+    _drag.addListener(notifyListeners);
     begin(heldPath, pointerOrigin);
   }
 
-  List<String> get paths => List.unmodifiable(_paths);
-  String get heldPath => _heldPath;
-  bool get isDragging => _dragging;
-  double get itemWidth => contentRect.width / _paths.length;
+  List<String> get paths =>
+      List.unmodifiable(_drag.visualOrder.map((index) => _basePaths[index]));
+  String get heldPath => _basePaths[_drag.heldIndex!];
+  bool get isDragging => _drag.isDragging;
+  bool get closeRequested => _closeRequested;
+  TabBarContextMenuResult? get result => _result;
+  double get itemWidth => contentRect.width / _basePaths.length;
+  double get draggedLeft =>
+      contentRect.left + _drag.draggedLeft(itemWidth, textDirection);
 
-  double leftFor(String path) {
-    final index = _paths.indexOf(path);
-    final physicalIndex =
-        textDirection == TextDirection.ltr ? index : _paths.length - 1 - index;
-    return contentRect.left + physicalIndex * itemWidth;
-  }
-
-  double get draggedLeft {
-    final index = _beforeDrag.indexOf(_heldPath);
-    final physicalIndex =
-        textDirection == TextDirection.ltr ? index : _paths.length - 1 - index;
-    return contentRect.left + physicalIndex * itemWidth + _dragOffset;
-  }
+  double leftFor(String path) =>
+      contentRect.left +
+      _drag.physicalIndex(paths.indexOf(path), textDirection) * itemWidth;
 
   void begin(String path, Offset pointerOrigin) {
-    _heldPath = path;
-    _pointerOrigin = pointerOrigin;
-    _beforeDrag = List.of(_paths);
-    _dragOffset = 0;
-    _dragging = false;
-    notifyListeners();
+    if (_closeRequested) {
+      return;
+    }
+    final currentPaths = paths;
+    final index = currentPaths.indexOf(path);
+    _basePaths = currentPaths;
+    _drag.begin(index, pointerOrigin.dx);
   }
 
   void move(Offset pointer) {
-    if (_heldPath == TabBarPreferences.morePath) {
+    if (_closeRequested) {
       return;
     }
-    final delta = pointer.dx - _pointerOrigin.dx;
-    if (!_dragging && delta.abs() < 8) {
-      return;
-    }
-    _dragging = true;
-    final source = _beforeDrag.indexOf(_heldPath);
-    final physicalSource = textDirection == TextDirection.ltr
-        ? source
-        : _paths.length - 1 - source;
-    final firstEditable = textDirection == TextDirection.ltr ? 0 : 1;
-    final lastEditable = textDirection == TextDirection.ltr
-        ? _paths.length - 2
-        : _paths.length - 1;
-    final center = (physicalSource * itemWidth + itemWidth / 2 + delta).clamp(
-      firstEditable * itemWidth + itemWidth / 2,
-      lastEditable * itemWidth + itemWidth / 2,
+    _drag.update(
+      pointerX: pointer.dx,
+      itemWidth: itemWidth,
+      direction: textDirection,
     );
-    _dragOffset = center - physicalSource * itemWidth - itemWidth / 2;
-    final physicalTarget =
-        (center / itemWidth).floor().clamp(firstEditable, lastEditable);
-    final target = textDirection == TextDirection.ltr
-        ? physicalTarget
-        : _paths.length - 1 - physicalTarget;
-    _paths = TabBarPreferences.reordered(_beforeDrag, source, target);
-    notifyListeners();
   }
 
   void end() {
-    if (!_dragging) {
+    if (_closeRequested || _drag.finish() == null) {
       return;
     }
-    _dragging = false;
+    _result = TabBarContextMenuResult(paths: paths);
+    _closeRequested = true;
     notifyListeners();
-    onDrop?.call();
+  }
+
+  void cancel() {
+    if (_closeRequested) {
+      return;
+    }
+    _closeRequested = true;
+    notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    _drag.dispose();
+    super.dispose();
   }
 }

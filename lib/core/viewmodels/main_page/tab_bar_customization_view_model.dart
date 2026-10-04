@@ -6,7 +6,7 @@ import 'package:unn_mobile/core/misc/tab_bar_preferences.dart';
 
 class TabBarCustomizationViewModel extends ChangeNotifier {
   final Set<String> _allowedPaths;
-  final Future<void> Function(List<String>) _savePaths;
+  final TabBarPathsSaver _savePaths;
   late List<String?> _slots;
   int _selectedSlot = 0;
   bool _isSaving = false;
@@ -16,7 +16,7 @@ class TabBarCustomizationViewModel extends ChangeNotifier {
     required Iterable<String> allowedPaths,
     required Iterable<String> initialPaths,
     required String selectedPath,
-    required Future<void> Function(List<String>) savePaths,
+    required TabBarPathsSaver savePaths,
   })  : _allowedPaths = allowedPaths.toSet(),
         _savePaths = savePaths {
     _resetSlots(initialPaths);

@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2026 BitCodersNN
 
+typedef TabBarPathsSaver = Future<void> Function(List<String> paths);
+
 class TabBarPreferences {
   static const morePath = 'more';
   static const minTabs = 3;
