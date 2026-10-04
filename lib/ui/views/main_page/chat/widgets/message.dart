@@ -125,15 +125,14 @@ class MessageWidget extends StatefulWidget {
                   getBBStyleSheet(theme: theme).copyWith(selectableText: false),
             ),
           ),
-          const SizedBox(
-            height: 4.0,
-          ),
+          if (msg.files.isEmpty) const SizedBox(height: 4),
         ],
-        for (final file in msg.files)
-          AttachedFile(
-            viewModel: AttachedFileViewModel.cached(file.id)
-              ..initFromFileData(file),
-          ),
+        AttachedFiles(
+          files: [
+            for (final file in msg.files)
+              AttachedFileViewModel.cached(file.id)..initFromFileData(file),
+          ],
+        ),
       ],
     );
   }

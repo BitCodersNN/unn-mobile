@@ -1,13 +1,12 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2025 BitCodersNN
 
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:event/event.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
 import 'package:injector/injector.dart';
-import 'package:intl/intl.dart';
 import 'package:mime/mime.dart';
 import 'package:path/path.dart' as p;
 import 'package:share_plus/share_plus.dart';
@@ -15,22 +14,21 @@ import 'package:unn_mobile/core/misc/haptic_utils.dart';
 import 'package:unn_mobile/core/misc/html_utils/html_to_plain_text.dart';
 import 'package:unn_mobile/core/models/feed/rating_list.dart';
 import 'package:unn_mobile/core/viewmodels/factories/feed_post_view_model_factory.dart';
-import 'package:unn_mobile/core/viewmodels/factories/profile_view_model_factory.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/common/profile_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/feed/feed_post_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/feed/reaction_view_model.dart';
-import 'package:unn_mobile/ui/unn_mobile_colors.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
-import 'package:unn_mobile/ui/views/main_page/feed/functions/reactions_window.dart';
+import 'package:unn_mobile/ui/views/main_page/feed/functions/anchored_reactions_window.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/widgets/attached_file.dart';
+import 'package:unn_mobile/ui/views/main_page/feed/widgets/feed_action_style.dart';
+import 'package:unn_mobile/ui/views/main_page/feed/widgets/feed_author_header.dart';
+import 'package:unn_mobile/ui/views/main_page/feed/widgets/feed_item_context_menu.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/widgets/packed_post_images.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/widgets/text_html_widget.dart';
 import 'package:unn_mobile/ui/views/main_page/main_page_routing.dart';
 import 'package:unn_mobile/ui/widgets/context_menu/context_menu_factory.dart';
-import 'package:unn_mobile/ui/widgets/context_menu/context_menu_helper.dart';
 import 'package:unn_mobile/ui/widgets/height_limiter.dart';
 import 'package:unn_mobile/ui/widgets/shimmer.dart';
-import 'package:unn_mobile/ui/widgets/shimmer_loading.dart';
 
 class FeedPost extends StatefulWidget {
   final FeedPostViewModel post;
@@ -50,6 +48,27 @@ class FeedPost extends StatefulWidget {
 
 class _FeedPostState extends State<FeedPost> {
   bool isCollapsed = true;
+  final _previewKey = GlobalKey();
+
+  void _collapse() {
+    final source = _previewKey.currentContext?.findRenderObject();
+    final scrollable = Scrollable.maybeOf(context);
+    if (source != null && scrollable != null) {
+      final viewport = RenderAbstractViewport.maybeOf(source);
+      if (viewport != null) {
+        final position = scrollable.position;
+        final target = viewport.getOffsetToReveal(source, 0).offset.clamp(
+              position.minScrollExtent,
+              position.maxScrollExtent,
+            );
+        if (position.pixels > target) {
+          position.jumpTo(target);
+        }
+      }
+    }
+    setState(() => isCollapsed = true);
+  }
+
   @override
   void initState() {
     isCollapsed = widget.isCollapsed;
@@ -57,233 +76,298 @@ class _FeedPostState extends State<FeedPost> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    final reactionsSize = MediaQuery.textScalerOf(context).scale(18.0);
-    return BaseView<FeedPostViewModel>(
-      model: widget.post,
-      builder: (context, model, _) {
-        final theme = Theme.of(context);
-        final unnColors = theme.unnMobileColors;
-        return GestureDetector(
-          onTap: () {
-            if (model.blogData == null) {
-              return;
-            }
-            if (widget.showingComments) {
-              return;
-            }
-            Injector.appInstance
-                .get<FeedPostViewModelFactory>()
-                .putInCache(model.blogData!.id, model);
-            _openPostCommentsPage(context, model);
-          },
-          onLongPress: () => ContextMenuHelper.showContextMenu(
-            context: context,
-            model: model,
-            actionsBuilder: () => createPostActions(
-              context: context,
-              model: model,
-              onShare: _sharePost,
-            ),
-            onOpen: () => setState(() {}),
-            onClose: () => setState(() {}),
-          ),
-          child: Shimmer(
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 100),
-              margin: const EdgeInsets.only(top: 12),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(0.0),
-                color: Theme.of(context).colorScheme.surface,
-                boxShadow: [
-                  BoxShadow(
-                    offset: Offset.zero,
-                    blurRadius: 9,
-                    color: theme.shadowColor.withAlpha(75),
-                  ),
-                ],
-              ),
-              child: Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(18.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Row(
-                          children: [
-                            Expanded(
-                              child: _PostHeader(
-                                postTime: model.postTime,
-                                viewModel: model.profileViewModel ??
-                                    ProfileViewModel.empty(),
-                              ),
-                            ),
-                            IconButton(
-                              onPressed: model.togglePin,
-                              icon: Icon(
-                                model.isPinned
-                                    ? Icons.push_pin
-                                    : Icons.push_pin_outlined,
-                              ),
-                            ),
-                          ],
+  Widget build(BuildContext context) => BaseView<FeedPostViewModel>(
+        model: widget.post,
+        builder: (context, model, _) {
+          final theme = Theme.of(context);
+          return GestureDetector(
+            onTap:
+                widget.showingComments ? null : () => _openPost(context, model),
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+              child: FeedItemContextMenu(
+                previewKey: _previewKey,
+                reactions: model.reactionViewModel,
+                actionsBuilder: (context) => createPostActions(
+                  context: context,
+                  model: model,
+                  onShare: _sharePost,
+                  includeReactions: false,
+                ),
+                child: Shimmer(
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 100),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(24),
+                      color: theme.colorScheme.surfaceContainerLowest,
+                      gradient: model.isAnnouncement
+                          ? LinearGradient(
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                              colors: [
+                                Color.alphaBlend(
+                                  theme.colorScheme.error
+                                      .withValues(alpha: 0.07),
+                                  theme.colorScheme.surfaceContainerLowest,
+                                ),
+                                theme.colorScheme.surfaceContainerLowest,
+                              ],
+                            )
+                          : null,
+                      border: Border.all(
+                        color: model.isAnnouncement
+                            ? theme.colorScheme.error.withValues(alpha: 0.2)
+                            : theme.colorScheme.outlineVariant
+                                .withValues(alpha: 0.6),
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          offset: const Offset(0, 6),
+                          blurRadius: 20,
+                          color: theme.shadowColor.withValues(alpha: 0.04),
                         ),
-                        const SizedBox(height: 16.0),
-                        if (isCollapsed)
-                          HeightLimiter(
-                            maxHeight: 240,
-                            fadeEffectHeight: 40,
-                            child: _buildPostContent(model),
-                            overflowIndicatorBuilder: (context) => Container(
-                              height: 150,
-                              decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  begin: Alignment.bottomCenter,
-                                  end: Alignment.topCenter,
-                                  colors: [
-                                    theme.colorScheme.surface.withAlpha(255),
-                                    theme.colorScheme.surface.withAlpha(0),
-                                  ],
-                                  stops: const [
-                                    0.2,
-                                    1.0,
-                                  ],
-                                ),
-                              ),
-                              child: Align(
-                                alignment: Alignment.bottomCenter,
-                                child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    const Expanded(child: Divider()),
-                                    TextButton(
-                                      onPressed: () {
-                                        setState(() {
-                                          isCollapsed = false;
-                                        });
-                                      },
-                                      child: const Text('Развернуть'),
-                                    ),
-                                    const Expanded(child: Divider()),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          )
-                        else
-                          _buildPostContent(model),
-                        if (model.isAnnouncement)
-                          ElevatedButton(
-                            onPressed: model.isAnnouncementRead
-                                ? null
-                                : model.markReadIfImportant,
-                            child: Text(
-                              model.isAnnouncementRead
-                                  ? 'Сообщение прочитано'
-                                  : 'Отметить прочитанным',
-                            ),
-                          )
-                        else
-                          const SizedBox(height: 16.0),
-                        for (final file in model.attachedFileViewModels)
-                          AttachedFile(viewModel: file),
-                        if (!widget.showingComments)
-                          Padding(
-                            padding: const EdgeInsets.only(
-                              left: 4,
-                              right: 4,
-                              top: 10,
-                            ),
-                            child: Divider(
-                              thickness: 0.4,
-                              color: unnColors?.idkWhatColor,
-                            ),
-                          ),
-                        const SizedBox(height: 8),
-                        if (widget.showingComments)
-                          Row(
+                      ],
+                    ),
+                    child: Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
-                              _ReactionCounterWithIcons(
-                                model: model.reactionViewModel ??
-                                    ReactionViewModel.empty(),
-                                reactionsSize: reactionsSize,
-                                background: unnColors!.idkWhatColor!,
-                              ),
-                            ],
-                          ),
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          spacing: 12.0,
-                          children: [
-                            _ReactionButton(
-                              model.reactionViewModel ??
-                                  ReactionViewModel.empty(),
-                              showCounter: !widget.showingComments,
-                            ),
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                                vertical: 6,
-                              ).copyWith(right: 8),
-                              decoration: BoxDecoration(
-                                color: unnColors?.idkWhatColor
-                                    ?.withValues(alpha: 0.1),
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
+                              Row(
                                 children: [
-                                  Icon(
-                                    Icons.chat_bubble_outline,
-                                    color: unnColors?.idkWhatColor,
-                                    size: 23,
+                                  Expanded(
+                                    child: FeedAuthorHeader(
+                                      dateTime: model.postTime == null
+                                          ? ''
+                                          : formatFeedPostTime(
+                                              model.postTime!,
+                                            ),
+                                      canOpenProfile: true,
+                                      viewModel: model.profileViewModel ??
+                                          ProfileViewModel.empty(),
+                                    ),
                                   ),
-                                  const SizedBox(width: 6),
-                                  Text(
-                                    '${model.commentsCount}',
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      color: unnColors?.idkWhatColor,
+                                  if (model.isAnnouncement)
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 10,
+                                        vertical: 5,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: theme.colorScheme.error
+                                            .withValues(alpha: 0.1),
+                                        borderRadius: BorderRadius.circular(20),
+                                      ),
+                                      child: Text(
+                                        'ВАЖНО',
+                                        style: theme.textTheme.labelSmall
+                                            ?.copyWith(
+                                          color: theme.colorScheme.error,
+                                          fontWeight: FontWeight.w700,
+                                          letterSpacing: 0.5,
+                                        ),
+                                      ),
+                                    ),
+                                  IconButton(
+                                    onPressed: model.togglePin,
+                                    tooltip: model.isPinned
+                                        ? 'Открепить пост'
+                                        : 'Закрепить пост',
+                                    icon: Icon(
+                                      model.isPinned
+                                          ? Icons.bookmark_rounded
+                                          : Icons.bookmark_border_rounded,
+                                      color: model.isPinned
+                                          ? theme.colorScheme.primary
+                                          : theme.colorScheme.onSurfaceVariant,
+                                      size: 22,
                                     ),
                                   ),
                                 ],
                               ),
-                            ),
-                            Expanded(child: Container()),
-                            IconButton(
-                              onPressed: () async {
-                                await _sharePost(model);
-                              },
-                              icon: const Icon(Icons.share),
-                            ),
-                          ],
+                              const SizedBox(height: 16.0),
+                              if (isCollapsed)
+                                HeightLimiter(
+                                  maxHeight: 240,
+                                  fadeEffectHeight: 40,
+                                  overflowIndicatorOutside: true,
+                                  overflowIndicatorBuilder: (context) =>
+                                      Padding(
+                                    padding: const EdgeInsets.only(top: 8),
+                                    child: _PostExpansionButton(
+                                      onPressed: () =>
+                                          setState(() => isCollapsed = false),
+                                      label: 'РАЗВЕРНУТЬ',
+                                    ),
+                                  ),
+                                  child: _buildPostContent(model),
+                                )
+                              else
+                                _buildPostContent(model),
+                              if (!isCollapsed && widget.isCollapsed)
+                                _PostExpansionButton(
+                                  onPressed: _collapse,
+                                  label: 'СКРЫТЬ',
+                                ),
+                              if (model.attachedImages.isNotEmpty)
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 12),
+                                  child: PackedPostImages(
+                                    attachedImages: model.attachedImages,
+                                    authorizationHeaders: model.authHeaders,
+                                  ),
+                                ),
+                              if (model.isAnnouncement)
+                                Padding(
+                                  padding: EdgeInsets.only(
+                                    top: 12,
+                                    bottom: model.attachedFileViewModels.isEmpty
+                                        ? 4
+                                        : 0,
+                                  ),
+                                  child: FilledButton(
+                                    style: FilledButton.styleFrom(
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(14),
+                                      ),
+                                      padding: const EdgeInsets.symmetric(
+                                        vertical: 12,
+                                      ),
+                                    ),
+                                    onPressed: model.isAnnouncementRead
+                                        ? null
+                                        : model.markReadIfImportant,
+                                    child: Text(
+                                      model.isAnnouncementRead
+                                          ? 'Сообщение прочитано'
+                                          : 'Прочитать',
+                                    ),
+                                  ),
+                                )
+                              else if (model.attachedFileViewModels.isEmpty)
+                                const SizedBox(height: 16.0),
+                              AttachedFiles(
+                                files: model.attachedFileViewModels,
+                                useCardStyle: true,
+                              ),
+                              Padding(
+                                padding: EdgeInsets.only(
+                                  left: 4,
+                                  right: 4,
+                                  top: model.attachedFileViewModels.isEmpty
+                                      ? 10
+                                      : 0,
+                                ),
+                                child: Divider(
+                                  height: model.attachedFileViewModels.isEmpty
+                                      ? null
+                                      : 1,
+                                  thickness: 0.4,
+                                  color: theme.colorScheme.outlineVariant,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                spacing: 12.0,
+                                children: [
+                                  _ReactionButton(
+                                    model.reactionViewModel ??
+                                        ReactionViewModel.empty(),
+                                    showCounter: true,
+                                  ),
+                                  InkWell(
+                                    onTap: widget.showingComments
+                                        ? null
+                                        : () => _openPost(
+                                              context,
+                                              model,
+                                              scrollToComments: true,
+                                            ),
+                                    borderRadius: feedActionBorderRadius,
+                                    child: Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 12,
+                                        vertical: 6,
+                                      ).copyWith(right: 8),
+                                      decoration: BoxDecoration(
+                                        color: theme
+                                            .colorScheme.surfaceContainerLow,
+                                        borderRadius: feedActionBorderRadius,
+                                      ),
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Icon(
+                                            Icons.chat_bubble_outline_rounded,
+                                            color: theme.colorScheme
+                                                .onSecondaryContainer,
+                                            size: 20,
+                                          ),
+                                          const SizedBox(width: 6),
+                                          Text(
+                                            '${model.commentsCount}',
+                                            style: TextStyle(
+                                              fontSize: 14,
+                                              color: theme
+                                                  .colorScheme.onSurfaceVariant,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                  Expanded(child: Container()),
+                                  IconButton(
+                                    onPressed: () async {
+                                      await _sharePost(model);
+                                    },
+                                    tooltip: 'Поделиться постом',
+                                    icon: Icon(
+                                      theme.platform == TargetPlatform.iOS
+                                          ? Icons.ios_share_rounded
+                                          : Icons.share_outlined,
+                                      size: 20,
+                                      color: theme.colorScheme.onSurfaceVariant,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
                       ],
                     ),
                   ),
-                ],
+                ),
               ),
             ),
-          ),
-        );
-      },
-      onModelReady: (p0) => p0.onError.subscribe(_onPostRefreshError),
-      onDispose: (p0) => p0.onError.unsubscribe(_onPostRefreshError),
-    );
-  }
+          );
+        },
+        onModelReady: (p0) => p0.onError.subscribe(_onPostRefreshError),
+        onDispose: (p0) => p0.onError.unsubscribe(_onPostRefreshError),
+      );
 
-  static void _openPostCommentsPage(
+  void _openPost(
     BuildContext context,
-    FeedPostViewModel post,
-  ) {
-    if (post.blogData == null) {
+    FeedPostViewModel model, {
+    bool scrollToComments = false,
+  }) {
+    if (model.blogData == null) {
       return;
     }
-    GoRouter.of(context).go(
-      '${GoRouter.of(context).routeInformationProvider.value.uri.path}/'
-      '${postCommentsRoute.pagePath.replaceAll(':postId', post.blogData!.id.toString())}',
+    Injector.appInstance
+        .get<FeedPostViewModelFactory>()
+        .putInCache(model.blogData!.id, model);
+    final router = GoRouter.of(context);
+    final location = Uri(
+      path: '${router.routeInformationProvider.value.uri.path}/'
+          '${postCommentsRoute.pagePath.replaceAll(':postId', model.blogData!.id.toString())}',
+      fragment: scrollToComments ? 'comments' : null,
     );
+    router.go(location.toString());
   }
 
   Future<void> _sharePost(FeedPostViewModel model) async {
@@ -342,184 +426,29 @@ class _FeedPostState extends State<FeedPost> {
             text: model.postText,
             headers: model.authHeaders,
           ),
-          PackedPostImages(
-            attachedImages: model.attachedImages,
-            authorizationHeaders: model.authHeaders,
-          ),
         ],
       );
 }
 
-class _PostHeader extends StatelessWidget {
-  final DateTime? postTime;
+class _PostExpansionButton extends StatelessWidget {
+  final String label;
+  final VoidCallback onPressed;
 
-  final ProfileViewModel viewModel;
-
-  const _PostHeader({
-    required this.postTime,
-    required this.viewModel,
-  });
+  const _PostExpansionButton({required this.label, required this.onPressed});
 
   @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return BaseView<ProfileViewModel>(
-      model: viewModel,
-      builder: (context, model, _) => GestureDetector(
-        onTap: () {
-          if (model.isLoading) {
-            return;
-          }
-          final bitrixId = model.userData?.bitrixId;
-          if (bitrixId == null) {
-            return;
-          }
-          Injector.appInstance
-              .get<ProfileViewModelFactory>()
-              .putInCache(bitrixId, model);
-          GoRouter.of(context).go(
-            '${GoRouter.of(context).routeInformationProvider.value.uri.path}/'
-            '${feedUserProfileRoute.pagePath.replaceAll(':userId', bitrixId.toString())}',
-          );
-        },
-        child: Row(
-          children: [
-            SizedBox(
-              width: 45,
-              height: 45,
-              child: ShimmerLoading(
-                isLoading: model.isLoading,
-                child: CircleAvatar(
-                  backgroundImage: model.hasAvatar
-                      ? CachedNetworkImageProvider(model.avatarUrl!)
-                      : null,
-                  child: model.hasAvatar
-                      ? null
-                      : Text(
-                          style: theme.textTheme.headlineSmall!.copyWith(
-                            color: theme.colorScheme.onSurface,
-                          ),
-                          model.initials,
-                        ),
-                ),
-              ),
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  ShimmerLoading(
-                    isLoading: model.isLoading,
-                    child: model.isLoading
-                        ? Container(
-                            width: double.infinity,
-                            height: MediaQuery.of(context)
-                                .textScaler
-                                .clamp(maxScaleFactor: 1.5)
-                                .scale(16),
-                            decoration: BoxDecoration(
-                              color: Colors.black,
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                          )
-                        : Text(
-                            model.fullname,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: theme.primaryColor,
-                            ),
-                          ),
-                  ),
-                  Text(
-                    postTime == null
-                        ? ''
-                        : DateFormat('d MMMM yyyy, HH:mm', 'ru_RU')
-                            .format(postTime!),
-                    style: TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.normal,
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _ReactionCounterWithIcons extends StatelessWidget {
-  const _ReactionCounterWithIcons({
-    required this.model,
-    required this.reactionsSize,
-    required this.background,
-  });
-
-  final ReactionViewModel model;
-  final double reactionsSize;
-  final Color background;
-
-  @override
-  Widget build(BuildContext context) => BaseView<ReactionViewModel>(
-        model: model,
-        builder: (context, model, _) => Expanded(
-          child: Container(
-            padding: const EdgeInsets.only(
-              top: 6,
-              bottom: 6,
-              right: 8,
-              left: 12,
-            ),
-            child: Builder(
-              builder: (context) {
-                final reactionTypeCount = model.reactionList.length - 1;
-                final reactionCounterOffset =
-                    reactionsSize * reactionTypeCount / 2 + reactionsSize + 8;
-                return SizedBox(
-                  height: reactionsSize,
-                  child: Stack(
-                    alignment: Alignment.centerLeft,
-                    children: [
-                      for (final (i, smallReactionEntry)
-                          in model.reactionList.indexed)
-                        Positioned(
-                          left: reactionsSize / 2 * i,
-                          child: ClipOval(
-                            child: SizedBox(
-                              width: reactionsSize,
-                              height: reactionsSize,
-                              child: Image.asset(
-                                smallReactionEntry.assetName,
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                          ),
-                        ),
-                      if (model.reactionCount > 0)
-                        Positioned(
-                          left: reactionCounterOffset,
-                          child: Text(
-                            '${model.reactionCount}',
-                            style: TextStyle(
-                              fontSize: 13.0,
-                              fontStyle: FontStyle.italic,
-                              fontWeight: FontWeight.w400,
-                              color: background,
-                            ),
-                          ),
-                        ),
-                    ],
-                  ),
-                );
-              },
-            ),
+  Widget build(BuildContext context) => Row(
+        children: [
+          Expanded(
+            child: Divider(color: Theme.of(context).colorScheme.outlineVariant),
           ),
-        ),
+          const SizedBox(width: 8),
+          TextButton(onPressed: onPressed, child: Text(label)),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Divider(color: Theme.of(context).colorScheme.outlineVariant),
+          ),
+        ],
       );
 }
 
@@ -538,8 +467,7 @@ class _ReactionButton extends StatelessWidget {
             viewModel.toggleLike();
           },
           onLongPress: () {
-            triggerHaptic(HapticIntensity.medium);
-            showReactionChoicePanel(context, viewModel);
+            showAnchoredReactionChoice(context, viewModel);
           },
           child: _reactionButton(
             context,
@@ -555,26 +483,32 @@ class _ReactionButton extends StatelessWidget {
     bool showCounter,
   ) {
     final theme = Theme.of(context);
-    final unnColors = theme.unnMobileColors;
-    final buttonColor = unnColors?.idkWhatColor;
+    final buttonColor = theme.colorScheme.onSurfaceVariant;
     final reactionToPost = model.currentReaction;
     return AnimatedContainer(
       duration: const Duration(milliseconds: 200),
-      curve: Curves.bounceOut,
+      curve: Curves.easeOutCubic,
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: reactionToPost == null
-            ? buttonColor?.withValues(alpha: 0.1)
-            : theme.colorScheme.inversePrimary.withValues(alpha: 0.5),
-        borderRadius: BorderRadius.circular(20),
+        color: feedReactionBackgroundColor(
+          theme.colorScheme,
+          isSelected: reactionToPost != null,
+        ),
+        borderRadius: feedActionBorderRadius,
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          getReactionImage(reactionToPost),
+          reactionToPost == null
+              ? Icon(
+                  Icons.favorite_border_rounded,
+                  size: 20,
+                  color: theme.colorScheme.onSecondaryContainer,
+                )
+              : getReactionImage(reactionToPost),
           const SizedBox(width: 6),
           Text(
-            '${showCounter ? (model.reactionCount > 0 ? model.reactionCount : '') : reactionToPost?.caption ?? ReactionType.like.caption}',
+            '${showCounter ? model.reactionCount : reactionToPost?.caption ?? ReactionType.like.caption}',
             style: TextStyle(
               fontSize: 14.0,
               fontWeight: FontWeight.w400,

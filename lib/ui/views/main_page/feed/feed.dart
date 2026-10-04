@@ -1,17 +1,25 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2025 BitCodersNN
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:injector/injector.dart';
+import 'package:intl/intl.dart';
+import 'package:unn_mobile/core/misc/html_utils/html_to_plain_text.dart';
+import 'package:unn_mobile/core/models/feed/feed_filter.dart';
 import 'package:unn_mobile/core/viewmodels/factories/main_page_routes_view_models_factory.dart';
+import 'package:unn_mobile/core/viewmodels/main_page/feed/feed_post_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/feed/feed_screen_view_model.dart';
 import 'package:unn_mobile/ui/builders/online_status_builder.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
-import 'package:unn_mobile/ui/views/main_page/feed/widgets/feed_post.dart';
-import 'package:unn_mobile/ui/views/main_page/main_page_routing.dart';
+import 'package:unn_mobile/ui/views/main_page/feed/widgets/feed_filters_bar.dart';
+import 'package:unn_mobile/ui/views/main_page/feed/widgets/feed_posts_sliver.dart';
 import 'package:unn_mobile/ui/views/main_page/main_page_tab_state.dart';
+import 'package:unn_mobile/ui/widgets/empty_state_widget.dart';
 import 'package:unn_mobile/ui/widgets/offline_overlay_displayer.dart';
+import 'package:unn_mobile/ui/widgets/search/search_controller.dart';
+import 'package:unn_mobile/ui/widgets/search/search_field.dart';
 
 class FeedScreenView extends StatefulWidget {
   final int? bottomRouteIndex;
@@ -23,15 +31,14 @@ class FeedScreenView extends StatefulWidget {
 
 class FeedScreenViewState extends State<FeedScreenView>
     implements MainPageTabState {
-  late ScrollController _scrollController;
-  late TextEditingController _textEditingController;
-
-  late FeedScreenViewModel _viewModel;
+  late final ScrollController _scrollController;
+  late final AppSearchController<String> _search;
+  late final FeedScreenViewModel _viewModel;
+  bool _clearingSearch = false;
 
   @override
   void initState() {
     super.initState();
-
     _viewModel = widget.bottomRouteIndex == null
         ? Injector.appInstance.get<FeedScreenViewModel>()
         : Injector.appInstance
@@ -39,381 +46,324 @@ class FeedScreenViewState extends State<FeedScreenView>
             .getViewModelByRouteIndex<FeedScreenViewModel>(
               widget.bottomRouteIndex!,
             );
-
-    _scrollController = ScrollController(
-      initialScrollOffset: _viewModel.scrollPosition,
-      keepScrollOffset: true,
-    );
-    _textEditingController = TextEditingController();
-
-    _viewModel.scrollToTop = () {
-      if (_scrollController.hasClients) {
-        _scrollController.animateTo(
-          0,
-          duration: Durations.medium1,
-          curve: Curves.decelerate,
-        );
-      }
-    };
+    _scrollController =
+        ScrollController(initialScrollOffset: _viewModel.scrollPosition)
+          ..addListener(_scrollUpdate);
+    _search = AppSearchController<String>(loader: (_) async => [])
+      ..addListener(_onSearchChanged);
+    _search.textController.text = _viewModel.searchQuery ?? '';
+    _viewModel.scrollToTop = refreshTab;
     _viewModel.onRefresh = refreshTab;
-    _scrollController.addListener(scrollUpdate);
   }
 
-  void scrollUpdate() {
+  void _scrollUpdate() {
     _viewModel.scrollPosition = _scrollController.offset;
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return OfflineOverlayDisplayer(
-      child: OnlineStatusBuilder(
-        builder: (context, online) => BaseView<FeedScreenViewModel>(
-          key: const ValueKey('feedscreen'),
-          model: _viewModel,
-          builder: (context, model, child) => Scaffold(
-            appBar: AppBar(
-              title: const Text('Лента'),
-              forceMaterialTransparency: true,
-              actions: [
-                _getSearchButton(model, online),
-                PopupMenuButton<String>(
-                  icon: const Icon(Icons.more_vert),
-                  onSelected: (value) {
-                    switch (value) {
-                      case 'onlyImportant':
-                        model.setShowingOnlyImportant(
-                          newStatus: !model.showOnlyImportant,
-                        );
-                        break;
-                    }
-                  },
-                  itemBuilder: (context) => [
-                    CheckedPopupMenuItem(
-                      checked: model.showOnlyImportant,
-                      enabled: online && !model.isBusy,
-                      value: 'onlyImportant',
-                      child: const Text('Показывать только важные'),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-            body: model.isBusy
-                ? const Center(
-                    child: CircularProgressIndicator(),
-                  )
-                : _getFeedBody(model, theme, context, online),
-          ),
-          onModelReady: (model) => model.init(),
-        ),
-      ),
-    );
-  }
-
-  Widget _getSearchButton(FeedScreenViewModel model, bool online) {
-    if (model.hasSearch) {
-      return IconButton(
-        icon: const Icon(Icons.search_off),
-        onPressed: !model.isBusy
-            ? () {
-                _textEditingController.clear();
-                model.resetSearch();
-              }
-            : null,
-        tooltip: 'Сбросить поиск',
-      );
+  void _onSearchChanged() {
+    if (mounted) {
+      setState(() {});
     }
-
-    return IconButton(
-      icon: const Icon(Icons.search),
-      onPressed: (online && !model.isBusy)
-          ? () async {
-              await _showSearchBar(context, model);
-            }
-          : null,
-      tooltip: 'Поиск',
-    );
   }
 
-  Widget _getFeedBody(
-    FeedScreenViewModel model,
-    ThemeData theme,
-    BuildContext context,
-    bool online,
-  ) =>
-      Column(
-        children: [
-          Expanded(
-            child: NotificationListener<ScrollEndNotification>(
-              child: RefreshIndicator(
-                onRefresh: model.reload,
-                child: CustomScrollView(
-                  controller: _scrollController,
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  slivers: [
-                    if (model.pinnedPosts.isNotEmpty)
-                      SliverAppBar(
-                        backgroundColor: theme.colorScheme.surface,
-                        surfaceTintColor: theme.colorScheme.surface,
-                        floating: true,
-                        primary: false,
-                        elevation: 10,
-                        shadowColor: theme.shadowColor,
-                        title: GestureDetector(
-                          onTap: () => openPinned(context),
-                          child: Container(
-                            padding: const EdgeInsets.all(8.0),
-                            width: double.infinity,
-                            child: Row(
-                              children: [
-                                Expanded(
-                                  child: Text(
-                                    'Закреплённые посты: ${model.pinnedPosts.length}',
-                                    style: theme.textTheme.bodyLarge,
-                                  ),
-                                ),
-                                TextButton(
-                                  onPressed: () => openPinned(context),
-                                  child: const Text(
-                                    'Открыть',
-                                    style: TextStyle(fontSize: 14.0),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                    if (model.failedToLoad)
-                      _coloredTopMessage(
-                        context,
-                        'Не удалось загрузить посты',
-                        theme.colorScheme.error,
-                        theme.colorScheme.onError,
-                      ),
-                    if (model.hasSearch && model.posts.isEmpty)
-                      SliverFillRemaining(
-                        child: Center(
-                          child: Padding(
-                            padding: const EdgeInsets.all(16.0),
-                            child: Text.rich(
-                              textAlign: TextAlign.center,
-                              TextSpan(
-                                children: [
-                                  const TextSpan(text: 'По запросу '),
-                                  TextSpan(
-                                    text: model.searchQuery,
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  const TextSpan(text: ' ничего не найдено'),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    if (!online && model.offlinePosts.isNotEmpty)
-                      _coloredTopMessage(
-                        context,
-                        'Показаны последние загруженные посты',
-                        theme.colorScheme.secondary,
-                        theme.colorScheme.onSecondary,
-                      ),
-                    SliverToBoxAdapter(
-                      child: ListView.builder(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemCount: model.posts.length,
-                        itemBuilder: (context, index) {
-                          if (index == model.numberUnreadMessages) {
-                            return Container(
-                              color: theme.colorScheme.surface,
-                              padding: const EdgeInsets.symmetric(
-                                vertical: 12.0,
-                                horizontal: 20.0,
-                              ),
-                              margin: const EdgeInsets.only(
-                                top: 8.0,
-                                bottom: 8.0,
-                              ),
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Text(
-                                    'ПРОЧИТАННЫЕ ПОСТЫ',
-                                    textAlign: TextAlign.center,
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .labelMedium
-                                        ?.copyWith(
-                                          color: theme.hintColor,
-                                          fontSize: 14.0,
-                                        ),
-                                  ),
-                                ],
-                              ),
-                            );
-                          }
+  void _openSearch() {
+    refreshTab();
+    _search.textController.text = _viewModel.searchQuery ?? '';
+    _search.open();
+  }
 
-                          final actualIndex = index > model.numberUnreadMessages
-                              ? index - 1
-                              : index;
-                          final post = model.posts[actualIndex];
-                          return FeedPost(
-                            key: ObjectKey(post),
-                            post: post,
-                            showingComments: false,
-                          );
-                        },
-                      ),
-                    ),
-                    if (model.loadingMore && online && model.posts.isNotEmpty)
-                      const SliverToBoxAdapter(
-                        child: Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Center(
-                            child: SizedBox(
-                              width: 24,
-                              height: 24,
-                              child: CircularProgressIndicator(),
-                            ),
-                          ),
-                        ),
-                      ),
-                  ],
-                ),
-              ),
-              onNotification: (scrollEnd) {
-                if (!online) {
-                  return false;
-                }
-                final metrics = scrollEnd.metrics;
+  void _closeSearch() {
+    _search.close();
+    _search.textController.text = _viewModel.searchQuery ?? '';
+  }
 
-                if (metrics.pixels >= metrics.maxScrollExtent - 300) {
-                  model.loadMorePosts();
-                }
+  void _clearSearch() {
+    if (_viewModel.isBusy) {
+      return;
+    }
+    _search.clearQuery();
+    unawaited(_submitSearch(''));
+  }
 
-                return true;
-              },
-            ),
-          ),
-        ],
-      );
-
-  Future<dynamic> _showSearchBar(
-    BuildContext context,
-    FeedScreenViewModel model,
-  ) {
-    void handleSearch(BuildContext dialogContext) {
-      final text = _textEditingController.text.trim();
-      if (text.isNotEmpty) {
-        model.submitSearch(text);
+  Future<void> _submitSearch(String query) async {
+    if (_viewModel.isBusy) {
+      return;
+    }
+    FocusScope.of(context).unfocus();
+    refreshTab();
+    final clearing = query.trim().isEmpty;
+    if (clearing) {
+      setState(() => _clearingSearch = true);
+    }
+    try {
+      if (clearing) {
+        if (_viewModel.hasSearch) {
+          await _viewModel.resetSearch();
+        }
+      } else {
+        await _viewModel.submitSearch(query);
       }
-      Navigator.of(dialogContext).pop();
+    } finally {
+      if (mounted) {
+        _closeSearch();
+        setState(() => _clearingSearch = false);
+      }
     }
+  }
 
-    return showDialog(
-      context: context,
-      builder: (dialogContext) => Stack(
-        children: [
-          Align(
-            alignment: AlignmentGeometry.topLeft,
-            child: SizedBox(
-              height: 60.0,
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 8.0,
+  void _selectFilter(FeedFilter filter) {
+    refreshTab();
+    unawaited(Future.sync(() => _viewModel.setFilter(filter)));
+  }
+
+  List<FeedPostViewModel> _visiblePosts(
+    FeedScreenViewModel model,
+    bool online,
+  ) {
+    var posts = model.filter == FeedFilter.pinned
+        ? model.pinnedPosts
+        : online
+            ? model.posts
+            : model.offlinePosts;
+    if (model.filter == FeedFilter.important) {
+      posts = posts.where((post) => post.isAnnouncement).toList();
+    }
+    if (model.filter == FeedFilter.pinned && model.hasSearch) {
+      final query = model.searchQuery!.toLowerCase();
+      posts = posts
+          .where(
+            (post) =>
+                htmlToPlainText(post.postText).toLowerCase().contains(query) ||
+                (post.profileViewModel?.fullname
+                        .toLowerCase()
+                        .contains(query) ??
+                    false),
+          )
+          .toList();
+    }
+    return posts;
+  }
+
+  @override
+  Widget build(BuildContext context) => OfflineOverlayDisplayer(
+        child: OnlineStatusBuilder(
+          builder: (context, online) => BaseView<FeedScreenViewModel>(
+            model: _viewModel,
+            onModelReady: (model) => model.init(),
+            builder: (context, model, _) {
+              final theme = Theme.of(context);
+              return PrimaryScrollController(
+                controller: _scrollController,
+                child: Scaffold(
+                  backgroundColor: theme.colorScheme.surfaceContainerLow,
+                  appBar: AppBar(
+                    backgroundColor: theme.colorScheme.surfaceContainerLow,
+                    scrolledUnderElevation: 0,
+                    toolbarHeight:
+                        12 + MediaQuery.textScalerOf(context).scale(48),
+                    title: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          DateFormat('EEEE, d MMMM', 'ru_RU')
+                              .format(DateTime.now())
+                              .toUpperCase(),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: theme.textTheme.labelSmall?.copyWith(
+                            color: theme.colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                        Text(
+                          'Лента',
+                          style: theme.textTheme.headlineSmall
+                              ?.copyWith(fontWeight: FontWeight.w400),
+                        ),
+                      ],
+                    ),
+                    automaticallyImplyLeading: false,
+                    actions: [
+                      if (!_search.isOpen && !model.hasSearch)
+                        IconButton(
+                          onPressed:
+                              online && !model.isBusy ? _openSearch : null,
+                          tooltip: 'Поиск по ленте',
+                          icon: const Icon(Icons.search_rounded),
+                        ),
+                    ],
+                  ),
+                  body: _feedBody(context, model, online),
                 ),
-                child: SearchBar(
-                  autoFocus: true,
-                  padding: const WidgetStatePropertyAll(
-                    EdgeInsets.symmetric(
-                      horizontal: 8.0,
+              );
+            },
+          ),
+        ),
+      );
+
+  Widget _feedBody(
+    BuildContext context,
+    FeedScreenViewModel model,
+    bool online,
+  ) {
+    final posts = _visiblePosts(model, online);
+    final colors = Theme.of(context).colorScheme;
+    return Align(
+      alignment: Alignment.topCenter,
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 720),
+        child: NotificationListener<ScrollEndNotification>(
+          onNotification: (notification) {
+            if (online &&
+                notification.metrics.axis == Axis.vertical &&
+                !model.isBusy &&
+                model.filter != FeedFilter.pinned &&
+                notification.metrics.extentAfter < 300) {
+              unawaited(model.loadMorePosts());
+            }
+            return false;
+          },
+          child: RefreshIndicator.adaptive(
+            onRefresh: () async {
+              if (online) {
+                await model.reload();
+              }
+            },
+            child: CustomScrollView(
+              primary: true,
+              physics: const AlwaysScrollableScrollPhysics(),
+              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+              slivers: [
+                SliverToBoxAdapter(
+                  child: FeedFiltersBar(
+                    selected: model.filter,
+                    onSelected: online && !model.isBusy && !model.loadingMore
+                        ? _selectFilter
+                        : null,
+                  ),
+                ),
+                if (!_clearingSearch && (_search.isOpen || model.hasSearch))
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+                      child: SearchField<String>(
+                        controller: _search,
+                        hintText: 'Поиск по ленте',
+                        onSubmitted: _submitSearch,
+                        onClear: _clearSearch,
+                        autofocus: _search.isOpen,
+                      ),
                     ),
                   ),
-                  controller: _textEditingController,
-                  onSubmitted: (value) {
-                    handleSearch(dialogContext);
-                  },
-                  trailing: [
-                    ValueListenableBuilder<TextEditingValue>(
-                      valueListenable: _textEditingController,
-                      builder: (context, value, child) {
-                        if (value.text.isEmpty) {
-                          return const SizedBox.shrink();
-                        }
-                        return IconButton(
-                          onPressed: _textEditingController.clear,
-                          icon: const Icon(Icons.clear),
-                        );
-                      },
+                if (model.failedToLoad)
+                  _notice(
+                    'Не удалось обновить ленту. Потяните вниз, чтобы повторить.',
+                    colors.error,
+                  ),
+                if (!online && posts.isNotEmpty)
+                  _notice(
+                    'Показаны последние загруженные посты',
+                    colors.onSurfaceVariant,
+                  ),
+                if (model.isReplacingPosts || posts.isEmpty)
+                  SliverFillRemaining(
+                    hasScrollBody: false,
+                    child: model.isReplacingPosts ||
+                            model.isBusy ||
+                            (online && model.loadingMore)
+                        ? const Center(
+                            child: CircularProgressIndicator.adaptive(),
+                          )
+                        : EmptyStateWidget(
+                            icon: model.hasSearch
+                                ? Icons.search_off_rounded
+                                : Icons.article_outlined,
+                            title: model.hasSearch
+                                ? 'Ничего не найдено'
+                                : switch (model.filter) {
+                                    FeedFilter.pinned =>
+                                      'Нет закреплённых постов',
+                                    FeedFilter.important =>
+                                      'Нет важных сообщений',
+                                    FeedFilter.all => 'Пока нет постов',
+                                  },
+                            caption: model.hasSearch
+                                ? 'Попробуйте другой запрос'
+                                : !online
+                                    ? 'Подключитесь к сети, чтобы загрузить ленту'
+                                    : 'Потяните вниз, чтобы обновить ленту',
+                          ),
+                  )
+                else
+                  FeedPostsSliver(
+                    posts: posts,
+                    showCount: model.filter == FeedFilter.pinned,
+                    title: model.hasSearch
+                        ? 'Результаты поиска'
+                        : model.filter == FeedFilter.all
+                            ? null
+                            : model.filter.caption,
+                  ),
+                if ((model.loadingMore || model.isBusy) &&
+                    !model.isReplacingPosts &&
+                    posts.isNotEmpty &&
+                    online)
+                  const SliverToBoxAdapter(
+                    child: Padding(
+                      padding: EdgeInsets.all(24),
+                      child: Center(
+                        child: SizedBox.square(
+                          dimension: 24,
+                          child: CircularProgressIndicator.adaptive(
+                            strokeWidth: 2,
+                          ),
+                        ),
+                      ),
                     ),
-                    IconButton(
-                      onPressed: () {
-                        handleSearch(dialogContext);
-                      },
-                      icon: const Icon(Icons.search),
-                    ),
-                  ],
-                ),
-              ),
+                  ),
+                const SliverToBoxAdapter(child: SizedBox(height: 24)),
+              ],
             ),
           ),
-        ],
-      ),
-    );
-  }
-
-  void openPinned(BuildContext context) {
-    GoRouter.of(context).go(
-      '${GoRouter.of(context).routeInformationProvider.value.uri.path}/'
-      '${pinnedPostsRoute.pagePath}',
-    );
-  }
-
-  Widget _coloredTopMessage(
-    BuildContext context,
-    String text,
-    Color background,
-    Color foreground,
-  ) {
-    final theme = Theme.of(context);
-    return PinnedHeaderSliver(
-      child: Container(
-        color: background,
-        width: double.infinity,
-        padding: const EdgeInsets.symmetric(
-          vertical: 8.0,
-          horizontal: 8.0,
-        ),
-        child: Text(
-          text,
-          style: theme.textTheme.bodyLarge?.copyWith(color: foreground),
         ),
       ),
     );
   }
+
+  Widget _notice(String message, Color color) => SliverToBoxAdapter(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
+          child: Text(message, style: TextStyle(color: color)),
+        ),
+      );
 
   @override
   void dispose() {
-    _viewModel.scrollToTop = null;
-    _viewModel.onRefresh = null;
-    _textEditingController.dispose();
+    if (_viewModel.scrollToTop == refreshTab) {
+      _viewModel.scrollToTop = null;
+    }
+    if (_viewModel.onRefresh == refreshTab) {
+      _viewModel.onRefresh = null;
+    }
+    _search
+      ..removeListener(_onSearchChanged)
+      ..dispose();
     _scrollController
-      ..removeListener(scrollUpdate)
+      ..removeListener(_scrollUpdate)
       ..dispose();
     super.dispose();
   }
 
   @override
   void refreshTab() {
-    _scrollController.animateTo(
-      0,
-      duration: const Duration(milliseconds: 400),
-      curve: Curves.decelerate,
-    );
+    if (_scrollController.hasClients) {
+      unawaited(
+        _scrollController.animateTo(
+          0,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOutCubic,
+        ),
+      );
+    }
   }
 }

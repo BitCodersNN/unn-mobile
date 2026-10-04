@@ -1,22 +1,22 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2025 BitCodersNN
 
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:unn_mobile/core/models/feed/rating_list.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/common/profile_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/feed/feed_comment_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/feed/reaction_view_model.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
-import 'package:unn_mobile/ui/views/main_page/feed/functions/reactions_window.dart';
+import 'package:unn_mobile/ui/views/main_page/feed/functions/anchored_reactions_window.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/widgets/attached_file.dart';
+import 'package:unn_mobile/ui/views/main_page/feed/widgets/feed_action_style.dart';
+import 'package:unn_mobile/ui/views/main_page/feed/widgets/feed_author_header.dart';
+import 'package:unn_mobile/ui/views/main_page/feed/widgets/feed_item_context_menu.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/widgets/packed_post_images.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/widgets/reaction_bubble.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/widgets/text_html_widget.dart';
 import 'package:unn_mobile/ui/widgets/context_menu/context_menu_factory.dart';
-import 'package:unn_mobile/ui/widgets/context_menu/context_menu_helper.dart';
 import 'package:unn_mobile/ui/widgets/shimmer.dart';
-import 'package:unn_mobile/ui/widgets/shimmer_loading.dart';
 
 class FeedCommentView extends StatelessWidget {
   final FeedCommentViewModel viewModel;
@@ -28,55 +28,73 @@ class FeedCommentView extends StatelessWidget {
   @override
   Widget build(BuildContext context) => BaseView<FeedCommentViewModel>(
         model: viewModel,
-        builder: (context, model, child) => GestureDetector(
-          onLongPress: () => ContextMenuHelper.showContextMenu(
-            context: context,
-            model: model,
-            actionsBuilder: () => createCommentActions(
+        builder: (context, model, child) => Padding(
+          padding: const EdgeInsets.fromLTRB(16, 10, 16, 0),
+          child: FeedItemContextMenu(
+            borderRadius: BorderRadius.circular(18),
+            reactions: model.reactionViewModel,
+            actionsBuilder: (context) => createCommentActions(
               context: context,
               model: model,
+              includeReactions: false,
             ),
-          ),
-          child: Shimmer(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _CommentHeader(
-                  dateTime: model.comment?.dateTime ?? '',
-                  viewModel: model.profileViewModel ?? ProfileViewModel.empty(),
-                  hide: model.isBusy,
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(
-                    left: 16,
-                    bottom: 10,
-                    right: 10,
-                    top: 8,
-                  ),
-                  child: model.renderMessage
-                      ? TextHtmlWidget(text: model.message)
-                      : const SizedBox(),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 20.0,
-                    vertical: 0.0,
-                  ),
-                  child: PackedPostImages(
-                    attachedImages: model.attachedImages,
-                    authorizationHeaders: model.authHeaders,
+            child: Shimmer(
+              child: Container(
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.surfaceContainerLow,
+                  borderRadius: BorderRadius.circular(18),
+                  border: Border.all(
+                    color: Theme.of(context)
+                        .colorScheme
+                        .outlineVariant
+                        .withValues(alpha: 0.5),
                   ),
                 ),
-                for (final file in model.attachedFileViewModels)
-                  Padding(
-                    padding: const EdgeInsets.only(left: 16),
-                    child: AttachedFile(viewModel: file),
-                  ),
-                _ReactionView(
-                  model: model.reactionViewModel ?? ReactionViewModel.empty(),
-                  context: context,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    FeedAuthorHeader(
+                      dateTime: model.comment?.dateTime ?? '',
+                      viewModel:
+                          model.profileViewModel ?? ProfileViewModel.empty(),
+                      isLoading: model.isBusy,
+                      compact: true,
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(
+                        left: 0,
+                        bottom: model.attachedImages.isEmpty &&
+                                model.attachedFileViewModels.isNotEmpty
+                            ? 0
+                            : 10,
+                        right: 0,
+                        top: 8,
+                      ),
+                      child: model.renderMessage
+                          ? TextHtmlWidget(
+                              text: model.message,
+                              headers: model.authHeaders,
+                            )
+                          : const SizedBox(),
+                    ),
+                    if (model.attachedImages.isNotEmpty)
+                      PackedPostImages(
+                        attachedImages: model.attachedImages,
+                        authorizationHeaders: model.authHeaders,
+                      ),
+                    AttachedFiles(
+                      files: model.attachedFileViewModels,
+                      useCardStyle: true,
+                    ),
+                    _ReactionView(
+                      topPadding: model.attachedFileViewModels.isEmpty ? 10 : 0,
+                      model:
+                          model.reactionViewModel ?? ReactionViewModel.empty(),
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
           ),
         ),
@@ -86,19 +104,20 @@ class FeedCommentView extends StatelessWidget {
 class _ReactionView extends StatelessWidget {
   const _ReactionView({
     required this.model,
-    required this.context,
+    this.topPadding = 10,
   });
 
   final ReactionViewModel model;
-  final BuildContext context;
+  final double topPadding;
 
   @override
   Widget build(BuildContext context) {
     final scaledAddButtonSize = MediaQuery.of(context).textScaler.scale(20) + 8;
+    final colors = Theme.of(context).colorScheme;
     return BaseView<ReactionViewModel>(
       model: model,
       builder: (context, model, _) => Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+        padding: EdgeInsets.only(top: topPadding),
         child: Wrap(
           direction: Axis.horizontal,
           spacing: 8,
@@ -107,6 +126,13 @@ class _ReactionView extends StatelessWidget {
             for (final reaction in ReactionType.values)
               if (model.getReactionCount(reaction) > 0)
                 ReactionBubble(
+                  borderRadius: feedActionBorderRadius,
+                  backgroundColor: feedReactionBackgroundColor(
+                    colors,
+                    isSelected: model.currentReaction == reaction,
+                  ),
+                  foregroundColor: colors.onSurfaceVariant,
+                  borderSide: BorderSide.none,
                   isSelected: model.currentReaction == reaction,
                   onPressed: () {
                     model.toggleReaction(reaction);
@@ -115,112 +141,33 @@ class _ReactionView extends StatelessWidget {
                   text: model.getReactionCount(reaction).toString(),
                 ),
             if (!model.isLoading && model.canAddReaction)
-              IconButton.filledTonal(
-                padding: EdgeInsets.zero,
-                constraints: BoxConstraints.tightFor(
-                  height: scaledAddButtonSize,
-                  width: scaledAddButtonSize,
-                ),
-                onPressed: () {
-                  showReactionChoicePanel(context, model);
-                },
-                icon: Icon(
-                  Icons.add,
-                  size: MediaQuery.of(context)
-                      .textScaler
-                      .clamp(maxScaleFactor: 1.3)
-                      .scale(16),
+              Builder(
+                builder: (buttonContext) => IconButton.filledTonal(
+                  padding: EdgeInsets.zero,
+                  style: IconButton.styleFrom(
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    shape: const RoundedRectangleBorder(
+                      borderRadius: feedActionBorderRadius,
+                    ),
+                  ),
+                  constraints: BoxConstraints.tightFor(
+                    height: scaledAddButtonSize,
+                    width: scaledAddButtonSize,
+                  ),
+                  onPressed: () {
+                    showAnchoredReactionChoice(buttonContext, model);
+                  },
+                  icon: Icon(
+                    Icons.add,
+                    size: MediaQuery.of(context)
+                        .textScaler
+                        .clamp(maxScaleFactor: 1.3)
+                        .scale(16),
+                  ),
                 ),
               ),
-            //
           ],
         ),
-      ),
-    );
-  }
-}
-
-class _CommentHeader extends StatelessWidget {
-  final String dateTime;
-  final ProfileViewModel viewModel;
-  final bool hide;
-
-  const _CommentHeader({
-    required this.dateTime,
-    required this.viewModel,
-    this.hide = false,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return BaseView<ProfileViewModel>(
-      model: viewModel,
-      builder: (context, model, _) => Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(left: 16),
-            child: ShimmerLoading(
-              isLoading: model.isLoading || hide,
-              child: CircleAvatar(
-                backgroundImage: model.hasAvatar
-                    ? CachedNetworkImageProvider(model.avatarUrl!)
-                    : null,
-                radius: MediaQuery.of(context).textScaler.scale(20),
-                child: model.hasAvatar
-                    ? null
-                    : Text(
-                        style: theme.textTheme.headlineSmall!.copyWith(
-                          color: theme.colorScheme.onSurface,
-                          fontSize: MediaQuery.of(context).textScaler.scale(20),
-                        ),
-                        model.initials,
-                      ),
-                //
-              ),
-            ),
-          ),
-          const SizedBox(width: 10),
-          Expanded(
-            child: ShimmerLoading(
-              isLoading: model.isLoading || hide,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  if (!model.isLoading && !hide)
-                    Text(
-                      model.fullname,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    )
-                  else
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                      child: Container(
-                        width: double.infinity,
-                        height: MediaQuery.of(context)
-                            .textScaler
-                            .clamp(maxScaleFactor: 1.5)
-                            .scale(16),
-                        decoration: BoxDecoration(
-                          color: Colors.black,
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                      ),
-                    ),
-                  if (!model.isLoading && !hide)
-                    Text(
-                      dateTime,
-                      style: theme.textTheme.bodySmall,
-                    ),
-                ],
-              ),
-            ),
-          ),
-        ],
       ),
     );
   }

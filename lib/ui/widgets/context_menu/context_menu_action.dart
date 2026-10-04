@@ -29,7 +29,7 @@ class ContextMenuAction {
                 leadingIcon,
                 const SizedBox(width: 12),
               ],
-              Text(label),
+              Flexible(child: Text(label)),
             ],
           ),
         ),
