@@ -54,6 +54,16 @@ class SettingsScreenView extends StatelessWidget {
                       ),
                       if (hasAccount) ...[
                         SwitchListTile.adaptive(
+                          title: const Text('Источник своего расписания'),
+                          subtitle: model.useRaspSchedule
+                              ? const Text('Загружается с rasp.unn.ru')
+                              : const Text('Загружается с Портала'),
+                          value: model.useRaspSchedule,
+                          onChanged: (value) {
+                            model.useRaspSchedule = value;
+                          },
+                        ),
+                        SwitchListTile.adaptive(
                           title: const Text('Порядок комментариев'),
                           subtitle: model.reverseComments
                               ? const Text('Сначала новые')

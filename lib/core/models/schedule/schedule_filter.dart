@@ -8,7 +8,7 @@ enum IdType {
   student,
   person,
   lecturer,
-  auditoriun,
+  auditorium,
 }
 
 class IdForSchedule {
@@ -51,6 +51,6 @@ extension IdTypeExtensions on IdType {
         IdType.student => 'Студент',
         IdType.lecturer => 'Преподаватель',
         IdType.person => 'Преподаватель',
-        IdType.auditoriun => 'Аудитория',
+        IdType.auditorium => 'Аудитория',
       };
 }

@@ -2,11 +2,14 @@
 // Copyright 2026 BitCodersNN
 
 import 'dart:async';
+import 'package:unn_mobile/core/misc/app_settings.dart';
 import 'package:unn_mobile/core/misc/authorisation/try_login_and_retrieve_data.dart';
 import 'package:unn_mobile/core/misc/date_time_utilities/date_time_extensions.dart';
 import 'package:unn_mobile/core/misc/date_time_utilities/week_range.dart';
 import 'package:unn_mobile/core/misc/user/current_user_sync_storage.dart';
+import 'package:unn_mobile/core/models/profile/employee/employee_data.dart';
 import 'package:unn_mobile/core/models/profile/student/student_data.dart';
+import 'package:unn_mobile/core/models/profile/user_data.dart';
 import 'package:unn_mobile/core/models/schedule/offline_schedule.dart';
 import 'package:unn_mobile/core/models/schedule/schedule_filter.dart';
 import 'package:unn_mobile/core/models/schedule/schedule_search_suggestion_item.dart';
@@ -59,6 +62,9 @@ class ScheduleTabViewModel extends BaseViewModel {
 
   Future<void> refreshDefaultId() async {
     final profile = _userStorage.currentUserData;
+    if (profile == null) {
+      return;
+    }
     if (_userType == IdType.group && profile is StudentData) {
       final groupId = await _searchIdService.findIdOnPortal(
         profile.baseEduInfo.eduGroup,
@@ -72,7 +78,7 @@ class ScheduleTabViewModel extends BaseViewModel {
       final currentUserId = await tryLoginAndRetrieveData(
         () async {
           final id = await _searchIdService.getIdOfLoggedInUser();
-          needsDefaultIdRefresh = false;
+
           return id;
         },
         () {
@@ -80,9 +86,32 @@ class ScheduleTabViewModel extends BaseViewModel {
           return null;
         },
       );
-      if (_userType == currentUserId?.idType) {
+      if (isIdTypeMatchingUser(_userType, profile)) {
         defaultId = currentUserId?.id;
+        needsDefaultIdRefresh = false;
       }
+    }
+  }
+
+  bool isIdTypeMatchingUser(IdType type, UserData? data) {
+    switch (data) {
+      case EmployeeData _:
+        switch (type) {
+          case IdType.person:
+          case IdType.lecturer:
+            return true;
+          default:
+            return false;
+        }
+      case StudentData _:
+        switch (type) {
+          case IdType.student:
+            return true;
+          default:
+            return false;
+        }
+      default:
+        return false;
     }
   }
 
@@ -98,10 +127,25 @@ class ScheduleTabViewModel extends BaseViewModel {
     );
   }
 
-  Future<void> loadSchedule() async {
+  Future<void> loadSchedule({bool useRasp = false}) async {
+    if (useRasp) {
+      if (_userStorage.currentUserData?.login == null) {
+        return;
+      }
+
+      final foundSchedule = await _scheduleService.getCurrentUserSchedule(
+            _userStorage.currentUserData!.login!,
+            _parent.selectedWeek.start,
+          ) ??
+          [];
+      schedule = partitionSchedule(foundSchedule);
+      return;
+    }
+
     if (searchFilter == null) {
       return;
     }
+
     final List<Subject> foundSchedule = await tryLoginAndRetrieveData(
           () => _scheduleService.getSchedule(searchFilter!),
           () => schedule?.expand((e) => e).toList(),
@@ -137,13 +181,24 @@ class ScheduleTabViewModel extends BaseViewModel {
 
   FutureOr<void> refresh({bool triggerOfflineUpdate = false}) =>
       busyCallAsync(() async {
-        if (needsDefaultIdRefresh) {
-          await refreshDefaultId();
-        }
-        updateFilter();
-        await loadSchedule();
-        if (triggerOfflineUpdate) {
-          await _parent.saveOfflineSchedule();
+        if (AppSettings.useRaspSchedule &&
+            selectedId == null &&
+            isIdTypeMatchingUser(_userType, _userStorage.currentUserData)) {
+          defaultId = ''; // Чтоб не был null
+          updateFilter(); // Даже если мы этот фильтр не используем, пусть будет актуальный
+          await loadSchedule(useRasp: true);
+          if (triggerOfflineUpdate) {
+            await _parent.saveOfflineSchedule();
+          }
+        } else {
+          if (needsDefaultIdRefresh) {
+            await refreshDefaultId();
+          }
+          updateFilter();
+          await loadSchedule();
+          if (triggerOfflineUpdate) {
+            await _parent.saveOfflineSchedule();
+          }
         }
       });
 

@@ -11,6 +11,7 @@ class AppSettings {
   static int initialPage = 0;
   static bool analyticsEnabled = false;
   static bool reverseComments = true;
+  static bool useRaspSchedule = true;
 
   static Event optionsSaved = Event('optionsSaved');
 
@@ -32,6 +33,11 @@ class AppSettings {
     );
     reverseComments = await _readValue(
       AppSettingsKeys.reverseComments,
+      defaultValue: true,
+      parser: bool.tryParse,
+    );
+    useRaspSchedule = await _readValue(
+      AppSettingsKeys.useRaspSchedule,
       defaultValue: true,
       parser: bool.tryParse,
     );
@@ -67,6 +73,10 @@ class AppSettings {
     await storage.write(
       key: AppSettingsKeys.reverseComments,
       value: reverseComments.toString(),
+    );
+    await storage.write(
+      key: AppSettingsKeys.useRaspSchedule,
+      value: useRaspSchedule.toString(),
     );
 
     optionsSaved.broadcast();

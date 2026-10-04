@@ -46,13 +46,15 @@ class ScheduleScreenViewModel extends BaseViewModel
   List<IdType> get sortedUserTypeList => switch (_userStorage.typeOfUser) {
         const (EmployeeData) => [
             IdType.lecturer,
-            IdType.auditoriun,
+            IdType.auditorium,
+            IdType.group,
             IdType.student,
           ],
         _ => [
             IdType.student,
             IdType.group,
             IdType.lecturer,
+            IdType.auditorium,
           ]
       };
 
