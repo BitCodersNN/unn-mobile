@@ -8,6 +8,7 @@ import 'package:unn_mobile/core/misc/tab_bar_preferences.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/tab_bar_customization_view_model.dart';
 import 'package:unn_mobile/ui/views/main_page/main_page_routing.dart';
 import 'package:unn_mobile/ui/views/main_page/tab_bar_item_content.dart';
+import 'package:unn_mobile/ui/views/main_page/tab_bar_reorder_preview.dart';
 
 Future<List<String>?> showTabBarCustomizationSheet(
   BuildContext context, {
@@ -227,34 +228,23 @@ class _TabBarCustomizationSheetState extends State<TabBarCustomizationSheet> {
                         vertical: 12,
                         horizontal: 4,
                       ),
-                      child: Row(
-                        children: [
-                          for (var index = 0;
-                              index < TabBarPreferences.editableSlotCount;
-                              index++)
-                            Expanded(child: _previewSlot(context, index)),
-                          Expanded(
-                            child: Semantics(
-                              enabled: false,
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 10,
-                                  horizontal: 2,
-                                ),
-                                child: TabBarItemContent(
-                                  icon: Icons.menu,
-                                  label: 'Ещё',
-                                  color: theme.colorScheme.onSurface
-                                      .withValues(alpha: 0.35),
-                                  labelStyle: TextStyle(
-                                    color: theme.colorScheme.onSurface
-                                        .withValues(alpha: 0.35),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
+                      child: TabBarReorderPreview(
+                        itemCount: TabBarPreferences.maxTabs,
+                        itemKey: (index) =>
+                            index == TabBarPreferences.editableSlotCount
+                                ? TabBarPreferences.morePath
+                                : _model.slots[index] ?? 'empty-$index',
+                        canDrag: (index) =>
+                            !_model.isSaving &&
+                            index < TabBarPreferences.editableSlotCount &&
+                            _model.slots[index] != null,
+                        canMove: _model.canMove,
+                        onSelected: _model.selectSlot,
+                        onMove: _model.move,
+                        itemBuilder: (context, index) =>
+                            index < TabBarPreferences.editableSlotCount
+                                ? _previewSlot(context, index)
+                                : _morePreview(context),
                       ),
                     ),
                   ),
@@ -285,12 +275,12 @@ class _TabBarCustomizationSheetState extends State<TabBarCustomizationSheet> {
     final route = path == null ? null : _routesByPath[path];
     final theme = Theme.of(context);
     final selected = _model.selectedSlot == index;
-    final content = Material(
-      color: Colors.transparent,
-      borderRadius: BorderRadius.circular(14),
-      child: InkWell(
+    return Semantics(
+      button: true,
+      selected: selected,
+      child: GestureDetector(
         key: ValueKey('quick-access-slot-$index'),
-        borderRadius: BorderRadius.circular(14),
+        behavior: HitTestBehavior.opaque,
         onTap: () => _model.selectSlot(index),
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 2),
@@ -312,24 +302,22 @@ class _TabBarCustomizationSheetState extends State<TabBarCustomizationSheet> {
         ),
       ),
     );
-    return DragTarget<int>(
-      onWillAcceptWithDetails: (details) => _model.canMove(details.data, index),
-      onAcceptWithDetails: (details) => _model.move(details.data, index),
-      builder: (context, candidates, rejected) => path == null
-          ? content
-          : LongPressDraggable<int>(
-              data: index,
-              feedback: Material(
-                color: theme.colorScheme.primaryContainer,
-                borderRadius: BorderRadius.circular(16),
-                child: Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: Icon(route!.unselectedIcon),
-                ),
-              ),
-              childWhenDragging: Opacity(opacity: 0.3, child: content),
-              child: content,
-            ),
+  }
+
+  Widget _morePreview(BuildContext context) {
+    final color =
+        Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.35);
+    return Semantics(
+      enabled: false,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 2),
+        child: TabBarItemContent(
+          icon: Icons.menu,
+          label: 'Ещё',
+          color: color,
+          labelStyle: TextStyle(color: color),
+        ),
+      ),
     );
   }
 
