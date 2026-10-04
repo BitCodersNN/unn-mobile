@@ -309,6 +309,12 @@ class _FeedItemMenuRoute extends PopupRoute<VoidCallback> {
                             child: ContextMenuActions(
                               key: const ValueKey('feed-menu-actions'),
                               actions: actions,
+                              onSelected: (action) {
+                                if (ModalRoute.of(context)?.isCurrent ??
+                                    false) {
+                                  Navigator.of(context).pop(action.onTap);
+                                }
+                              },
                             ),
                           ),
                         ),
