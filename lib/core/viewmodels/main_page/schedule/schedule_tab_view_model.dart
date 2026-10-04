@@ -7,6 +7,7 @@ import 'package:unn_mobile/core/misc/date_time_utilities/date_time_extensions.da
 import 'package:unn_mobile/core/misc/date_time_utilities/week_range.dart';
 import 'package:unn_mobile/core/misc/user/current_user_sync_storage.dart';
 import 'package:unn_mobile/core/models/profile/student/student_data.dart';
+import 'package:unn_mobile/core/models/schedule/offline_schedule.dart';
 import 'package:unn_mobile/core/models/schedule/schedule_filter.dart';
 import 'package:unn_mobile/core/models/schedule/schedule_search_suggestion_item.dart';
 import 'package:unn_mobile/core/models/schedule/subject.dart';
@@ -42,6 +43,8 @@ class ScheduleTabViewModel extends BaseViewModel {
 
   WeekRange get selectedWeek => _parent.selectedWeek;
   int get weekOffset => _parent.weekOffset;
+
+  OfflineSchedule? offlineSchedule;
 
   ScheduleTabViewModel(
     this._userType,
@@ -105,13 +108,21 @@ class ScheduleTabViewModel extends BaseViewModel {
         ) ??
         []
       ..sort((a, b) => a.dateTimeRange.start.compareTo(b.dateTimeRange.start));
-    schedule = List<List<Subject>>.generate(
-      6,
-      (day) => foundSchedule
-          .where((s) => s.dateTimeRange.start.weekday == day + 1)
-          .toList(),
-    );
+
+    if (defaultId != null && searchFilter!.id == defaultId) {
+      offlineSchedule = OfflineSchedule(_parent.selectedWeek, foundSchedule);
+    }
+
+    schedule = partitionSchedule(foundSchedule);
   }
+
+  List<List<Subject>> partitionSchedule(List<Subject> schedule) =>
+      List<List<Subject>>.generate(
+        6,
+        (day) => schedule
+            .where((s) => s.dateTimeRange.start.weekday == day + 1)
+            .toList(),
+      );
 
   Future<List<ScheduleSearchSuggestionItem>> getSuggestions(String text) async {
     if (text.length <= 2) {
@@ -124,12 +135,16 @@ class ScheduleTabViewModel extends BaseViewModel {
         <ScheduleSearchSuggestionItem>[];
   }
 
-  FutureOr<void> refresh() => busyCallAsync(() async {
+  FutureOr<void> refresh({bool triggerOfflineUpdate = false}) =>
+      busyCallAsync(() async {
         if (needsDefaultIdRefresh) {
           await refreshDefaultId();
         }
         updateFilter();
         await loadSchedule();
+        if (triggerOfflineUpdate) {
+          await _parent.saveOfflineSchedule();
+        }
       });
 
   Future<void> applySearchSuggestion(ScheduleSearchSuggestionItem s) async {

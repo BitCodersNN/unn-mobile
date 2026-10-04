@@ -3,54 +3,53 @@
 
 import 'dart:convert';
 
-import 'package:unn_mobile/core/misc/json/json_iterable_parser.dart';
-import 'package:unn_mobile/core/models/schedule/subject.dart';
+import 'package:unn_mobile/core/misc/json/json_utils.dart';
+import 'package:unn_mobile/core/models/schedule/offline_schedule.dart';
+import 'package:unn_mobile/core/models/schedule/schedule_filter.dart';
 import 'package:unn_mobile/core/providers/interfaces/schedule/offline_schedule_provider.dart';
-import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
 import 'package:unn_mobile/core/services/interfaces/common/storage_service.dart';
 
 class _OfflineScheduleProviderKeys {
-  static const scheduleKey = 'schedule_key';
+  static const scheduleKey = 'offline_schedule';
 }
 
 class OfflineScheduleProviderImpl implements OfflineScheduleProvider {
   final StorageService _storage;
-  final LoggerService _loggerService;
 
-  OfflineScheduleProviderImpl(this._storage, this._loggerService);
+  OfflineScheduleProviderImpl(this._storage);
 
   @override
-  Future<List<Subject>?> getData() async {
+  Future<Map<IdType, OfflineSchedule>> getData() async {
     if (!(await isContained())) {
-      return null;
+      return {};
     }
 
-    final jsonList = jsonDecode(
+    final JsonMap jsonMap = jsonDecode(
       (await _storage.read(
         key: _OfflineScheduleProviderKeys.scheduleKey,
       ))!,
     );
 
-    return parseJsonIterable<Subject>(
-      jsonList,
-      Subject.fromJson,
-      _loggerService,
+    return jsonMap.map(
+      (key, value) => MapEntry(
+        IdType.values[int.parse(key)],
+        OfflineSchedule.fromJson(value! as JsonMap),
+      ),
     );
   }
 
   @override
-  Future<void> saveData(List<Subject>? schedule) async {
+  Future<void> saveData(Map<IdType, OfflineSchedule>? schedule) async {
     if (schedule == null) {
       return;
     }
 
-    final List jsonList = [];
-    for (final subject in schedule) {
-      jsonList.add(subject.toJson());
-    }
+    final jsonMap = schedule.map(
+      (key, value) => MapEntry(key.index.toString(), value.toJson()),
+    );
     await _storage.write(
       key: _OfflineScheduleProviderKeys.scheduleKey,
-      value: jsonEncode(jsonList),
+      value: jsonEncode(jsonMap),
     );
   }
 

@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/constants/date_pattern.dart';
 import 'package:unn_mobile/core/misc/date_time_utilities/date_time_extensions.dart';
+import 'package:unn_mobile/core/misc/date_time_utilities/week_range.dart';
 import 'package:unn_mobile/core/models/schedule/schedule_filter.dart';
 import 'package:unn_mobile/core/models/schedule/schedule_search_suggestion_item.dart';
 import 'package:unn_mobile/core/viewmodels/factories/main_page_routes_view_models_factory.dart';
@@ -93,6 +94,16 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView> {
             return OnlineStatusBuilder(
               builder: (context, online) {
                 final theme = Theme.of(context);
+
+                WeekRange week = model.selectedWeek;
+
+                if (!online &&
+                    model.currentTab != null &&
+                    !model.currentTab!.hasAnyId &&
+                    model.currentTab!.offlineSchedule != null) {
+                  week = model.currentTab!.offlineSchedule!.week;
+                }
+
                 return DefaultTabController(
                   length: model.sortedUserTypeList.length,
                   initialIndex: 0,
@@ -170,7 +181,7 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView> {
                                         ),
                                         Expanded(
                                           child: Text(
-                                            '${model.selectedWeek.start.format(DatePattern.dMMM)} - ${model.selectedWeek.end.format(DatePattern.dMMM)}',
+                                            '${week.start.format(DatePattern.dMMM)} - ${week.end.format(DatePattern.dMMM)}',
                                             textAlign: TextAlign.center,
                                             style: theme.textTheme.titleLarge,
                                             textScaler: MediaQuery.of(context)
@@ -240,11 +251,20 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView> {
                         TabBarView(
                           children: model.sortedUserTypeList
                               .map(
-                                (t) => ScheduleTabView(
-                                  key: ValueKey(t),
-                                  viewModel: model.modelsByType[t]!,
-                                  onSearchRequested: _search.open,
-                                ),
+                                (t) => model.modelsByType[t] == null
+                                    ? const Center(
+                                        child: SizedBox(
+                                          width: 96,
+                                          height: 96,
+                                          child: CircularProgressIndicator
+                                              .adaptive(),
+                                        ),
+                                      )
+                                    : ScheduleTabView(
+                                        key: ValueKey(t),
+                                        viewModel: model.modelsByType[t]!,
+                                        onSearchRequested: _search.open,
+                                      ),
                               )
                               .toList(),
                         ),
@@ -277,7 +297,7 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView> {
               },
               statusChanged: (_) => Future.wait(
                 model.modelsByType.values.map((t) async => await t.refresh()),
-              ),
+              ).then((_) => model.saveOfflineSchedule()),
             );
           },
           model: _viewModel,
