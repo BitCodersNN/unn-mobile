@@ -236,11 +236,11 @@ class _MessageWidgetState extends State<MessageWidget> {
       builder: (context, model, _) => GestureDetector(
         onLongPress: () => ContextMenuHelper.showContextMenu(
           context: context,
-          model: model,
           actionsBuilder: () => createMessageActions(
             context: context,
             model: model,
-            widget: widget,
+            text: widget.message.text,
+            onReply: () => widget.chatModel.replyMessage = widget.message,
           ),
           onOpen: () => setState(() => _isHighlighted = true),
           onClose: () => setState(() => _isHighlighted = false),
