@@ -6,20 +6,11 @@ import 'package:unn_mobile/core/misc/app_settings.dart';
 import 'package:unn_mobile/core/misc/file_helpers/file_functions.dart';
 import 'package:unn_mobile/core/services/interfaces/common/storage_service.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
-import 'package:unn_mobile/ui/views/main_page/main_page_routing.dart';
 
 class SettingsScreenViewModel extends BaseViewModel {
   final StorageService _storageService;
 
   SettingsScreenViewModel(this._storageService);
-
-  int get activeNavbarRouteIndex => AppSettings.initialPage;
-
-  set activeNavbarRouteIndex(int index) {
-    AppSettings.initialPage = index;
-    AppSettings.save();
-    notifyListeners();
-  }
 
   bool get vibrationEnabled => AppSettings.vibrationEnabled;
 
@@ -52,14 +43,6 @@ class SettingsScreenViewModel extends BaseViewModel {
     AppSettings.save();
     notifyListeners();
   }
-
-  List<String> get activeNavbarRouteNames =>
-      [for (final e in MainPageRouting.activeNavbarRoutes) e.pageTitle];
-
-  String get initialScreenName =>
-      MainPageRouting.activeNavbarRoutes[AppSettings.initialPage].pageTitle;
-
-  int get navbarRouteCount => activeNavbarRouteNames.length;
 
   Future<void> clearCache() async {
     await Future.wait([

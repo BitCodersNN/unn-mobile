@@ -237,8 +237,4 @@ class MainPageRouting {
       userTypes: [],
     ),
   ];
-  static final List<MainPageRouteData> _activeNavbarRoutes =
-      navbarRoutes.where((e) => !e.isDisabled).toList();
-
-  static List<MainPageRouteData> get activeNavbarRoutes => _activeNavbarRoutes;
 }
