@@ -45,6 +45,14 @@ class SettingsScreenViewModel extends BaseViewModel {
     notifyListeners();
   }
 
+  bool get useRaspSchedule => AppSettings.useRaspSchedule;
+
+  set useRaspSchedule(bool value) {
+    AppSettings.useRaspSchedule = value;
+    AppSettings.save();
+    notifyListeners();
+  }
+
   List<String> get activeNavbarRouteNames =>
       [for (final e in MainPageRouting.activeNavbarRoutes) e.pageTitle];
 
