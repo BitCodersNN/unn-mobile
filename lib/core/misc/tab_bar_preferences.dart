@@ -17,6 +17,7 @@ class TabBarPreferences {
   ];
   static const availablePaths = [
     ...defaultPaths,
+    'myProfile',
     'grades',
     'online_certificates',
     'settings',
