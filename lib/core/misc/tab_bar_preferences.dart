@@ -25,6 +25,13 @@ class TabBarPreferences {
     'about',
   ];
 
+  static List<T> reordered<T>(Iterable<T> items, int from, int to) {
+    final result = List<T>.of(items);
+    final moved = result.removeAt(from);
+    result.insert(to, moved);
+    return List.unmodifiable(result);
+  }
+
   static List<String> normalize(
     Iterable<String> paths, {
     Iterable<String> allowed = availablePaths,

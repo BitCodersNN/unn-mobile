@@ -86,23 +86,27 @@ class TabBarCustomizationViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  bool canMove(int from, int to) =>
-      !_isSaving &&
-      from >= 0 &&
-      from < _slots.length &&
-      to >= 0 &&
-      to < _slots.length &&
-      from != to &&
-      _slots[from] != null &&
-      !(from < TabBarPreferences.requiredSlotCount && _slots[to] == null);
+  bool canMove(int from, int to) {
+    if (_isSaving ||
+        from < 0 ||
+        from >= _slots.length ||
+        to < 0 ||
+        to >= _slots.length ||
+        from == to ||
+        _slots[from] == null) {
+      return false;
+    }
+    final reordered = TabBarPreferences.reordered(_slots, from, to);
+    return reordered
+        .take(TabBarPreferences.requiredSlotCount)
+        .every((path) => path != null);
+  }
 
   void move(int from, int to) {
     if (!canMove(from, to)) {
       return;
     }
-    final moved = _slots[from];
-    _slots[from] = _slots[to];
-    _slots[to] = moved;
+    _slots = List.of(TabBarPreferences.reordered(_slots, from, to));
     _selectedSlot = to;
     notifyListeners();
   }
