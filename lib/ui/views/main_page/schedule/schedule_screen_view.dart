@@ -17,6 +17,7 @@ import 'package:unn_mobile/ui/views/base_view.dart';
 import 'package:unn_mobile/ui/views/main_page/schedule/export_schedule_flow.dart';
 import 'package:unn_mobile/ui/views/main_page/schedule/schedule_tab_view.dart';
 import 'package:unn_mobile/ui/views/main_page/schedule/widgets/schedule_search_suggestion_item_view.dart';
+import 'package:unn_mobile/ui/views/main_page/schedule/widgets/schedule_week_swipe.dart';
 import 'package:unn_mobile/ui/widgets/menu_button.dart';
 import 'package:unn_mobile/ui/widgets/offline_overlay_displayer.dart';
 import 'package:unn_mobile/ui/widgets/search/search_controller.dart';
@@ -236,16 +237,22 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView> {
                     ),
                     body: Stack(
                       children: [
-                        TabBarView(
-                          children: model.sortedUserTypeList
-                              .map(
-                                (t) => ScheduleTabView(
-                                  key: ValueKey(t),
-                                  viewModel: model.modelsByType[t]!,
-                                  onSearchRequested: _search.open,
-                                ),
-                              )
-                              .toList(),
+                        ScheduleWeekSwipe(
+                          enabled: online && !_search.isOpen,
+                          onPreviousWeek: model.previousWeek,
+                          onNextWeek: model.nextWeek,
+                          child: TabBarView(
+                            physics: const NeverScrollableScrollPhysics(),
+                            children: model.sortedUserTypeList
+                                .map(
+                                  (t) => ScheduleTabView(
+                                    key: ValueKey(t),
+                                    viewModel: model.modelsByType[t]!,
+                                    onSearchRequested: _search.open,
+                                  ),
+                                )
+                                .toList(),
+                          ),
                         ),
                         if (_search.isOpen) ...[
                           GestureDetector(

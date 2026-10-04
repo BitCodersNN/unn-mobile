@@ -29,6 +29,7 @@ class ScheduleTabViewModel extends BaseViewModel {
   String? foundName;
 
   List<List<Subject>>? schedule;
+  WeekRange? scheduleWeek;
 
   ScheduleFilter? searchFilter;
 
@@ -96,11 +97,13 @@ class ScheduleTabViewModel extends BaseViewModel {
   }
 
   Future<void> loadSchedule() async {
-    if (searchFilter == null) {
+    final filter = searchFilter;
+    final week = selectedWeek;
+    if (filter == null) {
       return;
     }
     final List<Subject> foundSchedule = await tryLoginAndRetrieveData(
-          () => _scheduleService.getSchedule(searchFilter!),
+          () => _scheduleService.getSchedule(filter),
           () => schedule?.expand((e) => e).toList(),
         ) ??
         []
@@ -111,6 +114,7 @@ class ScheduleTabViewModel extends BaseViewModel {
           .where((s) => s.dateTimeRange.start.weekday == day + 1)
           .toList(),
     );
+    scheduleWeek = week;
   }
 
   Future<List<ScheduleSearchSuggestionItem>> getSuggestions(String text) async {
