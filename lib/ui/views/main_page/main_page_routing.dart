@@ -75,6 +75,7 @@ final MainPageRouteData postCommentsRoute = MainPageRouteData(
   'comments/:postId',
   builder: (_, state) => CommentsPage(
     postId: int.tryParse(state.pathParameters['postId'] ?? '0') ?? 0,
+    scrollToComments: state.uri.fragment == 'comments',
   ),
   isDisabled: false,
   userTypes: [],

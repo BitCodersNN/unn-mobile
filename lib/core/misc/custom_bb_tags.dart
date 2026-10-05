@@ -9,8 +9,8 @@ import 'package:unn_mobile/core/constants/api/protocol_type.dart';
 import 'package:unn_mobile/core/misc/hex_color.dart';
 import 'package:unn_mobile/core/misc/html_utils/html_widget_callbacks.dart';
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
-import 'package:unn_mobile/ui/widgets/context_menu/context_menu_factory.dart';
 import 'package:unn_mobile/ui/widgets/context_menu/context_menu_helper.dart';
+import 'package:unn_mobile/ui/widgets/context_menu/link_context_menu_actions.dart';
 import 'package:unn_mobile/ui/widgets/spoiler_display.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -419,7 +419,6 @@ BBStylesheet getBBStyleSheet({ThemeData? theme}) => defaultBBStylesheet()
         onLongPress: (url, ctx) {
           ContextMenuHelper.showContextMenu(
             context: ctx,
-            model: url,
             actionsBuilder: () => createLinkActions(
               context: ctx,
               url: url,
