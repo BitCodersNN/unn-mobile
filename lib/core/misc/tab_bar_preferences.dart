@@ -1,0 +1,60 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright 2026 BitCodersNN
+
+typedef TabBarPathsSaver = Future<void> Function(List<String> paths);
+
+class TabBarPreferences {
+  static const morePath = 'more';
+  static const minTabs = 3;
+  static const maxTabs = 5;
+  static const editableSlotCount = maxTabs - 1;
+  static const requiredSlotCount = minTabs - 1;
+
+  static const defaultPaths = [
+    'feed',
+    'schedule',
+    'chats',
+    'source',
+    morePath,
+  ];
+  static const availablePaths = [
+    ...defaultPaths,
+    'myProfile',
+    'grades',
+    'online_certificates',
+    'settings',
+    'donations',
+    'about',
+  ];
+
+  static List<T> reordered<T>(Iterable<T> items, int from, int to) {
+    final result = List<T>.of(items);
+    final moved = result.removeAt(from);
+    result.insert(to, moved);
+    return List.unmodifiable(result);
+  }
+
+  static List<String> normalize(
+    Iterable<String> paths, {
+    Iterable<String> allowed = availablePaths,
+  }) {
+    final allowedPaths = allowed.toSet();
+    final result = paths
+        .where((path) => path != morePath && allowedPaths.contains(path))
+        .toSet()
+        .take(editableSlotCount)
+        .toList();
+    for (final path in defaultPaths) {
+      if (result.length >= requiredSlotCount) {
+        break;
+      }
+      if (path != morePath &&
+          allowedPaths.contains(path) &&
+          !result.contains(path)) {
+        result.add(path);
+      }
+    }
+    result.add(morePath);
+    return List.unmodifiable(result);
+  }
+}

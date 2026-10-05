@@ -4,7 +4,6 @@
 import 'package:flutter/material.dart';
 import 'package:unn_mobile/core/constants/api/path.dart';
 import 'package:unn_mobile/core/constants/api/protocol_type.dart';
-import 'package:unn_mobile/ui/views/main_page/main_page.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:webview_flutter_android/webview_flutter_android.dart';
 
@@ -45,7 +44,6 @@ class _DonationsScreenViewState extends State<DonationsScreenView> {
     final theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(
-        leading: getSubpageLeading(widget.bottomRouteIndex),
         title: const Text('Поддержать'),
         forceMaterialTransparency: true,
       ),

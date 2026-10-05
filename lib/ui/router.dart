@@ -3,7 +3,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:unn_mobile/core/misc/app_settings.dart';
+import 'package:unn_mobile/ui/main_page_locations.dart';
 import 'package:unn_mobile/ui/views/auth_page/auth_page.dart';
 import 'package:unn_mobile/ui/views/loading_page/loading_page.dart';
 import 'package:unn_mobile/ui/views/main_page/about/about.dart';
@@ -12,14 +12,7 @@ import 'package:unn_mobile/ui/views/main_page/main_page.dart';
 import 'package:unn_mobile/ui/views/main_page/main_page_routing.dart';
 import 'package:unn_mobile/ui/views/main_page/settings/settings.dart';
 
-const loadingPageRoute = '/';
-const mainPageRoute = '/main';
-const authPageRoute = '/auth';
-const drawerRoutePrefix = 'drawer';
-
-const settingsPath = 'settings';
-const aboutPath = 'about';
-const supportPath = 'support';
+export 'package:unn_mobile/ui/main_page_locations.dart';
 
 final shellBranchKeys = [
   for (final route in MainPageRouting.navbarRoutes)
@@ -73,7 +66,7 @@ final mainRouter = GoRouter(
             navigatorKey: route.key,
             routes: [
               GoRoute(
-                path: '$mainPageRoute${route.route.pagePath}',
+                path: mainPageTabLocation(route.route.pagePath),
                 name: route.route.pageTitle,
                 pageBuilder: (context, state) => NoTransitionPage(
                   child: route.route.builder(context, state),
@@ -93,15 +86,11 @@ final mainRouter = GoRouter(
   ],
   redirect: (context, state) {
     if (state.uri.path == mainPageRoute) {
-      final pageIndex =
-          AppSettings.initialPage < MainPageRouting.activeNavbarRoutes.length
-              ? AppSettings.initialPage
-              : 0;
-      return mainPageRoute +
-          MainPageRouting.navbarRoutes
-              .where((r) => !r.isDisabled)
-              .toList()[pageIndex]
-              .pagePath;
+      return mainPageTabLocation(
+        MainPageRouting.navbarRoutes
+            .firstWhere((route) => !route.isDisabled)
+            .pagePath,
+      );
     }
     return null;
   },
