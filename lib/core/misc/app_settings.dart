@@ -25,7 +25,6 @@ class AppSettings {
   }
 
   static bool vibrationEnabled = true;
-  static int initialPage = 0;
   static bool analyticsEnabled = false;
   static bool reverseComments = true;
 
@@ -36,11 +35,6 @@ class AppSettings {
       AppSettingsKeys.vibrationEnabled,
       defaultValue: true,
       parser: bool.tryParse,
-    );
-    initialPage = await _readValue(
-      AppSettingsKeys.initialPage,
-      defaultValue: 0,
-      parser: int.tryParse,
     );
     analyticsEnabled = await _readValue(
       AppSettingsKeys.analyticsEnabled,
@@ -86,10 +80,6 @@ class AppSettings {
     await storage.write(
       key: AppSettingsKeys.vibrationEnabled,
       value: vibrationEnabled.toString(),
-    );
-    await storage.write(
-      key: AppSettingsKeys.initialPage,
-      value: initialPage.toString(),
     );
     await storage.write(
       key: AppSettingsKeys.analyticsEnabled,
