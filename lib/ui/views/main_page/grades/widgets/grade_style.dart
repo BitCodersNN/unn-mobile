@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright 2026 BitCodersNN
+
 import 'package:intl/intl.dart';
 import 'package:unn_mobile/core/models/grade_book/mark_type.dart';
 

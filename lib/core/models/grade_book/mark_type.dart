@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright 2026 BitCodersNN
+
 enum MarkType {
   noShow(-1, 'Неявка'),
   notCredited(0, 'Не зачтено'),
