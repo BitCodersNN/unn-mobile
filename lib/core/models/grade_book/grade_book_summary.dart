@@ -104,13 +104,6 @@ class GradeStatistics {
     );
   }
 
-  int? get examPercentage => _percentageOfSubjects(examCount);
-
-  int? get retakePercentage => _percentageOfSubjects(retakeCount);
-
-  int? _percentageOfSubjects(int count) =>
-      subjectCount == 0 ? null : (count * 100 / subjectCount).round();
-
   double? averageDifferenceFrom(GradeStatistics reference) {
     final currentAverage = average;
     final referenceAverage = reference.average;
