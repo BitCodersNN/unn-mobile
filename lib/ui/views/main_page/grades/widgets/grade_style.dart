@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:unn_mobile/core/models/grade_book/mark_by_subject.dart';
+import 'package:unn_mobile/core/models/grade_book/mark_type.dart';
 
 const gradeDistributionOrder = [
   MarkType.perfect,
@@ -21,8 +21,8 @@ String gradeLabel(MarkType type) => switch (type) {
       MarkType.credited ||
       MarkType.notCredited ||
       MarkType.noShow =>
-        type.convertToString(),
-      _ => NumberFormat('0.#', 'ru_RU').format(type.convertToDouble()),
+        type.label,
+      _ => NumberFormat('0.#', 'ru_RU').format(type.value),
     };
 
 Color gradeColor(MarkType type) => switch (type) {

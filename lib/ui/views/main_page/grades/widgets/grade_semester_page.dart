@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
-import 'package:unn_mobile/core/models/grade_book/grade_book_summary.dart';
+import 'package:unn_mobile/core/models/grade_book/grade_semester.dart';
+import 'package:unn_mobile/core/models/grade_book/grade_statistics.dart';
 import 'package:unn_mobile/core/models/grade_book/mark_by_subject.dart';
 import 'package:unn_mobile/ui/views/main_page/grades/widgets/grade_semester_summary.dart';
 import 'package:unn_mobile/ui/views/main_page/grades/widgets/grade_subject_card.dart';

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:unn_mobile/core/misc/haptic_utils.dart';
-import 'package:unn_mobile/core/models/grade_book/grade_book_summary.dart';
+import 'package:unn_mobile/core/models/grade_book/grade_semester.dart';
+import 'package:unn_mobile/core/models/grade_book/grade_statistics.dart';
 import 'package:unn_mobile/core/models/grade_book/mark_by_subject.dart';
 import 'package:unn_mobile/ui/views/main_page/grades/widgets/grade_details_popover.dart';
 import 'package:unn_mobile/ui/views/main_page/grades/widgets/grade_distribution_bar.dart';
@@ -421,8 +422,8 @@ class _SubjectDetails extends StatelessWidget {
                     const SizedBox(height: 3),
                     Text(
                       kind == _SummaryDetails.retakes
-                          ? '${mark.controlType} · ${mark.markType.convertToString()}'
-                          : '${gradeLabel(mark.markType)}${mark.markType.convertToDouble() >= 2 ? ' · ${mark.markType.convertToString()}' : ''}',
+                          ? '${mark.controlType} · ${mark.markType.label}'
+                          : '${gradeLabel(mark.markType)}${mark.markType.isNumeric ? ' · ${mark.markType.label}' : ''}',
                       style: theme.textTheme.bodySmall
                           ?.copyWith(color: gradeColor(mark.markType)),
                     ),

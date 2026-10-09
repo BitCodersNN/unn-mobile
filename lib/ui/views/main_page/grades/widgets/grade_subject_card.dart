@@ -66,7 +66,7 @@ class _GradeSubjectCardState extends State<GradeSubjectCard> {
                     ),
                     const SizedBox(width: 12),
                     Semantics(
-                      label: 'Оценка: ${mark.markType.convertToString()}',
+                      label: 'Оценка: ${mark.markType.label}',
                       child: Container(
                         constraints: BoxConstraints(
                           maxWidth: MediaQuery.sizeOf(context).width * 0.25,

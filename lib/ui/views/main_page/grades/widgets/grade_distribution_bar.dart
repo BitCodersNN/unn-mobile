@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:unn_mobile/core/models/grade_book/grade_book_summary.dart';
-import 'package:unn_mobile/core/models/grade_book/mark_by_subject.dart';
+import 'package:unn_mobile/core/models/grade_book/grade_assessment.dart';
+import 'package:unn_mobile/core/models/grade_book/grade_distribution.dart';
+import 'package:unn_mobile/core/models/grade_book/grade_statistics.dart';
 import 'package:unn_mobile/ui/views/main_page/grades/widgets/grade_details_popover.dart';
 import 'package:unn_mobile/ui/views/main_page/grades/widgets/grade_style.dart';
 
@@ -30,7 +31,7 @@ class GradeDistributionBar extends StatelessWidget {
     Object? selected,
     GradeDetailsCallback showDetails,
   ) {
-    final entries = statistics.distributionEntries.toList()
+    final entries = statistics.distribution.entries.toList()
       ..sort((first, second) {
         final byType = gradeDistributionOrder
             .indexOf(first.type)
@@ -54,7 +55,7 @@ class GradeDistributionBar extends StatelessWidget {
                 builder: (context) => Semantics(
                   button: true,
                   selected: selected == entry,
-                  label: '${entry.type.convertToString()}, ${entry.count}',
+                  label: '${entry.type.label}, ${entry.count}',
                   child: GestureDetector(
                     key: ValueKey(
                       'grade-segment-${entry.group.name}-${entry.type.name}',
@@ -122,7 +123,7 @@ class _DistributionDetails extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Text(
-          '${gradeLabel(entry.type)}${entry.type.convertToDouble() >= 2 ? ' · ${entry.type.convertToString()}' : ''}',
+          '${gradeLabel(entry.type)}${entry.type.isNumeric ? ' · ${entry.type.label}' : ''}',
           style: theme.textTheme.titleSmall
               ?.copyWith(color: theme.colorScheme.onSurface),
         ),
