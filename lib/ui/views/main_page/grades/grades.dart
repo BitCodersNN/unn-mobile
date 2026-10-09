@@ -1,204 +1,110 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2025 BitCodersNN
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'package:unn_mobile/core/models/grade_book/mark_by_subject.dart';
+import 'package:unn_mobile/core/misc/haptic_utils.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/grades/grades_screen_view_model.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
+import 'package:unn_mobile/ui/views/main_page/grades/widgets/grade_book_content.dart';
 import 'package:unn_mobile/ui/views/main_page/main_page.dart';
+import 'package:unn_mobile/ui/widgets/empty_state_widget.dart';
 import 'package:unn_mobile/ui/widgets/offline_overlay_displayer.dart';
 
-class GradesScreenView extends StatefulWidget {
+class GradesScreenView extends StatelessWidget {
   final int? bottomRouteIndex;
 
   const GradesScreenView({super.key, this.bottomRouteIndex});
 
-  @override
-  State<GradesScreenView> createState() => _GradesScreenViewState();
-}
+  Future<void> _refresh(GradesScreenViewModel model) {
+    triggerHaptic(HapticIntensity.light);
+    return model.refresh();
+  }
 
-class _GradesScreenViewState extends State<GradesScreenView> {
   @override
   Widget build(BuildContext context) => OfflineOverlayDisplayer(
         child: Scaffold(
+          backgroundColor: Theme.of(context).colorScheme.surfaceContainerLow,
           appBar: AppBar(
-            leading: getSubpageLeading(widget.bottomRouteIndex),
+            leading: getSubpageLeading(bottomRouteIndex),
             title: const Text('Зачётная книжка'),
-            forceMaterialTransparency: true,
+            backgroundColor: Theme.of(context).colorScheme.surfaceContainerLow,
+            scrolledUnderElevation: 0,
           ),
-          body: BaseView<GradesScreenViewModel>(
-            builder: (context, value, child) =>
-                _getGradesBook(context: context, model: value),
+          body: SafeArea(
+            top: false,
+            child: BaseView<GradesScreenViewModel>(
+              onModelReady: (model) => unawaited(model.refresh()),
+              builder: (context, model, _) => Align(
+                alignment: Alignment.topCenter,
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 720),
+                  child: _buildContent(model),
+                ),
+              ),
+            ),
           ),
         ),
       );
 
-  Widget _getGradesBook({
-    required GradesScreenViewModel model,
-    required BuildContext context,
-  }) {
-    final theme = Theme.of(context);
-    return FutureBuilder(
-      future: model.getGradeBook(),
-      builder: (context, snapshot) {
-        if (snapshot.hasError) {
-          return const Center(
-            child: Padding(
-              padding: EdgeInsets.all(8.0),
-              child: Text('Произошла ошибка :('),
-            ),
-          );
-        }
-        if (snapshot.connectionState == ConnectionState.done) {
-          if (snapshot.hasData) {
-            final tabs = snapshot.data!.keys.toList();
-            if (tabs.isEmpty) {
-              return const Center(
-                child: Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text('Нет данных'),
-                ),
-              );
-            }
-            tabs.sort();
-            return DefaultTabController(
-              initialIndex: tabs.length - 1,
-              length: tabs.length,
-              child: Column(
-                children: [
-                  ColoredBox(
-                    color: theme.colorScheme.surface,
-                    child: TabBar.secondary(
-                      tabAlignment: TabAlignment.start,
-                      enableFeedback: false,
-                      isScrollable: true,
-                      tabs: [
-                        for (final tab in tabs)
-                          Tab(
-                            child: Text('Семестр $tab'),
-                          ),
-                      ],
-                    ),
-                  ),
-                  Expanded(
-                    child: TabBarView(
-                      children: [
-                        for (final tab in tabs)
-                          SingleChildScrollView(
-                            physics: const AlwaysScrollableScrollPhysics(),
-                            child: Padding(
-                              padding: const EdgeInsets.all(12.0),
-                              child: Table(
-                                border: TableBorder.all(
-                                  borderRadius: const BorderRadius.all(
-                                    Radius.circular(4.0),
-                                  ),
-                                ),
-                                children: [
-                                  TableRow(
-                                    decoration: BoxDecoration(
-                                      color: theme.highlightColor,
-                                    ),
-                                    children: const [
-                                      TableCell(
-                                        child: Padding(
-                                          padding: EdgeInsets.all(8.0),
-                                          child: Text(
-                                            'Дисциплина',
-                                            textAlign: TextAlign.center,
-                                          ),
-                                        ),
-                                      ),
-                                      TableCell(
-                                        child: Padding(
-                                          padding: EdgeInsets.all(8.0),
-                                          child: Text(
-                                            'Дата',
-                                            textAlign: TextAlign.center,
-                                          ),
-                                        ),
-                                      ),
-                                      TableCell(
-                                        child: Padding(
-                                          padding: EdgeInsets.all(8.0),
-                                          child: Text(
-                                            'Оценка',
-                                            textAlign: TextAlign.center,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  for (final row in snapshot.data![tab]!)
-                                    TableRow(
-                                      children: [
-                                        TableCell(
-                                          child: Padding(
-                                            padding: const EdgeInsets.all(8.0),
-                                            child: Text(
-                                              row.subject,
-                                              textAlign: TextAlign.center,
-                                            ),
-                                          ),
-                                        ),
-                                        TableCell(
-                                          child: Padding(
-                                            padding: const EdgeInsets.all(8.0),
-                                            child: Text(
-                                              DateFormat.yMd('ru_RU')
-                                                  .format(row.date),
-                                              textAlign: TextAlign.center,
-                                            ),
-                                          ),
-                                        ),
-                                        TableCell(
-                                          child: Padding(
-                                            padding: const EdgeInsets.all(8.0),
-                                            child: Text(
-                                              row.markType.convertToString(),
-                                              textAlign: TextAlign.center,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                ],
-                              ),
-                            ),
-                          ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            );
-          } else {
-            return Center(
-              child: Column(
-                children: [
-                  const Text('Ещё нет загруженной версии зачётной книжки'),
-                  TextButton(
-                    onPressed: () {
-                      // Force redraw
-                      setState(() {});
-                    },
-                    child: const Text('Обновить'),
-                  ),
-                ],
-              ),
-            );
-          }
-        }
-
-        return const Center(
-          child: SizedBox(
-            height: 100.0,
-            width: 100.0,
-            child: CircularProgressIndicator(),
-          ),
-        );
-      },
+  Widget _buildContent(GradesScreenViewModel model) {
+    if (model.isBusy && !model.hasGradeBook) {
+      return const Center(child: CircularProgressIndicator.adaptive());
+    }
+    if (model.hasError) {
+      return _emptyState(
+        icon: Icons.cloud_off_outlined,
+        title: 'Не удалось загрузить оценки',
+        caption: 'Попробуйте обновить зачётную книжку',
+        onRefresh: () => _refresh(model),
+      );
+    }
+    if (model.semesters.isEmpty) {
+      return _emptyState(
+        icon: Icons.menu_book_outlined,
+        title: model.hasGradeBook
+            ? 'Пока нет оценок'
+            : 'Нет загруженной зачётной книжки',
+        caption: model.hasGradeBook
+            ? 'Оценки появятся после публикации на Портале'
+            : 'Подключитесь к сети и обновите данные',
+        onRefresh: () => _refresh(model),
+      );
+    }
+    return GradeBookContent(
+      model: model,
+      onRefresh: () => _refresh(model),
     );
   }
+
+  Widget _emptyState({
+    required IconData icon,
+    required String title,
+    required String caption,
+    required Future<void> Function() onRefresh,
+  }) =>
+      LayoutBuilder(
+        builder: (context, constraints) => RefreshIndicator.adaptive(
+          onRefresh: onRefresh,
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            child: ConstrainedBox(
+              constraints: BoxConstraints(minHeight: constraints.maxHeight),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  EmptyStateWidget(icon: icon, title: title, caption: caption),
+                  TextButton.icon(
+                    onPressed: onRefresh,
+                    icon: const Icon(Icons.refresh_rounded),
+                    label: const Text('Обновить'),
+                  ),
+                  const SizedBox(height: 24),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
 }
