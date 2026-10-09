@@ -4,10 +4,9 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:unn_mobile/core/misc/haptic_utils.dart';
-import 'package:unn_mobile/core/models/grade_book/grade_semester.dart';
-import 'package:unn_mobile/core/models/grade_book/grade_statistics.dart';
 import 'package:unn_mobile/core/models/grade_book/mark_by_subject.dart';
 import 'package:unn_mobile/core/models/grade_book/mark_type.dart';
+import 'package:unn_mobile/core/viewmodels/main_page/grades/grade_semester_view_model.dart';
 import 'package:unn_mobile/ui/unn_mobile_colors.dart';
 import 'package:unn_mobile/ui/views/main_page/grades/widgets/grade_details_popover.dart';
 import 'package:unn_mobile/ui/views/main_page/grades/widgets/grade_distribution_bar.dart';
@@ -16,13 +15,11 @@ import 'package:unn_mobile/ui/views/main_page/grades/widgets/grade_style.dart';
 enum _SummaryDetails { disciplines, exams, retakes }
 
 class GradeSemesterSummary extends StatefulWidget {
-  final GradeSemester semester;
-  final GradeStatistics overall;
+  final GradeSemesterViewModel model;
   final Future<void> Function(MarkBySubject)? onSubjectSelected;
 
   const GradeSemesterSummary({
-    required this.semester,
-    required this.overall,
+    required this.model,
     this.onSubjectSelected,
     super.key,
   });
@@ -56,9 +53,9 @@ class _GradeSemesterSummaryState extends State<GradeSemesterSummary> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final semester = widget.semester;
+    final semester = widget.model.semester;
     final statistics = semester.statistics;
-    final difference = statistics.averageDifferenceFrom(widget.overall);
+    final difference = widget.model.averageDifference;
     final differenceColor = difference == null || difference == 0
         ? null
         : difference > 0
@@ -171,7 +168,7 @@ class _GradeSemesterSummaryState extends State<GradeSemesterSummary> {
                                     width: width,
                                     label: 'За всё обучение',
                                     value: formatGradeAverage(
-                                      widget.overall.average,
+                                      widget.model.overall.average,
                                     ),
                                   ),
                                   _SummaryMetric(
@@ -256,7 +253,7 @@ class _GradeSemesterSummaryState extends State<GradeSemesterSummary> {
                                 ?.copyWith(color: theme.colorScheme.onPrimary),
                           ),
                           GradeDistributionBar(
-                            statistics: statistics,
+                            entries: widget.model.distributionEntries,
                             selected: selected,
                             onShowDetails: showDetails,
                           ),

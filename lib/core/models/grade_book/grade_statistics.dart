@@ -45,17 +45,6 @@ class GradeStatistics {
   }
 
   double? get average => _average.value;
-
-  double? averageDifferenceFrom(GradeStatistics reference) {
-    final currentAverage = average;
-    final referenceAverage = reference.average;
-    if (currentAverage == null ||
-        referenceAverage == null ||
-        referenceAverage == 0) {
-      return null;
-    }
-    return (currentAverage - referenceAverage) * 100 / referenceAverage;
-  }
 }
 
 class _GradeAverage {

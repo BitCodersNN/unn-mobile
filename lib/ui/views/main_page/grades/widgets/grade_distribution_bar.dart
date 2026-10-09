@@ -5,18 +5,17 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:unn_mobile/core/models/grade_book/grade_assessment.dart';
 import 'package:unn_mobile/core/models/grade_book/grade_distribution.dart';
-import 'package:unn_mobile/core/models/grade_book/grade_statistics.dart';
 import 'package:unn_mobile/ui/unn_mobile_colors.dart';
 import 'package:unn_mobile/ui/views/main_page/grades/widgets/grade_details_popover.dart';
 import 'package:unn_mobile/ui/views/main_page/grades/widgets/grade_style.dart';
 
 class GradeDistributionBar extends StatelessWidget {
-  final GradeStatistics statistics;
+  final List<GradeDistributionEntry> entries;
   final Object? selected;
   final GradeDetailsCallback? onShowDetails;
 
   const GradeDistributionBar({
-    required this.statistics,
+    required this.entries,
     this.selected,
     this.onShowDetails,
     super.key,
@@ -35,15 +34,6 @@ class GradeDistributionBar extends StatelessWidget {
     Object? selected,
     GradeDetailsCallback showDetails,
   ) {
-    final entries = statistics.distribution.entries.toList()
-      ..sort((first, second) {
-        final byType = gradeDistributionOrder
-            .indexOf(first.type)
-            .compareTo(gradeDistributionOrder.indexOf(second.type));
-        return byType != 0
-            ? byType
-            : first.group.index.compareTo(second.group.index);
-      });
     if (entries.isEmpty) {
       return const Padding(padding: EdgeInsets.only(top: 8), child: Text('—'));
     }
