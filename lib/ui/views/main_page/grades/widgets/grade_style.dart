@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:unn_mobile/core/models/grade_book/mark_type.dart';
 
@@ -23,15 +22,4 @@ String gradeLabel(MarkType type) => switch (type) {
       MarkType.noShow =>
         type.label,
       _ => NumberFormat('0.#', 'ru_RU').format(type.value),
-    };
-
-Color gradeColor(MarkType type) => switch (type) {
-      MarkType.perfect || MarkType.excellent => const Color(0xFF15803D),
-      MarkType.veryGood || MarkType.good => const Color(0xFF9A6700),
-      MarkType.satisfactory => const Color(0xFFB45309),
-      MarkType.notSatisfactory ||
-      MarkType.notCredited =>
-        const Color(0xFFB42318),
-      MarkType.credited => const Color(0xFF2563EB),
-      MarkType.noShow => const Color(0xFF64748B),
     };

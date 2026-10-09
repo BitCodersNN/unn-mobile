@@ -4,6 +4,8 @@ import 'package:unn_mobile/core/misc/haptic_utils.dart';
 import 'package:unn_mobile/core/models/grade_book/grade_semester.dart';
 import 'package:unn_mobile/core/models/grade_book/grade_statistics.dart';
 import 'package:unn_mobile/core/models/grade_book/mark_by_subject.dart';
+import 'package:unn_mobile/core/models/grade_book/mark_type.dart';
+import 'package:unn_mobile/ui/unn_mobile_colors.dart';
 import 'package:unn_mobile/ui/views/main_page/grades/widgets/grade_details_popover.dart';
 import 'package:unn_mobile/ui/views/main_page/grades/widgets/grade_distribution_bar.dart';
 import 'package:unn_mobile/ui/views/main_page/grades/widgets/grade_style.dart';
@@ -57,8 +59,8 @@ class _GradeSemesterSummaryState extends State<GradeSemesterSummary> {
     final differenceColor = difference == null || difference == 0
         ? null
         : difference > 0
-            ? const Color(0xFF15803D)
-            : const Color(0xFFB42318);
+            ? theme.getColorOfMarkType(MarkType.excellent)
+            : theme.getColorOfMarkType(MarkType.notSatisfactory);
     return GradeDetailsPopover(
       openBelow: true,
       builder: (popoverContext, selected, showDetails, dismiss) => Container(
@@ -424,8 +426,9 @@ class _SubjectDetails extends StatelessWidget {
                       kind == _SummaryDetails.retakes
                           ? '${mark.controlType} · ${mark.markType.label}'
                           : '${gradeLabel(mark.markType)}${mark.markType.isNumeric ? ' · ${mark.markType.label}' : ''}',
-                      style: theme.textTheme.bodySmall
-                          ?.copyWith(color: gradeColor(mark.markType)),
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.getColorOfMarkType(mark.markType),
+                      ),
                     ),
                   ],
                 ),

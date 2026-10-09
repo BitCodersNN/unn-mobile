@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:unn_mobile/core/misc/haptic_utils.dart';
 import 'package:unn_mobile/core/models/grade_book/mark_by_subject.dart';
+import 'package:unn_mobile/ui/unn_mobile_colors.dart';
 import 'package:unn_mobile/ui/views/main_page/grades/widgets/grade_style.dart';
 
 class GradeSubjectCard extends StatefulWidget {
@@ -20,7 +21,7 @@ class _GradeSubjectCardState extends State<GradeSubjectCard> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final mark = widget.mark;
-    final color = gradeColor(mark.markType);
+    final color = theme.getColorOfMarkType(mark.markType);
     return Material(
       color: theme.colorScheme.surfaceContainerLowest,
       shape: RoundedRectangleBorder(

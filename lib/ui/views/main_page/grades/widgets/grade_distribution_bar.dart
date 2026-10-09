@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:unn_mobile/core/models/grade_book/grade_assessment.dart';
 import 'package:unn_mobile/core/models/grade_book/grade_distribution.dart';
 import 'package:unn_mobile/core/models/grade_book/grade_statistics.dart';
+import 'package:unn_mobile/ui/unn_mobile_colors.dart';
 import 'package:unn_mobile/ui/views/main_page/grades/widgets/grade_details_popover.dart';
 import 'package:unn_mobile/ui/views/main_page/grades/widgets/grade_style.dart';
 
@@ -76,7 +77,7 @@ class GradeDistributionBar extends StatelessWidget {
                         height: selected == entry ? 14 : 8,
                         decoration: BoxDecoration(
                           color: Color.lerp(
-                            gradeColor(entry.type),
+                            Theme.of(context).getColorOfMarkType(entry.type),
                             Colors.white,
                             0.3,
                           )!
