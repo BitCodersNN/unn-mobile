@@ -73,6 +73,9 @@ class ApiPath {
   /// Для получения зачетной книжки
   static const String marks = 'bitrix/vuz/api/marks2';
 
+  /// Для получения учебного плана
+  static const String curriculum = 'bitrix/vuz/api/rups/';
+
   /// Для получения информации о справках
   static const String spravka = 'spravka/json.php';
 
