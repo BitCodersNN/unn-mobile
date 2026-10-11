@@ -99,7 +99,7 @@ bool _validateItemType<T>(
     loggerService.logError(
       FormatException('Invalid JSON item type: ${item.runtimeType}'),
       StackTrace.current,
-      information: [item],
+      information: [if (item != null) item],
     );
     return false;
   }
