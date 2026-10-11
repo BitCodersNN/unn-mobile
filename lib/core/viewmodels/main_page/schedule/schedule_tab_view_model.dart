@@ -35,6 +35,7 @@ class ScheduleTabViewModel extends BaseViewModel {
 
   bool needsDefaultIdRefresh = true;
   bool triggerScrollToToday = false;
+  bool _refreshRequested = false;
 
   bool get hasAnyId => defaultId != null || selectedId != null;
 
@@ -102,12 +103,22 @@ class ScheduleTabViewModel extends BaseViewModel {
     if (filter == null) {
       return;
     }
-    final List<Subject> foundSchedule = await tryLoginAndRetrieveData(
-          () => _scheduleService.getSchedule(filter),
-          () => schedule?.expand((e) => e).toList(),
-        ) ??
-        []
-      ..sort((a, b) => a.dateTimeRange.start.compareTo(b.dateTimeRange.start));
+    final foundSchedule = await tryLoginAndRetrieveData<List<Subject>>(
+      () => _scheduleService.getSchedule(filter),
+      () => scheduleWeek?.start == week.start
+          ? schedule?.expand((subject) => subject).toList()
+          : null,
+    );
+    if (disposed ||
+        foundSchedule == null ||
+        week.start != selectedWeek.start ||
+        filter.id != (selectedId ?? defaultId)) {
+      return;
+    }
+    foundSchedule.sort(
+      (first, second) =>
+          first.dateTimeRange.start.compareTo(second.dateTimeRange.start),
+    );
     schedule = List<List<Subject>>.generate(
       6,
       (day) => foundSchedule
@@ -128,13 +139,21 @@ class ScheduleTabViewModel extends BaseViewModel {
         <ScheduleSearchSuggestionItem>[];
   }
 
-  FutureOr<void> refresh() => busyCallAsync(() async {
-        if (needsDefaultIdRefresh) {
-          await refreshDefaultId();
-        }
-        updateFilter();
-        await loadSchedule();
-      });
+  FutureOr<void> refresh() {
+    _refreshRequested = true;
+    return busyCallAsync(_refreshSchedule);
+  }
+
+  Future<void> _refreshSchedule() async {
+    do {
+      _refreshRequested = false;
+      if (needsDefaultIdRefresh) {
+        await refreshDefaultId();
+      }
+      updateFilter();
+      await loadSchedule();
+    } while (_refreshRequested && !disposed);
+  }
 
   Future<void> applySearchSuggestion(ScheduleSearchSuggestionItem s) async {
     selectedId = s.id;

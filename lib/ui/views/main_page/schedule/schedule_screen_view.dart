@@ -239,15 +239,16 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView> {
                       children: [
                         ScheduleWeekSwipe(
                           enabled: online && !_search.isOpen,
-                          onPreviousWeek: model.previousWeek,
-                          onNextWeek: model.nextWeek,
-                          child: TabBarView(
+                          weekOffset: model.weekOffset,
+                          onWeekChanged: model.selectWeek,
+                          weekBuilder: (context, weekOffset) => TabBarView(
                             physics: const NeverScrollableScrollPhysics(),
                             children: model.sortedUserTypeList
                                 .map(
                                   (t) => ScheduleTabView(
                                     key: ValueKey(t),
                                     viewModel: model.modelsByType[t]!,
+                                    weekOffset: weekOffset,
                                     onSearchRequested: _search.open,
                                   ),
                                 )
