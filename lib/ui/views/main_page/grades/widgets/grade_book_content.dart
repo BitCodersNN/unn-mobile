@@ -4,6 +4,7 @@
 import 'package:flutter/material.dart';
 import 'package:unn_mobile/core/misc/haptic_utils.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/grades/grades_screen_view_model.dart';
+import 'package:unn_mobile/ui/views/main_page/grades/widgets/curriculum_semester_page.dart';
 import 'package:unn_mobile/ui/views/main_page/grades/widgets/grade_semester_page.dart';
 
 class GradeBookContent extends StatefulWidget {
@@ -34,7 +35,7 @@ class _GradeBookContentState extends State<GradeBookContent>
 
   void _syncSemesterNumbers() {
     _semesterNumbers =
-        widget.model.semesters.map((model) => model.semester.number).toList();
+        widget.model.semesters.map((model) => model.number).toList();
   }
 
   TabController _createTabs() => TabController(
@@ -94,7 +95,7 @@ class _GradeBookContentState extends State<GradeBookContent>
                   height: MediaQuery.textScalerOf(context).scale(44),
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 12),
-                    child: Text('Семестр ${model.semester.number}'),
+                    child: Text(model.title),
                   ),
                 ),
             ],
@@ -105,11 +106,20 @@ class _GradeBookContentState extends State<GradeBookContent>
             controller: _tabs,
             children: [
               for (final model in widget.model.semesters)
-                GradeSemesterPage(
-                  key: ValueKey(model.semester.number),
-                  model: model,
-                  onRefresh: widget.onRefresh,
-                ),
+                if (model.curriculum == null)
+                  GradeSemesterPage(
+                    key: ValueKey(model.number),
+                    model: model.grades!,
+                    onRefresh: widget.onRefresh,
+                  )
+                else
+                  CurriculumSemesterPage(
+                    key: ValueKey(model.number),
+                    number: model.number,
+                    curriculum: model.curriculum!,
+                    summary: model.grades,
+                    onRefresh: widget.onRefresh,
+                  ),
             ],
           ),
         ),

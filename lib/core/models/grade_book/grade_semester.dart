@@ -16,7 +16,15 @@ class GradeSemester {
   }) {
     final indexedMarks = marks.indexed.toList()
       ..sort((first, second) {
-        final byDate = first.$2.date!.compareTo(second.$2.date!);
+        final firstDate = first.$2.date;
+        final secondDate = second.$2.date;
+        final byDate = firstDate == null
+            ? secondDate == null
+                ? 0
+                : 1
+            : secondDate == null
+                ? -1
+                : firstDate.compareTo(secondDate);
         return byDate != 0 ? byDate : first.$1.compareTo(second.$1);
       });
     final snapshot = List<MarkBySubject>.unmodifiable(

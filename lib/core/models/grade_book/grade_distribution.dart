@@ -31,8 +31,12 @@ class GradeDistribution {
   factory GradeDistribution.fromMarks(Iterable<MarkBySubject> marks) {
     final groups = <GradeResultGroup, Map<MarkType, int>>{};
     for (final mark in marks) {
+      final type = mark.markType;
+      if (type == null) {
+        continue;
+      }
       (groups[mark.resultGroup] ??= <MarkType, int>{}).update(
-        mark.markType!,
+        type,
         (count) => count + 1,
         ifAbsent: () => 1,
       );

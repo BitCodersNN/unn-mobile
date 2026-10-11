@@ -14,13 +14,14 @@ extension GradeAssessment on MarkBySubject {
 
   bool get isCreditControl => _normalizedControl.contains('зачет');
 
-  bool get requiresRetake => markType!.requiresRetake;
+  bool get requiresRetake => markType?.requiresRetake ?? false;
 
-  double? get averageValue =>
-      markType!.isNumeric && !isCreditControl ? markType!.value : null;
+  double? get averageValue => (markType?.isNumeric ?? false) && !isCreditControl
+      ? markType?.value
+      : null;
 
-  GradeResultGroup get resultGroup =>
-      markType!.isCredit || (markType == MarkType.noShow && isCreditControl)
-          ? GradeResultGroup.credits
-          : GradeResultGroup.grades;
+  GradeResultGroup get resultGroup => (markType?.isCredit ?? false) ||
+          (markType == MarkType.noShow && isCreditControl)
+      ? GradeResultGroup.credits
+      : GradeResultGroup.grades;
 }

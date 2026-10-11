@@ -24,7 +24,17 @@ class _GradeSubjectCardState extends State<GradeSubjectCard> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final mark = widget.mark;
-    final color = theme.getColorOfMarkType(mark.markType!);
+    final markType = mark.markType;
+    final date = mark.date;
+    final color = markType == null
+        ? theme.colorScheme.onSurfaceVariant
+        : theme.getColorOfMarkType(markType);
+    final details = [
+      if (date != null) DateFormat('dd.MM.yyyy').format(date),
+      if (mark.controlType.trim().isNotEmpty) mark.controlType,
+      if (date == null && mark.hours > 0)
+        '${mark.hours} ч · ${mark.creditedHours} з. е.',
+    ].join(' · ');
     return Material(
       color: theme.colorScheme.surfaceContainerLowest,
       shape: RoundedRectangleBorder(
@@ -58,41 +68,45 @@ class _GradeSubjectCardState extends State<GradeSubjectCard> {
                             style: theme.textTheme.titleSmall
                                 ?.copyWith(height: 1.35),
                           ),
-                          const SizedBox(height: 5),
-                          Text(
-                            '${DateFormat('dd.MM.yyyy').format(mark.date!)} · ${mark.controlType}',
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: theme.colorScheme.onSurfaceVariant,
+                          if (details.isNotEmpty) ...[
+                            const SizedBox(height: 5),
+                            Text(
+                              details,
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: theme.colorScheme.onSurfaceVariant,
+                              ),
                             ),
-                          ),
+                          ],
                         ],
                       ),
                     ),
-                    const SizedBox(width: 12),
-                    Semantics(
-                      label: 'Оценка: ${mark.markType!.label}',
-                      child: Container(
-                        constraints: BoxConstraints(
-                          maxWidth: MediaQuery.sizeOf(context).width * 0.25,
-                        ),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 5,
-                        ),
-                        decoration: BoxDecoration(
-                          color: color.withValues(alpha: 0.09),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Text(
-                          gradeLabel(mark.markType!),
-                          textAlign: TextAlign.center,
-                          style: theme.textTheme.labelMedium?.copyWith(
-                            color: color,
-                            fontWeight: FontWeight.w600,
+                    if (markType != null) ...[
+                      const SizedBox(width: 12),
+                      Semantics(
+                        label: 'Оценка: ${markType.label}',
+                        child: Container(
+                          constraints: BoxConstraints(
+                            maxWidth: MediaQuery.sizeOf(context).width * 0.25,
+                          ),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 5,
+                          ),
+                          decoration: BoxDecoration(
+                            color: color.withValues(alpha: 0.09),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Text(
+                            gradeLabel(markType),
+                            textAlign: TextAlign.center,
+                            style: theme.textTheme.labelMedium?.copyWith(
+                              color: color,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                         ),
                       ),
-                    ),
+                    ],
                     const SizedBox(width: 8),
                     AnimatedRotation(
                       turns: _expanded ? 0.5 : 0,

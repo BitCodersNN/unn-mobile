@@ -423,11 +423,15 @@ class _SubjectDetails extends StatelessWidget {
                     ),
                     const SizedBox(height: 3),
                     Text(
-                      kind == _SummaryDetails.retakes
-                          ? '${mark.controlType} · ${mark.markType!.label}'
-                          : '${gradeLabel(mark.markType!)}${mark.markType!.isNumeric ? ' · ${mark.markType!.label}' : ''}',
+                      mark.markType == null
+                          ? '${mark.controlType} · Без оценки'
+                          : kind == _SummaryDetails.retakes
+                              ? '${mark.controlType} · ${mark.markType!.label}'
+                              : '${gradeLabel(mark.markType!)}${mark.markType!.isNumeric ? ' · ${mark.markType!.label}' : ''}',
                       style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.getColorOfMarkType(mark.markType!),
+                        color: mark.markType == null
+                            ? theme.colorScheme.onSurfaceVariant
+                            : theme.getColorOfMarkType(mark.markType!),
                       ),
                     ),
                   ],
