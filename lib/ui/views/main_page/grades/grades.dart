@@ -146,8 +146,10 @@ class _GradesScreenViewState extends State<GradesScreenView> {
                                           child: Padding(
                                             padding: const EdgeInsets.all(8.0),
                                             child: Text(
-                                              DateFormat.yMd('ru_RU')
-                                                  .format(row.date),
+                                              row.date == null
+                                                  ? '—'
+                                                  : DateFormat.yMd('ru_RU')
+                                                      .format(row.date!),
                                               textAlign: TextAlign.center,
                                             ),
                                           ),
@@ -156,7 +158,8 @@ class _GradesScreenViewState extends State<GradesScreenView> {
                                           child: Padding(
                                             padding: const EdgeInsets.all(8.0),
                                             child: Text(
-                                              row.markType.convertToString(),
+                                              row.markType?.convertToString() ??
+                                                  '—',
                                               textAlign: TextAlign.center,
                                             ),
                                           ),
