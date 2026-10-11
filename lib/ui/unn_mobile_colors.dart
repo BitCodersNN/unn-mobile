@@ -3,12 +3,14 @@
 
 import 'package:flutter/material.dart';
 import 'package:unn_mobile/core/misc/date_time_utilities/date_time_extensions.dart';
+import 'package:unn_mobile/core/models/grade_book/mark_type.dart';
 import 'package:unn_mobile/core/models/schedule/subject_type.dart';
 
 class UnnMobileColors extends ThemeExtension<UnnMobileColors> {
   final Color? scheduleDayHighlight;
   final Color? scheduleSubjectHighlight;
   final Map<SubjectType, Color>? scheduleSubjectTypeColors;
+  final Map<MarkType, Color>? gradeMarkTypeColors;
   final Color? ligtherTextColor;
   final Color? idkWhatColor;
   final Color? wideButtonBottomColor;
@@ -17,6 +19,7 @@ class UnnMobileColors extends ThemeExtension<UnnMobileColors> {
     required this.scheduleDayHighlight,
     required this.scheduleSubjectHighlight,
     required this.scheduleSubjectTypeColors,
+    required this.gradeMarkTypeColors,
     required this.ligtherTextColor,
     required this.idkWhatColor,
     required this.wideButtonBottomColor,
@@ -27,6 +30,7 @@ class UnnMobileColors extends ThemeExtension<UnnMobileColors> {
     Color? scheduleDayHighlight,
     Color? scheduleSubjectHighlight,
     Map<SubjectType, Color>? scheduleSubjectTypeColors,
+    Map<MarkType, Color>? gradeMarkTypeColors,
     Color? ligtherTextColor,
     Color? idkWhatColor,
     Color? wideButtonTopColor,
@@ -38,6 +42,7 @@ class UnnMobileColors extends ThemeExtension<UnnMobileColors> {
             scheduleSubjectHighlight ?? this.scheduleSubjectHighlight,
         scheduleSubjectTypeColors:
             scheduleSubjectTypeColors ?? this.scheduleSubjectTypeColors,
+        gradeMarkTypeColors: gradeMarkTypeColors ?? this.gradeMarkTypeColors,
         ligtherTextColor: ligtherTextColor ?? this.ligtherTextColor,
         idkWhatColor: idkWhatColor ?? this.idkWhatColor,
         wideButtonBottomColor:
@@ -74,6 +79,14 @@ class UnnMobileColors extends ThemeExtension<UnnMobileColors> {
           return Color.lerp(thisColor, otherColor, t) ?? thisColor;
         }),
       ),
+      gradeMarkTypeColors: Map.fromIterables(
+        gradeMarkTypeColors!.keys,
+        gradeMarkTypeColors!.keys.map((MarkType key) {
+          final Color thisColor = gradeMarkTypeColors![key]!;
+          final Color otherColor = otherColors.gradeMarkTypeColors![key]!;
+          return Color.lerp(thisColor, otherColor, t) ?? thisColor;
+        }),
+      ),
       ligtherTextColor: Color.lerp(
         ligtherTextColor,
         otherColors.ligtherTextColor,
@@ -94,6 +107,11 @@ class UnnMobileColors extends ThemeExtension<UnnMobileColors> {
 }
 
 extension ThemeDataExtension on ThemeData {
+  Color getColorOfMarkType(MarkType markType) {
+    final extraColors = extension<UnnMobileColors>()!;
+    return extraColors.gradeMarkTypeColors![markType] ?? primaryColor;
+  }
+
   Color getColorOfSubjectType(SubjectType subjectType) {
     final extraColors = extension<UnnMobileColors>()!;
     return extraColors.scheduleSubjectTypeColors![subjectType] ?? primaryColor;
