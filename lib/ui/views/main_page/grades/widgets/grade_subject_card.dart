@@ -24,7 +24,7 @@ class _GradeSubjectCardState extends State<GradeSubjectCard> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final mark = widget.mark;
-    final color = theme.getColorOfMarkType(mark.markType);
+    final color = theme.getColorOfMarkType(mark.markType!);
     return Material(
       color: theme.colorScheme.surfaceContainerLowest,
       shape: RoundedRectangleBorder(
@@ -60,7 +60,7 @@ class _GradeSubjectCardState extends State<GradeSubjectCard> {
                           ),
                           const SizedBox(height: 5),
                           Text(
-                            '${DateFormat('dd.MM.yyyy').format(mark.date)} · ${mark.controlType}',
+                            '${DateFormat('dd.MM.yyyy').format(mark.date!)} · ${mark.controlType}',
                             style: theme.textTheme.bodySmall?.copyWith(
                               color: theme.colorScheme.onSurfaceVariant,
                             ),
@@ -70,7 +70,7 @@ class _GradeSubjectCardState extends State<GradeSubjectCard> {
                     ),
                     const SizedBox(width: 12),
                     Semantics(
-                      label: 'Оценка: ${mark.markType.label}',
+                      label: 'Оценка: ${mark.markType!.label}',
                       child: Container(
                         constraints: BoxConstraints(
                           maxWidth: MediaQuery.sizeOf(context).width * 0.25,
@@ -84,7 +84,7 @@ class _GradeSubjectCardState extends State<GradeSubjectCard> {
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: Text(
-                          gradeLabel(mark.markType),
+                          gradeLabel(mark.markType!),
                           textAlign: TextAlign.center,
                           style: theme.textTheme.labelMedium?.copyWith(
                             color: color,

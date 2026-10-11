@@ -32,7 +32,7 @@ class GradeDistribution {
     final groups = <GradeResultGroup, Map<MarkType, int>>{};
     for (final mark in marks) {
       (groups[mark.resultGroup] ??= <MarkType, int>{}).update(
-        mark.markType,
+        mark.markType!,
         (count) => count + 1,
         ifAbsent: () => 1,
       );
