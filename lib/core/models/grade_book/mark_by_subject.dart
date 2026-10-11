@@ -17,13 +17,13 @@ class MarkBySubject {
   static const int _hoursPerCreditedHour = 36;
 
   final String controlType;
-  final DateTime date;
+  final DateTime? date;
   final int hours;
   final String? lecturers;
-  final MarkType markType;
+  final MarkType? markType;
   final String subject;
 
-  const MarkBySubject({
+  MarkBySubject({
     required this.controlType,
     required this.date,
     required this.hours,
@@ -36,21 +36,27 @@ class MarkBySubject {
 
   factory MarkBySubject.fromJson(JsonMap jsonMap) => MarkBySubject(
         controlType: jsonMap[_MarkBySubjectJsonKeys.controlType]! as String,
-        date: DateTime.parse(jsonMap[_MarkBySubjectJsonKeys.date]! as String),
-        hours: int.parse(jsonMap[_MarkBySubjectJsonKeys.hours]! as String),
-        lecturers: jsonMap[_MarkBySubjectJsonKeys.lecturers] as String?,
-        markType: MarkType.fromDouble(
-          (jsonMap[_MarkBySubjectJsonKeys.mark]! as num).toDouble(),
+        date: jsonMap[_MarkBySubjectJsonKeys.date] == null
+            ? null
+            : DateTime.parse(jsonMap[_MarkBySubjectJsonKeys.date]! as String),
+        hours: int.parse(
+          jsonMap[_MarkBySubjectJsonKeys.hours]! as String,
         ),
+        lecturers: jsonMap[_MarkBySubjectJsonKeys.lecturers] as String?,
+        markType: jsonMap[_MarkBySubjectJsonKeys.mark] == null
+            ? null
+            : MarkType.fromDouble(
+                (jsonMap[_MarkBySubjectJsonKeys.mark]! as num).toDouble(),
+              ),
         subject: jsonMap[_MarkBySubjectJsonKeys.subject]! as String,
       );
 
   JsonMap toJson() => {
         _MarkBySubjectJsonKeys.controlType: controlType,
-        _MarkBySubjectJsonKeys.date: date.toIso8601String(),
+        _MarkBySubjectJsonKeys.date: date?.toIso8601String(),
         _MarkBySubjectJsonKeys.hours: hours.toString(),
         _MarkBySubjectJsonKeys.lecturers: lecturers,
-        _MarkBySubjectJsonKeys.mark: markType.value,
+        _MarkBySubjectJsonKeys.mark: markType?.value,
         _MarkBySubjectJsonKeys.subject: subject,
       };
 }
