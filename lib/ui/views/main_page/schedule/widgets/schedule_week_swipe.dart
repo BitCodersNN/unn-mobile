@@ -1,18 +1,20 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2026 BitCodersNN
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 class ScheduleWeekSwipe extends StatefulWidget {
-  final Widget child;
+  final int weekOffset;
+  final IndexedWidgetBuilder weekBuilder;
+  final ValueChanged<int> onWeekChanged;
   final bool enabled;
-  final VoidCallback onPreviousWeek;
-  final VoidCallback onNextWeek;
 
   const ScheduleWeekSwipe({
-    required this.child,
-    required this.onPreviousWeek,
-    required this.onNextWeek,
+    required this.weekOffset,
+    required this.weekBuilder,
+    required this.onWeekChanged,
     super.key,
     this.enabled = true,
   });
@@ -22,78 +24,69 @@ class ScheduleWeekSwipe extends StatefulWidget {
 }
 
 class _ScheduleWeekSwipeState extends State<ScheduleWeekSwipe> {
-  double _dragDistance = 0;
-  double _offset = 0;
-  bool _isDragging = false;
+  static const int _originPage = 1000000;
+  late final int _anchorWeekOffset;
+  late final PageController _pages;
+  int _currentPage = _originPage;
+  int? _programmaticPage;
+
+  @override
+  void initState() {
+    super.initState();
+    _anchorWeekOffset = widget.weekOffset;
+    _pages = PageController(initialPage: _originPage);
+  }
 
   @override
   void didUpdateWidget(ScheduleWeekSwipe oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (!widget.enabled) {
-      _isDragging = false;
-      _offset = 0;
-      _dragDistance = 0;
+    if (oldWidget.weekOffset == widget.weekOffset) {
+      return;
+    }
+    final page = _originPage + widget.weekOffset - _anchorWeekOffset;
+    if (page != _currentPage) {
+      _programmaticPage = page;
+      unawaited(_animateToPage(page));
     }
   }
 
-  void _resetDrag() => setState(() {
-        _isDragging = false;
-        _offset = 0;
-      });
-
-  void _onDragEnd(DragEndDetails details) {
-    _resetDrag();
-    if (!widget.enabled) {
-      return;
+  Future<void> _animateToPage(int page) async {
+    await _pages.animateToPage(
+      page,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOutCubic,
+    );
+    if (mounted && _programmaticPage == page) {
+      setState(() => _programmaticPage = null);
     }
+  }
 
-    final velocity = details.primaryVelocity ?? 0;
-    final isFling = velocity.abs() >= 500 && _dragDistance.abs() >= 20;
-    if (!isFling && _dragDistance.abs() < 48) {
-      return;
-    }
-
-    final direction = isFling ? velocity : _dragDistance;
-    if (direction < 0) {
-      widget.onNextWeek();
-    } else {
-      widget.onPreviousWeek();
+  void _onPageChanged(int page) {
+    _currentPage = page;
+    if (_programmaticPage == null) {
+      widget.onWeekChanged(_anchorWeekOffset + page - _originPage);
     }
   }
 
   @override
-  Widget build(BuildContext context) => LayoutBuilder(
-        builder: (context, constraints) => GestureDetector(
-          behavior: HitTestBehavior.opaque,
-          onHorizontalDragStart: widget.enabled
-              ? (_) {
-                  _dragDistance = 0;
-                  setState(() => _isDragging = true);
-                }
-              : null,
-          onHorizontalDragUpdate: widget.enabled
-              ? (details) {
-                  _dragDistance += details.primaryDelta ?? 0;
-                  setState(() {
-                    _offset = (_dragDistance * 0.35).clamp(
-                      -constraints.maxWidth * 0.15,
-                      constraints.maxWidth * 0.15,
-                    );
-                  });
-                }
-              : null,
-          onHorizontalDragEnd: widget.enabled ? _onDragEnd : null,
-          onHorizontalDragCancel: widget.enabled ? _resetDrag : null,
-          child: ClipRect(
-            child: AnimatedContainer(
-              duration: _isDragging
-                  ? Duration.zero
-                  : const Duration(milliseconds: 280),
-              curve: Curves.easeOutCubic,
-              transform: Matrix4.translationValues(_offset, 0, 0),
-              child: widget.child,
-            ),
-          ),
-        ),
+  void dispose() {
+    _pages.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => PageView.builder(
+        controller: _pages,
+        physics: widget.enabled && _programmaticPage == null
+            ? null
+            : const NeverScrollableScrollPhysics(),
+        onPageChanged: _onPageChanged,
+        itemBuilder: (context, page) {
+          final weekOffset = _anchorWeekOffset + page - _originPage;
+          return KeyedSubtree(
+            key: ValueKey(weekOffset),
+            child: widget.weekBuilder(context, weekOffset),
+          );
+        },
       );
 }

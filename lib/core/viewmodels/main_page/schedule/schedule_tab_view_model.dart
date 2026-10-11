@@ -39,6 +39,8 @@ class ScheduleTabViewModel extends BaseViewModel {
 
   bool needsDefaultIdRefresh = true;
   bool triggerScrollToToday = false;
+  bool _refreshRequested = false;
+  bool _offlineUpdateRequested = false;
 
   bool get hasAnyId => defaultId != null || selectedId != null;
 
@@ -141,6 +143,12 @@ class ScheduleTabViewModel extends BaseViewModel {
             week.start,
           ) ??
           [];
+      if (disposed ||
+          week.start != selectedWeek.start ||
+          selectedId != null ||
+          !AppSettings.useRaspSchedule) {
+        return;
+      }
       schedule = partitionSchedule(foundSchedule);
       scheduleWeek = week;
       return;
@@ -149,18 +157,25 @@ class ScheduleTabViewModel extends BaseViewModel {
     if (filter == null) {
       return;
     }
-
-    final List<Subject> foundSchedule = await tryLoginAndRetrieveData(
-          () => _scheduleService.getSchedule(filter),
-          () => schedule?.expand((e) => e).toList(),
-        ) ??
-        []
-      ..sort((a, b) => a.dateTimeRange.start.compareTo(b.dateTimeRange.start));
-
+    final foundSchedule = await tryLoginAndRetrieveData<List<Subject>>(
+      () => _scheduleService.getSchedule(filter),
+      () => scheduleWeek?.start == week.start
+          ? schedule?.expand((subject) => subject).toList()
+          : null,
+    );
+    if (disposed ||
+        foundSchedule == null ||
+        week.start != selectedWeek.start ||
+        filter.id != (selectedId ?? defaultId)) {
+      return;
+    }
+    foundSchedule.sort(
+      (first, second) =>
+          first.dateTimeRange.start.compareTo(second.dateTimeRange.start),
+    );
     if (defaultId != null && filter.id == defaultId) {
       offlineSchedule = OfflineSchedule(week, foundSchedule);
     }
-
     schedule = partitionSchedule(foundSchedule);
     scheduleWeek = week;
   }
@@ -184,28 +199,35 @@ class ScheduleTabViewModel extends BaseViewModel {
         <ScheduleSearchSuggestionItem>[];
   }
 
-  FutureOr<void> refresh({bool triggerOfflineUpdate = false}) =>
-      busyCallAsync(() async {
-        if (AppSettings.useRaspSchedule &&
-            selectedId == null &&
-            isIdTypeMatchingUser(_userType, _userStorage.currentUserData)) {
-          defaultId = ''; // Чтоб не был null
-          updateFilter(); // Даже если мы этот фильтр не используем, пусть будет актуальный
-          await loadSchedule(useRasp: true);
-          if (triggerOfflineUpdate) {
-            await _parent.saveOfflineSchedule();
-          }
-        } else {
-          if (needsDefaultIdRefresh) {
-            await refreshDefaultId();
-          }
-          updateFilter();
-          await loadSchedule();
-          if (triggerOfflineUpdate) {
-            await _parent.saveOfflineSchedule();
-          }
-        }
-      });
+  FutureOr<void> refresh({bool triggerOfflineUpdate = false}) {
+    _refreshRequested = true;
+    _offlineUpdateRequested |= triggerOfflineUpdate;
+    return busyCallAsync(_refreshSchedule);
+  }
+
+  Future<void> _refreshSchedule() async {
+    do {
+      _refreshRequested = false;
+      final saveOffline = _offlineUpdateRequested;
+      _offlineUpdateRequested = false;
+      final useRasp = AppSettings.useRaspSchedule &&
+          selectedId == null &&
+          isIdTypeMatchingUser(_userType, _userStorage.currentUserData);
+      if (useRasp) {
+        defaultId = '';
+      } else if (needsDefaultIdRefresh) {
+        await refreshDefaultId();
+      }
+      if (disposed) {
+        return;
+      }
+      updateFilter();
+      await loadSchedule(useRasp: useRasp);
+      if (saveOffline && !disposed) {
+        await _parent.saveOfflineSchedule();
+      }
+    } while (_refreshRequested && !disposed);
+  }
 
   Future<void> applySearchSuggestion(ScheduleSearchSuggestionItem s) async {
     selectedId = s.id;

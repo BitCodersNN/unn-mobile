@@ -242,28 +242,29 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView> {
                       children: [
                         ScheduleWeekSwipe(
                           enabled: online && !_search.isOpen,
-                          onPreviousWeek: model.previousWeek,
-                          onNextWeek: model.nextWeek,
-                          child: TabBarView(
+                          weekOffset: model.weekOffset,
+                          onWeekChanged: model.selectWeek,
+                          weekBuilder: (context, weekOffset) => TabBarView(
                             physics: const NeverScrollableScrollPhysics(),
-                          children: model.sortedUserTypeList
-                              .map(
-                                (t) => model.modelsByType[t] == null
-                                    ? const Center(
-                                        child: SizedBox(
-                                          width: 96,
-                                          height: 96,
-                                          child: CircularProgressIndicator
-                                              .adaptive(),
+                            children: model.sortedUserTypeList
+                                .map(
+                                  (t) => model.modelsByType[t] == null
+                                      ? const Center(
+                                          child: SizedBox(
+                                            width: 96,
+                                            height: 96,
+                                            child: CircularProgressIndicator
+                                                .adaptive(),
+                                          ),
+                                        )
+                                      : ScheduleTabView(
+                                          key: ValueKey(t),
+                                          viewModel: model.modelsByType[t]!,
+                                          weekOffset: weekOffset,
+                                          onSearchRequested: _search.open,
                                         ),
-                                      )
-                                    : ScheduleTabView(
-                                        key: ValueKey(t),
-                                        viewModel: model.modelsByType[t]!,
-                                        onSearchRequested: _search.open,
-                                      ),
-                              )
-                              .toList(),
+                                )
+                                .toList(),
                           ),
                         ),
                         if (_search.isOpen) ...[

@@ -119,15 +119,15 @@ class ScheduleScreenViewModel extends BaseViewModel
     await _offlineScheduleProvider.saveData(offlineData);
   }
 
-  void nextWeek() {
-    weekOffset++;
-    recalculateDateTimeRange();
-    notifyListeners();
-    refreshTab();
-  }
+  void nextWeek() => selectWeek(weekOffset + 1);
 
-  void previousWeek() {
-    weekOffset--;
+  void previousWeek() => selectWeek(weekOffset - 1);
+
+  void selectWeek(int offset) {
+    if (offset == weekOffset) {
+      return;
+    }
+    weekOffset = offset;
     recalculateDateTimeRange();
     notifyListeners();
     refreshTab();
@@ -204,9 +204,6 @@ class ScheduleScreenViewModel extends BaseViewModel
       return;
     }
 
-    weekOffset = 0;
-    recalculateDateTimeRange();
-    notifyListeners();
-    refreshTab();
+    selectWeek(0);
   }
 }
