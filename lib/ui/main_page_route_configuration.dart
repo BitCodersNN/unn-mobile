@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright 2026 BitCodersNN
+
 import 'package:unn_mobile/core/misc/tab_bar_preferences.dart';
 import 'package:unn_mobile/ui/main_page_locations.dart';
 import 'package:unn_mobile/ui/views/main_page/main_page_route_data.dart';
