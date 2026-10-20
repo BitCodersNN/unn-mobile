@@ -8,32 +8,28 @@ import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
 class MainPageRoutesViewModelsFactory {
   final UnnAuthService _authorizationService;
 
-  final Map<int, BaseViewModel> _viewModels = {};
+  final Map<Type, BaseViewModel> _viewModels = {};
 
   MainPageRoutesViewModelsFactory(this._authorizationService) {
     _authorizationService.addListener(
       _resetIfUnauthorized,
     ); // А где отписаться? Я хз) Это должен быть синглтон, надеюсь, ничего не сломается
   }
-  T getViewModelByRouteIndex<T extends BaseViewModel>(int index) {
-    final existing = _viewModels[index];
+  T getViewModel<T extends BaseViewModel>() {
+    final existing = _viewModels[T];
     if (existing is T) {
       return existing;
     }
 
     final T newInstance = Injector.appInstance.get<T>();
-    _viewModels[index] = newInstance;
+    _viewModels[T] = newInstance;
     return newInstance;
   }
 
-  T? getViewModelByType<T>() => _viewModels.values
-      .map(
-        (e) => e is T ? e as T : null,
-      )
-      .firstWhere(
-        (p) => p != null,
-        orElse: () => null,
-      );
+  T? getViewModelByType<T extends BaseViewModel>() {
+    final model = _viewModels[T];
+    return model is T ? model : null;
+  }
 
   void _resetIfUnauthorized() {
     if (_authorizationService.isAuthorised) {

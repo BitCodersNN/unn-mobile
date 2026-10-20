@@ -22,23 +22,32 @@ class TabBarDragFeedback extends StatelessWidget {
   Widget build(BuildContext context) => AnimatedScale(
         scale: dragging ? 1.08 : 1,
         duration: const Duration(milliseconds: 150),
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 150),
-          margin: const EdgeInsets.symmetric(horizontal: 3),
-          decoration: BoxDecoration(
-            color: backgroundColor,
-            borderRadius: BorderRadius.circular(16),
-            boxShadow: dragging
-                ? [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.15),
-                      blurRadius: 14,
-                      offset: const Offset(0, 4),
-                    ),
-                  ]
-                : [],
-          ),
-          child: child,
+        child: Stack(
+          fit: StackFit.passthrough,
+          clipBehavior: Clip.none,
+          children: [
+            Positioned.fill(
+              left: 3,
+              right: 3,
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 150),
+                decoration: BoxDecoration(
+                  color: backgroundColor,
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: dragging
+                      ? [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.15),
+                            blurRadius: 14,
+                            offset: const Offset(0, 4),
+                          ),
+                        ]
+                      : [],
+                ),
+              ),
+            ),
+            child,
+          ],
         ),
       );
 }

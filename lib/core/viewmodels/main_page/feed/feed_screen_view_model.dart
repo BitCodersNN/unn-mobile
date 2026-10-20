@@ -33,6 +33,8 @@ class FeedScreenViewModel extends BaseViewModel
 
   final List<FeedPostViewModel> _totalPosts = [];
 
+  Future<void>? _initialization;
+
   int _numberUnreadMessages = 0;
   int _currentPage = 0;
   bool _failedToLoad = false;
@@ -79,12 +81,12 @@ class FeedScreenViewModel extends BaseViewModel
     this._searchService,
   );
 
-  FutureOr<void> init() {
-    _blogPostProvider //
-        .getData() //
-        .then((posts) => _addPostsToList(offlinePosts, posts)) //
-        .whenComplete(reload);
-  }
+  Future<void> init() =>
+      _initialization ??= _blogPostProvider.getData().then((posts) {
+        if (!disposed && offlinePosts.isEmpty) {
+          _addPostsToList(offlinePosts, posts);
+        }
+      }).whenComplete(reload);
 
   void _addPostsToList(
     List<FeedPostViewModel> posts,

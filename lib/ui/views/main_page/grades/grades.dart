@@ -9,9 +9,7 @@ import 'package:unn_mobile/ui/views/base_view.dart';
 import 'package:unn_mobile/ui/widgets/offline_overlay_displayer.dart';
 
 class GradesScreenView extends StatefulWidget {
-  final int? bottomRouteIndex;
-
-  const GradesScreenView({super.key, this.bottomRouteIndex});
+  const GradesScreenView({super.key});
 
   @override
   State<GradesScreenView> createState() => _GradesScreenViewState();

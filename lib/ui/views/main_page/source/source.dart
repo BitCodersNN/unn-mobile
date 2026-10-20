@@ -17,17 +17,13 @@ import 'package:unn_mobile/ui/widgets/offline_overlay_displayer.dart';
 class SourcePageView extends StatelessWidget {
   static const _selectSemesterKey = 'selectSemester';
 
-  final int? bottomRouteIndex;
-
-  const SourcePageView({super.key, this.bottomRouteIndex});
+  const SourcePageView({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final viewModel = bottomRouteIndex == null
-        ? null
-        : Injector.appInstance
-            .get<MainPageRoutesViewModelsFactory>()
-            .getViewModelByRouteIndex<SourcePageViewModel>(bottomRouteIndex!);
+    final viewModel = Injector.appInstance
+        .get<MainPageRoutesViewModelsFactory>()
+        .getViewModel<SourcePageViewModel>();
     return OfflineOverlayDisplayer(
       child: OnlineStatusBuilder(
         builder: (context, online) => BaseView<SourcePageViewModel>(

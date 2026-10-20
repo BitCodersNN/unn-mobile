@@ -2,19 +2,17 @@
 // Copyright 2025 BitCodersNN
 
 import 'package:flutter/material.dart';
+import 'package:injector/injector.dart';
+import 'package:unn_mobile/core/misc/user/current_user_sync_storage.dart';
 import 'package:unn_mobile/core/models/schedule/subject_type.dart';
 import 'package:unn_mobile/ui/router.dart';
 import 'package:unn_mobile/ui/unn_mobile_colors.dart';
 
-class UnnMobile extends StatelessWidget {
+class UnnMobile extends StatefulWidget {
   const UnnMobile({super.key});
 
   @override
-  Widget build(BuildContext context) => MaterialApp.router(
-        routerConfig: mainRouter,
-        theme: buildAppTheme(Brightness.light),
-        themeMode: ThemeMode.system,
-      );
+  State<UnnMobile> createState() => _UnnMobileState();
 
   ThemeData buildAppTheme(Brightness brightness) {
     const primaryColor = Color(0xFF00BBB0);
@@ -55,4 +53,22 @@ class UnnMobile extends StatelessWidget {
       ],
     );
   }
+}
+
+class _UnnMobileState extends State<UnnMobile> {
+  late final AppRouter _router =
+      AppRouter(userType: Injector.appInstance.get<CurrentUserSyncStorage>());
+
+  @override
+  void dispose() {
+    _router.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => MaterialApp.router(
+        routerConfig: _router.router,
+        theme: widget.buildAppTheme(Brightness.light),
+        themeMode: ThemeMode.system,
+      );
 }

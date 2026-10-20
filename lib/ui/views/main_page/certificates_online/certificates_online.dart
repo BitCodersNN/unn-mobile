@@ -9,9 +9,7 @@ import 'package:unn_mobile/ui/views/base_view.dart';
 import 'package:unn_mobile/ui/widgets/wide_button.dart';
 
 class OnlineCertificatesScreenView extends StatefulWidget {
-  final int? bottomRouteIndex;
-
-  const OnlineCertificatesScreenView({super.key, this.bottomRouteIndex});
+  const OnlineCertificatesScreenView({super.key});
 
   @override
   State<OnlineCertificatesScreenView> createState() =>

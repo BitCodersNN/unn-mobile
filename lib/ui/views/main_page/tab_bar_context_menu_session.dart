@@ -17,6 +17,7 @@ class TabBarContextMenuResult {
 }
 
 class TabBarContextMenuSession extends ChangeNotifier {
+  final List<String> originalPaths;
   final Rect barRect;
   final Rect contentRect;
   final TextDirection textDirection;
@@ -34,7 +35,8 @@ class TabBarContextMenuSession extends ChangeNotifier {
     required this.selectedPath,
     required Offset pointerOrigin,
     required this.textDirection,
-  })  : _basePaths = List.unmodifiable(paths),
+  })  : originalPaths = List.unmodifiable(paths),
+        _basePaths = List.unmodifiable(paths),
         _drag = TabBarDragController(
           itemCount: paths.length,
           editableCount: paths.length - 1,
@@ -95,6 +97,12 @@ class TabBarContextMenuSession extends ChangeNotifier {
     _result = TabBarContextMenuResult(paths: paths);
     _closeRequested = true;
     notifyListeners();
+  }
+
+  void restoreOrder() {
+    final path = heldPath;
+    _basePaths = originalPaths;
+    _drag.begin(originalPaths.indexOf(path), 0);
   }
 
   void cancel() {

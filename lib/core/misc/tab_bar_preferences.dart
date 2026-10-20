@@ -17,15 +17,6 @@ class TabBarPreferences {
     'source',
     morePath,
   ];
-  static const availablePaths = [
-    ...defaultPaths,
-    'myProfile',
-    'grades',
-    'online_certificates',
-    'settings',
-    'donations',
-    'about',
-  ];
 
   static List<T> reordered<T>(Iterable<T> items, int from, int to) {
     final result = List<T>.of(items);
@@ -36,20 +27,26 @@ class TabBarPreferences {
 
   static List<String> normalize(
     Iterable<String> paths, {
-    Iterable<String> allowed = availablePaths,
+    Iterable<String>? allowed,
   }) {
-    final allowedPaths = allowed.toSet();
+    final allowedPaths = allowed?.toSet();
     final result = paths
-        .where((path) => path != morePath && allowedPaths.contains(path))
+        .where(
+          (path) =>
+              path.isNotEmpty &&
+              !path.contains('/') &&
+              path != morePath &&
+              (allowedPaths == null || allowedPaths.contains(path)),
+        )
         .toSet()
         .take(editableSlotCount)
         .toList();
-    for (final path in defaultPaths) {
+    for (final path in {...defaultPaths, ...?allowedPaths}) {
       if (result.length >= requiredSlotCount) {
         break;
       }
       if (path != morePath &&
-          allowedPaths.contains(path) &&
+          (allowedPaths == null || allowedPaths.contains(path)) &&
           !result.contains(path)) {
         result.add(path);
       }

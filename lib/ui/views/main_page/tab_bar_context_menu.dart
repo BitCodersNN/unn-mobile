@@ -5,8 +5,9 @@ import 'dart:async';
 import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:unn_mobile/ui/views/main_page/main_page_routing.dart';
+import 'package:unn_mobile/ui/views/main_page/main_page_route_data.dart';
 import 'package:unn_mobile/ui/views/main_page/tab_bar_context_menu_session.dart';
 import 'package:unn_mobile/ui/views/main_page/tab_bar_drag_feedback.dart';
 import 'package:unn_mobile/ui/views/main_page/tab_bar_gesture_detector.dart';
@@ -16,12 +17,13 @@ Future<TabBarContextMenuResult?> showTabBarContextMenu(
   BuildContext context, {
   required TabBarContextMenuSession session,
   required List<MainPageRouteData> routes,
+  required Future<bool> Function(List<String> paths) onReorder,
 }) {
   final completion = Completer<TabBarContextMenuResult?>();
   late final OverlayEntry entry;
   LocalHistoryEntry? history;
   TabBarContextMenuResult? dismissedResult;
-  var removed = false;
+  bool removed = false;
   void removeOverlay() {
     if (removed) {
       return;
@@ -37,6 +39,7 @@ Future<TabBarContextMenuResult?> showTabBarContextMenu(
     builder: (_) => _TabBarContextMenu(
       session: session,
       routes: routes,
+      onReorder: onReorder,
       onDismiss: (result) {
         dismissedResult = result;
         removeOverlay();
@@ -56,12 +59,14 @@ Future<TabBarContextMenuResult?> showTabBarContextMenu(
 class _TabBarContextMenu extends StatefulWidget {
   final TabBarContextMenuSession session;
   final List<MainPageRouteData> routes;
+  final Future<bool> Function(List<String> paths) onReorder;
   final ValueChanged<TabBarContextMenuResult?> onDismiss;
   final VoidCallback onClosed;
 
   const _TabBarContextMenu({
     required this.session,
     required this.routes,
+    required this.onReorder,
     required this.onDismiss,
     required this.onClosed,
   });
@@ -106,14 +111,27 @@ class _TabBarContextMenuState extends State<_TabBarContextMenu>
     if (_closing) {
       return;
     }
-    _closing = true;
+    setState(() => _closing = true);
+    final accepted = result == null ||
+        listEquals(result.paths, session.originalPaths) ||
+        await widget.onReorder(result.paths);
+    if (!mounted) {
+      return;
+    }
+    if (result == null || !accepted) {
+      session.restoreOrder();
+    }
+    await WidgetsBinding.instance.endOfFrame;
+    if (!mounted) {
+      return;
+    }
     try {
       await _animation.reverse().orCancel;
     } on TickerCanceled {
       return;
     }
     if (mounted) {
-      widget.onDismiss(result);
+      widget.onDismiss(accepted ? result : null);
     }
   }
 
@@ -140,68 +158,72 @@ class _TabBarContextMenuState extends State<_TabBarContextMenu>
     );
     return Material(
       type: MaterialType.transparency,
-      child: Stack(
-        children: [
-          Positioned(
-            left: 0,
-            right: 0,
-            top: 0,
-            height: session.barRect.top,
-            child: ClipRect(
-              key: const ValueKey('tab-bar-blurred-content'),
-              child: BackdropFilter(
-                filter: ImageFilter.blur(
-                  sigmaX: 5 * progress,
-                  sigmaY: 5 * progress,
-                ),
-                child: GestureDetector(
-                  behavior: HitTestBehavior.opaque,
-                  onTap: () => _dismiss(null),
-                  child: ColoredBox(
-                    color: Colors.black.withValues(alpha: 0.2 * progress),
+      child: IgnorePointer(
+        ignoring: _closing,
+        child: Stack(
+          children: [
+            Positioned(
+              left: 0,
+              right: 0,
+              top: 0,
+              height: session.barRect.top,
+              child: ClipRect(
+                key: const ValueKey('tab-bar-blurred-content'),
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(
+                    sigmaX: 5 * progress,
+                    sigmaY: 5 * progress,
+                  ),
+                  child: GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTap: () => _dismiss(null),
+                    child: ColoredBox(
+                      color: Colors.black.withValues(alpha: 0.2 * progress),
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-          Positioned.fromRect(
-            rect: session.barRect,
-            child: ColoredBox(color: theme.colorScheme.surface),
-          ),
-          for (final path in session.paths
-              .where((path) => !session.isDragging || path != session.heldPath))
-            _tab(context, path, progress),
-          if (session.isDragging) _tab(context, session.heldPath, progress),
-          Positioned(
-            left: left,
-            top: session.barRect.top - 96,
-            width: menuWidth,
-            height: 80,
-            child: IgnorePointer(
-              ignoring: session.isDragging,
-              child: AnimatedOpacity(
-                duration: const Duration(milliseconds: 120),
-                opacity: session.isDragging ? 0 : progress,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(16),
-                  child: ColoredBox(
-                    color: background,
-                    child: CupertinoContextMenuAction(
-                      onPressed: () => _dismiss(
-                        TabBarContextMenuResult(
-                          paths: session.paths,
-                          customize: true,
-                        ),
-                      ),
-                      trailingIcon: CupertinoIcons.gear,
-                      child: Text(
-                        'Настроить нижнее меню',
-                        style: TextStyle(
-                          color: CupertinoDynamicColor.resolve(
-                            CupertinoColors.label,
-                            context,
+            Positioned.fromRect(
+              rect: session.barRect,
+              child: ColoredBox(color: theme.colorScheme.surface),
+            ),
+            for (final path in session.paths.where(
+              (path) => !session.isDragging || path != session.heldPath,
+            ))
+              _tab(context, path, progress),
+            if (session.isDragging) _tab(context, session.heldPath, progress),
+            Positioned(
+              left: left,
+              top: session.barRect.top - 96,
+              width: menuWidth,
+              height: 80,
+              child: IgnorePointer(
+                ignoring: _closing || session.isDragging,
+                child: AnimatedOpacity(
+                  duration: const Duration(milliseconds: 120),
+                  opacity: _closing || session.isDragging ? 0 : progress,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(16),
+                    child: ColoredBox(
+                      color: background,
+                      child: CupertinoContextMenuAction(
+                        onPressed: () => _dismiss(
+                          TabBarContextMenuResult(
+                            paths: session.paths,
+                            customize: true,
                           ),
-                          fontSize: 17,
+                        ),
+                        trailingIcon: CupertinoIcons.gear,
+                        child: Text(
+                          'Настроить нижнее меню',
+                          style: TextStyle(
+                            color: CupertinoDynamicColor.resolve(
+                              CupertinoColors.label,
+                              context,
+                            ),
+                            fontSize: 17,
+                          ),
                         ),
                       ),
                     ),
@@ -209,8 +231,8 @@ class _TabBarContextMenuState extends State<_TabBarContextMenu>
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

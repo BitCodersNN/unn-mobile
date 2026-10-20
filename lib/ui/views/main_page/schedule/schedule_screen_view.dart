@@ -25,11 +25,7 @@ import 'package:unn_mobile/ui/widgets/search/search_field.dart';
 import 'package:unn_mobile/ui/widgets/search/search_overlay.dart';
 
 class ScheduleScreenView extends StatefulWidget {
-  final int? bottomRouteIndex;
-  const ScheduleScreenView({
-    super.key,
-    this.bottomRouteIndex,
-  });
+  const ScheduleScreenView({super.key});
 
   @override
   State<ScheduleScreenView> createState() => _ScheduleScreenViewState();
@@ -44,13 +40,9 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView> {
   @override
   void initState() {
     super.initState();
-    _viewModel = widget.bottomRouteIndex == null
-        ? Injector.appInstance.get<ScheduleScreenViewModel>()
-        : Injector.appInstance
-            .get<MainPageRoutesViewModelsFactory>()
-            .getViewModelByRouteIndex<ScheduleScreenViewModel>(
-              widget.bottomRouteIndex!,
-            );
+    _viewModel = Injector.appInstance
+        .get<MainPageRoutesViewModelsFactory>()
+        .getViewModel<ScheduleScreenViewModel>();
     _search = AppSearchController<ScheduleSearchSuggestionItem>(
       loader: (query) async =>
           (await _viewModel.currentTab?.getSuggestions(query)) ??

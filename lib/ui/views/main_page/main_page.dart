@@ -9,7 +9,6 @@ import 'package:unn_mobile/core/viewmodels/main_page/main_page_view_model.dart';
 import 'package:unn_mobile/ui/router.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
 import 'package:unn_mobile/ui/views/main_page/main_page_navigation_bar.dart';
-import 'package:unn_mobile/ui/views/main_page/main_page_routing.dart';
 import 'package:unn_mobile/ui/widgets/dialogs/analytics_confirm_dialog.dart';
 import 'package:unn_mobile/ui/widgets/dialogs/changelog_dialog.dart';
 
@@ -46,7 +45,9 @@ class MainPageState extends State<MainPage> {
 
   bool isRootScreen(BuildContext context) {
     final location = GoRouterState.of(context).uri.path;
-    return MainPageRouting.navbarRoutes
+    return AppRouter.of(context)
+        .configuration
+        .tabs
         .any((r) => mainPageTabLocation(r.pagePath) == location);
   }
 
@@ -58,30 +59,27 @@ class MainPageState extends State<MainPage> {
             builder: (context) => widget.shell,
           ),
           bottomNavigationBar: MainPageNavigationBar(
-            routes: [...MainPageRouting.navbarRoutes, ...model.routes],
+            routes: AppRouter.of(context).configuration.destinations,
             onDestinationSelected: (route) {
-              final value = MainPageRouting.navbarRoutes.indexWhere(
-                (destination) => destination.pagePath == route.pagePath,
-              );
-              if (value < 0) {
-                if (route.isDisabled || (route.onlineOnly && !model.isOnline)) {
-                  return;
-                }
-                context.go(
-                  mainPageDestinationLocation(route.pagePath),
-                );
+              if (route.isDisabled || (route.onlineOnly && !model.isOnline)) {
                 return;
               }
-              final currentRouteIndex = widget.shell.currentIndex;
-              if (value == currentRouteIndex && isRootScreen(context)) {
-                if (value != MainPageRouting.moreTabIndex) {
-                  model.refreshTab(value);
-                }
+              final index = AppRouter.of(context).configuration.tabs.indexWhere(
+                    (destination) => destination.pagePath == route.pagePath,
+                  );
+              if (index < 0) {
+                AppRouter.of(context)
+                    .goToDestination(route.pagePath, initialLocation: true);
                 return;
               }
-              widget.shell.goBranch(
-                value,
-                initialLocation: value == currentRouteIndex,
+              final currentIndex = widget.shell.currentIndex;
+              if (index == currentIndex && isRootScreen(context)) {
+                route.onReselect?.call();
+                return;
+              }
+              AppRouter.of(context).goToDestination(
+                route.pagePath,
+                initialLocation: index == currentIndex,
               );
             },
           ),

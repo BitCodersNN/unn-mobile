@@ -8,9 +8,7 @@ import 'package:webview_flutter/webview_flutter.dart';
 import 'package:webview_flutter_android/webview_flutter_android.dart';
 
 class DonationsScreenView extends StatefulWidget {
-  final int? bottomRouteIndex;
-
-  const DonationsScreenView({super.key, this.bottomRouteIndex});
+  const DonationsScreenView({super.key});
 
   @override
   State<DonationsScreenView> createState() => _DonationsScreenViewState();

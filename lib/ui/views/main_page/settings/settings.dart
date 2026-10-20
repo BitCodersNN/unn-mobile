@@ -4,22 +4,17 @@
 import 'package:adaptive_dialog/adaptive_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:provider/provider.dart';
 import 'package:unn_mobile/core/misc/app_version.dart';
-import 'package:unn_mobile/core/viewmodels/main_page/main_page_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/settings/settings_screen_view_model.dart';
 import 'package:unn_mobile/ui/router.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
-import 'package:unn_mobile/ui/views/main_page/main_page_routing.dart';
 import 'package:unn_mobile/ui/views/main_page/tab_bar_customization_sheet.dart';
 
 class SettingsScreenView extends StatelessWidget {
-  final int? bottomRouteIndex;
   final bool hasAccount;
 
   const SettingsScreenView({
     super.key,
-    this.bottomRouteIndex,
     this.hasAccount = true,
   });
 
@@ -81,12 +76,9 @@ class SettingsScreenView extends StatelessWidget {
                             subtitle: const Text('Настроить нижнее меню'),
                             trailing: const Icon(Icons.chevron_right),
                             onTap: () async {
-                              final mainModel =
-                                  context.read<MainPageViewModel>();
-                              final routes = [
-                                ...MainPageRouting.navbarRoutes,
-                                ...mainModel.routes,
-                              ];
+                              final routes = AppRouter.of(context)
+                                  .configuration
+                                  .destinations;
                               await showTabBarCustomizationSheet(
                                 context,
                                 routes: routes,

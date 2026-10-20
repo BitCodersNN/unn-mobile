@@ -9,7 +9,8 @@ import 'package:unn_mobile/core/misc/app_settings.dart';
 import 'package:unn_mobile/core/misc/haptic_utils.dart';
 import 'package:unn_mobile/core/misc/tab_bar_preferences.dart';
 import 'package:unn_mobile/ui/main_page_locations.dart';
-import 'package:unn_mobile/ui/views/main_page/main_page_routing.dart';
+import 'package:unn_mobile/ui/main_page_route_configuration.dart';
+import 'package:unn_mobile/ui/views/main_page/main_page_route_data.dart';
 import 'package:unn_mobile/ui/views/main_page/tab_bar_context_menu.dart';
 import 'package:unn_mobile/ui/views/main_page/tab_bar_context_menu_session.dart';
 import 'package:unn_mobile/ui/views/main_page/tab_bar_customization_sheet.dart';
@@ -52,14 +53,12 @@ class _MainPageNavigationBarState extends State<MainPageNavigationBar> {
     return ValueListenableBuilder<List<String>>(
       valueListenable: widget.paths ?? AppSettings.tabBarPaths,
       builder: (context, savedPaths, _) {
-        final routesByPath = {
-          for (final route in widget.routes) route.pagePath: route,
-        };
-        final paths = TabBarPreferences.normalize(
-          savedPaths,
-          allowed: routesByPath.keys,
+        final configuration = MainPageRouteConfiguration(
+          routes: widget.routes,
+          paths: savedPaths,
         );
-        final visible = paths.map((path) => routesByPath[path]!).toList();
+        final paths = configuration.paths;
+        final visible = configuration.tabs;
         return MediaQuery.withNoTextScaling(
           child: CupertinoTabBar(
             key: _barKey,
@@ -138,14 +137,10 @@ class _MainPageNavigationBarState extends State<MainPageNavigationBar> {
         context,
         session: session,
         routes: widget.routes,
+        onReorder: _saveOrder,
       );
       if (result == null) {
         return;
-      }
-      if (!listEquals(result.paths, paths)) {
-        if (!await _saveOrder(result.paths)) {
-          return;
-        }
       }
       if (!context.mounted) {
         return;
@@ -175,7 +170,6 @@ class _MainPageNavigationBarState extends State<MainPageNavigationBar> {
   Future<bool> _saveOrder(List<String> paths) async {
     try {
       await widget.savePaths(paths);
-      return true;
     } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -184,5 +178,6 @@ class _MainPageNavigationBarState extends State<MainPageNavigationBar> {
       }
       return false;
     }
+    return true;
   }
 }

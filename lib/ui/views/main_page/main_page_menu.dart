@@ -4,13 +4,11 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-import 'package:unn_mobile/core/misc/app_settings.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/common/profile_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/main_page_view_model.dart';
 import 'package:unn_mobile/ui/builders/online_status_builder.dart';
 import 'package:unn_mobile/ui/router.dart';
-import 'package:unn_mobile/ui/views/main_page/main_page_routing.dart';
+import 'package:unn_mobile/ui/views/main_page/main_page_route_data.dart';
 import 'package:unn_mobile/ui/widgets/shimmer_loading.dart';
 
 class MainPageMenu extends StatelessWidget {
@@ -26,71 +24,69 @@ class MainPageMenu extends StatelessWidget {
       body: ListenableBuilder(
         listenable: model,
         builder: (context, _) => OnlineStatusBuilder(
-          builder: (context, isOnline) => ValueListenableBuilder<List<String>>(
-            valueListenable: AppSettings.tabBarPaths,
-            builder: (context, paths, _) {
-              final routes = [
-                for (final route in MainPageRouting.navbarRoutes)
-                  if (route.pagePath != 'more' &&
-                      !paths.contains(route.pagePath))
-                    route,
-                for (final route in model.routes)
-                  if (!route.onlineOnly || isOnline) route,
-              ];
-              return SafeArea(
-                bottom: false,
-                child: ScrollConfiguration(
-                  behavior: ScrollConfiguration.of(context)
-                      .copyWith(overscroll: false),
-                  child: SingleChildScrollView(
-                    padding: const EdgeInsets.fromLTRB(16, 24, 16, 32),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Semantics(
-                          button: true,
-                          label: 'Открыть мой профиль',
-                          child: CupertinoButton(
-                            padding: EdgeInsets.zero,
-                            pressedOpacity: 0.75,
-                            onPressed: () => context.go(
-                              mainPageDestinationLocation('myProfile'),
-                            ),
-                            child: _buildProfile(context),
+          builder: (context, isOnline) {
+            final configuration = AppRouter.of(context).configuration;
+            final routes = configuration.tabs.last.subroutes
+                .where(
+                  (route) =>
+                      !route.isDisabled && (!route.onlineOnly || isOnline),
+                )
+                .toList(growable: false);
+            return SafeArea(
+              bottom: false,
+              child: ScrollConfiguration(
+                behavior:
+                    ScrollConfiguration.of(context).copyWith(overscroll: false),
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.fromLTRB(16, 24, 16, 32),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Semantics(
+                        button: true,
+                        label: 'Открыть мой профиль',
+                        child: CupertinoButton(
+                          padding: EdgeInsets.zero,
+                          pressedOpacity: 0.75,
+                          onPressed: () =>
+                              AppRouter.of(context).goToDestination(
+                            'myProfile',
+                            initialLocation: true,
                           ),
+                          child: _buildProfile(context),
                         ),
-                        const SizedBox(height: 36),
-                        Material(
-                          color: theme.colorScheme.surfaceContainerLow,
-                          borderRadius: BorderRadius.circular(24),
-                          clipBehavior: Clip.antiAlias,
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              for (var index = 0;
-                                  index < routes.length;
-                                  index++) ...[
-                                if (index > 0)
-                                  Divider(
-                                    height: 1,
-                                    thickness: 0.5,
-                                    indent: 56,
-                                    endIndent: 16,
-                                    color: theme.colorScheme.outlineVariant
-                                        .withValues(alpha: 0.6),
-                                  ),
-                                _buildDestination(context, routes[index]),
-                              ],
+                      ),
+                      const SizedBox(height: 36),
+                      Material(
+                        color: theme.colorScheme.surfaceContainerLow,
+                        borderRadius: BorderRadius.circular(24),
+                        clipBehavior: Clip.antiAlias,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            for (int index = 0;
+                                index < routes.length;
+                                index++) ...[
+                              if (index > 0)
+                                Divider(
+                                  height: 1,
+                                  thickness: 0.5,
+                                  indent: 56,
+                                  endIndent: 16,
+                                  color: theme.colorScheme.outlineVariant
+                                      .withValues(alpha: 0.6),
+                                ),
+                              _buildDestination(context, routes[index]),
                             ],
-                          ),
+                          ],
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
-              );
-            },
-          ),
+              ),
+            );
+          },
         ),
       ),
     );
@@ -114,9 +110,8 @@ class MainPageMenu extends StatelessWidget {
         color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
       ),
       enabled: !route.isDisabled,
-      onTap: () => context.go(
-        mainPageDestinationLocation(route.pagePath),
-      ),
+      onTap: () => AppRouter.of(context)
+          .goToDestination(route.pagePath, initialLocation: true),
     );
   }
 

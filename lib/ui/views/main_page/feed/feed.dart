@@ -14,8 +14,7 @@ import 'package:unn_mobile/ui/views/main_page/main_page_tab_state.dart';
 import 'package:unn_mobile/ui/widgets/offline_overlay_displayer.dart';
 
 class FeedScreenView extends StatefulWidget {
-  final int? bottomRouteIndex;
-  const FeedScreenView({required this.bottomRouteIndex, super.key});
+  const FeedScreenView({super.key});
 
   @override
   State<FeedScreenView> createState() => FeedScreenViewState();
@@ -32,13 +31,9 @@ class FeedScreenViewState extends State<FeedScreenView>
   void initState() {
     super.initState();
 
-    _viewModel = widget.bottomRouteIndex == null
-        ? Injector.appInstance.get<FeedScreenViewModel>()
-        : Injector.appInstance
-            .get<MainPageRoutesViewModelsFactory>()
-            .getViewModelByRouteIndex<FeedScreenViewModel>(
-              widget.bottomRouteIndex!,
-            );
+    _viewModel = Injector.appInstance
+        .get<MainPageRoutesViewModelsFactory>()
+        .getViewModel<FeedScreenViewModel>();
 
     _scrollController = ScrollController(
       initialScrollOffset: _viewModel.scrollPosition,
@@ -46,17 +41,19 @@ class FeedScreenViewState extends State<FeedScreenView>
     );
     _textEditingController = TextEditingController();
 
-    _viewModel.scrollToTop = () {
-      if (_scrollController.hasClients) {
-        _scrollController.animateTo(
-          0,
-          duration: Durations.medium1,
-          curve: Curves.decelerate,
-        );
-      }
-    };
+    _viewModel.scrollToTop = _scrollToTop;
     _viewModel.onRefresh = refreshTab;
     _scrollController.addListener(scrollUpdate);
+  }
+
+  void _scrollToTop() {
+    if (_scrollController.hasClients) {
+      _scrollController.animateTo(
+        0,
+        duration: Durations.medium1,
+        curve: Curves.decelerate,
+      );
+    }
   }
 
   void scrollUpdate() {
@@ -399,8 +396,12 @@ class FeedScreenViewState extends State<FeedScreenView>
 
   @override
   void dispose() {
-    _viewModel.scrollToTop = null;
-    _viewModel.onRefresh = null;
+    if (_viewModel.scrollToTop == _scrollToTop) {
+      _viewModel.scrollToTop = null;
+    }
+    if (_viewModel.onRefresh == refreshTab) {
+      _viewModel.onRefresh = null;
+    }
     _textEditingController.dispose();
     _scrollController
       ..removeListener(scrollUpdate)

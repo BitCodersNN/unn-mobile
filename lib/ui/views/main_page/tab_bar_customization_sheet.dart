@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:unn_mobile/core/misc/app_settings.dart';
 import 'package:unn_mobile/core/misc/tab_bar_preferences.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/tab_bar_customization_view_model.dart';
-import 'package:unn_mobile/ui/views/main_page/main_page_routing.dart';
+import 'package:unn_mobile/ui/views/main_page/main_page_route_data.dart';
 import 'package:unn_mobile/ui/views/main_page/tab_bar_item_content.dart';
 import 'package:unn_mobile/ui/views/main_page/tab_bar_reorder_preview.dart';
 
