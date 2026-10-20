@@ -10,7 +10,6 @@ import 'package:unn_mobile/core/viewmodels/factories/main_page_routes_view_model
 import 'package:unn_mobile/core/viewmodels/main_page/source/source_page_view_model.dart';
 import 'package:unn_mobile/ui/builders/online_status_builder.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
-import 'package:unn_mobile/ui/views/main_page/main_page.dart';
 import 'package:unn_mobile/ui/views/main_page/source/source_course_view.dart';
 import 'package:unn_mobile/ui/views/main_page/source/source_webinar_view.dart';
 import 'package:unn_mobile/ui/widgets/offline_overlay_displayer.dart';
@@ -18,17 +17,13 @@ import 'package:unn_mobile/ui/widgets/offline_overlay_displayer.dart';
 class SourcePageView extends StatelessWidget {
   static const _selectSemesterKey = 'selectSemester';
 
-  final int? bottomRouteIndex;
-
-  const SourcePageView({super.key, this.bottomRouteIndex});
+  const SourcePageView({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final viewModel = bottomRouteIndex == null
-        ? null
-        : Injector.appInstance
-            .get<MainPageRoutesViewModelsFactory>()
-            .getViewModelByRouteIndex<SourcePageViewModel>(bottomRouteIndex!);
+    final viewModel = Injector.appInstance
+        .get<MainPageRoutesViewModelsFactory>()
+        .getViewModel<SourcePageViewModel>();
     return OfflineOverlayDisplayer(
       child: OnlineStatusBuilder(
         builder: (context, online) => BaseView<SourcePageViewModel>(
@@ -98,7 +93,6 @@ class SourcePageView extends StatelessWidget {
                       },
                     ),
                 ],
-                leading: getSubpageLeading(bottomRouteIndex),
               ),
               body: TabBarView(
                 children: [

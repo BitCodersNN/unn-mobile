@@ -1,9 +1,13 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2025 BitCodersNN
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:unn_mobile/core/misc/app_settings.dart';
+import 'package:unn_mobile/core/misc/tab_bar_preferences.dart';
+import 'package:unn_mobile/ui/main_page_locations.dart';
+import 'package:unn_mobile/ui/main_page_route_configuration.dart';
 import 'package:unn_mobile/ui/views/auth_page/auth_page.dart';
 import 'package:unn_mobile/ui/views/loading_page/loading_page.dart';
 import 'package:unn_mobile/ui/views/main_page/about/about.dart';
@@ -12,111 +16,232 @@ import 'package:unn_mobile/ui/views/main_page/main_page.dart';
 import 'package:unn_mobile/ui/views/main_page/main_page_routing.dart';
 import 'package:unn_mobile/ui/views/main_page/settings/settings.dart';
 
-const loadingPageRoute = '/';
-const mainPageRoute = '/main';
-const authPageRoute = '/auth';
-const drawerRoutePrefix = 'drawer';
+export 'package:unn_mobile/ui/main_page_locations.dart';
 
-const settingsPath = 'settings';
-const aboutPath = 'about';
-const supportPath = 'support';
+class AppRouter extends ChangeNotifier {
+  final ValueListenable<List<String>> _tabPaths;
+  final ValueListenable<Type>? _userType;
+  final List<MainPageRouteData> _routes;
+  final StatefulShellRouteBuilder? _shellBuilder;
+  final GlobalKey<StatefulNavigationShellState> _shellKey =
+      GlobalKey<StatefulNavigationShellState>();
+  final Map<String, ({MainPageRouteData route, StatefulShellBranch branch})>
+      _branches = {};
+  final Map<String, ({Uri uri, Object? extra})> _locations = {};
+  late MainPageRouteConfiguration _configuration;
+  late final ValueNotifier<RoutingConfig> _routingConfig;
+  late final GoRouter _router;
 
-final shellBranchKeys = [
-  for (final route in MainPageRouting.navbarRoutes)
-    (key: GlobalKey<NavigatorState>(), route: route),
-];
+  AppRouter({
+    ValueListenable<List<String>>? tabPaths,
+    ValueListenable<Type>? userType,
+    List<MainPageRouteData>? routes,
+    StatefulShellRouteBuilder? shellBuilder,
+    String initialLocation = loadingPageRoute,
+  })  : _tabPaths = tabPaths ?? AppSettings.tabBarPaths,
+        _userType = userType,
+        _routes = List.unmodifiable(routes ?? mainPageRoutes),
+        _shellBuilder = shellBuilder {
+    _configuration = _buildConfiguration();
+    _routingConfig = ValueNotifier(_buildRoutingConfig());
+    _router = GoRouter.routingConfig(
+      routingConfig: _routingConfig,
+      initialLocation: initialLocation,
+    );
+    _router.routerDelegate.addListener(_rememberLocation);
+    _tabPaths.addListener(_updateRoutes);
+    _userType?.addListener(_updateRoutes);
+  }
 
-final mainPageKey = GlobalKey<MainPageState>();
+  static AppRouter of(BuildContext context) =>
+      context.dependOnInheritedWidgetOfExactType<AppRouterScope>()!.notifier!;
 
-final mainRouter = GoRouter(
-  initialLocation: loadingPageRoute,
-  initialExtra: <String, Object>{},
-  routes: [
-    GoRoute(
-      path: loadingPageRoute,
-      pageBuilder: (context, state) => const NoTransitionPage(
-        child: LoadingPage(),
-      ),
-    ),
-    GoRoute(
-      path: authPageRoute,
-      name: 'auth',
-      builder: (context, state) => const AuthPage(),
+  GoRouter get router => _router;
+  MainPageRouteConfiguration get configuration => _configuration;
+
+  String locationFor(String path) => _configuration.locationFor(path);
+
+  void goToDestination(String path, {bool initialLocation = false}) {
+    if (!_configuration.containsDestination(path)) {
+      return;
+    }
+    final saved = initialLocation ? null : _locations[path];
+    if (saved != null) {
+      final destination = mainPageDestinationPath(saved.uri);
+      if (destination != null &&
+          _configuration.containsDestination(destination) &&
+          (path != TabBarPreferences.morePath ||
+              destination == TabBarPreferences.morePath ||
+              !_configuration.paths.contains(destination))) {
+        _router.go(
+          _configuration.relocate(saved.uri).toString(),
+          extra: saved.extra,
+        );
+        return;
+      }
+    }
+    _router.go(locationFor(path));
+  }
+
+  void _rememberLocation() {
+    final matches = _router.routerDelegate.currentConfiguration;
+    if (matches.isEmpty || matches.isError) {
+      return;
+    }
+    final destination = mainPageDestinationPath(matches.uri);
+    if (destination == null) {
+      _locations.clear();
+      return;
+    }
+    final location = (uri: matches.uri, extra: matches.extra);
+    _locations[destination] = location;
+    if (!_configuration.paths.contains(destination) ||
+        destination == TabBarPreferences.morePath) {
+      _locations[TabBarPreferences.morePath] = location;
+    }
+  }
+
+  MainPageRouteConfiguration _buildConfiguration() =>
+      MainPageRouteConfiguration(
+        routes: _routes,
+        paths: _tabPaths.value,
+        userType: _userType?.value,
+      );
+
+  void _updateRoutes() {
+    final next = _buildConfiguration();
+    if (listEquals(_configuration.paths, next.paths) &&
+        listEquals(_configuration.destinations, next.destinations)) {
+      return;
+    }
+    final matches = _router.routerDelegate.currentConfiguration;
+    final information = _router.routeInformationProvider.value;
+    final uri = information.uri;
+    final state = information.state;
+    final extra = state is RouteInformationState ? state.extra : matches.extra;
+    _configuration = next;
+    _locations.removeWhere((path, _) => !next.containsDestination(path));
+    _routingConfig.value = _buildRoutingConfig();
+    final relocated = next.relocate(uri);
+    if (relocated != uri || uri != matches.uri) {
+      _router.go(relocated.toString(), extra: extra);
+    }
+    notifyListeners();
+  }
+
+  StatefulShellBranch _branchFor(MainPageRouteData route) {
+    final existing = _branches[route.pagePath];
+    if (existing != null &&
+        existing.route.builder == route.builder &&
+        listEquals(existing.route.subroutes, route.subroutes)) {
+      return existing.branch;
+    }
+    final branch = StatefulShellBranch(
       routes: [
         GoRoute(
-          path: settingsPath,
-          name: 'settings',
-          builder: (_, __) => const SettingsScreenView(
-            hasAccount: false,
+          path: _configuration.locationFor(route.pagePath),
+          name: route.pageTitle,
+          pageBuilder: (context, state) => NoTransitionPage(
+            key: ValueKey(route.pagePath),
+            child: route.builder(context, state),
           ),
-        ),
-        GoRoute(
-          path: aboutPath,
-          name: 'about',
-          builder: (_, __) => const AboutScreenView(),
-        ),
-        GoRoute(
-          path: supportPath,
-          name: 'support',
-          builder: (_, __) => const DonationsScreenView(),
+          routes: _buildSubroutes(route.subroutes),
         ),
       ],
-    ),
-    StatefulShellRoute.indexedStack(
-      builder: (context, state, shell) => MainPage(
-        key: mainPageKey,
-        shell: shell,
-      ),
-      branches: [
-        for (final route in shellBranchKeys)
-          StatefulShellBranch(
-            navigatorKey: route.key,
+    );
+    _branches[route.pagePath] = (route: route, branch: branch);
+    return branch;
+  }
+
+  String? _redirect(BuildContext context, GoRouterState state) {
+    if (state.uri.path == mainPageRoute) {
+      return locationFor(_configuration.paths.first);
+    }
+    final destination = mainPageDestinationPath(state.uri);
+    if (destination == null) {
+      return null;
+    }
+    if (!_configuration.containsDestination(destination)) {
+      return locationFor(_configuration.paths.first);
+    }
+    final canonical = _configuration.relocate(state.uri);
+    return canonical == state.uri ? null : canonical.toString();
+  }
+
+  RoutingConfig _buildRoutingConfig() => RoutingConfig(
+        routes: [
+          GoRoute(
+            path: loadingPageRoute,
+            pageBuilder: (context, state) =>
+                const NoTransitionPage(child: LoadingPage()),
+          ),
+          GoRoute(
+            path: authPageRoute,
+            name: 'auth',
+            builder: (context, state) => const AuthPage(),
             routes: [
               GoRoute(
-                path: '$mainPageRoute${route.route.pagePath}',
-                name: route.route.pageTitle,
-                pageBuilder: (context, state) => NoTransitionPage(
-                  child: route.route.builder(context, state),
-                ),
-                routes: [
-                  ..._buildSubroutes(
-                    MainPageRouting.drawerRoutes,
-                    prefix: '$drawerRoutePrefix/',
-                  ),
-                  ..._buildSubroutes(route.route.subroutes),
-                ],
+                path: settingsPath,
+                name: 'settings',
+                builder: (_, __) => const SettingsScreenView(hasAccount: false),
+              ),
+              GoRoute(
+                path: aboutPath,
+                name: 'about',
+                builder: (_, __) => const AboutScreenView(),
+              ),
+              GoRoute(
+                path: supportPath,
+                name: 'support',
+                builder: (_, __) => const DonationsScreenView(),
               ),
             ],
           ),
-      ],
-    ),
-  ],
-  redirect: (context, state) {
-    if (state.uri.path == mainPageRoute) {
-      final pageIndex =
-          AppSettings.initialPage < MainPageRouting.activeNavbarRoutes.length
-              ? AppSettings.initialPage
-              : 0;
-      return mainPageRoute +
-          MainPageRouting.navbarRoutes
-              .where((r) => !r.isDisabled)
-              .toList()[pageIndex]
-              .pagePath;
-    }
-    return null;
-  },
-);
-
-List<GoRoute> _buildSubroutes(
-  List<MainPageRouteData> routes, {
-  String prefix = '',
-}) =>
-    routes
-        .map(
-          (route) => GoRoute(
-            path: '$prefix${route.pagePath}',
-            builder: (context, state) => route.builder(context, state),
-            routes: _buildSubroutes(route.subroutes),
+          StatefulShellRoute.indexedStack(
+            key: _shellKey,
+            pageBuilder: (context, state, shell) => NoTransitionPage(
+              key: const ValueKey('main-shell'),
+              child: AppRouterScope(
+                router: this,
+                child: Builder(
+                  builder: (context) =>
+                      _shellBuilder?.call(context, state, shell) ??
+                      MainPage(shell: shell),
+                ),
+              ),
+            ),
+            branches: [
+              for (final route in _configuration.tabs) _branchFor(route),
+            ],
           ),
-        )
-        .toList(growable: false);
+        ],
+        redirect: _redirect,
+      );
+
+  @override
+  void dispose() {
+    _tabPaths.removeListener(_updateRoutes);
+    _userType?.removeListener(_updateRoutes);
+    _router.routerDelegate.removeListener(_rememberLocation);
+    _router.dispose();
+    _routingConfig.dispose();
+    super.dispose();
+  }
+}
+
+class AppRouterScope extends InheritedNotifier<AppRouter> {
+  const AppRouterScope({
+    required AppRouter router,
+    required super.child,
+    super.key,
+  }) : super(notifier: router);
+}
+
+List<GoRoute> _buildSubroutes(List<MainPageRouteData> routes) => [
+      for (final route in routes)
+        GoRoute(
+          path: route.pagePath,
+          builder: route.builder,
+          routes: _buildSubroutes(route.subroutes),
+        ),
+    ];

@@ -678,10 +678,7 @@ void registerDependencies() {
       ),
     )
     ..registerDependency(
-      () => MainPageViewModel(
-        get<CurrentUserSyncStorage>(),
-        get<OnlineStatusData>(),
-      ),
+      () => MainPageViewModel(get<OnlineStatusData>()),
     )
     ..registerDependency(
       () => CertificatesViewModel(get<CertificatesService>()),

@@ -13,14 +13,12 @@ import 'package:unn_mobile/core/models/dialog/dialog.dart' as d;
 import 'package:unn_mobile/core/models/dialog/preview_dialog.dart';
 import 'package:unn_mobile/core/viewmodels/factories/main_page_routes_view_models_factory.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/chat/chat_screen_view_model.dart';
+import 'package:unn_mobile/ui/router.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
 import 'package:unn_mobile/ui/views/main_page/chat/widgets/unread_badge.dart';
-import 'package:unn_mobile/ui/views/main_page/main_page.dart';
 
 class ChatScreenView extends StatefulWidget {
-  const ChatScreenView({super.key, this.bottomRouteIndex = 2});
-
-  final int? bottomRouteIndex;
+  const ChatScreenView({super.key});
 
   @override
   State<ChatScreenView> createState() => _ChatScreenViewState();
@@ -29,19 +27,14 @@ class ChatScreenView extends StatefulWidget {
 class _ChatScreenViewState extends State<ChatScreenView> {
   @override
   Widget build(BuildContext context) {
-    final viewModel = widget.bottomRouteIndex == null
-        ? null
-        : Injector.appInstance
-            .get<MainPageRoutesViewModelsFactory>()
-            .getViewModelByRouteIndex<ChatScreenViewModel>(
-              widget.bottomRouteIndex!,
-            );
+    final viewModel = Injector.appInstance
+        .get<MainPageRoutesViewModelsFactory>()
+        .getViewModel<ChatScreenViewModel>();
     return BaseView<ChatScreenViewModel>(
       builder: (context, model, child) => Scaffold(
         appBar: AppBar(
           title: const Text('Сообщения'),
           forceMaterialTransparency: true,
-          leading: getSubpageLeading(widget.bottomRouteIndex),
           actions: [
             if (!model.isBusy)
               SearchAnchor(
@@ -168,7 +161,7 @@ class _ChatScreenViewState extends State<ChatScreenView> {
         controller.closeView('');
         model.storedDialogInfo = dialog;
         GoRouter.of(context).go(
-          '${GoRouter.of(context).state.path}/stored',
+          AppRouter.of(context).locationFor('chats/stored'),
         );
       },
     );
@@ -262,7 +255,7 @@ class DialogInfo extends StatelessWidget {
       visualDensity: VisualDensity.adaptivePlatformDensity,
       onTap: () {
         GoRouter.of(context)
-            .go('${GoRouter.of(context).state.path}/${dialog.chatId}');
+            .go(AppRouter.of(context).locationFor('chats/${dialog.chatId}'));
       },
     );
   }
