@@ -10,7 +10,6 @@ import 'package:unn_mobile/core/viewmodels/factories/main_page_routes_view_model
 import 'package:unn_mobile/core/viewmodels/main_page/chat/chat_screen_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/feed/feed_screen_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/main_page_route_view_model.dart';
-import 'package:unn_mobile/core/viewmodels/main_page/main_page_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/schedule/schedule_screen_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/source/source_page_view_model.dart';
 import 'package:unn_mobile/ui/views/main_page/about/about.dart';
@@ -133,9 +132,7 @@ final List<MainPageRouteData> mainPageRoutes = [
     Icons.menu,
     'Ещё',
     MainPagePaths.more,
-    builder: (context, _) => MainPageMenu(
-      model: context.read<MainPageViewModel>(),
-    ),
+    builder: (_, __) => const MainPageMenu(),
     userTypes: [],
   ),
   MainPageRouteData(

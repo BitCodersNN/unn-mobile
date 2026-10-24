@@ -163,7 +163,6 @@ import 'package:unn_mobile/core/viewmodels/main_page/chat/chat_inside_view_model
 import 'package:unn_mobile/core/viewmodels/main_page/chat/chat_screen_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/feed/feed_screen_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/grades/grades_screen_view_model.dart';
-import 'package:unn_mobile/core/viewmodels/main_page/main_page_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/schedule/schedule_screen_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/settings/settings_screen_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/source/source_page_view_model.dart';
@@ -680,9 +679,6 @@ void registerDependencies() {
         get<UnnAuthService>(),
         get<LoggerService>(),
       ),
-    )
-    ..registerDependency(
-      MainPageViewModel.new,
     )
     ..registerDependency(
       () => CertificatesViewModel(get<CertificatesService>()),
