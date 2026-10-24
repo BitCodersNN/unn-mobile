@@ -19,7 +19,7 @@ class MainPageMenu extends StatefulWidget {
 }
 
 class _MainPageMenuState extends State<MainPageMenu> {
-  late final ProfileViewModel _profile = ProfileViewModel.currentUser();
+  late final _profile = ProfileViewModel.currentUser();
 
   @override
   void dispose() {
