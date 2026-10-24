@@ -30,103 +30,102 @@ class SettingsScreenView extends StatelessWidget {
         builder: (context, model, _) => Column(
           children: [
             Expanded(
-              child: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    ...ListTile.divideTiles(
-                      context: context,
-                      tiles: [
+              child: ListView(
+                padding: EdgeInsets.zero,
+                children: [
+                  ...ListTile.divideTiles(
+                    context: context,
+                    tiles: [
+                      SwitchListTile.adaptive(
+                        title: const Text('Вибрация'),
+                        value: model.vibrationEnabled,
+                        onChanged: (value) {
+                          model.vibrationEnabled = value;
+                        },
+                      ),
+                      SwitchListTile.adaptive(
+                        title: const Text('Источник своего расписания'),
+                        subtitle: model.useRaspSchedule
+                            ? const Text('Загружается с rasp.unn.ru')
+                            : const Text('Загружается с Портала'),
+                        value: model.useRaspSchedule,
+                        onChanged: (value) {
+                          model.useRaspSchedule = value;
+                        },
+                      ),
+                      SwitchListTile.adaptive(
+                        title: const Text('Сбор телеметрии'),
+                        value: model.analyticsEnabled,
+                        onChanged: (value) {
+                          model.analyticsEnabled = value;
+                        },
+                      ),
+                      if (hasAccount) ...[
                         SwitchListTile.adaptive(
-                          title: const Text('Вибрация'),
-                          value: model.vibrationEnabled,
+                          title: const Text('Порядок комментариев'),
+                          subtitle: model.reverseComments
+                              ? const Text('Сначала новые')
+                              : const Text('Сначала старые'),
+                          value: model.reverseComments,
                           onChanged: (value) {
-                            model.vibrationEnabled = value;
+                            model.reverseComments = value;
                           },
                         ),
-                        SwitchListTile.adaptive(
-                          title: const Text('Источник своего расписания'),
-                          subtitle: model.useRaspSchedule
-                              ? const Text('Загружается с rasp.unn.ru')
-                              : const Text('Загружается с Портала'),
-                          value: model.useRaspSchedule,
-                          onChanged: (value) {
-                            model.useRaspSchedule = value;
-                          },
-                        ),
-                        SwitchListTile.adaptive(
-                          title: const Text('Сбор телеметрии'),
-                          value: model.analyticsEnabled,
-                          onChanged: (value) {
-                            model.analyticsEnabled = value;
-                          },
-                        ),
-                        if (hasAccount) ...[
-                          SwitchListTile.adaptive(
-                            title: const Text('Порядок комментариев'),
-                            subtitle: model.reverseComments
-                                ? const Text('Сначала новые')
-                                : const Text('Сначала старые'),
-                            value: model.reverseComments,
-                            onChanged: (value) {
-                              model.reverseComments = value;
-                            },
-                          ),
-                          ListTile(
-                            title: const Text('Быстрый доступ'),
-                            subtitle: const Text('Настроить нижнее меню'),
-                            trailing: const Icon(Icons.chevron_right),
-                            onTap: () async {
-                              final routes = AppRouter.of(context)
-                                  .configuration
-                                  .destinations;
-                              await showTabBarCustomizationSheet(
-                                context,
-                                routes: routes,
-                              );
-                            },
-                          ),
-                        ],
                         ListTile(
-                          title: const Text('Очистить кэш'),
+                          title: const Text('Быстрый доступ'),
+                          subtitle: const Text('Настроить нижнее меню'),
+                          trailing: const Icon(Icons.chevron_right),
                           onTap: () async {
-                            await model.clearCache();
-                            if (context.mounted) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('Кэш очищен'),
-                                ),
-                              );
-                            }
+                            final routes = AppRouter.of(context)
+                                .configuration
+                                .destinations;
+                            await showTabBarCustomizationSheet(
+                              context,
+                              routes: routes,
+                            );
                           },
                         ),
-                        if (hasAccount)
-                          ListTile(
-                            title: const Text('Выйти из аккаунта'),
-                            onTap: () async {
-                              if (context.mounted) {
-                                final result = await showOkCancelAlertDialog(
-                                  context: context,
-                                  title: 'Выйти из аккаунта?',
-                                  okLabel: 'Выйти',
-                                  cancelLabel: 'Отмена',
-                                  isDestructiveAction: true,
-                                );
+                      ],
+                      ListTile(
+                        title: const Text('Очистить кэш'),
+                        onTap: () async {
+                          await model.clearCache();
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Кэш очищен'),
+                              ),
+                            );
+                          }
+                        },
+                      ),
+                      if (hasAccount)
+                        ListTile(
+                          title: const Text('Выйти из аккаунта'),
+                          onTap: () async {
+                            if (context.mounted) {
+                              final result = await showOkCancelAlertDialog(
+                                context: context,
+                                title: 'Выйти из аккаунта?',
+                                okLabel: 'Выйти',
+                                cancelLabel: 'Отмена',
+                                isDestructiveAction: true,
+                              );
 
-                                if (result == OkCancelResult.ok &&
-                                    context.mounted) {
-                                  await model.logout();
-                                  if (context.mounted) {
-                                    GoRouter.of(context).go(loadingPageRoute);
-                                  }
+                              if (result == OkCancelResult.ok &&
+                                  context.mounted) {
+                                await model.logout();
+                                if (context.mounted) {
+                                  GoRouter.of(context).go(loadingPageRoute);
                                 }
                               }
-                            },
-                            textColor: theme.colorScheme.error,
-                          ),
-                      ],
-                    ),
-                  ],
-                ),
+                            }
+                          },
+                          textColor: theme.colorScheme.error,
+                        ),
+                    ],
+                  ),
+                ],
               ),
             ),
             Align(
