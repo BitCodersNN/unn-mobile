@@ -9,6 +9,7 @@ import 'package:unn_mobile/core/viewmodels/main_page/common/profile_view_model.d
 import 'package:unn_mobile/ui/builders/online_status_builder.dart';
 import 'package:unn_mobile/ui/router.dart';
 import 'package:unn_mobile/ui/views/main_page/main_page_route_data.dart';
+import 'package:unn_mobile/ui/widgets/shimmer.dart';
 import 'package:unn_mobile/ui/widgets/shimmer_loading.dart';
 
 class MainPageMenu extends StatefulWidget {
@@ -121,9 +122,11 @@ class _MainPageMenuState extends State<MainPageMenu> {
     );
   }
 
-  Widget _buildProfile(BuildContext context) => ListenableBuilder(
-        listenable: _profile,
-        builder: (context, _) => _profileContent(context, _profile),
+  Widget _buildProfile(BuildContext context) => Shimmer(
+        child: ListenableBuilder(
+          listenable: _profile,
+          builder: (context, _) => _profileContent(context, _profile),
+        ),
       );
 
   Widget _profileContent(BuildContext context, ProfileViewModel profile) {

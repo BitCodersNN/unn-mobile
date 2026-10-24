@@ -88,7 +88,6 @@ class _OnlineCertificatesScreenViewState
           final theme = Theme.of(context);
           return Container(
             decoration: BoxDecoration(
-              color: theme.cardColor,
               borderRadius: BorderRadius.circular(16.0),
               boxShadow: const [
                 BoxShadow(
@@ -98,95 +97,87 @@ class _OnlineCertificatesScreenViewState
                 ),
               ],
             ),
-            child: Column(
-              children: [
-                Padding(
-                  padding: EdgeInsets.only(
-                    top: 15.0,
-                    left: 16.0,
-                    right: 16.0,
-                    bottom: model.isViewExpanded ? 0.0 : 15.0,
-                  ),
-                  child: ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    title: Row(
-                      children: [
-                        Text(
-                          model.name,
-                          style: const TextStyle(
-                            fontSize: 17.0,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        if (model.isBusy)
-                          const Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 8.0),
-                            child: SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: CircularProgressIndicator(),
-                            ),
-                          ),
-                      ],
-                    ),
-                    trailing: Icon(
-                      model.isViewExpanded
-                          ? Icons.keyboard_arrow_up
-                          : Icons.keyboard_arrow_down,
-                    ),
-                    onTap: () {
-                      model.isViewExpanded = !model.isViewExpanded;
-                    },
-                  ),
-                ),
-                if (model.isViewExpanded)
+            child: Material(
+              color: theme.cardColor,
+              borderRadius: BorderRadius.circular(16),
+              clipBehavior: Clip.antiAlias,
+              child: Column(
+                children: [
                   Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          model.description,
-                          style: const TextStyle(fontSize: 15.0),
-                        ),
-                        if (model.isPractice) ...[
-                          _extraField('Тип практики: ', model.practiceType),
-                          _extraField(
-                            'Название практики: ',
-                            model.practiceName,
-                          ),
-                          _extraField('Даты проведения: ', model.practiceDates),
-                        ],
-                        const SizedBox(height: 35.0),
-                        WideButton(
-                          onPressed: model.isBusy
-                              ? null
-                              : () async {
-                                  if (model.downloadAvailable) {
-                                    await model.download();
-                                  } else {
-                                    await model.askForPath();
-                                  }
-                                },
-                          child: Text(
-                            model.downloadAvailable ? 'Загрузить' : 'Получить',
-                            style: TextStyle(
-                              color: theme.colorScheme.onPrimary,
-                              fontSize: 15.0,
+                    padding: EdgeInsets.only(
+                      top: 15.0,
+                      left: 16.0,
+                      right: 16.0,
+                      bottom: model.isViewExpanded ? 0.0 : 15.0,
+                    ),
+                    child: ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      title: Row(
+                        children: [
+                          Text(
+                            model.name,
+                            style: const TextStyle(
+                              fontSize: 17.0,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                        ),
-                        if (model.downloadAvailable) ...[
-                          const SizedBox(height: 16.0),
+                          if (model.isBusy)
+                            const Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 8.0),
+                              child: SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(),
+                              ),
+                            ),
+                        ],
+                      ),
+                      trailing: Icon(
+                        model.isViewExpanded
+                            ? Icons.keyboard_arrow_up
+                            : Icons.keyboard_arrow_down,
+                      ),
+                      onTap: () {
+                        model.isViewExpanded = !model.isViewExpanded;
+                      },
+                    ),
+                  ),
+                  if (model.isViewExpanded)
+                    Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            model.description,
+                            style: const TextStyle(fontSize: 15.0),
+                          ),
+                          if (model.isPractice) ...[
+                            _extraField('Тип практики: ', model.practiceType),
+                            _extraField(
+                              'Название практики: ',
+                              model.practiceName,
+                            ),
+                            _extraField(
+                              'Даты проведения: ',
+                              model.practiceDates,
+                            ),
+                          ],
+                          const SizedBox(height: 35.0),
                           WideButton(
                             onPressed: model.isBusy
                                 ? null
                                 : () async {
-                                    await model.downloadSig();
+                                    if (model.downloadAvailable) {
+                                      await model.download();
+                                    } else {
+                                      await model.askForPath();
+                                    }
                                   },
                             child: Text(
-                              'Загрузить ЭЦП',
+                              model.downloadAvailable
+                                  ? 'Загрузить'
+                                  : 'Получить',
                               style: TextStyle(
                                 color: theme.colorScheme.onPrimary,
                                 fontSize: 15.0,
@@ -194,11 +185,29 @@ class _OnlineCertificatesScreenViewState
                               ),
                             ),
                           ),
+                          if (model.downloadAvailable) ...[
+                            const SizedBox(height: 16.0),
+                            WideButton(
+                              onPressed: model.isBusy
+                                  ? null
+                                  : () async {
+                                      await model.downloadSig();
+                                    },
+                              child: Text(
+                                'Загрузить ЭЦП',
+                                style: TextStyle(
+                                  color: theme.colorScheme.onPrimary,
+                                  fontSize: 15.0,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ],
                         ],
-                      ],
+                      ),
                     ),
-                  ),
-              ],
+                ],
+              ),
             ),
           );
         },
