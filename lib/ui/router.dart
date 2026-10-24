@@ -13,10 +13,9 @@ import 'package:unn_mobile/ui/views/loading_page/loading_page.dart';
 import 'package:unn_mobile/ui/views/main_page/about/about.dart';
 import 'package:unn_mobile/ui/views/main_page/donations/donations.dart';
 import 'package:unn_mobile/ui/views/main_page/main_page.dart';
+import 'package:unn_mobile/ui/views/main_page/main_page_route_data.dart';
 import 'package:unn_mobile/ui/views/main_page/main_page_routing.dart';
 import 'package:unn_mobile/ui/views/main_page/settings/settings.dart';
-
-export 'package:unn_mobile/ui/main_page_locations.dart';
 
 class AppRouter extends ChangeNotifier {
   final ValueListenable<List<String>> _tabPaths;

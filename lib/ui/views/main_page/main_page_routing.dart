@@ -29,8 +29,6 @@ import 'package:unn_mobile/ui/views/main_page/schedule/schedule_screen_view.dart
 import 'package:unn_mobile/ui/views/main_page/settings/settings.dart';
 import 'package:unn_mobile/ui/views/main_page/source/source.dart';
 
-export 'package:unn_mobile/ui/views/main_page/main_page_route_data.dart';
-
 final MainPageRouteData postCommentsRoute = MainPageRouteData(
   Icons.comment,
   Icons.comment,
