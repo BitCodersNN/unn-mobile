@@ -3,7 +3,7 @@
 
 import 'package:adaptive_dialog/adaptive_dialog.dart';
 import 'package:flutter/material.dart';
-import 'package:injector/injector.dart';
+import 'package:provider/provider.dart';
 import 'package:unn_mobile/core/constants/date_pattern.dart';
 import 'package:unn_mobile/core/misc/date_time_utilities/date_time_extensions.dart';
 import 'package:unn_mobile/core/viewmodels/factories/main_page_routes_view_models_factory.dart';
@@ -21,8 +21,8 @@ class SourcePageView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final viewModel = Injector.appInstance
-        .get<MainPageRoutesViewModelsFactory>()
+    final viewModel = context
+        .read<MainPageRoutesViewModelsFactory>()
         .getOrCreate<SourcePageViewModel>();
     return OfflineOverlayDisplayer(
       child: OnlineStatusBuilder(

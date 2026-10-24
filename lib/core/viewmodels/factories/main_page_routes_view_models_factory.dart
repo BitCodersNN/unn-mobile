@@ -1,29 +1,35 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2025 BitCodersNN
 
-import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation/unn_authorisation_service.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
 
+typedef MainPageViewModelCreator = T Function<T extends BaseViewModel>();
+
 class MainPageRoutesViewModelsFactory {
   final UnnAuthService _authorizationService;
-
+  final MainPageViewModelCreator _createViewModel;
   final Map<Type, BaseViewModel> _viewModels = {};
+  bool _disposed = false;
 
-  MainPageRoutesViewModelsFactory(this._authorizationService) {
-    _authorizationService.addListener(
-      _resetIfUnauthorized,
-    ); // А где отписаться? Я хз) Это должен быть синглтон, надеюсь, ничего не сломается
+  MainPageRoutesViewModelsFactory(
+    this._authorizationService, {
+    required MainPageViewModelCreator createViewModel,
+  }) : _createViewModel = createViewModel {
+    _authorizationService.addListener(_resetIfUnauthorized);
   }
+
   T getOrCreate<T extends BaseViewModel>() {
-    final existing = _viewModels[T];
-    if (existing is T) {
+    if (_disposed) {
+      throw StateError('MainPageRoutesViewModelsFactory is disposed');
+    }
+    final existing = getCached<T>();
+    if (existing != null) {
       return existing;
     }
-
-    final T newInstance = Injector.appInstance.get<T>();
-    _viewModels[T] = newInstance;
-    return newInstance;
+    final model = _createViewModel<T>();
+    _viewModels[T] = model;
+    return model;
   }
 
   T? getCached<T extends BaseViewModel>() {
@@ -32,9 +38,27 @@ class MainPageRoutesViewModelsFactory {
   }
 
   void _resetIfUnauthorized() {
-    if (_authorizationService.isAuthorised) {
+    if (!_authorizationService.isAuthorised) {
+      _clear();
+    }
+  }
+
+  void _clear() {
+    final models = _viewModels.values.toList(growable: false);
+    _viewModels.clear();
+    for (final model in models) {
+      if (!model.disposed) {
+        model.dispose();
+      }
+    }
+  }
+
+  void dispose() {
+    if (_disposed) {
       return;
     }
-    _viewModels.clear();
+    _disposed = true;
+    _authorizationService.removeListener(_resetIfUnauthorized);
+    _clear();
   }
 }

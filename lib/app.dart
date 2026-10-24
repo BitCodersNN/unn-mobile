@@ -2,14 +2,22 @@
 // Copyright 2025 BitCodersNN
 
 import 'package:flutter/material.dart';
-import 'package:injector/injector.dart';
+import 'package:provider/provider.dart';
 import 'package:unn_mobile/core/misc/user/current_user_sync_storage.dart';
 import 'package:unn_mobile/core/models/schedule/subject_type.dart';
+import 'package:unn_mobile/core/viewmodels/factories/main_page_routes_view_models_factory.dart';
 import 'package:unn_mobile/ui/router.dart';
 import 'package:unn_mobile/ui/unn_mobile_colors.dart';
 
 class UnnMobile extends StatefulWidget {
-  const UnnMobile({super.key});
+  final MainPageRoutesViewModelsFactory routesViewModelsFactory;
+  final CurrentUserSyncStorage currentUserStorage;
+
+  const UnnMobile({
+    required this.routesViewModelsFactory,
+    required this.currentUserStorage,
+    super.key,
+  });
 
   @override
   State<UnnMobile> createState() => _UnnMobileState();
@@ -56,19 +64,25 @@ class UnnMobile extends StatefulWidget {
 }
 
 class _UnnMobileState extends State<UnnMobile> {
-  late final AppRouter _router =
-      AppRouter(userType: Injector.appInstance.get<CurrentUserSyncStorage>());
+  late final MainPageRoutesViewModelsFactory _routesViewModelsFactory =
+      widget.routesViewModelsFactory;
+  late final AppRouter _router = AppRouter(userType: widget.currentUserStorage);
 
   @override
   void dispose() {
     _router.dispose();
+    _routesViewModelsFactory.dispose();
     super.dispose();
   }
 
   @override
-  Widget build(BuildContext context) => MaterialApp.router(
-        routerConfig: _router.router,
-        theme: widget.buildAppTheme(Brightness.light),
-        themeMode: ThemeMode.system,
+  Widget build(BuildContext context) =>
+      Provider<MainPageRoutesViewModelsFactory>.value(
+        value: _routesViewModelsFactory,
+        child: MaterialApp.router(
+          routerConfig: _router.router,
+          theme: widget.buildAppTheme(Brightness.light),
+          themeMode: ThemeMode.system,
+        ),
       );
 }

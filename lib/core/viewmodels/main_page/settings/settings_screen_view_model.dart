@@ -4,13 +4,22 @@
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:unn_mobile/core/misc/app_settings.dart';
 import 'package:unn_mobile/core/misc/file_helpers/file_functions.dart';
+import 'package:unn_mobile/core/services/interfaces/authorisation/source_authorisation_service.dart';
+import 'package:unn_mobile/core/services/interfaces/authorisation/unn_authorisation_service.dart';
 import 'package:unn_mobile/core/services/interfaces/common/storage_service.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
 
 class SettingsScreenViewModel extends BaseViewModel {
   final StorageService _storageService;
 
-  SettingsScreenViewModel(this._storageService);
+  final UnnAuthService _authorizationService;
+  final SourceAuthService _sourceAuthorizationService;
+
+  SettingsScreenViewModel(
+    this._storageService,
+    this._authorizationService,
+    this._sourceAuthorizationService,
+  );
 
   bool get vibrationEnabled => AppSettings.vibrationEnabled;
 
@@ -60,5 +69,7 @@ class SettingsScreenViewModel extends BaseViewModel {
 
   Future<void> logout() async {
     await clearEverything();
+    _authorizationService.logout();
+    _sourceAuthorizationService.logout();
   }
 }

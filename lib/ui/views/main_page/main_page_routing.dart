@@ -2,7 +2,6 @@
 // Copyright 2025 BitCodersNN
 
 import 'package:flutter/material.dart';
-import 'package:injector/injector.dart';
 import 'package:provider/provider.dart';
 import 'package:unn_mobile/core/constants/main_page_paths.dart';
 import 'package:unn_mobile/core/models/profile/student/student_data.dart';
@@ -192,10 +191,8 @@ final List<MainPageRouteData> mainPageRoutes = [
   ),
 ];
 
-void _refresh<T extends BaseViewModel>() {
-  final model = Injector.appInstance
-      .get<MainPageRoutesViewModelsFactory>()
-      .getCached<T>();
+void _refresh<T extends BaseViewModel>(BuildContext context) {
+  final model = context.read<MainPageRoutesViewModelsFactory>().getCached<T>();
   if (model case final MainPageRouteViewModel routeModel) {
     routeModel.refresh();
   }

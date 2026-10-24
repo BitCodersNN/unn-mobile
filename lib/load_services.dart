@@ -147,6 +147,7 @@ import 'package:unn_mobile/core/services/interfaces/schedule/export_schedule_ser
 import 'package:unn_mobile/core/services/interfaces/schedule/schedule_search_history_service.dart';
 import 'package:unn_mobile/core/services/interfaces/schedule/schedule_service.dart';
 import 'package:unn_mobile/core/viewmodels/auth_page/auth_page_view_model.dart';
+import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/factories/attached_file_view_model_factory.dart';
 import 'package:unn_mobile/core/viewmodels/factories/feed_comment_view_model_factory.dart';
 import 'package:unn_mobile/core/viewmodels/factories/feed_post_view_model_factory.dart';
@@ -648,7 +649,10 @@ void registerDependencies() {
       FeedCommentViewModelFactory.new,
     )
     ..registerSingleton<MainPageRoutesViewModelsFactory>(
-      () => MainPageRoutesViewModelsFactory(get<UnnAuthService>()),
+      () => MainPageRoutesViewModelsFactory(
+        get<UnnAuthService>(),
+        createViewModel: <T extends BaseViewModel>() => get<T>(),
+      ),
     )
 
     // =========================================================================
@@ -706,7 +710,11 @@ void registerDependencies() {
       ),
     )
     ..registerDependency(
-      () => SettingsScreenViewModel(get<StorageService>()),
+      () => SettingsScreenViewModel(
+        get<StorageService>(),
+        get<UnnAuthService>(),
+        get<SourceAuthService>(),
+      ),
     )
     ..registerDependency(
       () => ScheduleScreenViewModel(

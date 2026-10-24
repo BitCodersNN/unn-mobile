@@ -14,7 +14,7 @@ class MainPageRouteData {
   final List<Type> userTypes;
   final List<MainPageRouteData> subroutes;
   final bool onlineOnly;
-  final VoidCallback? onReselect;
+  final ValueChanged<BuildContext>? onReselect;
 
   const MainPageRouteData(
     this.selectedIcon,
@@ -39,7 +39,7 @@ class MainPageRouteData {
     List<Type>? userTypes,
     List<MainPageRouteData>? subroutes,
     bool? onlineOnly,
-    VoidCallback? onReselect,
+    ValueChanged<BuildContext>? onReselect,
   }) =>
       MainPageRouteData(
         selectedIcon ?? this.selectedIcon,

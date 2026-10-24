@@ -5,7 +5,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:html_unescape/html_unescape.dart';
-import 'package:injector/injector.dart';
+import 'package:provider/provider.dart';
 import 'package:unn_mobile/core/constants/date_pattern.dart';
 import 'package:unn_mobile/core/constants/main_page_paths.dart';
 import 'package:unn_mobile/core/misc/date_time_utilities/date_time_extensions.dart';
@@ -28,8 +28,8 @@ class ChatScreenView extends StatefulWidget {
 class _ChatScreenViewState extends State<ChatScreenView> {
   @override
   Widget build(BuildContext context) {
-    final viewModel = Injector.appInstance
-        .get<MainPageRoutesViewModelsFactory>()
+    final viewModel = context
+        .read<MainPageRoutesViewModelsFactory>()
         .getOrCreate<ChatScreenViewModel>();
     return BaseView<ChatScreenViewModel>(
       builder: (context, model, child) => Scaffold(

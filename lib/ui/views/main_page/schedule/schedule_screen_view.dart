@@ -4,7 +4,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:injector/injector.dart';
+import 'package:provider/provider.dart';
 import 'package:unn_mobile/core/constants/date_pattern.dart';
 import 'package:unn_mobile/core/misc/date_time_utilities/date_time_extensions.dart';
 import 'package:unn_mobile/core/misc/date_time_utilities/week_range.dart';
@@ -40,8 +40,8 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView> {
   @override
   void initState() {
     super.initState();
-    _viewModel = Injector.appInstance
-        .get<MainPageRoutesViewModelsFactory>()
+    _viewModel = context
+        .read<MainPageRoutesViewModelsFactory>()
         .getOrCreate<ScheduleScreenViewModel>();
     _search = AppSearchController<ScheduleSearchSuggestionItem>(
       loader: (query) async =>

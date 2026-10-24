@@ -74,7 +74,7 @@ class MainPageState extends State<MainPage> {
               }
               final currentIndex = widget.shell.currentIndex;
               if (index == currentIndex && isRootScreen(context)) {
-                route.onReselect?.call();
+                route.onReselect?.call(context);
                 return;
               }
               AppRouter.of(context).goToDestination(
