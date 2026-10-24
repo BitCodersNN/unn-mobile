@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:html_unescape/html_unescape.dart';
 import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/constants/date_pattern.dart';
+import 'package:unn_mobile/core/constants/main_page_paths.dart';
 import 'package:unn_mobile/core/misc/date_time_utilities/date_time_extensions.dart';
 import 'package:unn_mobile/core/misc/user/user_functions.dart';
 import 'package:unn_mobile/core/models/dialog/dialog.dart' as d;
@@ -161,7 +162,7 @@ class _ChatScreenViewState extends State<ChatScreenView> {
         controller.closeView('');
         model.storedDialogInfo = dialog;
         GoRouter.of(context).go(
-          AppRouter.of(context).locationFor('chats/stored'),
+          AppRouter.of(context).locationFor('${MainPagePaths.chats}/stored'),
         );
       },
     );
@@ -254,8 +255,10 @@ class DialogInfo extends StatelessWidget {
       enableFeedback: true,
       visualDensity: VisualDensity.adaptivePlatformDensity,
       onTap: () {
-        GoRouter.of(context)
-            .go(AppRouter.of(context).locationFor('chats/${dialog.chatId}'));
+        GoRouter.of(context).go(
+          AppRouter.of(context)
+              .locationFor('${MainPagePaths.chats}/${dialog.chatId}'),
+        );
       },
     );
   }

@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2026 BitCodersNN
 
+import 'package:unn_mobile/core/constants/main_page_paths.dart';
 import 'package:unn_mobile/core/misc/tab_bar_preferences.dart';
 import 'package:unn_mobile/ui/main_page_locations.dart';
 import 'package:unn_mobile/ui/views/main_page/main_page_route_data.dart';
@@ -26,13 +27,13 @@ class MainPageRouteConfiguration {
         .toList(growable: false);
     final byPath = {for (final route in available) route.pagePath: route};
     final selected = TabBarPreferences.normalize(paths, allowed: byPath.keys);
-    final more = byPath[TabBarPreferences.morePath]!;
+    final more = byPath[MainPagePaths.more]!;
     return MainPageRouteConfiguration._(
       selected,
       List.unmodifiable(available),
       List.unmodifiable([
         for (final path in selected)
-          if (path == TabBarPreferences.morePath)
+          if (path == MainPagePaths.more)
             more.copyWith(
               subroutes: [
                 ...more.subroutes,
@@ -59,10 +60,10 @@ class MainPageRouteConfiguration {
     if (destination == null) {
       return uri;
     }
-    final index = uri.pathSegments[1] == TabBarPreferences.morePath &&
-            uri.pathSegments.length > 2
-        ? 2
-        : 1;
+    final index =
+        uri.pathSegments[1] == MainPagePaths.more && uri.pathSegments.length > 2
+            ? 2
+            : 1;
     return Uri(
       pathSegments: [
         '',

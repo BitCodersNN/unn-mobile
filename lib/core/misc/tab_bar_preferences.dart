@@ -1,21 +1,22 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2026 BitCodersNN
 
+import 'package:unn_mobile/core/constants/main_page_paths.dart';
+
 typedef TabBarPathsSaver = Future<void> Function(List<String> paths);
 
 class TabBarPreferences {
-  static const morePath = 'more';
   static const minTabs = 3;
   static const maxTabs = 5;
   static const editableSlotCount = maxTabs - 1;
   static const requiredSlotCount = minTabs - 1;
 
   static const defaultPaths = [
-    'feed',
-    'schedule',
-    'chats',
-    'source',
-    morePath,
+    MainPagePaths.feed,
+    MainPagePaths.schedule,
+    MainPagePaths.chats,
+    MainPagePaths.source,
+    MainPagePaths.more,
   ];
 
   static List<T> reordered<T>(Iterable<T> items, int from, int to) {
@@ -35,7 +36,7 @@ class TabBarPreferences {
           (path) =>
               path.isNotEmpty &&
               !path.contains('/') &&
-              path != morePath &&
+              path != MainPagePaths.more &&
               (allowedPaths == null || allowedPaths.contains(path)),
         )
         .toSet()
@@ -45,13 +46,13 @@ class TabBarPreferences {
       if (result.length >= requiredSlotCount) {
         break;
       }
-      if (path != morePath &&
+      if (path != MainPagePaths.more &&
           (allowedPaths == null || allowedPaths.contains(path)) &&
           !result.contains(path)) {
         result.add(path);
       }
     }
-    result.add(morePath);
+    result.add(MainPagePaths.more);
     return List.unmodifiable(result);
   }
 }

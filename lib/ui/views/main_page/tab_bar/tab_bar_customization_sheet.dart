@@ -3,6 +3,7 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:unn_mobile/core/constants/main_page_paths.dart';
 import 'package:unn_mobile/core/misc/app_settings.dart';
 import 'package:unn_mobile/core/misc/tab_bar_preferences.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/tab_bar_customization_view_model.dart';
@@ -181,8 +182,7 @@ class _TabBarCustomizationSheetState extends State<TabBarCustomizationSheet> {
                               children: [
                                 for (final route in widget.routes.where(
                                   (route) =>
-                                      route.pagePath !=
-                                      TabBarPreferences.morePath,
+                                      route.pagePath != MainPagePaths.more,
                                 ))
                                   SizedBox(
                                     width: width,
@@ -234,7 +234,7 @@ class _TabBarCustomizationSheetState extends State<TabBarCustomizationSheet> {
                         itemCount: TabBarPreferences.maxTabs,
                         itemKey: (index) =>
                             index == TabBarPreferences.editableSlotCount
-                                ? TabBarPreferences.morePath
+                                ? MainPagePaths.more
                                 : _model.slots[index] ?? 'empty-$index',
                         canDrag: (index) =>
                             !_model.isSaving &&

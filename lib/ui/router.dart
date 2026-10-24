@@ -4,8 +4,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:unn_mobile/core/constants/main_page_paths.dart';
 import 'package:unn_mobile/core/misc/app_settings.dart';
-import 'package:unn_mobile/core/misc/tab_bar_preferences.dart';
 import 'package:unn_mobile/ui/main_page_locations.dart';
 import 'package:unn_mobile/ui/main_page_route_configuration.dart';
 import 'package:unn_mobile/ui/views/auth_page/auth_page.dart';
@@ -70,8 +70,8 @@ class AppRouter extends ChangeNotifier {
       final destination = mainPageDestinationPath(saved.uri);
       if (destination != null &&
           _configuration.containsDestination(destination) &&
-          (path != TabBarPreferences.morePath ||
-              destination == TabBarPreferences.morePath ||
+          (path != MainPagePaths.more ||
+              destination == MainPagePaths.more ||
               !_configuration.paths.contains(destination))) {
         _router.go(
           _configuration.relocate(saved.uri).toString(),
@@ -96,8 +96,8 @@ class AppRouter extends ChangeNotifier {
     final location = (uri: matches.uri, extra: matches.extra);
     _locations[destination] = location;
     if (!_configuration.paths.contains(destination) ||
-        destination == TabBarPreferences.morePath) {
-      _locations[TabBarPreferences.morePath] = location;
+        destination == MainPagePaths.more) {
+      _locations[MainPagePaths.more] = location;
     }
   }
 

@@ -4,6 +4,7 @@
 import 'package:flutter/material.dart';
 import 'package:injector/injector.dart';
 import 'package:provider/provider.dart';
+import 'package:unn_mobile/core/constants/main_page_paths.dart';
 import 'package:unn_mobile/core/models/profile/student/student_data.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/factories/main_page_routes_view_models_factory.dart';
@@ -71,7 +72,7 @@ final List<MainPageRouteData> mainPageRoutes = [
     Icons.star,
     Icons.star_border,
     'Лента',
-    'feed',
+    MainPagePaths.feed,
     builder: (_, __) => const FeedScreenView(),
     onReselect: _refresh<FeedScreenViewModel>,
     userTypes: [],
@@ -85,7 +86,7 @@ final List<MainPageRouteData> mainPageRoutes = [
     Icons.calendar_month,
     Icons.calendar_month_outlined,
     'Расписание',
-    'schedule',
+    MainPagePaths.schedule,
     builder: (_, __) => const ScheduleScreenView(),
     onReselect: _refresh<ScheduleScreenViewModel>,
     userTypes: [],
@@ -94,7 +95,7 @@ final List<MainPageRouteData> mainPageRoutes = [
     Icons.chat,
     Icons.chat_bubble_outline,
     'Сообщения',
-    'chats',
+    MainPagePaths.chats,
     builder: (_, __) => const ChatScreenView(),
     onReselect: _refresh<ChatScreenViewModel>,
     subroutes: [
@@ -124,7 +125,7 @@ final List<MainPageRouteData> mainPageRoutes = [
     Icons.menu_book,
     Icons.menu_book_outlined,
     'Материалы',
-    'source',
+    MainPagePaths.source,
     builder: (_, __) => const SourcePageView(),
     onReselect: _refresh<SourcePageViewModel>,
     isDisabled: false,
@@ -134,7 +135,7 @@ final List<MainPageRouteData> mainPageRoutes = [
     Icons.menu,
     Icons.menu,
     'Ещё',
-    'more',
+    MainPagePaths.more,
     builder: (context, _) => MainPageMenu(
       model: context.read<MainPageViewModel>(),
     ),
@@ -144,7 +145,7 @@ final List<MainPageRouteData> mainPageRoutes = [
     Icons.person,
     Icons.person_outline,
     'Мой профиль',
-    'myProfile',
+    MainPagePaths.myProfile,
     userTypes: [],
     builder: (_, __) => const ProfilePage(isMe: true),
   ),
@@ -152,7 +153,7 @@ final List<MainPageRouteData> mainPageRoutes = [
     Icons.book,
     Icons.book_outlined,
     'Зачётная книжка',
-    'grades',
+    MainPagePaths.grades,
     builder: (_, __) => const GradesScreenView(),
     userTypes: [StudentData],
   ),
@@ -160,7 +161,7 @@ final List<MainPageRouteData> mainPageRoutes = [
     Icons.description,
     Icons.description_outlined,
     'Справки онлайн',
-    'online_certificates',
+    MainPagePaths.onlineCertificates,
     builder: (_, __) => const OnlineCertificatesScreenView(),
     userTypes: [StudentData],
   ),
@@ -168,7 +169,7 @@ final List<MainPageRouteData> mainPageRoutes = [
     Icons.settings,
     Icons.settings_outlined,
     'Настройки',
-    'settings',
+    MainPagePaths.settings,
     builder: (_, __) => const SettingsScreenView(),
     userTypes: [],
   ),
@@ -176,7 +177,7 @@ final List<MainPageRouteData> mainPageRoutes = [
     Icons.credit_card,
     Icons.credit_card_outlined,
     'Поддержать',
-    'donations',
+    MainPagePaths.donations,
     builder: (_, __) => const DonationsScreenView(),
     userTypes: [],
     onlineOnly: true,
@@ -185,7 +186,7 @@ final List<MainPageRouteData> mainPageRoutes = [
     Icons.info,
     Icons.info_outline,
     'О нас',
-    'about',
+    MainPagePaths.about,
     builder: (_, __) => const AboutScreenView(),
     userTypes: [],
   ),

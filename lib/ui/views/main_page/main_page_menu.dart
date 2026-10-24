@@ -4,6 +4,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:unn_mobile/core/constants/main_page_paths.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/common/profile_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/main_page_view_model.dart';
 import 'package:unn_mobile/ui/builders/online_status_builder.dart';
@@ -50,7 +51,7 @@ class MainPageMenu extends StatelessWidget {
                           pressedOpacity: 0.75,
                           onPressed: () =>
                               AppRouter.of(context).goToDestination(
-                            'myProfile',
+                            MainPagePaths.myProfile,
                             initialLocation: true,
                           ),
                           child: _buildProfile(context),

@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:unn_mobile/core/constants/main_page_paths.dart';
 import 'package:unn_mobile/core/misc/app_settings.dart';
 import 'package:unn_mobile/core/misc/haptic_utils.dart';
 import 'package:unn_mobile/core/misc/tab_bar_preferences.dart';
@@ -39,7 +40,7 @@ class MainPageNavigationBar extends StatefulWidget {
   static int getSelectedBarIndex(BuildContext context, List<String> paths) {
     final destination = mainPageDestinationPath(GoRouterState.of(context).uri);
     final index = destination == null ? -1 : paths.indexOf(destination);
-    return index < 0 ? paths.indexOf(TabBarPreferences.morePath) : index;
+    return index < 0 ? paths.indexOf(MainPagePaths.more) : index;
   }
 }
 

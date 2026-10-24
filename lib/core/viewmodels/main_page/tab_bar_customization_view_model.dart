@@ -2,6 +2,7 @@
 // Copyright 2026 BitCodersNN
 
 import 'package:flutter/foundation.dart';
+import 'package:unn_mobile/core/constants/main_page_paths.dart';
 import 'package:unn_mobile/core/misc/tab_bar_preferences.dart';
 
 class TabBarCustomizationViewModel extends ChangeNotifier {
@@ -34,8 +35,7 @@ class TabBarCustomizationViewModel extends ChangeNotifier {
     final normalized =
         TabBarPreferences.normalize(paths, allowed: _allowedPaths);
     _slots = List<String?>.filled(TabBarPreferences.editableSlotCount, null);
-    final editable =
-        normalized.where((path) => path != TabBarPreferences.morePath);
+    final editable = normalized.where((path) => path != MainPagePaths.more);
     var index = 0;
     for (final path in editable) {
       _slots[index++] = path;
@@ -61,7 +61,7 @@ class TabBarCustomizationViewModel extends ChangeNotifier {
 
   void choose(String path) {
     if (_isSaving ||
-        path == TabBarPreferences.morePath ||
+        path == MainPagePaths.more ||
         !_allowedPaths.contains(path)) {
       return;
     }
@@ -117,7 +117,7 @@ class TabBarCustomizationViewModel extends ChangeNotifier {
     }
     final paths = List<String>.unmodifiable([
       ..._slots.whereType<String>(),
-      TabBarPreferences.morePath,
+      MainPagePaths.more,
     ]);
     _isSaving = true;
     notifyListeners();
