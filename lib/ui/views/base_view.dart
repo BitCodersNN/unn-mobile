@@ -25,7 +25,7 @@ class BaseView<T extends BaseViewModel> extends StatefulWidget {
     this.createModel,
     this.onModelReady,
     this.onDispose,
-  }) : assert(model == null || createModel == null);
+  });
 
   @override
   State<BaseView<T>> createState() => BaseViewState<T>();
