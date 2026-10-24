@@ -8,25 +8,13 @@ import 'package:unn_mobile/core/constants/main_page_paths.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/common/profile_view_model.dart';
 import 'package:unn_mobile/ui/builders/online_status_builder.dart';
 import 'package:unn_mobile/ui/router.dart';
+import 'package:unn_mobile/ui/views/base_view.dart';
 import 'package:unn_mobile/ui/views/main_page/main_page_route_data.dart';
 import 'package:unn_mobile/ui/widgets/shimmer.dart';
 import 'package:unn_mobile/ui/widgets/shimmer_loading.dart';
 
-class MainPageMenu extends StatefulWidget {
+class MainPageMenu extends StatelessWidget {
   const MainPageMenu({super.key});
-
-  @override
-  State<MainPageMenu> createState() => _MainPageMenuState();
-}
-
-class _MainPageMenuState extends State<MainPageMenu> {
-  late final _profile = ProfileViewModel.currentUser();
-
-  @override
-  void dispose() {
-    _profile.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -123,9 +111,10 @@ class _MainPageMenuState extends State<MainPageMenu> {
   }
 
   Widget _buildProfile(BuildContext context) => Shimmer(
-        child: ListenableBuilder(
-          listenable: _profile,
-          builder: (context, _) => _profileContent(context, _profile),
+        child: BaseView<ProfileViewModel>(
+          createModel: ProfileViewModel.currentUser,
+          onDispose: (model) => model.dispose(),
+          builder: (context, model, _) => _profileContent(context, model),
         ),
       );
 
