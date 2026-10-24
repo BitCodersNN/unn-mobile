@@ -8,7 +8,7 @@ import 'package:unn_mobile/core/misc/app_version.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/settings/settings_screen_view_model.dart';
 import 'package:unn_mobile/ui/router.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
-import 'package:unn_mobile/ui/views/main_page/tab_bar_customization_sheet.dart';
+import 'package:unn_mobile/ui/views/main_page/tab_bar/tab_bar_customization_sheet.dart';
 
 class SettingsScreenView extends StatelessWidget {
   final bool hasAccount;

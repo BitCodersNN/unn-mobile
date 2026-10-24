@@ -2,7 +2,7 @@
 // Copyright 2026 BitCodersNN
 
 import 'package:flutter/widgets.dart';
-import 'package:unn_mobile/ui/views/main_page/tab_bar_drag_controller.dart';
+import 'package:unn_mobile/ui/views/main_page/tab_bar/tab_bar_drag_controller.dart';
 
 class TabBarContextMenuResult {
   final List<String> paths;

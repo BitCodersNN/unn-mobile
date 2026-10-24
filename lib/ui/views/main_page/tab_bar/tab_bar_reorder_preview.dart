@@ -2,9 +2,9 @@
 // Copyright 2026 BitCodersNN
 
 import 'package:flutter/material.dart';
-import 'package:unn_mobile/ui/views/main_page/tab_bar_drag_controller.dart';
-import 'package:unn_mobile/ui/views/main_page/tab_bar_drag_feedback.dart';
-import 'package:unn_mobile/ui/views/main_page/tab_bar_gesture_detector.dart';
+import 'package:unn_mobile/ui/views/main_page/tab_bar/tab_bar_drag_controller.dart';
+import 'package:unn_mobile/ui/views/main_page/tab_bar/tab_bar_drag_feedback.dart';
+import 'package:unn_mobile/ui/views/main_page/tab_bar/tab_bar_gesture_detector.dart';
 
 class TabBarReorderPreview extends StatefulWidget {
   final int itemCount;

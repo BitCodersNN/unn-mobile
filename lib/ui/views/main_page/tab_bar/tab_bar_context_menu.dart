@@ -8,10 +8,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:unn_mobile/ui/views/main_page/main_page_route_data.dart';
-import 'package:unn_mobile/ui/views/main_page/tab_bar_context_menu_session.dart';
-import 'package:unn_mobile/ui/views/main_page/tab_bar_drag_feedback.dart';
-import 'package:unn_mobile/ui/views/main_page/tab_bar_gesture_detector.dart';
-import 'package:unn_mobile/ui/views/main_page/tab_bar_item_content.dart';
+import 'package:unn_mobile/ui/views/main_page/tab_bar/tab_bar_context_menu_session.dart';
+import 'package:unn_mobile/ui/views/main_page/tab_bar/tab_bar_drag_feedback.dart';
+import 'package:unn_mobile/ui/views/main_page/tab_bar/tab_bar_gesture_detector.dart';
+import 'package:unn_mobile/ui/views/main_page/tab_bar/tab_bar_item_content.dart';
 
 Future<TabBarContextMenuResult?> showTabBarContextMenu(
   BuildContext context, {

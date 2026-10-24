@@ -8,7 +8,7 @@ import 'package:unn_mobile/core/misc/app_open_tracker.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/main_page_view_model.dart';
 import 'package:unn_mobile/ui/router.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
-import 'package:unn_mobile/ui/views/main_page/main_page_navigation_bar.dart';
+import 'package:unn_mobile/ui/views/main_page/tab_bar/main_page_navigation_bar.dart';
 import 'package:unn_mobile/ui/widgets/dialogs/analytics_confirm_dialog.dart';
 import 'package:unn_mobile/ui/widgets/dialogs/changelog_dialog.dart';
 

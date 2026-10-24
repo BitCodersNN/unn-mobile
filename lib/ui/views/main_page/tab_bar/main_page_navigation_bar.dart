@@ -11,11 +11,11 @@ import 'package:unn_mobile/core/misc/tab_bar_preferences.dart';
 import 'package:unn_mobile/ui/main_page_locations.dart';
 import 'package:unn_mobile/ui/main_page_route_configuration.dart';
 import 'package:unn_mobile/ui/views/main_page/main_page_route_data.dart';
-import 'package:unn_mobile/ui/views/main_page/tab_bar_context_menu.dart';
-import 'package:unn_mobile/ui/views/main_page/tab_bar_context_menu_session.dart';
-import 'package:unn_mobile/ui/views/main_page/tab_bar_customization_sheet.dart';
-import 'package:unn_mobile/ui/views/main_page/tab_bar_gesture_detector.dart';
-import 'package:unn_mobile/ui/views/main_page/tab_bar_item_content.dart';
+import 'package:unn_mobile/ui/views/main_page/tab_bar/tab_bar_context_menu.dart';
+import 'package:unn_mobile/ui/views/main_page/tab_bar/tab_bar_context_menu_session.dart';
+import 'package:unn_mobile/ui/views/main_page/tab_bar/tab_bar_customization_sheet.dart';
+import 'package:unn_mobile/ui/views/main_page/tab_bar/tab_bar_gesture_detector.dart';
+import 'package:unn_mobile/ui/views/main_page/tab_bar/tab_bar_item_content.dart';
 
 class MainPageNavigationBar extends StatefulWidget {
   final ValueChanged<MainPageRouteData>? onDestinationSelected;
