@@ -60,7 +60,8 @@ class _MainPageNavigationBarState extends State<MainPageNavigationBar> {
         );
         final paths = configuration.paths;
         final visible = configuration.tabs;
-        return MediaQuery.withNoTextScaling(
+        return MediaQuery.withClampedTextScaling(
+          maxScaleFactor: 1.3,
           child: CupertinoTabBar(
             key: _barKey,
             height: MainPageNavigationBar.navbarHeight,
