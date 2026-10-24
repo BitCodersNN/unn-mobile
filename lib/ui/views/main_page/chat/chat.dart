@@ -30,7 +30,7 @@ class _ChatScreenViewState extends State<ChatScreenView> {
   Widget build(BuildContext context) {
     final viewModel = Injector.appInstance
         .get<MainPageRoutesViewModelsFactory>()
-        .getViewModel<ChatScreenViewModel>();
+        .getOrCreate<ChatScreenViewModel>();
     return BaseView<ChatScreenViewModel>(
       builder: (context, model, child) => Scaffold(
         appBar: AppBar(

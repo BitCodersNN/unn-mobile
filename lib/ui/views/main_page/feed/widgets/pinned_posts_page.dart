@@ -17,7 +17,7 @@ class PinnedPostsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final viewModel = Injector.appInstance
         .get<MainPageRoutesViewModelsFactory>()
-        .getViewModelByType<FeedScreenViewModel>();
+        .getCached<FeedScreenViewModel>();
 
     return BaseView<FeedScreenViewModel>(
       builder: (context, vm, _) => PostsListPage(

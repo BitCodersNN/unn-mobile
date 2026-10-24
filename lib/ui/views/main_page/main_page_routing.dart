@@ -195,7 +195,7 @@ final List<MainPageRouteData> mainPageRoutes = [
 void _refresh<T extends BaseViewModel>() {
   final model = Injector.appInstance
       .get<MainPageRoutesViewModelsFactory>()
-      .getViewModelByType<T>();
+      .getCached<T>();
   if (model case final MainPageRouteViewModel routeModel) {
     routeModel.refresh();
   }

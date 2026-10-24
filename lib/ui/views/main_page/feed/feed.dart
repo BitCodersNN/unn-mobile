@@ -33,7 +33,7 @@ class FeedScreenViewState extends State<FeedScreenView>
 
     _viewModel = Injector.appInstance
         .get<MainPageRoutesViewModelsFactory>()
-        .getViewModel<FeedScreenViewModel>();
+        .getOrCreate<FeedScreenViewModel>();
 
     _scrollController = ScrollController(
       initialScrollOffset: _viewModel.scrollPosition,

@@ -23,7 +23,7 @@ class SourcePageView extends StatelessWidget {
   Widget build(BuildContext context) {
     final viewModel = Injector.appInstance
         .get<MainPageRoutesViewModelsFactory>()
-        .getViewModel<SourcePageViewModel>();
+        .getOrCreate<SourcePageViewModel>();
     return OfflineOverlayDisplayer(
       child: OnlineStatusBuilder(
         builder: (context, online) => BaseView<SourcePageViewModel>(

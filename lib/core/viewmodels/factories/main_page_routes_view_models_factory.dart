@@ -15,7 +15,7 @@ class MainPageRoutesViewModelsFactory {
       _resetIfUnauthorized,
     ); // А где отписаться? Я хз) Это должен быть синглтон, надеюсь, ничего не сломается
   }
-  T getViewModel<T extends BaseViewModel>() {
+  T getOrCreate<T extends BaseViewModel>() {
     final existing = _viewModels[T];
     if (existing is T) {
       return existing;
@@ -26,7 +26,7 @@ class MainPageRoutesViewModelsFactory {
     return newInstance;
   }
 
-  T? getViewModelByType<T extends BaseViewModel>() {
+  T? getCached<T extends BaseViewModel>() {
     final model = _viewModels[T];
     return model is T ? model : null;
   }

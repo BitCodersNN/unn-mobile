@@ -42,7 +42,7 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView> {
     super.initState();
     _viewModel = Injector.appInstance
         .get<MainPageRoutesViewModelsFactory>()
-        .getViewModel<ScheduleScreenViewModel>();
+        .getOrCreate<ScheduleScreenViewModel>();
     _search = AppSearchController<ScheduleSearchSuggestionItem>(
       loader: (query) async =>
           (await _viewModel.currentTab?.getSuggestions(query)) ??
