@@ -682,7 +682,7 @@ void registerDependencies() {
       ),
     )
     ..registerDependency(
-      () => MainPageViewModel(get<OnlineStatusData>()),
+      MainPageViewModel.new,
     )
     ..registerDependency(
       () => CertificatesViewModel(get<CertificatesService>()),
