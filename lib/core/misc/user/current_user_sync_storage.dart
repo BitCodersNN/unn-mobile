@@ -29,6 +29,7 @@ class CurrentUserSyncStorage extends ChangeNotifier
   /// Хранит тип текущего пользователя: [Type] ([StudentData] или [EmployeeData]) или [Null] в случае ошибки
   Type get typeOfUser => _currentUserData.runtimeType;
 
+  /// Предоставляет [typeOfUser] через интерфейс [ValueListenable].
   @override
   Type get value => typeOfUser;
 
