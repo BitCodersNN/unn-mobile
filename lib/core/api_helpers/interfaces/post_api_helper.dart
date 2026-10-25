@@ -9,5 +9,6 @@ abstract interface class PostApiHelper {
     Map<String, dynamic>? data,
     Map<String, dynamic>? queryParameters,
     Options? options,
+    CancelToken? cancelToken,
   });
 }

@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2025 BitCodersNN
 
+import 'package:dio/dio.dart';
 import 'package:unn_mobile/core/models/schedule/schedule_filter.dart';
 import 'package:unn_mobile/core/models/schedule/subject.dart';
 
@@ -10,7 +11,10 @@ abstract interface class ScheduleService {
   /// [scheduleFilter]: Фильтр, по которому происходит получение расписания
   ///
   /// Возвращает список предметов или 'null', если не вышло получить ответ от портала или statusCode не равен 200
-  Future<List<Subject>?> getSchedule(ScheduleFilter scheduleFilter);
+  Future<List<Subject>?> getSchedule(
+    ScheduleFilter scheduleFilter, {
+    CancelToken? cancelToken,
+  });
 
   /// Получение расписания текущего пользователя
   ///
@@ -18,5 +22,9 @@ abstract interface class ScheduleService {
   /// [login]: Логин пользователя
   ///
   /// Возвращает список предметов или 'null', если не вышло получить ответ от портала или statusCode не равен 200
-  Future<List<Subject>?> getCurrentUserSchedule(String login, DateTime date);
+  Future<List<Subject>?> getCurrentUserSchedule(
+    String login,
+    DateTime date, {
+    CancelToken? cancelToken,
+  });
 }
