@@ -2,6 +2,8 @@
 // Copyright 2026 BitCodersNN
 
 import 'dart:async';
+
+import 'package:dio/dio.dart';
 import 'package:unn_mobile/core/misc/app_settings.dart';
 import 'package:unn_mobile/core/misc/authorisation/try_login_and_retrieve_data.dart';
 import 'package:unn_mobile/core/misc/date_time_utilities/date_time_extensions.dart';
@@ -41,6 +43,7 @@ class ScheduleTabViewModel extends BaseViewModel {
   bool triggerScrollToToday = false;
   bool _refreshRequested = false;
   bool _offlineUpdateRequested = false;
+  CancelToken? _scheduleRequest;
 
   bool get hasAnyId => defaultId != null || selectedId != null;
 
@@ -60,6 +63,12 @@ class ScheduleTabViewModel extends BaseViewModel {
     this._scheduleService,
     this._searchHistoryService,
   );
+
+  @override
+  void dispose() {
+    _scheduleRequest?.cancel();
+    super.dispose();
+  }
 
   FutureOr<void> init() async => await refresh();
 
@@ -131,6 +140,25 @@ class ScheduleTabViewModel extends BaseViewModel {
   }
 
   Future<void> loadSchedule({bool useRasp = false}) async {
+    final cancelToken = CancelToken();
+    _scheduleRequest = cancelToken;
+    try {
+      await _loadSchedule(useRasp: useRasp, cancelToken: cancelToken);
+    } on DioException catch (error) {
+      if (!CancelToken.isCancel(error)) {
+        rethrow;
+      }
+    } finally {
+      if (identical(_scheduleRequest, cancelToken)) {
+        _scheduleRequest = null;
+      }
+    }
+  }
+
+  Future<void> _loadSchedule({
+    required bool useRasp,
+    required CancelToken cancelToken,
+  }) async {
     final week = selectedWeek;
     final filter = searchFilter;
     if (useRasp) {
@@ -141,9 +169,11 @@ class ScheduleTabViewModel extends BaseViewModel {
       final foundSchedule = await _scheduleService.getCurrentUserSchedule(
             _userStorage.currentUserData!.login!,
             week.start,
+            cancelToken: cancelToken,
           ) ??
           [];
       if (disposed ||
+          cancelToken.isCancelled ||
           week.start != selectedWeek.start ||
           selectedId != null ||
           !AppSettings.useRaspSchedule) {
@@ -158,12 +188,13 @@ class ScheduleTabViewModel extends BaseViewModel {
       return;
     }
     final foundSchedule = await tryLoginAndRetrieveData<List<Subject>>(
-      () => _scheduleService.getSchedule(filter),
+      () => _scheduleService.getSchedule(filter, cancelToken: cancelToken),
       () => scheduleWeek?.start == week.start
           ? schedule?.expand((subject) => subject).toList()
           : null,
     );
     if (disposed ||
+        cancelToken.isCancelled ||
         foundSchedule == null ||
         week.start != selectedWeek.start ||
         filter.id != (selectedId ?? defaultId)) {
@@ -202,6 +233,7 @@ class ScheduleTabViewModel extends BaseViewModel {
   FutureOr<void> refresh({bool triggerOfflineUpdate = false}) {
     _refreshRequested = true;
     _offlineUpdateRequested |= triggerOfflineUpdate;
+    _scheduleRequest?.cancel();
     return busyCallAsync(_refreshSchedule);
   }
 

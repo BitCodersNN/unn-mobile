@@ -81,6 +81,14 @@ class ScheduleScreenViewModel extends BaseViewModel
     this._offlineScheduleProvider,
   );
 
+  @override
+  void dispose() {
+    for (final model in modelsByType.values) {
+      model.dispose();
+    }
+    super.dispose();
+  }
+
   FutureOr<void> init() => busyCallAsync(() async {
         offlineData = await _offlineScheduleProvider.getData();
 
