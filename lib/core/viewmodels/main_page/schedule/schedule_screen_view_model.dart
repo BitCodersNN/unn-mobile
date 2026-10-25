@@ -81,6 +81,14 @@ class ScheduleScreenViewModel extends BaseViewModel
     this._offlineScheduleProvider,
   );
 
+  @override
+  void dispose() {
+    for (final model in modelsByType.values) {
+      model.dispose();
+    }
+    super.dispose();
+  }
+
   FutureOr<void> init() => busyCallAsync(() async {
         offlineData = await _offlineScheduleProvider.getData();
 
@@ -119,15 +127,15 @@ class ScheduleScreenViewModel extends BaseViewModel
     await _offlineScheduleProvider.saveData(offlineData);
   }
 
-  void nextWeek() {
-    weekOffset++;
-    recalculateDateTimeRange();
-    notifyListeners();
-    refreshTab();
-  }
+  void nextWeek() => selectWeek(weekOffset + 1);
 
-  void previousWeek() {
-    weekOffset--;
+  void previousWeek() => selectWeek(weekOffset - 1);
+
+  void selectWeek(int offset) {
+    if (offset == weekOffset) {
+      return;
+    }
+    weekOffset = offset;
     recalculateDateTimeRange();
     notifyListeners();
     refreshTab();
@@ -204,9 +212,6 @@ class ScheduleScreenViewModel extends BaseViewModel
       return;
     }
 
-    weekOffset = 0;
-    recalculateDateTimeRange();
-    notifyListeners();
-    refreshTab();
+    selectWeek(0);
   }
 }

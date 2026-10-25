@@ -62,6 +62,7 @@ abstract class WebAuthenticatedApiHelper extends AuthenticatedApiHelper {
     required String path,
     Map<String, dynamic>? queryParameters,
     Options? options,
+    CancelToken? cancelToken,
     ProgressCallback? onReceiveProgress,
   }) =>
       _request(
@@ -69,6 +70,7 @@ abstract class WebAuthenticatedApiHelper extends AuthenticatedApiHelper {
         path: path,
         queryParameters: queryParameters,
         options: options,
+        cancelToken: cancelToken,
         onReceiveProgress: onReceiveProgress,
       );
 
@@ -78,6 +80,7 @@ abstract class WebAuthenticatedApiHelper extends AuthenticatedApiHelper {
     dynamic data,
     Map<String, dynamic>? queryParameters,
     Options? options,
+    CancelToken? cancelToken,
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) =>
@@ -87,6 +90,7 @@ abstract class WebAuthenticatedApiHelper extends AuthenticatedApiHelper {
         body: data,
         queryParameters: queryParameters,
         options: options,
+        cancelToken: cancelToken,
         onReceiveProgress: onReceiveProgress,
         onSendProgress: onSendProgress,
       );
@@ -97,6 +101,7 @@ abstract class WebAuthenticatedApiHelper extends AuthenticatedApiHelper {
     Map<String, dynamic>? body,
     Map<String, dynamic>? queryParameters,
     Options? options,
+    CancelToken? cancelToken,
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
@@ -110,6 +115,7 @@ abstract class WebAuthenticatedApiHelper extends AuthenticatedApiHelper {
         options,
       ),
       options: options,
+      cancelToken: cancelToken,
       onReceiveProgress: onReceiveProgress,
       onSendProgress: onSendProgress,
     );

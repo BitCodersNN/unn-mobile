@@ -18,6 +18,7 @@ import 'package:unn_mobile/ui/views/base_view.dart';
 import 'package:unn_mobile/ui/views/main_page/schedule/export_schedule_flow.dart';
 import 'package:unn_mobile/ui/views/main_page/schedule/schedule_tab_view.dart';
 import 'package:unn_mobile/ui/views/main_page/schedule/widgets/schedule_search_suggestion_item_view.dart';
+import 'package:unn_mobile/ui/views/main_page/schedule/widgets/schedule_week_swipe.dart';
 import 'package:unn_mobile/ui/widgets/menu_button.dart';
 import 'package:unn_mobile/ui/widgets/offline_overlay_displayer.dart';
 import 'package:unn_mobile/ui/widgets/search/search_controller.dart';
@@ -239,25 +240,32 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView> {
                     ),
                     body: Stack(
                       children: [
-                        TabBarView(
-                          children: model.sortedUserTypeList
-                              .map(
-                                (t) => model.modelsByType[t] == null
-                                    ? const Center(
-                                        child: SizedBox(
-                                          width: 96,
-                                          height: 96,
-                                          child: CircularProgressIndicator
-                                              .adaptive(),
+                        ScheduleWeekSwipe(
+                          enabled: online && !_search.isOpen,
+                          weekOffset: model.weekOffset,
+                          onWeekChanged: model.selectWeek,
+                          weekBuilder: (context, weekOffset) => TabBarView(
+                            physics: const NeverScrollableScrollPhysics(),
+                            children: model.sortedUserTypeList
+                                .map(
+                                  (t) => model.modelsByType[t] == null
+                                      ? const Center(
+                                          child: SizedBox(
+                                            width: 96,
+                                            height: 96,
+                                            child: CircularProgressIndicator
+                                                .adaptive(),
+                                          ),
+                                        )
+                                      : ScheduleTabView(
+                                          key: ValueKey(t),
+                                          viewModel: model.modelsByType[t]!,
+                                          weekOffset: weekOffset,
+                                          onSearchRequested: _search.open,
                                         ),
-                                      )
-                                    : ScheduleTabView(
-                                        key: ValueKey(t),
-                                        viewModel: model.modelsByType[t]!,
-                                        onSearchRequested: _search.open,
-                                      ),
-                              )
-                              .toList(),
+                                )
+                                .toList(),
+                          ),
                         ),
                         if (_search.isOpen) ...[
                           GestureDetector(
