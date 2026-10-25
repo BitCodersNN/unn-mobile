@@ -7,9 +7,11 @@ import 'package:flutter/material.dart';
 import 'package:unn_mobile/core/misc/haptic_utils.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/grades/grades_screen_view_model.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
+import 'package:unn_mobile/ui/views/main_page/grades/widgets/grade_book_content.dart';
+import 'package:unn_mobile/ui/widgets/empty_state_widget.dart';
 import 'package:unn_mobile/ui/widgets/offline_overlay_displayer.dart';
 
-class GradesScreenView extends StatefulWidget {
+class GradesScreenView extends StatelessWidget {
   const GradesScreenView({super.key});
 
   Future<void> _refresh(GradesScreenViewModel model) {

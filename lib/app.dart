@@ -2,9 +2,9 @@
 // Copyright 2025 BitCodersNN
 
 import 'package:flutter/material.dart';
-import 'package:unn_mobile/core/models/grade_book/mark_type.dart';
 import 'package:provider/provider.dart';
 import 'package:unn_mobile/core/misc/user/current_user_sync_storage.dart';
+import 'package:unn_mobile/core/models/grade_book/mark_type.dart';
 import 'package:unn_mobile/core/models/schedule/subject_type.dart';
 import 'package:unn_mobile/core/viewmodels/factories/main_page_routes_view_models_factory.dart';
 import 'package:unn_mobile/ui/router.dart';
