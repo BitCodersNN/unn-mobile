@@ -24,17 +24,18 @@ class ScheduleWeekSwipe extends StatefulWidget {
 }
 
 class _ScheduleWeekSwipeState extends State<ScheduleWeekSwipe> {
-  static const int _originPage = 1000000;
+  // Запас индексов для перелистывания к предыдущим неделям.
+  static const int _initialPageIndex = 1000000;
   late final int _anchorWeekOffset;
   late final PageController _pages;
-  int _currentPage = _originPage;
+  int _currentPage = _initialPageIndex;
   int? _programmaticPage;
 
   @override
   void initState() {
     super.initState();
     _anchorWeekOffset = widget.weekOffset;
-    _pages = PageController(initialPage: _originPage);
+    _pages = PageController(initialPage: _initialPageIndex);
   }
 
   @override
@@ -43,7 +44,7 @@ class _ScheduleWeekSwipeState extends State<ScheduleWeekSwipe> {
     if (oldWidget.weekOffset == widget.weekOffset) {
       return;
     }
-    final page = _originPage + widget.weekOffset - _anchorWeekOffset;
+    final page = _initialPageIndex + widget.weekOffset - _anchorWeekOffset;
     if (page != _currentPage) {
       _programmaticPage = page;
       unawaited(_animateToPage(page));
@@ -64,7 +65,7 @@ class _ScheduleWeekSwipeState extends State<ScheduleWeekSwipe> {
   void _onPageChanged(int page) {
     _currentPage = page;
     if (_programmaticPage == null) {
-      widget.onWeekChanged(_anchorWeekOffset + page - _originPage);
+      widget.onWeekChanged(_anchorWeekOffset + page - _initialPageIndex);
     }
   }
 
@@ -82,7 +83,7 @@ class _ScheduleWeekSwipeState extends State<ScheduleWeekSwipe> {
             : const NeverScrollableScrollPhysics(),
         onPageChanged: _onPageChanged,
         itemBuilder: (context, page) {
-          final weekOffset = _anchorWeekOffset + page - _originPage;
+          final weekOffset = _anchorWeekOffset + page - _initialPageIndex;
           return KeyedSubtree(
             key: ValueKey(weekOffset),
             child: widget.weekBuilder(context, weekOffset),
