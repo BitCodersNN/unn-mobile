@@ -25,7 +25,7 @@ import 'package:unn_mobile/core/services/interfaces/loading_page/loading_page_co
 import 'package:unn_mobile/core/services/interfaces/loading_page/logo_downloader_service.dart';
 import 'package:unn_mobile/core/services/interfaces/profile/profile_of_current_user_service.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
-import 'package:unn_mobile/ui/router.dart';
+import 'package:unn_mobile/ui/main_page_locations.dart';
 
 class LoadingPageViewModel extends BaseViewModel {
   final LoggerService _loggerService;
