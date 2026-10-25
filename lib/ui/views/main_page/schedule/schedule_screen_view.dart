@@ -4,7 +4,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:injector/injector.dart';
+import 'package:provider/provider.dart';
 import 'package:unn_mobile/core/constants/date_pattern.dart';
 import 'package:unn_mobile/core/misc/date_time_utilities/date_time_extensions.dart';
 import 'package:unn_mobile/core/misc/date_time_utilities/week_range.dart';
@@ -15,7 +15,6 @@ import 'package:unn_mobile/core/viewmodels/main_page/schedule/schedule_screen_vi
 import 'package:unn_mobile/core/viewmodels/main_page/schedule/schedule_tab_view_model.dart';
 import 'package:unn_mobile/ui/builders/online_status_builder.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
-import 'package:unn_mobile/ui/views/main_page/main_page.dart';
 import 'package:unn_mobile/ui/views/main_page/schedule/export_schedule_flow.dart';
 import 'package:unn_mobile/ui/views/main_page/schedule/schedule_tab_view.dart';
 import 'package:unn_mobile/ui/views/main_page/schedule/widgets/schedule_search_suggestion_item_view.dart';
@@ -26,11 +25,7 @@ import 'package:unn_mobile/ui/widgets/search/search_field.dart';
 import 'package:unn_mobile/ui/widgets/search/search_overlay.dart';
 
 class ScheduleScreenView extends StatefulWidget {
-  final int? bottomRouteIndex;
-  const ScheduleScreenView({
-    super.key,
-    this.bottomRouteIndex,
-  });
+  const ScheduleScreenView({super.key});
 
   @override
   State<ScheduleScreenView> createState() => _ScheduleScreenViewState();
@@ -45,13 +40,9 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView> {
   @override
   void initState() {
     super.initState();
-    _viewModel = widget.bottomRouteIndex == null
-        ? Injector.appInstance.get<ScheduleScreenViewModel>()
-        : Injector.appInstance
-            .get<MainPageRoutesViewModelsFactory>()
-            .getViewModelByRouteIndex<ScheduleScreenViewModel>(
-              widget.bottomRouteIndex!,
-            );
+    _viewModel = context
+        .read<MainPageRoutesViewModelsFactory>()
+        .getOrCreate<ScheduleScreenViewModel>();
     _search = AppSearchController<ScheduleSearchSuggestionItem>(
       loader: (query) async =>
           (await _viewModel.currentTab?.getSuggestions(query)) ??
@@ -115,7 +106,7 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView> {
                               tooltip: 'Закрыть поиск',
                               onPressed: _search.close,
                             )
-                          : getSubpageLeading(widget.bottomRouteIndex),
+                          : null,
                       title: const Text(
                         'Расписание',
                       ),

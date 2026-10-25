@@ -246,7 +246,7 @@ class ChatInsideViewModel extends BaseViewModel {
     _messages.clear();
     _unpartitionedMessages.clear();
     _dialogsViewModel =
-        _routesViewModelFactory.getViewModelByType<ChatScreenViewModel>();
+        _routesViewModelFactory.getCached<ChatScreenViewModel>();
     fetchDialogFromRoot(chatId);
     final messages = await tryLoginAndRetrieveData<PaginatedResult<Message>>(
       () => this.chatId == null

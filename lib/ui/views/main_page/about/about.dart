@@ -10,19 +10,16 @@ import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/about/about_view_model.dart';
 import 'package:unn_mobile/ui/unn_mobile_colors.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
-import 'package:unn_mobile/ui/views/main_page/main_page.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class AboutScreenView extends StatelessWidget {
-  final int? bottomRouteIndex;
-  const AboutScreenView({super.key, this.bottomRouteIndex});
+  const AboutScreenView({super.key});
 
   @override
   Widget build(BuildContext context) => BaseView<AboutViewModel>(
         onModelReady: (model) => model.init(),
         builder: (context, model, child) => Scaffold(
           appBar: AppBar(
-            leading: getSubpageLeading(bottomRouteIndex),
             title: const Text('О нас'),
             forceMaterialTransparency: true,
           ),

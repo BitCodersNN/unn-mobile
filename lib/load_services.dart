@@ -147,6 +147,7 @@ import 'package:unn_mobile/core/services/interfaces/schedule/export_schedule_ser
 import 'package:unn_mobile/core/services/interfaces/schedule/schedule_search_history_service.dart';
 import 'package:unn_mobile/core/services/interfaces/schedule/schedule_service.dart';
 import 'package:unn_mobile/core/viewmodels/auth_page/auth_page_view_model.dart';
+import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/factories/attached_file_view_model_factory.dart';
 import 'package:unn_mobile/core/viewmodels/factories/feed_comment_view_model_factory.dart';
 import 'package:unn_mobile/core/viewmodels/factories/feed_post_view_model_factory.dart';
@@ -162,7 +163,6 @@ import 'package:unn_mobile/core/viewmodels/main_page/chat/chat_inside_view_model
 import 'package:unn_mobile/core/viewmodels/main_page/chat/chat_screen_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/feed/feed_screen_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/grades/grades_screen_view_model.dart';
-import 'package:unn_mobile/core/viewmodels/main_page/main_page_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/schedule/schedule_screen_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/settings/settings_screen_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/source/source_page_view_model.dart';
@@ -648,7 +648,10 @@ void registerDependencies() {
       FeedCommentViewModelFactory.new,
     )
     ..registerSingleton<MainPageRoutesViewModelsFactory>(
-      () => MainPageRoutesViewModelsFactory(get<UnnAuthService>()),
+      () => MainPageRoutesViewModelsFactory(
+        get<UnnAuthService>(),
+        createViewModel: <T extends BaseViewModel>() => get<T>(),
+      ),
     )
 
     // =========================================================================
@@ -678,12 +681,6 @@ void registerDependencies() {
       ),
     )
     ..registerDependency(
-      () => MainPageViewModel(
-        get<CurrentUserSyncStorage>(),
-        get<OnlineStatusData>(),
-      ),
-    )
-    ..registerDependency(
       () => CertificatesViewModel(get<CertificatesService>()),
     )
     ..registerDependency(
@@ -709,7 +706,11 @@ void registerDependencies() {
       ),
     )
     ..registerDependency(
-      () => SettingsScreenViewModel(get<StorageService>()),
+      () => SettingsScreenViewModel(
+        get<StorageService>(),
+        get<UnnAuthService>(),
+        get<SourceAuthService>(),
+      ),
     )
     ..registerDependency(
       () => ScheduleScreenViewModel(

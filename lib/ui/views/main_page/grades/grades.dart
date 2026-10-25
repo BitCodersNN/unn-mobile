@@ -7,15 +7,10 @@ import 'package:flutter/material.dart';
 import 'package:unn_mobile/core/misc/haptic_utils.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/grades/grades_screen_view_model.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
-import 'package:unn_mobile/ui/views/main_page/grades/widgets/grade_book_content.dart';
-import 'package:unn_mobile/ui/views/main_page/main_page.dart';
-import 'package:unn_mobile/ui/widgets/empty_state_widget.dart';
 import 'package:unn_mobile/ui/widgets/offline_overlay_displayer.dart';
 
-class GradesScreenView extends StatelessWidget {
-  final int? bottomRouteIndex;
-
-  const GradesScreenView({super.key, this.bottomRouteIndex});
+class GradesScreenView extends StatefulWidget {
+  const GradesScreenView({super.key});
 
   Future<void> _refresh(GradesScreenViewModel model) {
     triggerHaptic(HapticIntensity.light);
@@ -27,7 +22,6 @@ class GradesScreenView extends StatelessWidget {
         child: Scaffold(
           backgroundColor: Theme.of(context).colorScheme.surfaceContainerLow,
           appBar: AppBar(
-            leading: getSubpageLeading(bottomRouteIndex),
             title: const Text('Зачётная книжка'),
             backgroundColor: Theme.of(context).colorScheme.surfaceContainerLow,
             scrolledUnderElevation: 0,
