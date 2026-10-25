@@ -103,7 +103,9 @@ class FeedScreenViewModel extends BaseViewModel
 
   Future<void> init() => _initialization ??= _initialize();
 
-  Future<void> _initialize() async {
+  Future<void> _initialize() async => await busyCallAsync(_loadInitialPosts);
+
+  Future<void> _loadInitialPosts() async {
     final lastReadAt = await _lastFeedLoadDateTimeProvider.getData();
     final cachedPosts = await _blogPostProvider.getData();
     if (disposed) {
