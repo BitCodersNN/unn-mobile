@@ -77,9 +77,10 @@ jobs:
         run: |
           flutter doctor --verbose
           flutter build apk --flavor default
-          
           mv build/app/outputs/flutter-apk/app-default-release.apk build/unn-mobile-default.apk
-          sha1sum build/unn-mobile-default.apk > build/unn-mobile-default.apk.sha1
+          cd build
+          sha1sum unn-mobile-default.apk > unn-mobile-default.apk.sha1
+          cd ..
           
       - name: delete old build artifacts
         uses: geekyeggo/delete-artifact@f275313e70c08f6120db482d7a6b98377786765b
