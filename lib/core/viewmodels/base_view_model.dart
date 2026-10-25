@@ -24,7 +24,11 @@ class BaseViewModel extends ChangeNotifier {
   void notifyListeners() {
     if (!disposed) {
       WidgetsBinding.instance.endOfFrame.whenComplete(
-        () => super.notifyListeners(),
+        () {
+          if (!disposed) {
+            super.notifyListeners();
+          }
+        },
       );
     }
   }
