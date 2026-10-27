@@ -96,6 +96,8 @@ import 'package:unn_mobile/core/services/implementations/profile/profile_service
 import 'package:unn_mobile/core/services/implementations/schedule/export_schedule_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/schedule/schedule_search_history_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/schedule/schedule_service_impl.dart';
+import 'package:unn_mobile/core/services/implementations/schedule_widget/schedule_widget_platform_impl.dart';
+import 'package:unn_mobile/core/services/implementations/schedule_widget/schedule_widget_service_impl.dart';
 import 'package:unn_mobile/core/services/interfaces/about/authors_config_service.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation/authorisation_refresh_service.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation/source_authorisation_service.dart';
@@ -146,6 +148,8 @@ import 'package:unn_mobile/core/services/interfaces/profile/profile_service.dart
 import 'package:unn_mobile/core/services/interfaces/schedule/export_schedule_service.dart';
 import 'package:unn_mobile/core/services/interfaces/schedule/schedule_search_history_service.dart';
 import 'package:unn_mobile/core/services/interfaces/schedule/schedule_service.dart';
+import 'package:unn_mobile/core/services/interfaces/schedule_widget/schedule_widget_platform.dart';
+import 'package:unn_mobile/core/services/interfaces/schedule_widget/schedule_widget_service.dart';
 import 'package:unn_mobile/core/viewmodels/auth_page/auth_page_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/factories/attached_file_view_model_factory.dart';
@@ -385,6 +389,20 @@ void registerDependencies() {
     ..registerSingleton<OfflineScheduleProvider>(
       () => OfflineScheduleProviderImpl(
         get<StorageService>(),
+      ),
+    )
+    ..registerSingleton<ScheduleWidgetPlatform>(
+      () => ScheduleWidgetPlatformImpl(get<LoggerService>()),
+    )
+    ..registerSingleton<ScheduleWidgetService>(
+      () => ScheduleWidgetServiceImpl(
+        get<CurrentUserSyncStorage>(),
+        get<AuthDataProvider>(),
+        get<ScheduleService>(),
+        get<SearchIdOnPortalService>(),
+        get<OfflineScheduleProvider>(),
+        get<ScheduleWidgetPlatform>(),
+        get<LoggerService>(),
       ),
     )
     ..registerSingleton<ScheduleSearchHistoryService>(
@@ -710,6 +728,7 @@ void registerDependencies() {
         get<StorageService>(),
         get<UnnAuthService>(),
         get<SourceAuthService>(),
+        get<ScheduleWidgetService>(),
       ),
     )
     ..registerDependency(

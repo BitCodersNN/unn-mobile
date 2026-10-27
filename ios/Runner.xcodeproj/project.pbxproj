@@ -7,17 +7,26 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		03733AF5118E560E58C57CDD /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AAA291E444BAB7E045645B79 /* Foundation.framework */; };
+		0D55D7788CDA8C474E569CF2 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 291548B6B386E976F01F0E74 /* SwiftUI.framework */; };
 		1498D2341E8E89220040F4C2 /* GeneratedPluginRegistrant.m in Sources */ = {isa = PBXBuildFile; fileRef = 1498D2331E8E89220040F4C2 /* GeneratedPluginRegistrant.m */; };
+		2C1D4978CC6A4945F1488D2A /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D3CD56A551596B2F1C5DAC8D /* WidgetKit.framework */; };
 		331C808B294A63AB00263BE5 /* RunnerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 331C807B294A618700263BE5 /* RunnerTests.swift */; };
+		36AD32F96DDFCBD7AC66AFEC /* ScheduleWidgetExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 78A5B92B0574846B6299CCD9 /* ScheduleWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		3B3967161E833CAA004F5970 /* AppFrameworkInfo.plist in Resources */ = {isa = PBXBuildFile; fileRef = 3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */; };
+		5FD15DB40DDE0E42E462B59B /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D3CD56A551596B2F1C5DAC8D /* WidgetKit.framework */; };
 		651F2E2730F782D655658552 /* Pods_RunnerTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE53B148E09F3E30D3F35B9A /* Pods_RunnerTests.framework */; };
+		6C5E4BC21D655F3CA33065AE /* ScheduleWidgetData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FFA8D783634CDC0B542F43C /* ScheduleWidgetData.swift */; };
+		6ED0DE77FD85FA8888759669 /* ScheduleWidgetBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AF29A9D0397CA1CD192FB00 /* ScheduleWidgetBridge.swift */; };
 		74858FAF1ED2DC5600515810 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74858FAE1ED2DC5600515810 /* AppDelegate.swift */; };
 		78A318202AECB46A00862997 /* FlutterGeneratedPluginSwiftPackage in Frameworks */ = {isa = PBXBuildFile; productRef = 78A3181F2AECB46A00862997 /* FlutterGeneratedPluginSwiftPackage */; };
+		83FE5F3DC772EC4DC9227599 /* ScheduleWidgetData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FFA8D783634CDC0B542F43C /* ScheduleWidgetData.swift */; };
 		8A25B5D1806FEF9EF23852A0 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = A00EFB593E02940F7C12FD8C /* GoogleService-Info.plist */; };
 		8BBD688AD9D7A1427BD129E7 /* Pods_Runner.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9EE2AFE52D2A7966E1428F2 /* Pods_Runner.framework */; };
 		97C146FC1CF9000F007C117D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FA1CF9000F007C117D /* Main.storyboard */; };
 		97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FD1CF9000F007C117D /* Assets.xcassets */; };
 		97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */; };
+		F2F46BB174734AC0E15AEBC9 /* ScheduleWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4637A8A7A0F382B37CC5B2C7 /* ScheduleWidget.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -27,6 +36,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = 97C146ED1CF9000F007C117D;
 			remoteInfo = Runner;
+		};
+		5C0B086C8E62FE457393D578 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 97C146E61CF9000F007C117D /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = AA2E40C209037EC02F887104;
+			remoteInfo = ScheduleWidgetExtension;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -41,18 +57,35 @@
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		F24BAF7B8F4A76E4F4377EDA /* Embed App Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				36AD32F96DDFCBD7AC66AFEC /* ScheduleWidgetExtension.appex in Embed App Extensions */,
+			);
+			name = "Embed App Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		1498D2321E8E86230040F4C2 /* GeneratedPluginRegistrant.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GeneratedPluginRegistrant.h; sourceTree = "<group>"; };
 		1498D2331E8E89220040F4C2 /* GeneratedPluginRegistrant.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GeneratedPluginRegistrant.m; sourceTree = "<group>"; };
+		291548B6B386E976F01F0E74 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS14.0.sdk/System/Library/Frameworks/SwiftUI.framework; sourceTree = DEVELOPER_DIR; };
 		331C807B294A618700263BE5 /* RunnerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunnerTests.swift; sourceTree = "<group>"; };
 		331C8081294A63A400263BE5 /* RunnerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RunnerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = AppFrameworkInfo.plist; path = Flutter/AppFrameworkInfo.plist; sourceTree = "<group>"; };
+		3FFA8D783634CDC0B542F43C /* ScheduleWidgetData.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ScheduleWidgetData.swift; sourceTree = "<group>"; };
+		4637A8A7A0F382B37CC5B2C7 /* ScheduleWidget.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ScheduleWidget.swift; sourceTree = "<group>"; };
 		50CD54ADA23309CDFD318253 /* Pods-Runner.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.release.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.release.xcconfig"; sourceTree = "<group>"; };
+		5DC52E254EEDBC43C300D8DC /* ScheduleWidget.entitlements */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.entitlements; path = ScheduleWidget.entitlements; sourceTree = "<group>"; };
+		6AF29A9D0397CA1CD192FB00 /* ScheduleWidgetBridge.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ScheduleWidgetBridge.swift; sourceTree = "<group>"; };
 		74858FAD1ED2DC5600515810 /* Runner-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Runner-Bridging-Header.h"; sourceTree = "<group>"; };
 		74858FAE1ED2DC5600515810 /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		789D130BB84F273052617D67 /* Pods-Runner.profile.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.profile.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.profile.xcconfig"; sourceTree = "<group>"; };
+		78A5B92B0574846B6299CCD9 /* ScheduleWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ScheduleWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		78E0A7A72DC9AD7400C4905E /* FlutterGeneratedPluginSwiftPackage */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = FlutterGeneratedPluginSwiftPackage; path = Flutter/ephemeral/Packages/FlutterGeneratedPluginSwiftPackage; sourceTree = "<group>"; };
 		7A512F8E2EB58B4997DCEB03 /* Pods-RunnerTests.profile.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RunnerTests.profile.xcconfig"; path = "Target Support Files/Pods-RunnerTests/Pods-RunnerTests.profile.xcconfig"; sourceTree = "<group>"; };
 		7AFA3C8E1D35360C0083082E /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = Release.xcconfig; path = Flutter/Release.xcconfig; sourceTree = "<group>"; };
@@ -63,11 +96,15 @@
 		97C146FD1CF9000F007C117D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		97C147001CF9000F007C117D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		97C147021CF9000F007C117D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		97D18268252906290F19661D /* Widget.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = Widget.xcconfig; sourceTree = "<group>"; };
 		A00EFB593E02940F7C12FD8C /* GoogleService-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "Runner/GoogleService-Info.plist"; sourceTree = "<group>"; };
+		AAA291E444BAB7E045645B79 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS14.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
 		BAF356D2C0638BF43E91BCF5 /* Pods-RunnerTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RunnerTests.debug.xcconfig"; path = "Target Support Files/Pods-RunnerTests/Pods-RunnerTests.debug.xcconfig"; sourceTree = "<group>"; };
 		C9EE2AFE52D2A7966E1428F2 /* Pods_Runner.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Runner.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		CE53B148E09F3E30D3F35B9A /* Pods_RunnerTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_RunnerTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		D3CD56A551596B2F1C5DAC8D /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS14.0.sdk/System/Library/Frameworks/WidgetKit.framework; sourceTree = DEVELOPER_DIR; };
 		E07E4DFE1539AE2BD35F49E2 /* Pods-Runner.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.debug.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.debug.xcconfig"; sourceTree = "<group>"; };
+		E72D2425580297B898FDCBC2 /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		FDF070D8AEB1523A0A2C5A78 /* Pods-RunnerTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RunnerTests.release.xcconfig"; path = "Target Support Files/Pods-RunnerTests/Pods-RunnerTests.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -86,12 +123,33 @@
 			files = (
 				78A318202AECB46A00862997 /* FlutterGeneratedPluginSwiftPackage in Frameworks */,
 				8BBD688AD9D7A1427BD129E7 /* Pods_Runner.framework in Frameworks */,
+				5FD15DB40DDE0E42E462B59B /* WidgetKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F2F30A30A7BCED06591E3252 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				03733AF5118E560E58C57CDD /* Foundation.framework in Frameworks */,
+				0D55D7788CDA8C474E569CF2 /* SwiftUI.framework in Frameworks */,
+				2C1D4978CC6A4945F1488D2A /* WidgetKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		2B9E4AD933CE256FCF2A8653 /* iOS */ = {
+			isa = PBXGroup;
+			children = (
+				AAA291E444BAB7E045645B79 /* Foundation.framework */,
+				291548B6B386E976F01F0E74 /* SwiftUI.framework */,
+				D3CD56A551596B2F1C5DAC8D /* WidgetKit.framework */,
+			);
+			name = iOS;
+			sourceTree = "<group>";
+		};
 		331C8082294A63A400263BE5 /* RunnerTests */ = {
 			isa = PBXGroup;
 			children = (
@@ -135,6 +193,8 @@
 				5D8CFE45C856E72B87AB83D1 /* Pods */,
 				A59D618F1220FE8D763E366B /* Frameworks */,
 				A00EFB593E02940F7C12FD8C /* GoogleService-Info.plist */,
+				CC04090687422F0FB2335478 /* ScheduleWidgetShared */,
+				CE6357E9389A7FDFFDA56837 /* ScheduleWidget */,
 			);
 			sourceTree = "<group>";
 		};
@@ -143,6 +203,7 @@
 			children = (
 				97C146EE1CF9000F007C117D /* Runner.app */,
 				331C8081294A63A400263BE5 /* RunnerTests.xctest */,
+				78A5B92B0574846B6299CCD9 /* ScheduleWidgetExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -158,6 +219,7 @@
 				1498D2331E8E89220040F4C2 /* GeneratedPluginRegistrant.m */,
 				74858FAE1ED2DC5600515810 /* AppDelegate.swift */,
 				74858FAD1ED2DC5600515810 /* Runner-Bridging-Header.h */,
+				6AF29A9D0397CA1CD192FB00 /* ScheduleWidgetBridge.swift */,
 			);
 			path = Runner;
 			sourceTree = "<group>";
@@ -167,8 +229,30 @@
 			children = (
 				C9EE2AFE52D2A7966E1428F2 /* Pods_Runner.framework */,
 				CE53B148E09F3E30D3F35B9A /* Pods_RunnerTests.framework */,
+				2B9E4AD933CE256FCF2A8653 /* iOS */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		CC04090687422F0FB2335478 /* ScheduleWidgetShared */ = {
+			isa = PBXGroup;
+			children = (
+				3FFA8D783634CDC0B542F43C /* ScheduleWidgetData.swift */,
+			);
+			name = ScheduleWidgetShared;
+			path = ScheduleWidgetShared;
+			sourceTree = "<group>";
+		};
+		CE6357E9389A7FDFFDA56837 /* ScheduleWidget */ = {
+			isa = PBXGroup;
+			children = (
+				4637A8A7A0F382B37CC5B2C7 /* ScheduleWidget.swift */,
+				E72D2425580297B898FDCBC2 /* Info.plist */,
+				5DC52E254EEDBC43C300D8DC /* ScheduleWidget.entitlements */,
+				97D18268252906290F19661D /* Widget.xcconfig */,
+			);
+			name = ScheduleWidget;
+			path = ScheduleWidget;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -203,6 +287,7 @@
 				97C146EB1CF9000F007C117D /* Frameworks */,
 				97C146EC1CF9000F007C117D /* Resources */,
 				9705A1C41CF9048500538489 /* Embed Frameworks */,
+				F24BAF7B8F4A76E4F4377EDA /* Embed App Extensions */,
 				3B06AD1E1E4923F5004D2608 /* Thin Binary */,
 				3629A02B41426A96FDD1C068 /* [CP] Embed Pods Frameworks */,
 				E4DE8E9906BCCF3E760337B5 /* FlutterFire: "flutterfire upload-crashlytics-symbols" */,
@@ -210,6 +295,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				14887836B2F4E98E2FE9C44C /* PBXTargetDependency */,
 			);
 			name = Runner;
 			packageProductDependencies = (
@@ -218,6 +304,23 @@
 			productName = Runner;
 			productReference = 97C146EE1CF9000F007C117D /* Runner.app */;
 			productType = "com.apple.product-type.application";
+		};
+		AA2E40C209037EC02F887104 /* ScheduleWidgetExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 9BED2C2DBF8AC80E2BAD0EF4 /* Build configuration list for PBXNativeTarget "ScheduleWidgetExtension" */;
+			buildPhases = (
+				7CF216D3D107E147870158C3 /* Sources */,
+				F2F30A30A7BCED06591E3252 /* Frameworks */,
+				A5044CD918EB93ED7F002606 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = ScheduleWidgetExtension;
+			productName = ScheduleWidgetExtension;
+			productReference = 78A5B92B0574846B6299CCD9 /* ScheduleWidgetExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
 		};
 /* End PBXNativeTarget section */
 
@@ -236,6 +339,19 @@
 					97C146ED1CF9000F007C117D = {
 						CreatedOnToolsVersion = 7.3.1;
 						LastSwiftMigration = 1100;
+						SystemCapabilities = {
+							com.apple.ApplicationGroups.iOS = {
+								enabled = 1;
+							};
+						};
+					};
+					AA2E40C209037EC02F887104 = {
+						CreatedOnToolsVersion = 26.0;
+						SystemCapabilities = {
+							com.apple.ApplicationGroups.iOS = {
+								enabled = 1;
+							};
+						};
 					};
 				};
 			};
@@ -257,6 +373,7 @@
 			targets = (
 				97C146ED1CF9000F007C117D /* Runner */,
 				331C8080294A63A400263BE5 /* RunnerTests */,
+				AA2E40C209037EC02F887104 /* ScheduleWidgetExtension */,
 			);
 		};
 /* End PBXProject section */
@@ -278,6 +395,13 @@
 				97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */,
 				97C146FC1CF9000F007C117D /* Main.storyboard in Resources */,
 				8A25B5D1806FEF9EF23852A0 /* GoogleService-Info.plist in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A5044CD918EB93ED7F002606 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -405,18 +529,35 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		7CF216D3D107E147870158C3 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6C5E4BC21D655F3CA33065AE /* ScheduleWidgetData.swift in Sources */,
+				F2F46BB174734AC0E15AEBC9 /* ScheduleWidget.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		97C146EA1CF9000F007C117D /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				74858FAF1ED2DC5600515810 /* AppDelegate.swift in Sources */,
 				1498D2341E8E89220040F4C2 /* GeneratedPluginRegistrant.m in Sources */,
+				83FE5F3DC772EC4DC9227599 /* ScheduleWidgetData.swift in Sources */,
+				6ED0DE77FD85FA8888759669 /* ScheduleWidgetBridge.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		14887836B2F4E98E2FE9C44C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = ScheduleWidgetExtension;
+			target = AA2E40C209037EC02F887104 /* ScheduleWidgetExtension */;
+			targetProxy = 5C0B086C8E62FE457393D578 /* PBXContainerItemProxy */;
+		};
 		331C8086294A63A400263BE5 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 97C146ED1CF9000F007C117D /* Runner */;
@@ -504,6 +645,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = Runner/Runner.entitlements;
 				CURRENT_PROJECT_VERSION = 409;
 				DART_DEBUG_BONJOUR_SERVICE = _dartobservatory._tcp;
 				DEVELOPMENT_TEAM = 8468D64C4S;
@@ -574,6 +716,90 @@
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Runner.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Runner";
 			};
 			name = Profile;
+		};
+		49D2DCEE5ED876B9E885BA62 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 97D18268252906290F19661D /* Widget.xcconfig */;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_ENTITLEMENTS = ScheduleWidget/ScheduleWidget.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
+				DEVELOPMENT_TEAM = 8468D64C4S;
+				INFOPLIST_FILE = ScheduleWidget/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = "$(FLUTTER_BUILD_NAME)";
+				PRODUCT_BUNDLE_IDENTIFIER = ru.unn.unnMobile.ScheduleWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		68774BA96ECD481C8F944A42 /* Profile */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 97D18268252906290F19661D /* Widget.xcconfig */;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_ENTITLEMENTS = ScheduleWidget/ScheduleWidget.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
+				DEVELOPMENT_TEAM = 8468D64C4S;
+				INFOPLIST_FILE = ScheduleWidget/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = "$(FLUTTER_BUILD_NAME)";
+				PRODUCT_BUNDLE_IDENTIFIER = ru.unn.unnMobile.ScheduleWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Profile;
+		};
+		6D0A4AEB4A7C841A4684DA4F /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 97D18268252906290F19661D /* Widget.xcconfig */;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_ENTITLEMENTS = ScheduleWidget/ScheduleWidget.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
+				DEVELOPMENT_TEAM = 8468D64C4S;
+				INFOPLIST_FILE = ScheduleWidget/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = "$(FLUTTER_BUILD_NAME)";
+				PRODUCT_BUNDLE_IDENTIFIER = ru.unn.unnMobile.ScheduleWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
 		};
 		97C147031CF9000F007C117D /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -696,6 +922,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = Runner/Runner.entitlements;
 				CURRENT_PROJECT_VERSION = 409;
 				DART_DEBUG_BONJOUR_SERVICE = _dartobservatory._tcp;
 				DEVELOPMENT_TEAM = 8468D64C4S;
@@ -724,6 +951,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = Runner/Runner.entitlements;
 				CURRENT_PROJECT_VERSION = 409;
 				DART_DEBUG_BONJOUR_SERVICE = "";
 				DEVELOPMENT_TEAM = 8468D64C4S;
@@ -774,6 +1002,16 @@
 				97C147061CF9000F007C117D /* Debug */,
 				97C147071CF9000F007C117D /* Release */,
 				249021D4217E4FDB00AE95B9 /* Profile */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		9BED2C2DBF8AC80E2BAD0EF4 /* Build configuration list for PBXNativeTarget "ScheduleWidgetExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				6D0A4AEB4A7C841A4684DA4F /* Release */,
+				49D2DCEE5ED876B9E885BA62 /* Debug */,
+				68774BA96ECD481C8F944A42 /* Profile */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
