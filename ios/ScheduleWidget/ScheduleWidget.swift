@@ -55,7 +55,15 @@ struct ScheduleWidgetView: View {
         }
     }
 
-    private var itemSpacing: CGFloat { family == .systemMedium ? 6 : 8 }
+    private var itemSpacing: CGFloat { family == .systemMedium ? 4 : 8 }
+
+    private func lessonCapacity(for height: CGFloat) -> Int {
+        switch family {
+        case .systemSmall: return 1
+        case .systemMedium: return 2
+        default: return max(1, min(6, Int((height - 64) / (rowHeight + itemSpacing))))
+        }
+    }
 
     private var remaining: [ScheduleWidgetLesson] {
         guard entry.data?.covers(entry.date) == true else { return [] }
@@ -70,9 +78,7 @@ struct ScheduleWidgetView: View {
 
     var body: some View {
         GeometryReader { geometry in
-            let headerAndFooterHeight: CGFloat = family == .systemMedium ? 60 : 64
-            let capacity = family == .systemSmall ? 1 :
-                max(1, min(6, Int((geometry.size.height - headerAndFooterHeight) / (rowHeight + itemSpacing))))
+            let capacity = lessonCapacity(for: geometry.size.height)
             VStack(alignment: .leading, spacing: itemSpacing) {
                 VStack(alignment: .leading, spacing: 3) {
                     HStack {
@@ -84,12 +90,15 @@ struct ScheduleWidgetView: View {
                             Text("\(remaining.count)")
                                 .font(.system(size: 11, weight: .semibold))
                                 .foregroundColor(accent)
-                                .frame(width: 20, height: 20)
+                                .frame(
+                                    width: family == .systemMedium ? 16 : 20,
+                                    height: family == .systemMedium ? 16 : 20
+                                )
                                 .background(Circle().fill(accent.opacity(0.12)))
                         }
                     }
                     Text(dateLabel)
-                        .font(.system(size: 11))
+                        .font(.system(size: family == .systemMedium ? 10 : 11))
                         .foregroundColor(.secondary)
                         .lineLimit(1)
                 }
@@ -113,7 +122,8 @@ struct ScheduleWidgetView: View {
                 .foregroundColor(accent)
             }
         }
-        .padding(14)
+        .padding(.horizontal, 14)
+        .padding(.vertical, family == .systemMedium ? 8 : 14)
         .scheduleWidgetBackground()
         .widgetURL(ScheduleWidgetConstants.url)
     }
