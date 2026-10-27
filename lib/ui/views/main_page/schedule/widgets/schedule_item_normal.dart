@@ -20,13 +20,43 @@ class ScheduleItemNormal extends StatefulWidget {
   State<ScheduleItemNormal> createState() => _ScheduleItemNormalState();
 }
 
-class _ScheduleItemNormalState extends State<ScheduleItemNormal>
-    with TickerProviderStateMixin {
+class _ScheduleItemNormalState extends State<ScheduleItemNormal> {
   bool _expanded = false;
   final vutsScheduleUri = 'http://www.ivo.unn.ru/raspisanie-vuts/';
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) => Padding(
+        padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 8.0),
+        child: GestureDetector(
+          onTap: () async {
+            if (widget.subject.name == 'Военная подготовка') {
+              final Uri url = Uri.parse(vutsScheduleUri);
+              if (!await launchUrl(url)) {
+                throw Exception('Could not launch $url');
+              }
+            } else {
+              setState(() {
+                _expanded = !_expanded;
+              });
+            }
+          },
+          child: AnimatedCrossFade(
+            duration: const Duration(milliseconds: 360),
+            reverseDuration: const Duration(milliseconds: 360),
+            sizeCurve: Curves.easeInOutCubic,
+            firstCurve: Curves.easeInOut,
+            secondCurve: Curves.easeInOut,
+            alignment: Alignment.topCenter,
+            crossFadeState: _expanded
+                ? CrossFadeState.showSecond
+                : CrossFadeState.showFirst,
+            firstChild: _buildCard(context, expanded: false),
+            secondChild: _buildCard(context, expanded: true),
+          ),
+        ),
+      );
+
+  Widget _buildCard(BuildContext context, {required bool expanded}) {
     final theme = Theme.of(context);
     final extraColors = theme.extension<UnnMobileColors>()!;
     final DateFormat timeFormatter = DateFormat('HH:mm');
@@ -36,129 +66,119 @@ class _ScheduleItemNormalState extends State<ScheduleItemNormal>
     const horizontalPadding = 8.0;
     const cardRadius = 12.0;
 
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 8.0),
-      child: GestureDetector(
-        onTap: () async {
-          if (widget.subject.name == 'Военная подготовка') {
-            final Uri url = Uri.parse(vutsScheduleUri);
-            if (!await launchUrl(url)) {
-              throw Exception('Could not launch $url');
-            }
-          } else {
-            setState(() {
-              _expanded = !_expanded;
-            });
-          }
-        },
-        child: Container(
-          decoration: BoxDecoration(
-            borderRadius: const BorderRadius.only(
-              topRight: Radius.circular(cardRadius),
-              bottomRight: Radius.circular(cardRadius),
-            ),
-            color: theme.getScheduleSurfaceColor(
-              widget.subject.dateTimeRange,
-              isEven: widget.even,
-            ),
-          ),
-          clipBehavior: Clip.antiAlias,
-          child: IntrinsicHeight(
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Container(
-                  width: 4,
-                  decoration: BoxDecoration(
-                    color: typeColor,
-                    borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(cardRadius),
-                      bottomLeft: Radius.circular(cardRadius),
-                    ),
-                  ),
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: const BorderRadius.only(
+          topRight: Radius.circular(cardRadius),
+          bottomRight: Radius.circular(cardRadius),
+        ),
+        color: theme.getScheduleSurfaceColor(
+          widget.subject.dateTimeRange,
+          isEven: widget.even,
+        ),
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: IntrinsicHeight(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Container(
+              width: 4,
+              decoration: BoxDecoration(
+                color: typeColor,
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(cardRadius),
+                  bottomLeft: Radius.circular(cardRadius),
                 ),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      vertical: verticalPadding,
-                      horizontal: horizontalPadding,
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          widget.subject.name,
-                          style: theme.textTheme.titleMedium!
-                              .copyWith(fontWeight: FontWeight.bold),
-                          overflow: _expanded
-                              ? TextOverflow.visible
-                              : TextOverflow.ellipsis,
-                          softWrap: true,
-                        ),
-                        _textWithIcon(
-                          context,
-                          Icons.location_on,
-                          '${widget.subject.address.auditorium}/${widget.subject.address.building}',
-                        ),
-                        if (_expanded)
-                          _textWithIcon(
-                            context,
-                            Icons.person,
-                            widget.subject.lecturer,
-                          ),
-                        if (_expanded)
-                          _textWithIcon(
-                            context,
-                            Icons.school,
-                            "Поток: ${widget.subject.groups.join("|")}",
-                          ),
-                        Text(
-                          widget.subject.subjectType,
-                          style: theme.textTheme.labelLarge!.copyWith(
-                            color: typeColor,
-                            fontStyle: FontStyle.italic,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+              ),
+            ),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  vertical: verticalPadding,
+                  horizontal: horizontalPadding,
                 ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: verticalPadding,
-                    horizontal: horizontalPadding,
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Text(
-                        timeFormatter
-                            .format(widget.subject.dateTimeRange.start),
-                        style: theme.textTheme.titleMedium!
-                            .copyWith(fontWeight: FontWeight.bold),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      widget.subject.name,
+                      style: theme.textTheme.titleMedium!
+                          .copyWith(fontWeight: FontWeight.bold),
+                      overflow: expanded
+                          ? TextOverflow.visible
+                          : TextOverflow.ellipsis,
+                      softWrap: true,
+                    ),
+                    _textWithIcon(
+                      context,
+                      Icons.location_on,
+                      '${widget.subject.address.auditorium}/${widget.subject.address.building}',
+                      expanded: expanded,
+                    ),
+                    if (expanded)
+                      _textWithIcon(
+                        context,
+                        Icons.person,
+                        widget.subject.lecturer,
+                        expanded: expanded,
                       ),
-                      Text(
-                        timeFormatter.format(widget.subject.dateTimeRange.end),
-                        style: theme.textTheme.titleMedium!.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: extraColors.ligtherTextColor,
-                        ),
+                    if (expanded)
+                      _textWithIcon(
+                        context,
+                        Icons.school,
+                        "Поток: ${widget.subject.groups.join("|")}",
+                        expanded: expanded,
                       ),
-                    ],
-                  ),
+                    Text(
+                      widget.subject.subjectType,
+                      style: theme.textTheme.labelLarge!.copyWith(
+                        color: typeColor,
+                        fontStyle: FontStyle.italic,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
-          ),
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                vertical: verticalPadding,
+                horizontal: horizontalPadding,
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(
+                    timeFormatter.format(widget.subject.dateTimeRange.start),
+                    style: theme.textTheme.titleMedium!
+                        .copyWith(fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    timeFormatter.format(widget.subject.dateTimeRange.end),
+                    style: theme.textTheme.titleMedium!.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: extraColors.ligtherTextColor,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
 
-  Widget _textWithIcon(BuildContext context, IconData icon, String text) {
+  Widget _textWithIcon(
+    BuildContext context,
+    IconData icon,
+    String text, {
+    required bool expanded,
+  }) {
     final theme = Theme.of(context);
     final extraColors = theme.extension<UnnMobileColors>()!;
     return Row(
@@ -178,8 +198,8 @@ class _ScheduleItemNormalState extends State<ScheduleItemNormal>
             text,
             style: theme.textTheme.labelLarge!
                 .copyWith(color: extraColors.ligtherTextColor),
-            overflow: _expanded ? TextOverflow.visible : TextOverflow.ellipsis,
-            softWrap: _expanded,
+            overflow: expanded ? TextOverflow.visible : TextOverflow.ellipsis,
+            softWrap: expanded,
           ),
         ),
       ],
