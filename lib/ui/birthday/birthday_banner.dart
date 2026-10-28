@@ -4,17 +4,20 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:unn_mobile/core/misc/birthday/birthday_greeting_manager.dart';
 import 'package:unn_mobile/core/misc/user/current_user_sync_storage.dart';
-import 'package:unn_mobile/core/services/interfaces/birthday/birthday_greeting_service.dart';
+import 'package:unn_mobile/core/models/birthday/birthday_greeting_data.dart';
 import 'package:unn_mobile/ui/birthday/birthday_balloon.dart';
 
 class BirthdayBanner extends StatefulWidget {
   final CurrentUserSyncStorage userStorage;
-  final BirthdayGreetingService service;
+  final BirthdayGreetingManager manager;
+  final bool isActive;
 
   const BirthdayBanner({
     required this.userStorage,
-    required this.service,
+    required this.manager,
+    required this.isActive,
     super.key,
   });
 
@@ -25,13 +28,32 @@ class BirthdayBanner extends StatefulWidget {
 class _BirthdayBannerState extends State<BirthdayBanner>
     with WidgetsBindingObserver {
   Timer? _midnightTimer;
-  DateTime _today = DateTime.now();
+  BirthdayGreetingData? _greeting;
+  int _generation = 0;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    widget.userStorage.addListener(_loadGreeting);
     _scheduleMidnight();
+    _loadGreeting();
+  }
+
+  @override
+  void didUpdateWidget(BirthdayBanner oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.userStorage != widget.userStorage) {
+      oldWidget.userStorage.removeListener(_loadGreeting);
+      widget.userStorage.addListener(_loadGreeting);
+    }
+    if (!widget.isActive) {
+      _generation++;
+    } else if (!oldWidget.isActive ||
+        oldWidget.userStorage != widget.userStorage ||
+        oldWidget.manager != widget.manager) {
+      _loadGreeting();
+    }
   }
 
   void _scheduleMidnight() {
@@ -42,8 +64,39 @@ class _BirthdayBannerState extends State<BirthdayBanner>
   }
 
   void _refreshDate() {
-    setState(() => _today = DateTime.now());
+    _loadGreeting();
     _scheduleMidnight();
+  }
+
+  void _loadGreeting() {
+    final generation = ++_generation;
+    if (!widget.isActive) {
+      return;
+    }
+    final user = widget.userStorage.currentUserData;
+    if (user == null || !widget.manager.isBirthday(user, DateTime.now())) {
+      setState(() => _greeting = null);
+      return;
+    }
+    unawaited(_selectGreeting(user.userId, generation));
+  }
+
+  Future<void> _selectGreeting(int userId, int generation) async {
+    final greeting = await widget.manager.getGreeting(
+      userId,
+      previousId: _greeting?.id,
+    );
+    if (!mounted || generation != _generation || !widget.isActive) {
+      return;
+    }
+    final user = widget.userStorage.currentUserData;
+    if (user?.userId != userId ||
+        user == null ||
+        !widget.manager.isBirthday(user, DateTime.now())) {
+      setState(() => _greeting = null);
+      return;
+    }
+    setState(() => _greeting = greeting);
   }
 
   @override
@@ -51,6 +104,7 @@ class _BirthdayBannerState extends State<BirthdayBanner>
     if (state == AppLifecycleState.resumed) {
       _refreshDate();
     } else {
+      _generation++;
       _midnightTimer?.cancel();
     }
   }
@@ -58,28 +112,24 @@ class _BirthdayBannerState extends State<BirthdayBanner>
   @override
   void dispose() {
     _midnightTimer?.cancel();
+    widget.userStorage.removeListener(_loadGreeting);
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
 
   @override
-  Widget build(BuildContext context) => ListenableBuilder(
-        listenable: widget.userStorage,
-        builder: (context, _) {
-          final user = widget.userStorage.currentUserData;
-          if (user == null || !widget.service.isBirthday(user, _today)) {
-            return const SizedBox.shrink();
-          }
-          return const Padding(
-            padding: EdgeInsets.only(bottom: 12),
-            child: _BirthdayCard(),
-          );
-        },
-      );
+  Widget build(BuildContext context) => _greeting == null
+      ? const SizedBox.shrink()
+      : Padding(
+          padding: const EdgeInsets.only(bottom: 12),
+          child: _BirthdayCard(greeting: _greeting!),
+        );
 }
 
 class _BirthdayCard extends StatelessWidget {
-  const _BirthdayCard();
+  final BirthdayGreetingData greeting;
+
+  const _BirthdayCard({required this.greeting});
 
   @override
   Widget build(BuildContext context) {
@@ -112,16 +162,7 @@ class _BirthdayCard extends StatelessWidget {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
-                          'СЕГОДНЯ ВАШ ДЕНЬ',
-                          style: theme.textTheme.labelSmall?.copyWith(
-                            color: colors.primary,
-                            fontWeight: FontWeight.w600,
-                            letterSpacing: 1.1,
-                          ),
-                        ),
-                        const SizedBox(height: 6),
-                        Text(
-                          'С днём рождения!',
+                          greeting.title,
                           style: theme.textTheme.titleLarge?.copyWith(
                             fontSize: 20,
                             fontWeight: FontWeight.w600,
@@ -130,7 +171,7 @@ class _BirthdayCard extends StatelessWidget {
                         ),
                         const SizedBox(height: 6),
                         Text(
-                          'Пусть хорошего будет больше — сегодня и каждый день.',
+                          greeting.shortMessage,
                           style: theme.textTheme.bodyMedium?.copyWith(
                             height: 1.4,
                             color: colors.onSurfaceVariant,

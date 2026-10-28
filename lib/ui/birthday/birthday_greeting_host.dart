@@ -4,19 +4,19 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:unn_mobile/core/misc/birthday/birthday_greeting_manager.dart';
 import 'package:unn_mobile/core/misc/user/current_user_sync_storage.dart';
-import 'package:unn_mobile/core/services/interfaces/birthday/birthday_greeting_service.dart';
 import 'package:unn_mobile/ui/birthday/birthday_greeting.dart';
 
 class BirthdayGreetingHost extends StatefulWidget {
   final CurrentUserSyncStorage userStorage;
-  final BirthdayGreetingService service;
+  final BirthdayGreetingManager manager;
   final bool enabled;
   final Widget child;
 
   const BirthdayGreetingHost({
     required this.userStorage,
-    required this.service,
+    required this.manager,
     required this.enabled,
     required this.child,
     super.key,
@@ -86,11 +86,16 @@ class _BirthdayGreetingHostState extends State<BirthdayGreetingHost>
 
   Future<void> _presentIfEligible(int userId, DateTime date) async {
     final user = widget.userStorage.currentUserData;
-    if (user == null || !await widget.service.shouldShow(user, date)) {
+    if (user == null || !await widget.manager.shouldShow(user, date)) {
       return;
     }
+    if (!mounted || widget.userStorage.currentUserData?.userId != userId) {
+      return;
+    }
+    final greeting = await widget.manager.getGreeting(userId);
     final now = DateTime.now();
-    if (!mounted ||
+    if (greeting == null ||
+        !mounted ||
         !_canPresent ||
         widget.userStorage.currentUserData?.userId != userId ||
         now.year != date.year ||
@@ -98,7 +103,7 @@ class _BirthdayGreetingHostState extends State<BirthdayGreetingHost>
         now.day != date.day) {
       return;
     }
-    final service = widget.service;
+    final manager = widget.manager;
     await showGeneralDialog<void>(
       context: context,
       routeSettings: const RouteSettings(name: 'birthday-greeting'),
@@ -106,7 +111,8 @@ class _BirthdayGreetingHostState extends State<BirthdayGreetingHost>
           ? Duration.zero
           : const Duration(milliseconds: 450),
       pageBuilder: (context, _, __) => BirthdayGreeting(
-        onShown: () => unawaited(service.markShown(userId, date)),
+        greeting: greeting,
+        onShown: () => unawaited(manager.markShown(userId, date)),
       ),
       transitionBuilder: (context, animation, _, child) => FadeTransition(
         opacity: animation.drive(CurveTween(curve: Curves.easeOutCubic)),

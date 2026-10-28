@@ -6,8 +6,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/constants/main_page_paths.dart';
+import 'package:unn_mobile/core/misc/birthday/birthday_greeting_manager.dart';
 import 'package:unn_mobile/core/misc/user/current_user_sync_storage.dart';
-import 'package:unn_mobile/core/services/interfaces/birthday/birthday_greeting_service.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/common/profile_view_model.dart';
 import 'package:unn_mobile/ui/birthday/birthday_banner.dart';
 import 'package:unn_mobile/ui/builders/online_status_builder.dart';
@@ -27,7 +27,8 @@ class MainPageMenu extends StatelessWidget {
       backgroundColor: theme.colorScheme.surface,
       body: OnlineStatusBuilder(
         builder: (context, isOnline) {
-          final configuration = AppRouter.of(context).configuration;
+          final router = AppRouter.of(context);
+          final configuration = router.configuration;
           final routes = configuration.tabs.last.subroutes
               .where(
                 (route) => !route.isDisabled && (!route.onlineOnly || isOnline),
@@ -57,11 +58,17 @@ class MainPageMenu extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 24),
-                    BirthdayBanner(
-                      userStorage:
-                          Injector.appInstance.get<CurrentUserSyncStorage>(),
-                      service:
-                          Injector.appInstance.get<BirthdayGreetingService>(),
+                    ListenableBuilder(
+                      listenable: router.router.routeInformationProvider,
+                      builder: (context, _) => BirthdayBanner(
+                        userStorage:
+                            Injector.appInstance.get<CurrentUserSyncStorage>(),
+                        manager:
+                            Injector.appInstance.get<BirthdayGreetingManager>(),
+                        isActive: router.router.routeInformationProvider.value
+                                .uri.path ==
+                            router.locationFor(MainPagePaths.more),
+                      ),
                     ),
                     const SizedBox(height: 12),
                     Material(

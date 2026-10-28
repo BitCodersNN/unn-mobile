@@ -8,23 +8,26 @@ import 'package:unn_mobile/core/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/constants/api/path.dart';
 import 'package:unn_mobile/core/misc/dio_options_factory/options_with_expected_type_factory.dart';
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
+import 'package:unn_mobile/core/services/interfaces/git/git_config_service.dart';
 
-class GitConfigLoader {
+class GitConfigServiceImpl implements GitConfigService {
   final LoggerService loggerService;
   final ApiHelper apiHelper;
-  final String path;
 
-  GitConfigLoader(
+  GitConfigServiceImpl(
     this.loggerService,
-    this.apiHelper, {
-    required this.path,
-  });
+    this.apiHelper,
+  );
 
-  Future<Map<String, dynamic>?> getConfig() async {
+  @override
+  Future<Map<String, dynamic>?> getConfig({
+    required String path,
+    required String revision,
+  }) async {
     Response response;
     try {
       response = await apiHelper.get(
-        path: '${ApiPath.gitRepository}/$path',
+        path: '${ApiPath.gitRepository}/$revision/$path',
         options: OptionsWithExpectedTypeFactory.string,
       );
     } catch (error, stackTrace) {

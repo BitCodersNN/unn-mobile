@@ -9,7 +9,11 @@ abstract interface class LogoDownloaderService {
   /// [fileName] - имя файла логотипа, который нужно загрузить.
   ///
   /// Возвращает [File], если загрузка прошла успешно, или `null`, если произошла ошибка.
-  Future<File?> downloadFile(String fileName);
+  Future<File?> downloadFile(
+    String fileName, {
+    required String revision,
+    bool allowLegacyFallback = false,
+  });
 
   /// Загружает список файлов логотипов с именами [fileNames].
   ///
@@ -18,5 +22,6 @@ abstract interface class LogoDownloaderService {
   /// Возвращает список [File], если загрузка прошла успешно, или `null`, если произошла ошибка.
   Future<List<File>?> downloadFiles({
     required List<String> fileNames,
+    required String revision,
   });
 }

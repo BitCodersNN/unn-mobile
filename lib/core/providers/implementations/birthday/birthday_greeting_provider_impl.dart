@@ -6,6 +6,7 @@ import 'package:unn_mobile/core/services/interfaces/common/storage_service.dart'
 
 class _BirthdayGreetingProviderKeys {
   static const String shownYearPrefix = 'birthday_greeting';
+  static const String lastGreetingIdPrefix = 'birthday_greeting_last_id';
 }
 
 class BirthdayGreetingProviderImpl implements BirthdayGreetingProvider {
@@ -34,4 +35,16 @@ class BirthdayGreetingProviderImpl implements BirthdayGreetingProvider {
     _shownYears[userId] = year;
     await _storage.write(key: _key(userId), value: year.toString());
   }
+
+  @override
+  Future<String?> getLastGreetingId(int userId) => _storage.read(
+        key: '${_BirthdayGreetingProviderKeys.lastGreetingIdPrefix}.$userId',
+      );
+
+  @override
+  Future<void> saveLastGreetingId(int userId, String greetingId) =>
+      _storage.write(
+        key: '${_BirthdayGreetingProviderKeys.lastGreetingIdPrefix}.$userId',
+        value: greetingId,
+      );
 }

@@ -4,7 +4,6 @@
 import 'package:dio/dio.dart';
 import 'package:unn_mobile/core/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/constants/api/path.dart';
-import 'package:unn_mobile/core/misc/camel_case_converter.dart';
 import 'package:unn_mobile/core/misc/dio_options_factory/options_with_expected_type_factory.dart';
 import 'package:unn_mobile/core/misc/git/git_folder.dart';
 import 'package:unn_mobile/core/misc/json/json_utils.dart';
@@ -27,8 +26,13 @@ class LastCommitShaServiceImpl implements LastCommitShaService {
     Response response;
     try {
       response = await _apiHelper.get(
-        path: _path(gitPath.name.toSnakeCase()),
-        options: OptionsWithExpectedTypeFactory.jsonMap,
+        path: 'repos/${ApiPath.gitRepository}/commits',
+        queryParameters: {
+          'sha': GitPath.branch,
+          'path': gitPath.directory,
+          'per_page': 1,
+        },
+        options: OptionsWithExpectedTypeFactory.list,
       );
     } catch (error, stackTrace) {
       _loggerService.logError(error, stackTrace);
@@ -36,13 +40,20 @@ class LastCommitShaServiceImpl implements LastCommitShaService {
     }
 
     try {
-      return (response.data as JsonMap)['sha'] as String?;
+      return _readSha(response.data);
     } catch (error, stackTrace) {
       _loggerService.log('Exception: $error\nStackTrace: $stackTrace');
       return null;
     }
   }
 
-  String _path(String filePath) =>
-      'repos/${ApiPath.gitRepository}/commits/develop?path={file_path}&paths=$filePath&per_page=1';
+  String? _readSha(Object? json) {
+    if (json is! List) {
+      throw const FormatException('Expected a Git commit list');
+    }
+    final commits = json;
+    return commits.isEmpty
+        ? null
+        : (commits.first as JsonMap)['sha'] as String?;
+  }
 }

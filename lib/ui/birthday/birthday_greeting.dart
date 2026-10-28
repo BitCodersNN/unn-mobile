@@ -3,12 +3,18 @@
 
 import 'package:flutter/material.dart';
 import 'package:unn_mobile/core/misc/haptic_utils.dart';
+import 'package:unn_mobile/core/models/birthday/birthday_greeting_data.dart';
 import 'package:unn_mobile/ui/birthday/birthday_balloons.dart';
 
 class BirthdayGreeting extends StatefulWidget {
+  final BirthdayGreetingData greeting;
   final VoidCallback onShown;
 
-  const BirthdayGreeting({required this.onShown, super.key});
+  const BirthdayGreeting({
+    required this.greeting,
+    required this.onShown,
+    super.key,
+  });
 
   @override
   State<BirthdayGreeting> createState() => _BirthdayGreetingState();
@@ -115,7 +121,7 @@ class _BirthdayGreetingState extends State<BirthdayGreeting>
                             ),
                             const SizedBox(height: 24),
                             Text(
-                              'С днём\nрождения!',
+                              widget.greeting.title,
                               textAlign: TextAlign.center,
                               style: Theme.of(context)
                                   .textTheme
@@ -129,11 +135,10 @@ class _BirthdayGreetingState extends State<BirthdayGreeting>
                                   ),
                             ),
                             const SizedBox(height: 24),
-                            const Text(
-                              'Пусть впереди будет много радостных открытий, '
-                              'тёплых встреч и поводов гордиться собой.',
+                            Text(
+                              widget.greeting.message,
                               textAlign: TextAlign.center,
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 17,
                                 height: 1.55,
                                 color: Color(0xFF5B756F),

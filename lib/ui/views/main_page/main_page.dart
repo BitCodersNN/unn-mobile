@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/misc/app_open_tracker.dart';
+import 'package:unn_mobile/core/misc/birthday/birthday_greeting_manager.dart';
 import 'package:unn_mobile/core/misc/user/current_user_sync_storage.dart';
-import 'package:unn_mobile/core/services/interfaces/birthday/birthday_greeting_service.dart';
 import 'package:unn_mobile/ui/birthday/birthday_greeting_host.dart';
 import 'package:unn_mobile/ui/builders/online_status_builder.dart';
 import 'package:unn_mobile/ui/main_page_locations.dart';
@@ -62,7 +62,7 @@ class MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) => BirthdayGreetingHost(
         userStorage: Injector.appInstance.get<CurrentUserSyncStorage>(),
-        service: Injector.appInstance.get<BirthdayGreetingService>(),
+        manager: Injector.appInstance.get<BirthdayGreetingManager>(),
         enabled: _startupDialogsComplete,
         child: Scaffold(
           extendBody: false,
