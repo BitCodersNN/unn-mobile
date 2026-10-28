@@ -13,24 +13,12 @@ class BirthdayGreetingCatalog {
 
   BirthdayGreetingCatalog({
     required Iterable<BirthdayGreetingData> greetings,
-  }) : greetings = List.unmodifiable(greetings) {
-    if (this.greetings.isEmpty ||
-        this.greetings.map((greeting) => greeting.id).toSet().length !=
-            this.greetings.length) {
-      throw const FormatException(
-        'Birthday greetings must have unique IDs and cannot be empty',
-      );
-    }
-  }
+  }) : greetings = List.unmodifiable(greetings);
 
   factory BirthdayGreetingCatalog.fromJson(Object? json) {
-    if (json is! JsonMap) {
-      throw const FormatException(
-        'Expected a birthday greetings configuration',
-      );
-    }
+    final config = json! as JsonMap;
     return BirthdayGreetingCatalog(
-      greetings: (json[_BirthdayGreetingCatalogJsonKeys.greetings]! as List)
+      greetings: (config[_BirthdayGreetingCatalogJsonKeys.greetings]! as List)
           .map((item) => BirthdayGreetingData.fromJson(item as JsonMap)),
     );
   }

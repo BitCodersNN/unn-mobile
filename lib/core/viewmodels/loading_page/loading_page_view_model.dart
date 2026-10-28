@@ -67,12 +67,12 @@ class LoadingPageViewModel extends BaseViewModel {
 
   Future<void> initLoadingPages() async {
     final resource = await _loadingPages.get();
-    if (resource == null) {
+    final page = resource?.data.pageForDate(DateTime.now());
+    if (resource == null || page == null) {
       _actualLoadingPage = null;
       _logoImage = null;
       return;
     }
-    final page = resource.data.pageForDate(DateTime.now());
     final logo = await _logos.downloadFile(
       page.imagePath,
       revision: resource.sha ?? GitPath.branch,

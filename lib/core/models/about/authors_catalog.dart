@@ -22,13 +22,11 @@ class AuthorsCatalog {
       );
 
   factory AuthorsCatalog.fromJson(Object? json) {
-    if (json is! JsonMap) {
-      throw const FormatException('Expected an authors configuration');
-    }
+    final config = json! as JsonMap;
     return AuthorsCatalog(
-      authors: (json[AuthorsConfigKeys.authors]! as List)
+      authors: (config[AuthorsConfigKeys.authors]! as List)
           .map((item) => Author.fromJson(item as JsonMap)),
-      pastAuthors: (json[AuthorsConfigKeys.pastAuthors]! as List)
+      pastAuthors: (config[AuthorsConfigKeys.pastAuthors]! as List)
           .map((item) => Author.fromJson(item as JsonMap)),
     );
   }

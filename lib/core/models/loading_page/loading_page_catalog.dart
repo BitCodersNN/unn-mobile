@@ -13,25 +13,19 @@ class LoadingPageCatalog {
   final List<LoadingPageModel> pages;
 
   LoadingPageCatalog(Iterable<LoadingPageModel> pages)
-      : pages = List.unmodifiable(pages) {
-    if (this.pages.isEmpty ||
-        !this.pages.any((page) => page.dateTimeRangeToUseOn == null)) {
-      throw const FormatException('Loading pages must contain a default page');
-    }
-  }
+      : pages = List.unmodifiable(pages);
 
-  LoadingPageModel pageForDate(DateTime date) => pages.firstWhere(
-        (page) =>
-            page.dateTimeRangeToUseOn != null &&
-            date.isDateInRangeIgnoringYear(page.dateTimeRangeToUseOn!),
-        orElse: () =>
-            pages.firstWhere((page) => page.dateTimeRangeToUseOn == null),
-      );
+  LoadingPageModel? pageForDate(DateTime date) =>
+      pages
+          .where(
+            (page) =>
+                page.dateTimeRangeToUseOn != null &&
+                date.isDateInRangeIgnoringYear(page.dateTimeRangeToUseOn!),
+          )
+          .firstOrNull ??
+      pages.where((page) => page.dateTimeRangeToUseOn == null).firstOrNull;
 
   factory LoadingPageCatalog.fromJson(Object? json) {
-    if (json is! List && json is! JsonMap) {
-      throw const FormatException('Expected a loading pages configuration');
-    }
     final items = json is List
         ? json
         : (json! as JsonMap).values.expand((group) => group! as List);

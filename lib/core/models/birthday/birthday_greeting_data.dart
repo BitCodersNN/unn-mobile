@@ -37,11 +37,6 @@ class BirthdayGreetingData {
         _BirthdayGreetingJsonKeys.shortMessage: shortMessage,
       };
 
-  static String _readText(JsonMap json, String key) {
-    final value = json[key];
-    if (value is! String || value.trim().isEmpty) {
-      throw FormatException('Invalid birthday greeting field: $key');
-    }
-    return value.trim();
-  }
+  static String _readText(JsonMap json, String key) =>
+      (json[key]! as String).trim();
 }
