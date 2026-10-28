@@ -30,9 +30,19 @@ class _BirthdayGreetingState extends State<BirthdayGreeting>
     parent: _controller,
     curve: const Interval(0.32, 0.82, curve: Curves.easeOutCubic),
   );
-  static const _hapticMoments = [0.06, 0.2, 0.36, 0.55];
-  int _nextHaptic = 0;
+  static const _hapticsStart = Duration(milliseconds: 80);
+  static const _hapticsEnd = Duration(milliseconds: 4200);
+  static const _hapticRampDuration = Duration(milliseconds: 2200);
+  static const _initialHapticInterval = Duration(milliseconds: 350);
+  static const _finalHapticInterval = Duration(milliseconds: 100);
+  static const _finalHaptics = [
+    (delay: Duration(milliseconds: 180), intensity: HapticIntensity.light),
+    (delay: Duration(milliseconds: 320), intensity: HapticIntensity.medium),
+  ];
+  Duration _nextHapticAt = _hapticsStart;
+  int _nextFinalHaptic = 0;
   bool _started = false;
+  bool _closing = false;
 
   @override
   void initState() {
@@ -49,7 +59,8 @@ class _BirthdayGreetingState extends State<BirthdayGreeting>
   void didChangeDependencies() {
     super.didChangeDependencies();
     if (MediaQuery.disableAnimationsOf(context)) {
-      _nextHaptic = _hapticMoments.length;
+      _nextHapticAt = _hapticsEnd + _finalHapticInterval;
+      _nextFinalHaptic = _finalHaptics.length;
       _controller.value = 1;
     } else if (!_started) {
       _controller.forward();
@@ -58,17 +69,43 @@ class _BirthdayGreetingState extends State<BirthdayGreeting>
   }
 
   void _onAnimation() {
-    if (_nextHaptic < _hapticMoments.length &&
-        _controller.value >= _hapticMoments[_nextHaptic]) {
-      _nextHaptic++;
-      triggerHaptic(HapticIntensity.light);
+    if (!_controller.isAnimating || _closing) {
+      return;
+    }
+    final elapsed = _controller.duration! * _controller.value;
+    if (elapsed > _hapticsEnd) {
+      _playFinalHaptics(elapsed - _hapticsEnd);
+      return;
+    }
+    if (elapsed < _nextHapticAt) {
+      return;
+    }
+    do {
+      final progress = ((_nextHapticAt - _hapticsStart).inMicroseconds /
+              _hapticRampDuration.inMicroseconds)
+          .clamp(0.0, 1.0);
+      _nextHapticAt += _initialHapticInterval +
+          (_finalHapticInterval - _initialHapticInterval) * progress;
+    } while (_nextHapticAt <= elapsed && _nextHapticAt <= _hapticsEnd);
+    triggerHaptic(HapticIntensity.light);
+  }
+
+  void _playFinalHaptics(Duration elapsed) {
+    HapticIntensity? intensity;
+    while (_nextFinalHaptic < _finalHaptics.length &&
+        elapsed >= _finalHaptics[_nextFinalHaptic].delay) {
+      intensity = _finalHaptics[_nextFinalHaptic].intensity;
+      _nextFinalHaptic++;
+    }
+    if (intensity != null) {
+      triggerHaptic(intensity);
     }
   }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
-      if (_controller.value < 1) {
+      if (!_closing && _controller.value < 1) {
         _controller.forward();
       }
     } else {
@@ -85,7 +122,17 @@ class _BirthdayGreetingState extends State<BirthdayGreeting>
   }
 
   @override
-  Widget build(BuildContext context) => Material(
+  Widget build(BuildContext context) => PopScope<void>(
+        onPopInvokedWithResult: (didPop, _) {
+          if (didPop) {
+            _closing = true;
+            _controller.stop();
+          }
+        },
+        child: _buildGreeting(context),
+      );
+
+  Widget _buildGreeting(BuildContext context) => Material(
         color: const Color(0xFFF8FAF7),
         child: Stack(
           fit: StackFit.expand,
