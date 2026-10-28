@@ -26,6 +26,7 @@ import 'package:unn_mobile/core/models/feed/blog_post_type.dart';
 import 'package:unn_mobile/core/providers/implementations/about/authors_provider_impl.dart';
 import 'package:unn_mobile/core/providers/implementations/about/last_commit_sha_authors_provider_impl.dart';
 import 'package:unn_mobile/core/providers/implementations/authorisation/authorisation_data_provider_impl.dart';
+import 'package:unn_mobile/core/providers/implementations/birthday/birthday_greeting_provider_impl.dart';
 import 'package:unn_mobile/core/providers/implementations/common/message_ignored_keys_provider_impl.dart';
 import 'package:unn_mobile/core/providers/implementations/feed/blog_post_provider_impl.dart';
 import 'package:unn_mobile/core/providers/implementations/feed/last_feed_load_date_time_provider_impl.dart';
@@ -37,6 +38,7 @@ import 'package:unn_mobile/core/providers/implementations/schedule/offline_sched
 import 'package:unn_mobile/core/providers/interfaces/about/authors_provider.dart';
 import 'package:unn_mobile/core/providers/interfaces/about/last_commit_sha_authors_provider.dart';
 import 'package:unn_mobile/core/providers/interfaces/authorisation/auth_data_provider.dart';
+import 'package:unn_mobile/core/providers/interfaces/birthday/birthday_greeting_provider.dart';
 import 'package:unn_mobile/core/providers/interfaces/common/message_ignored_keys_provider.dart';
 import 'package:unn_mobile/core/providers/interfaces/feed/blog_post_provider.dart';
 import 'package:unn_mobile/core/providers/interfaces/feed/last_feed_load_date_time_provider.dart';
@@ -50,6 +52,7 @@ import 'package:unn_mobile/core/services/implementations/authentication/source_a
 import 'package:unn_mobile/core/services/implementations/authentication/stream_auth_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/authentication/unn_auth_refresh_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/authentication/unn_auth_service_impl.dart';
+import 'package:unn_mobile/core/services/implementations/birthday/birthday_greeting_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/certificate/certificate_downloader_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/certificate/certificate_path_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/certificate/certificate_service_impl.dart';
@@ -101,6 +104,7 @@ import 'package:unn_mobile/core/services/interfaces/authorisation/authorisation_
 import 'package:unn_mobile/core/services/interfaces/authorisation/source_authorisation_service.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation/stream_auth_service.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation/unn_authorisation_service.dart';
+import 'package:unn_mobile/core/services/interfaces/birthday/birthday_greeting_service.dart';
 import 'package:unn_mobile/core/services/interfaces/certificate/certificate_downloader_service.dart';
 import 'package:unn_mobile/core/services/interfaces/certificate/certificate_path_service.dart';
 import 'package:unn_mobile/core/services/interfaces/certificate/certificates_service.dart';
@@ -205,6 +209,15 @@ void registerDependencies() {
     ..registerSingleton<StorageService>(StorageServiceImpl.new)
     ..registerSingleton<AppOpenTracker>(
       () => AppOpenTracker(get<StorageService>()),
+    )
+    ..registerSingleton<BirthdayGreetingProvider>(
+      () => BirthdayGreetingProviderImpl(get<StorageService>()),
+    )
+    ..registerSingleton<BirthdayGreetingService>(
+      () => BirthdayGreetingServiceImpl(
+        get<BirthdayGreetingProvider>(),
+        get<LoggerService>(),
+      ),
     )
 
     // =========================================================================
@@ -334,6 +347,7 @@ void registerDependencies() {
       () => UserDataProviderImpl(
         get<StorageService>(),
         get<LoggerService>(),
+        get<ProfileOfCurrentUserService>(),
       ),
     )
     ..registerSingleton<CurrentUserSyncStorage>(

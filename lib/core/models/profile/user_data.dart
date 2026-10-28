@@ -94,6 +94,7 @@ class UserData extends UserShortInfo {
           _UserDataJsonKeys.phone: phone,
           _UserDataJsonKeys.sex: sex,
           _UserDataJsonKeys.notes: notes,
+          _UserDataJsonKeys.birthdate: birthdate?.toIso8601String(),
         },
       };
 }
