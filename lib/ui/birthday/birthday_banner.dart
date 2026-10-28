@@ -135,6 +135,9 @@ class _BirthdayCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
+    final reduceMotion = MediaQuery.disableAnimationsOf(context);
+    final transitionDuration =
+        reduceMotion ? Duration.zero : const Duration(milliseconds: 300);
     return Semantics(
       container: true,
       child: DecoratedBox(
@@ -154,31 +157,57 @@ class _BirthdayCard extends StatelessWidget {
             builder: (context, constraints) {
               final showBalloons = constraints.maxWidth >= 290 &&
                   MediaQuery.textScalerOf(context).scale(20) <= 28;
+              final text = AnimatedSwitcher(
+                key: ValueKey(reduceMotion),
+                duration: transitionDuration,
+                switchInCurve: Curves.easeOutCubic,
+                switchOutCurve: Curves.easeInCubic,
+                transitionBuilder: (child, animation) => FadeTransition(
+                  opacity: animation,
+                  child: child,
+                ),
+                layoutBuilder: (current, previous) => Stack(
+                  alignment: Alignment.topLeft,
+                  children: [
+                    ...previous,
+                    if (current != null) current,
+                  ],
+                ),
+                child: Column(
+                  key: ValueKey(greeting.id),
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      greeting.title,
+                      style: theme.textTheme.titleLarge?.copyWith(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w600,
+                        color: colors.onSurface,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      greeting.shortMessage,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        height: 1.4,
+                        color: colors.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
+                ),
+              );
               return Row(
                 children: [
                   Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          greeting.title,
-                          style: theme.textTheme.titleLarge?.copyWith(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w600,
-                            color: colors.onSurface,
+                    child: reduceMotion
+                        ? text
+                        : AnimatedSize(
+                            duration: transitionDuration,
+                            curve: Curves.easeInOutCubic,
+                            alignment: Alignment.topLeft,
+                            child: text,
                           ),
-                        ),
-                        const SizedBox(height: 6),
-                        Text(
-                          greeting.shortMessage,
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            height: 1.4,
-                            color: colors.onSurfaceVariant,
-                          ),
-                        ),
-                      ],
-                    ),
                   ),
                   if (showBalloons) ...[
                     const SizedBox(width: 12),
