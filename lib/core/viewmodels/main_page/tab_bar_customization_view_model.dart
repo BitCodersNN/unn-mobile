@@ -17,9 +17,8 @@ class TabBarCustomizationViewModel extends ChangeNotifier {
     required Iterable<String> allowedPaths,
     required Iterable<String> initialPaths,
     required String selectedPath,
-    required TabBarPathsSaver savePaths,
-  })  : _allowedPaths = allowedPaths.toSet(),
-        _savePaths = savePaths {
+    required this._savePaths,
+  })  : _allowedPaths = allowedPaths.toSet() {
     _resetSlots(initialPaths);
     final index = _slots.indexOf(selectedPath);
     _selectedSlot = index < 0 ? 0 : index;

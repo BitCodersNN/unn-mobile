@@ -112,7 +112,7 @@ class MessageFileSenderServiceImpl implements MessageFileSenderService {
     final fileDataList = await Future.wait(uploadFutures);
     return [
       for (final fileData in fileDataList)
-        if (fileData != null) fileData,
+        ?fileData,
     ];
   }
 
@@ -157,7 +157,7 @@ class MessageFileSenderServiceImpl implements MessageFileSenderService {
     final requestData = {
       _DataKeys.sessid: (_apiHelper as AuthenticatedApiHelper).sessionId,
       _DataKeys.chatId: chatId,
-      if (text != null) _DataKeys.message: text,
+      _DataKeys.message: ?text,
       _DataKeys.templateId: const Uuid().v4(),
       _DataKeys.asFile: 'Y',
     };

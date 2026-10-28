@@ -40,7 +40,7 @@ class AuthErrorText extends StatelessWidget {
             alignment: AlignmentDirectional.centerStart,
             children: [
               ...previousChildren,
-              if (currentChild != null) currentChild,
+              ?currentChild,
             ],
           ),
           transitionBuilder: (child, animation) => FadeTransition(

@@ -16,18 +16,13 @@ class HttpRequestSender {
   final Map<String, String> _cookies;
 
   HttpRequestSender({
-    required String path,
-    bool useSSL = true,
-    String host = Host.unn,
-    Map<String, dynamic> queryParams = const {},
-    Map<String, String> headers = const {},
-    Map<String, String> cookies = const {},
-  })  : _cookies = cookies,
-        _headers = headers,
-        _useSSL = useSSL,
-        _queryParams = queryParams,
-        _host = host,
-        _path = path;
+    required this._path,
+    this._useSSL = true,
+    this._host = Host.unn,
+    this._queryParams = const {},
+    this._headers = const {},
+    this._cookies = const {},
+  });
 
   /// Конвертирует http ответ в строку
   ///

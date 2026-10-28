@@ -24,18 +24,17 @@ class FileDownloader {
   ///
   /// [LoggerService] - сервис для логирования ошибок и информации.
   /// [ApiHelper] - помощник для выполнения HTTP-запросов.
-  /// [downloadFolderName] - название папки, в которую будут загружаться файлы (опционально).
+  /// [_downloadFolderName] - название папки, в которую будут загружаться файлы (опционально).
   ///   Если не указано, файлы будут сохраняться в корневую директорию загрузок.
-  /// [basePath] - базовый путь для загрузки файлов (опционально).
+  /// [_basePath] - базовый путь для загрузки файлов (опционально).
   /// [cookies] - cookies, которые могут быть использованы при запросах (опционально).
   FileDownloader(
     this._loggerService,
     this._apiHelper, {
-    String? downloadFolderName,
-    String? basePath,
+    this._downloadFolderName,
+    this._basePath,
     Map<String, String> cookies = const {},
-  })  : _downloadFolderName = downloadFolderName,
-        _basePath = basePath;
+  });
 
   /// Загружает файл с указанным именем [fileName].
   ///

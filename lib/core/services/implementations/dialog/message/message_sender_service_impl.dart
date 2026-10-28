@@ -91,7 +91,7 @@ class MessageSenderServiceImpl implements MessageSenderService {
     final data = <String, dynamic>{
       _DataKeys.dialogId: dialogId,
       _DataKeys.templateId: const Uuid().v4(),
-      if (text != null) _DataKeys.message: text,
+      _DataKeys.message: ?text,
       if (replyMessageId != null) _DataKeys.replyId: replyMessageId.toString(),
     };
 

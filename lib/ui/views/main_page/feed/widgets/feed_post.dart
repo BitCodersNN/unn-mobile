@@ -301,7 +301,7 @@ class _FeedPostState extends State<FeedPost> {
 
     final fetchedImages = await Future.wait(
       model.attachedImages.map(
-        (url) => _imageUrlToXFile(url).onError((_, __) => null),
+        (url) => _imageUrlToXFile(url).onError((_, _) => null),
       ),
     );
     xFiles.addAll(fetchedImages.whereType<XFile>());

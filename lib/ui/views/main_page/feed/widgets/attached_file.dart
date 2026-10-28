@@ -5,8 +5,9 @@ import 'dart:io';
 import 'package:extended_image/extended_image.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
-import 'package:open_filex/open_filex.dart';
+import 'package:mime/mime.dart';
 import 'package:path/path.dart' as path;
+import 'package:unn_mobile/core/misc/file_helpers/file_functions.dart';
 import 'package:unn_mobile/core/misc/haptic_utils.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/feed/attached_file_view_model.dart';
 import 'package:unn_mobile/ui/unn_mobile_colors.dart';
@@ -183,9 +184,9 @@ class _AttachedFileState extends State<AttachedFile> {
         }
         break;
       default:
-        final openResult = await OpenFilex.open(file.path);
+        final openResult = await viewFile(file.path, lookupMimeType(file.path) ?? 'application/octet-stream');
         switch (openResult.type) {
-          case ResultType.error:
+          case OpenResultType.error:
             if (context.mounted) {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
@@ -194,7 +195,7 @@ class _AttachedFileState extends State<AttachedFile> {
               );
             }
             break;
-          case ResultType.noAppToOpen:
+          case OpenResultType.noApp:
             if (context.mounted) {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
@@ -203,7 +204,7 @@ class _AttachedFileState extends State<AttachedFile> {
               );
             }
             break;
-          case ResultType.permissionDenied:
+          case OpenResultType.permissionDenied:
             if (context.mounted) {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(

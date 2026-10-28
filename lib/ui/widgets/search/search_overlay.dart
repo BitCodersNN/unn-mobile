@@ -86,7 +86,7 @@ class SearchOverlay<T> extends StatelessWidget {
                           shrinkWrap: true,
                           padding: const EdgeInsets.symmetric(vertical: 4),
                           itemCount: controller.suggestions.length,
-                          separatorBuilder: (_, __) => Divider(
+                          separatorBuilder: (_, _) => Divider(
                             height: 1,
                             thickness: 1,
                             color: theme.dividerColor.withAlpha(51),
