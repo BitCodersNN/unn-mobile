@@ -52,19 +52,12 @@ Future<String?> openFilePicker(String fileName, String mimeType) async {
   return location;
 }
 
-Future<OpenResult> viewFile(String uri, String mimeType) =>
-    switch (defaultTargetPlatform) {
-      TargetPlatform.android => _viewFileAndroid(uri, mimeType),
-      _ => _viewFileDefault(uri, mimeType),
-    };
-
-Future<OpenResult> _viewFileAndroid(String uri, String mimeType) async {
+Future<OpenResult> viewFile(String uri, String mimeType) async {
   try {
-    final result = await fileFunctionsMethodChannel.invokeMethod('viewFile', {
-      'uri': uri,
-      'mimeType': mimeType,
-    });
-    return OpenResult.fromJson(jsonDecode(result));
+    return switch (defaultTargetPlatform) {
+      TargetPlatform.android => await _viewFileAndroid(uri, mimeType),
+      _ => await _viewFileDefault(uri, mimeType),
+    };
   } catch (error, stack) {
     Injector.appInstance.get<LoggerService>().log(
       'Could not open file.\n'
@@ -75,24 +68,23 @@ Future<OpenResult> _viewFileAndroid(String uri, String mimeType) async {
   }
 }
 
+Future<OpenResult> _viewFileAndroid(String uri, String mimeType) async {
+  final result = await fileFunctionsMethodChannel.invokeMethod('viewFile', {
+    'uri': uri,
+    'mimeType': mimeType,
+  });
+  return OpenResult.fromJson(jsonDecode(result));
+}
+
 Future<OpenResult> _viewFileDefault(String uri, String mimeType) async {
-  try {
-    final result = await ofx.OpenFilex.open(uri, type: mimeType);
-    return OpenResult(switch (result.type) {
-      ofx.ResultType.done => OpenResultType.success,
-      ofx.ResultType.noAppToOpen => OpenResultType.noApp,
-      ofx.ResultType.fileNotFound => OpenResultType.permissionDenied,
-      ofx.ResultType.permissionDenied => OpenResultType.permissionDenied,
-      _ => OpenResultType.error,
-    }, result.message);
-  } catch (error, stack) {
-    Injector.appInstance.get<LoggerService>().log(
-      'Could not open file.\n'
-      'Exception: $error\n'
-      'stack: $stack',
-    );
-    return OpenResult(OpenResultType.error, error.toString());
-  }
+  final result = await ofx.OpenFilex.open(uri, type: mimeType);
+  return OpenResult(switch (result.type) {
+    ofx.ResultType.done => OpenResultType.success,
+    ofx.ResultType.noAppToOpen => OpenResultType.noApp,
+    ofx.ResultType.fileNotFound => OpenResultType.permissionDenied,
+    ofx.ResultType.permissionDenied => OpenResultType.permissionDenied,
+    _ => OpenResultType.error,
+  }, result.message);
 }
 
 Future<Iterable<String>?> openUploadFilePicker({required bool gallery}) async {

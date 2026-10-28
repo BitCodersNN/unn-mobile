@@ -99,8 +99,7 @@ class MainActivity : FlutterActivity() {
                     }
 
                     try {
-                        viewFileFromUri(uri, mimeType)
-                        result.success(serializeOpenResult(OpenResult(0, "done")))
+                        viewFileFromUri(uri, mimeType, result)
                     } catch (e: ActivityNotFoundException) {
                         result.success(serializeOpenResult(OpenResult(1, "Could not find the app to open")))
                     } catch (e: Exception) {
@@ -218,10 +217,12 @@ class MainActivity : FlutterActivity() {
     private fun viewFileFromUri(
         uri: Uri,
         mimeType: String,
+        result: MethodChannel.Result
     ) {
         val fileIntent = Intent(Intent.ACTION_VIEW)
         fileIntent.setDataAndType(uri, mimeType)
         fileIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         startActivity(fileIntent)
+        result.success(serializeOpenResult(OpenResult(0, "done")))
     }
 }
