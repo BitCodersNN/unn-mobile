@@ -11,15 +11,16 @@ import 'package:unn_mobile/core/misc/tab_bar_preferences.dart';
 import 'package:unn_mobile/core/services/interfaces/common/storage_service.dart';
 
 class AppSettings {
-  static final tabBarPaths =
-      ValueNotifier<List<String>>(TabBarPreferences.defaultPaths);
+  static final tabBarPaths = ValueNotifier<List<String>>(
+    TabBarPreferences.defaultPaths,
+  );
 
   static Future<void> updateTabBarPaths(List<String> paths) async {
     final normalized = TabBarPreferences.normalize(paths);
     await Injector.appInstance.get<StorageService>().write(
-          key: AppSettingsKeys.tabBarPaths,
-          value: jsonEncode(normalized),
-        );
+      key: AppSettingsKeys.tabBarPaths,
+      value: jsonEncode(normalized),
+    );
     tabBarPaths.value = normalized;
     optionsSaved.broadcast();
   }

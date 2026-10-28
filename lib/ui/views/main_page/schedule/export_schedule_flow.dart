@@ -21,8 +21,7 @@ Future<void> runExportFlow(
       final result = await showOkCancelAlertDialog(
         context: context,
         title: 'Доступ к календарю',
-        message:
-            'Приложению запрещён доступ к календарю. Разрешите его в настройках, чтобы экспортировать расписание.',
+        message: 'Приложению запрещён доступ к календарю. Разрешите его в настройках, чтобы экспортировать расписание.',
         okLabel: 'Настройки',
         cancelLabel: 'Отмена',
       );
@@ -65,18 +64,15 @@ Future<void> runExportFlow(
     return;
   }
 
-  ScaffoldMessenger.of(context).showSnackBar(
-    const SnackBar(
-      content: Text('Экспорт завершён'),
-    ),
-  );
+  ScaffoldMessenger.of(context)
+      .showSnackBar(const SnackBar(content: Text('Экспорт завершён')));
 
   if (Platform.isAndroid) {
     await showMessage(
       context,
       result
           ? 'Расписание экспортировано в календарь "Расписание ННГУ". \n'
-              'Возможно, понадобится включить настройку Device Calendar в приложении календаря.'
+                'Возможно, понадобится включить настройку Device Calendar в приложении календаря.'
           : 'Не удалось экспортировать. Попробуйте снова.',
       messageKey: result ? 'export_schedule_success' : null,
     );

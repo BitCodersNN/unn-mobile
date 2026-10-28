@@ -92,8 +92,9 @@ class BitrixHtmlParserUtils {
       return null;
     }
 
-    final reactionValue = myReactionElement
-            .attributes[FeedHtmlParserStrings.attrDataMyreaction] ??
+    final reactionValue =
+        myReactionElement.attributes[FeedHtmlParserStrings
+            .attrDataMyreaction] ??
         myReactionElement.attributes[FeedHtmlParserStrings.attrDataValue];
 
     if (reactionValue != null && reactionValue.isNotEmpty) {
@@ -113,7 +114,8 @@ class BitrixHtmlParserUtils {
       return RatingList();
     }
 
-    final targetContainer = emojiContainer.querySelector(
+    final targetContainer =
+        emojiContainer.querySelector(
           FeedHtmlParserStrings.feedPostEmojiContainer,
         ) ??
         emojiContainer;
@@ -148,7 +150,8 @@ class BitrixHtmlParserUtils {
       if (skipIfInCommentsBlock) {
         final parent2 = fileWrap.parent?.parent;
         final parent3 = parent2?.parent;
-        final inComments = (parent2?.classes.contains(
+        final inComments =
+            (parent2?.classes.contains(
                   FeedHtmlParserStrings.feedCommentsBlock,
                 ) ??
                 false) ||
@@ -174,8 +177,8 @@ class BitrixHtmlParserUtils {
         continue;
       }
 
-      final fileName =
-          linkElement.attributes[FeedHtmlParserStrings.attrTitle]?.trim();
+      final fileName = linkElement.attributes[FeedHtmlParserStrings.attrTitle]
+          ?.trim();
       if (fileName == null || fileName.isEmpty) {
         continue;
       }
@@ -216,8 +219,9 @@ class BitrixHtmlParserUtils {
         '${FeedHtmlParserStrings.likeIdPrefix}$entityType$entityId${FeedHtmlParserStrings.likeIdSuffix}';
 
     if (combinedScripts.contains(searchPattern)) {
-      final match =
-          RegularExpressions.keySignedRegExp.firstMatch(combinedScripts);
+      final match = RegularExpressions.keySignedRegExp.firstMatch(
+        combinedScripts,
+      );
       if (match != null) {
         return match.group(1) ?? '';
       }
@@ -232,7 +236,9 @@ class BitrixHtmlParserUtils {
     Set<String> result,
   ) {
     for (final element in root.querySelectorAll(selector)) {
-      final src = attrs.map((attr) => element.attributes[attr]).firstWhere(
+      final src = attrs
+          .map((attr) => element.attributes[attr])
+          .firstWhere(
             (val) => val != null && val.isNotEmpty,
             orElse: () => null,
           );
@@ -267,7 +273,8 @@ class BitrixHtmlParserUtils {
       final imgElement = avatarContainer.querySelector(
         FeedHtmlParserStrings.imgTag,
       );
-      final rawSrc = imgElement?.attributes[FeedHtmlParserStrings.attrSrc] ??
+      final rawSrc =
+          imgElement?.attributes[FeedHtmlParserStrings.attrSrc] ??
           imgElement?.attributes[FeedHtmlParserStrings.attrDataSrc];
 
       if (rawSrc != null &&

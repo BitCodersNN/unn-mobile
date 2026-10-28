@@ -41,10 +41,7 @@ class MessageFileSenderServiceImpl implements MessageFileSenderService {
   final LoggerService _loggerService;
   final ApiHelper _apiHelper;
 
-  MessageFileSenderServiceImpl(
-    this._loggerService,
-    this._apiHelper,
-  );
+  MessageFileSenderServiceImpl(this._loggerService, this._apiHelper);
 
   @override
   Future<FileData?> sendFile({
@@ -95,25 +92,21 @@ class MessageFileSenderServiceImpl implements MessageFileSenderService {
       return null;
     }
     return ((response.data as JsonMap)[_JsonKeys.result]!
-        as JsonMap)[_JsonKeys.id] as int?;
+            as JsonMap)[_JsonKeys.id]
+        as int?;
   }
 
   Future<List<FileData>> _uploadFiles(int folderId, List<File> files) async {
     final uploadFutures = [
       for (final file in files)
-        _uploadFile(folderId, file).catchError(
-          (exception, stackTrace) {
-            _loggerService.logError(exception, stackTrace);
-            return null;
-          },
-        ),
+        _uploadFile(folderId, file).catchError((exception, stackTrace) {
+          _loggerService.logError(exception, stackTrace);
+          return null;
+        }),
     ];
 
     final fileDataList = await Future.wait(uploadFutures);
-    return [
-      for (final fileData in fileDataList)
-        ?fileData,
-    ];
+    return [for (final fileData in fileDataList) ?fileData];
   }
 
   Future<FileData?> _uploadFile(int folderId, File file) async {
@@ -125,9 +118,7 @@ class MessageFileSenderServiceImpl implements MessageFileSenderService {
         },
         data: {
           _DataKeys.id: folderId,
-          _DataKeys.data: {
-            _DataKeys.name: path.basename(file.path),
-          },
+          _DataKeys.data: {_DataKeys.name: path.basename(file.path)},
           _DataKeys.fileContent: [
             path.basename(file.path),
             base64Encode(await file.readAsBytes()),
@@ -171,10 +162,7 @@ class MessageFileSenderServiceImpl implements MessageFileSenderService {
 
   Future<bool> _commitFiles(Map<String, dynamic> requestData) async {
     try {
-      await _apiHelper.post(
-        path: ApiPath.fileCommit,
-        data: requestData,
-      );
+      await _apiHelper.post(path: ApiPath.fileCommit, data: requestData);
     } catch (exception, stackTrace) {
       _loggerService.logError(exception, stackTrace);
       return false;

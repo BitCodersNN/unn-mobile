@@ -17,10 +17,7 @@ class VoteKeySignedImplServiceImpl implements VoteKeySignedService {
   final LoggerService _loggerService;
   final ApiHelper _apiHelper;
 
-  VoteKeySignedImplServiceImpl(
-    this._loggerService,
-    this._apiHelper,
-  );
+  VoteKeySignedImplServiceImpl(this._loggerService, this._apiHelper);
 
   @override
   Future<String?> getVoteKeySigned({

@@ -30,56 +30,44 @@ class MessageSenderServiceImpl implements MessageSenderService {
   final LoggerService _loggerService;
   final ApiHelper _apiHelper;
 
-  MessageSenderServiceImpl(
-    this._loggerService,
-    this._apiHelper,
-  );
+  MessageSenderServiceImpl(this._loggerService, this._apiHelper);
 
   @override
-  Future<int?> send({
-    required String dialogId,
-    required String text,
-  }) =>
-      _sendMessage(
-        dialogId: dialogId,
-        text: text,
-      );
+  Future<int?> send({required String dialogId, required String text}) =>
+      _sendMessage(dialogId: dialogId, text: text);
 
   @override
   Future<int?> reply({
     required String dialogId,
     required String text,
     required int replyMessageId,
-  }) =>
-      _sendMessage(
-        dialogId: dialogId,
-        text: text,
-        replyMessageId: replyMessageId,
-      );
+  }) => _sendMessage(
+    dialogId: dialogId,
+    text: text,
+    replyMessageId: replyMessageId,
+  );
 
   @override
   Future<int?> forward({
     required String dialogId,
     required String? text,
     required int forwardMessageId,
-  }) =>
-      forwardMultiple(
-        dialogId: dialogId,
-        text: text,
-        forwardMessageIds: [forwardMessageId],
-      );
+  }) => forwardMultiple(
+    dialogId: dialogId,
+    text: text,
+    forwardMessageIds: [forwardMessageId],
+  );
 
   @override
   Future<int?> forwardMultiple({
     required String dialogId,
     required String? text,
     required List<int> forwardMessageIds,
-  }) =>
-      _sendMessage(
-        dialogId: dialogId,
-        text: text,
-        forwardMessageIds: forwardMessageIds,
-      );
+  }) => _sendMessage(
+    dialogId: dialogId,
+    text: text,
+    forwardMessageIds: forwardMessageIds,
+  );
 
   Future<int?> _sendMessage({
     required String dialogId,
@@ -121,6 +109,7 @@ class MessageSenderServiceImpl implements MessageSenderService {
     }
 
     return ((response.data as JsonMap)[_JsonKeys.data]!
-        as JsonMap)[_JsonKeys.id] as int?;
+            as JsonMap)[_JsonKeys.id]
+        as int?;
   }
 }

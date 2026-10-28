@@ -163,11 +163,7 @@ class FileDownloader {
   }) async {
     final futures = [
       for (final fileName in fileNames)
-        downloadFile(
-          fileName,
-          downloadUrl: downloadUrl,
-          force: force,
-        ),
+        downloadFile(fileName, downloadUrl: downloadUrl, force: force),
     ];
 
     final results = await Future.wait(futures);
@@ -199,16 +195,16 @@ class FileDownloader {
 
   String _buildRequestPath(String? downloadUrl, String fileName) =>
       downloadUrl?.isNotEmpty ?? false
-          ? Uri.parse(downloadUrl!).path
-          : fileName.startsWith(ProtocolType.https.name)
-              ? fileName
-              : '${_basePath ?? ''}/$fileName'.replaceAll(
-                  RegularExpressions.leadingSlashesRegExp,
-                  '/',
-                );
+      ? Uri.parse(downloadUrl!).path
+      : fileName.startsWith(ProtocolType.https.name)
+      ? fileName
+      : '${_basePath ?? ''}/$fileName'.replaceAll(
+          RegularExpressions.leadingSlashesRegExp,
+          '/',
+        );
 
   Map<String, String> _extractQueryParameters(String? downloadUrl) =>
       downloadUrl?.isNotEmpty ?? false
-          ? Uri.parse(downloadUrl!).queryParameters
-          : <String, String>{};
+      ? Uri.parse(downloadUrl!).queryParameters
+      : <String, String>{};
 }

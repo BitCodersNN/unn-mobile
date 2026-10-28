@@ -89,8 +89,10 @@ class ScheduleServiceImpl implements ScheduleService {
         path: ApiPath.raspSchedule,
         data: {
           _DataKeys._json: _DataKeys._json,
-          _DataKeys._date:
-              DateTimeParser.format(date, DatePattern.yyyymmddDash),
+          _DataKeys._date: DateTimeParser.format(
+            date,
+            DatePattern.yyyymmddDash,
+          ),
           _DataKeys._login: login,
         },
         cancelToken: cancelToken,

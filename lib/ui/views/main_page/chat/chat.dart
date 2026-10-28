@@ -46,8 +46,9 @@ class _ChatScreenViewState extends State<ChatScreenView> {
                   icon: const Icon(Icons.search),
                 ),
                 suggestionsBuilder: (context, controller) async {
-                  final suggestions =
-                      await model.getSuggestions(controller.text);
+                  final suggestions = await model.getSuggestions(
+                    controller.text,
+                  );
                   return suggestions.map(
                     (e) => searchItemTile(context, e, controller, model),
                   );
@@ -95,10 +96,7 @@ class _ChatScreenViewState extends State<ChatScreenView> {
                   physics: const AlwaysScrollableScrollPhysics(),
                   children: [
                     for (final (dialog) in model.dialogs)
-                      DialogInfo(
-                        dialog: dialog,
-                        chatsModel: model,
-                      ),
+                      DialogInfo(dialog: dialog, chatsModel: model),
                     if (model.hasError) const Text('Не удалось загрузить'),
                     if (model.isBusy)
                       const Center(
@@ -140,9 +138,7 @@ class _ChatScreenViewState extends State<ChatScreenView> {
                 child: Padding(
                   padding: const EdgeInsets.all(4.0),
                   child: Text(
-                    generateInitials(
-                      dialog.title.split(' '),
-                    ),
+                    generateInitials(dialog.title.split(' ')),
                     style: theme.textTheme.headlineSmall!.copyWith(
                       color: theme.colorScheme.onSurface,
                     ),
@@ -170,11 +166,7 @@ class _ChatScreenViewState extends State<ChatScreenView> {
 }
 
 class DialogInfo extends StatelessWidget {
-  DialogInfo({
-    required this.dialog,
-    required this.chatsModel,
-    super.key,
-  });
+  DialogInfo({required this.dialog, required this.chatsModel, super.key});
 
   final d.Dialog dialog;
   final HtmlUnescape _unescaper = HtmlUnescape();

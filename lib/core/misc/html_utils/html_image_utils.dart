@@ -14,10 +14,7 @@ import 'package:unn_mobile/core/constants/regular_expressions.dart';
   final body = document?.body;
 
   if (body == null) {
-    return (
-      cleanedText: htmlText,
-      imageUrls: const [],
-    );
+    return (cleanedText: htmlText, imageUrls: const []);
   }
 
   return extractImagesAndCleanHtmlElement(
@@ -118,8 +115,8 @@ int? _getImageSize(dom.Element img, String dimension, String? style) {
   var size = _parseSize(img.attributes[dimension]);
 
   if (size == null && style != null) {
-    final match =
-        RegularExpressions.dimensionValueRegExp(dimension).firstMatch(style);
+    final match = RegularExpressions.dimensionValueRegExp(dimension)
+        .firstMatch(style);
     if (match != null) {
       size = int.tryParse(match.group(1)!);
     }

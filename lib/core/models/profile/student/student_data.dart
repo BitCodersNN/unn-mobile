@@ -12,11 +12,11 @@ class _StudentDataJsonKeys {
 
 class StudentData extends UserData {
   static Set<String> get jsonKeys => {
-        _StudentDataJsonKeys.eduStatus,
-        _StudentDataJsonKeys.eduYear,
-        ...BaseEduInfo.jsonKeys,
-        ...UserData.jsonKeys,
-      };
+    _StudentDataJsonKeys.eduStatus,
+    _StudentDataJsonKeys.eduYear,
+    ...BaseEduInfo.jsonKeys,
+    ...UserData.jsonKeys,
+  };
 
   final BaseEduInfo baseEduInfo;
   final String eduStatus;
@@ -45,31 +45,31 @@ class StudentData extends UserData {
     required this.eduStatus,
     required this.eduYear,
   }) : super(
-          userId: userData.userId,
-          bitrixId: userData.bitrixId,
-          login: userData.login,
-          fullname: userData.fullname,
-          email: userData.email,
-          phone: userData.phone,
-          sex: userData.sex,
-          photoSrc: userData.photoSrc,
-          notes: userData.notes,
-          web: userData.web,
-          birthdate: userData.birthdate,
-        );
+         userId: userData.userId,
+         bitrixId: userData.bitrixId,
+         login: userData.login,
+         fullname: userData.fullname,
+         email: userData.email,
+         phone: userData.phone,
+         sex: userData.sex,
+         photoSrc: userData.photoSrc,
+         notes: userData.notes,
+         web: userData.web,
+         birthdate: userData.birthdate,
+       );
 
   factory StudentData.fromJson(JsonMap json) => StudentData.withUserData(
-        baseEduInfo: BaseEduInfo.fromJson(json),
-        userData: UserData.fromJson(json),
-        eduStatus: json[_StudentDataJsonKeys.eduStatus]! as String,
-        eduYear: json[_StudentDataJsonKeys.eduYear]! as int,
-      );
+    baseEduInfo: BaseEduInfo.fromJson(json),
+    userData: UserData.fromJson(json),
+    eduStatus: json[_StudentDataJsonKeys.eduStatus]! as String,
+    eduYear: json[_StudentDataJsonKeys.eduYear]! as int,
+  );
 
   @override
   JsonMap toJson() => {
-        ...super.toJson(),
-        ...baseEduInfo.toJson(),
-        _StudentDataJsonKeys.eduStatus: eduStatus,
-        _StudentDataJsonKeys.eduYear: eduYear,
-      };
+    ...super.toJson(),
+    ...baseEduInfo.toJson(),
+    _StudentDataJsonKeys.eduStatus: eduStatus,
+    _StudentDataJsonKeys.eduYear: eduYear,
+  };
 }

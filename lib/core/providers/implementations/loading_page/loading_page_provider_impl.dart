@@ -26,9 +26,7 @@ class LoadingPageProviderImpl implements LoadingPageProvider {
     }
 
     final jsonList = jsonDecode(
-      (await _storage.read(
-        key: _LoadingPageProviderKeys.loadingPagesKey,
-      ))!,
+      (await _storage.read(key: _LoadingPageProviderKeys.loadingPagesKey))!,
     );
 
     return parseJsonIterable<LoadingPageModel>(
@@ -55,12 +53,10 @@ class LoadingPageProviderImpl implements LoadingPageProvider {
   }
 
   @override
-  Future<bool> isContained() => _storage.containsKey(
-        key: _LoadingPageProviderKeys.loadingPagesKey,
-      );
+  Future<bool> isContained() =>
+      _storage.containsKey(key: _LoadingPageProviderKeys.loadingPagesKey);
 
   @override
-  Future<void> removeData() => _storage.remove(
-        key: _LoadingPageProviderKeys.loadingPagesKey,
-      );
+  Future<void> removeData() =>
+      _storage.remove(key: _LoadingPageProviderKeys.loadingPagesKey);
 }

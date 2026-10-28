@@ -30,19 +30,17 @@ class Message extends MessageShortInfo {
     required this.viewedByOthers,
     required this.notify,
   }) : super(
-          messageId: messageShortInfo.messageId,
-          author: messageShortInfo.author,
-          text: messageShortInfo.text,
-          uuid: messageShortInfo.uuid,
-          dateTime: messageShortInfo.dateTime,
-        );
+         messageId: messageShortInfo.messageId,
+         author: messageShortInfo.author,
+         text: messageShortInfo.text,
+         uuid: messageShortInfo.uuid,
+         dateTime: messageShortInfo.dateTime,
+       );
 
   factory Message.fromJson(JsonMap jsonMap) {
     final List<FileData> files = [];
     for (final file in jsonMap[MessageJsonKeys.files]! as List) {
-      files.add(
-        FileData.fromMessageJson(file),
-      );
+      files.add(FileData.fromMessageJson(file));
     }
 
     return Message(

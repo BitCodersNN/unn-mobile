@@ -15,32 +15,30 @@ class FeedFileDownloaderServiceImpl implements FeedFileDownloaderService {
     LoggerService loggerService,
     ApiHelper apiHelper,
   ) : _fileDownloader = FileDownloader(
-          loggerService,
-          apiHelper,
-          downloadFolderName: 'feed',
-        );
+        loggerService,
+        apiHelper,
+        downloadFolderName: 'feed',
+      );
 
   @override
   Future<File?> downloadFile({
     required String fileName,
     required String downloadUrl,
     required bool force,
-  }) =>
-      _fileDownloader.downloadFile(
-        fileName,
-        downloadUrl: downloadUrl,
-        force: force,
-      );
+  }) => _fileDownloader.downloadFile(
+    fileName,
+    downloadUrl: downloadUrl,
+    force: force,
+  );
 
   @override
   Future<List<File>?> downloadFiles({
     required List<String> fileNames,
     required String downloadUrl,
     required bool force,
-  }) =>
-      _fileDownloader.downloadFiles(
-        fileNames,
-        downloadUrl: downloadUrl,
-        force: force,
-      );
+  }) => _fileDownloader.downloadFiles(
+    fileNames,
+    downloadUrl: downloadUrl,
+    force: force,
+  );
 }

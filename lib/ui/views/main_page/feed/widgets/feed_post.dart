@@ -72,9 +72,10 @@ class _FeedPostState extends State<FeedPost> {
             if (widget.showingComments) {
               return;
             }
-            Injector.appInstance
-                .get<FeedPostViewModelFactory>()
-                .putInCache(model.blogData!.id, model);
+            Injector.appInstance.get<FeedPostViewModelFactory>().putInCache(
+              model.blogData!.id,
+              model,
+            );
             _openPostCommentsPage(context, model);
           },
           onLongPress: () => ContextMenuHelper.showContextMenu(
@@ -115,7 +116,8 @@ class _FeedPostState extends State<FeedPost> {
                             Expanded(
                               child: _PostHeader(
                                 postTime: model.postTime,
-                                viewModel: model.profileViewModel ??
+                                viewModel:
+                                    model.profileViewModel ??
                                     ProfileViewModel.empty(),
                               ),
                             ),
@@ -145,10 +147,7 @@ class _FeedPostState extends State<FeedPost> {
                                     theme.colorScheme.surface.withAlpha(255),
                                     theme.colorScheme.surface.withAlpha(0),
                                   ],
-                                  stops: const [
-                                    0.2,
-                                    1.0,
-                                  ],
+                                  stops: const [0.2, 1.0],
                                 ),
                               ),
                               child: Align(
@@ -205,7 +204,8 @@ class _FeedPostState extends State<FeedPost> {
                           Row(
                             children: [
                               _ReactionCounterWithIcons(
-                                model: model.reactionViewModel ??
+                                model:
+                                    model.reactionViewModel ??
                                     ReactionViewModel.empty(),
                                 reactionsSize: reactionsSize,
                                 background: unnColors!.idkWhatColor!,
@@ -227,8 +227,9 @@ class _FeedPostState extends State<FeedPost> {
                                 vertical: 6,
                               ).copyWith(right: 8),
                               decoration: BoxDecoration(
-                                color: unnColors?.idkWhatColor
-                                    ?.withValues(alpha: 0.1),
+                                color: unnColors?.idkWhatColor?.withValues(
+                                  alpha: 0.1,
+                                ),
                                 borderRadius: BorderRadius.circular(20),
                               ),
                               child: Row(
@@ -322,32 +323,24 @@ class _FeedPostState extends State<FeedPost> {
     if (data.statusCode != 200) {
       return null;
     }
-    return XFile.fromData(
-      data.bodyBytes,
-      mimeType: mimeType,
-    );
+    return XFile.fromData(data.bodyBytes, mimeType: mimeType);
   }
 
   void _onPostRefreshError(EventArgs e) {
-    const snackBar = SnackBar(
-      content: Text('Не удалось обновить пост'),
-    );
+    const snackBar = SnackBar(content: Text('Не удалось обновить пост'));
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 
   Widget _buildPostContent(FeedPostViewModel model) => Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          TextHtmlWidget(
-            text: model.postText,
-            headers: model.authHeaders,
-          ),
-          PackedPostImages(
-            attachedImages: model.attachedImages,
-            authorizationHeaders: model.authHeaders,
-          ),
-        ],
-      );
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      TextHtmlWidget(text: model.postText, headers: model.authHeaders),
+      PackedPostImages(
+        attachedImages: model.attachedImages,
+        authorizationHeaders: model.authHeaders,
+      ),
+    ],
+  );
 }
 
 class _PostHeader extends StatelessWidget {
@@ -355,10 +348,7 @@ class _PostHeader extends StatelessWidget {
 
   final ProfileViewModel viewModel;
 
-  const _PostHeader({
-    required this.postTime,
-    required this.viewModel,
-  });
+  const _PostHeader({required this.postTime, required this.viewModel});
 
   @override
   Widget build(BuildContext context) {
@@ -374,9 +364,10 @@ class _PostHeader extends StatelessWidget {
           if (bitrixId == null) {
             return;
           }
-          Injector.appInstance
-              .get<ProfileViewModelFactory>()
-              .putInCache(bitrixId, model);
+          Injector.appInstance.get<ProfileViewModelFactory>().putInCache(
+            bitrixId,
+            model,
+          );
           GoRouter.of(context).go(
             '${GoRouter.of(context).routeInformationProvider.value.uri.path}/'
             '${feedUserProfileRoute.pagePath.replaceAll(':userId', bitrixId.toString())}',
@@ -414,8 +405,7 @@ class _PostHeader extends StatelessWidget {
                     child: model.isLoading
                         ? Container(
                             width: double.infinity,
-                            height: MediaQuery.of(context)
-                                .textScaler
+                            height: MediaQuery.of(context).textScaler
                                 .clamp(maxScaleFactor: 1.5)
                                 .scale(16),
                             decoration: BoxDecoration(
@@ -435,8 +425,10 @@ class _PostHeader extends StatelessWidget {
                   Text(
                     postTime == null
                         ? ''
-                        : DateFormat('d MMMM yyyy, HH:mm', 'ru_RU')
-                            .format(postTime!),
+                        : DateFormat(
+                            'd MMMM yyyy, HH:mm',
+                            'ru_RU',
+                          ).format(postTime!),
                     style: TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.normal,
@@ -466,61 +458,56 @@ class _ReactionCounterWithIcons extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => BaseView<ReactionViewModel>(
-        model: model,
-        builder: (context, model, _) => Expanded(
-          child: Container(
-            padding: const EdgeInsets.only(
-              top: 6,
-              bottom: 6,
-              right: 8,
-              left: 12,
-            ),
-            child: Builder(
-              builder: (context) {
-                final reactionTypeCount = model.reactionList.length - 1;
-                final reactionCounterOffset =
-                    reactionsSize * reactionTypeCount / 2 + reactionsSize + 8;
-                return SizedBox(
-                  height: reactionsSize,
-                  child: Stack(
-                    alignment: Alignment.centerLeft,
-                    children: [
-                      for (final (i, smallReactionEntry)
-                          in model.reactionList.indexed)
-                        Positioned(
-                          left: reactionsSize / 2 * i,
-                          child: ClipOval(
-                            child: SizedBox(
-                              width: reactionsSize,
-                              height: reactionsSize,
-                              child: Image.asset(
-                                smallReactionEntry.assetName,
-                                fit: BoxFit.cover,
-                              ),
-                            ),
+    model: model,
+    builder: (context, model, _) => Expanded(
+      child: Container(
+        padding: const EdgeInsets.only(top: 6, bottom: 6, right: 8, left: 12),
+        child: Builder(
+          builder: (context) {
+            final reactionTypeCount = model.reactionList.length - 1;
+            final reactionCounterOffset =
+                reactionsSize * reactionTypeCount / 2 + reactionsSize + 8;
+            return SizedBox(
+              height: reactionsSize,
+              child: Stack(
+                alignment: Alignment.centerLeft,
+                children: [
+                  for (final (i, smallReactionEntry)
+                      in model.reactionList.indexed)
+                    Positioned(
+                      left: reactionsSize / 2 * i,
+                      child: ClipOval(
+                        child: SizedBox(
+                          width: reactionsSize,
+                          height: reactionsSize,
+                          child: Image.asset(
+                            smallReactionEntry.assetName,
+                            fit: BoxFit.cover,
                           ),
                         ),
-                      if (model.reactionCount > 0)
-                        Positioned(
-                          left: reactionCounterOffset,
-                          child: Text(
-                            '${model.reactionCount}',
-                            style: TextStyle(
-                              fontSize: 13.0,
-                              fontStyle: FontStyle.italic,
-                              fontWeight: FontWeight.w400,
-                              color: background,
-                            ),
-                          ),
+                      ),
+                    ),
+                  if (model.reactionCount > 0)
+                    Positioned(
+                      left: reactionCounterOffset,
+                      child: Text(
+                        '${model.reactionCount}',
+                        style: TextStyle(
+                          fontSize: 13.0,
+                          fontStyle: FontStyle.italic,
+                          fontWeight: FontWeight.w400,
+                          color: background,
                         ),
-                    ],
-                  ),
-                );
-              },
-            ),
-          ),
+                      ),
+                    ),
+                ],
+              ),
+            );
+          },
         ),
-      );
+      ),
+    ),
+  );
 }
 
 class _ReactionButton extends StatelessWidget {
@@ -531,23 +518,19 @@ class _ReactionButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => BaseView<ReactionViewModel>(
-        model: viewModel,
-        builder: (context, viewModel, _) => GestureDetector(
-          onTap: () {
-            triggerHaptic(HapticIntensity.selection);
-            viewModel.toggleLike();
-          },
-          onLongPress: () {
-            triggerHaptic(HapticIntensity.medium);
-            showReactionChoicePanel(context, viewModel);
-          },
-          child: _reactionButton(
-            context,
-            viewModel,
-            showCounter,
-          ),
-        ),
-      );
+    model: viewModel,
+    builder: (context, viewModel, _) => GestureDetector(
+      onTap: () {
+        triggerHaptic(HapticIntensity.selection);
+        viewModel.toggleLike();
+      },
+      onLongPress: () {
+        triggerHaptic(HapticIntensity.medium);
+        showReactionChoicePanel(context, viewModel);
+      },
+      child: _reactionButton(context, viewModel, showCounter),
+    ),
+  );
 
   static Widget _reactionButton(
     BuildContext context,
@@ -596,11 +579,7 @@ class _ReactionButton extends StatelessWidget {
         height: height,
       );
     } else {
-      return Image.asset(
-        reaction.assetName,
-        width: width,
-        height: height,
-      );
+      return Image.asset(reaction.assetName, width: width, height: height);
     }
   }
 }

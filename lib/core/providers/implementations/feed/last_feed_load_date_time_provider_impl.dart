@@ -34,8 +34,8 @@ class LastFeedLoadDateTimeProviderImpl implements LastFeedLoadDateTimeProvider {
 
   @override
   Future<bool> isContained() => _storage.containsKey(
-        key: _LastFeedLoadDateTimeProviderKeys.feedTimeStorageKey,
-      );
+    key: _LastFeedLoadDateTimeProviderKeys.feedTimeStorageKey,
+  );
 
   @override
   Future<void> saveData(DateTime? data) async {
@@ -47,6 +47,6 @@ class LastFeedLoadDateTimeProviderImpl implements LastFeedLoadDateTimeProvider {
 
   @override
   Future<void> removeData() => _storage.remove(
-        key: _LastFeedLoadDateTimeProviderKeys.feedTimeStorageKey,
-      );
+    key: _LastFeedLoadDateTimeProviderKeys.feedTimeStorageKey,
+  );
 }

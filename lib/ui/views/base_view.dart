@@ -36,7 +36,8 @@ class BaseViewState<T extends BaseViewModel> extends State<BaseView<T>> {
   @override
   void initState() {
     super.initState();
-    model = widget.model ??
+    model =
+        widget.model ??
         widget.createModel?.call() ??
         Injector.appInstance.get<T>();
     widget.onModelReady?.call(model);
@@ -44,12 +45,12 @@ class BaseViewState<T extends BaseViewModel> extends State<BaseView<T>> {
 
   @override
   Widget build(BuildContext context) => ChangeNotifierProvider.value(
-        value: model,
-        child: ListenableBuilder(
-          builder: (context, child) => widget.builder(context, model, child),
-          listenable: model,
-        ),
-      );
+    value: model,
+    child: ListenableBuilder(
+      builder: (context, child) => widget.builder(context, model, child),
+      listenable: model,
+    ),
+  );
 
   @override
   void dispose() {

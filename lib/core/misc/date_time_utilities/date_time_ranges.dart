@@ -7,27 +7,34 @@ import 'package:unn_mobile/core/misc/date_time_utilities/date_time_extensions.da
 
 class DateTimeRanges {
   static DateTimeRange currentWeek() {
-    final startOfWeek =
-        DateTime.now().subtract(Duration(days: DateTime.now().weekday - 1));
-    final endOfWeek =
-        startOfWeek.add(const Duration(days: DateTime.daysPerWeek - 1));
+    final startOfWeek = DateTime.now().subtract(
+      Duration(days: DateTime.now().weekday - 1),
+    );
+    final endOfWeek = startOfWeek.add(
+      const Duration(days: DateTime.daysPerWeek - 1),
+    );
 
     return DateTimeRange(start: startOfWeek, end: endOfWeek);
   }
 
   static DateTimeRange nextWeek() {
-    final startOfWeek = DateTime.now()
-        .add(Duration(days: DateTime.daysPerWeek - DateTime.now().weekday + 1));
-    final endOfWeek =
-        startOfWeek.add(const Duration(days: DateTime.daysPerWeek - 1));
+    final startOfWeek = DateTime.now().add(
+      Duration(days: DateTime.daysPerWeek - DateTime.now().weekday + 1),
+    );
+    final endOfWeek = startOfWeek.add(
+      const Duration(days: DateTime.daysPerWeek - 1),
+    );
 
     return DateTimeRange(start: startOfWeek, end: endOfWeek);
   }
 
   static DateTimeRange currentMonth() {
     final now = DateTime.now();
-    final endOfMonth =
-        DateTime(now.year, now.month + 1, 1).subtract(const Duration(days: 1));
+    final endOfMonth = DateTime(
+      now.year,
+      now.month + 1,
+      1,
+    ).subtract(const Duration(days: 1));
 
     return DateTimeRange(
       start: DateTime(now.year, now.month, 1),
@@ -82,7 +89,8 @@ class DateTimeRanges {
     final anchorDate = referenceDate ?? startDate ?? DateTime.now();
     final startOfDay = (startDate ?? anchorDate).startOfDay;
 
-    final isSpringSummerSemester = anchorDate.month >= DateTime.february &&
+    final isSpringSummerSemester =
+        anchorDate.month >= DateTime.february &&
         anchorDate.month <= DateTime.august;
 
     final endOfSemesterDate = isSpringSummerSemester

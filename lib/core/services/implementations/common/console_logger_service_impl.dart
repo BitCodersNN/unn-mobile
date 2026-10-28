@@ -9,9 +9,7 @@ import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
 class ConsoleLoggerServiceImpl implements LoggerService {
   @override
   void log(String message) {
-    debugPrint(
-      '[ ${_getCaller(StackTrace.current)} ]: $message',
-    );
+    debugPrint('[ ${_getCaller(StackTrace.current)} ]: $message');
   }
 
   @override

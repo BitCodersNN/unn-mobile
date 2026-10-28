@@ -27,10 +27,10 @@ class PreviewEmployee extends UserShortInfo {
     required UserShortInfo userShortInfo,
     required this.profiles,
   }) : super(
-          bitrixId: userShortInfo.bitrixId,
-          fullname: userShortInfo.fullname,
-          photoSrc: userShortInfo.photoSrc,
-        );
+         bitrixId: userShortInfo.bitrixId,
+         fullname: userShortInfo.fullname,
+         photoSrc: userShortInfo.photoSrc,
+       );
 
   factory PreviewEmployee.fromJson(JsonMap json) =>
       PreviewEmployee.withUserShortInfo(
@@ -44,10 +44,10 @@ class PreviewEmployee extends UserShortInfo {
 
   @override
   JsonMap toJson() => {
-        ...super.toProfileJson(),
-        _PreviewEmployeeJsonKeys.id: userId,
-        _PreviewEmployeeJsonKeys.profiles: [
-          for (final profile in profiles) profile.toJson(),
-        ],
-      };
+    ...super.toProfileJson(),
+    _PreviewEmployeeJsonKeys.id: userId,
+    _PreviewEmployeeJsonKeys.profiles: [
+      for (final profile in profiles) profile.toJson(),
+    ],
+  };
 }

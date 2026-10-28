@@ -39,26 +39,26 @@ class ChatRestrictions {
   });
 
   factory ChatRestrictions.fromJson(JsonMap json) => ChatRestrictions(
-        avatar: json[_ChatRestrictionsJsonKeys.avatar]! as bool,
-        rename: json[_ChatRestrictionsJsonKeys.rename]! as bool,
-        extend: json[_ChatRestrictionsJsonKeys.extend]! as bool,
-        call: json[_ChatRestrictionsJsonKeys.call]! as bool,
-        mute: json[_ChatRestrictionsJsonKeys.mute]! as bool,
-        leave: json[_ChatRestrictionsJsonKeys.leave]! as bool,
-        leaveOwner: json[_ChatRestrictionsJsonKeys.leaveOwner]! as bool,
-        send: json[_ChatRestrictionsJsonKeys.send]! as bool,
-        userList: json[_ChatRestrictionsJsonKeys.userList]! as bool,
-      );
+    avatar: json[_ChatRestrictionsJsonKeys.avatar]! as bool,
+    rename: json[_ChatRestrictionsJsonKeys.rename]! as bool,
+    extend: json[_ChatRestrictionsJsonKeys.extend]! as bool,
+    call: json[_ChatRestrictionsJsonKeys.call]! as bool,
+    mute: json[_ChatRestrictionsJsonKeys.mute]! as bool,
+    leave: json[_ChatRestrictionsJsonKeys.leave]! as bool,
+    leaveOwner: json[_ChatRestrictionsJsonKeys.leaveOwner]! as bool,
+    send: json[_ChatRestrictionsJsonKeys.send]! as bool,
+    userList: json[_ChatRestrictionsJsonKeys.userList]! as bool,
+  );
 
   JsonMap toJson() => {
-        _ChatRestrictionsJsonKeys.avatar: avatar,
-        _ChatRestrictionsJsonKeys.rename: rename,
-        _ChatRestrictionsJsonKeys.extend: extend,
-        _ChatRestrictionsJsonKeys.call: call,
-        _ChatRestrictionsJsonKeys.mute: mute,
-        _ChatRestrictionsJsonKeys.leave: leave,
-        _ChatRestrictionsJsonKeys.leaveOwner: leaveOwner,
-        _ChatRestrictionsJsonKeys.send: send,
-        _ChatRestrictionsJsonKeys.userList: userList,
-      };
+    _ChatRestrictionsJsonKeys.avatar: avatar,
+    _ChatRestrictionsJsonKeys.rename: rename,
+    _ChatRestrictionsJsonKeys.extend: extend,
+    _ChatRestrictionsJsonKeys.call: call,
+    _ChatRestrictionsJsonKeys.mute: mute,
+    _ChatRestrictionsJsonKeys.leave: leave,
+    _ChatRestrictionsJsonKeys.leaveOwner: leaveOwner,
+    _ChatRestrictionsJsonKeys.send: send,
+    _ChatRestrictionsJsonKeys.userList: userList,
+  };
 }

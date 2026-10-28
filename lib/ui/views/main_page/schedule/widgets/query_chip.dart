@@ -8,11 +8,7 @@ class QueryChip extends StatefulWidget {
   final String label;
   final VoidCallback onClear;
 
-  const QueryChip({
-    required this.label,
-    required this.onClear,
-    super.key,
-  });
+  const QueryChip({required this.label, required this.onClear, super.key});
 
   @override
   State<QueryChip> createState() => _QueryChipState();
@@ -30,10 +26,10 @@ class _QueryChipState extends State<QueryChip>
     curve: Curves.easeOut,
   );
 
-  late final Animation<double> _scale =
-      Tween<double>(begin: 0.8, end: 1.0).animate(
-    CurvedAnimation(parent: _controller, curve: Curves.easeOutBack),
-  );
+  late final Animation<double> _scale = Tween<double>(
+    begin: 0.8,
+    end: 1.0,
+  ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutBack));
 
   @override
   void initState() {

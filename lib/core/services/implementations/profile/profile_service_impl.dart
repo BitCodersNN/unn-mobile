@@ -23,10 +23,7 @@ class ProfileServiceImpl implements ProfileService {
   final LoggerService _loggerService;
   final ApiHelper _apiHelper;
 
-  ProfileServiceImpl(
-    this._loggerService,
-    this._apiHelper,
-  );
+  ProfileServiceImpl(this._loggerService, this._apiHelper);
 
   @override
   Future<UserData?> getProfile({required int userId}) async {
@@ -42,17 +39,20 @@ class ProfileServiceImpl implements ProfileService {
     }
 
     final responseData = response.data as JsonMap;
-    final userType = responseData[ProfilesStrings.type] ??
+    final userType =
+        responseData[ProfilesStrings.type] ??
         ((responseData[ProfilesStrings.profilesKey]! as List)[0]
             as JsonMap)[ProfilesStrings.type];
 
     UserData? userData;
     try {
       userData = switch (userType) {
-        ProfilesStrings.student =>
-          StudentData.fromJson(_getStudentJson(responseData)),
-        ProfilesStrings.employee =>
-          EmployeeData.fromJson(_getEmployeeJson(responseData)),
+        ProfilesStrings.student => StudentData.fromJson(
+          _getStudentJson(responseData),
+        ),
+        ProfilesStrings.employee => EmployeeData.fromJson(
+          _getEmployeeJson(responseData),
+        ),
         _ => UserData.fromJson(_getUserJson(responseData)),
       };
     } catch (error, stackTrace) {

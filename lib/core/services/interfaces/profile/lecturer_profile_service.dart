@@ -18,8 +18,5 @@ abstract interface class LecturerProfileService {
   ///   - [LecturerSearchResult.found] — если профиль успешно найден
   ///   - [LecturerSearchResult.error] — если произошла ошибка при поиске внутри страницы или запросе сотрудников
   ///   - [LecturerSearchResult.notFound] — если профиль не найден ни на одной странице
-  Future<LecturerSearchResult> getProfile(
-    String fullname,
-    String syncId,
-  );
+  Future<LecturerSearchResult> getProfile(String fullname, String syncId);
 }

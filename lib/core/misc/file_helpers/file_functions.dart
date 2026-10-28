@@ -3,6 +3,7 @@
 
 import 'dart:convert';
 import 'dart:io';
+
 import 'package:content_resolver/content_resolver.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
@@ -51,11 +52,11 @@ Future<String?> openFilePicker(String fileName, String mimeType) async {
   return location;
 }
 
-Future<OpenResult> viewFile(String uri, String mimeType) => switch(defaultTargetPlatform) {
-  TargetPlatform.android => _viewFileAndroid(uri, mimeType),
-  _ => _viewFileDefault(uri, mimeType)
-};
-
+Future<OpenResult> viewFile(String uri, String mimeType) =>
+    switch (defaultTargetPlatform) {
+      TargetPlatform.android => _viewFileAndroid(uri, mimeType),
+      _ => _viewFileDefault(uri, mimeType),
+    };
 
 Future<OpenResult> _viewFileAndroid(String uri, String mimeType) async {
   try {
@@ -94,10 +95,11 @@ Future<OpenResult> _viewFileDefault(String uri, String mimeType) async {
   }
 }
 
-
 Future<Iterable<String>?> openUploadFilePicker({required bool gallery}) async {
   if (Platform.isAndroid) {
-    await fileFunctionsMethodChannel.invokeMethod('pickUploadFiles', {'gallery': gallery});
+    await fileFunctionsMethodChannel.invokeMethod('pickUploadFiles', {
+      'gallery': gallery,
+    });
     const pickerEvents = EventChannel(
       'ru.bitcodersnn.unnstudenthub/file_events',
     );

@@ -10,15 +10,12 @@ class OptionsWithTimeoutAndExpectedTypeFactory {
     int duration,
     ResponseDataType responseDataType, {
     String? contentTypeHeader,
-  }) =>
-      Options(
-        sendTimeout: Duration(seconds: duration),
-        receiveTimeout: Duration(seconds: duration),
-        extra: OptionsWithExpectedTypeFactory.mapWithExpectedType(
-          responseDataType,
-        ),
-        headers: contentTypeHeader != null
-            ? {Headers.contentTypeHeader: contentTypeHeader}
-            : null,
-      );
+  }) => Options(
+    sendTimeout: Duration(seconds: duration),
+    receiveTimeout: Duration(seconds: duration),
+    extra: OptionsWithExpectedTypeFactory.mapWithExpectedType(responseDataType),
+    headers: contentTypeHeader != null
+        ? {Headers.contentTypeHeader: contentTypeHeader}
+        : null,
+  );
 }

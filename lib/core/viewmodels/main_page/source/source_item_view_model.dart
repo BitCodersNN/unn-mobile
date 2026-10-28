@@ -19,12 +19,10 @@ class SourceItemViewModel extends BaseViewModel {
   final DistanceMaterialData _material;
   final DistanceLinkData? _linkData;
   final DistanceFileData? _fileData;
-  SourceItemViewModel(
-    DistanceMaterialData material,
-    this._downloader,
-  )   : _material = material,
-        _linkData = material is DistanceLinkData ? material : null,
-        _fileData = material is DistanceFileData ? material : null;
+  SourceItemViewModel(DistanceMaterialData material, this._downloader)
+    : _material = material,
+      _linkData = material is DistanceLinkData ? material : null,
+      _fileData = material is DistanceFileData ? material : null;
 
   bool get isFile => _fileData is DistanceFileData;
   bool get isLink => _linkData is DistanceLinkData;
@@ -40,7 +38,7 @@ class SourceItemViewModel extends BaseViewModel {
   String? get fileSize => _fileData == null
       ? null
       : _sizeConverter.convertBytesToSize(_fileData.sizeInBytes).toString() +
-          (_sizeConverter.lastUsedUnit?.getUnitStringRu() ?? '');
+            (_sizeConverter.lastUsedUnit?.getUnitStringRu() ?? '');
 
   FutureOr<void> downloadFile() => busyCallAsync(_downloadFile);
 

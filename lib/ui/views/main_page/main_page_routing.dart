@@ -46,9 +46,7 @@ final MainPageRouteData pinnedPostsRoute = MainPageRouteData(
   'pinned',
   userTypes: [],
   builder: (_, _) => const PinnedPostsPage(),
-  subroutes: [
-    postCommentsRoute,
-  ],
+  subroutes: [postCommentsRoute],
 );
 
 final MainPageRouteData feedUserProfileRoute = MainPageRouteData(
@@ -72,11 +70,7 @@ final List<MainPageRouteData> mainPageRoutes = [
     builder: (_, _) => const FeedScreenView(),
     onReselect: _refresh<FeedScreenViewModel>,
     userTypes: [],
-    subroutes: [
-      postCommentsRoute,
-      pinnedPostsRoute,
-      feedUserProfileRoute,
-    ],
+    subroutes: [postCommentsRoute, pinnedPostsRoute, feedUserProfileRoute],
   ),
   MainPageRouteData(
     Icons.calendar_month,
