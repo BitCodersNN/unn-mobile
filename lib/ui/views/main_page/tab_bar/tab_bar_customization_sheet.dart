@@ -9,6 +9,7 @@ import 'package:unn_mobile/core/misc/tab_bar_preferences.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/tab_bar_customization_view_model.dart';
 import 'package:unn_mobile/ui/views/main_page/main_page_route_data.dart';
 import 'package:unn_mobile/ui/views/main_page/tab_bar/tab_bar_item_content.dart';
+import 'package:unn_mobile/ui/views/main_page/tab_bar/tab_bar_label_layout.dart';
 import 'package:unn_mobile/ui/views/main_page/tab_bar/tab_bar_reorder_preview.dart';
 
 Future<List<String>?> showTabBarCustomizationSheet(
@@ -230,23 +231,33 @@ class _TabBarCustomizationSheetState extends State<TabBarCustomizationSheet> {
                         vertical: 12,
                         horizontal: 4,
                       ),
-                      child: TabBarReorderPreview(
-                        itemCount: TabBarPreferences.maxTabs,
-                        itemKey: (index) =>
-                            index == TabBarPreferences.editableSlotCount
-                                ? MainPagePaths.more
-                                : _model.slots[index] ?? 'empty-$index',
-                        canDrag: (index) =>
-                            !_model.isSaving &&
-                            index < TabBarPreferences.editableSlotCount &&
-                            _model.slots[index] != null,
-                        canMove: _model.canMove,
-                        onSelected: _model.selectSlot,
-                        onMove: _model.move,
-                        itemBuilder: (context, index) =>
-                            index < TabBarPreferences.editableSlotCount
-                                ? _previewSlot(context, index)
-                                : _morePreview(context),
+                      child: TabBarLabelLayout(
+                        labels: [
+                          for (int index = 0;
+                              index < TabBarPreferences.editableSlotCount;
+                              index++)
+                            _slotLabel(index),
+                          'Ещё',
+                        ],
+                        itemHorizontalPadding: 2,
+                        child: TabBarReorderPreview(
+                          itemCount: TabBarPreferences.maxTabs,
+                          itemKey: (index) =>
+                              index == TabBarPreferences.editableSlotCount
+                                  ? MainPagePaths.more
+                                  : _model.slots[index] ?? 'empty-$index',
+                          canDrag: (index) =>
+                              !_model.isSaving &&
+                              index < TabBarPreferences.editableSlotCount &&
+                              _model.slots[index] != null,
+                          canMove: _model.canMove,
+                          onSelected: _model.selectSlot,
+                          onMove: _model.move,
+                          itemBuilder: (context, index) =>
+                              index < TabBarPreferences.editableSlotCount
+                                  ? _previewSlot(context, index)
+                                  : _morePreview(context),
+                        ),
                       ),
                     ),
                   ),
@@ -272,6 +283,10 @@ class _TabBarCustomizationSheetState extends State<TabBarCustomizationSheet> {
     );
   }
 
+  String _slotLabel(int index) =>
+      _routesByPath[_model.slots[index]]?.pageTitle ??
+      (_model.selectedSlot == index ? 'Не показывать' : 'Добавить');
+
   Widget _previewSlot(BuildContext context, int index) {
     final path = _model.slots[index];
     final route = path == null ? null : _routesByPath[path];
@@ -289,8 +304,7 @@ class _TabBarCustomizationSheetState extends State<TabBarCustomizationSheet> {
           child: TabBarItemContent(
             icon: (selected ? route?.selectedIcon : route?.unselectedIcon) ??
                 (selected ? Icons.block : Icons.add),
-            label:
-                route?.pageTitle ?? (selected ? 'Не показывать' : 'Добавить'),
+            label: _slotLabel(index),
             color: selected
                 ? theme.colorScheme.primary
                 : theme.colorScheme.onSurfaceVariant,
