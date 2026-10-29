@@ -5,6 +5,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:unn_mobile/core/constants/main_page_paths.dart';
 import 'package:unn_mobile/core/misc/user/current_user_sync_storage.dart';
 import 'package:unn_mobile/core/models/schedule/subject_type.dart';
 import 'package:unn_mobile/core/services/interfaces/schedule_widget/schedule_widget_platform.dart';
@@ -76,7 +77,14 @@ class UnnMobile extends StatefulWidget {
 class _UnnMobileState extends State<UnnMobile> {
   late final MainPageRoutesViewModelsFactory _routesViewModelsFactory =
       widget.routesViewModelsFactory;
-  late final AppRouter _router = AppRouter(userType: widget.currentUserStorage);
+  late final Future<bool> _widgetLaunch =
+      widget.scheduleWidgetPlatform.consumeLaunch();
+  late final AppRouter _router = AppRouter(
+    userType: widget.currentUserStorage,
+    initialDestination: _widgetLaunch.then(
+      (openSchedule) => openSchedule ? MainPagePaths.schedule : null,
+    ),
+  );
 
   late final ScheduleWidgetBinding _scheduleWidget;
 
@@ -89,7 +97,7 @@ class _UnnMobileState extends State<UnnMobile> {
       widget.currentUserStorage,
       _router,
       _openPersonalSchedule,
-    )..start();
+    )..start(initialLaunch: _widgetLaunch);
   }
 
   void _openPersonalSchedule() {

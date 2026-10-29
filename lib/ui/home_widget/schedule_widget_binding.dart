@@ -30,31 +30,33 @@ class ScheduleWidgetBinding with WidgetsBindingObserver {
     this._onOpen,
   );
 
-  void start() {
+  void start({Future<bool>? initialLaunch}) {
     _useRasp = AppSettings.useRaspSchedule;
     WidgetsBinding.instance.addObserver(this);
     _user.addListener(_refresh);
     _router.router.routerDelegate.addListener(_openIfReady);
     AppSettings.optionsSaved.subscribe(_onSettingsChanged);
     _platform.setOpenHandler(_requestOpen);
-    unawaited(_consumeLaunch());
+    unawaited(_consumeLaunch(initialLaunch));
     _refresh();
   }
 
-  Future<void> _consumeLaunch() async {
-    if (await _platform.consumeLaunch() && !_disposed) {
+  Future<void> _consumeLaunch([Future<bool>? launch]) async {
+    if (await (launch ?? _platform.consumeLaunch()) && !_disposed) {
       _requestOpen();
     }
   }
 
   void _requestOpen() {
     _pendingOpen = true;
+    _router.requestDestination(MainPagePaths.schedule);
     _openIfReady();
   }
 
   void _openIfReady() {
-    final path = _router.router.routeInformationProvider.value.uri.path;
-    if (!_pendingOpen || !path.startsWith('$mainPageRoute/')) {
+    final uri = _router.router.routerDelegate.currentConfiguration.uri;
+    if (!_pendingOpen ||
+        mainPageDestinationPath(uri) != MainPagePaths.schedule) {
       return;
     }
     _pendingOpen = false;
@@ -62,13 +64,11 @@ class ScheduleWidgetBinding with WidgetsBindingObserver {
       if (_disposed) {
         return;
       }
-      final path = _router.router.routeInformationProvider.value.uri.path;
-      if (!path.startsWith('$mainPageRoute/')) {
-        _pendingOpen = true;
+      final uri = _router.router.routerDelegate.currentConfiguration.uri;
+      if (mainPageDestinationPath(uri) != MainPagePaths.schedule) {
         return;
       }
       _onOpen();
-      _router.goToDestination(MainPagePaths.schedule, initialLocation: true);
     });
     WidgetsBinding.instance.ensureVisualUpdate();
   }

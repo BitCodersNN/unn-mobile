@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2025 BitCodersNN
 
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -27,6 +29,8 @@ class AppRouter extends ChangeNotifier {
   final Map<String, ({MainPageRouteData route, StatefulShellBranch branch})>
       _branches = {};
   final Map<String, ({Uri uri, Object? extra})> _locations = {};
+  Future<String?>? _initialDestination;
+  String? _requestedDestination;
   late MainPageRouteConfiguration _configuration;
   late final ValueNotifier<RoutingConfig> _routingConfig;
   late final GoRouter _router;
@@ -37,7 +41,9 @@ class AppRouter extends ChangeNotifier {
     List<MainPageRouteData>? routes,
     StatefulShellRouteBuilder? shellBuilder,
     String initialLocation = loadingPageRoute,
-  })  : _tabPaths = tabPaths ?? AppSettings.tabBarPaths,
+    Future<String?>? initialDestination,
+  })  : _initialDestination = initialDestination,
+        _tabPaths = tabPaths ?? AppSettings.tabBarPaths,
         _userType = userType,
         _routes = List.unmodifiable(routes ?? mainPageRoutes),
         _shellBuilder = shellBuilder {
@@ -59,6 +65,22 @@ class AppRouter extends ChangeNotifier {
   MainPageRouteConfiguration get configuration => _configuration;
 
   String locationFor(String path) => _configuration.locationFor(path);
+
+  void requestDestination(String path) {
+    if (!_routes.any((route) => route.pagePath == path && !route.isDisabled)) {
+      return;
+    }
+    if (_router.routerDelegate.currentConfiguration.uri.toString() ==
+        locationFor(path)) {
+      _requestedDestination = null;
+      return;
+    }
+    _requestedDestination = path;
+    final uri = _router.routeInformationProvider.value.uri;
+    if (uri.path == mainPageRoute || mainPageDestinationPath(uri) != null) {
+      _router.refresh();
+    }
+  }
 
   void goToDestination(String path, {bool initialLocation = false}) {
     if (!_configuration.containsDestination(path)) {
@@ -86,6 +108,10 @@ class AppRouter extends ChangeNotifier {
     final matches = _router.routerDelegate.currentConfiguration;
     if (matches.isEmpty || matches.isError) {
       return;
+    }
+    final requested = _requestedDestination;
+    if (requested != null && matches.uri.toString() == locationFor(requested)) {
+      _requestedDestination = null;
     }
     final destination = mainPageDestinationPath(matches.uri);
     if (destination == null) {
@@ -152,7 +178,37 @@ class AppRouter extends ChangeNotifier {
     return branch;
   }
 
-  String? _redirect(BuildContext context, GoRouterState state) {
+  FutureOr<String?> _redirect(BuildContext context, GoRouterState state) {
+    if (state.uri.path != mainPageRoute &&
+        mainPageDestinationPath(state.uri) == null) {
+      return null;
+    }
+    final initial = _initialDestination;
+    if (initial != null) {
+      return _redirectAfterInitialDestination(state, initial);
+    }
+    return _redirectToMainPage(state);
+  }
+
+  Future<String?> _redirectAfterInitialDestination(
+    GoRouterState state,
+    Future<String?> initial,
+  ) async {
+    final destination = await initial;
+    if (_initialDestination == initial) {
+      _initialDestination = null;
+      _requestedDestination ??= destination;
+    }
+    return _redirectToMainPage(state);
+  }
+
+  String? _redirectToMainPage(GoRouterState state) {
+    final requested = _requestedDestination;
+    if (requested != null && _configuration.containsDestination(requested)) {
+      final target = locationFor(requested);
+      return state.uri.toString() == target ? null : target;
+    }
+    _requestedDestination = null;
     if (state.uri.path == mainPageRoute) {
       return locationFor(_configuration.paths.first);
     }

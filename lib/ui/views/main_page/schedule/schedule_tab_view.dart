@@ -107,6 +107,7 @@ class _ScheduleTabViewState extends State<ScheduleTabView> {
           ),
         ),
         SliverAppBar(
+          automaticallyImplyLeading: false,
           title: DayHeader(
             dayOfWeek:
                 l.firstOrNull?.dateTimeRange.start.format(DatePattern.e) ??
