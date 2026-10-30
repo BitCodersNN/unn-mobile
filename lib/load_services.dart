@@ -149,6 +149,7 @@ import 'package:unn_mobile/core/services/interfaces/schedule/export_schedule_ser
 import 'package:unn_mobile/core/services/interfaces/schedule/schedule_search_history_service.dart';
 import 'package:unn_mobile/core/services/interfaces/schedule/schedule_service.dart';
 import 'package:unn_mobile/core/viewmodels/auth_page/auth_page_view_model.dart';
+import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/factories/attached_file_view_model_factory.dart';
 import 'package:unn_mobile/core/viewmodels/factories/feed_comment_view_model_factory.dart';
 import 'package:unn_mobile/core/viewmodels/factories/feed_post_view_model_factory.dart';
@@ -164,7 +165,6 @@ import 'package:unn_mobile/core/viewmodels/main_page/chat/chat_inside_view_model
 import 'package:unn_mobile/core/viewmodels/main_page/chat/chat_screen_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/feed/feed_screen_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/grades/grades_screen_view_model.dart';
-import 'package:unn_mobile/core/viewmodels/main_page/main_page_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/schedule/schedule_screen_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/settings/settings_screen_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/source/source_page_view_model.dart';
@@ -175,9 +175,10 @@ void registerDependencies() {
   T get<T>({String dependencyName = ''}) =>
       injector.get<T>(dependencyName: dependencyName);
 
-  ApiHelper getPlatformSpecificHelper<TWeb extends ApiHelper,
-          TDefault extends ApiHelper>() =>
-      kIsWeb ? get<TWeb>() : get<TDefault>();
+  ApiHelper getPlatformSpecificHelper<
+    TWeb extends ApiHelper,
+    TDefault extends ApiHelper
+  >() => kIsWeb ? get<TWeb>() : get<TDefault>();
 
   final apiHelperFactories = {
     HostType.github: () => get<GithubApiHelper>(),
@@ -208,7 +209,6 @@ void registerDependencies() {
     ..registerSingleton<AppOpenTracker>(
       () => AppOpenTracker(get<StorageService>()),
     )
-
     // =========================================================================
     // 2. СЕТЕВЫЕ ПОМОЩНИКИ (API HELPERS)
     // =========================================================================
@@ -234,7 +234,6 @@ void registerDependencies() {
       () =>
           WebUnnSourceApiHelper(authorizationService: get<SourceAuthService>()),
     )
-
     // =========================================================================
     // 3. АУТЕНТИФИКАЦИЯ И АВТОРИЗАЦИЯ
     // =========================================================================
@@ -246,10 +245,8 @@ void registerDependencies() {
       ),
     )
     ..registerSingleton<SourceAuthService>(
-      () => SourceAuthServiceImpl(
-        get<OnlineStatusData>(),
-        get<LoggerService>(),
-      ),
+      () =>
+          SourceAuthServiceImpl(get<OnlineStatusData>(), get<LoggerService>()),
     )
     ..registerSingleton<AuthDataProvider>(
       () => AuthorisationDataProviderImpl(get<StorageService>()),
@@ -268,7 +265,6 @@ void registerDependencies() {
         getApiHelper(HostType.unnPortal),
       ),
     )
-
     // =========================================================================
     // 4. КОНФИГУРАЦИЯ И МЕТАДАННЫЕ
     // =========================================================================
@@ -300,21 +296,15 @@ void registerDependencies() {
       () => LastCommitShaAuthorsProviderImpl(get<StorageService>()),
     )
     ..registerSingleton<AuthorsProvider>(
-      () => AuthorsProviderImpl(
-        get<StorageService>(),
-        get<LoggerService>(),
-      ),
+      () => AuthorsProviderImpl(get<StorageService>(), get<LoggerService>()),
     )
     ..registerSingleton<LastCommitShaLoadingPageProvider>(
       () => LastCommitShaLoadingPageProviderImpl(get<StorageService>()),
     )
     ..registerSingleton<LoadingPageProvider>(
-      () => LoadingPageProviderImpl(
-        get<StorageService>(),
-        get<LoggerService>(),
-      ),
+      () =>
+          LoadingPageProviderImpl(get<StorageService>(), get<LoggerService>()),
     )
-
     // =========================================================================
     // 5. ПОЛЬЗОВАТЕЛЬ И ПРОФИЛЬ
     // =========================================================================
@@ -333,10 +323,7 @@ void registerDependencies() {
       ),
     )
     ..registerSingleton<UserDataProvider>(
-      () => UserDataProviderImpl(
-        get<StorageService>(),
-        get<LoggerService>(),
-      ),
+      () => UserDataProviderImpl(get<StorageService>(), get<LoggerService>()),
     )
     ..registerSingleton<CurrentUserSyncStorage>(
       () => CurrentUserSyncStorage(
@@ -370,7 +357,6 @@ void registerDependencies() {
         get<ProfileService>(),
       ),
     )
-
     // =========================================================================
     // 6. РАСПИСАНИЕ И УСПЕВАЕМОСТЬ
     // =========================================================================
@@ -385,9 +371,7 @@ void registerDependencies() {
       () => ExportScheduleServiceImpl(getApiHelper(HostType.unnPortal)),
     )
     ..registerSingleton<OfflineScheduleProvider>(
-      () => OfflineScheduleProviderImpl(
-        get<StorageService>(),
-      ),
+      () => OfflineScheduleProviderImpl(get<StorageService>()),
     )
     ..registerSingleton<ScheduleSearchHistoryService>(
       () => ScheduleSearchHistoryServiceImpl(
@@ -413,7 +397,6 @@ void registerDependencies() {
         get<LoggerService>(),
       ),
     )
-
     // =========================================================================
     // 7. БЛОГ, ЛЕНТА И КОНТЕНТ
     // =========================================================================
@@ -478,7 +461,6 @@ void registerDependencies() {
         get<CurrentUserSyncStorage>(),
       ),
     )
-
     // =========================================================================
     // 8. СЕРТИФИКАТЫ
     // =========================================================================
@@ -500,7 +482,6 @@ void registerDependencies() {
         getApiHelper(HostType.unnPortal),
       ),
     )
-
     // =========================================================================
     // 9. ДИСТАНЦИОННОЕ ОБУЧЕНИЕ (UNN SOURCE)
     // =========================================================================
@@ -534,7 +515,6 @@ void registerDependencies() {
         getApiHelper(HostType.unnSource),
       ),
     )
-
     // =========================================================================
     // 10. СООБЩЕНИЯ И ДИАЛОГИ
     // =========================================================================
@@ -621,7 +601,6 @@ void registerDependencies() {
         getApiHelper(HostType.unnPortal),
       ),
     )
-
     // =========================================================================
     // 11. РЕЙТИНГИ И РЕАКЦИИ (ОБЩИЕ)
     // Управление реакциями и рейтингами вне контекста сообщений
@@ -639,7 +618,6 @@ void registerDependencies() {
         getApiHelper(HostType.unnPortal),
       ),
     )
-
     // =========================================================================
     // 12. ФАБРИКИ VIEWMODEL
     // =========================================================================
@@ -656,9 +634,11 @@ void registerDependencies() {
       FeedCommentViewModelFactory.new,
     )
     ..registerSingleton<MainPageRoutesViewModelsFactory>(
-      () => MainPageRoutesViewModelsFactory(get<UnnAuthService>()),
+      () => MainPageRoutesViewModelsFactory(
+        get<UnnAuthService>(),
+        createViewModel: <T extends BaseViewModel>() => get<T>(),
+      ),
     )
-
     // =========================================================================
     // 13. VIEWMODELS ЭКРАНОВ И КОМПОНЕНТОВ
     // =========================================================================
@@ -683,12 +663,6 @@ void registerDependencies() {
         get<AuthDataProvider>(),
         get<UnnAuthService>(),
         get<LoggerService>(),
-      ),
-    )
-    ..registerDependency(
-      () => MainPageViewModel(
-        get<CurrentUserSyncStorage>(),
-        get<OnlineStatusData>(),
       ),
     )
     ..registerDependency(
@@ -719,7 +693,11 @@ void registerDependencies() {
       ),
     )
     ..registerDependency(
-      () => SettingsScreenViewModel(get<StorageService>()),
+      () => SettingsScreenViewModel(
+        get<StorageService>(),
+        get<UnnAuthService>(),
+        get<SourceAuthService>(),
+      ),
     )
     ..registerDependency(
       () => ScheduleScreenViewModel(

@@ -3,18 +3,9 @@
 
 import 'package:unn_mobile/core/models/schedule/schedule_filter.dart';
 
-enum ExportScheduleResult {
-  success,
-  noPermission,
-  timeout,
-  statusCodeIsntOk,
-}
+enum ExportScheduleResult { success, noPermission, timeout, statusCodeIsntOk }
 
-enum RequestCalendarPermissionResult {
-  allowed,
-  rejected,
-  permanentlyDenied,
-}
+enum RequestCalendarPermissionResult { allowed, rejected, permanentlyDenied }
 
 abstract interface class ExportScheduleService {
   /// Экспортирует расписание в дефолтный календарь устройства

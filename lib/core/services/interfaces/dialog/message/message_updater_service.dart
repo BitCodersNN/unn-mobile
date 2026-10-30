@@ -11,8 +11,5 @@ abstract interface class MessageUpdaterService {
   /// Возвращает:
   ///   - `true` - если сообщение было успешно обновлено
   ///   - `false` - в случае ошибки или невалидного ответа сервера
-  Future<bool> update({
-    required int messageId,
-    required String text,
-  });
+  Future<bool> update({required int messageId, required String text});
 }

@@ -27,14 +27,15 @@ class ApiHelper implements GetApiHelper, PostApiHelper, ApiOptionsHelper {
     required String path,
     Map<String, dynamic>? queryParameters,
     Options? options,
+    CancelToken? cancelToken,
     ProgressCallback? onReceiveProgress,
-  }) =>
-      dio.get(
-        path,
-        queryParameters: queryParameters,
-        options: options,
-        onReceiveProgress: onReceiveProgress,
-      );
+  }) => dio.get(
+    path,
+    queryParameters: queryParameters,
+    options: options,
+    cancelToken: cancelToken,
+    onReceiveProgress: onReceiveProgress,
+  );
 
   @override
   Future<Response> post({
@@ -42,15 +43,16 @@ class ApiHelper implements GetApiHelper, PostApiHelper, ApiOptionsHelper {
     Object? data,
     Map<String, dynamic>? queryParameters,
     Options? options,
+    CancelToken? cancelToken,
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
-  }) =>
-      dio.post(
-        path,
-        data: data,
-        queryParameters: queryParameters,
-        options: options,
-      );
+  }) => dio.post(
+    path,
+    data: data,
+    queryParameters: queryParameters,
+    options: options,
+    cancelToken: cancelToken,
+  );
 
   @override
   void updateOptions(BaseOptions newOptions) {

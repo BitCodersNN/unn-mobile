@@ -31,10 +31,8 @@ class PreviewDialog extends BaseDialogInfo {
       );
 
   JsonMap toJson() => {
-        _PreviewDialogJsonKeys.customData: {
-          _PreviewDialogJsonKeys.id: dialogId,
-        },
-        _PreviewDialogJsonKeys.title: title,
-        _PreviewDialogJsonKeys.avatar: avatarUrl,
-      };
+    _PreviewDialogJsonKeys.customData: {_PreviewDialogJsonKeys.id: dialogId},
+    _PreviewDialogJsonKeys.title: title,
+    _PreviewDialogJsonKeys.avatar: avatarUrl,
+  };
 }

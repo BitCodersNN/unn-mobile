@@ -17,10 +17,7 @@ class CertificatePathServiceImpl implements CertificatePathService {
   final LoggerService _loggerService;
   final ApiHelper _apiHelper;
 
-  CertificatePathServiceImpl(
-    this._loggerService,
-    this._apiHelper,
-  );
+  CertificatePathServiceImpl(this._loggerService, this._apiHelper);
 
   @override
   Future<String?> getCertificatePath({
@@ -31,10 +28,7 @@ class CertificatePathServiceImpl implements CertificatePathService {
     try {
       response = await _apiHelper.post(
         path: ApiPath.createSpravka,
-        data: {
-          _DataNames.sendtype: sendtype,
-          _DataNames.num: number,
-        },
+        data: {_DataNames.sendtype: sendtype, _DataNames.num: number},
         options: OptionsWithExpectedTypeFactory.string,
       );
     } catch (error, stackTrace) {

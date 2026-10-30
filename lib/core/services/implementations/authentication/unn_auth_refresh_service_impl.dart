@@ -33,10 +33,7 @@ class AuthRefreshServiceImpl implements AuthRefreshService {
       return !(authData.login == AuthData.getDefaultParameter() ||
           authData.login == AuthData.getDefaultParameter());
     } on PlatformException catch (error, stack) {
-      _loggerService.logError(
-        error,
-        stack,
-      );
+      _loggerService.logError(error, stack);
       unawaited(_storage.clear());
       return false;
     }
@@ -52,8 +49,9 @@ class AuthRefreshServiceImpl implements AuthRefreshService {
 
     const demoPrefixLength = DemoModeConstants.demoUserPrefix.length;
 
-    final shouldEnableDemo =
-        authData.login.startsWith(DemoModeConstants.demoUserPrefix);
+    final shouldEnableDemo = authData.login.startsWith(
+      DemoModeConstants.demoUserPrefix,
+    );
 
     final actualLogin = shouldEnableDemo
         ? authData.login.substring(demoPrefixLength)

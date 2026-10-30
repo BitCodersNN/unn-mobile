@@ -21,21 +21,22 @@ class ForwardInfo {
   });
 
   factory ForwardInfo.fromJson(JsonMap jsonMap) => ForwardInfo(
-        forwardChatId:
-            (jsonMap[ForwardInfoJsonKeys.forwardId]! as String).split('/')[0],
-        forwardMessageId: int.parse(
-          (jsonMap[ForwardInfoJsonKeys.forwardId]! as String).split('/')[1],
-        ),
-        forwardAuthor: jsonMap[ForwardInfoJsonKeys.forwardAuthor] != null
-            ? UserShortInfo.fromMessageJson(
-                jsonMap[ForwardInfoJsonKeys.forwardAuthor]! as JsonMap,
-              )
-            : null,
-      );
+    forwardChatId: (jsonMap[ForwardInfoJsonKeys.forwardId]! as String).split(
+      '/',
+    )[0],
+    forwardMessageId: int.parse(
+      (jsonMap[ForwardInfoJsonKeys.forwardId]! as String).split('/')[1],
+    ),
+    forwardAuthor: jsonMap[ForwardInfoJsonKeys.forwardAuthor] != null
+        ? UserShortInfo.fromMessageJson(
+            jsonMap[ForwardInfoJsonKeys.forwardAuthor]! as JsonMap,
+          )
+        : null,
+  );
 
   JsonMap toJson() => {
-        ForwardInfoJsonKeys.forwardId: '$forwardChatId/$forwardMessageId',
-        if (forwardAuthor != null)
-          ForwardInfoJsonKeys.forwardAuthor: forwardAuthor!.toMessageJson(),
-      };
+    ForwardInfoJsonKeys.forwardId: '$forwardChatId/$forwardMessageId',
+    if (forwardAuthor != null)
+      ForwardInfoJsonKeys.forwardAuthor: forwardAuthor!.toMessageJson(),
+  };
 }

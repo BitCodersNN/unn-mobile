@@ -108,11 +108,7 @@ class MessageWidget extends StatefulWidget {
   }) {
     final theme = Theme.of(context);
     final msgText = isSystem
-        ? msg.text
-            .split(
-              systemMessageSeparator,
-            )
-            .lastOrNull
+        ? msg.text.split(systemMessageSeparator).lastOrNull
         : msg.text;
     return Column(
       children: [
@@ -121,13 +117,11 @@ class MessageWidget extends StatefulWidget {
             alignment: Alignment.centerLeft,
             child: BBCodeText(
               data: msgText ?? '',
-              stylesheet:
-                  getBBStyleSheet(theme: theme).copyWith(selectableText: false),
+              stylesheet: getBBStyleSheet(theme: theme)
+                  .copyWith(selectableText: false),
             ),
           ),
-          const SizedBox(
-            height: 4.0,
-          ),
+          const SizedBox(height: 4.0),
         ],
         for (final file in msg.files)
           AttachedFile(
@@ -141,16 +135,12 @@ class MessageWidget extends StatefulWidget {
   static Widget _buildMessageWithReply(
     BuildContext context,
     MessageWithReply msg,
-  ) =>
-      Column(
-        children: [
-          buildReplyMessage(
-            context,
-            msg.replyMessage,
-          ),
-          _buildMessage(context, msg),
-        ],
-      );
+  ) => Column(
+    children: [
+      buildReplyMessage(context, msg.replyMessage),
+      _buildMessage(context, msg),
+    ],
+  );
 
   static Widget _buildMessageWithForward(
     BuildContext context,
@@ -160,16 +150,8 @@ class MessageWidget extends StatefulWidget {
     final isSystem = msg.forwardInfo.forwardAuthor == null;
     return Column(
       children: [
-        _forwardMessageHeader(
-          context,
-          msg.forwardInfo,
-          isSystem,
-        ),
-        _buildMessage(
-          context,
-          msg,
-          isSystem: isSystem,
-        ),
+        _forwardMessageHeader(context, msg.forwardInfo, isSystem),
+        _buildMessage(context, msg, isSystem: isSystem),
       ],
     );
   }
@@ -177,15 +159,14 @@ class MessageWidget extends StatefulWidget {
   static Widget _buildMessageWithForwardAndReply(
     BuildContext context,
     MessageWithForwardAndReply msg,
-  ) =>
-      Column(
-        spacing: 2.0,
-        children: [
-          _forwardMessageHeader(context, msg.forwardInfo, false),
-          buildReplyMessage(context, msg.replyMessage, showFullText: true),
-          _buildMessage(context, msg),
-        ],
-      );
+  ) => Column(
+    spacing: 2.0,
+    children: [
+      _forwardMessageHeader(context, msg.forwardInfo, false),
+      buildReplyMessage(context, msg.replyMessage, showFullText: true),
+      _buildMessage(context, msg),
+    ],
+  );
 
   static Widget _messageAuthorHeader(BuildContext context, String? fullname) {
     final theme = Theme.of(context);
@@ -248,10 +229,8 @@ class _MessageWidgetState extends State<MessageWidget> {
         ),
         child: _buildMessageContent(context, model, theme),
       ),
-      onModelReady: (model) => model.init(
-        widget.message.messageId,
-        widget.message.ratingList,
-      ),
+      onModelReady: (model) =>
+          model.init(widget.message.messageId, widget.message.ratingList),
     );
   }
 
@@ -259,116 +238,111 @@ class _MessageWidgetState extends State<MessageWidget> {
     BuildContext context,
     MessageReactionViewModel model,
     ThemeData theme,
-  ) =>
-      Row(
-        children: [
-          Expanded(
-            child: LayoutBuilder(
-              builder: (context, constraints) => Padding(
-                padding: const EdgeInsets.only(bottom: 4.0),
-                child: Align(
-                  alignment: widget.fromCurrentUser
-                      ? Alignment.centerRight
-                      : Alignment.centerLeft,
-                  child: ConstrainedBox(
-                    constraints: BoxConstraints(
-                      maxWidth: constraints.maxWidth * 0.9,
-                    ),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: widget.fromCurrentUser
-                          ? CrossAxisAlignment.end
-                          : CrossAxisAlignment.start,
-                      children: [
-                        AnimatedContainer(
-                          duration: Duration(
-                            milliseconds: _isHighlighted ? 300 : 600,
-                          ),
-                          curve: Curves.decelerate,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(8.0),
-                            color: _isHighlighted
-                                ? theme.colorScheme.secondaryFixed
-                                : widget.fromCurrentUser
-                                    ? theme.colorScheme.surfaceDim
-                                    : theme.colorScheme.surfaceContainer,
-                          ),
-                          padding:
-                              const EdgeInsets.all(8.0).copyWith(bottom: 0.0),
-                          child: IntrinsicWidth(
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                if (widget.displayAuthor) ...[
-                                  MessageWidget._messageAuthorHeader(
-                                    context,
-                                    widget.message.author?.fullname,
-                                  ),
-                                  const SizedBox(height: 4.0),
-                                ],
-                                MessageWidget._buildContent(
-                                  context,
-                                  widget.message,
-                                ),
-                                Align(
-                                  alignment: Alignment.centerRight,
-                                  child: Text(
-                                    widget.message.dateTime
-                                        .toLocal()
-                                        .format(DatePattern.hhmm),
-                                    style: theme.textTheme.bodySmall,
-                                  ),
-                                ),
-                              ],
+  ) => Row(
+    children: [
+      Expanded(
+        child: LayoutBuilder(
+          builder: (context, constraints) => Padding(
+            padding: const EdgeInsets.only(bottom: 4.0),
+            child: Align(
+              alignment: widget.fromCurrentUser
+                  ? Alignment.centerRight
+                  : Alignment.centerLeft,
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxWidth: constraints.maxWidth * 0.9,
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: widget.fromCurrentUser
+                      ? CrossAxisAlignment.end
+                      : CrossAxisAlignment.start,
+                  children: [
+                    AnimatedContainer(
+                      duration: Duration(
+                        milliseconds: _isHighlighted ? 300 : 600,
+                      ),
+                      curve: Curves.decelerate,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8.0),
+                        color: _isHighlighted
+                            ? theme.colorScheme.secondaryFixed
+                            : widget.fromCurrentUser
+                            ? theme.colorScheme.surfaceDim
+                            : theme.colorScheme.surfaceContainer,
+                      ),
+                      padding: const EdgeInsets.all(8.0).copyWith(bottom: 0.0),
+                      child: IntrinsicWidth(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            if (widget.displayAuthor) ...[
+                              MessageWidget._messageAuthorHeader(
+                                context,
+                                widget.message.author?.fullname,
+                              ),
+                              const SizedBox(height: 4.0),
+                            ],
+                            MessageWidget._buildContent(
+                              context,
+                              widget.message,
                             ),
-                          ),
+                            Align(
+                              alignment: Alignment.centerRight,
+                              child: Text(
+                                widget.message.dateTime.toLocal().format(
+                                  DatePattern.hhmm,
+                                ),
+                                style: theme.textTheme.bodySmall,
+                              ),
+                            ),
+                          ],
                         ),
-                        ConstrainedBox(
-                          constraints: const BoxConstraints(maxHeight: 100),
-                          child: MessageReactionView(model: model),
-                        ),
-                      ],
+                      ),
                     ),
-                  ),
+                    ConstrainedBox(
+                      constraints: const BoxConstraints(maxHeight: 100),
+                      child: MessageReactionView(model: model),
+                    ),
+                  ],
                 ),
               ),
             ),
           ),
-          const Expanded(flex: 0, child: SizedBox()),
-        ],
-      );
+        ),
+      ),
+      const Expanded(flex: 0, child: SizedBox()),
+    ],
+  );
 }
 
 class MessageReactionView extends StatelessWidget {
   final MessageReactionViewModel model;
-  const MessageReactionView({
-    required this.model,
-    super.key,
-  });
+  const MessageReactionView({required this.model, super.key});
 
   @override
   Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 4.0),
-        child: Wrap(
-          direction: Axis.horizontal,
-          spacing: 8,
-          crossAxisAlignment: WrapCrossAlignment.center,
-          children: [
-            for (final reaction in ReactionType.values)
-              if (model.getReactionCount(reaction) > 0)
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 4.0),
-                  child: ReactionBubble(
-                    isSelected: model.currentReaction == reaction,
-                    onPressed: () {
-                      triggerHaptic(HapticIntensity.selection);
-                      model.toggleReaction(reaction);
-                    },
-                    icon: Image.asset(reaction.assetName),
-                    text: model.getReactionCount(reaction).toString(),
-                  ),
-                ),
-          ],
-        ),
-      );
+    padding: const EdgeInsets.symmetric(horizontal: 4.0),
+    child: Wrap(
+      direction: Axis.horizontal,
+      spacing: 8,
+      crossAxisAlignment: WrapCrossAlignment.center,
+      children: [
+        for (final reaction in ReactionType.values)
+          if (model.getReactionCount(reaction) > 0)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 4.0),
+              child: ReactionBubble(
+                isSelected: model.currentReaction == reaction,
+                onPressed: () {
+                  triggerHaptic(HapticIntensity.selection);
+                  model.toggleReaction(reaction);
+                },
+                icon: Image.asset(reaction.assetName),
+                text: model.getReactionCount(reaction).toString(),
+              ),
+            ),
+      ],
+    ),
+  );
 }

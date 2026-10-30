@@ -12,10 +12,10 @@ class _EmployeeDataJsonKeys {
 
 class EmployeeData extends UserData {
   static Set<String> get jsonKeys => {
-        _EmployeeDataJsonKeys.syncId,
-        _EmployeeDataJsonKeys.profiles,
-        ...UserData.jsonKeys,
-      };
+    _EmployeeDataJsonKeys.syncId,
+    _EmployeeDataJsonKeys.profiles,
+    ...UserData.jsonKeys,
+  };
 
   final String syncId;
   final List<EmployeeProfile> profiles;
@@ -41,37 +41,36 @@ class EmployeeData extends UserData {
     required this.syncId,
     required this.profiles,
   }) : super(
-          bitrixId: userData.bitrixId,
-          login: userData.login,
-          fullname: userData.fullname,
-          userId: userData.userId,
-          email: userData.email,
-          phone: userData.phone,
-          sex: userData.sex,
-          photoSrc: userData.photoSrc,
-          notes: userData.notes,
-          web: userData.web,
-          birthdate: userData.birthdate,
-        );
+         bitrixId: userData.bitrixId,
+         login: userData.login,
+         fullname: userData.fullname,
+         userId: userData.userId,
+         email: userData.email,
+         phone: userData.phone,
+         sex: userData.sex,
+         photoSrc: userData.photoSrc,
+         notes: userData.notes,
+         web: userData.web,
+         birthdate: userData.birthdate,
+       );
 
   @override
   JsonMap toJson() => {
-        ...super.toJson(),
-        _EmployeeDataJsonKeys.syncId: syncId,
-        _EmployeeDataJsonKeys.profiles: [
-          for (final profile in profiles) profile.toJson(),
-        ],
-      };
+    ...super.toJson(),
+    _EmployeeDataJsonKeys.syncId: syncId,
+    _EmployeeDataJsonKeys.profiles: [
+      for (final profile in profiles) profile.toJson(),
+    ],
+  };
 
   factory EmployeeData.fromJson(JsonMap json) => EmployeeData.withUserData(
-        userData: UserData.fromJson(json),
-        syncId: json[_EmployeeDataJsonKeys.syncId]! as String,
-        profiles: json.containsKey(_EmployeeDataJsonKeys.profiles)
-            ? [
-                for (final item
-                    in json[_EmployeeDataJsonKeys.profiles]! as List)
-                  EmployeeProfile.fromJson(item as JsonMap),
-              ]
-            : [EmployeeProfile.fromJson(json)],
-      );
+    userData: UserData.fromJson(json),
+    syncId: json[_EmployeeDataJsonKeys.syncId]! as String,
+    profiles: json.containsKey(_EmployeeDataJsonKeys.profiles)
+        ? [
+            for (final item in json[_EmployeeDataJsonKeys.profiles]! as List)
+              EmployeeProfile.fromJson(item as JsonMap),
+          ]
+        : [EmployeeProfile.fromJson(json)],
+  );
 }

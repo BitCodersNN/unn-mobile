@@ -13,7 +13,9 @@ import 'package:injector/injector.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:unn_mobile/app.dart';
 import 'package:unn_mobile/core/misc/app_settings.dart';
+import 'package:unn_mobile/core/misc/user/current_user_sync_storage.dart';
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
+import 'package:unn_mobile/core/viewmodels/factories/main_page_routes_view_models_factory.dart';
 import 'package:unn_mobile/firebase_options.dart';
 import 'package:unn_mobile/load_services.dart';
 
@@ -25,9 +27,10 @@ void main() async {
     certificate.buffer.asUint8List(),
   );
 
-  await SystemChrome.setPreferredOrientations(
-    [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown],
-  );
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
 
   try {
     await Firebase.initializeApp(
@@ -45,21 +48,29 @@ void main() async {
 
   if (!kDebugMode) {
     FlutterError.onError = (errorDetails) {
-      Injector.appInstance
-          .get<LoggerService>()
-          .handleFlutterFatalError(errorDetails);
+      Injector.appInstance.get<LoggerService>().handleFlutterFatalError(
+        errorDetails,
+      );
     };
 
     PlatformDispatcher.instance.onError = (error, stack) {
-      Injector.appInstance
-          .get<LoggerService>()
-          .logError(error, stack, fatal: true);
+      Injector.appInstance.get<LoggerService>().logError(
+        error,
+        stack,
+        fatal: true,
+      );
       return true;
     };
   }
 
   await initializeDateFormatting('ru_RU', null);
-  runApp(const UnnMobile());
+  runApp(
+    UnnMobile(
+      routesViewModelsFactory: Injector.appInstance
+          .get<MainPageRoutesViewModelsFactory>(),
+      currentUserStorage: Injector.appInstance.get<CurrentUserSyncStorage>(),
+    ),
+  );
 }
 
 Future<void> updateAnalyticsSettings() async {

@@ -8,5 +8,6 @@ abstract interface class GetApiHelper {
     required String path,
     Map<String, dynamic>? queryParameters,
     Options? options,
+    CancelToken? cancelToken,
   });
 }

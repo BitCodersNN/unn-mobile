@@ -40,21 +40,13 @@ class RegularExpressions {
     _RegularExpressionSource.commentIdAndMessage,
   );
 
-  static final authorRegExp = RegExp(
-    _RegularExpressionSource.author,
-  );
+  static final authorRegExp = RegExp(_RegularExpressionSource.author);
 
-  static final dateTimeRegExp = RegExp(
-    _RegularExpressionSource.dateTime,
-  );
+  static final dateTimeRegExp = RegExp(_RegularExpressionSource.dateTime);
 
-  static final keySignedRegExp = RegExp(
-    _RegularExpressionSource.keySigned,
-  );
+  static final keySignedRegExp = RegExp(_RegularExpressionSource.keySigned);
 
-  static final filesRegExp = RegExp(
-    _RegularExpressionSource.files,
-  );
+  static final filesRegExp = RegExp(_RegularExpressionSource.files);
 
   static final cookieCleanupRegExp = RegExp(
     _RegularExpressionSource.cookieCleanup,
@@ -68,13 +60,9 @@ class RegularExpressions {
     _RegularExpressionSource.leadingDigits,
   );
 
-  static final errorRegex = RegExp(
-    _RegularExpressionSource.errorText,
-  );
+  static final errorRegex = RegExp(_RegularExpressionSource.errorText);
 
-  static final phpsessidRegExp = RegExp(
-    _RegularExpressionSource.phpsessid,
-  );
+  static final phpsessidRegExp = RegExp(_RegularExpressionSource.phpsessid);
 
   static final distanceCourseSemesterRegExp = RegExp(
     _RegularExpressionSource.distanceCourseSemester,
@@ -108,9 +96,7 @@ class RegularExpressions {
     caseSensitive: false,
   );
 
-  static final urlRegExp = RegExp(
-    _RegularExpressionSource.urlPattern,
-  );
+  static final urlRegExp = RegExp(_RegularExpressionSource.urlPattern);
 
   static final recordBlogRegExp = RegExp(
     _RegularExpressionSource.recordBlogPattern,
@@ -120,9 +106,7 @@ class RegularExpressions {
     _RegularExpressionSource.blogPostIdPattern,
   );
 
-  static final digitsRegExp = RegExp(
-    _RegularExpressionSource.digitsPattern,
-  );
+  static final digitsRegExp = RegExp(_RegularExpressionSource.digitsPattern);
 
   static final nonDigitsRegExp = RegExp(
     _RegularExpressionSource.nonDigitsPattern,
@@ -132,9 +116,7 @@ class RegularExpressions {
     _RegularExpressionSource.fourDigitYearPattern,
   );
 
-  static final timeRegExp = RegExp(
-    _RegularExpressionSource.timePattern,
-  );
+  static final timeRegExp = RegExp(_RegularExpressionSource.timePattern);
 
   static final _dimensionRegExpCache = LRUCache<String, RegExp>(100);
   static RegExp dimensionValueRegExp(String dimension) =>

@@ -10,125 +10,123 @@ import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/about/about_view_model.dart';
 import 'package:unn_mobile/ui/unn_mobile_colors.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
-import 'package:unn_mobile/ui/views/main_page/main_page.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class AboutScreenView extends StatelessWidget {
-  final int? bottomRouteIndex;
-  const AboutScreenView({super.key, this.bottomRouteIndex});
+  const AboutScreenView({super.key});
 
   @override
   Widget build(BuildContext context) => BaseView<AboutViewModel>(
-        onModelReady: (model) => model.init(),
-        builder: (context, model, child) => Scaffold(
-          appBar: AppBar(
-            leading: getSubpageLeading(bottomRouteIndex),
-            title: const Text('О нас'),
-            forceMaterialTransparency: true,
-          ),
-          body: LayoutBuilder(
-            builder: (context, constraints) {
-              final theme = Theme.of(context);
-              final unnColors = theme.unnMobileColors;
-              return SingleChildScrollView(
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(minHeight: constraints.maxHeight),
-                  child: IntrinsicHeight(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        if (model.isBusy)
-                          const Expanded(
-                            child: Center(child: CircularProgressIndicator()),
-                          )
-                        else
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                if (model.authors.isNotEmpty)
-                                  Padding(
-                                    padding: const EdgeInsets.only(top: 15),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Center(
-                                          child: Text(
-                                            'Команда разработчиков',
-                                            textAlign: TextAlign.center,
-                                            style: theme.textTheme.headlineSmall
-                                                ?.copyWith(
-                                              color: theme.colorScheme
+    onModelReady: (model) => model.init(),
+    builder: (context, model, child) => Scaffold(
+      appBar: AppBar(
+        title: const Text('О нас'),
+        forceMaterialTransparency: true,
+      ),
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          final theme = Theme.of(context);
+          final unnColors = theme.unnMobileColors;
+          return SingleChildScrollView(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(minHeight: constraints.maxHeight),
+              child: IntrinsicHeight(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    if (model.isBusy)
+                      const Expanded(
+                        child: Center(child: CircularProgressIndicator()),
+                      )
+                    else
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            if (model.authors.isNotEmpty)
+                              Padding(
+                                padding: const EdgeInsets.only(top: 15),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Center(
+                                      child: Text(
+                                        'Команда разработчиков',
+                                        textAlign: TextAlign.center,
+                                        style: theme.textTheme.headlineSmall
+                                            ?.copyWith(
+                                              color: theme
+                                                  .colorScheme
                                                   .onPrimaryContainer,
                                             ),
-                                          ),
-                                        ),
-                                        ...model.authors.map(
-                                          _AuthorProfileWidget.new,
-                                        ),
-                                      ],
+                                      ),
                                     ),
-                                  ),
-                                if (model.pastAuthors.isNotEmpty) ...[
-                                  const Divider(),
-                                  ExpansionTile(
-                                    shape: const Border(),
-                                    title: Text(
-                                      'Прошлые участники',
-                                      textAlign: TextAlign.left,
-                                      style: theme.textTheme.headlineSmall
-                                          ?.copyWith(
+                                    ...model.authors.map(
+                                      _AuthorProfileWidget.new,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            if (model.pastAuthors.isNotEmpty) ...[
+                              const Divider(),
+                              ExpansionTile(
+                                shape: const Border(),
+                                title: Text(
+                                  'Прошлые участники',
+                                  textAlign: TextAlign.left,
+                                  style: theme.textTheme.headlineSmall
+                                      ?.copyWith(
                                         color: theme
-                                            .colorScheme.onPrimaryContainer,
+                                            .colorScheme
+                                            .onPrimaryContainer,
                                       ),
-                                    ),
-                                    dense: true,
-                                    children: [
-                                      ...model.pastAuthors.map(
-                                        _AuthorProfileWidget.new,
-                                      ),
-                                    ],
+                                ),
+                                dense: true,
+                                children: [
+                                  ...model.pastAuthors.map(
+                                    _AuthorProfileWidget.new,
                                   ),
-                                  const Divider(),
-                                  Expanded(child: Container()),
                                 ],
-                                const Spacer(),
-                              ],
-                            ),
-                          ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: HtmlWidget(
-                            '''
+                              ),
+                              const Divider(),
+                              Expanded(child: Container()),
+                            ],
+                            const Spacer(),
+                          ],
+                        ),
+                      ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: HtmlWidget(
+                        '''
                       <center><p>Приложение распространяется под лицензией <a href="https://github.com/BitCodersNN/unn-mobile?tab=Apache-2.0-1-ov-file">Apache 2.0</a></p>
                       <p>Код приложения доступен <a href="https://github.com/BitCodersNN/unn-mobile">на нашем GitHub</a></p>
                       <p>По всем вопросам можно обращаться: <a href="https://t.me/unn_mobile">t.me/unn_mobile</a></p></center>
                       ''',
-                            textStyle: TextStyle(
-                              color: unnColors?.ligtherTextColor,
-                              fontFamily: 'Inter',
-                              fontSize: 13,
-                            ),
-                            onTapUrl: (url) async {
-                              if (!await launchUrl(Uri.parse(url))) {
-                                Injector.appInstance
-                                    .get<LoggerService>()
-                                    .log('Could not launch url $url');
-                              }
-                              return true;
-                            },
-                          ),
+                        textStyle: TextStyle(
+                          color: unnColors?.ligtherTextColor,
+                          fontFamily: 'Inter',
+                          fontSize: 13,
                         ),
-                      ],
+                        onTapUrl: (url) async {
+                          if (!await launchUrl(Uri.parse(url))) {
+                            Injector.appInstance.get<LoggerService>().log(
+                              'Could not launch url $url',
+                            );
+                          }
+                          return true;
+                        },
+                      ),
                     ),
-                  ),
+                  ],
                 ),
-              );
-            },
-          ),
-        ),
-      );
+              ),
+            ),
+          );
+        },
+      ),
+    ),
+  );
 }
 
 class _AuthorProfileWidget extends StatelessWidget {

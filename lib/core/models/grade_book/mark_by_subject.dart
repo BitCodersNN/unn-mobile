@@ -35,28 +35,26 @@ class MarkBySubject {
   int get creditedHours => hours ~/ _hoursPerCreditedHour;
 
   factory MarkBySubject.fromJson(JsonMap jsonMap) => MarkBySubject(
-        controlType: jsonMap[_MarkBySubjectJsonKeys.controlType]! as String,
-        date: jsonMap[_MarkBySubjectJsonKeys.date] == null
-            ? null
-            : DateTime.parse(jsonMap[_MarkBySubjectJsonKeys.date]! as String),
-        hours: int.parse(
-          jsonMap[_MarkBySubjectJsonKeys.hours]! as String,
-        ),
-        lecturers: jsonMap[_MarkBySubjectJsonKeys.lecturers] as String?,
-        markType: jsonMap[_MarkBySubjectJsonKeys.mark] == null
-            ? null
-            : MarkType.fromDouble(
-                (jsonMap[_MarkBySubjectJsonKeys.mark]! as num).toDouble(),
-              ),
-        subject: jsonMap[_MarkBySubjectJsonKeys.subject]! as String,
-      );
+    controlType: jsonMap[_MarkBySubjectJsonKeys.controlType]! as String,
+    date: jsonMap[_MarkBySubjectJsonKeys.date] == null
+        ? null
+        : DateTime.parse(jsonMap[_MarkBySubjectJsonKeys.date]! as String),
+    hours: int.parse(jsonMap[_MarkBySubjectJsonKeys.hours]! as String),
+    lecturers: jsonMap[_MarkBySubjectJsonKeys.lecturers] as String?,
+    markType: jsonMap[_MarkBySubjectJsonKeys.mark] == null
+        ? null
+        : MarkType.fromDouble(
+            (jsonMap[_MarkBySubjectJsonKeys.mark]! as num).toDouble(),
+          ),
+    subject: jsonMap[_MarkBySubjectJsonKeys.subject]! as String,
+  );
 
   JsonMap toJson() => {
-        _MarkBySubjectJsonKeys.controlType: controlType,
-        _MarkBySubjectJsonKeys.date: date?.toIso8601String(),
-        _MarkBySubjectJsonKeys.hours: hours.toString(),
-        _MarkBySubjectJsonKeys.lecturers: lecturers,
-        _MarkBySubjectJsonKeys.mark: markType?.value,
-        _MarkBySubjectJsonKeys.subject: subject,
-      };
+    _MarkBySubjectJsonKeys.controlType: controlType,
+    _MarkBySubjectJsonKeys.date: date?.toIso8601String(),
+    _MarkBySubjectJsonKeys.hours: hours.toString(),
+    _MarkBySubjectJsonKeys.lecturers: lecturers,
+    _MarkBySubjectJsonKeys.mark: markType?.value,
+    _MarkBySubjectJsonKeys.subject: subject,
+  };
 }

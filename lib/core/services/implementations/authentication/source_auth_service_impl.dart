@@ -40,8 +40,8 @@ class SourceAuthServiceImpl extends ChangeNotifier
 
   @override
   Map<String, dynamic>? get headers => {
-        'Cookie': '${SessionIdentifierKeys.sessionIdCookieKey}=$sessionId',
-      };
+    'Cookie': '${SessionIdentifierKeys.sessionIdCookieKey}=$sessionId',
+  };
 
   SourceAuthServiceImpl(
     OnlineStatusData onlineStatus,
@@ -49,30 +49,21 @@ class SourceAuthServiceImpl extends ChangeNotifier
   ) {
     _authorisationHelper = AuthorisationHelper(
       onlineStatus,
-      ApiHelper(
-        options: createBaseOptions(
-          host: Host.unnSource,
-        ),
-      ),
+      ApiHelper(options: createBaseOptions(host: Host.unnSource)),
       loggerService,
       '',
     );
   }
 
   @override
-  Future<AuthRequestResult> auth(
-    String login,
-    String password,
-  ) async {
+  Future<AuthRequestResult> auth(String login, String password) async {
     try {
-      return await _auth(
-        {
-          AjaxActionStrings.actionKey: _FormDataValues.login,
-          _FormDataKeys.login: login,
-          _FormDataKeys.password: password,
-          _FormDataKeys.submit: _FormDataValues.submit,
-        },
-      );
+      return await _auth({
+        AjaxActionStrings.actionKey: _FormDataValues.login,
+        _FormDataKeys.login: login,
+        _FormDataKeys.password: password,
+        _FormDataKeys.submit: _FormDataValues.submit,
+      });
     } finally {
       // Сообщаем, что авторизация могла измениться
       // Это надо делать независимо от того, как мы выйдем отсюда
@@ -96,10 +87,7 @@ class SourceAuthServiceImpl extends ChangeNotifier
       additionalGoodStatusCodes: [302],
     );
 
-    return result.fold(
-      (authResult) => authResult,
-      _parseResponse,
-    );
+    return result.fold((authResult) => authResult, _parseResponse);
   }
 
   AuthRequestResult _parseResponse(Response response) {

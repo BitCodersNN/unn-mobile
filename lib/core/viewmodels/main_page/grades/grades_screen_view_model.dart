@@ -42,9 +42,8 @@ class GradesScreenViewModel extends BaseViewModel {
 
   int? get selectedSemesterNumber => _selectedSemesterNumber;
 
-  int get selectedSemesterIndex => _semesters.indexWhere(
-        (model) => model.number == _selectedSemesterNumber,
-      );
+  int get selectedSemesterIndex =>
+      _semesters.indexWhere((model) => model.number == _selectedSemesterNumber);
 
   bool get hasGradeBook => _hasGradeBook;
 
@@ -118,8 +117,8 @@ class GradesScreenViewModel extends BaseViewModel {
       _selectedSemesterNumber = plannedSemesters.isNotEmpty
           ? plannedSemesters.first.number
           : _semesters.isEmpty
-              ? null
-              : _semesters.last.number;
+          ? null
+          : _semesters.last.number;
     }
   }
 
@@ -137,8 +136,9 @@ class GradesScreenViewModel extends BaseViewModel {
       return const [];
     }
     final profile = _userStorage.currentUserData;
-    final profileCourse =
-        profile is StudentData ? profile.baseEduInfo.eduCourse : null;
+    final profileCourse = profile is StudentData
+        ? profile.baseEduInfo.eduCourse
+        : null;
     final course = profileCourse != null && profileCourse > 0
         ? profileCourse
         : (numbers.first + 1) ~/ 2;
@@ -156,14 +156,11 @@ class GradesScreenViewModel extends BaseViewModel {
   }
 
   Future<Map<int, List<MarkBySubject>>?> _getGradeBook() =>
-      tryLoginAndRetrieveData(
-        () async {
-          final gradeBook = await _gradeBookService.getGradeBook();
-          if (gradeBook != null) {
-            await _markBySubjectProvider.saveData(gradeBook);
-          }
-          return gradeBook;
-        },
-        _markBySubjectProvider.getData,
-      );
+      tryLoginAndRetrieveData(() async {
+        final gradeBook = await _gradeBookService.getGradeBook();
+        if (gradeBook != null) {
+          await _markBySubjectProvider.saveData(gradeBook);
+        }
+        return gradeBook;
+      }, _markBySubjectProvider.getData);
 }

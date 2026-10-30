@@ -30,17 +30,17 @@ class AuthorisationDataProviderImpl implements AuthDataProvider {
 
   @override
   Future<void> saveData(AuthData authData) => Future.wait([
-        _storage.write(
-          key: _AuthDataProviderKeys._loginKey,
-          value: authData.login,
-          secure: true,
-        ),
-        _storage.write(
-          key: _AuthDataProviderKeys._passwordKey,
-          value: authData.password,
-          secure: true,
-        ),
-      ]);
+    _storage.write(
+      key: _AuthDataProviderKeys._loginKey,
+      value: authData.login,
+      secure: true,
+    ),
+    _storage.write(
+      key: _AuthDataProviderKeys._passwordKey,
+      value: authData.password,
+      secure: true,
+    ),
+  ]);
 
   @override
   Future<bool> isContained() async {
@@ -56,7 +56,7 @@ class AuthorisationDataProviderImpl implements AuthDataProvider {
 
   @override
   Future<void> removeData() => Future.wait([
-        _storage.remove(key: _AuthDataProviderKeys._loginKey, secure: true),
-        _storage.remove(key: _AuthDataProviderKeys._passwordKey, secure: true),
-      ]);
+    _storage.remove(key: _AuthDataProviderKeys._loginKey, secure: true),
+    _storage.remove(key: _AuthDataProviderKeys._passwordKey, secure: true),
+  ]);
 }

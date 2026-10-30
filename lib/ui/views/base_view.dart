@@ -16,11 +16,13 @@ class BaseView<T extends BaseViewModel> extends StatefulWidget {
   final void Function(T)? onDispose;
 
   final T? model;
+  final T Function()? createModel;
 
   const BaseView({
     required this.builder,
     super.key,
     this.model,
+    this.createModel,
     this.onModelReady,
     this.onDispose,
   });
@@ -33,19 +35,22 @@ class BaseViewState<T extends BaseViewModel> extends State<BaseView<T>> {
   late T model;
   @override
   void initState() {
-    model = widget.model ?? Injector.appInstance.get<T>();
-    widget.onModelReady?.call(model);
     super.initState();
+    model =
+        widget.model ??
+        widget.createModel?.call() ??
+        Injector.appInstance.get<T>();
+    widget.onModelReady?.call(model);
   }
 
   @override
   Widget build(BuildContext context) => ChangeNotifierProvider.value(
-        value: model,
-        child: ListenableBuilder(
-          builder: (context, child) => widget.builder(context, model, child),
-          listenable: model,
-        ),
-      );
+    value: model,
+    child: ListenableBuilder(
+      builder: (context, child) => widget.builder(context, model, child),
+      listenable: model,
+    ),
+  );
 
   @override
   void dispose() {

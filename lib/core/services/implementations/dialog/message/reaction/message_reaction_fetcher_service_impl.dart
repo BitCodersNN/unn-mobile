@@ -35,10 +35,7 @@ class MessageReactionFetcherServiceImpl
   final LoggerService _loggerService;
   final ApiHelper _apiHelper;
 
-  MessageReactionFetcherServiceImpl(
-    this._loggerService,
-    this._apiHelper,
-  );
+  MessageReactionFetcherServiceImpl(this._loggerService, this._apiHelper);
 
   @override
   Future<RatingList?> fetch(int messageId) async {
@@ -69,8 +66,8 @@ class MessageReactionFetcherServiceImpl
       (reaction) {
         final userId = reaction[_JsonKeys.userId];
         return {
-          _JsonKeys.reaction:
-              (reaction[_JsonKeys.reaction]! as String).toLowerCase(),
+          _JsonKeys.reaction: (reaction[_JsonKeys.reaction]! as String)
+              .toLowerCase(),
           defaultUserInfoKeys.id: userId,
           defaultUserInfoKeys.fullname: usersById[userId]![_JsonKeys.name],
           defaultUserInfoKeys.photoSrc: usersById[userId]![_JsonKeys.avatar],
@@ -79,10 +76,6 @@ class MessageReactionFetcherServiceImpl
       _loggerService,
     );
 
-    return RatingList.fromJson(
-      {
-        _JsonKeys.users: users,
-      },
-    );
+    return RatingList.fromJson({_JsonKeys.users: users});
   }
 }

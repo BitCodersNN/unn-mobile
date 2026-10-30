@@ -31,8 +31,7 @@ class OfflineSchedule {
   }
 
   JsonMap toJson() => {
-        _OfflineScheduleJsonKeys.week: week.toJson(),
-        _OfflineScheduleJsonKeys.subjects:
-            subjects.map((e) => e.toJson()).toList(),
-      };
+    _OfflineScheduleJsonKeys.week: week.toJson(),
+    _OfflineScheduleJsonKeys.subjects: subjects.map((e) => e.toJson()).toList(),
+  };
 }

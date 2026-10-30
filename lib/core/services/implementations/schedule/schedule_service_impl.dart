@@ -37,7 +37,10 @@ class ScheduleServiceImpl implements ScheduleService {
   );
 
   @override
-  Future<List<Subject>?> getSchedule(ScheduleFilter scheduleFilter) async {
+  Future<List<Subject>?> getSchedule(
+    ScheduleFilter scheduleFilter, {
+    CancelToken? cancelToken,
+  }) async {
     final path =
         '${ApiPath.schedule}${scheduleFilter.idType.name}/${scheduleFilter.id}';
 
@@ -56,9 +59,13 @@ class ScheduleServiceImpl implements ScheduleService {
               .replaceAll('-', '.'),
           _QueryParameterKeys._lng: '1',
         },
+        cancelToken: cancelToken,
         options: OptionsWithExpectedTypeFactory.list,
       );
     } catch (error, stackTrace) {
+      if (error is DioException && CancelToken.isCancel(error)) {
+        rethrow;
+      }
       _loggerService.logError(error, stackTrace);
       return null;
     }
@@ -73,21 +80,28 @@ class ScheduleServiceImpl implements ScheduleService {
   @override
   Future<List<Subject>?> getCurrentUserSchedule(
     String login,
-    DateTime date,
-  ) async {
+    DateTime date, {
+    CancelToken? cancelToken,
+  }) async {
     Response response;
     try {
       response = await _raspApiHelper.post(
         path: ApiPath.raspSchedule,
         data: {
           _DataKeys._json: _DataKeys._json,
-          _DataKeys._date:
-              DateTimeParser.format(date, DatePattern.yyyymmddDash),
+          _DataKeys._date: DateTimeParser.format(
+            date,
+            DatePattern.yyyymmddDash,
+          ),
           _DataKeys._login: login,
         },
+        cancelToken: cancelToken,
         options: OptionsWithExpectedTypeFactory.jsonMap,
       );
     } catch (error, stackTrace) {
+      if (error is DioException && CancelToken.isCancel(error)) {
+        rethrow;
+      }
       _loggerService.logError(error, stackTrace);
       return null;
     }

@@ -43,40 +43,36 @@ class Certificates {
 
   static List<Certificate> _parsePracticeCertificates(
     List<dynamic> practices,
-  ) =>
-      [
-        for (final practice in practices)
-          if (practice is JsonMap)
-            PracticeOrder.fromJson(_createPracticeCertificateJson(practice)),
-      ];
+  ) => [
+    for (final practice in practices)
+      if (practice is JsonMap)
+        PracticeOrder.fromJson(_createPracticeCertificateJson(practice)),
+  ];
 
   static JsonMap _createCertificateJson(
     String certificateType,
     String? certificateUri,
   ) {
-    final certificateJson =
-        JsonMap.from(certificateTypesInfo[certificateType]!);
+    final certificateJson = JsonMap.from(
+      certificateTypesInfo[certificateType]!,
+    );
 
     certificateJson[CertificateJsonKeys.certificatePath] =
         certificateUri?.isNotEmpty ?? false
-            ? Uri.parse(certificateUri!).path.substring(1)
-            : '';
+        ? Uri.parse(certificateUri!).path.substring(1)
+        : '';
 
     return certificateJson;
   }
 
-  static JsonMap _createPracticeCertificateJson(
-    JsonMap practice,
-  ) {
+  static JsonMap _createPracticeCertificateJson(JsonMap practice) {
     final certificateUri = practice[_CertificatesJsonKeys.practice] as String?;
     final practiceReferenceJson = JsonMap.from(practice)
-      ..addAll(
-        certificateTypesInfo[_CertificatesJsonKeys.practices]!,
-      );
+      ..addAll(certificateTypesInfo[_CertificatesJsonKeys.practices]!);
     practiceReferenceJson[CertificateJsonKeys.certificatePath] =
         certificateUri?.isNotEmpty ?? false
-            ? Uri.parse(certificateUri!).path.substring(1)
-            : '';
+        ? Uri.parse(certificateUri!).path.substring(1)
+        : '';
     return practiceReferenceJson;
   }
 }

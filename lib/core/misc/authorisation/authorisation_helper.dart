@@ -57,10 +57,7 @@ class AuthorisationHelper {
           }
           return const Left(AuthRequestResult.unknown);
         default:
-          _loggerService.logError(
-            exception.error,
-            exception.stackTrace,
-          );
+          _loggerService.logError(exception.error, exception.stackTrace);
           return const Left(AuthRequestResult.unknown);
       }
     }

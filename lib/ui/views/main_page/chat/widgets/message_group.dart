@@ -32,16 +32,12 @@ class MessageGroup extends StatelessWidget {
     final scaledAvatarWidth = MediaQuery.of(context).textScaler.scale(50.0);
     if (messages.firstOrNull?.messageStatus == MessageState.system) {
       final msgText = messages.firstOrNull?.text
-          .split(
-            systemMessageSeparator,
-          )
+          .split(systemMessageSeparator)
           .lastOrNull;
       return Center(
         child: LayoutBuilder(
           builder: (context, constraints) => ConstrainedBox(
-            constraints: BoxConstraints(
-              maxWidth: constraints.maxWidth * 0.7,
-            ),
+            constraints: BoxConstraints(maxWidth: constraints.maxWidth * 0.7),
             child: Padding(
               padding: const EdgeInsets.all(4.0),
               child: IntrinsicWidth(
@@ -82,15 +78,14 @@ class MessageGroup extends StatelessWidget {
                   ? CrossAxisAlignment.start
                   : CrossAxisAlignment.end,
               children: [
-                ...messages.take(messages.length - 1).map(
+                ...messages
+                    .take(messages.length - 1)
+                    .map(
                       (message) => MessageWidget(
-                        key: ValueKey(
-                          (
-                            message.messageId,
-                            message.ratingList?.getTotalNumberOfReactions() ??
-                                0,
-                          ),
-                        ),
+                        key: ValueKey((
+                          message.messageId,
+                          message.ratingList?.getTotalNumberOfReactions() ?? 0,
+                        )),
                         message: message,
                         fromCurrentUser: !leftAvatar,
                         chatModel: chatModel,

@@ -5,18 +5,14 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/misc/app_open_tracker.dart';
-import 'package:unn_mobile/core/viewmodels/main_page/main_page_view_model.dart';
+import 'package:unn_mobile/ui/builders/online_status_builder.dart';
+import 'package:unn_mobile/ui/main_page_locations.dart';
 import 'package:unn_mobile/ui/router.dart';
-import 'package:unn_mobile/ui/views/base_view.dart';
-import 'package:unn_mobile/ui/views/main_page/main_page_drawer.dart';
-import 'package:unn_mobile/ui/views/main_page/main_page_navigation_bar.dart';
-import 'package:unn_mobile/ui/views/main_page/main_page_routing.dart';
+import 'package:unn_mobile/ui/views/main_page/tab_bar/main_page_navigation_bar.dart';
 import 'package:unn_mobile/ui/widgets/dialogs/analytics_confirm_dialog.dart';
 import 'package:unn_mobile/ui/widgets/dialogs/changelog_dialog.dart';
 
 class MainPage extends StatefulWidget {
-  static MainPageState? get globalState => mainPageKey.currentState;
-
   final StatefulNavigationShell shell;
 
   const MainPage({required this.shell, super.key});
@@ -25,24 +21,7 @@ class MainPage extends StatefulWidget {
   State<MainPage> createState() => MainPageState();
 }
 
-Widget? getSubpageLeading(int? bottomRouteIndex) {
-  if (bottomRouteIndex == null) {
-    return null;
-  }
-  return IconButton(
-    onPressed: () {
-      MainPage.globalState?.scaffold?.openDrawer();
-    },
-    icon: const Icon(Icons.menu),
-  );
-}
-
 class MainPageState extends State<MainPage> {
-  final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
-  ScaffoldState? get scaffold => scaffoldKey.currentState;
-
-  final drawerIdOffset = 10;
-
   @override
   void initState() {
     super.initState();
@@ -66,69 +45,40 @@ class MainPageState extends State<MainPage> {
 
   bool isRootScreen(BuildContext context) {
     final location = GoRouterState.of(context).uri.path;
-    return MainPageRouting.navbarRoutes
-        .any((r) => mainPageRoute + r.pagePath == location);
+    return AppRouter.of(context).configuration.tabs
+        .any((r) => mainPageTabLocation(r.pagePath) == location);
   }
 
   @override
-  Widget build(BuildContext context) => BaseView<MainPageViewModel>(
-        builder: (context, model, _) => Scaffold(
-          key: scaffoldKey,
-          drawerEdgeDragWidth: MediaQuery.of(context).size.width,
-          extendBody: false,
-          drawer: isRootScreen(context)
-              ? Builder(
-                  // Разделяем контекст, иначе в текущем нет Scaffold, а он нам нужен
-                  builder: (context) => MainPageDrawer(
-                    model: model,
-                    onDestinationSelected: (value) {
-                      Scaffold.of(context).closeDrawer();
-                      final selectedBarIndex = widget.shell.currentIndex;
-                      final currentPageRoute = mainPageRoute +
-                          MainPageRouting
-                              .navbarRoutes[selectedBarIndex].pagePath;
-                      final destinationSubroute = model.routes
-                          .where((r) => model.isOnline || !r.onlineOnly)
-                          .elementAt(value)
-                          .pagePath;
-                      GoRouter.of(context).go(
-                        '$currentPageRoute/$drawerRoutePrefix/$destinationSubroute',
-                      );
-                    },
-                  ),
-                )
-              : null,
-          body: Builder(
-            builder: (context) => widget.shell,
-          ),
-          bottomNavigationBar: MainPageNavigationBar(
-            model: model,
-            onDestinationSelected: (value) {
-              final currentRouteIndex = widget.shell.currentIndex;
-              if (value == currentRouteIndex) {
-                if (isRootScreen(context)) {
-                  model.refreshTab(value);
-                } else {
-                  goToRootScreen(context, currentRouteIndex);
-                }
-              } else {
-                goToRootScreen(context, currentRouteIndex);
-
-                // Без делея эта хрень не работает >:(
-                Future.delayed(
-                  const Duration(milliseconds: 10),
-                  () => widget.shell.goBranch(value),
-                );
-              }
-            },
-          ),
-        ),
-        onModelReady: (model) => model.init(),
-      );
-
-  void goToRootScreen(BuildContext context, int currentRouteIndex) {
-    GoRouter.of(context).go(
-      mainPageRoute + MainPageRouting.navbarRoutes[currentRouteIndex].pagePath,
-    );
-  }
+  Widget build(BuildContext context) => Scaffold(
+    extendBody: false,
+    body: Builder(builder: (context) => widget.shell),
+    bottomNavigationBar: OnlineStatusBuilder(
+      builder: (context, isOnline) => MainPageNavigationBar(
+        routes: AppRouter.of(context).configuration.destinations,
+        onDestinationSelected: (route) {
+          if (route.isDisabled || (route.onlineOnly && !isOnline)) {
+            return;
+          }
+          final index = AppRouter.of(context).configuration.tabs.indexWhere(
+            (destination) => destination.pagePath == route.pagePath,
+          );
+          if (index < 0) {
+            AppRouter.of(context)
+                .goToDestination(route.pagePath, initialLocation: true);
+            return;
+          }
+          final currentIndex = widget.shell.currentIndex;
+          if (index == currentIndex && isRootScreen(context)) {
+            route.onReselect?.call(context);
+            return;
+          }
+          AppRouter.of(context).goToDestination(
+            route.pagePath,
+            initialLocation: index == currentIndex,
+          );
+        },
+      ),
+    ),
+  );
 }

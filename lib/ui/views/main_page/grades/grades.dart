@@ -8,14 +8,11 @@ import 'package:unn_mobile/core/misc/haptic_utils.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/grades/grades_screen_view_model.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
 import 'package:unn_mobile/ui/views/main_page/grades/widgets/grade_book_content.dart';
-import 'package:unn_mobile/ui/views/main_page/main_page.dart';
 import 'package:unn_mobile/ui/widgets/empty_state_widget.dart';
 import 'package:unn_mobile/ui/widgets/offline_overlay_displayer.dart';
 
 class GradesScreenView extends StatelessWidget {
-  final int? bottomRouteIndex;
-
-  const GradesScreenView({super.key, this.bottomRouteIndex});
+  const GradesScreenView({super.key});
 
   Future<void> _refresh(GradesScreenViewModel model) {
     triggerHaptic(HapticIntensity.light);
@@ -24,29 +21,28 @@ class GradesScreenView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => OfflineOverlayDisplayer(
-        child: Scaffold(
-          backgroundColor: Theme.of(context).colorScheme.surfaceContainerLow,
-          appBar: AppBar(
-            leading: getSubpageLeading(bottomRouteIndex),
-            title: const Text('Зачётная книжка'),
-            backgroundColor: Theme.of(context).colorScheme.surfaceContainerLow,
-            scrolledUnderElevation: 0,
-          ),
-          body: SafeArea(
-            top: false,
-            child: BaseView<GradesScreenViewModel>(
-              onModelReady: (model) => unawaited(model.refresh()),
-              builder: (context, model, _) => Align(
-                alignment: Alignment.topCenter,
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 720),
-                  child: _buildContent(model),
-                ),
-              ),
+    child: Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.surfaceContainerLow,
+      appBar: AppBar(
+        title: const Text('Зачётная книжка'),
+        backgroundColor: Theme.of(context).colorScheme.surfaceContainerLow,
+        scrolledUnderElevation: 0,
+      ),
+      body: SafeArea(
+        top: false,
+        child: BaseView<GradesScreenViewModel>(
+          onModelReady: (model) => unawaited(model.refresh()),
+          builder: (context, model, _) => Align(
+            alignment: Alignment.topCenter,
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 720),
+              child: _buildContent(model),
             ),
           ),
         ),
-      );
+      ),
+    ),
+  );
 
   Widget _buildContent(GradesScreenViewModel model) {
     if (model.isBusy && !model.hasGradeBook) {
@@ -72,10 +68,7 @@ class GradesScreenView extends StatelessWidget {
         onRefresh: () => _refresh(model),
       );
     }
-    return GradeBookContent(
-      model: model,
-      onRefresh: () => _refresh(model),
-    );
+    return GradeBookContent(model: model, onRefresh: () => _refresh(model));
   }
 
   Widget _emptyState({
@@ -83,28 +76,27 @@ class GradesScreenView extends StatelessWidget {
     required String title,
     required String caption,
     required Future<void> Function() onRefresh,
-  }) =>
-      LayoutBuilder(
-        builder: (context, constraints) => RefreshIndicator.adaptive(
-          onRefresh: onRefresh,
-          child: SingleChildScrollView(
-            physics: const AlwaysScrollableScrollPhysics(),
-            child: ConstrainedBox(
-              constraints: BoxConstraints(minHeight: constraints.maxHeight),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  EmptyStateWidget(icon: icon, title: title, caption: caption),
-                  TextButton.icon(
-                    onPressed: onRefresh,
-                    icon: const Icon(Icons.refresh_rounded),
-                    label: const Text('Обновить'),
-                  ),
-                  const SizedBox(height: 24),
-                ],
+  }) => LayoutBuilder(
+    builder: (context, constraints) => RefreshIndicator.adaptive(
+      onRefresh: onRefresh,
+      child: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        child: ConstrainedBox(
+          constraints: BoxConstraints(minHeight: constraints.maxHeight),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              EmptyStateWidget(icon: icon, title: title, caption: caption),
+              TextButton.icon(
+                onPressed: onRefresh,
+                icon: const Icon(Icons.refresh_rounded),
+                label: const Text('Обновить'),
               ),
-            ),
+              const SizedBox(height: 24),
+            ],
           ),
         ),
-      );
+      ),
+    ),
+  );
 }

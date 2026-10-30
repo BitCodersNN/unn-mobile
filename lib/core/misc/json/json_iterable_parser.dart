@@ -21,11 +21,10 @@ List<T> parseJsonIterable<T>(
   Iterable<dynamic> jsonItems,
   T Function(JsonMap) fromJson,
   LoggerService loggerService,
-) =>
-    jsonItems
-        .map((item) => _parseItem(item, fromJson, loggerService))
-        .whereType<T>()
-        .toList();
+) => jsonItems
+    .map((item) => _parseItem(item, fromJson, loggerService))
+    .whereType<T>()
+    .toList();
 
 /// Асинхронно преобразует итерируемую коллекцию JSON-объектов в список объектов типа [T].
 ///
@@ -91,10 +90,7 @@ T? _parseItem<T>(
   }
 }
 
-bool _validateItemType<T>(
-  dynamic item,
-  LoggerService loggerService,
-) {
+bool _validateItemType<T>(dynamic item, LoggerService loggerService) {
   if (item is! JsonMap) {
     loggerService.logError(
       FormatException('Invalid JSON item type: ${item.runtimeType}'),

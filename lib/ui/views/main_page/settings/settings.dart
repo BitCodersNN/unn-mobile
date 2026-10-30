@@ -6,19 +6,15 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:unn_mobile/core/misc/app_version.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/settings/settings_screen_view_model.dart';
+import 'package:unn_mobile/ui/main_page_locations.dart';
 import 'package:unn_mobile/ui/router.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
-import 'package:unn_mobile/ui/views/main_page/main_page.dart';
+import 'package:unn_mobile/ui/views/main_page/tab_bar/tab_bar_customization_sheet.dart';
 
 class SettingsScreenView extends StatelessWidget {
-  final int? bottomRouteIndex;
   final bool hasAccount;
 
-  const SettingsScreenView({
-    super.key,
-    this.bottomRouteIndex,
-    this.hasAccount = true,
-  });
+  const SettingsScreenView({super.key, this.hasAccount = true});
 
   @override
   Widget build(BuildContext context) {
@@ -27,13 +23,13 @@ class SettingsScreenView extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Настройки'),
         forceMaterialTransparency: true,
-        leading: getSubpageLeading(bottomRouteIndex),
       ),
       body: BaseView<SettingsScreenViewModel>(
         builder: (context, model, _) => Column(
           children: [
-            SingleChildScrollView(
-              child: Column(
+            Expanded(
+              child: ListView(
+                padding: EdgeInsets.zero,
                 children: [
                   ...ListTile.divideTiles(
                     context: context,
@@ -46,6 +42,16 @@ class SettingsScreenView extends StatelessWidget {
                         },
                       ),
                       SwitchListTile.adaptive(
+                        title: const Text('Источник своего расписания'),
+                        subtitle: model.useRaspSchedule
+                            ? const Text('Загружается с rasp.unn.ru')
+                            : const Text('Загружается с Портала'),
+                        value: model.useRaspSchedule,
+                        onChanged: (value) {
+                          model.useRaspSchedule = value;
+                        },
+                      ),
+                      SwitchListTile.adaptive(
                         title: const Text('Сбор телеметрии'),
                         value: model.analyticsEnabled,
                         onChanged: (value) {
@@ -53,16 +59,6 @@ class SettingsScreenView extends StatelessWidget {
                         },
                       ),
                       if (hasAccount) ...[
-                        SwitchListTile.adaptive(
-                          title: const Text('Источник своего расписания'),
-                          subtitle: model.useRaspSchedule
-                              ? const Text('Загружается с rasp.unn.ru')
-                              : const Text('Загружается с Портала'),
-                          value: model.useRaspSchedule,
-                          onChanged: (value) {
-                            model.useRaspSchedule = value;
-                          },
-                        ),
                         SwitchListTile.adaptive(
                           title: const Text('Порядок комментариев'),
                           subtitle: model.reverseComments
@@ -74,18 +70,17 @@ class SettingsScreenView extends StatelessWidget {
                           },
                         ),
                         ListTile(
-                          title: const Text('Начальный экран'),
-                          trailing: Padding(
-                            padding: const EdgeInsets.all(6.0),
-                            child: Text(
-                              model.initialScreenName,
-                              style: const TextStyle(fontSize: 16),
-                              softWrap: false,
-                              overflow: TextOverflow.visible,
-                            ),
-                          ),
+                          title: const Text('Быстрый доступ'),
+                          subtitle: const Text('Настроить нижнее меню'),
+                          trailing: const Icon(Icons.chevron_right),
                           onTap: () async {
-                            await _showScreenChoiceModal(context, model);
+                            final routes = AppRouter.of(context)
+                                .configuration
+                                .destinations;
+                            await showTabBarCustomizationSheet(
+                              context,
+                              routes: routes,
+                            );
                           },
                         ),
                       ],
@@ -95,9 +90,7 @@ class SettingsScreenView extends StatelessWidget {
                           await model.clearCache();
                           if (context.mounted) {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Кэш очищен'),
-                              ),
+                              const SnackBar(content: Text('Кэш очищен')),
                             );
                           }
                         },
@@ -131,9 +124,6 @@ class SettingsScreenView extends StatelessWidget {
                 ],
               ),
             ),
-            Expanded(
-              child: Container(),
-            ),
             Align(
               alignment: Alignment.center,
               child: FutureBuilder(
@@ -156,42 +146,5 @@ class SettingsScreenView extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  Future<dynamic> _showScreenChoiceModal(
-    BuildContext context,
-    SettingsScreenViewModel model,
-  ) async {
-    final theme = Theme.of(context);
-    final currentIndex = model.activeNavbarRouteIndex;
-
-    final selectedIndex = await showModalActionSheet<int>(
-      context: context,
-      useRootNavigator: true,
-      title: 'Выберите экран',
-      cancelLabel: 'Отмена',
-      actions: List.generate(
-        model.navbarRouteCount,
-        (index) {
-          final isSelected = index == currentIndex;
-
-          return SheetAction<int>(
-            label: model.activeNavbarRouteNames[index],
-            key: index,
-            isDefaultAction: isSelected,
-            textStyle: TextStyle(
-              color: isSelected ? theme.colorScheme.primary : null,
-              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-            ),
-          );
-        },
-      ),
-    );
-
-    if (selectedIndex != null) {
-      model.activeNavbarRouteIndex = selectedIndex;
-    }
-
-    return selectedIndex;
   }
 }

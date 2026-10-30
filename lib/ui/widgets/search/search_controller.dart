@@ -20,11 +20,7 @@ class AppSearchController<T> extends ChangeNotifier {
   bool _isOpen = false;
   int _requestId = 0;
 
-  AppSearchController({
-    required SuggestionsLoader<T> loader,
-    SuggestionApplier<T>? applier,
-  })  : _loader = loader,
-        _applier = applier {
+  AppSearchController({required this._loader, this._applier}) {
     textController.addListener(_onTextChanged);
   }
 

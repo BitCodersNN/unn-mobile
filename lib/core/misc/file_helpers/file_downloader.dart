@@ -24,18 +24,17 @@ class FileDownloader {
   ///
   /// [LoggerService] - сервис для логирования ошибок и информации.
   /// [ApiHelper] - помощник для выполнения HTTP-запросов.
-  /// [downloadFolderName] - название папки, в которую будут загружаться файлы (опционально).
+  /// [_downloadFolderName] - название папки, в которую будут загружаться файлы (опционально).
   ///   Если не указано, файлы будут сохраняться в корневую директорию загрузок.
-  /// [basePath] - базовый путь для загрузки файлов (опционально).
+  /// [_basePath] - базовый путь для загрузки файлов (опционально).
   /// [cookies] - cookies, которые могут быть использованы при запросах (опционально).
   FileDownloader(
     this._loggerService,
     this._apiHelper, {
-    String? downloadFolderName,
-    String? basePath,
+    this._downloadFolderName,
+    this._basePath,
     Map<String, String> cookies = const {},
-  })  : _downloadFolderName = downloadFolderName,
-        _basePath = basePath;
+  });
 
   /// Загружает файл с указанным именем [fileName].
   ///
@@ -164,11 +163,7 @@ class FileDownloader {
   }) async {
     final futures = [
       for (final fileName in fileNames)
-        downloadFile(
-          fileName,
-          downloadUrl: downloadUrl,
-          force: force,
-        ),
+        downloadFile(fileName, downloadUrl: downloadUrl, force: force),
     ];
 
     final results = await Future.wait(futures);
@@ -200,16 +195,16 @@ class FileDownloader {
 
   String _buildRequestPath(String? downloadUrl, String fileName) =>
       downloadUrl?.isNotEmpty ?? false
-          ? Uri.parse(downloadUrl!).path
-          : fileName.startsWith(ProtocolType.https.name)
-              ? fileName
-              : '${_basePath ?? ''}/$fileName'.replaceAll(
-                  RegularExpressions.leadingSlashesRegExp,
-                  '/',
-                );
+      ? Uri.parse(downloadUrl!).path
+      : fileName.startsWith(ProtocolType.https.name)
+      ? fileName
+      : '${_basePath ?? ''}/$fileName'.replaceAll(
+          RegularExpressions.leadingSlashesRegExp,
+          '/',
+        );
 
   Map<String, String> _extractQueryParameters(String? downloadUrl) =>
       downloadUrl?.isNotEmpty ?? false
-          ? Uri.parse(downloadUrl!).queryParameters
-          : <String, String>{};
+      ? Uri.parse(downloadUrl!).queryParameters
+      : <String, String>{};
 }

@@ -43,8 +43,8 @@ class BlogPostServiceImpl implements BlogPostService {
         path: ApiPath.blogPostGet,
         queryParameters: {
           SessionIdentifierKeys.sessid: _authorizationService.csrf ?? '',
-          _QueryParamNames.start:
-              (_numberOfPostsPerPage * pageNumber).toString(),
+          _QueryParamNames.start: (_numberOfPostsPerPage * pageNumber)
+              .toString(),
           _QueryParamNames._postId: postId.toString(),
         },
         options: Options(

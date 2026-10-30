@@ -26,9 +26,7 @@ class FileDataServiceImpl implements FileDataService {
   );
 
   @override
-  Future<FileData?> getFileData({
-    required int id,
-  }) async {
+  Future<FileData?> getFileData({required int id}) async {
     Response response;
     try {
       response = await _apiHelper.get(

@@ -6,10 +6,6 @@ import 'package:unn_mobile/core/constants/api/host.dart';
 import 'package:unn_mobile/core/misc/dio_interceptor/source_unn_interceptor.dart';
 
 final class WebUnnSourceApiHelper extends WebAuthenticatedApiHelper {
-  WebUnnSourceApiHelper({
-    required super.authorizationService,
-  }) : super(
-          host: Host.unnSource,
-          interceptors: [SourceUnnInterceptor()],
-        );
+  WebUnnSourceApiHelper({required super.authorizationService})
+    : super(host: Host.unnSource, interceptors: [SourceUnnInterceptor()]);
 }

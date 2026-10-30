@@ -1,44 +1,64 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2025 BitCodersNN
 
-import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation/unn_authorisation_service.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
 
+typedef MainPageViewModelCreator = T Function<T extends BaseViewModel>();
+
 class MainPageRoutesViewModelsFactory {
   final UnnAuthService _authorizationService;
+  final MainPageViewModelCreator _createViewModel;
+  final Map<Type, BaseViewModel> _viewModels = {};
+  bool _disposed = false;
 
-  final Map<int, BaseViewModel> _viewModels = {};
-
-  MainPageRoutesViewModelsFactory(this._authorizationService) {
-    _authorizationService.addListener(
-      _resetIfUnauthorized,
-    ); // А где отписаться? Я хз) Это должен быть синглтон, надеюсь, ничего не сломается
+  MainPageRoutesViewModelsFactory(
+    this._authorizationService, {
+    required this._createViewModel,
+  }) {
+    _authorizationService.addListener(_resetIfUnauthorized);
   }
-  T getViewModelByRouteIndex<T extends BaseViewModel>(int index) {
-    final existing = _viewModels[index];
-    if (existing is T) {
+
+  T getOrCreate<T extends BaseViewModel>() {
+    if (_disposed) {
+      throw StateError('MainPageRoutesViewModelsFactory is disposed');
+    }
+    final existing = getCached<T>();
+    if (existing != null) {
       return existing;
     }
-
-    final T newInstance = Injector.appInstance.get<T>();
-    _viewModels[index] = newInstance;
-    return newInstance;
+    final model = _createViewModel<T>();
+    _viewModels[T] = model;
+    return model;
   }
 
-  T? getViewModelByType<T>() => _viewModels.values
-      .map(
-        (e) => e is T ? e as T : null,
-      )
-      .firstWhere(
-        (p) => p != null,
-        orElse: () => null,
-      );
+  T? getCached<T extends BaseViewModel>() {
+    final model = _viewModels[T];
+    return model is T ? model : null;
+  }
 
   void _resetIfUnauthorized() {
-    if (_authorizationService.isAuthorised) {
+    if (!_authorizationService.isAuthorised) {
+      _clear();
+    }
+  }
+
+  void _clear() {
+    final models = _viewModels.values.toList(growable: false);
+    _viewModels.clear();
+    for (final model in models) {
+      if (!model.disposed) {
+        model.dispose();
+      }
+    }
+  }
+
+  void dispose() {
+    if (_disposed) {
       return;
     }
-    _viewModels.clear();
+    _disposed = true;
+    _authorizationService.removeListener(_resetIfUnauthorized);
+    _clear();
   }
 }

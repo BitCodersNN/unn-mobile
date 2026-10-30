@@ -20,17 +20,15 @@ final class DistanceLinkData extends DistanceMaterialData {
   });
 
   factory DistanceLinkData.fromJson(JsonMap jsonMap) => DistanceLinkData(
-        link: jsonMap[_LinkDataJsonKeys.link]! as String,
-        comment: jsonMap[_LinkDataJsonKeys.comment]! as String,
-        dateTime: DateTime.parse(
-          jsonMap[_LinkDataJsonKeys.dateTime]! as String,
-        ),
-      );
+    link: jsonMap[_LinkDataJsonKeys.link]! as String,
+    comment: jsonMap[_LinkDataJsonKeys.comment]! as String,
+    dateTime: DateTime.parse(jsonMap[_LinkDataJsonKeys.dateTime]! as String),
+  );
 
   @override
   JsonMap toJson() => {
-        _LinkDataJsonKeys.link: link,
-        _LinkDataJsonKeys.comment: comment,
-        _LinkDataJsonKeys.dateTime: dateTime.toIso8601String(),
-      };
+    _LinkDataJsonKeys.link: link,
+    _LinkDataJsonKeys.comment: comment,
+    _LinkDataJsonKeys.dateTime: dateTime.toIso8601String(),
+  };
 }
