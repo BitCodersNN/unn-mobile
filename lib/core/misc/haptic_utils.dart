@@ -4,13 +4,7 @@
 import 'package:flutter/services.dart';
 import 'package:unn_mobile/core/misc/app_settings.dart';
 
-enum HapticIntensity {
-  selection,
-  light,
-  medium,
-  heavy,
-  vibrate,
-}
+enum HapticIntensity { selection, light, medium, heavy, vibrate }
 
 final _hapticHandlers = {
   HapticIntensity.selection: HapticFeedback.selectionClick,

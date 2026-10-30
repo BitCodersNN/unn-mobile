@@ -28,9 +28,7 @@ class AuthorsProviderImpl implements AuthorsProvider {
     }
 
     final jsonMap = jsonDecode(
-      (await _storage.read(
-        key: _AuthorsProviderKeys.authorsKey,
-      ))!,
+      (await _storage.read(key: _AuthorsProviderKeys.authorsKey))!,
     ) as JsonMap;
 
     return {
@@ -54,10 +52,8 @@ class AuthorsProviderImpl implements AuthorsProvider {
     }
 
     final jsonMap = authors.map(
-      (key, value) => MapEntry(
-        key,
-        [for (final author in value) author.toJson()],
-      ),
+      (key, value) =>
+          MapEntry(key, [for (final author in value) author.toJson()]),
     );
 
     await _storage.write(
@@ -67,9 +63,8 @@ class AuthorsProviderImpl implements AuthorsProvider {
   }
 
   @override
-  Future<bool> isContained() => _storage.containsKey(
-        key: _AuthorsProviderKeys.authorsKey,
-      );
+  Future<bool> isContained() =>
+      _storage.containsKey(key: _AuthorsProviderKeys.authorsKey);
 
   @override
   Future<void> removeData() =>

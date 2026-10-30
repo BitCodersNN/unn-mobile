@@ -7,16 +7,11 @@ import 'package:unn_mobile/core/misc/dio_interceptor/response_type_interceptor.d
 
 class OptionsWithExpectedTypeFactory {
   static Options _optionsWithExpectedType(ResponseDataType responseDataType) =>
-      Options(
-        extra: mapWithExpectedType(responseDataType),
-      );
+      Options(extra: mapWithExpectedType(responseDataType));
 
   static Map<String, dynamic> mapWithExpectedType(
     ResponseDataType responseDataType,
-  ) =>
-      {
-        ResponseTypeInterceptorKey.expectedType: responseDataType,
-      };
+  ) => {ResponseTypeInterceptorKey.expectedType: responseDataType};
 
   static Options get jsonMap =>
       _optionsWithExpectedType(ResponseDataType.jsonMap);

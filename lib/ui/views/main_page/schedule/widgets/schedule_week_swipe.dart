@@ -77,17 +77,17 @@ class _ScheduleWeekSwipeState extends State<ScheduleWeekSwipe> {
 
   @override
   Widget build(BuildContext context) => PageView.builder(
-        controller: _pages,
-        physics: widget.enabled && _programmaticPage == null
-            ? null
-            : const NeverScrollableScrollPhysics(),
-        onPageChanged: _onPageChanged,
-        itemBuilder: (context, page) {
-          final weekOffset = _anchorWeekOffset + page - _initialPageIndex;
-          return KeyedSubtree(
-            key: ValueKey(weekOffset),
-            child: widget.weekBuilder(context, weekOffset),
-          );
-        },
+    controller: _pages,
+    physics: widget.enabled && _programmaticPage == null
+        ? null
+        : const NeverScrollableScrollPhysics(),
+    onPageChanged: _onPageChanged,
+    itemBuilder: (context, page) {
+      final weekOffset = _anchorWeekOffset + page - _initialPageIndex;
+      return KeyedSubtree(
+        key: ValueKey(weekOffset),
+        child: widget.weekBuilder(context, weekOffset),
       );
+    },
+  );
 }

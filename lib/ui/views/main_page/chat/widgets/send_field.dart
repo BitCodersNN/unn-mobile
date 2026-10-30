@@ -9,10 +9,7 @@ import 'package:unn_mobile/core/viewmodels/main_page/chat/chat_inside_view_model
 import 'package:unn_mobile/ui/views/main_page/chat/widgets/message.dart';
 
 class SendField extends StatefulWidget {
-  const SendField({
-    required this.model,
-    super.key,
-  });
+  const SendField({required this.model, super.key});
 
   final ChatInsideViewModel model;
 
@@ -51,10 +48,7 @@ class _SendFieldState extends State<SendField> {
                 onPressed: () {
                   widget.model.replyMessage = null;
                 },
-                icon: Icon(
-                  Icons.close,
-                  color: theme.colorScheme.primary,
-                ),
+                icon: Icon(Icons.close, color: theme.colorScheme.primary),
               ),
             ],
           ),
@@ -71,8 +65,9 @@ class _SendFieldState extends State<SendField> {
                         title: const Text('Выбрать из галереи'),
                         leading: const Icon(Icons.image),
                         onTap: () async {
-                          final files =
-                              await openUploadFilePicker(gallery: true);
+                          final files = await openUploadFilePicker(
+                            gallery: true,
+                          );
                           if (context.mounted) {
                             GoRouter.of(context).pop(files);
                           }
@@ -117,8 +112,9 @@ class _SendFieldState extends State<SendField> {
                   autocorrect: true,
                   enableSuggestions: true,
                   enabled: !widget.model.isBusy,
-                  decoration:
-                      const InputDecoration(hintText: 'Текст сообщения'),
+                  decoration: const InputDecoration(
+                    hintText: 'Текст сообщения',
+                  ),
                 ),
               ),
             ),
@@ -137,9 +133,7 @@ class _SendFieldState extends State<SendField> {
                     },
               color: theme.colorScheme.primary,
               disabledColor: theme.disabledColor,
-              icon: const Icon(
-                Icons.send,
-              ),
+              icon: const Icon(Icons.send),
             ),
           ],
         ),

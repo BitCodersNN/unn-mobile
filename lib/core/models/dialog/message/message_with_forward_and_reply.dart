@@ -15,13 +15,13 @@ class MessageWithForwardAndReply extends Message {
     required this.forwardInfo,
     required this.replyMessage,
   }) : super(
-          messageShortInfo: message,
-          ratingList: message.ratingList,
-          messageStatus: message.messageStatus,
-          files: message.files,
-          viewedByOthers: message.viewedByOthers,
-          notify: message.notify,
-        );
+         messageShortInfo: message,
+         ratingList: message.ratingList,
+         messageStatus: message.messageStatus,
+         files: message.files,
+         viewedByOthers: message.viewedByOthers,
+         notify: message.notify,
+       );
 
   factory MessageWithForwardAndReply.fromJson(JsonMap jsonMap) =>
       MessageWithForwardAndReply(
@@ -32,8 +32,8 @@ class MessageWithForwardAndReply extends Message {
 
   @override
   JsonMap toJson() => {
-        ...super.toJson(),
-        'forward_info': forwardInfo.toJson(),
-        'reply_message': replyMessage.toJson(),
-      };
+    ...super.toJson(),
+    'forward_info': forwardInfo.toJson(),
+    'reply_message': replyMessage.toJson(),
+  };
 }

@@ -36,78 +36,58 @@ class MessageServiceAggregatorImpl implements MessageServiceAggregator {
     required int chatId,
     int limit = 25,
     int? lastMessageId,
-  }) =>
-      _fetcherService.fetchByChatId(
-        chatId: chatId,
-        limit: limit,
-        lastMessageId: lastMessageId,
-      );
+  }) => _fetcherService.fetchByChatId(
+    chatId: chatId,
+    limit: limit,
+    lastMessageId: lastMessageId,
+  );
 
   @override
   Future<PaginatedResult<Message>?> fetchByDialogId({
     required String dialogId,
     int limit = 25,
-  }) =>
-      _fetcherService.fetchByDialogId(
-        dialogId: dialogId,
-        limit: limit,
-      );
+  }) => _fetcherService.fetchByDialogId(dialogId: dialogId, limit: limit);
 
   @override
-  Future<int?> send({
-    required String dialogId,
-    required String text,
-  }) =>
-      _senderService.send(
-        dialogId: dialogId,
-        text: text,
-      );
+  Future<int?> send({required String dialogId, required String text}) =>
+      _senderService.send(dialogId: dialogId, text: text);
 
   @override
   Future<int?> reply({
     required String dialogId,
     required String text,
     required int replyMessageId,
-  }) =>
-      _senderService.reply(
-        dialogId: dialogId,
-        text: text,
-        replyMessageId: replyMessageId,
-      );
+  }) => _senderService.reply(
+    dialogId: dialogId,
+    text: text,
+    replyMessageId: replyMessageId,
+  );
 
   @override
   Future<int?> forward({
     required String dialogId,
     required String? text,
     required int forwardMessageId,
-  }) =>
-      _senderService.forward(
-        dialogId: dialogId,
-        text: text,
-        forwardMessageId: forwardMessageId,
-      );
+  }) => _senderService.forward(
+    dialogId: dialogId,
+    text: text,
+    forwardMessageId: forwardMessageId,
+  );
 
   @override
   Future<int?> forwardMultiple({
     required String dialogId,
     required String? text,
     required List<int> forwardMessageIds,
-  }) =>
-      _senderService.forwardMultiple(
-        dialogId: dialogId,
-        text: text,
-        forwardMessageIds: forwardMessageIds,
-      );
+  }) => _senderService.forwardMultiple(
+    dialogId: dialogId,
+    text: text,
+    forwardMessageIds: forwardMessageIds,
+  );
 
   @override
-  Future<bool> update({
-    required int messageId,
-    required String text,
-  }) =>
-      _updaterService.update(
-        messageId: messageId,
-        text: text,
-      );
+  Future<bool> update({required int messageId, required String text}) =>
+      _updaterService.update(messageId: messageId, text: text);
 
   @override
   Future<bool> remove({required int messageId}) =>
@@ -118,39 +98,22 @@ class MessageServiceAggregatorImpl implements MessageServiceAggregator {
     required int chatId,
     required File file,
     String? text,
-  }) =>
-      _fileSenderService.sendFile(
-        chatId: chatId,
-        file: file,
-        text: text,
-      );
+  }) => _fileSenderService.sendFile(chatId: chatId, file: file, text: text);
 
   @override
   Future<List<FileData>?> sendFiles({
     required int chatId,
     required List<File> files,
     String? text,
-  }) =>
-      _fileSenderService.sendFiles(
-        chatId: chatId,
-        files: files,
-        text: text,
-      );
+  }) => _fileSenderService.sendFiles(chatId: chatId, files: files, text: text);
 
   @override
   Future<bool> readMessage({required int chatId, required int messageId}) =>
-      _readerService.readMessage(
-        chatId: chatId,
-        messageId: messageId,
-      );
+      _readerService.readMessage(chatId: chatId, messageId: messageId);
 
   @override
   Future<bool> readMessages({
     required int chatId,
     required Iterable<int> messageIds,
-  }) =>
-      _readerService.readMessages(
-        chatId: chatId,
-        messageIds: messageIds,
-      );
+  }) => _readerService.readMessages(chatId: chatId, messageIds: messageIds);
 }

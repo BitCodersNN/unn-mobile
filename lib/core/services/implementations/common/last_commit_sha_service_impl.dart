@@ -15,15 +15,10 @@ class LastCommitShaServiceImpl implements LastCommitShaService {
   final LoggerService _loggerService;
   final ApiHelper _apiHelper;
 
-  LastCommitShaServiceImpl(
-    this._loggerService,
-    this._apiHelper,
-  );
+  LastCommitShaServiceImpl(this._loggerService, this._apiHelper);
 
   @override
-  Future<String?> getSha({
-    required GitPath gitPath,
-  }) async {
+  Future<String?> getSha({required GitPath gitPath}) async {
     Response response;
     try {
       response = await _apiHelper.get(

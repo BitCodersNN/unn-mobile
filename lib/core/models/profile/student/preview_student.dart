@@ -26,10 +26,10 @@ class PreviewStudent extends UserShortInfo {
     required this.userId,
     required this.baseEduInfo,
   }) : super(
-          bitrixId: userShortInfo.bitrixId,
-          fullname: userShortInfo.fullname,
-          photoSrc: userShortInfo.photoSrc,
-        );
+         bitrixId: userShortInfo.bitrixId,
+         fullname: userShortInfo.fullname,
+         photoSrc: userShortInfo.photoSrc,
+       );
 
   factory PreviewStudent.fromJson(JsonMap json) =>
       PreviewStudent.withUserShortInfo(
@@ -40,8 +40,8 @@ class PreviewStudent extends UserShortInfo {
 
   @override
   JsonMap toJson() => {
-        ...super.toProfileJson(),
-        _PreviewStudentJsonKeys.userId: userId,
-        ...baseEduInfo.toPreviewStudentJson(),
-      };
+    ...super.toProfileJson(),
+    _PreviewStudentJsonKeys.userId: userId,
+    ...baseEduInfo.toPreviewStudentJson(),
+  };
 }

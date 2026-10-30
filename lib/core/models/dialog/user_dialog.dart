@@ -47,11 +47,10 @@ final class UserDialog extends Dialog {
 
   @override
   JsonMap toJson() => {
-        ...super.toJson(),
-        _UserDialogJsonKeys.type: _UserDialogJsonKeys.user,
-        _UserDialogJsonKeys.user: {
-          _UserDialogJsonKeys.lastActivityDate:
-              lastActivityAt?.toIso8601String(),
-        },
-      };
+    ...super.toJson(),
+    _UserDialogJsonKeys.type: _UserDialogJsonKeys.user,
+    _UserDialogJsonKeys.user: {
+      _UserDialogJsonKeys.lastActivityDate: lastActivityAt?.toIso8601String(),
+    },
+  };
 }

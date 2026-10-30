@@ -27,28 +27,27 @@ class BaseChatSetting {
   });
 
   factory BaseChatSetting.fromJson(JsonMap json) => BaseChatSetting(
-        muteList: _parseMuteList(json[_ChatSettingJsonKeys.muteList]),
-        owner: json[_ChatSettingJsonKeys.owner]! as int,
-        role: enumFromString(
-          UserRole.values,
-          (json[_ChatSettingJsonKeys.role]! as String).toLowerCase(),
-        ),
-        permissions: ChatPermissions.fromJson(
-          json[_ChatSettingJsonKeys.permissions]! as JsonMap,
-        ),
-      );
+    muteList: _parseMuteList(json[_ChatSettingJsonKeys.muteList]),
+    owner: json[_ChatSettingJsonKeys.owner]! as int,
+    role: enumFromString(
+      UserRole.values,
+      (json[_ChatSettingJsonKeys.role]! as String).toLowerCase(),
+    ),
+    permissions: ChatPermissions.fromJson(
+      json[_ChatSettingJsonKeys.permissions]! as JsonMap,
+    ),
+  );
 
   JsonMap toJson() => {
-        _ChatSettingJsonKeys.muteList: _serializeMuteList(muteList),
-        _ChatSettingJsonKeys.owner: owner,
-        _ChatSettingJsonKeys.role:
-            role.toString().split('.').last.toLowerCase(),
-        _ChatSettingJsonKeys.permissions: permissions.toJson(),
-      };
+    _ChatSettingJsonKeys.muteList: _serializeMuteList(muteList),
+    _ChatSettingJsonKeys.owner: owner,
+    _ChatSettingJsonKeys.role: role.toString().split('.').last.toLowerCase(),
+    _ChatSettingJsonKeys.permissions: permissions.toJson(),
+  };
 
   static Map<String, bool> _serializeMuteList(List<int> muteList) => {
-        for (final userId in muteList) userId.toString(): true,
-      };
+    for (final userId in muteList) userId.toString(): true,
+  };
 
   static List<int> _parseMuteList(dynamic muteList) {
     if (muteList is! Map) {

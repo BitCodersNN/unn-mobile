@@ -18,17 +18,17 @@ class GradesScreenView extends StatefulWidget {
 class _GradesScreenViewState extends State<GradesScreenView> {
   @override
   Widget build(BuildContext context) => OfflineOverlayDisplayer(
-        child: Scaffold(
-          appBar: AppBar(
-            title: const Text('Зачётная книжка'),
-            forceMaterialTransparency: true,
-          ),
-          body: BaseView<GradesScreenViewModel>(
-            builder: (context, value, child) =>
-                _getGradesBook(context: context, model: value),
-          ),
-        ),
-      );
+    child: Scaffold(
+      appBar: AppBar(
+        title: const Text('Зачётная книжка'),
+        forceMaterialTransparency: true,
+      ),
+      body: BaseView<GradesScreenViewModel>(
+        builder: (context, value, child) =>
+            _getGradesBook(context: context, model: value),
+      ),
+    ),
+  );
 
   Widget _getGradesBook({
     required GradesScreenViewModel model,
@@ -71,9 +71,7 @@ class _GradesScreenViewState extends State<GradesScreenView> {
                       isScrollable: true,
                       tabs: [
                         for (final tab in tabs)
-                          Tab(
-                            child: Text('Семестр $tab'),
-                          ),
+                          Tab(child: Text('Семестр $tab')),
                       ],
                     ),
                   ),

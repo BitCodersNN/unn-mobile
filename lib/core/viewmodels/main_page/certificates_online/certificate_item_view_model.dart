@@ -69,45 +69,45 @@ class CertificateItemViewModel extends BaseViewModel {
   }
 
   Future<void> askForPath() async => await busyCallAsync(() async {
-        if (DemoModeStatus.demoModeEnabled) {
-          return;
-        }
-        if (_certificate == null) {
-          return;
-        }
-        int num = 0;
-        if (isPractice) {
-          num = _practiceOrder!.num;
-        }
-        final path = await _certificatePathService.getCertificatePath(
-          sendtype: _certificate!.sendtype,
-          number: num,
-        );
-        if (path == null) {
-          return;
-        }
+    if (DemoModeStatus.demoModeEnabled) {
+      return;
+    }
+    if (_certificate == null) {
+      return;
+    }
+    int num = 0;
+    if (isPractice) {
+      num = _practiceOrder!.num;
+    }
+    final path = await _certificatePathService.getCertificatePath(
+      sendtype: _certificate!.sendtype,
+      number: num,
+    );
+    if (path == null) {
+      return;
+    }
 
-        _certificate = Certificate(
-          name: _certificate!.name,
-          sendtype: _certificate!.sendtype,
-          description: _certificate!.description,
-          certificatePath: path,
-        );
-      });
+    _certificate = Certificate(
+      name: _certificate!.name,
+      sendtype: _certificate!.sendtype,
+      description: _certificate!.description,
+      certificatePath: path,
+    );
+  });
 
   Future<void> download() async => await busyCallAsync(
-        () => _downloadAndHandleFile(
-          _certificate?.certificatePath,
-          onCertificateDownloaded,
-        ),
-      );
+    () => _downloadAndHandleFile(
+      _certificate?.certificatePath,
+      onCertificateDownloaded,
+    ),
+  );
 
   Future<void> downloadSig() async => await busyCallAsync(
-        () => _downloadAndHandleFile(
-          _certificate?.certificateSigPath,
-          onSigDownloaded,
-        ),
-      );
+    () => _downloadAndHandleFile(
+      _certificate?.certificateSigPath,
+      onSigDownloaded,
+    ),
+  );
 
   Future<void> _downloadAndHandleFile(
     String? filePath,

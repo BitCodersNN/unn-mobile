@@ -2,11 +2,13 @@
 // Copyright 2025 BitCodersNN
 
 import 'dart:io';
+
 import 'package:extended_image/extended_image.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
-import 'package:open_filex/open_filex.dart';
+import 'package:mime/mime.dart';
 import 'package:path/path.dart' as path;
+import 'package:unn_mobile/core/misc/file_helpers/file_functions.dart';
 import 'package:unn_mobile/core/misc/haptic_utils.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/feed/attached_file_view_model.dart';
 import 'package:unn_mobile/ui/unn_mobile_colors.dart';
@@ -16,10 +18,7 @@ import 'package:unn_mobile/ui/widgets/shimmer_loading.dart';
 
 class AttachedFile extends StatefulWidget {
   final AttachedFileViewModel viewModel;
-  const AttachedFile({
-    required this.viewModel,
-    super.key,
-  });
+  const AttachedFile({required this.viewModel, super.key});
 
   @override
   State<AttachedFile> createState() => _AttachedFileState();
@@ -49,8 +48,9 @@ class _AttachedFileState extends State<AttachedFile> {
                   triggerHaptic(HapticIntensity.medium);
                   await Future.wait([
                     _downloadAndOpenFile(model, true, context),
-                    FirebaseAnalytics.instance
-                        .logEvent(name: 'feed_attached_file_long_press'),
+                    FirebaseAnalytics.instance.logEvent(
+                      name: 'feed_attached_file_long_press',
+                    ),
                   ]);
                 },
                 child: ColoredBox(
@@ -92,16 +92,18 @@ class _AttachedFileState extends State<AttachedFile> {
                                               ),
                                               overflow: TextOverflow.ellipsis,
                                               textScaler: scaler,
-                                              style:
-                                                  const TextStyle(fontSize: 16),
+                                              style: const TextStyle(
+                                                fontSize: 16,
+                                              ),
                                             ),
                                     ),
                                   ),
                                   if (!model.isLoadingData &&
                                       model.isDownloadingFile)
                                     const Padding(
-                                      padding:
-                                          EdgeInsets.symmetric(horizontal: 8.0),
+                                      padding: EdgeInsets.symmetric(
+                                        horizontal: 8.0,
+                                      ),
                                       child: SizedBox(
                                         height: 16,
                                         width: 16,
@@ -183,32 +185,29 @@ class _AttachedFileState extends State<AttachedFile> {
         }
         break;
       default:
-        final openResult = await OpenFilex.open(file.path);
+        final openResult = await viewFile(
+          file.path,
+          lookupMimeType(file.path) ?? 'application/octet-stream',
+        );
         switch (openResult.type) {
-          case ResultType.error:
+          case OpenResultType.error:
             if (context.mounted) {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Неизвестная ошибка'),
-                ),
+                const SnackBar(content: Text('Неизвестная ошибка')),
               );
             }
             break;
-          case ResultType.noAppToOpen:
+          case OpenResultType.noApp:
             if (context.mounted) {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Нет подходящей программы'),
-                ),
+                const SnackBar(content: Text('Нет подходящей программы')),
               );
             }
             break;
-          case ResultType.permissionDenied:
+          case OpenResultType.permissionDenied:
             if (context.mounted) {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Нет доступа к файлам'),
-                ),
+                const SnackBar(content: Text('Нет доступа к файлам')),
               );
             }
             break;

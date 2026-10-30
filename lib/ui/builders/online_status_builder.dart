@@ -42,8 +42,8 @@ class OnlineStatusBuilder extends StatefulWidget {
 }
 
 class _OnlineStatusBuilderState extends State<OnlineStatusBuilder> {
-  final OnlineStatusData onlineStatusData =
-      Injector.appInstance.get<OnlineStatusData>();
+  final OnlineStatusData onlineStatusData = Injector.appInstance
+      .get<OnlineStatusData>();
 
   @override
   void initState() {
@@ -57,11 +57,11 @@ class _OnlineStatusBuilderState extends State<OnlineStatusBuilder> {
 
   @override
   Widget build(BuildContext context) => ValueListenableBuilder<bool>(
-        valueListenable: onlineStatusData.notifier,
-        builder: (context, value, _) =>
-            widget.builder?.call(context, value) ??
-            (value ? widget.onlineWidget! : widget.offlineWidget!),
-      );
+    valueListenable: onlineStatusData.notifier,
+    builder: (context, value, _) =>
+        widget.builder?.call(context, value) ??
+        (value ? widget.onlineWidget! : widget.offlineWidget!),
+  );
 
   @override
   void dispose() {

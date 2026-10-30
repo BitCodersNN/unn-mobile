@@ -17,9 +17,9 @@ class MessageReactionViewModel extends ReactionViewModelBase {
     super._currentUserSyncStorage,
   );
   factory MessageReactionViewModel.cached(MessageReactionCacheKey key) =>
-      Injector.appInstance
-          .get<MessageReactionViewModelFactory>()
-          .getViewModel(key);
+      Injector.appInstance.get<MessageReactionViewModelFactory>().getViewModel(
+        key,
+      );
 
   final MessageReactionServiceAggregator _reactionServiceAggregator;
 
@@ -59,23 +59,14 @@ class MessageReactionViewModel extends ReactionViewModelBase {
 
       if (!reactionRemoved || !reactionsFetched) {
         // не закончили процедуру полностью - возвращаем как было
-        ratingList!.addReactions(
-          currentReactionType,
-          {currentReactionInfo},
-        );
+        ratingList!.addReactions(currentReactionType, {currentReactionInfo});
         notifyListeners();
       }
     } else {
       // Добавляем временно, чтобы сразу показать действие
-      ratingList?.addReactions(
-        reaction,
-        {UserShortInfo(bitrixId: profileId)},
-      );
+      ratingList?.addReactions(reaction, {UserShortInfo(bitrixId: profileId)});
       notifyListeners();
-      await _reactionServiceAggregator.addReaction(
-        _messageId!,
-        reaction,
-      );
+      await _reactionServiceAggregator.addReaction(_messageId!, reaction);
       if (!await _fetchReactions()) {
         // Удаляем временную реакцию.
         // Если _fetchReactions отработал, то её и так не будет

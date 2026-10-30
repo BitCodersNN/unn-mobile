@@ -27,51 +27,49 @@ class BlogPostComment {
   });
 
   factory BlogPostComment.fromJson(JsonMap jsonMap) => BlogPostComment(
-        data: BlogPostCommentData.fromJson(jsonMap),
-        ratingList:
-            jsonMap[_BlogPostCommentDataWithRatingsJsonKeys.reaction] != null
-                ? RatingList.fromJson(
-                    jsonMap[_BlogPostCommentDataWithRatingsJsonKeys.reaction]!
-                        as JsonMap,
-                  )
-                : null,
-        userShortInfo: UserShortInfo.fromJson(
-          jsonMap[_BlogPostCommentDataWithRatingsJsonKeys.author]! as JsonMap,
-        ),
-        attachFiles: [
-          for (final item
-              in jsonMap[_BlogPostCommentDataWithRatingsJsonKeys.attach]!
-                  as List)
-            FileData.fromJson(item),
-        ],
-      );
+    data: BlogPostCommentData.fromJson(jsonMap),
+    ratingList:
+        jsonMap[_BlogPostCommentDataWithRatingsJsonKeys.reaction] != null
+        ? RatingList.fromJson(
+            jsonMap[_BlogPostCommentDataWithRatingsJsonKeys.reaction]!
+                as JsonMap,
+          )
+        : null,
+    userShortInfo: UserShortInfo.fromJson(
+      jsonMap[_BlogPostCommentDataWithRatingsJsonKeys.author]! as JsonMap,
+    ),
+    attachFiles: [
+      for (final item
+          in jsonMap[_BlogPostCommentDataWithRatingsJsonKeys.attach]! as List)
+        FileData.fromJson(item),
+    ],
+  );
 
   JsonMap toJson() => {
-        ...data.toJson(),
-        _BlogPostCommentDataWithRatingsJsonKeys.reaction: ratingList?.toJson(),
-        _BlogPostCommentDataWithRatingsJsonKeys.author: userShortInfo.toJson(),
-        _BlogPostCommentDataWithRatingsJsonKeys.attach: [
-          for (final file in attachFiles) file.toJson(),
-        ],
-      };
+    ...data.toJson(),
+    _BlogPostCommentDataWithRatingsJsonKeys.reaction: ratingList?.toJson(),
+    _BlogPostCommentDataWithRatingsJsonKeys.author: userShortInfo.toJson(),
+    _BlogPostCommentDataWithRatingsJsonKeys.attach: [
+      for (final file in attachFiles) file.toJson(),
+    ],
+  };
 
   factory BlogPostComment.fromBitrixJson(JsonMap jsonMap) => BlogPostComment(
-        data: BlogPostCommentData.fromBitrixJson(jsonMap),
-        ratingList:
-            jsonMap[_BlogPostCommentDataWithRatingsJsonKeys.reaction] != null
-                ? RatingList.fromBitrixJson(
-                    jsonMap[_BlogPostCommentDataWithRatingsJsonKeys.reaction]!
-                        as JsonMap,
-                  )
-                : null,
-        userShortInfo: UserShortInfo.fromBitrixJson(
-          jsonMap[_BlogPostCommentDataWithRatingsJsonKeys.author]! as JsonMap,
-        ),
-        attachFiles: [
-          for (final item
-              in jsonMap[_BlogPostCommentDataWithRatingsJsonKeys.attach]!
-                  as List)
-            FileData.fromBitrixJson(item),
-        ],
-      );
+    data: BlogPostCommentData.fromBitrixJson(jsonMap),
+    ratingList:
+        jsonMap[_BlogPostCommentDataWithRatingsJsonKeys.reaction] != null
+        ? RatingList.fromBitrixJson(
+            jsonMap[_BlogPostCommentDataWithRatingsJsonKeys.reaction]!
+                as JsonMap,
+          )
+        : null,
+    userShortInfo: UserShortInfo.fromBitrixJson(
+      jsonMap[_BlogPostCommentDataWithRatingsJsonKeys.author]! as JsonMap,
+    ),
+    attachFiles: [
+      for (final item
+          in jsonMap[_BlogPostCommentDataWithRatingsJsonKeys.attach]! as List)
+        FileData.fromBitrixJson(item),
+    ],
+  );
 }

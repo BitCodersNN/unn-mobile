@@ -32,30 +32,28 @@ class ScheduleSearchSuggestionItem {
   factory ScheduleSearchSuggestionItem.fromJson(
     JsonMap jsonMap, {
     bool isHistory = false,
-  }) =>
-      ScheduleSearchSuggestionItem(
-        jsonMap[_ScheduleSearchSuggestionJsonKeys.id]! as String,
-        jsonMap[_ScheduleSearchSuggestionJsonKeys.label]! as String,
-        jsonMap[_ScheduleSearchSuggestionJsonKeys.description]! as String,
-        isHistory: isHistory,
-      );
+  }) => ScheduleSearchSuggestionItem(
+    jsonMap[_ScheduleSearchSuggestionJsonKeys.id]! as String,
+    jsonMap[_ScheduleSearchSuggestionJsonKeys.label]! as String,
+    jsonMap[_ScheduleSearchSuggestionJsonKeys.description]! as String,
+    isHistory: isHistory,
+  );
 
   JsonMap toJson() => {
-        _ScheduleSearchSuggestionJsonKeys.id: id,
-        _ScheduleSearchSuggestionJsonKeys.label: label,
-        _ScheduleSearchSuggestionJsonKeys.description: description,
-      };
+    _ScheduleSearchSuggestionJsonKeys.id: id,
+    _ScheduleSearchSuggestionJsonKeys.label: label,
+    _ScheduleSearchSuggestionJsonKeys.description: description,
+  };
 
   ScheduleSearchSuggestionItem copyWith({
     String? id,
     String? label,
     String? description,
     bool? isHistory,
-  }) =>
-      ScheduleSearchSuggestionItem(
-        id ?? this.id,
-        label ?? this.label,
-        description ?? this.description,
-        isHistory: isHistory ?? this.isHistory,
-      );
+  }) => ScheduleSearchSuggestionItem(
+    id ?? this.id,
+    label ?? this.label,
+    description ?? this.description,
+    isHistory: isHistory ?? this.isHistory,
+  );
 }

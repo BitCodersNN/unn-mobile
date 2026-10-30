@@ -45,13 +45,13 @@ class SearchFilter {
     EduForm? eduForm,
     EduYear? eduYear,
   }) : filters = _buildFilters(
-          globalFilter: globalFilter,
-          fullname: fullname,
-          eduLevel: eduLevel?.name,
-          eduCourse: eduCourse?.value,
-          eduForm: eduForm?.name.toKebabCase(),
-          eduYear: eduYear?.value,
-        );
+         globalFilter: globalFilter,
+         fullname: fullname,
+         eduLevel: eduLevel?.name,
+         eduCourse: eduCourse?.value,
+         eduForm: eduForm?.name.toKebabCase(),
+         eduYear: eduYear?.value,
+       );
 
   static Map<String, FilterMap> _buildFilters({
     String? globalFilter,
@@ -94,13 +94,13 @@ class EmployeeSearchFilter extends SearchFilter {
 
 class EduCourse extends BoundedInt {
   EduCourse(int value)
-      : super(
-          value: value,
-          min: 1,
-          max: 6,
-          paramName: _FilterNames.eduCourse,
-          errorMessage: 'Учебный год должен быть от 1 до 6',
-        );
+    : super(
+        value: value,
+        min: 1,
+        max: 6,
+        paramName: _FilterNames.eduCourse,
+        errorMessage: 'Учебный год должен быть от 1 до 6',
+      );
 
   EduCourse.first() : this(1);
   EduCourse.last() : this(6);
@@ -108,14 +108,14 @@ class EduCourse extends BoundedInt {
 
 class EduYear extends BoundedInt {
   EduYear(int value)
-      : super(
-          value: value,
-          min: 2000,
-          max: DateTime.now().year,
-          paramName: _FilterNames.eduYear,
-          errorMessage:
-              'Учебный год должен быть от 2000 до ${DateTime.now().year}',
-        );
+    : super(
+        value: value,
+        min: 2000,
+        max: DateTime.now().year,
+        paramName: _FilterNames.eduYear,
+        errorMessage:
+            'Учебный год должен быть от 2000 до ${DateTime.now().year}',
+      );
 
   EduYear.current() : this(DateTime.now().year);
 
@@ -132,14 +132,9 @@ enum EduLevel {
   increasedLevel,
   preparatoryDepartment,
   specialist,
-  spo,
-  ;
+  spo;
 
   String get name => _displayNames[this]!;
 }
 
-enum EduForm {
-  fullTime,
-  distance,
-  partTime,
-}
+enum EduForm { fullTime, distance, partTime }

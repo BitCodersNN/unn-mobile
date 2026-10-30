@@ -62,15 +62,17 @@ class SearchIdOnPortalServiceImpl implements SearchIdOnPortalService {
     // При резкой смене на онлайн авторизация иногда не проходит, поэтому пробуем тянуть из синхронного хранилища
     final userData =
         await _gettingProfileOfCurrentUser.getProfileOfCurrentUser() ??
-            _userSyncStorage.currentUserData;
+        _userSyncStorage.currentUserData;
 
     if (userData is EmployeeData) {
       return IdForSchedule(IdType.person, userData.syncId);
     }
 
     if (userData is StudentData) {
-      final userIds =
-          await findIdOnPortal(userData.fullname.toString(), IdType.student);
+      final userIds = await findIdOnPortal(
+        userData.fullname.toString(),
+        IdType.student,
+      );
 
       final userInfo = userIds
           ?.where((item) => item.description == userData.baseEduInfo.eduGroup)

@@ -15,19 +15,14 @@ class CertificatesServiceImpl implements CertificatesService {
   final LoggerService _loggerService;
   final ApiHelper _apiHelper;
 
-  CertificatesServiceImpl(
-    this._loggerService,
-    this._apiHelper,
-  );
+  CertificatesServiceImpl(this._loggerService, this._apiHelper);
 
   @override
   Future<Certificates?> getCertificates() async {
     Response response;
 
     try {
-      response = await _apiHelper.get(
-        path: ApiPath.spravka,
-      );
+      response = await _apiHelper.get(path: ApiPath.spravka);
     } catch (error, stackTrace) {
       _loggerService.logError(error, stackTrace);
       return null;

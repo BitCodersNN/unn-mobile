@@ -3,12 +3,7 @@
 
 import 'dart:math';
 
-enum SizeUnit {
-  byte,
-  kilobyte,
-  megabyte,
-  gigabyte,
-}
+enum SizeUnit { byte, kilobyte, megabyte, gigabyte }
 
 extension UnitNames on SizeUnit {
   String getUnitStringRu() {
@@ -42,8 +37,9 @@ extension UnitNames on SizeUnit {
 
 class SizeConverter {
   static const int _base = 10;
-  static final String _allUnits =
-      SizeUnit.values.expand((unit) => unit.getAllUnitVariants()).join('|');
+  static final String _allUnits = SizeUnit.values
+      .expand((unit) => unit.getAllUnitVariants())
+      .join('|');
   static final Map<SizeUnit?, num> _coefficients = {
     SizeUnit.byte: pow(_base, 0),
     SizeUnit.kilobyte: pow(_base, 3),
@@ -64,10 +60,7 @@ class SizeConverter {
   static int parseFileSize(String sizeText) {
     final pattern = '([\\d.,]+)\\s*($_allUnits)';
 
-    final regex = RegExp(
-      pattern,
-      caseSensitive: false,
-    );
+    final regex = RegExp(pattern, caseSensitive: false);
 
     final match = regex.firstMatch(sizeText);
     if (match == null) {
@@ -80,9 +73,7 @@ class SizeConverter {
     final unit = match.group(2)?.toUpperCase() ?? 'Б';
 
     for (final sizeUnit in SizeUnit.values) {
-      if (sizeUnit.getAllUnitVariants().any(
-            (u) => u.toUpperCase() == unit,
-          )) {
+      if (sizeUnit.getAllUnitVariants().any((u) => u.toUpperCase() == unit)) {
         return (value * _coefficients[sizeUnit]!).toInt();
       }
     }

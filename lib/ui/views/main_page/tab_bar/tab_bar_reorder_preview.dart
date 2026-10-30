@@ -78,61 +78,60 @@ class _TabBarReorderPreviewState extends State<TabBarReorderPreview> {
 
   @override
   Widget build(BuildContext context) => SizedBox(
-        height: 62,
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            final itemWidth = constraints.maxWidth / widget.itemCount;
-            final direction = Directionality.of(context);
-            final visualOrder = _drag.visualOrder;
-            Widget item(int index) {
-              final dragging = _drag.isDragging && index == _drag.heldIndex;
-              final visualIndex = visualOrder.indexOf(index);
-              final physicalIndex = _drag.physicalIndex(visualIndex, direction);
-              return AnimatedPositioned(
-                key: ValueKey(widget.itemKey(index)),
-                duration: dragging
-                    ? Duration.zero
-                    : const Duration(milliseconds: 180),
-                curve: Curves.easeOutCubic,
-                left: dragging
-                    ? _drag.draggedLeft(itemWidth, direction)
-                    : physicalIndex * itemWidth,
-                top: dragging ? -8 : 0,
-                width: itemWidth,
-                height: 62,
-                child: TabBarGestureDetector(
-                  onHoldStart: widget.canDrag(index)
-                      ? (pointer) => _begin(index, pointer)
-                      : null,
-                  onHoldMove: (pointer) => _drag.update(
-                    pointerX: pointer.dx,
-                    itemWidth: itemWidth,
-                    direction: direction,
-                    canMove: widget.canMove,
-                  ),
-                  onHoldEnd: _end,
-                  onHoldCancel: _drag.cancel,
-                  child: TabBarDragFeedback(
-                    dragging: dragging,
-                    backgroundColor: index == _drag.heldIndex
-                        ? TabBarDragFeedback.highlightColor(context)
-                        : Colors.transparent,
-                    child: widget.itemBuilder(context, index),
-                  ),
-                ),
-              );
-            }
+    height: 62,
+    child: LayoutBuilder(
+      builder: (context, constraints) {
+        final itemWidth = constraints.maxWidth / widget.itemCount;
+        final direction = Directionality.of(context);
+        final visualOrder = _drag.visualOrder;
+        Widget item(int index) {
+          final dragging = _drag.isDragging && index == _drag.heldIndex;
+          final visualIndex = visualOrder.indexOf(index);
+          final physicalIndex = _drag.physicalIndex(visualIndex, direction);
+          return AnimatedPositioned(
+            key: ValueKey(widget.itemKey(index)),
+            duration: dragging
+                ? Duration.zero
+                : const Duration(milliseconds: 180),
+            curve: Curves.easeOutCubic,
+            left: dragging
+                ? _drag.draggedLeft(itemWidth, direction)
+                : physicalIndex * itemWidth,
+            top: dragging ? -8 : 0,
+            width: itemWidth,
+            height: 62,
+            child: TabBarGestureDetector(
+              onHoldStart: widget.canDrag(index)
+                  ? (pointer) => _begin(index, pointer)
+                  : null,
+              onHoldMove: (pointer) => _drag.update(
+                pointerX: pointer.dx,
+                itemWidth: itemWidth,
+                direction: direction,
+                canMove: widget.canMove,
+              ),
+              onHoldEnd: _end,
+              onHoldCancel: _drag.cancel,
+              child: TabBarDragFeedback(
+                dragging: dragging,
+                backgroundColor: index == _drag.heldIndex
+                    ? TabBarDragFeedback.highlightColor(context)
+                    : Colors.transparent,
+                child: widget.itemBuilder(context, index),
+              ),
+            ),
+          );
+        }
 
-            return Stack(
-              clipBehavior: Clip.none,
-              children: [
-                for (var index = 0; index < widget.itemCount; index++)
-                  if (!_drag.isDragging || index != _drag.heldIndex)
-                    item(index),
-                if (_drag.isDragging) item(_drag.heldIndex!),
-              ],
-            );
-          },
-        ),
-      );
+        return Stack(
+          clipBehavior: Clip.none,
+          children: [
+            for (var index = 0; index < widget.itemCount; index++)
+              if (!_drag.isDragging || index != _drag.heldIndex) item(index),
+            if (_drag.isDragging) item(_drag.heldIndex!),
+          ],
+        );
+      },
+    ),
+  );
 }

@@ -166,7 +166,8 @@ class ScheduleTabViewModel extends BaseViewModel {
         return;
       }
 
-      final foundSchedule = await _scheduleService.getCurrentUserSchedule(
+      final foundSchedule =
+          await _scheduleService.getCurrentUserSchedule(
             _userStorage.currentUserData!.login!,
             week.start,
             cancelToken: cancelToken,
@@ -242,7 +243,8 @@ class ScheduleTabViewModel extends BaseViewModel {
       _refreshRequested = false;
       final saveOffline = _offlineUpdateRequested;
       _offlineUpdateRequested = false;
-      final useRasp = AppSettings.useRaspSchedule &&
+      final useRasp =
+          AppSettings.useRaspSchedule &&
           selectedId == null &&
           isIdTypeMatchingUser(_userType, _userStorage.currentUserData);
       if (useRasp) {

@@ -51,70 +51,70 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(
-          title: const Text('Профиль'),
-          forceMaterialTransparency: true,
-        ),
-        body: BaseView<ProfileViewModel>(
-          model: _model,
-          builder: (context, model, _) {
-            if (model.hasError) {
-              return _ProfileLoadError(
-                onRetry: () => widget.isMe
-                    ? model.init(force: true, loadCurrentUser: true)
-                    : model.init(
-                        force: true,
-                        retryAttempt: 0,
-                        userId: _getUserId(),
-                      ),
-              );
-            }
-            final data = model.userData;
-            return Shimmer(
-              child: RefreshIndicator(
-                onRefresh: () async => await model.init(
-                  force: true,
-                  loadCurrentUser: widget.isMe,
-                  userId: _getUserId(),
-                  loadFromPost: widget.loadFromPost,
+    appBar: AppBar(
+      title: const Text('Профиль'),
+      forceMaterialTransparency: true,
+    ),
+    body: BaseView<ProfileViewModel>(
+      model: _model,
+      builder: (context, model, _) {
+        if (model.hasError) {
+          return _ProfileLoadError(
+            onRetry: () => widget.isMe
+                ? model.init(force: true, loadCurrentUser: true)
+                : model.init(
+                    force: true,
+                    retryAttempt: 0,
+                    userId: _getUserId(),
+                  ),
+          );
+        }
+        final data = model.userData;
+        return Shimmer(
+          child: RefreshIndicator(
+            onRefresh: () async => await model.init(
+              force: true,
+              loadCurrentUser: widget.isMe,
+              userId: _getUserId(),
+              loadFromPost: widget.loadFromPost,
+            ),
+            child: ListView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              padding: const EdgeInsets.all(16),
+              children: [
+                AnimatedContainer(
+                  duration: const Duration(milliseconds: 100),
+                  child: ShimmerLoading(
+                    isLoading: model.isLoading,
+                    child: ProfilePageHeader(model: model),
+                  ),
                 ),
-                child: ListView(
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  padding: const EdgeInsets.all(16),
-                  children: [
-                    AnimatedContainer(
-                      duration: const Duration(milliseconds: 100),
-                      child: ShimmerLoading(
-                        isLoading: model.isLoading,
-                        child: ProfilePageHeader(model: model),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    if (!model.isLoading && data != null) ...[
-                      GeneralInfoCard(data: data, isMe: model.isMe),
-                      if (model.studentData != null)
-                        StudyInfoCard(data: model.studentData!),
-                      if (model.employeeData != null)
-                        EmploymentInfoCard(data: model.employeeData!),
-                      ContactInfoCard(data: data),
-                      AboutInfoCard(data: data),
-                    ],
-                  ],
-                ),
-              ),
-            );
-          },
-          onModelReady: (model) {
-            if (!widget.isMe) {
-              model.init(
-                userId: _getUserId(),
-                loadFromPost: widget.loadFromPost,
-                force: true,
-              );
-            }
-          },
-        ),
-      );
+                const SizedBox(height: 16),
+                if (!model.isLoading && data != null) ...[
+                  GeneralInfoCard(data: data, isMe: model.isMe),
+                  if (model.studentData != null)
+                    StudyInfoCard(data: model.studentData!),
+                  if (model.employeeData != null)
+                    EmploymentInfoCard(data: model.employeeData!),
+                  ContactInfoCard(data: data),
+                  AboutInfoCard(data: data),
+                ],
+              ],
+            ),
+          ),
+        );
+      },
+      onModelReady: (model) {
+        if (!widget.isMe) {
+          model.init(
+            userId: _getUserId(),
+            loadFromPost: widget.loadFromPost,
+            force: true,
+          );
+        }
+      },
+    ),
+  );
 }
 
 class _ProfileLoadError extends StatelessWidget {
@@ -141,10 +141,7 @@ class _ProfileLoadError extends StatelessWidget {
             style: theme.textTheme.titleLarge,
           ),
           const SizedBox(height: 24),
-          OutlinedButton(
-            onPressed: onRetry,
-            child: const Text('Повторить'),
-          ),
+          OutlinedButton(onPressed: onRetry, child: const Text('Повторить')),
         ],
       ),
     );

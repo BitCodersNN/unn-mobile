@@ -7,8 +7,8 @@ import 'package:unn_mobile/core/models/profile/user_data.dart';
 
 ImageProvider<Object>? getUserAvatar(UserData? userData) =>
     userData?.photoSrc != null
-        ? CachedNetworkImageProvider(userData!.photoSrc!)
-        : null;
+    ? CachedNetworkImageProvider(userData!.photoSrc!)
+    : null;
 
 String generateInitials(List<String> names) {
   final nonEmpty = names.where((n) => n.isNotEmpty);

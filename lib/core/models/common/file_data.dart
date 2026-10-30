@@ -75,10 +75,10 @@ class FileData
     final id = switch (generateIdFromName) {
       true => (json[keys.name]! as String).hashCode,
       false => switch (json[keys.id]) {
-          final int idValue => idValue,
-          final String idString => int.parse(idString),
-          _ => throw const FormatException('Invalid ID format in JSON'),
-        },
+        final int idValue => idValue,
+        final String idString => int.parse(idString),
+        _ => throw const FormatException('Invalid ID format in JSON'),
+      },
     };
 
     final size = switch (json[keys.size]) {
@@ -96,28 +96,24 @@ class FileData
   }
 
   factory FileData.fromJson(JsonMap json) => FileData._fromJsonWithKeys(
-        json,
-        const _DefaultFileDataKeys(),
-        generateIdFromName: true,
-      );
+    json,
+    const _DefaultFileDataKeys(),
+    generateIdFromName: true,
+  );
 
-  factory FileData.fromBitrixJson(JsonMap json) => FileData._fromJsonWithKeys(
-        json,
-        const _BitrixFileDataKeys(),
-      );
+  factory FileData.fromBitrixJson(JsonMap json) =>
+      FileData._fromJsonWithKeys(json, const _BitrixFileDataKeys());
 
-  factory FileData.fromMessageJson(JsonMap json) => FileData._fromJsonWithKeys(
-        json,
-        const _MessageFileDataKeys(),
-      );
+  factory FileData.fromMessageJson(JsonMap json) =>
+      FileData._fromJsonWithKeys(json, const _MessageFileDataKeys());
 
   @protected
   @override
   Map<JsonKeyFormat, JsonKeys> get availableFormats => const {
-        JsonKeyFormat.standard: _DefaultFileDataKeys(),
-        JsonKeyFormat.bitrix: _BitrixFileDataKeys(),
-        JsonKeyFormat.message: _MessageFileDataKeys(),
-      };
+    JsonKeyFormat.standard: _DefaultFileDataKeys(),
+    JsonKeyFormat.bitrix: _BitrixFileDataKeys(),
+    JsonKeyFormat.message: _MessageFileDataKeys(),
+  };
 
   @protected
   @override

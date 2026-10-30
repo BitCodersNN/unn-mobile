@@ -4,12 +4,7 @@
 import 'package:flutter/material.dart';
 import 'package:unn_mobile/core/misc/custom_errors/auth_exceptions.dart';
 
-enum AuthRequestResultLegacy {
-  success,
-  noInternet,
-  wrongCredentials,
-  unknown,
-}
+enum AuthRequestResultLegacy { success, noInternet, wrongCredentials, unknown }
 
 @Deprecated('Создана более новая версия')
 abstract interface class AuthorizationService extends Listenable {

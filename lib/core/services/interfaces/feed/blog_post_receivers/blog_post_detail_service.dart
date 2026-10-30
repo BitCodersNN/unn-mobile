@@ -14,7 +14,5 @@ abstract interface class BlogPostDetailService {
   /// - [postId]: Целочисленный идентификатор запрашиваемого поста.
   ///
   /// Возвращает: [Future]<[BlogPost]?>` – объект поста или `null` при ошибке.
-  Future<BlogPost?> getBlogPostById({
-    required int postId,
-  });
+  Future<BlogPost?> getBlogPostById({required int postId});
 }

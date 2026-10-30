@@ -10,11 +10,7 @@ class SideMenuItem {
   final String title;
   final String? subtitle;
 
-  const SideMenuItem({
-    required this.value,
-    required this.title,
-    this.subtitle,
-  });
+  const SideMenuItem({required this.value, required this.title, this.subtitle});
 }
 
 class SideMenuItemWithIcon extends SideMenuItem {
@@ -53,8 +49,9 @@ class MenuButton extends StatelessWidget {
   });
 
   List<Widget> _items(BuildContext context) {
-    final needsShift =
-        items.any((e) => e is SideMenuItemWithIcon || e is CheckedSideMenuItem);
+    final needsShift = items.any(
+      (e) => e is SideMenuItemWithIcon || e is CheckedSideMenuItem,
+    );
     return items
         .map(
           (e) => _MenuItemView(
@@ -75,16 +72,18 @@ class MenuButton extends StatelessWidget {
     const menuWidth = 300.0;
     final menuRight = buttonRect.right.clamp(12.0, screenSize.width - 12.0);
     final menuLeft = menuRight - menuWidth;
-    final menuTop =
-        (buttonRect.bottom + 4.0).clamp(12.0, screenSize.height - 12.0);
-    final anchorFraction =
-        ((buttonRect.center.dx - menuLeft) / menuWidth).clamp(0.0, 1.0);
+    final menuTop = (buttonRect.bottom + 4.0).clamp(
+      12.0,
+      screenSize.height - 12.0,
+    );
+    final anchorFraction = ((buttonRect.center.dx - menuLeft) / menuWidth)
+        .clamp(0.0, 1.0);
 
     final value = await showGeneralDialog<String>(
       context: buttonContext,
       barrierDismissible: true,
-      barrierLabel:
-          MaterialLocalizations.of(buttonContext).modalBarrierDismissLabel,
+      barrierLabel: MaterialLocalizations.of(buttonContext)
+          .modalBarrierDismissLabel,
       barrierColor: Colors.black.withAlpha(80),
       transitionDuration: const Duration(milliseconds: 180),
       pageBuilder: (context, animation, secondaryAnimation) => Stack(
@@ -94,11 +93,15 @@ class MenuButton extends StatelessWidget {
             right: screenSize.width - menuRight,
             width: menuWidth,
             child: FadeTransition(
-              opacity:
-                  CurvedAnimation(parent: animation, curve: Curves.easeOut),
+              opacity: CurvedAnimation(
+                parent: animation,
+                curve: Curves.easeOut,
+              ),
               child: ScaleTransition(
-                scale:
-                    CurvedAnimation(parent: animation, curve: Curves.easeOut),
+                scale: CurvedAnimation(
+                  parent: animation,
+                  curve: Curves.easeOut,
+                ),
                 alignment: Alignment(anchorFraction * 2 - 1, -1.0),
                 child: ConstrainedBox(
                   constraints: BoxConstraints(
@@ -131,12 +134,12 @@ class MenuButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Builder(
-        builder: (buttonContext) => IconButton(
-          icon: const Icon(Icons.more_vert),
-          tooltip: 'Меню',
-          onPressed: () => _showMenu(buttonContext),
-        ),
-      );
+    builder: (buttonContext) => IconButton(
+      icon: const Icon(Icons.more_vert),
+      tooltip: 'Меню',
+      onPressed: () => _showMenu(buttonContext),
+    ),
+  );
 }
 
 class _MenuItemView extends StatefulWidget {

@@ -41,10 +41,7 @@ class ImportantBlogPostUsersServiceImpl
   final LoggerService _loggerService;
   final ApiHelper _apiHelper;
 
-  ImportantBlogPostUsersServiceImpl(
-    this._loggerService,
-    this._apiHelper,
-  );
+  ImportantBlogPostUsersServiceImpl(this._loggerService, this._apiHelper);
 
   @override
   Future<int?> getTotalUserCount(int postId) async {
@@ -74,10 +71,7 @@ class ImportantBlogPostUsersServiceImpl
     );
   }
 
-  Future<Map?> _getResponseData(
-    int postId, [
-    int pageNumber = 0,
-  ]) async {
+  Future<Map?> _getResponseData(int postId, [int pageNumber = 0]) async {
     Response response;
     try {
       response = await _apiHelper.post(

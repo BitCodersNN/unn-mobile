@@ -17,9 +17,8 @@ class TabBarCustomizationViewModel extends ChangeNotifier {
     required Iterable<String> allowedPaths,
     required Iterable<String> initialPaths,
     required String selectedPath,
-    required TabBarPathsSaver savePaths,
-  })  : _allowedPaths = allowedPaths.toSet(),
-        _savePaths = savePaths {
+    required this._savePaths,
+  }) : _allowedPaths = allowedPaths.toSet() {
     _resetSlots(initialPaths);
     final index = _slots.indexOf(selectedPath);
     _selectedSlot = index < 0 ? 0 : index;
@@ -32,8 +31,10 @@ class TabBarCustomizationViewModel extends ChangeNotifier {
   bool get isSaving => _isSaving;
 
   void _resetSlots(Iterable<String> paths) {
-    final normalized =
-        TabBarPreferences.normalize(paths, allowed: _allowedPaths);
+    final normalized = TabBarPreferences.normalize(
+      paths,
+      allowed: _allowedPaths,
+    );
     _slots = List<String?>.filled(TabBarPreferences.editableSlotCount, null);
     final editable = normalized.where((path) => path != MainPagePaths.more);
     var index = 0;

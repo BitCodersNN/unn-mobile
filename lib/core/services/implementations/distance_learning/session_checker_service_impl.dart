@@ -11,10 +11,7 @@ class SessionCheckerServiceImpl implements SessionCheckerService {
   final LoggerService _loggerService;
   final ApiHelper _apiHelper;
 
-  SessionCheckerServiceImpl(
-    this._loggerService,
-    this._apiHelper,
-  );
+  SessionCheckerServiceImpl(this._loggerService, this._apiHelper);
 
   @override
   Future<bool?> isSessionAlive() async {
@@ -22,9 +19,7 @@ class SessionCheckerServiceImpl implements SessionCheckerService {
     try {
       response = await _apiHelper.post(
         path: ApiPath.session,
-        options: Options(
-          responseType: ResponseType.plain,
-        ),
+        options: Options(responseType: ResponseType.plain),
       );
     } catch (exception, stackTrace) {
       _loggerService.logError(exception, stackTrace);

@@ -19,12 +19,12 @@ class FeedPostViewModelFactory
 
   @override
   FeedPostViewModel createViewModel(FeedPostCacheKey key) => FeedPostViewModel(
-        getService<BlogPostDetailService>(),
-        getService<LoggerService>(),
-        getService<LastFeedLoadDateTimeProvider>(),
-        getService<ImportantBlogPostAcknowledgementService>(),
-        getService<PinningBlogPostService>(),
-        getService<UnnAuthService>(),
-        getService<BlogPostCommentsService>(),
-      );
+    getService<BlogPostDetailService>(),
+    getService<LoggerService>(),
+    getService<LastFeedLoadDateTimeProvider>(),
+    getService<ImportantBlogPostAcknowledgementService>(),
+    getService<PinningBlogPostService>(),
+    getService<UnnAuthService>(),
+    getService<BlogPostCommentsService>(),
+  );
 }

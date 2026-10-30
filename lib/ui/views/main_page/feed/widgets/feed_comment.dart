@@ -20,74 +20,66 @@ import 'package:unn_mobile/ui/widgets/shimmer_loading.dart';
 
 class FeedCommentView extends StatelessWidget {
   final FeedCommentViewModel viewModel;
-  const FeedCommentView({
-    required this.viewModel,
-    super.key,
-  });
+  const FeedCommentView({required this.viewModel, super.key});
 
   @override
   Widget build(BuildContext context) => BaseView<FeedCommentViewModel>(
-        model: viewModel,
-        builder: (context, model, child) => GestureDetector(
-          onLongPress: () => ContextMenuHelper.showContextMenu(
-            context: context,
-            model: model,
-            actionsBuilder: () => createCommentActions(
+    model: viewModel,
+    builder: (context, model, child) => GestureDetector(
+      onLongPress: () => ContextMenuHelper.showContextMenu(
+        context: context,
+        model: model,
+        actionsBuilder: () =>
+            createCommentActions(context: context, model: model),
+      ),
+      child: Shimmer(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _CommentHeader(
+              dateTime: model.comment?.dateTime ?? '',
+              viewModel: model.profileViewModel ?? ProfileViewModel.empty(),
+              hide: model.isBusy,
+            ),
+            Padding(
+              padding: const EdgeInsets.only(
+                left: 16,
+                bottom: 10,
+                right: 10,
+                top: 8,
+              ),
+              child: model.renderMessage
+                  ? TextHtmlWidget(text: model.message)
+                  : const SizedBox(),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 20.0,
+                vertical: 0.0,
+              ),
+              child: PackedPostImages(
+                attachedImages: model.attachedImages,
+                authorizationHeaders: model.authHeaders,
+              ),
+            ),
+            for (final file in model.attachedFileViewModels)
+              Padding(
+                padding: const EdgeInsets.only(left: 16),
+                child: AttachedFile(viewModel: file),
+              ),
+            _ReactionView(
+              model: model.reactionViewModel ?? ReactionViewModel.empty(),
               context: context,
-              model: model,
             ),
-          ),
-          child: Shimmer(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _CommentHeader(
-                  dateTime: model.comment?.dateTime ?? '',
-                  viewModel: model.profileViewModel ?? ProfileViewModel.empty(),
-                  hide: model.isBusy,
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(
-                    left: 16,
-                    bottom: 10,
-                    right: 10,
-                    top: 8,
-                  ),
-                  child: model.renderMessage
-                      ? TextHtmlWidget(text: model.message)
-                      : const SizedBox(),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 20.0,
-                    vertical: 0.0,
-                  ),
-                  child: PackedPostImages(
-                    attachedImages: model.attachedImages,
-                    authorizationHeaders: model.authHeaders,
-                  ),
-                ),
-                for (final file in model.attachedFileViewModels)
-                  Padding(
-                    padding: const EdgeInsets.only(left: 16),
-                    child: AttachedFile(viewModel: file),
-                  ),
-                _ReactionView(
-                  model: model.reactionViewModel ?? ReactionViewModel.empty(),
-                  context: context,
-                ),
-              ],
-            ),
-          ),
+          ],
         ),
-      );
+      ),
+    ),
+  );
 }
 
 class _ReactionView extends StatelessWidget {
-  const _ReactionView({
-    required this.model,
-    required this.context,
-  });
+  const _ReactionView({required this.model, required this.context});
 
   final ReactionViewModel model;
   final BuildContext context;
@@ -126,8 +118,7 @@ class _ReactionView extends StatelessWidget {
                 },
                 icon: Icon(
                   Icons.add,
-                  size: MediaQuery.of(context)
-                      .textScaler
+                  size: MediaQuery.of(context).textScaler
                       .clamp(maxScaleFactor: 1.3)
                       .scale(16),
                 ),
@@ -201,8 +192,7 @@ class _CommentHeader extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(horizontal: 8.0),
                       child: Container(
                         width: double.infinity,
-                        height: MediaQuery.of(context)
-                            .textScaler
+                        height: MediaQuery.of(context).textScaler
                             .clamp(maxScaleFactor: 1.5)
                             .scale(16),
                         decoration: BoxDecoration(
@@ -212,10 +202,7 @@ class _CommentHeader extends StatelessWidget {
                       ),
                     ),
                   if (!model.isLoading && !hide)
-                    Text(
-                      dateTime,
-                      style: theme.textTheme.bodySmall,
-                    ),
+                    Text(dateTime, style: theme.textTheme.bodySmall),
                 ],
               ),
             ),
