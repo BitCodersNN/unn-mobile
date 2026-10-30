@@ -37,17 +37,10 @@ class ReactionActionServiceImpl implements ReactionActionService {
   Future<UserShortInfo?> addReaction(
     ReactionType reactionType,
     String voteKeySigned,
-  ) =>
-      _manageReaction(
-        reactionType,
-        voteKeySigned,
-        RatingListStrings.plus,
-      );
+  ) => _manageReaction(reactionType, voteKeySigned, RatingListStrings.plus);
 
   @override
-  Future<bool> removeReaction(
-    String voteKeySigned,
-  ) async =>
+  Future<bool> removeReaction(String voteKeySigned) async =>
       await _manageReaction(
         ReactionType.like,
         voteKeySigned,
@@ -94,9 +87,10 @@ class ReactionActionServiceImpl implements ReactionActionService {
     }
 
     try {
-      jsonValue = ((response.data
-              as JsonMap)[_KeysForReactionManagerJsonConverter.data]!
-          as JsonMap)[_KeysForReactionManagerJsonConverter.userData];
+      jsonValue =
+          ((response.data
+                  as JsonMap)[_KeysForReactionManagerJsonConverter.data]!
+              as JsonMap)[_KeysForReactionManagerJsonConverter.userData];
     } catch (error, stackTrace) {
       _loggerService.logError(error, stackTrace);
       return null;

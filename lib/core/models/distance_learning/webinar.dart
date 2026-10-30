@@ -44,40 +44,34 @@ final class Webinar {
   });
 
   factory Webinar.fromJson(JsonMap jsonMap) => Webinar(
-        id: int.tryParse(jsonMap[_WebinarJsonKeys.id]! as String),
-        discipline: jsonMap[_WebinarJsonKeys.discipline]! as String,
-        title: jsonMap[_WebinarJsonKeys.title]! as String,
-        comment: jsonMap[_WebinarJsonKeys.comment]! as String,
-        dateTimeRange: _parseDateTimeRange(jsonMap),
-        groups: (jsonMap[_WebinarJsonKeys.groups]! as String)
-            .split('|')
-            .where((element) => element.isNotEmpty)
-            .toSet()
-            .toList(),
-        employeeLogin: jsonMap[_WebinarJsonKeys.login]! as String,
-        urlStream: jsonMap[_WebinarJsonKeys.urlStream]! as String,
-        urlRecord: jsonMap[_WebinarJsonKeys.urlRecord]! as String,
-      );
+    id: int.tryParse(jsonMap[_WebinarJsonKeys.id]! as String),
+    discipline: jsonMap[_WebinarJsonKeys.discipline]! as String,
+    title: jsonMap[_WebinarJsonKeys.title]! as String,
+    comment: jsonMap[_WebinarJsonKeys.comment]! as String,
+    dateTimeRange: _parseDateTimeRange(jsonMap),
+    groups: (jsonMap[_WebinarJsonKeys.groups]! as String)
+        .split('|')
+        .where((element) => element.isNotEmpty)
+        .toSet()
+        .toList(),
+    employeeLogin: jsonMap[_WebinarJsonKeys.login]! as String,
+    urlStream: jsonMap[_WebinarJsonKeys.urlStream]! as String,
+    urlRecord: jsonMap[_WebinarJsonKeys.urlRecord]! as String,
+  );
 
   JsonMap toJson() => {
-        _WebinarJsonKeys.id: id?.toString(),
-        _WebinarJsonKeys.discipline: discipline,
-        _WebinarJsonKeys.title: title,
-        _WebinarJsonKeys.comment: comment,
-        _WebinarJsonKeys.date: dateTimeRange.start.format(
-          DatePattern.yyyymmddDash,
-        ),
-        _WebinarJsonKeys.time: dateTimeRange.start.format(
-          DatePattern.hhmmss,
-        ),
-        _WebinarJsonKeys.finishTime: dateTimeRange.end.format(
-          DatePattern.hhmmss,
-        ),
-        _WebinarJsonKeys.groups: groups.join('|'),
-        _WebinarJsonKeys.login: employeeLogin,
-        _WebinarJsonKeys.urlStream: urlStream,
-        _WebinarJsonKeys.urlRecord: urlRecord,
-      };
+    _WebinarJsonKeys.id: id?.toString(),
+    _WebinarJsonKeys.discipline: discipline,
+    _WebinarJsonKeys.title: title,
+    _WebinarJsonKeys.comment: comment,
+    _WebinarJsonKeys.date: dateTimeRange.start.format(DatePattern.yyyymmddDash),
+    _WebinarJsonKeys.time: dateTimeRange.start.format(DatePattern.hhmmss),
+    _WebinarJsonKeys.finishTime: dateTimeRange.end.format(DatePattern.hhmmss),
+    _WebinarJsonKeys.groups: groups.join('|'),
+    _WebinarJsonKeys.login: employeeLogin,
+    _WebinarJsonKeys.urlStream: urlStream,
+    _WebinarJsonKeys.urlRecord: urlRecord,
+  };
 
   static DateTimeRange _parseDateTimeRange(JsonMap jsonMap) {
     final dateString = jsonMap[_WebinarJsonKeys.date]! as String;

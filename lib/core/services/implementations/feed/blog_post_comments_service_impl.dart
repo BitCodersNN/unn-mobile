@@ -71,9 +71,7 @@ class BlogPostCommentsServiceImpl implements BlogPostCommentsService {
     }
 
     if (!bodyAsJson.containsKey(_JsonKeys._messageListKey)) {
-      _loggerService.log(
-        'json doesn\'t contain the messageList key',
-      );
+      _loggerService.log('json doesn\'t contain the messageList key');
       return null;
     }
 

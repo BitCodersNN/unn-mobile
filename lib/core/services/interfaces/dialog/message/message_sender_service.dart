@@ -11,10 +11,7 @@ abstract interface class MessageSenderService {
   /// Возвращает:
   ///   - Идентификатор отправленного сообщения (int) в случае успешной отправки
   ///   - `null` в случае возникновения ошибки или неуспешного статуса ответа
-  Future<int?> send({
-    required String dialogId,
-    required String text,
-  });
+  Future<int?> send({required String dialogId, required String text});
 
   /// Отправляет ответное текстовое сообщение в указанный диалог.
   ///

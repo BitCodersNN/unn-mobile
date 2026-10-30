@@ -36,10 +36,7 @@ class UnnMobile extends StatefulWidget {
       ),
       snackBarTheme: const SnackBarThemeData(
         backgroundColor: Color(0xFF323232),
-        contentTextStyle: TextStyle(
-          color: Color(0xFFF0F0F0),
-          fontSize: 16,
-        ),
+        contentTextStyle: TextStyle(color: Color(0xFFF0F0F0), fontSize: 16),
         actionTextColor: primaryColor,
       ),
       extensions: const [

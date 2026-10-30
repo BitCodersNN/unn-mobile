@@ -22,18 +22,18 @@ class EmployeeProfile {
   });
 
   JsonMap toJson() => {
-        ...previewEmployeeProfile.toJson(),
-        _EmployeeProfileJsonKeys.jobType: jobType,
-        _EmployeeProfileJsonKeys.manager: manager?.toProfileJson(),
-      };
+    ...previewEmployeeProfile.toJson(),
+    _EmployeeProfileJsonKeys.jobType: jobType,
+    _EmployeeProfileJsonKeys.manager: manager?.toProfileJson(),
+  };
 
   factory EmployeeProfile.fromJson(JsonMap json) => EmployeeProfile(
-        previewEmployeeProfile: BaseEmployeeProfile.fromJson(json),
-        jobType: json[_EmployeeProfileJsonKeys.jobType]! as String,
-        manager: json[_EmployeeProfileJsonKeys.manager] != null
-            ? UserShortInfo.fromProfileJson(
-                json[_EmployeeProfileJsonKeys.manager]! as JsonMap,
-              )
-            : null,
-      );
+    previewEmployeeProfile: BaseEmployeeProfile.fromJson(json),
+    jobType: json[_EmployeeProfileJsonKeys.jobType]! as String,
+    manager: json[_EmployeeProfileJsonKeys.manager] != null
+        ? UserShortInfo.fromProfileJson(
+            json[_EmployeeProfileJsonKeys.manager]! as JsonMap,
+          )
+        : null,
+  );
 }

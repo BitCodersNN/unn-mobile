@@ -41,7 +41,5 @@ abstract interface class ReactionRatingListService {
   /// Возвращает [Map] или null, если:
   ///   1. Если передали пустую строку
   ///   2. [getNumbersOfReactions] вернул null
-  Future<RatingList?> getRatingList({
-    required String voteKeySigned,
-  });
+  Future<RatingList?> getRatingList({required String voteKeySigned});
 }

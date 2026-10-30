@@ -81,8 +81,9 @@ class ChatInsideViewModel extends BaseViewModel {
   Future<PaginatedResult<Message>?> getMessagesByDialogId(
     String dialogId,
   ) async {
-    final messages =
-        await _messagesAggregator.fetchByDialogId(dialogId: dialogId);
+    final messages = await _messagesAggregator.fetchByDialogId(
+      dialogId: dialogId,
+    );
     if (messages == null) {
       return null;
     }
@@ -110,7 +111,8 @@ class ChatInsideViewModel extends BaseViewModel {
     if (chatId != null) {
       await _readMessages(chatId!, messages.items);
     }
-    final messagesToRemove = messages.items.length -
+    final messagesToRemove =
+        messages.items.length -
         messages.items.reversed
             .takeWhile(
               (m) =>
@@ -126,10 +128,7 @@ class ChatInsideViewModel extends BaseViewModel {
       _dialogsViewModel!.notifyListeners();
     }
     _unpartitionedMessages
-      ..removeRange(
-        0,
-        min(messagesToRemove, _unpartitionedMessages.length),
-      )
+      ..removeRange(0, min(messagesToRemove, _unpartitionedMessages.length))
       ..insertAll(0, messages.items.reversed);
 
     _messages
@@ -146,10 +145,11 @@ class ChatInsideViewModel extends BaseViewModel {
       return;
     }
 
-    _dialog = viewModel?.dialogs.cast<BaseDialogInfo>().firstWhere(
-              (d) => d is Dialog && d.chatId == chatId,
-              orElse: () => storedInfo!,
-            ) ??
+    _dialog =
+        viewModel?.dialogs.cast<BaseDialogInfo>().firstWhere(
+          (d) => d is Dialog && d.chatId == chatId,
+          orElse: () => storedInfo!,
+        ) ??
         storedInfo;
   }
 
@@ -163,38 +163,37 @@ class ChatInsideViewModel extends BaseViewModel {
   }
 
   FutureOr<void> loadMoreMessages() async => await busyCallAsync(() async {
-        if (_dialog == null) {
-          return;
-        }
-        if (_isInitializing) {
-          return;
-        }
-        if (!_hasMessagesBefore) {
-          return;
-        }
-        final messages =
-            await tryLoginAndRetrieveData<PaginatedResult<Message>?>(
-          () => chatId == null
-              ? getMessagesByDialogId(_dialog!.dialogId.stringValue)
-              : _messagesAggregator.fetchByChatId(
-                  chatId: chatId!,
-                  lastMessageId: _unpartitionedMessages.last.messageId,
-                ),
-          () => null,
-        );
-        if (messages == null) {
-          _hasError = true;
-          return;
-        }
-        if (chatId != null) {
-          await _readMessages(chatId!, messages.items);
-        }
-        _unpartitionedMessages.addAll(messages.items);
-        _messages
-          ..clear()
-          ..addAll(_partitionMessages(_unpartitionedMessages));
-        _hasMessagesBefore = messages.hasNextPage;
-      });
+    if (_dialog == null) {
+      return;
+    }
+    if (_isInitializing) {
+      return;
+    }
+    if (!_hasMessagesBefore) {
+      return;
+    }
+    final messages = await tryLoginAndRetrieveData<PaginatedResult<Message>?>(
+      () => chatId == null
+          ? getMessagesByDialogId(_dialog!.dialogId.stringValue)
+          : _messagesAggregator.fetchByChatId(
+              chatId: chatId!,
+              lastMessageId: _unpartitionedMessages.last.messageId,
+            ),
+      () => null,
+    );
+    if (messages == null) {
+      _hasError = true;
+      return;
+    }
+    if (chatId != null) {
+      await _readMessages(chatId!, messages.items);
+    }
+    _unpartitionedMessages.addAll(messages.items);
+    _messages
+      ..clear()
+      ..addAll(_partitionMessages(_unpartitionedMessages));
+    _hasMessagesBefore = messages.hasNextPage;
+  });
 
   Future<void> refreshLoop({bool checkStartConditions = true}) async {
     if (checkStartConditions) {
@@ -245,8 +244,8 @@ class ChatInsideViewModel extends BaseViewModel {
     this.chatId = chatId;
     _messages.clear();
     _unpartitionedMessages.clear();
-    _dialogsViewModel =
-        _routesViewModelFactory.getCached<ChatScreenViewModel>();
+    _dialogsViewModel = _routesViewModelFactory
+        .getCached<ChatScreenViewModel>();
     fetchDialogFromRoot(chatId);
     final messages = await tryLoginAndRetrieveData<PaginatedResult<Message>>(
       () => this.chatId == null
@@ -279,7 +278,9 @@ class ChatInsideViewModel extends BaseViewModel {
 
       final lastMessageAuthorId = lastMessage?.author?.bitrixId ?? -2;
       final messageAuthorId = message.author?.bitrixId;
-      final timeDifference = lastMessage?.dateTime //
+      final timeDifference =
+          lastMessage
+              ?.dateTime //
               .difference(message.dateTime)
               .inMinutes
               .abs() ??
@@ -288,11 +289,9 @@ class ChatInsideViewModel extends BaseViewModel {
         _lastReadMessageId = index == 0 ? null : message.messageId;
       }
       if (!(lastMessage?.dateTime.isSameDate(message.dateTime) ?? false)) {
-        partitions.add(
-          [
-            [message],
-          ],
-        );
+        partitions.add([
+          [message],
+        ]);
         continue;
       }
       if (lastMessageAuthorId == messageAuthorId &&
@@ -309,10 +308,7 @@ class ChatInsideViewModel extends BaseViewModel {
     return partitions;
   }
 
-  Future<void> _readMessages(
-    int chatId,
-    List<Message> messages,
-  ) async {
+  Future<void> _readMessages(int chatId, List<Message> messages) async {
     if (DemoModeStatus.demoModeEnabled) {
       return;
     }

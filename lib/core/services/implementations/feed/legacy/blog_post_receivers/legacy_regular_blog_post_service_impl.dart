@@ -23,10 +23,7 @@ class RegularBlogPostServiceImpl implements RegularBlogPostService {
   final LoggerService _loggerService;
   final ApiHelper _apiHelper;
 
-  RegularBlogPostServiceImpl(
-    this._loggerService,
-    this._apiHelper,
-  );
+  RegularBlogPostServiceImpl(this._loggerService, this._apiHelper);
 
   @override
   Future<List<BlogPost>?> getRegularBlogPosts({

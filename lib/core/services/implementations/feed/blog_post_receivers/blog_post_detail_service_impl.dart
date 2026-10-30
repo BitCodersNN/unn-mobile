@@ -23,9 +23,7 @@ class BlogPostDetailServiceImpl implements BlogPostDetailService {
   );
 
   @override
-  Future<BlogPost?> getBlogPostById({
-    required int postId,
-  }) async {
+  Future<BlogPost?> getBlogPostById({required int postId}) async {
     Response response;
     try {
       response = await _apiHelper.get(

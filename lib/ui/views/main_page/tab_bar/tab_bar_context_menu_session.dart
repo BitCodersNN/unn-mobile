@@ -35,22 +35,22 @@ class TabBarContextMenuSession extends ChangeNotifier {
     required this.selectedPath,
     required Offset pointerOrigin,
     required this.textDirection,
-  })  : originalPaths = List.unmodifiable(paths),
-        _basePaths = List.unmodifiable(paths),
-        _drag = TabBarDragController(
-          itemCount: paths.length,
-          editableCount: paths.length - 1,
-        ),
-        contentRect = Rect.fromLTWH(
-          anchor.left -
-              (textDirection == TextDirection.ltr
-                      ? paths.indexOf(heldPath)
-                      : paths.length - 1 - paths.indexOf(heldPath)) *
-                  anchor.width,
-          anchor.top,
-          anchor.width * paths.length,
-          anchor.height,
-        ) {
+  }) : originalPaths = List.unmodifiable(paths),
+       _basePaths = List.unmodifiable(paths),
+       _drag = TabBarDragController(
+         itemCount: paths.length,
+         editableCount: paths.length - 1,
+       ),
+       contentRect = Rect.fromLTWH(
+         anchor.left -
+             (textDirection == TextDirection.ltr
+                     ? paths.indexOf(heldPath)
+                     : paths.length - 1 - paths.indexOf(heldPath)) *
+                 anchor.width,
+         anchor.top,
+         anchor.width * paths.length,
+         anchor.height,
+       ) {
     _drag.addListener(notifyListeners);
     begin(heldPath, pointerOrigin);
   }

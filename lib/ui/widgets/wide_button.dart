@@ -2,17 +2,14 @@
 // Copyright 2025 BitCodersNN
 
 import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:unn_mobile/ui/unn_mobile_colors.dart';
 
 class WideButton extends StatelessWidget {
   final FutureOr<void> Function()? onPressed;
   final Widget child;
-  const WideButton({
-    required this.child,
-    this.onPressed,
-    super.key,
-  });
+  const WideButton({required this.child, this.onPressed, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -25,10 +22,7 @@ class WideButton extends StatelessWidget {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [
-              theme.primaryColor,
-              extraColors.wideButtonBottomColor!,
-            ],
+            colors: [theme.primaryColor, extraColors.wideButtonBottomColor!],
           ),
           borderRadius: BorderRadius.circular(50.0),
         ),

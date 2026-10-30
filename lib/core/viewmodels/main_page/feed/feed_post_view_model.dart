@@ -73,8 +73,9 @@ class FeedPostViewModel extends BaseViewModel {
 
   // Нужны для подтягивания html и всякого содержимого поста на фронте
   Map<String, String> get authHeaders =>
-      _authorisationService.headers
-          ?.map((key, value) => MapEntry(key, value.toString())) ??
+      _authorisationService.headers?.map(
+        (key, value) => MapEntry(key, value.toString()),
+      ) ??
       {};
 
   int? get authorId => blogData?.authorBitrixId;
@@ -128,9 +129,9 @@ class FeedPostViewModel extends BaseViewModel {
           (c) => FeedCommentViewModel.cached(c.data.id)..initFromFullInfo(c),
         ),
       );
-    _profileViewModel =
-        ProfileViewModel.cached(post.userShortInfo.bitrixId ?? 0)
-          ..initFromShortInfo(post.userShortInfo);
+    _profileViewModel = ProfileViewModel.cached(
+      post.userShortInfo.bitrixId ?? 0,
+    )..initFromShortInfo(post.userShortInfo);
     _reactionViewModel = ReactionViewModel.cached(post.data.id)
       ..initFull(post.data.keySigned!, post.ratingList);
     attachedFileViewModels
@@ -179,10 +180,10 @@ class FeedPostViewModel extends BaseViewModel {
   }
 
   Future<void> reloadComments() async => busyCallAsync(() async {
-        comments.clear();
-        _currentCommentsPage = 1;
-        await loadCommentsPage();
-      });
+    comments.clear();
+    _currentCommentsPage = 1;
+    await loadCommentsPage();
+  });
 
   Future<void> loadCommentsPage({int page = 1}) async {
     _commentsError = false;
@@ -203,14 +204,14 @@ class FeedPostViewModel extends BaseViewModel {
   }
 
   Future<void> loadMoreComments() async => busyCallAsync(() async {
-        if (!hasMoreComments) {
-          return;
-        }
-        await loadCommentsPage(page: _currentCommentsPage + 1);
-        if (!commentsError) {
-          _currentCommentsPage++;
-        }
-      });
+    if (!hasMoreComments) {
+      return;
+    }
+    await loadCommentsPage(page: _currentCommentsPage + 1);
+    if (!commentsError) {
+      _currentCommentsPage++;
+    }
+  });
 
   Future<void> togglePin() async {
     if (DemoModeStatus.demoModeEnabled) {

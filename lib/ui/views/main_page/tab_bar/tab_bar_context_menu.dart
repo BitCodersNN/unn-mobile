@@ -112,7 +112,8 @@ class _TabBarContextMenuState extends State<_TabBarContextMenu>
       return;
     }
     setState(() => _closing = true);
-    final accepted = result == null ||
+    final accepted =
+        result == null ||
         listEquals(result.paths, session.originalPaths) ||
         await widget.onReorder(result.paths);
     if (!mounted) {
@@ -137,13 +138,13 @@ class _TabBarContextMenuState extends State<_TabBarContextMenu>
 
   @override
   Widget build(BuildContext context) => MediaQuery.withNoTextScaling(
-        child: BlockSemantics(
-          child: ListenableBuilder(
-            listenable: Listenable.merge([_animation, session]),
-            builder: (context, _) => _buildMenu(context),
-          ),
-        ),
-      );
+    child: BlockSemantics(
+      child: ListenableBuilder(
+        listenable: Listenable.merge([_animation, session]),
+        builder: (context, _) => _buildMenu(context),
+      ),
+    ),
+  );
 
   Widget _buildMenu(BuildContext context) {
     final theme = Theme.of(context);
@@ -256,10 +257,7 @@ class _TabBarContextMenuState extends State<_TabBarContextMenu>
       height: session.contentRect.height,
       child: TabBarGestureDetector(
         onTap: () => _dismiss(
-          TabBarContextMenuResult(
-            paths: session.paths,
-            destinationPath: path,
-          ),
+          TabBarContextMenuResult(paths: session.paths, destinationPath: path),
         ),
         onHoldStart: (pointer) => session.begin(path, pointer),
         onHoldMove: session.move,
@@ -274,9 +272,7 @@ class _TabBarContextMenuState extends State<_TabBarContextMenu>
               icon: selected ? route.selectedIcon : route.unselectedIcon,
               label: route.pageTitle,
               color: color,
-              labelStyle: CupertinoTheme.of(context)
-                  .textTheme
-                  .tabLabelTextStyle
+              labelStyle: CupertinoTheme.of(context).textTheme.tabLabelTextStyle
                   .copyWith(color: color),
             ),
           ),

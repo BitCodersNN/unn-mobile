@@ -46,10 +46,8 @@ final MainPageRouteData pinnedPostsRoute = MainPageRouteData(
   'Закреплённые посты',
   'pinned',
   userTypes: [],
-  builder: (_, __) => const PinnedPostsPage(),
-  subroutes: [
-    postCommentsRoute,
-  ],
+  builder: (_, _) => const PinnedPostsPage(),
+  subroutes: [postCommentsRoute],
 );
 
 final MainPageRouteData feedUserProfileRoute = MainPageRouteData(
@@ -70,21 +68,17 @@ final List<MainPageRouteData> mainPageRoutes = [
     Icons.star_border,
     'Лента',
     MainPagePaths.feed,
-    builder: (_, __) => const FeedScreenView(),
+    builder: (_, _) => const FeedScreenView(),
     onReselect: _refresh<FeedScreenViewModel>,
     userTypes: [],
-    subroutes: [
-      postCommentsRoute,
-      pinnedPostsRoute,
-      feedUserProfileRoute,
-    ],
+    subroutes: [postCommentsRoute, pinnedPostsRoute, feedUserProfileRoute],
   ),
   MainPageRouteData(
     Icons.calendar_month,
     Icons.calendar_month_outlined,
     'Расписание',
     MainPagePaths.schedule,
-    builder: (_, __) => const ScheduleScreenView(),
+    builder: (_, _) => const ScheduleScreenView(),
     onReselect: _refresh<ScheduleScreenViewModel>,
     userTypes: [],
   ),
@@ -93,7 +87,7 @@ final List<MainPageRouteData> mainPageRoutes = [
     Icons.chat_bubble_outline,
     'Сообщения',
     MainPagePaths.chats,
-    builder: (_, __) => const ChatScreenView(),
+    builder: (_, _) => const ChatScreenView(),
     onReselect: _refresh<ChatScreenViewModel>,
     subroutes: [
       MainPageRouteData(
@@ -123,7 +117,7 @@ final List<MainPageRouteData> mainPageRoutes = [
     Icons.menu_book_outlined,
     'Материалы',
     MainPagePaths.source,
-    builder: (_, __) => const SourcePageView(),
+    builder: (_, _) => const SourcePageView(),
     onReselect: _refresh<SourcePageViewModel>,
     isDisabled: false,
     userTypes: [],
@@ -133,7 +127,7 @@ final List<MainPageRouteData> mainPageRoutes = [
     Icons.menu,
     'Ещё',
     MainPagePaths.more,
-    builder: (_, __) => const MainPageMenu(),
+    builder: (_, _) => const MainPageMenu(),
     userTypes: [],
   ),
   MainPageRouteData(
@@ -142,14 +136,14 @@ final List<MainPageRouteData> mainPageRoutes = [
     'Мой профиль',
     MainPagePaths.myProfile,
     userTypes: [],
-    builder: (_, __) => const ProfilePage(isMe: true),
+    builder: (_, _) => const ProfilePage(isMe: true),
   ),
   MainPageRouteData(
     Icons.book,
     Icons.book_outlined,
     'Зачётная книжка',
     MainPagePaths.grades,
-    builder: (_, __) => const GradesScreenView(),
+    builder: (_, _) => const GradesScreenView(),
     userTypes: [StudentData],
   ),
   MainPageRouteData(
@@ -157,7 +151,7 @@ final List<MainPageRouteData> mainPageRoutes = [
     Icons.description_outlined,
     'Справки онлайн',
     MainPagePaths.onlineCertificates,
-    builder: (_, __) => const OnlineCertificatesScreenView(),
+    builder: (_, _) => const OnlineCertificatesScreenView(),
     userTypes: [StudentData],
   ),
   MainPageRouteData(
@@ -165,7 +159,7 @@ final List<MainPageRouteData> mainPageRoutes = [
     Icons.settings_outlined,
     'Настройки',
     MainPagePaths.settings,
-    builder: (_, __) => const SettingsScreenView(),
+    builder: (_, _) => const SettingsScreenView(),
     userTypes: [],
   ),
   MainPageRouteData(
@@ -173,7 +167,7 @@ final List<MainPageRouteData> mainPageRoutes = [
     Icons.credit_card_outlined,
     'Поддержать',
     MainPagePaths.donations,
-    builder: (_, __) => const DonationsScreenView(),
+    builder: (_, _) => const DonationsScreenView(),
     userTypes: [],
     onlineOnly: true,
   ),
@@ -182,7 +176,7 @@ final List<MainPageRouteData> mainPageRoutes = [
     Icons.info_outline,
     'О нас',
     MainPagePaths.about,
-    builder: (_, __) => const AboutScreenView(),
+    builder: (_, _) => const AboutScreenView(),
     userTypes: [],
   ),
 ];

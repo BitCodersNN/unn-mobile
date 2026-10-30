@@ -35,9 +35,7 @@ class UnnAuthServiceImpl extends ChangeNotifier implements UnnAuthService {
     this._authDataProvider,
     this._loggerService,
   ) {
-    _apiHelper = ApiHelper(
-      options: createBaseOptions(host: Host.unn),
-    );
+    _apiHelper = ApiHelper(options: createBaseOptions(host: Host.unn));
 
     _authorisationHelper = AuthorisationHelper(
       _onlineStatus,
@@ -165,8 +163,9 @@ class UnnAuthServiceImpl extends ChangeNotifier implements UnnAuthService {
       final errorText = errorMatch.group(1)?.toLowerCase().trim() ?? '';
 
       if (errorText.contains('неверный логин или пароль')) {
-        _loggerService
-            .log('Авторизация отклонена сервером: неверный логин или пароль');
+        _loggerService.log(
+          'Авторизация отклонена сервером: неверный логин или пароль',
+        );
         return AuthRequestResult.wrongCredentials;
       }
 
@@ -183,9 +182,8 @@ class UnnAuthServiceImpl extends ChangeNotifier implements UnnAuthService {
     }
 
     final sessionCookie = cookies.firstWhere(
-      (cookie) => cookie.startsWith(
-        '${SessionIdentifierKeys.sessionIdCookieKey}=',
-      ),
+      (cookie) =>
+          cookie.startsWith('${SessionIdentifierKeys.sessionIdCookieKey}='),
       orElse: () => '',
     );
 
@@ -212,9 +210,11 @@ class UnnAuthServiceImpl extends ChangeNotifier implements UnnAuthService {
     try {
       // Оставляем каскадное приведение типов, как вы и просили.
       // Любая ошибка здесь будет перехвачена блоком catch ниже.
-      _csrf = ((((csrfResponse.data as JsonMap)['errors']! as List).first
-              as JsonMap)['customData']! as JsonMap)[SessionIdentifierKeys.csrf]
-          as String?;
+      _csrf =
+          ((((csrfResponse.data as JsonMap)['errors']! as List).first
+                      as JsonMap)['customData']!
+                  as JsonMap)[SessionIdentifierKeys.csrf]
+              as String?;
     } catch (error, stackTrace) {
       _loggerService.log(
         'Не удалось получить CSRF-токен. Exception: $error\nStackTrace: $stackTrace',

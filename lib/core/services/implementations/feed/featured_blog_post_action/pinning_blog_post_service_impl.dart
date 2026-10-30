@@ -20,24 +20,21 @@ class PinningBlogPostServiceImpl implements PinningBlogPostService {
   final LoggerService _loggerService;
   final ApiHelper _apiHelper;
 
-  PinningBlogPostServiceImpl(
-    this._loggerService,
-    this._apiHelper,
-  );
+  PinningBlogPostServiceImpl(this._loggerService, this._apiHelper);
 
   @override
   Future<bool> pin(int pinnedId) => _updatePostPinStatus(
-        pinnedId,
-        AnalyticsLabel.pinBlogPost,
-        AjaxActionStrings.pinBlogPost,
-      );
+    pinnedId,
+    AnalyticsLabel.pinBlogPost,
+    AjaxActionStrings.pinBlogPost,
+  );
 
   @override
   Future<bool> unpin(int pinnedId) => _updatePostPinStatus(
-        pinnedId,
-        AnalyticsLabel.unpinBlogPost,
-        AjaxActionStrings.unpinBlogPost,
-      );
+    pinnedId,
+    AnalyticsLabel.unpinBlogPost,
+    AjaxActionStrings.unpinBlogPost,
+  );
 
   Future<bool> _updatePostPinStatus(
     int pinnedId,
@@ -52,9 +49,7 @@ class PinningBlogPostServiceImpl implements PinningBlogPostService {
           AnalyticsLabel.b24statAction: b24statAction,
           AjaxActionStrings.actionKey: actionKey,
         },
-        data: {
-          _DataKeys.logId: pinnedId,
-        },
+        data: {_DataKeys.logId: pinnedId},
         options: OptionsWithTimeoutAndExpectedTypeFactory.options(
           10,
           ResponseDataType.jsonMap,

@@ -16,7 +16,5 @@ abstract interface class LastCommitShaService {
   /// Возвращает:
   /// - [String] — SHA-хеш последнего коммита, если запрос и извлечение прошли успешно.
   /// - `null` — если произошла ошибка на любом этапе выполнения.
-  Future<String?> getSha({
-    required GitPath gitPath,
-  });
+  Future<String?> getSha({required GitPath gitPath});
 }

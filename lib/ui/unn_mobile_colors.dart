@@ -31,18 +31,16 @@ class UnnMobileColors extends ThemeExtension<UnnMobileColors> {
     Color? idkWhatColor,
     Color? wideButtonTopColor,
     Color? wideButtonBottomColor,
-  }) =>
-      UnnMobileColors(
-        scheduleDayHighlight: scheduleDayHighlight ?? this.scheduleDayHighlight,
-        scheduleSubjectHighlight:
-            scheduleSubjectHighlight ?? this.scheduleSubjectHighlight,
-        scheduleSubjectTypeColors:
-            scheduleSubjectTypeColors ?? this.scheduleSubjectTypeColors,
-        ligtherTextColor: ligtherTextColor ?? this.ligtherTextColor,
-        idkWhatColor: idkWhatColor ?? this.idkWhatColor,
-        wideButtonBottomColor:
-            wideButtonBottomColor ?? this.wideButtonBottomColor,
-      );
+  }) => UnnMobileColors(
+    scheduleDayHighlight: scheduleDayHighlight ?? this.scheduleDayHighlight,
+    scheduleSubjectHighlight:
+        scheduleSubjectHighlight ?? this.scheduleSubjectHighlight,
+    scheduleSubjectTypeColors:
+        scheduleSubjectTypeColors ?? this.scheduleSubjectTypeColors,
+    ligtherTextColor: ligtherTextColor ?? this.ligtherTextColor,
+    idkWhatColor: idkWhatColor ?? this.idkWhatColor,
+    wideButtonBottomColor: wideButtonBottomColor ?? this.wideButtonBottomColor,
+  );
 
   @override
   ThemeExtension<UnnMobileColors> lerp(
@@ -79,11 +77,7 @@ class UnnMobileColors extends ThemeExtension<UnnMobileColors> {
         otherColors.ligtherTextColor,
         t,
       ),
-      idkWhatColor: Color.lerp(
-        idkWhatColor,
-        otherColors.idkWhatColor,
-        t,
-      ),
+      idkWhatColor: Color.lerp(idkWhatColor, otherColors.idkWhatColor, t),
       wideButtonBottomColor: Color.lerp(
         wideButtonBottomColor,
         otherColors.wideButtonBottomColor,

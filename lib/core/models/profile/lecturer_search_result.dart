@@ -7,10 +7,7 @@ class LecturerSearchResult {
   final EmployeeData? profile;
   final bool notFound;
 
-  const LecturerSearchResult._({
-    this.profile,
-    this.notFound = false,
-  });
+  const LecturerSearchResult._({this.profile, this.notFound = false});
 
   factory LecturerSearchResult.found(EmployeeData profile) =>
       LecturerSearchResult._(profile: profile);

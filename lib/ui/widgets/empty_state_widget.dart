@@ -27,11 +27,7 @@ class EmptyStateWidget extends StatelessWidget {
         color: theme.colorScheme.primaryContainer,
         shape: BoxShape.circle,
       ),
-      child: Icon(
-        icon,
-        size: 40,
-        color: theme.colorScheme.primary,
-      ),
+      child: Icon(icon, size: 40, color: theme.colorScheme.primary),
     );
     return Center(
       child: Padding(

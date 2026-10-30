@@ -30,12 +30,11 @@ class Certificate {
       certificatePath.isEmpty ? null : '$certificatePath.sig';
 
   factory Certificate.fromJson(JsonMap jsonMap) => Certificate(
-        name: jsonMap[CertificateJsonKeys.name]! as String,
-        sendtype: jsonMap[CertificateJsonKeys.sendtype]! as int,
-        description: jsonMap[CertificateJsonKeys.description]! as String,
-        certificatePath:
-            jsonMap[CertificateJsonKeys.certificatePath]! as String,
-      );
+    name: jsonMap[CertificateJsonKeys.name]! as String,
+    sendtype: jsonMap[CertificateJsonKeys.sendtype]! as int,
+    description: jsonMap[CertificateJsonKeys.description]! as String,
+    certificatePath: jsonMap[CertificateJsonKeys.certificatePath]! as String,
+  );
 
   factory Certificate.fromPracticeUrl(String practiceUrl) {
     final practiceTypeInfo =
@@ -48,9 +47,9 @@ class Certificate {
     );
   }
   JsonMap toJson() => {
-        CertificateJsonKeys.name: name,
-        CertificateJsonKeys.sendtype: sendtype,
-        CertificateJsonKeys.description: description,
-        CertificateJsonKeys.certificatePath: certificatePath,
-      };
+    CertificateJsonKeys.name: name,
+    CertificateJsonKeys.sendtype: sendtype,
+    CertificateJsonKeys.description: description,
+    CertificateJsonKeys.certificatePath: certificatePath,
+  };
 }

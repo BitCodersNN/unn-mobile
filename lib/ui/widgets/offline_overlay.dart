@@ -7,10 +7,7 @@ import 'package:unn_mobile/core/services/interfaces/authorisation/authorisation_
 
 class OfflineOverlay extends StatefulWidget {
   final double bottomOffset;
-  const OfflineOverlay({
-    super.key,
-    this.bottomOffset = 0,
-  });
+  const OfflineOverlay({super.key, this.bottomOffset = 0});
 
   @override
   State<OfflineOverlay> createState() => _OfflineOverlayState();
@@ -40,10 +37,7 @@ class _OfflineOverlayState extends State<OfflineOverlay> {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(
-                    left: 8.0,
-                    right: 12.0,
-                  ),
+                  padding: const EdgeInsets.only(left: 8.0, right: 12.0),
                   child: SizedBox(
                     height: 48,
                     width: 48,

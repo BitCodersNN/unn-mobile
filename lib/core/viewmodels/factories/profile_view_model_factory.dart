@@ -18,11 +18,11 @@ class ProfileViewModelFactory
   @override
   @protected
   ProfileViewModel createViewModel(ProfileCacheKey key) => ProfileViewModel(
-        getService<ProfileOfCurrentUserService>(),
-        getService<ProfileService>(),
-        getService<LoggerService>(),
-        getService<CurrentUserSyncStorage>(),
-      );
+    getService<ProfileOfCurrentUserService>(),
+    getService<ProfileService>(),
+    getService<LoggerService>(),
+    getService<CurrentUserSyncStorage>(),
+  );
 
   ProfileViewModel getCurrentUserViewModel() =>
       createViewModel(0)..init(loadCurrentUser: true);

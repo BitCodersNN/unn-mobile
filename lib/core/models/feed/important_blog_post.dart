@@ -29,13 +29,13 @@ class ImportantBlogPost extends BlogPost {
     required this.isRead,
     required this.readCount,
   }) : super(
-          data: blogPost.data,
-          ratingList: blogPost.ratingList,
-          userShortInfo: blogPost.userShortInfo,
-          attachFiles: blogPost.attachFiles,
-          comments: blogPost.comments,
-          commentCount: blogPost.commentCount,
-        );
+         data: blogPost.data,
+         ratingList: blogPost.ratingList,
+         userShortInfo: blogPost.userShortInfo,
+         attachFiles: blogPost.attachFiles,
+         comments: blogPost.comments,
+         commentCount: blogPost.commentCount,
+       );
 
   factory ImportantBlogPost.fromJson(JsonMap jsonMap) =>
       ImportantBlogPost.fromBlogPost(
@@ -46,8 +46,8 @@ class ImportantBlogPost extends BlogPost {
 
   @override
   JsonMap toJson() => {
-        ...super.toJson(),
-        _ImportantBlogPostJsonKeys.isRead: isRead,
-        _ImportantBlogPostJsonKeys.readCount: readCount,
-      };
+    ...super.toJson(),
+    _ImportantBlogPostJsonKeys.isRead: isRead,
+    _ImportantBlogPostJsonKeys.readCount: readCount,
+  };
 }

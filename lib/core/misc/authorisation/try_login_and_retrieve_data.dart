@@ -18,12 +18,12 @@ Future<T?> tryLoginAndRetrieveData<T>(
   FutureOr<T?> Function() offline,
 ) async {
   final LoggerService loggerService = Injector.appInstance.get<LoggerService>();
-  final UnnAuthService authorisationService =
-      Injector.appInstance.get<UnnAuthService>();
-  final AuthRefreshService authorisationRefreshService =
-      Injector.appInstance.get<AuthRefreshService>();
-  final OnlineStatusData onlineStatus =
-      Injector.appInstance.get<OnlineStatusData>();
+  final UnnAuthService authorisationService = Injector.appInstance
+      .get<UnnAuthService>();
+  final AuthRefreshService authorisationRefreshService = Injector.appInstance
+      .get<AuthRefreshService>();
+  final OnlineStatusData onlineStatus = Injector.appInstance
+      .get<OnlineStatusData>();
 
   if (authorisationService.sessionId == '' || !onlineStatus.isOnline) {
     AuthRequestResult? authRequestResult;

@@ -117,17 +117,17 @@ class _AuthTextFieldState extends State<AuthTextField> {
                   curve: _animationCurve,
                   builder: (context, labelProgress, child) =>
                       TweenAnimationBuilder<Color?>(
-                    tween: ColorTween(end: borderColor),
-                    duration: _animationDuration,
-                    curve: _animationCurve,
-                    builder: (context, animatedColor, child) => _decoration(
-                      context,
-                      labelStyle: labelStyle,
-                      labelProgress: labelProgress,
-                      labelWidth: labelWidth,
-                      borderColor: animatedColor ?? Colors.transparent,
-                    ),
-                  ),
+                        tween: ColorTween(end: borderColor),
+                        duration: _animationDuration,
+                        curve: _animationCurve,
+                        builder: (context, animatedColor, child) => _decoration(
+                          context,
+                          labelStyle: labelStyle,
+                          labelProgress: labelProgress,
+                          labelWidth: labelWidth,
+                          borderColor: animatedColor ?? Colors.transparent,
+                        ),
+                      ),
                 ),
               ),
               Positioned.fill(
@@ -143,8 +143,9 @@ class _AuthTextFieldState extends State<AuthTextField> {
         AuthErrorText(
           text: widget.errorText,
           reservedHeight: _FieldMetrics.errorSlotHeight,
-          contentPadding:
-              const EdgeInsets.only(left: _FieldMetrics.contentPadding),
+          contentPadding: const EdgeInsets.only(
+            left: _FieldMetrics.contentPadding,
+          ),
         ),
       ],
     );
@@ -169,8 +170,7 @@ class _AuthTextFieldState extends State<AuthTextField> {
               labelWidth: labelWidth,
               borderColor: borderColor,
               fillColor: Theme.of(context).cardColor,
-              shadowColor: Theme.of(context)
-                  .shadowColor
+              shadowColor: Theme.of(context).shadowColor
                   .withValues(alpha: _FieldMetrics.shadowOpacity),
             ),
           ),
@@ -188,10 +188,7 @@ class _AuthTextFieldState extends State<AuthTextField> {
                     ),
                     child: FractionalTranslation(
                       translation: const Offset(0, -0.5),
-                      child: Opacity(
-                        opacity: labelProgress,
-                        child: label,
-                      ),
+                      child: Opacity(opacity: labelProgress, child: label),
                     ),
                   ),
                 ),
@@ -201,10 +198,7 @@ class _AuthTextFieldState extends State<AuthTextField> {
                     padding: const EdgeInsets.only(
                       left: _FieldMetrics.contentPadding,
                     ),
-                    child: Opacity(
-                      opacity: 1 - labelProgress,
-                      child: label,
-                    ),
+                    child: Opacity(opacity: 1 - labelProgress, child: label),
                   ),
                 ),
               ],
@@ -216,36 +210,36 @@ class _AuthTextFieldState extends State<AuthTextField> {
   }
 
   Widget _input(TextStyle valueStyle, Color cursorColor) => Align(
-        alignment: Alignment.center,
-        child: SizedBox(
-          width: double.infinity,
-          child: TextField(
-            controller: widget.controller,
-            focusNode: widget.focusNode,
-            autocorrect: false,
-            enableSuggestions: false,
-            obscureText: widget.obscured,
-            autofillHints: widget.autofillHints,
-            textInputAction: widget.textInputAction,
-            onSubmitted: widget.onSubmitted,
-            cursorColor: cursorColor,
-            style: valueStyle,
-            textAlignVertical: TextAlignVertical.center,
-            decoration: const InputDecoration(
-              isDense: true,
-              border: InputBorder.none,
-              enabledBorder: InputBorder.none,
-              focusedBorder: InputBorder.none,
-              errorBorder: InputBorder.none,
-              focusedErrorBorder: InputBorder.none,
-              contentPadding: EdgeInsets.only(
-                left: _FieldMetrics.contentPadding,
-                right: _FieldMetrics.contentPadding,
-              ),
-            ),
+    alignment: Alignment.center,
+    child: SizedBox(
+      width: double.infinity,
+      child: TextField(
+        controller: widget.controller,
+        focusNode: widget.focusNode,
+        autocorrect: false,
+        enableSuggestions: false,
+        obscureText: widget.obscured,
+        autofillHints: widget.autofillHints,
+        textInputAction: widget.textInputAction,
+        onSubmitted: widget.onSubmitted,
+        cursorColor: cursorColor,
+        style: valueStyle,
+        textAlignVertical: TextAlignVertical.center,
+        decoration: const InputDecoration(
+          isDense: true,
+          border: InputBorder.none,
+          enabledBorder: InputBorder.none,
+          focusedBorder: InputBorder.none,
+          errorBorder: InputBorder.none,
+          focusedErrorBorder: InputBorder.none,
+          contentPadding: EdgeInsets.only(
+            left: _FieldMetrics.contentPadding,
+            right: _FieldMetrics.contentPadding,
           ),
         ),
-      );
+      ),
+    ),
+  );
 
   double _measureLabelWidth(BuildContext context, TextStyle labelStyle) {
     final effectiveStyle = DefaultTextStyle.of(context).style.merge(labelStyle);
@@ -330,7 +324,8 @@ class _FieldBoxPainter extends CustomPainter {
 
     final gapStart =
         _FieldMetrics.contentPadding - _FieldMetrics.notchGap * labelProgress;
-    final gapEnd = _FieldMetrics.contentPadding +
+    final gapEnd =
+        _FieldMetrics.contentPadding +
         labelWidth * labelProgress +
         _FieldMetrics.notchGap * labelProgress;
 

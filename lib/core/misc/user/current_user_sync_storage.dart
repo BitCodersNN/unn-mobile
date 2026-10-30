@@ -38,8 +38,8 @@ class CurrentUserSyncStorage extends ChangeNotifier
     if (await _userDataProvider.isContained()) {
       _currentUserData = await _userDataProvider.getData();
     } else {
-      _currentUserData =
-          await _gettingProfileOfCurrentUser.getProfileOfCurrentUser();
+      _currentUserData = await _gettingProfileOfCurrentUser
+          .getProfileOfCurrentUser();
       unawaited(_userDataProvider.saveData(_currentUserData));
     }
     notifyListeners();

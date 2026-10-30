@@ -5,11 +5,7 @@ import 'package:html/dom.dart' as dom;
 import 'package:html/parser.dart' as parser;
 import 'package:html_unescape/html_unescape.dart';
 
-void _processNode(
-  dom.Node node,
-  StringBuffer buffer,
-  Set<String> blockTags,
-) {
+void _processNode(dom.Node node, StringBuffer buffer, Set<String> blockTags) {
   if (node is dom.Text) {
     final text = node.text.replaceAll(RegExp(r'\s+'), ' ').trim();
     if (text.isNotEmpty) {

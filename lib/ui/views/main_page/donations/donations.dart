@@ -26,9 +26,7 @@ class _DonationsScreenViewState extends State<DonationsScreenView> {
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..enableZoom(false)
       ..loadRequest(
-        Uri.parse(
-          '${ProtocolType.https.name}://${ApiPath.donation}',
-        ),
+        Uri.parse('${ProtocolType.https.name}://${ApiPath.donation}'),
       );
 
     final platform = controller.platform;
