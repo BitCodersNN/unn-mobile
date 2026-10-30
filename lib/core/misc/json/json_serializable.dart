@@ -34,7 +34,5 @@ mixin MultiFormatJsonSerializable {
   @protected
   JsonMap buildJsonMap(JsonKeys keys);
 
-  JsonMap toJson() => _toJsonForFormat(
-        JsonKeyFormat.standard,
-      );
+  JsonMap toJson() => _toJsonForFormat(JsonKeyFormat.standard);
 }

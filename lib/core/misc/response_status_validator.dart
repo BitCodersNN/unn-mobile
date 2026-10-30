@@ -11,10 +11,7 @@ class _ResponseDataJsonKeys {
 }
 
 class ResponseStatusValidator {
-  static bool validate(
-    JsonMap responseData,
-    LoggerService loggerService,
-  ) {
+  static bool validate(JsonMap responseData, LoggerService loggerService) {
     final status = responseData[_ResponseDataJsonKeys.status];
 
     if (status == _ResponseDataJsonKeys.error) {

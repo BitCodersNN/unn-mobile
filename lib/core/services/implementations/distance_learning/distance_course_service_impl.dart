@@ -23,10 +23,7 @@ class DistanceCourseServiceImpl implements DistanceCourseService {
   final LoggerService _loggerService;
   final ApiHelper _apiHelper;
 
-  DistanceCourseServiceImpl(
-    this._loggerService,
-    this._apiHelper,
-  );
+  DistanceCourseServiceImpl(this._loggerService, this._apiHelper);
 
   @override
   Future<List<DistanceCourse>?> getDistanceCourses({

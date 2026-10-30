@@ -8,13 +8,11 @@ class DateTimeParser {
     String input,
     String pattern, {
     String local = 'ru_RU',
-  }) =>
-      DateFormat(pattern, local).parse(input);
+  }) => DateFormat(pattern, local).parse(input);
 
   static String format(
     DateTime dateTime,
     String pattern, {
     String locale = 'ru_RU',
-  }) =>
-      DateFormat(pattern, locale).format(dateTime);
+  }) => DateFormat(pattern, locale).format(dateTime);
 }

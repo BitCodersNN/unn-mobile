@@ -24,10 +24,7 @@ class ScheduleSearchSuggestionItemView extends StatelessWidget {
     final theme = Theme.of(context);
     return ListTile(
       visualDensity: VisualDensity.compact,
-      leading: Icon(
-        _iconForType(searchType),
-        color: theme.colorScheme.primary,
-      ),
+      leading: Icon(_iconForType(searchType), color: theme.colorScheme.primary),
       title: _highlightedTitle(theme),
       trailing: model.isHistory ? const Icon(Icons.history) : null,
       subtitle: Text(
@@ -41,16 +38,17 @@ class ScheduleSearchSuggestionItemView extends StatelessWidget {
   }
 
   IconData _iconForType(IdType type) => switch (type) {
-        IdType.student => Icons.person_outline,
-        IdType.lecturer => Icons.person_outline,
-        IdType.group => Icons.groups_outlined,
-        IdType.auditorium => Icons.location_on_outlined,
-        _ => Icons.search,
-      };
+    IdType.student => Icons.person_outline,
+    IdType.lecturer => Icons.person_outline,
+    IdType.group => Icons.groups_outlined,
+    IdType.auditorium => Icons.location_on_outlined,
+    _ => Icons.search,
+  };
 
   Widget _highlightedTitle(ThemeData theme) {
-    final base =
-        theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w500);
+    final base = theme.textTheme.bodyLarge?.copyWith(
+      fontWeight: FontWeight.w500,
+    );
     final queryLower = query.trim().toLowerCase();
     final label = model.label;
     if (queryLower.isEmpty) {

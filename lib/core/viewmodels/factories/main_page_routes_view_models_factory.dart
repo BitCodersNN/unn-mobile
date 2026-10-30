@@ -14,8 +14,8 @@ class MainPageRoutesViewModelsFactory {
 
   MainPageRoutesViewModelsFactory(
     this._authorizationService, {
-    required MainPageViewModelCreator createViewModel,
-  }) : _createViewModel = createViewModel {
+    required this._createViewModel,
+  }) {
     _authorizationService.addListener(_resetIfUnauthorized);
   }
 

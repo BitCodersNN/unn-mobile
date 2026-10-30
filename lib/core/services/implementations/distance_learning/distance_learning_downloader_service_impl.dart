@@ -16,21 +16,20 @@ class DistanceLearningDownloaderServiceImpl
     LoggerService loggerService,
     ApiHelper apiHelper,
   ) : _fileDownloader = FileDownloader(
-          loggerService,
-          apiHelper,
-          downloadFolderName: 'distanceLearning',
-        );
+        loggerService,
+        apiHelper,
+        downloadFolderName: 'distanceLearning',
+      );
 
   @override
   Future<File?> downloadFile({
     required String fileName,
     required String downloadUrl,
     bool force = false,
-  }) =>
-      _fileDownloader.downloadFile(
-        fileName,
-        downloadUrl: downloadUrl,
-        force: force,
-        pickLocation: true,
-      );
+  }) => _fileDownloader.downloadFile(
+    fileName,
+    downloadUrl: downloadUrl,
+    force: force,
+    pickLocation: true,
+  );
 }

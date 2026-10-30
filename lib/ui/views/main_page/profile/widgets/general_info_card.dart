@@ -10,11 +10,7 @@ class GeneralInfoCard extends StatelessWidget {
   final UserData data;
   final bool isMe;
 
-  const GeneralInfoCard({
-    required this.data,
-    this.isMe = false,
-    super.key,
-  });
+  const GeneralInfoCard({required this.data, this.isMe = false, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -33,8 +29,8 @@ class GeneralInfoCard extends StatelessWidget {
   }
 
   String _displaySex(String sex) => switch (sex) {
-        'M' => 'Мужской',
-        'F' => 'Женский',
-        _ => sex,
-      };
+    'M' => 'Мужской',
+    'F' => 'Женский',
+    _ => sex,
+  };
 }

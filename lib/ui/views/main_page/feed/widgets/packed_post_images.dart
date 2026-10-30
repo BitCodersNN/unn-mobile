@@ -23,54 +23,52 @@ class PackedPostImages extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => PackedImagesView(
-        onChildTap: (index) async {
-          await showDialog(
-            context: context,
-            builder: (context) => _ImagesCarouselDialog(
-              attachedImages,
-              index,
-              headers: authorizationHeaders,
-            ),
-          );
-        },
-        children: attachedImages.map((e) {
-          final imageUrl = e.startsWith('/')
-              ? '${ProtocolType.https.name}://${Host.unn}$e'
-              : e;
-          final isInternal = imageUrl.startsWith(
-            '${ProtocolType.https.name}://${Host.unn}',
-          );
-          final headers = isInternal
-              ? authorizationHeaders
-              : {
-                  'User-Agent':
-                      'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-                  'Referer': Uri.parse(imageUrl).origin,
-                  'Accept':
-                      'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8',
-                };
-
-          return CachedNetworkImage(
-            imageUrl: imageUrl,
-            httpHeaders: headers,
-            placeholder: (context, url) =>
-                const Center(child: CircularProgressIndicator()),
-            errorWidget: (context, url, error) => const Center(
-              child: Icon(Icons.broken_image, color: Colors.grey, size: 40),
-            ),
-          );
-        }).toList(),
+    onChildTap: (index) async {
+      await showDialog(
+        context: context,
+        builder: (context) => _ImagesCarouselDialog(
+          attachedImages,
+          index,
+          headers: authorizationHeaders,
+        ),
       );
+    },
+    children: attachedImages.map((e) {
+      final imageUrl = e.startsWith('/')
+          ? '${ProtocolType.https.name}://${Host.unn}$e'
+          : e;
+      final isInternal = imageUrl.startsWith(
+        '${ProtocolType.https.name}://${Host.unn}',
+      );
+      final headers = isInternal
+          ? authorizationHeaders
+          : {
+              'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+              'Referer': Uri.parse(imageUrl).origin,
+              'Accept': 'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8',
+            };
+
+      return CachedNetworkImage(
+        imageUrl: imageUrl,
+        httpHeaders: headers,
+        placeholder: (context, url) =>
+            const Center(child: CircularProgressIndicator()),
+        errorWidget: (context, url, error) => const Center(
+          child: Icon(Icons.broken_image, color: Colors.grey, size: 40),
+        ),
+      );
+    }).toList(),
+  );
 }
 
 class _ImagesCarouselDialog extends StatefulWidget {
   final Map<String, String>? headers;
   _ImagesCarouselDialog(this.attachedImages, int initialIndex, {this.headers})
-      : initialIndex = BoundedInt(
-          value: initialIndex,
-          min: 0,
-          max: attachedImages.length,
-        );
+    : initialIndex = BoundedInt(
+        value: initialIndex,
+        min: 0,
+        max: attachedImages.length,
+      );
 
   final Iterable<String> attachedImages;
   final BoundedInt initialIndex;
@@ -100,16 +98,16 @@ class _ImagesCarouselDialogState extends State<_ImagesCarouselDialog> {
 
   @override
   Widget build(BuildContext context) => ExtendedImageSlidePage(
-        slideAxis: SlideAxis.vertical,
-        child: ImagesCarousel(
-          attachedImages: widget.attachedImages,
-          imageModel: widget.initialIndex.value,
-          headers: widget.headers,
-          onPageChanged: (index) {
-            _overlayKey.currentState?.updateIndex(index);
-          },
-        ),
-      );
+    slideAxis: SlideAxis.vertical,
+    child: ImagesCarousel(
+      attachedImages: widget.attachedImages,
+      imageModel: widget.initialIndex.value,
+      headers: widget.headers,
+      onPageChanged: (index) {
+        _overlayKey.currentState?.updateIndex(index);
+      },
+    ),
+  );
 
   @override
   void dispose() {
@@ -160,9 +158,7 @@ class _ImagesCarouselDialogOverlayState
           color: Colors.transparent,
           child: Container(
             padding: const EdgeInsets.all(12),
-            decoration: const BoxDecoration(
-              color: Colors.transparent,
-            ),
+            decoration: const BoxDecoration(color: Colors.transparent),
             child: Text(
               '${index + 1} из ${widget.initialIndex.max + 1}',
               style: TextStyle(
@@ -198,18 +194,18 @@ class ImagesCarousel extends StatefulWidget {
 class _ImagesCarouselState extends State<ImagesCarousel> {
   @override
   Widget build(BuildContext context) => CarouselSlider(
-        options: CarouselOptions(
-          scrollPhysics: const BouncingScrollPhysics(),
-          enableInfiniteScroll: false,
-          disableCenter: true,
-          padEnds: true,
-          viewportFraction: 1.0,
-          initialPage: widget.imageModel,
-          onPageChanged: (index, reason) => widget.onPageChanged?.call(index),
-        ),
-        items: [
-          for (final image in widget.attachedImages)
-            DismissibleImage(image: image, headers: widget.headers),
-        ],
-      );
+    options: CarouselOptions(
+      scrollPhysics: const BouncingScrollPhysics(),
+      enableInfiniteScroll: false,
+      disableCenter: true,
+      padEnds: true,
+      viewportFraction: 1.0,
+      initialPage: widget.imageModel,
+      onPageChanged: (index, reason) => widget.onPageChanged?.call(index),
+    ),
+    items: [
+      for (final image in widget.attachedImages)
+        DismissibleImage(image: image, headers: widget.headers),
+    ],
+  );
 }

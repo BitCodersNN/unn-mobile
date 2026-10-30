@@ -26,35 +26,35 @@ class _ScheduleItemNormalState extends State<ScheduleItemNormal> {
 
   @override
   Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 8.0),
-        child: GestureDetector(
-          onTap: () async {
-            if (widget.subject.name == 'Военная подготовка') {
-              final Uri url = Uri.parse(vutsScheduleUri);
-              if (!await launchUrl(url)) {
-                throw Exception('Could not launch $url');
-              }
-            } else {
-              setState(() {
-                _expanded = !_expanded;
-              });
-            }
-          },
-          child: AnimatedCrossFade(
-            duration: const Duration(milliseconds: 360),
-            reverseDuration: const Duration(milliseconds: 360),
-            sizeCurve: Curves.easeInOutCubic,
-            firstCurve: Curves.easeInOut,
-            secondCurve: Curves.easeInOut,
-            alignment: Alignment.topCenter,
-            crossFadeState: _expanded
-                ? CrossFadeState.showSecond
-                : CrossFadeState.showFirst,
-            firstChild: _buildCard(context, expanded: false),
-            secondChild: _buildCard(context, expanded: true),
-          ),
-        ),
-      );
+    padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 8.0),
+    child: GestureDetector(
+      onTap: () async {
+        if (widget.subject.name == 'Военная подготовка') {
+          final Uri url = Uri.parse(vutsScheduleUri);
+          if (!await launchUrl(url)) {
+            throw Exception('Could not launch $url');
+          }
+        } else {
+          setState(() {
+            _expanded = !_expanded;
+          });
+        }
+      },
+      child: AnimatedCrossFade(
+        duration: const Duration(milliseconds: 360),
+        reverseDuration: const Duration(milliseconds: 360),
+        sizeCurve: Curves.easeInOutCubic,
+        firstCurve: Curves.easeInOut,
+        secondCurve: Curves.easeInOut,
+        alignment: Alignment.topCenter,
+        crossFadeState: _expanded
+            ? CrossFadeState.showSecond
+            : CrossFadeState.showFirst,
+        firstChild: _buildCard(context, expanded: false),
+        secondChild: _buildCard(context, expanded: true),
+      ),
+    ),
+  );
 
   Widget _buildCard(BuildContext context, {required bool expanded}) {
     final theme = Theme.of(context);
@@ -104,8 +104,9 @@ class _ScheduleItemNormalState extends State<ScheduleItemNormal> {
                   children: [
                     Text(
                       widget.subject.name,
-                      style: theme.textTheme.titleMedium!
-                          .copyWith(fontWeight: FontWeight.bold),
+                      style: theme.textTheme.titleMedium!.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
                       overflow: expanded
                           ? TextOverflow.visible
                           : TextOverflow.ellipsis,
@@ -154,8 +155,9 @@ class _ScheduleItemNormalState extends State<ScheduleItemNormal> {
                 children: [
                   Text(
                     timeFormatter.format(widget.subject.dateTimeRange.start),
-                    style: theme.textTheme.titleMedium!
-                        .copyWith(fontWeight: FontWeight.bold),
+                    style: theme.textTheme.titleMedium!.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   Text(
                     timeFormatter.format(widget.subject.dateTimeRange.end),
@@ -196,8 +198,9 @@ class _ScheduleItemNormalState extends State<ScheduleItemNormal> {
         Expanded(
           child: Text(
             text,
-            style: theme.textTheme.labelLarge!
-                .copyWith(color: extraColors.ligtherTextColor),
+            style: theme.textTheme.labelLarge!.copyWith(
+              color: extraColors.ligtherTextColor,
+            ),
             overflow: expanded ? TextOverflow.visible : TextOverflow.ellipsis,
             softWrap: expanded,
           ),

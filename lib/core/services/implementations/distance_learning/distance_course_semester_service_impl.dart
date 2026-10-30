@@ -15,10 +15,7 @@ class DistanceCourseSemesterServiceImpl
   final LoggerService _loggerService;
   final ApiHelper _apiHelper;
 
-  DistanceCourseSemesterServiceImpl(
-    this._loggerService,
-    this._apiHelper,
-  );
+  DistanceCourseSemesterServiceImpl(this._loggerService, this._apiHelper);
 
   @override
   Future<List<Semester>?> getSemesters() async {

@@ -37,7 +37,7 @@ final class SonnetGroupChatSetting extends IrregularChatSetting {
 
   @override
   JsonMap toJson() => {
-        ...super.toJson(),
-        GroupDialogJsonKeys.type: GroupDialogJsonKeys.sonetGroup,
-      };
+    ...super.toJson(),
+    GroupDialogJsonKeys.type: GroupDialogJsonKeys.sonetGroup,
+  };
 }

@@ -8,8 +8,12 @@ import 'package:unn_mobile/core/viewmodels/main_page/chat/message_reaction_view_
 
 typedef MessageReactionCacheKey = int;
 
-class MessageReactionViewModelFactory extends CachedViewModelFactoryBase<
-    MessageReactionCacheKey, MessageReactionViewModel> {
+class MessageReactionViewModelFactory
+    extends
+        CachedViewModelFactoryBase<
+          MessageReactionCacheKey,
+          MessageReactionViewModel
+        > {
   MessageReactionViewModelFactory() : super(100);
 
   @override

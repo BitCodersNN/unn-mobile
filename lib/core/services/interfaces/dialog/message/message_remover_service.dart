@@ -10,7 +10,5 @@ abstract interface class MessageRemoverService {
   /// Возвращает:
   ///   - `true` - если сообщение было успешно удалено
   ///   - `false` - в случае ошибки или невалидного ответа сервера
-  Future<bool> remove({
-    required int messageId,
-  });
+  Future<bool> remove({required int messageId});
 }

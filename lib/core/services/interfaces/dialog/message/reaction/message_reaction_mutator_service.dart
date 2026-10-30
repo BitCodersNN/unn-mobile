@@ -13,10 +13,7 @@ abstract interface class MessageReactionMutatorService {
   /// Возвращает:
   ///   - `true` - если реакция была успешно добавлена
   ///   - `false` - если произошла ошибка при выполнении запроса
-  Future<bool> addReaction(
-    int messageId,
-    ReactionType reactionType,
-  );
+  Future<bool> addReaction(int messageId, ReactionType reactionType);
 
   /// Удаляет реакцию с указанного сообщения.
   ///
@@ -27,8 +24,5 @@ abstract interface class MessageReactionMutatorService {
   /// Возвращает:
   ///   - `true` - если реакция была успешно удалена
   ///   - `false` - если произошла ошибка при выполнении запроса
-  Future<bool> removeReaction(
-    int messageId,
-    ReactionType reactionType,
-  );
+  Future<bool> removeReaction(int messageId, ReactionType reactionType);
 }

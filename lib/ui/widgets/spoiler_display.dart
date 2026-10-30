@@ -32,9 +32,7 @@ class _SpoilerDisplayState extends State<SpoilerDisplay> {
       child: Container(
         decoration: BoxDecoration(
           color: theme.highlightColor,
-          borderRadius: const BorderRadius.all(
-            Radius.circular(8.0),
-          ),
+          borderRadius: const BorderRadius.all(Radius.circular(8.0)),
         ),
         child: Padding(
           padding: const EdgeInsets.all(8.0),
@@ -47,15 +45,15 @@ class _SpoilerDisplayState extends State<SpoilerDisplay> {
             },
             child: _open
                 ? widget.selectable
-                    ? SelectableText.rich(
-                        TextSpan(children: widget.content),
-                        onTap: () {
-                          setState(() {
-                            _open = false;
-                          });
-                        },
-                      )
-                    : RichText(text: TextSpan(children: widget.content))
+                      ? SelectableText.rich(
+                          TextSpan(children: widget.content),
+                          onTap: () {
+                            setState(() {
+                              _open = false;
+                            });
+                          },
+                        )
+                      : RichText(text: TextSpan(children: widget.content))
                 : Text(widget.spoilerText),
           ),
         ),

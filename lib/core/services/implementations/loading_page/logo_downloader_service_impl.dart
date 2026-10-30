@@ -12,15 +12,13 @@ import 'package:unn_mobile/core/services/interfaces/loading_page/logo_downloader
 class LogoDownloaderServiceImpl implements LogoDownloaderService {
   final FileDownloader _fileDownloader;
 
-  LogoDownloaderServiceImpl(
-    LoggerService loggerService,
-    ApiHelper apiHelper,
-  ) : _fileDownloader = FileDownloader(
-          loggerService,
-          apiHelper,
-          downloadFolderName: 'logos',
-          basePath: '${ApiPath.gitRepository}/${ApiPath.loadingScreen}',
-        );
+  LogoDownloaderServiceImpl(LoggerService loggerService, ApiHelper apiHelper)
+    : _fileDownloader = FileDownloader(
+        loggerService,
+        apiHelper,
+        downloadFolderName: 'logos',
+        basePath: '${ApiPath.gitRepository}/${ApiPath.loadingScreen}',
+      );
 
   @override
   Future<File?> downloadFile(String fileName) =>

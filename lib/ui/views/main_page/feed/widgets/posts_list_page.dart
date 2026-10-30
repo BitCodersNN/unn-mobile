@@ -23,61 +23,58 @@ class PostsListPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(
-          title: Text(title),
-          forceMaterialTransparency: true,
-        ),
-        body: OnlineStatusBuilder(
-          builder: (context, online) => LayoutBuilder(
-            builder: (context, constraints) => RefreshIndicator(
-              onRefresh: () async {
-                if (online) {
-                  await viewModel?.refreshFeatured();
-                }
-              },
-              child: Builder(
-                builder: (context) {
-                  if (viewModel == null) {
-                    return const Text('Что-то пошло не так');
-                  }
-                  if (postsList.isEmpty) {
-                    final child = Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Center(
-                        child: Text(
-                          noPostsText,
-                          style: Theme.of(context).textTheme.bodyLarge,
-                        ),
-                      ),
-                    );
-                    return SingleChildScrollView(
-                      physics: const AlwaysScrollableScrollPhysics(),
-                      child: ConstrainedBox(
-                        constraints: BoxConstraints(
-                          minWidth: constraints.maxWidth,
-                          minHeight: constraints.maxHeight,
-                        ),
-                        child: child,
-                      ),
-                    );
-                  }
-                  return SingleChildScrollView(
-                    physics: const AlwaysScrollableScrollPhysics(),
-                    child: Column(
-                      children: [
-                        for (final post in postsList)
-                          FeedPost(
-                            key: ValueKey(post),
-                            post: post,
-                            showingComments: false,
-                          ),
-                      ],
+    appBar: AppBar(title: Text(title), forceMaterialTransparency: true),
+    body: OnlineStatusBuilder(
+      builder: (context, online) => LayoutBuilder(
+        builder: (context, constraints) => RefreshIndicator(
+          onRefresh: () async {
+            if (online) {
+              await viewModel?.refreshFeatured();
+            }
+          },
+          child: Builder(
+            builder: (context) {
+              if (viewModel == null) {
+                return const Text('Что-то пошло не так');
+              }
+              if (postsList.isEmpty) {
+                final child = Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Center(
+                    child: Text(
+                      noPostsText,
+                      style: Theme.of(context).textTheme.bodyLarge,
                     ),
-                  );
-                },
-              ),
-            ),
+                  ),
+                );
+                return SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      minWidth: constraints.maxWidth,
+                      minHeight: constraints.maxHeight,
+                    ),
+                    child: child,
+                  ),
+                );
+              }
+              return SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                child: Column(
+                  children: [
+                    for (final post in postsList)
+                      FeedPost(
+                        key: ValueKey(post),
+                        post: post,
+                        showingComments: false,
+                      ),
+                  ],
+                ),
+              );
+            },
           ),
         ),
-      );
+      ),
+    ),
+  );
 }

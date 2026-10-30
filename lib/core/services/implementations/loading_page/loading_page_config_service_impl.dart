@@ -12,14 +12,12 @@ import 'package:unn_mobile/core/services/interfaces/loading_page/loading_page_co
 class LoadingPageConfigServiceImpl implements LoadingPageConfigService {
   final GitConfigLoader gitConfigLoader;
 
-  LoadingPageConfigServiceImpl(
-    LoggerService loggerService,
-    ApiHelper apiHelper,
-  ) : gitConfigLoader = GitConfigLoader(
-          loggerService,
-          apiHelper,
-          path: '${ApiPath.loadingScreen}/loading_page_config.json',
-        );
+  LoadingPageConfigServiceImpl(LoggerService loggerService, ApiHelper apiHelper)
+    : gitConfigLoader = GitConfigLoader(
+        loggerService,
+        apiHelper,
+        path: '${ApiPath.loadingScreen}/loading_page_config.json',
+      );
 
   @override
   Future<List<LoadingPageModel>?> getLoadingPages() async {
@@ -29,9 +27,7 @@ class LoadingPageConfigServiceImpl implements LoadingPageConfigService {
       return null;
     }
 
-    final loadingPages = [
-      for (final list in jsonMap.values) ...list,
-    ];
+    final loadingPages = [for (final list in jsonMap.values) ...list];
 
     return parseJsonIterable<LoadingPageModel>(
       loadingPages,

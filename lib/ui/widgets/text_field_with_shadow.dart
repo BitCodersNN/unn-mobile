@@ -26,9 +26,7 @@ class TextFieldWithBoxShadow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const errorStyle = TextStyle(
-      fontSize: 14,
-    );
+    const errorStyle = TextStyle(fontSize: 14);
 
     // Wrap everything in LayoutBuilder so that the available maxWidth is taken into account for the height calculation (important if you error text exceeds one line)
     return LayoutBuilder(
@@ -59,9 +57,7 @@ class TextFieldWithBoxShadow extends StatelessWidget {
                     offset: const Offset(0, 2),
                   ),
                 ],
-                borderRadius: BorderRadius.circular(
-                  16.0,
-                ),
+                borderRadius: BorderRadius.circular(16.0),
               ),
             ),
             SizedBox(
@@ -83,14 +79,10 @@ class TextFieldWithBoxShadow extends StatelessWidget {
                     color: theme.hintColor,
                   ),
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(
-                      16.0,
-                    ),
+                    borderRadius: BorderRadius.circular(16.0),
                   ),
                   enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(
-                      16.0,
-                    ),
+                    borderRadius: BorderRadius.circular(16.0),
                     borderSide: BorderSide.none,
                   ),
                 ),

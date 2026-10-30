@@ -32,7 +32,7 @@ class SourcePageViewModel extends BaseViewModel {
 
   final Map<Semester, Iterable<SourceCourseViewModel>> _materialsMap = {};
   final Map<Semester, Map<DateTime, List<SourceWebinarViewModel>>>
-      _webinarsMap = {};
+  _webinarsMap = {};
 
   String? materialsError;
   String? webinarsError;
@@ -90,11 +90,11 @@ class SourcePageViewModel extends BaseViewModel {
   }
 
   FutureOr<void> refresh() => busyCallAsync(() async {
-        if (_currentSemester == null) {
-          return await _init();
-        }
-        await _initCurrentSemester();
-      });
+    if (_currentSemester == null) {
+      return await _init();
+    }
+    await _initCurrentSemester();
+  });
 
   FutureOr<void> _initCurrentSemester() async {
     if (currentSemester == null) {

@@ -21,10 +21,7 @@ class GradeBookServiceImpl implements GradeBookService {
   final LoggerService _loggerService;
   final ApiHelper _apiHelper;
 
-  GradeBookServiceImpl(
-    this._loggerService,
-    this._apiHelper,
-  );
+  GradeBookServiceImpl(this._loggerService, this._apiHelper);
 
   @override
   Future<Map<int, List<MarkBySubject>>?> getGradeBook() async {

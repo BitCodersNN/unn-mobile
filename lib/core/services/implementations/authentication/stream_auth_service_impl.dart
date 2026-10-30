@@ -51,9 +51,7 @@ class StreamAuthServiceImpl implements StreamAuthService {
   Future<Map<String, String>?> getStreamAuthParams() async {
     Response response;
     try {
-      response = await _apiHelper.get(
-        path: ApiPath.stream,
-      );
+      response = await _apiHelper.get(path: ApiPath.stream);
     } catch (error, stackTrace) {
       _loggerService.logError(error, stackTrace);
       return null;

@@ -7,11 +7,7 @@ class ProfileCard extends StatelessWidget {
   final String title;
   final List<Widget> tiles;
 
-  const ProfileCard({
-    required this.title,
-    required this.tiles,
-    super.key,
-  });
+  const ProfileCard({required this.title, required this.tiles, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -31,12 +27,7 @@ class ProfileCard extends StatelessWidget {
             ),
           ),
           for (var index = 0; index < tiles.length; index++) ...[
-            if (index > 0)
-              const Divider(
-                height: 1,
-                indent: 16,
-                endIndent: 16,
-              ),
+            if (index > 0) const Divider(height: 1, indent: 16, endIndent: 16),
             tiles[index],
           ],
         ],

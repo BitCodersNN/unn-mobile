@@ -18,11 +18,8 @@ class RequestPayloads {
         'id': 'im-recent-v2',
         'dynamicLoad': true,
         'dynamicSearch': true,
-        'options': {
-          'withChatByUsers': false,
-          'exclude': [],
-        },
-      }
+        'options': {'withChatByUsers': false, 'exclude': []},
+      },
     ],
     'clearUnavailableItems': false,
     'presentedItems': [],

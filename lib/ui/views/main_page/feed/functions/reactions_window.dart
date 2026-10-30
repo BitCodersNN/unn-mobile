@@ -20,10 +20,7 @@ void showReactionChoicePanel(
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(
-            'Выбор реакции',
-            style: theme.textTheme.headlineSmall,
-          ),
+          Text('Выбор реакции', style: theme.textTheme.headlineSmall),
           Padding(
             padding: const EdgeInsets.only(top: 2),
             child: Divider(
@@ -41,11 +38,7 @@ void showReactionChoicePanel(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   for (final reaction in ReactionType.values)
-                    _circleAvatarWithCaption(
-                      reaction,
-                      context,
-                      model,
-                    ),
+                    _circleAvatarWithCaption(reaction, context, model),
                 ],
               ),
             ),

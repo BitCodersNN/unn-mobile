@@ -75,34 +75,32 @@ class MessageFetcherServiceImpl implements MessageFetcherService {
     required int chatId,
     int limit = 25,
     int? lastMessageId,
-  }) async =>
-      _processPaginatedResponse<PaginatedResult<Message>>(
-        lastMessageId == null
-            ? await _fetchFirstMessages(chatId, limit)
-            : await _fetchMessages(chatId, lastMessageId, limit),
-        (data, messages) => PaginatedResult(
-          items: messages,
-          hasPreviousPage:
-              data[PaginatedResultJsonKeys.hasPrevPage] as bool? ?? false,
-          hasNextPage: data[PaginatedResultJsonKeys.hasNextPage]! as bool,
-        ),
-      );
+  }) async => _processPaginatedResponse<PaginatedResult<Message>>(
+    lastMessageId == null
+        ? await _fetchFirstMessages(chatId, limit)
+        : await _fetchMessages(chatId, lastMessageId, limit),
+    (data, messages) => PaginatedResult(
+      items: messages,
+      hasPreviousPage:
+          data[PaginatedResultJsonKeys.hasPrevPage] as bool? ?? false,
+      hasNextPage: data[PaginatedResultJsonKeys.hasNextPage]! as bool,
+    ),
+  );
 
   @override
   Future<PaginatedResultWithChatId<Message>?> fetchByDialogId({
     required String dialogId,
     int limit = 25,
-  }) async =>
-      _processPaginatedResponse<PaginatedResultWithChatId<Message>>(
-        await _fetchFirstMessages(dialogId, limit, false),
-        (data, messages) => PaginatedResultWithChatId(
-          chatId: (data[_JsonKeys.chat]! as JsonMap)[_JsonKeys.id]! as int,
-          items: messages,
-          hasPreviousPage:
-              data[PaginatedResultJsonKeys.hasPrevPage] as bool? ?? false,
-          hasNextPage: data[PaginatedResultJsonKeys.hasNextPage]! as bool,
-        ),
-      );
+  }) async => _processPaginatedResponse<PaginatedResultWithChatId<Message>>(
+    await _fetchFirstMessages(dialogId, limit, false),
+    (data, messages) => PaginatedResultWithChatId(
+      chatId: (data[_JsonKeys.chat]! as JsonMap)[_JsonKeys.id]! as int,
+      items: messages,
+      hasPreviousPage:
+          data[PaginatedResultJsonKeys.hasPrevPage] as bool? ?? false,
+      hasNextPage: data[PaginatedResultJsonKeys.hasNextPage]! as bool,
+    ),
+  );
 
   Future<T?> _processPaginatedResponse<T>(
     Response? response,
@@ -163,9 +161,7 @@ class MessageFetcherServiceImpl implements MessageFetcherService {
     final messageStatus = _determineMessageStatus(message, params);
     final files = _processFiles(params[_JsonKeys.fileId], filesById);
     final notify = params[_JsonKeys.notify] != 'N';
-    final hasReactions = messageIdsWithReactions.contains(
-      messageId,
-    );
+    final hasReactions = messageIdsWithReactions.contains(messageId);
 
     final jsonMap = {
       ..._proccessMessageShortInfo(message, usersById),
@@ -190,9 +186,10 @@ class MessageFetcherServiceImpl implements MessageFetcherService {
         usersById,
         filesById,
       );
-      return MessageWithForwardAndReply.fromJson(
-        {...jsonMap, ...processedData},
-      );
+      return MessageWithForwardAndReply.fromJson({
+        ...jsonMap,
+        ...processedData,
+      });
     }
 
     if (hasReply) {
@@ -248,19 +245,10 @@ class MessageFetcherServiceImpl implements MessageFetcherService {
     Map<String, dynamic> message,
     Map<int, dynamic> usersById,
     Map<int, dynamic> filesById,
-  ) =>
-      {
-        ..._processReply(
-          messagesById,
-          replyId,
-          usersById,
-          filesById,
-        ),
-        ..._processForward(
-          message,
-          usersById,
-        ),
-      };
+  ) => {
+    ..._processReply(messagesById, replyId, usersById, filesById),
+    ..._processForward(message, usersById),
+  };
 
   Map<String, dynamic> _processReply(
     Map<int, dynamic> messagesById,
@@ -284,55 +272,39 @@ class MessageFetcherServiceImpl implements MessageFetcherService {
   Map<String, dynamic> _proccessMessageShortInfo(
     Map<String, dynamic> messagesJson,
     Map<int, dynamic> usersById,
-  ) =>
-      {
-        MessageShortInfoJsonKeys.id: messagesJson[MessageShortInfoJsonKeys.id],
-        MessageShortInfoJsonKeys.author:
-            usersById[messagesJson[_JsonKeys.authorId]],
-        MessageShortInfoJsonKeys.text:
-            messagesJson[MessageShortInfoJsonKeys.text],
-        MessageShortInfoJsonKeys.uuid:
-            messagesJson[MessageShortInfoJsonKeys.uuid],
-        MessageShortInfoJsonKeys.date:
-            messagesJson[MessageShortInfoJsonKeys.date],
-      };
+  ) => {
+    MessageShortInfoJsonKeys.id: messagesJson[MessageShortInfoJsonKeys.id],
+    MessageShortInfoJsonKeys.author:
+        usersById[messagesJson[_JsonKeys.authorId]],
+    MessageShortInfoJsonKeys.text: messagesJson[MessageShortInfoJsonKeys.text],
+    MessageShortInfoJsonKeys.uuid: messagesJson[MessageShortInfoJsonKeys.uuid],
+    MessageShortInfoJsonKeys.date: messagesJson[MessageShortInfoJsonKeys.date],
+  };
 
   Map<String, dynamic> _processForward(
     Map<String, dynamic> message,
     Map<int, dynamic> usersById,
-  ) =>
-      {
-        ForwardInfoJsonKeys.forwardId: (message[_JsonKeys.forward]
-            as JsonMap)[MessageShortInfoJsonKeys.id],
-        ForwardInfoJsonKeys.forwardAuthor: usersById[
-            (message[_JsonKeys.forward] as JsonMap)[_JsonKeys.userId]],
-      };
+  ) => {
+    ForwardInfoJsonKeys.forwardId:
+        (message[_JsonKeys.forward] as JsonMap)[MessageShortInfoJsonKeys.id],
+    ForwardInfoJsonKeys.forwardAuthor:
+        usersById[(message[_JsonKeys.forward] as JsonMap)[_JsonKeys.userId]],
+  };
 
   Future<Response?> _fetchFirstMessages(
     dynamic id,
     int limit, [
     bool isChatId = true,
-  ]) =>
-      _fetchMessagesFromApi(
-        action: isChatId
-            ? AjaxActionStrings.fetchFirstMessageByChatId
-            : AjaxActionStrings.fetchFirstMessageByDialogId,
-        data: isChatId
-            ? {
-                _DataKeys.chatId: id as int,
-                _DataKeys.limit: limit,
-              }
-            : {
-                _DataKeys.dialogId: id as String,
-                _DataKeys.messageLimit: limit,
-              },
-      );
+  ]) => _fetchMessagesFromApi(
+    action: isChatId
+        ? AjaxActionStrings.fetchFirstMessageByChatId
+        : AjaxActionStrings.fetchFirstMessageByDialogId,
+    data: isChatId
+        ? {_DataKeys.chatId: id as int, _DataKeys.limit: limit}
+        : {_DataKeys.dialogId: id as String, _DataKeys.messageLimit: limit},
+  );
 
-  Future<Response?> _fetchMessages(
-    int chatId,
-    int lastMessageId,
-    int limit,
-  ) =>
+  Future<Response?> _fetchMessages(int chatId, int lastMessageId, int limit) =>
       _fetchMessagesFromApi(
         action: AjaxActionStrings.fetchMessage,
         data: {
@@ -350,9 +322,7 @@ class MessageFetcherServiceImpl implements MessageFetcherService {
     try {
       return await _apiHelper.post(
         path: ApiPath.ajax,
-        queryParameters: {
-          AjaxActionStrings.actionKey: action,
-        },
+        queryParameters: {AjaxActionStrings.actionKey: action},
         data: data,
         options: OptionsWithTimeoutAndExpectedTypeFactory.options(
           10,

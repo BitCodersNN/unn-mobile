@@ -33,8 +33,9 @@ class ChatSetting extends BaseChatSetting {
       owner: baseChatSetting.owner,
       role: baseChatSetting.role,
       permissions: baseChatSetting.permissions,
-      managerList:
-          List<int>.from(json[_ChatSettingJsonKeys.managerList]! as List),
+      managerList: List<int>.from(
+        json[_ChatSettingJsonKeys.managerList]! as List,
+      ),
       userCounter: json[_ChatSettingJsonKeys.userCounter]! as int,
       restrictions: ChatRestrictions.fromJson(
         json[_ChatSettingJsonKeys.restrictions]! as JsonMap,
@@ -44,9 +45,9 @@ class ChatSetting extends BaseChatSetting {
 
   @override
   JsonMap toJson() => {
-        ...super.toJson(),
-        _ChatSettingJsonKeys.managerList: managerList,
-        _ChatSettingJsonKeys.userCounter: userCounter,
-        _ChatSettingJsonKeys.restrictions: restrictions.toJson(),
-      };
+    ...super.toJson(),
+    _ChatSettingJsonKeys.managerList: managerList,
+    _ChatSettingJsonKeys.userCounter: userCounter,
+    _ChatSettingJsonKeys.restrictions: restrictions.toJson(),
+  };
 }

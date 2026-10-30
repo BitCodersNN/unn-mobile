@@ -10,8 +10,12 @@ import 'package:unn_mobile/core/viewmodels/main_page/feed/attached_file_view_mod
 
 typedef AttachedFileCacheKey = int;
 
-class AttachedFileViewModelFactory extends CachedViewModelFactoryBase<
-    AttachedFileCacheKey, AttachedFileViewModel> {
+class AttachedFileViewModelFactory
+    extends
+        CachedViewModelFactoryBase<
+          AttachedFileCacheKey,
+          AttachedFileViewModel
+        > {
   AttachedFileViewModelFactory() : super(100);
 
   @override
