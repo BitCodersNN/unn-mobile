@@ -17,8 +17,8 @@ class GradeStatistics {
     required this.examCount,
     required this.retakeCount,
     required this.distribution,
-    required _GradeAverage average,
-  }) : _average = average;
+    required this._average,
+  });
 
   factory GradeStatistics.fromMarks(Iterable<MarkBySubject> marks) {
     final snapshot = marks.toList();
