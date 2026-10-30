@@ -168,7 +168,7 @@ class _BirthdayCard extends StatelessWidget {
                     FadeTransition(opacity: animation, child: child),
                 layoutBuilder: (current, previous) => Stack(
                   alignment: Alignment.topLeft,
-                  children: [...previous, if (current != null) current],
+                  children: [...previous, ?current],
                 ),
                 child: Column(
                   key: ValueKey(greeting.id),

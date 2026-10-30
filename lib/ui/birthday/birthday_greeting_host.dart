@@ -110,7 +110,7 @@ class _BirthdayGreetingHostState extends State<BirthdayGreetingHost>
       transitionDuration: MediaQuery.disableAnimationsOf(context)
           ? Duration.zero
           : const Duration(milliseconds: 450),
-      pageBuilder: (context, _, __) => BirthdayGreeting(
+      pageBuilder: (context, _, _) => BirthdayGreeting(
         greeting: greeting,
         onShown: () => unawaited(manager.markShown(userId, date)),
       ),
