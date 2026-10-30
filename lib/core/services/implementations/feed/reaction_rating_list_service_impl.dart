@@ -20,10 +20,7 @@ class ReactionRatingListServiceImpl implements ReactionRatingListService {
   final LoggerService _loggerService;
   final ApiHelper _apiHelper;
 
-  ReactionRatingListServiceImpl(
-    this._loggerService,
-    this._apiHelper,
-  );
+  ReactionRatingListServiceImpl(this._loggerService, this._apiHelper);
 
   @override
   Future<RatingList?> getReactionListByReaction({
@@ -118,8 +115,10 @@ class ReactionRatingListServiceImpl implements ReactionRatingListService {
 
     JsonMap jsonMap;
     try {
-      jsonMap = ((response.data as JsonMap)[_JsonKeys.data]!
-          as JsonMap)[_JsonKeys.reactions]! as JsonMap;
+      jsonMap =
+          ((response.data as JsonMap)[_JsonKeys.data]!
+                  as JsonMap)[_JsonKeys.reactions]!
+              as JsonMap;
     } catch (error, stackTrace) {
       _loggerService.logError(error, stackTrace);
       return null;
@@ -142,17 +141,16 @@ class ReactionRatingListServiceImpl implements ReactionRatingListService {
   }
 
   @override
-  Future<RatingList?> getRatingList({
-    required String voteKeySigned,
-  }) async {
+  Future<RatingList?> getRatingList({required String voteKeySigned}) async {
     const int reactionCountPerPage = 20;
 
     if (voteKeySigned == '') {
       return null;
     }
 
-    final numbersOfReactions =
-        await getNumbersOfReactions(voteKeySigned: voteKeySigned);
+    final numbersOfReactions = await getNumbersOfReactions(
+      voteKeySigned: voteKeySigned,
+    );
 
     if (numbersOfReactions == null) {
       return null;
@@ -161,9 +159,11 @@ class ReactionRatingListServiceImpl implements ReactionRatingListService {
     final futures = <Future<RatingList?>>[];
 
     numbersOfReactions.forEach((key, value) {
-      for (var pageNumber = 1;
-          pageNumber <= value ~/ reactionCountPerPage + 1;
-          pageNumber++) {
+      for (
+        var pageNumber = 1;
+        pageNumber <= value ~/ reactionCountPerPage + 1;
+        pageNumber++
+      ) {
         futures.add(
           getReactionListByReaction(
             voteKeySigned: voteKeySigned,
@@ -178,9 +178,7 @@ class ReactionRatingListServiceImpl implements ReactionRatingListService {
 
     final combinedList = RatingList();
     for (final ratingList in ratingLists) {
-      ratingList?.ratingList.forEach(
-        combinedList.addReactions,
-      );
+      ratingList?.ratingList.forEach(combinedList.addReactions);
     }
 
     return combinedList;

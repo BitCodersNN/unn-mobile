@@ -60,8 +60,9 @@ class ExportScheduleServiceImpl implements ExportScheduleService {
           rethrow;
       }
     }
-    final iCalendarData =
-        ICalendar.fromString(response.data).data.skip(1).toList();
+    final iCalendarData = ICalendar.fromString(response.data).data
+        .skip(1)
+        .toList();
 
     final deviceCalendarPlugin = DeviceCalendar.instance
       ..autoPermissions = AutoPermissionMode.asNeeded;
@@ -102,9 +103,7 @@ class ExportScheduleServiceImpl implements ExportScheduleService {
   Future<bool> openSettings() =>
       PermissionHandlerPlatform.instance.openAppSettings();
 
-  Future<String?> _findCalendarId(
-    DeviceCalendar deviceCalendarPlugin,
-  ) async {
+  Future<String?> _findCalendarId(DeviceCalendar deviceCalendarPlugin) async {
     final calendars = await deviceCalendarPlugin.listCalendars();
 
     for (final calendar in calendars) {

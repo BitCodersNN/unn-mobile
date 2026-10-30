@@ -21,35 +21,35 @@ class _LoadingPageState extends State<LoadingPage> {
 
   @override
   Widget build(BuildContext context) => BaseView<LoadingPageViewModel>(
-        builder: (context, model, child) => FutureBuilder<void>(
-          future: _loadingPages,
-          builder: (context, snapshot) {
-            final theme = Theme.of(context);
-            final backgroundColor = theme.colorScheme.surfaceContainerLowest;
-            final overlay =
-                ThemeData.estimateBrightnessForColor(backgroundColor) ==
-                        Brightness.dark
-                    ? SystemUiOverlayStyle.light
-                    : SystemUiOverlayStyle.dark;
-            return AnnotatedRegion<SystemUiOverlayStyle>(
-              value: SystemUiOverlayStyle(
-                statusBarColor: backgroundColor,
-                statusBarBrightness: overlay.statusBarBrightness,
-                statusBarIconBrightness: overlay.statusBarIconBrightness,
-                systemStatusBarContrastEnforced: false,
-              ),
-              child: Scaffold(
-                backgroundColor: backgroundColor,
-                body: SafeArea(child: _buildContent(context, model)),
-              ),
-            );
-          },
-        ),
-        onModelReady: (model) {
-          _loadingPages = model.initLoadingPages();
-          model.decideRoute(context, loadingPageReady: _waitForLogo(model));
-        },
-      );
+    builder: (context, model, child) => FutureBuilder<void>(
+      future: _loadingPages,
+      builder: (context, snapshot) {
+        final theme = Theme.of(context);
+        final backgroundColor = theme.colorScheme.surfaceContainerLowest;
+        final overlay =
+            ThemeData.estimateBrightnessForColor(backgroundColor) ==
+                Brightness.dark
+            ? SystemUiOverlayStyle.light
+            : SystemUiOverlayStyle.dark;
+        return AnnotatedRegion<SystemUiOverlayStyle>(
+          value: SystemUiOverlayStyle(
+            statusBarColor: backgroundColor,
+            statusBarBrightness: overlay.statusBarBrightness,
+            statusBarIconBrightness: overlay.statusBarIconBrightness,
+            systemStatusBarContrastEnforced: false,
+          ),
+          child: Scaffold(
+            backgroundColor: backgroundColor,
+            body: SafeArea(child: _buildContent(context, model)),
+          ),
+        );
+      },
+    ),
+    onModelReady: (model) {
+      _loadingPages = model.initLoadingPages();
+      model.decideRoute(context, loadingPageReady: _waitForLogo(model));
+    },
+  );
 
   Future<void> _waitForLogo(LoadingPageViewModel model) async {
     await _loadingPages;
@@ -152,12 +152,11 @@ class _LoadingPageState extends State<LoadingPage> {
     String title,
     TextStyle textStyle, {
     TextAlign textAlign = TextAlign.center,
-  }) =>
-      Text(
-        title,
-        style: textStyle,
-        textAlign: textAlign,
-        maxLines: 3,
-        overflow: TextOverflow.ellipsis,
-      );
+  }) => Text(
+    title,
+    style: textStyle,
+    textAlign: textAlign,
+    maxLines: 3,
+    overflow: TextOverflow.ellipsis,
+  );
 }

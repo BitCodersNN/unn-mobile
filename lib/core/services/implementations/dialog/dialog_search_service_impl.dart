@@ -41,37 +41,28 @@ class DialogSearchServiceImpl implements DialogSearchService {
   final LoggerService _loggerService;
   final ApiHelper _apiHelper;
 
-  DialogSearchServiceImpl(
-    this._loggerService,
-    this._apiHelper,
-  );
+  DialogSearchServiceImpl(this._loggerService, this._apiHelper);
 
   @override
-  Future<List<PreviewDialog>?> getHistory() => _fetchDialogs(
-        {
-          AjaxActionStrings.actionKey: AjaxActionStrings.loadDialog,
-        },
-      );
+  Future<List<PreviewDialog>?> getHistory() => _fetchDialogs({
+    AjaxActionStrings.actionKey: AjaxActionStrings.loadDialog,
+  });
 
   @override
   Future<List<PreviewDialog>?> search(String query) => _fetchDialogs(
-        {
-          AjaxActionStrings.actionKey: AjaxActionStrings.searchDialog,
-        },
-        data: {
-          _DataKeys.searchQuery: {
-            _DataKeys.query: query.toLowerCase(),
-            _DataKeys.queryWords: query.toLowerCase().split(' '),
-          },
-        },
-      );
+    {AjaxActionStrings.actionKey: AjaxActionStrings.searchDialog},
+    data: {
+      _DataKeys.searchQuery: {
+        _DataKeys.query: query.toLowerCase(),
+        _DataKeys.queryWords: query.toLowerCase().split(' '),
+      },
+    },
+  );
 
   @override
   Future<bool> save(List<String> dialogIds) async {
     final responseData = await _executeQuery(
-      {
-        AjaxActionStrings.actionKey: AjaxActionStrings.saveDialog,
-      },
+      {AjaxActionStrings.actionKey: AjaxActionStrings.saveDialog},
       data: {
         _DataKeys.dialog: RequestPayloads.dialog,
         _DataKeys.recentItems: [
@@ -102,8 +93,9 @@ class DialogSearchServiceImpl implements DialogSearchService {
 
     return parseJsonIterable<PreviewDialog>(
       (((responseData as JsonMap)[_ResponseJsonKeys.data]!
-              as JsonMap)[_ResponseJsonKeys.dialog]!
-          as JsonMap)[_ResponseJsonKeys.items]! as Iterable,
+                  as JsonMap)[_ResponseJsonKeys.dialog]!
+              as JsonMap)[_ResponseJsonKeys.items]!
+          as Iterable,
       (json) {
         final type = json[_ResponseJsonKeys.entityType]! as String;
         switch (type) {
@@ -128,10 +120,7 @@ class DialogSearchServiceImpl implements DialogSearchService {
       response = await _apiHelper.post(
         path: ApiPath.ajax,
         queryParameters: queryParameters,
-        data: {
-          _DataKeys.dialog: RequestPayloads.dialog,
-          ...?data,
-        },
+        data: {_DataKeys.dialog: RequestPayloads.dialog, ...?data},
         options: OptionsWithTimeoutAndExpectedTypeFactory.options(
           10,
           ResponseDataType.jsonMap,

@@ -28,24 +28,23 @@ class MessageShortInfo {
   });
 
   factory MessageShortInfo.fromJson(JsonMap jsonMap) => MessageShortInfo(
-        messageId: jsonMap[MessageShortInfoJsonKeys.id]! as int,
-        author: jsonMap[MessageShortInfoJsonKeys.author] != null
-            ? UserShortInfo.fromMessageJson(
-                jsonMap[MessageShortInfoJsonKeys.author]! as JsonMap,
-              )
-            : null,
-        text: jsonMap[MessageShortInfoJsonKeys.text]! as String,
-        uuid: jsonMap[MessageShortInfoJsonKeys.uuid] as String?,
-        dateTime:
-            DateTime.parse(jsonMap[MessageShortInfoJsonKeys.date]! as String),
-      );
+    messageId: jsonMap[MessageShortInfoJsonKeys.id]! as int,
+    author: jsonMap[MessageShortInfoJsonKeys.author] != null
+        ? UserShortInfo.fromMessageJson(
+            jsonMap[MessageShortInfoJsonKeys.author]! as JsonMap,
+          )
+        : null,
+    text: jsonMap[MessageShortInfoJsonKeys.text]! as String,
+    uuid: jsonMap[MessageShortInfoJsonKeys.uuid] as String?,
+    dateTime: DateTime.parse(jsonMap[MessageShortInfoJsonKeys.date]! as String),
+  );
 
   JsonMap toJson() => {
-        MessageShortInfoJsonKeys.id: messageId,
-        if (author != null)
-          MessageShortInfoJsonKeys.author: author!.toMessageJson(),
-        MessageShortInfoJsonKeys.text: text,
-        MessageShortInfoJsonKeys.uuid: uuid,
-        MessageShortInfoJsonKeys.date: dateTime.toIso8601String(),
-      };
+    MessageShortInfoJsonKeys.id: messageId,
+    if (author != null)
+      MessageShortInfoJsonKeys.author: author!.toMessageJson(),
+    MessageShortInfoJsonKeys.text: text,
+    MessageShortInfoJsonKeys.uuid: uuid,
+    MessageShortInfoJsonKeys.date: dateTime.toIso8601String(),
+  };
 }

@@ -16,12 +16,12 @@ class BoundedInt {
     String paramName = 'value',
     String? errorMessage,
   }) : value = _validate(
-          value,
-          min,
-          max,
-          paramName,
-          errorMessage ?? 'Должно быть от $min до $max',
-        );
+         value,
+         min,
+         max,
+         paramName,
+         errorMessage ?? 'Должно быть от $min до $max',
+       );
 
   static int _validate(
     int value,

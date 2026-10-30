@@ -17,10 +17,7 @@ class ProfileOfCurrentUserServiceImpl implements ProfileOfCurrentUserService {
   final LoggerService _loggerService;
   final ApiHelper _apiHelper;
 
-  ProfileOfCurrentUserServiceImpl(
-    this._loggerService,
-    this._apiHelper,
-  );
+  ProfileOfCurrentUserServiceImpl(this._loggerService, this._apiHelper);
 
   @override
   Future<UserData?> getProfileOfCurrentUser() async {
@@ -41,10 +38,10 @@ class ProfileOfCurrentUserServiceImpl implements ProfileOfCurrentUserService {
     try {
       userData =
           (jsonMap as JsonMap)[ProfilesStrings.type] == ProfilesStrings.student
-              ? StudentData.fromJson(jsonMap)
-              : jsonMap[ProfilesStrings.type] == ProfilesStrings.employee
-                  ? EmployeeData.fromJson(jsonMap)
-                  : null;
+          ? StudentData.fromJson(jsonMap)
+          : jsonMap[ProfilesStrings.type] == ProfilesStrings.employee
+          ? EmployeeData.fromJson(jsonMap)
+          : null;
     } catch (e, stackTrace) {
       _loggerService.logError(e, stackTrace, information: [jsonMap.toString()]);
     }

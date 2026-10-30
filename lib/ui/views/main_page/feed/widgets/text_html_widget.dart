@@ -16,49 +16,49 @@ class TextHtmlWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => HtmlWidget(
-        text,
-        onTapUrl: htmlWidgetOnTapUrl,
-        onTapImage: (imageMetadata) async {
-          await showDialog(
-            context: context,
-            builder: (context) => ExtendedImageSlidePage(
-              slideAxis: SlideAxis.vertical,
-              child: DismissibleImage(
-                image: imageMetadata.sources.first.url,
-                headers: headers,
+    text,
+    onTapUrl: htmlWidgetOnTapUrl,
+    onTapImage: (imageMetadata) async {
+      await showDialog(
+        context: context,
+        builder: (context) => ExtendedImageSlidePage(
+          slideAxis: SlideAxis.vertical,
+          child: DismissibleImage(
+            image: imageMetadata.sources.first.url,
+            headers: headers,
+          ),
+        ),
+      );
+    },
+    customWidgetBuilder: (element) {
+      if (element.localName == 'a') {
+        final href = element.attributes['href'];
+        final text = element.text;
+        if (href != null) {
+          return Builder(
+            builder: (ctx) => GestureDetector(
+              onTap: () => htmlWidgetOnTapUrl(href),
+              onLongPress: () => ContextMenuHelper.showContextMenu(
+                context: ctx,
+                model: href,
+                actionsBuilder: () => createLinkActions(
+                  context: ctx,
+                  url: href,
+                  onOpen: () => htmlWidgetOnTapUrl(href),
+                ),
+              ),
+              child: Text(
+                text,
+                style: TextStyle(
+                  color: Theme.of(ctx).colorScheme.primary,
+                  decoration: TextDecoration.underline,
+                ),
               ),
             ),
           );
-        },
-        customWidgetBuilder: (element) {
-          if (element.localName == 'a') {
-            final href = element.attributes['href'];
-            final text = element.text;
-            if (href != null) {
-              return Builder(
-                builder: (ctx) => GestureDetector(
-                  onTap: () => htmlWidgetOnTapUrl(href),
-                  onLongPress: () => ContextMenuHelper.showContextMenu(
-                    context: ctx,
-                    model: href,
-                    actionsBuilder: () => createLinkActions(
-                      context: ctx,
-                      url: href,
-                      onOpen: () => htmlWidgetOnTapUrl(href),
-                    ),
-                  ),
-                  child: Text(
-                    text,
-                    style: TextStyle(
-                      color: Theme.of(ctx).colorScheme.primary,
-                      decoration: TextDecoration.underline,
-                    ),
-                  ),
-                ),
-              );
-            }
-          }
-          return null;
-        },
-      );
+        }
+      }
+      return null;
+    },
+  );
 }

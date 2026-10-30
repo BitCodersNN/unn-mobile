@@ -24,16 +24,15 @@ class FeedCommentViewModel extends BaseViewModel {
   ReactionViewModel? _reactionViewModel;
   ProfileViewModel? _profileViewModel;
 
-  FeedCommentViewModel(
-    this._authorisationService,
-  );
+  FeedCommentViewModel(this._authorisationService);
   factory FeedCommentViewModel.cached(FeedCommentCacheKey key) =>
       Injector.appInstance.get<FeedCommentViewModelFactory>().getViewModel(key);
 
   // Нужны для подтягивания html и всякого содержимого поста на фронте
   Map<String, String> get authHeaders =>
-      _authorisationService.headers
-          ?.map((key, value) => MapEntry(key, value.toString())) ??
+      _authorisationService.headers?.map(
+        (key, value) => MapEntry(key, value.toString()),
+      ) ??
       {};
 
   String get message => _unescaper.convert(comment?.message ?? '');
@@ -54,17 +53,15 @@ class FeedCommentViewModel extends BaseViewModel {
       ..init(loadFromPost: true, userId: comment.authorBitrixId);
     attachedFileViewModels
       ..clear()
-      ..addAll(
-        comment.attachedFiles.map(AttachedFileViewModel.cached),
-      );
+      ..addAll(comment.attachedFiles.map(AttachedFileViewModel.cached));
     notifyListeners();
   }
 
   void initFromFullInfo(BlogPostComment comment) {
     this.comment = comment.data;
-    _profileViewModel =
-        ProfileViewModel.cached(comment.userShortInfo.bitrixId ?? 0)
-          ..initFromShortInfo(comment.userShortInfo);
+    _profileViewModel = ProfileViewModel.cached(
+      comment.userShortInfo.bitrixId ?? 0,
+    )..initFromShortInfo(comment.userShortInfo);
     _reactionViewModel = ReactionViewModel.cached(comment.data.id)
       ..initFull(comment.data.keySigned, comment.ratingList!);
     attachedFileViewModels

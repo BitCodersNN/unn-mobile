@@ -38,8 +38,11 @@ class ReactionViewModel extends ReactionViewModelBase {
     }
 
     notifyListeners();
-    _loadData(voteKeySigned: voteKeySigned, postId: postId, authorId: authorId)
-        .whenComplete(() {
+    _loadData(
+      voteKeySigned: voteKeySigned,
+      postId: postId,
+      authorId: authorId,
+    ).whenComplete(() {
       _isLoading = false;
       notifyListeners();
     });
@@ -90,18 +93,12 @@ class ReactionViewModel extends ReactionViewModelBase {
       notifyListeners();
       if (!await _reactionManager.removeReaction(_voteKeySigned!)) {
         // Если реакция не удалилась - восстанавливаем её
-        ratingList!.addReactions(
-          currentReactionType,
-          {currentReactionInfo},
-        );
+        ratingList!.addReactions(currentReactionType, {currentReactionInfo});
         notifyListeners();
       }
     } else {
       // Добавляем временно, чтобы сразу показать действие
-      ratingList?.addReactions(
-        reaction,
-        {UserShortInfo(bitrixId: profileId)},
-      );
+      ratingList?.addReactions(reaction, {UserShortInfo(bitrixId: profileId)});
       notifyListeners();
       final reactionUserInfo = await _reactionManager.addReaction(
         reaction,
@@ -111,10 +108,7 @@ class ReactionViewModel extends ReactionViewModelBase {
       ratingList?.removeReaction(profileId);
       if (reactionUserInfo != null) {
         // Если реакция реально добавилась - фиксируем это
-        ratingList?.addReactions(
-          reaction,
-          {reactionUserInfo},
-        );
+        ratingList?.addReactions(reaction, {reactionUserInfo});
       }
       notifyListeners();
     }

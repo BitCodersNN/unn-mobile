@@ -10,10 +10,7 @@ class LastCommitShaProviderImpl implements LastCommitShaProvider {
   final StorageService _storage;
   final GitPath gitPath;
 
-  LastCommitShaProviderImpl(
-    this._storage, {
-    required this.gitPath,
-  });
+  LastCommitShaProviderImpl(this._storage, {required this.gitPath});
 
   @override
   Future<String?> getData() async {
@@ -21,9 +18,7 @@ class LastCommitShaProviderImpl implements LastCommitShaProvider {
       return null;
     }
 
-    return _storage.read(
-      key: _key,
-    );
+    return _storage.read(key: _key);
   }
 
   @override
@@ -32,16 +27,11 @@ class LastCommitShaProviderImpl implements LastCommitShaProvider {
       return;
     }
 
-    await _storage.write(
-      key: _key,
-      value: sha,
-    );
+    await _storage.write(key: _key, value: sha);
   }
 
   @override
-  Future<bool> isContained() => _storage.containsKey(
-        key: _key,
-      );
+  Future<bool> isContained() => _storage.containsKey(key: _key);
 
   String get _key => '${gitPath.name.toSnakeCase()}_sha_key';
 

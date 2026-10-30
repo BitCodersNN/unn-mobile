@@ -23,13 +23,11 @@ class BaseViewModel extends ChangeNotifier {
   @override
   void notifyListeners() {
     if (!disposed) {
-      WidgetsBinding.instance.endOfFrame.whenComplete(
-        () {
-          if (!disposed) {
-            super.notifyListeners();
-          }
-        },
-      );
+      WidgetsBinding.instance.endOfFrame.whenComplete(() {
+        if (!disposed) {
+          super.notifyListeners();
+        }
+      });
     }
   }
 
@@ -71,7 +69,4 @@ class BaseViewModel extends ChangeNotifier {
   }
 }
 
-enum ViewState {
-  idle,
-  busy,
-}
+enum ViewState { idle, busy }

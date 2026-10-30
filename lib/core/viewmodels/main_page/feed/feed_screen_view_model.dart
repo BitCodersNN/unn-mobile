@@ -81,38 +81,38 @@ class FeedScreenViewModel extends BaseViewModel
     this._searchService,
   );
 
-  Future<void> init() =>
-      _initialization ??= _blogPostProvider.getData().then((posts) {
+  Future<void> init() => _initialization ??= _blogPostProvider
+      .getData()
+      .then((posts) {
         if (!disposed && offlinePosts.isEmpty) {
           _addPostsToList(offlinePosts, posts);
         }
-      }).whenComplete(reload);
+      })
+      .whenComplete(reload);
 
   void _addPostsToList(
     List<FeedPostViewModel> posts,
     List<BlogPost>? newPosts, {
     bool isRegularPost = true,
   }) {
-    final postViewmodels = newPosts?.map(
-      (p) {
-        final post = FeedPostViewModel.cached(p.data.id)
-          ..initFromFullInfo(p, this);
-        if (post.isNewPost && isRegularPost) {
-          _numberUnreadMessages++;
-        }
-        return post;
-      },
-    );
+    final postViewmodels = newPosts?.map((p) {
+      final post = FeedPostViewModel.cached(p.data.id)
+        ..initFromFullInfo(p, this);
+      if (post.isNewPost && isRegularPost) {
+        _numberUnreadMessages++;
+      }
+      return post;
+    });
     posts.addAll(postViewmodels ?? []);
   }
 
   Future<void> loadMorePosts() async => await changeState(() async {
-        if (loadingMore || _currentPage <= 0) {
-          return;
-        }
-        loadingMore = true;
-        final freshPosts =
-            await tryLoginAndRetrieveData<Map<BlogPostType, List<BlogPost>>>(
+    if (loadingMore || _currentPage <= 0) {
+      return;
+    }
+    loadingMore = true;
+    final freshPosts =
+        await tryLoginAndRetrieveData<Map<BlogPostType, List<BlogPost>>>(
           () => _postPaginationService.loadNextPageBlogPosts(
             pageNumber: _currentPage + 1,
             pinIds: _totalPosts
@@ -127,17 +127,17 @@ class FeedScreenViewModel extends BaseViewModel
           () => null,
         );
 
-        if (freshPosts == null) {
-          failedToLoad = true;
-          loadingMore = false;
-          return;
-        }
-        _addPostsToList(_totalPosts, freshPosts[BlogPostType.regular]);
+    if (freshPosts == null) {
+      failedToLoad = true;
+      loadingMore = false;
+      return;
+    }
+    _addPostsToList(_totalPosts, freshPosts[BlogPostType.regular]);
 
-        failedToLoad = false;
-        _currentPage++;
-        loadingMore = false;
-      });
+    failedToLoad = false;
+    _currentPage++;
+    loadingMore = false;
+  });
 
   Future<void> reload({bool updateMainPage = true}) async =>
       await changeState(() async {
@@ -147,20 +147,20 @@ class FeedScreenViewModel extends BaseViewModel
           _numberUnreadMessages = 0;
         }
 
-        final [posts as Map<BlogPostType, List<BlogPost>>?, _] =
-            await Future.wait(
-          [
-            tryLoginAndRetrieveData(
-              () => _blogPostServiceImpl.refreshBlogPosts(
-                assetsCheckSum: _streamAuthService.sonetLAssetsCheckSum ?? '',
-                signedParameters: _streamAuthService.signedParameters ?? '',
-                commentFormUID: _streamAuthService.commentFormUID ?? '',
-              ),
-              () => null,
+        final [
+          posts as Map<BlogPostType, List<BlogPost>>?,
+          _,
+        ] = await Future.wait([
+          tryLoginAndRetrieveData(
+            () => _blogPostServiceImpl.refreshBlogPosts(
+              assetsCheckSum: _streamAuthService.sonetLAssetsCheckSum ?? '',
+              signedParameters: _streamAuthService.signedParameters ?? '',
+              commentFormUID: _streamAuthService.commentFormUID ?? '',
             ),
-            _lastFeedLoadDateTimeProvider.getData(),
-          ],
-        );
+            () => null,
+          ),
+          _lastFeedLoadDateTimeProvider.getData(),
+        ]);
 
         if (posts == null) {
           return;
@@ -182,8 +182,9 @@ class FeedScreenViewModel extends BaseViewModel
         if (!hasSearch && freshPosts.isNotEmpty) {
           await Future.wait([
             _blogPostProvider.saveData(freshPosts),
-            _lastFeedLoadDateTimeProvider
-                .saveData(freshPosts.first.data.datePublish),
+            _lastFeedLoadDateTimeProvider.saveData(
+              freshPosts.first.data.datePublish,
+            ),
           ]);
         }
 
@@ -224,16 +225,16 @@ class FeedScreenViewModel extends BaseViewModel
       });
 
   FutureOr<void> resetSearch() async => await busyCallAsync(() async {
-        final success = await _searchService.setFilter(
-          query: '',
-          onlyImportant: showOnlyImportant,
-        );
-        if (success) {
-          _searchQuery = null;
-          await reload();
-          notifyListeners();
-        }
-      });
+    final success = await _searchService.setFilter(
+      query: '',
+      onlyImportant: showOnlyImportant,
+    );
+    if (success) {
+      _searchQuery = null;
+      await reload();
+      notifyListeners();
+    }
+  });
 
   FutureOr<void> setShowingOnlyImportant({bool newStatus = true}) async =>
       await busyCallAsync(() async {

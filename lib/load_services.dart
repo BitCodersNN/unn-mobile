@@ -177,9 +177,10 @@ void registerDependencies() {
   T get<T>({String dependencyName = ''}) =>
       injector.get<T>(dependencyName: dependencyName);
 
-  ApiHelper getPlatformSpecificHelper<TWeb extends ApiHelper,
-          TDefault extends ApiHelper>() =>
-      kIsWeb ? get<TWeb>() : get<TDefault>();
+  ApiHelper getPlatformSpecificHelper<
+    TWeb extends ApiHelper,
+    TDefault extends ApiHelper
+  >() => kIsWeb ? get<TWeb>() : get<TDefault>();
 
   final apiHelperFactories = {
     HostType.github: () => get<GithubApiHelper>(),
@@ -210,7 +211,6 @@ void registerDependencies() {
     ..registerSingleton<AppOpenTracker>(
       () => AppOpenTracker(get<StorageService>()),
     )
-
     // =========================================================================
     // 2. СЕТЕВЫЕ ПОМОЩНИКИ (API HELPERS)
     // =========================================================================
@@ -236,7 +236,6 @@ void registerDependencies() {
       () =>
           WebUnnSourceApiHelper(authorizationService: get<SourceAuthService>()),
     )
-
     // =========================================================================
     // 3. АУТЕНТИФИКАЦИЯ И АВТОРИЗАЦИЯ
     // =========================================================================
@@ -248,10 +247,8 @@ void registerDependencies() {
       ),
     )
     ..registerSingleton<SourceAuthService>(
-      () => SourceAuthServiceImpl(
-        get<OnlineStatusData>(),
-        get<LoggerService>(),
-      ),
+      () =>
+          SourceAuthServiceImpl(get<OnlineStatusData>(), get<LoggerService>()),
     )
     ..registerSingleton<AuthDataProvider>(
       () => AuthorisationDataProviderImpl(get<StorageService>()),
@@ -270,7 +267,6 @@ void registerDependencies() {
         getApiHelper(HostType.unnPortal),
       ),
     )
-
     // =========================================================================
     // 4. КОНФИГУРАЦИЯ И МЕТАДАННЫЕ
     // =========================================================================
@@ -302,21 +298,15 @@ void registerDependencies() {
       () => LastCommitShaAuthorsProviderImpl(get<StorageService>()),
     )
     ..registerSingleton<AuthorsProvider>(
-      () => AuthorsProviderImpl(
-        get<StorageService>(),
-        get<LoggerService>(),
-      ),
+      () => AuthorsProviderImpl(get<StorageService>(), get<LoggerService>()),
     )
     ..registerSingleton<LastCommitShaLoadingPageProvider>(
       () => LastCommitShaLoadingPageProviderImpl(get<StorageService>()),
     )
     ..registerSingleton<LoadingPageProvider>(
-      () => LoadingPageProviderImpl(
-        get<StorageService>(),
-        get<LoggerService>(),
-      ),
+      () =>
+          LoadingPageProviderImpl(get<StorageService>(), get<LoggerService>()),
     )
-
     // =========================================================================
     // 5. ПОЛЬЗОВАТЕЛЬ И ПРОФИЛЬ
     // =========================================================================
@@ -335,10 +325,7 @@ void registerDependencies() {
       ),
     )
     ..registerSingleton<UserDataProvider>(
-      () => UserDataProviderImpl(
-        get<StorageService>(),
-        get<LoggerService>(),
-      ),
+      () => UserDataProviderImpl(get<StorageService>(), get<LoggerService>()),
     )
     ..registerSingleton<CurrentUserSyncStorage>(
       () => CurrentUserSyncStorage(
@@ -372,7 +359,6 @@ void registerDependencies() {
         get<ProfileService>(),
       ),
     )
-
     // =========================================================================
     // 6. РАСПИСАНИЕ И УСПЕВАЕМОСТЬ
     // =========================================================================
@@ -387,9 +373,7 @@ void registerDependencies() {
       () => ExportScheduleServiceImpl(getApiHelper(HostType.unnPortal)),
     )
     ..registerSingleton<OfflineScheduleProvider>(
-      () => OfflineScheduleProviderImpl(
-        get<StorageService>(),
-      ),
+      () => OfflineScheduleProviderImpl(get<StorageService>()),
     )
     ..registerSingleton<ScheduleWidgetPlatform>(
       () => ScheduleWidgetPlatformImpl(get<LoggerService>()),
@@ -423,7 +407,6 @@ void registerDependencies() {
         get<LoggerService>(),
       ),
     )
-
     // =========================================================================
     // 7. БЛОГ, ЛЕНТА И КОНТЕНТ
     // =========================================================================
@@ -488,7 +471,6 @@ void registerDependencies() {
         get<CurrentUserSyncStorage>(),
       ),
     )
-
     // =========================================================================
     // 8. СЕРТИФИКАТЫ
     // =========================================================================
@@ -510,7 +492,6 @@ void registerDependencies() {
         getApiHelper(HostType.unnPortal),
       ),
     )
-
     // =========================================================================
     // 9. ДИСТАНЦИОННОЕ ОБУЧЕНИЕ (UNN SOURCE)
     // =========================================================================
@@ -544,7 +525,6 @@ void registerDependencies() {
         getApiHelper(HostType.unnSource),
       ),
     )
-
     // =========================================================================
     // 10. СООБЩЕНИЯ И ДИАЛОГИ
     // =========================================================================
@@ -631,7 +611,6 @@ void registerDependencies() {
         getApiHelper(HostType.unnPortal),
       ),
     )
-
     // =========================================================================
     // 11. РЕЙТИНГИ И РЕАКЦИИ (ОБЩИЕ)
     // Управление реакциями и рейтингами вне контекста сообщений
@@ -649,7 +628,6 @@ void registerDependencies() {
         getApiHelper(HostType.unnPortal),
       ),
     )
-
     // =========================================================================
     // 12. ФАБРИКИ VIEWMODEL
     // =========================================================================
@@ -671,7 +649,6 @@ void registerDependencies() {
         createViewModel: <T extends BaseViewModel>() => get<T>(),
       ),
     )
-
     // =========================================================================
     // 13. VIEWMODELS ЭКРАНОВ И КОМПОНЕНТОВ
     // =========================================================================

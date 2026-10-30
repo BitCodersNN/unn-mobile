@@ -17,8 +17,7 @@ Future<void> viewFileAndShowMessage(
     await viewFile(file.path, mimeType);
   }
   if (context.mounted) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message)),
-    );
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(message)));
   }
 }

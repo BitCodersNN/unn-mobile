@@ -18,17 +18,15 @@ import 'package:unn_mobile/core/models/feed/post_destination.dart';
 import 'package:unn_mobile/core/models/profile/user_short_info.dart';
 
 class BlogPostHtmlParser {
-  static BlogPost? parsePost(
-    String? htmlText,
-    UserShortInfo currentUserData,
-  ) {
+  static BlogPost? parsePost(String? htmlText, UserShortInfo currentUserData) {
     if (htmlText == null || htmlText.isEmpty) {
       return null;
     }
 
     final document = parser.parse(htmlText);
-    final postElement =
-        document.querySelector(FeedHtmlParserStrings.feedItemWrap);
+    final postElement = document.querySelector(
+      FeedHtmlParserStrings.feedItemWrap,
+    );
 
     if (postElement == null) {
       return null;
@@ -48,8 +46,9 @@ class BlogPostHtmlParser {
     }
 
     final document = parser.parse(htmlText);
-    final postElements =
-        document.querySelectorAll(FeedHtmlParserStrings.feedItemWrap);
+    final postElements = document.querySelectorAll(
+      FeedHtmlParserStrings.feedItemWrap,
+    );
     final blogPosts = <BlogPostType, List<BlogPost>>{};
 
     for (final post in postElements) {
@@ -58,8 +57,7 @@ class BlogPostHtmlParser {
 
       final targetKey = switch (postType) {
         ExtendedBlogPostType.pinned ||
-        ExtendedBlogPostType.importantPinned =>
-          BlogPostType.pinned,
+        ExtendedBlogPostType.importantPinned => BlogPostType.pinned,
         _ => BlogPostType.regular,
       };
 
@@ -92,25 +90,24 @@ class BlogPostHtmlParser {
 
     return switch (blogPostType) {
       ExtendedBlogPostType.important ||
-      ExtendedBlogPostType.importantPinned =>
-        ImportantBlogPost(
-          data: postData,
-          ratingList: ratingList,
-          userShortInfo: authorInfo,
-          attachFiles: attachFiles,
-          comments: const [],
-          commentCount: commentCount,
-          isRead: _isImportantPostRead(postElement),
-          readCount: _getImportantPostReadCount(postElement),
-        ),
+      ExtendedBlogPostType.importantPinned => ImportantBlogPost(
+        data: postData,
+        ratingList: ratingList,
+        userShortInfo: authorInfo,
+        attachFiles: attachFiles,
+        comments: const [],
+        commentCount: commentCount,
+        isRead: _isImportantPostRead(postElement),
+        readCount: _getImportantPostReadCount(postElement),
+      ),
       _ => BlogPost(
-          data: postData,
-          ratingList: ratingList,
-          userShortInfo: authorInfo,
-          attachFiles: attachFiles,
-          comments: const [],
-          commentCount: commentCount,
-        ),
+        data: postData,
+        ratingList: ratingList,
+        userShortInfo: authorInfo,
+        attachFiles: attachFiles,
+        comments: const [],
+        commentCount: commentCount,
+      ),
     };
   }
 
@@ -118,11 +115,13 @@ class BlogPostHtmlParser {
     Element postElement,
     UserShortInfo authorInfo,
   ) {
-    final contentView = postElement
-            .attributes[FeedHtmlParserStrings.attrBxContentViewKeySigned] ??
+    final contentView =
+        postElement.attributes[FeedHtmlParserStrings
+            .attrBxContentViewKeySigned] ??
         FeedHtmlParserStrings.emptyString;
-    final postIdMatch =
-        RegularExpressions.blogPostIdRegExp.firstMatch(contentView);
+    final postIdMatch = RegularExpressions.blogPostIdRegExp.firstMatch(
+      contentView,
+    );
     final postId = int.tryParse(postIdMatch?.group(1) ?? '') ?? 0;
 
     final keySigned = BitrixHtmlParserUtils.extractKeySigned(
@@ -133,21 +132,24 @@ class BlogPostHtmlParser {
 
     final authorBitrixId = authorInfo.bitrixId ?? 0;
 
-    final title = postElement
+    final title =
+        postElement
             .querySelector(FeedHtmlParserStrings.feedPostPinnedTitle)
             ?.text
             .trim() ??
         FeedHtmlParserStrings.emptyString;
 
-    final postContent =
-        postElement.querySelector(FeedHtmlParserStrings.selPostContWrap);
+    final postContent = postElement.querySelector(
+      FeedHtmlParserStrings.selPostContWrap,
+    );
 
     String cleanedText = FeedHtmlParserStrings.emptyString;
     final uniqueUrls = <String>{};
 
     if (postContent != null) {
-      final textElement =
-          postContent.querySelector(FeedHtmlParserStrings.feedPostText);
+      final textElement = postContent.querySelector(
+        FeedHtmlParserStrings.feedPostText,
+      );
 
       if (textElement != null) {
         final result = extractImagesAndCleanHtmlElement(textElement);
@@ -171,7 +173,8 @@ class BlogPostHtmlParser {
           FeedHtmlParserStrings.emptyString,
     );
 
-    final numberOfComments = int.tryParse(
+    final numberOfComments =
+        int.tryParse(
           postElement
                   .querySelector(
                     FeedHtmlParserStrings.feedInformCommentsPinnedAll,
@@ -182,7 +185,8 @@ class BlogPostHtmlParser {
         ) ??
         0;
 
-    final numberOfViews = int.tryParse(
+    final numberOfViews =
+        int.tryParse(
           postElement
                   .querySelector(FeedHtmlParserStrings.feedContentViewCnt)
                   ?.text
@@ -193,8 +197,9 @@ class BlogPostHtmlParser {
 
     final livefeedId =
         postElement.attributes[FeedHtmlParserStrings.attrDataLivefeedId];
-    final pinnedId =
-        int.tryParse(livefeedId ?? FeedHtmlParserStrings.emptyString);
+    final pinnedId = int.tryParse(
+      livefeedId ?? FeedHtmlParserStrings.emptyString,
+    );
 
     final destinations = _extractDestinations(postElement);
     final files = BitrixHtmlParserUtils.extractAttachedFiles(
@@ -223,8 +228,9 @@ class BlogPostHtmlParser {
   }
 
   static bool _isImportantPostRead(Element postElement) {
-    final footer =
-        postElement.querySelector(FeedHtmlParserStrings.feedImpPostFooter);
+    final footer = postElement.querySelector(
+      FeedHtmlParserStrings.feedImpPostFooter,
+    );
     if (footer == null) {
       return false;
     }
@@ -233,14 +239,16 @@ class BlogPostHtmlParser {
   }
 
   static int _getImportantPostReadCount(Element postElement) {
-    final footer =
-        postElement.querySelector(FeedHtmlParserStrings.feedImpPostFooter);
+    final footer = postElement.querySelector(
+      FeedHtmlParserStrings.feedImpPostFooter,
+    );
     if (footer == null) {
       return 0;
     }
 
-    final countElement =
-        footer.querySelector(FeedHtmlParserStrings.blogPostReadersCountPrefix);
+    final countElement = footer.querySelector(
+      FeedHtmlParserStrings.blogPostReadersCountPrefix,
+    );
     if (countElement == null) {
       return 0;
     }
@@ -253,8 +261,9 @@ class BlogPostHtmlParser {
 
   static List<PostDestination>? _extractDestinations(Element postElement) {
     final destinations = <PostDestination>[];
-    final destinationElements = postElement
-        .querySelectorAll(FeedHtmlParserStrings.feedAddPostDestinationNew);
+    final destinationElements = postElement.querySelectorAll(
+      FeedHtmlParserStrings.feedAddPostDestinationNew,
+    );
 
     for (final dest in destinationElements) {
       final entityType =
@@ -278,20 +287,22 @@ class BlogPostHtmlParser {
   }
 
   static ExtendedBlogPostType _getPostType(Element postElement) {
-    final postBlock =
-        postElement.querySelector(FeedHtmlParserStrings.feedPostBlock);
+    final postBlock = postElement.querySelector(
+      FeedHtmlParserStrings.feedPostBlock,
+    );
     if (postBlock == null) {
       return ExtendedBlogPostType.regular;
     }
 
     final classes = postBlock.classes;
-    final isPinned = postBlock
-                .attributes[FeedHtmlParserStrings.attrDataLivefeedPostPinned] ==
+    final isPinned =
+        postBlock.attributes[FeedHtmlParserStrings
+                .attrDataLivefeedPostPinned] ==
             FeedHtmlParserStrings.yesValue ||
         classes.contains(FeedHtmlParserStrings.feedPostBlockPinnedClass);
     final isImportant =
         classes.contains(FeedHtmlParserStrings.feedImpPostClass) ||
-            classes.contains(FeedHtmlParserStrings.feedPostBlockImportantClass);
+        classes.contains(FeedHtmlParserStrings.feedPostBlockImportantClass);
 
     if (isImportant && isPinned) {
       return ExtendedBlogPostType.importantPinned;
@@ -307,13 +318,15 @@ class BlogPostHtmlParser {
   }
 
   static int _extractCommentCount(Element postElement) {
-    final commentsBlock = postElement
-        .querySelector(FeedHtmlParserStrings.feedInformCommentsPinned);
+    final commentsBlock = postElement.querySelector(
+      FeedHtmlParserStrings.feedInformCommentsPinned,
+    );
     if (commentsBlock == null) {
       return 0;
     }
-    final countElement = commentsBlock
-        .querySelector(FeedHtmlParserStrings.feedInformCommentsPinnedAll);
+    final countElement = commentsBlock.querySelector(
+      FeedHtmlParserStrings.feedInformCommentsPinnedAll,
+    );
     if (countElement == null || countElement.text.isEmpty) {
       return 0;
     }

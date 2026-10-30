@@ -101,8 +101,9 @@ class LoadingPageViewModel extends BaseViewModel {
       throw Exception('Invalid loading page data');
     }
 
-    _logoImage = await _logoDownloaderService
-        .downloadFile(_actualLoadingPage!.imagePath);
+    _logoImage = await _logoDownloaderService.downloadFile(
+      _actualLoadingPage!.imagePath,
+    );
 
     if (_logoImage == null) {
       throw Exception('Failed to download logo image');
@@ -169,8 +170,8 @@ class LoadingPageViewModel extends BaseViewModel {
 
   Future<void> _initUserData() async {
     if (await _appOpenTracker.isFirstTimeOpenOnVersion()) {
-      final profile =
-          await _gettingProfileOfCurrentUser.getProfileOfCurrentUser();
+      final profile = await _gettingProfileOfCurrentUser
+          .getProfileOfCurrentUser();
       unawaited(_userDataProvider.saveData(profile));
     }
 
@@ -186,8 +187,8 @@ class LoadingPageViewModel extends BaseViewModel {
   }
 
   Future<void> _saveLoadingPagesConfigFromGit() async {
-    final loadingPagesConfig =
-        await _loadingPageConfigService.getLoadingPages();
+    final loadingPagesConfig = await _loadingPageConfigService
+        .getLoadingPages();
 
     if (loadingPagesConfig == null) {
       return;
@@ -202,7 +203,4 @@ class LoadingPageViewModel extends BaseViewModel {
   }
 }
 
-enum _TypeScreen {
-  authScreen,
-  mainScreen,
-}
+enum _TypeScreen { authScreen, mainScreen }

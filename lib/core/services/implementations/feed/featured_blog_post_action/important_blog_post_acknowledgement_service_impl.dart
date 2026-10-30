@@ -34,9 +34,7 @@ class ImportantBlogPostAcknowledgementServiceImpl
         queryParameters: {
           AjaxActionStrings.actionKey: AjaxActionStrings.readImportantBlogPost,
         },
-        data: {
-          _DataKeys.postId: postId,
-        },
+        data: {_DataKeys.postId: postId},
         options: OptionsWithTimeoutAndExpectedTypeFactory.options(
           10,
           ResponseDataType.jsonMap,

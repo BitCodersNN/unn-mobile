@@ -43,23 +43,17 @@ class _HeightLimiterState extends State<HeightLimiter> {
       );
     }
     return ConstrainedBox(
-      constraints: BoxConstraints(
-        maxHeight: widget.maxHeight,
-      ),
+      constraints: BoxConstraints(maxHeight: widget.maxHeight),
       child: Stack(
         clipBehavior: Clip.hardEdge,
         children: [
-          Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            child: widget.child,
-          ),
+          Positioned(top: 0, left: 0, right: 0, child: widget.child),
           Positioned(
             bottom: 0,
             left: 0,
             width: _size.width,
-            child: widget.overflowIndicatorBuilder?.call(context) ??
+            child:
+                widget.overflowIndicatorBuilder?.call(context) ??
                 _buildOverflowIndicator(),
           ),
         ],
@@ -68,19 +62,19 @@ class _HeightLimiterState extends State<HeightLimiter> {
   }
 
   Widget _buildOverflowIndicator() => Container(
-        height: widget.fadeEffectHeight,
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.bottomCenter,
-            end: Alignment.topCenter,
-            colors: [
-              widget.baseColor.withAlpha(200),
-              widget.baseColor.withAlpha(0),
-            ],
-            tileMode: TileMode.clamp,
-          ),
-        ),
-      );
+    height: widget.fadeEffectHeight,
+    decoration: BoxDecoration(
+      gradient: LinearGradient(
+        begin: Alignment.bottomCenter,
+        end: Alignment.topCenter,
+        colors: [
+          widget.baseColor.withAlpha(200),
+          widget.baseColor.withAlpha(0),
+        ],
+        tileMode: TileMode.clamp,
+      ),
+    ),
+  );
 }
 
 class MeasureSizeRenderObject extends RenderProxyBox {

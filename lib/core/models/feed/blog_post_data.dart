@@ -68,13 +68,12 @@ class BlogPostData {
     final fullText = jsonMap[_BlogPostDataJsonKeys.fulltext]! as String;
     final result = extractImagesAndCleanHtmlString(fullText);
     return BlogPostData(
-      id: int.parse(
-        jsonMap[_BlogPostDataJsonKeys.id]! as String,
-      ),
+      id: int.parse(jsonMap[_BlogPostDataJsonKeys.id]! as String),
       blogId: null,
       authorBitrixId: int.parse(
         (jsonMap[_BlogPostDataJsonKeys.author]!
-            as JsonMap)[_BlogPostDataJsonKeys.id]! as String,
+                as JsonMap)[_BlogPostDataJsonKeys.id]!
+            as String,
       ),
       title: jsonMap[_BlogPostDataJsonKeys.title]! as String,
       detailText: result.cleanedText,
@@ -97,51 +96,52 @@ class BlogPostData {
       numberOfViews: jsonMap[_BlogPostDataJsonKeys.numberOfViews] as int?,
       destinations: jsonMap[_BlogPostDataJsonKeys.destinations] != null
           ? (jsonMap[_BlogPostDataJsonKeys.destinations]! as List<dynamic>)
-              .map((e) => PostDestination.fromJson(e as Map<String, dynamic>))
-              .toList()
+                .map((e) => PostDestination.fromJson(e as Map<String, dynamic>))
+                .toList()
           : null,
     );
   }
 
   JsonMap toJson() => {
-        _BlogPostDataJsonKeys.id: id.toString(),
-        _BlogPostDataJsonKeys.author: {
-          _BlogPostDataJsonKeys.id: authorBitrixId.toString(),
-        },
-        _BlogPostDataJsonKeys.title: title,
-        _BlogPostDataJsonKeys.fulltext:
-            restoreHtmlText(detailText, imageUrls ?? const []),
-        _BlogPostDataJsonKeys.time:
-            datePublish.format(DatePattern.ddmmyyyyhhmmss),
-        _BlogPostDataJsonKeys.commentsNum: numberOfComments.toString(),
-        _BlogPostDataJsonKeys.attach:
-            fileIds?.map((hash) => hash.toString()).toList(),
-        _BlogPostDataJsonKeys.pinnedId: pinnedId,
-        _BlogPostDataJsonKeys.keySigned: keySigned,
-        _BlogPostDataJsonKeys.destinations:
-            destinations?.map((destination) => destination.toJson()).toList(),
-      };
+    _BlogPostDataJsonKeys.id: id.toString(),
+    _BlogPostDataJsonKeys.author: {
+      _BlogPostDataJsonKeys.id: authorBitrixId.toString(),
+    },
+    _BlogPostDataJsonKeys.title: title,
+    _BlogPostDataJsonKeys.fulltext: restoreHtmlText(
+      detailText,
+      imageUrls ?? const [],
+    ),
+    _BlogPostDataJsonKeys.time: datePublish.format(DatePattern.ddmmyyyyhhmmss),
+    _BlogPostDataJsonKeys.commentsNum: numberOfComments.toString(),
+    _BlogPostDataJsonKeys.attach: fileIds
+        ?.map((hash) => hash.toString())
+        .toList(),
+    _BlogPostDataJsonKeys.pinnedId: pinnedId,
+    _BlogPostDataJsonKeys.keySigned: keySigned,
+    _BlogPostDataJsonKeys.destinations: destinations
+        ?.map((destination) => destination.toJson())
+        .toList(),
+  };
 
   factory BlogPostData.fromBitrixJson(JsonMap jsonMap) => BlogPostData(
-        id: int.parse(
-          jsonMap[_BlogPostDataBitrixJsonKeys.id]! as String,
-        ),
-        blogId: int.tryParse(
-          jsonMap[_BlogPostDataBitrixJsonKeys.blogId]! as String,
-        ),
-        authorBitrixId: int.parse(
-          jsonMap[_BlogPostDataBitrixJsonKeys.authorId]! as String,
-        ),
-        title: jsonMap[_BlogPostDataBitrixJsonKeys.title]! as String,
-        detailText: jsonMap[_BlogPostDataBitrixJsonKeys.detailText]! as String,
-        datePublish: DateTime.parse(
-          jsonMap[_BlogPostDataBitrixJsonKeys.datePublish]! as String,
-        ),
-        numberOfComments: int.parse(
-          jsonMap[_BlogPostDataBitrixJsonKeys.numComments]! as String,
-        ),
-        fileIds: (jsonMap[_BlogPostDataBitrixJsonKeys.files] as List<dynamic>?)
-            ?.map((element) => element as int)
-            .toList(),
-      );
+    id: int.parse(jsonMap[_BlogPostDataBitrixJsonKeys.id]! as String),
+    blogId: int.tryParse(
+      jsonMap[_BlogPostDataBitrixJsonKeys.blogId]! as String,
+    ),
+    authorBitrixId: int.parse(
+      jsonMap[_BlogPostDataBitrixJsonKeys.authorId]! as String,
+    ),
+    title: jsonMap[_BlogPostDataBitrixJsonKeys.title]! as String,
+    detailText: jsonMap[_BlogPostDataBitrixJsonKeys.detailText]! as String,
+    datePublish: DateTime.parse(
+      jsonMap[_BlogPostDataBitrixJsonKeys.datePublish]! as String,
+    ),
+    numberOfComments: int.parse(
+      jsonMap[_BlogPostDataBitrixJsonKeys.numComments]! as String,
+    ),
+    fileIds: (jsonMap[_BlogPostDataBitrixJsonKeys.files] as List<dynamic>?)
+        ?.map((element) => element as int)
+        .toList(),
+  );
 }

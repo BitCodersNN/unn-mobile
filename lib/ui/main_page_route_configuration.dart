@@ -62,8 +62,8 @@ class MainPageRouteConfiguration {
     }
     final index =
         uri.pathSegments[1] == MainPagePaths.more && uri.pathSegments.length > 2
-            ? 2
-            : 1;
+        ? 2
+        : 1;
     return Uri(
       pathSegments: [
         '',

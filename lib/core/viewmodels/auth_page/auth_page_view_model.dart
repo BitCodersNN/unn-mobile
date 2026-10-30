@@ -39,14 +39,12 @@ class AuthPageViewModel extends BaseViewModel {
 
     final shouldEnableDemo = user.startsWith(DemoModeConstants.demoUserPrefix);
 
-    final actualUserName =
-        shouldEnableDemo ? user.substring(demoPrefixLength) : user;
+    final actualUserName = shouldEnableDemo
+        ? user.substring(demoPrefixLength)
+        : user;
 
     try {
-      authResult = await _authorisationService.auth(
-        actualUserName,
-        password,
-      );
+      authResult = await _authorisationService.auth(actualUserName, password);
     } catch (error, stackTrace) {
       _loggerService.logError(error, stackTrace);
     }

@@ -29,9 +29,10 @@ void main() async {
     certificate.buffer.asUint8List(),
   );
 
-  await SystemChrome.setPreferredOrientations(
-    [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown],
-  );
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
 
   try {
     await Firebase.initializeApp(
@@ -49,15 +50,17 @@ void main() async {
 
   if (!kDebugMode) {
     FlutterError.onError = (errorDetails) {
-      Injector.appInstance
-          .get<LoggerService>()
-          .handleFlutterFatalError(errorDetails);
+      Injector.appInstance.get<LoggerService>().handleFlutterFatalError(
+        errorDetails,
+      );
     };
 
     PlatformDispatcher.instance.onError = (error, stack) {
-      Injector.appInstance
-          .get<LoggerService>()
-          .logError(error, stack, fatal: true);
+      Injector.appInstance.get<LoggerService>().logError(
+        error,
+        stack,
+        fatal: true,
+      );
       return true;
     };
   }
@@ -65,8 +68,8 @@ void main() async {
   await initializeDateFormatting('ru_RU', null);
   runApp(
     UnnMobile(
-      routesViewModelsFactory:
-          Injector.appInstance.get<MainPageRoutesViewModelsFactory>(),
+      routesViewModelsFactory: Injector.appInstance
+          .get<MainPageRoutesViewModelsFactory>(),
       currentUserStorage: Injector.appInstance.get<CurrentUserSyncStorage>(),
       scheduleWidgetPlatform:
           Injector.appInstance.get<ScheduleWidgetPlatform>(),

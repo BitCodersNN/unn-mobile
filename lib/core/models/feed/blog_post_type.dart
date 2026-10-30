@@ -7,18 +7,9 @@ const _blogPostTypeToString = {
   BlogPostType.important: 'important',
 };
 
-enum BlogPostType {
-  regular,
-  pinned,
-  important,
-}
+enum BlogPostType { regular, pinned, important }
 
-enum ExtendedBlogPostType {
-  regular,
-  pinned,
-  important,
-  importantPinned,
-}
+enum ExtendedBlogPostType { regular, pinned, important, importantPinned }
 
 extension BlogPostTypeExtension on BlogPostType {
   String get stringValue => _blogPostTypeToString[this]!;

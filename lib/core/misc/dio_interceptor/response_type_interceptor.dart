@@ -30,8 +30,9 @@ final Map<ResponseDataType, Function(dynamic)> _typeCheckers = {
 class ResponseTypeInterceptor extends Interceptor {
   @override
   void onResponse(Response response, ResponseInterceptorHandler handler) {
-    final expectedType = response.requestOptions
-        .extra[ResponseTypeInterceptorKey.expectedType] as ResponseDataType?;
+    final expectedType =
+        response.requestOptions.extra[ResponseTypeInterceptorKey.expectedType]
+            as ResponseDataType?;
     final checker = _typeCheckers[expectedType];
 
     if (checker == null) {

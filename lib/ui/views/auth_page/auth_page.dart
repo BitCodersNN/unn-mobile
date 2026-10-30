@@ -18,10 +18,7 @@ import 'package:unn_mobile/ui/widgets/dialogs/changelog_dialog.dart';
 import 'package:unn_mobile/ui/widgets/menu_button.dart';
 import 'package:unn_mobile/ui/widgets/wide_button.dart';
 
-enum _InputType {
-  login,
-  password,
-}
+enum _InputType { login, password }
 
 class _MenuItemValues {
   static const settings = 'settings';
@@ -107,104 +104,94 @@ class _AuthPageState extends State<AuthPage> {
 
   void _handleLoginFocusChanged() {
     if (_loginFocusNode.hasFocus) {
-      _revealField(
-        _loginFieldKey,
-        _loginFocusNode,
-        alignment: 0,
-      );
+      _revealField(_loginFieldKey, _loginFocusNode, alignment: 0);
     }
   }
 
   void _handlePasswordFocusChanged() {
     if (_passwordFocusNode.hasFocus) {
-      _revealField(
-        _passwordFieldKey,
-        _passwordFocusNode,
-        alignment: 1,
-      );
+      _revealField(_passwordFieldKey, _passwordFocusNode, alignment: 1);
     }
   }
 
   @override
   Widget build(BuildContext context) => BaseView<AuthPageViewModel>(
-        builder: (context, viewModel, child) {
-          final theme = Theme.of(context);
-          final isKeyboardVisible = MediaQuery.viewInsetsOf(context).bottom > 0;
+    builder: (context, viewModel, child) {
+      final theme = Theme.of(context);
+      final isKeyboardVisible = MediaQuery.viewInsetsOf(context).bottom > 0;
 
-          return Scaffold(
-            backgroundColor: theme.colorScheme.surfaceContainerLowest,
-            appBar: AppBar(
-              titleTextStyle: TextStyle(
-                fontSize: _titleFontSize,
-                height: _titleHeightFactor,
-                fontWeight: FontWeight.bold,
-                color: theme.colorScheme.primary,
-              ),
-              centerTitle: true,
-              title: const Text(
-                _title,
-              ),
-              actions: [
-                MenuButton(
-                  enabled: true,
-                  items: [
-                    const SideMenuItem(
-                      title: 'Настройки',
-                      value: _MenuItemValues.settings,
-                    ),
-                    const SideMenuItem(
-                      title: 'Поддержать',
-                      value: _MenuItemValues.support,
-                    ),
-                    const SideMenuItem(
-                      title: 'О нас',
-                      value: _MenuItemValues.about,
-                    ),
-                  ],
-                  onSelected: (item) {
-                    switch (item) {
-                      case _MenuItemValues.settings:
-                        GoRouter.of(context).go('$authPageRoute/$settingsPath');
-                        break;
-                      case _MenuItemValues.about:
-                        GoRouter.of(context).go('$authPageRoute/$aboutPath');
-                        break;
-                      case _MenuItemValues.support:
-                        GoRouter.of(context).go('$authPageRoute/$supportPath');
-                        break;
-                    }
-                  },
+      return Scaffold(
+        backgroundColor: theme.colorScheme.surfaceContainerLowest,
+        appBar: AppBar(
+          titleTextStyle: TextStyle(
+            fontSize: _titleFontSize,
+            height: _titleHeightFactor,
+            fontWeight: FontWeight.bold,
+            color: theme.colorScheme.primary,
+          ),
+          centerTitle: true,
+          title: const Text(_title),
+          actions: [
+            MenuButton(
+              enabled: true,
+              items: [
+                const SideMenuItem(
+                  title: 'Настройки',
+                  value: _MenuItemValues.settings,
+                ),
+                const SideMenuItem(
+                  title: 'Поддержать',
+                  value: _MenuItemValues.support,
+                ),
+                const SideMenuItem(
+                  title: 'О нас',
+                  value: _MenuItemValues.about,
                 ),
               ],
+              onSelected: (item) {
+                switch (item) {
+                  case _MenuItemValues.settings:
+                    GoRouter.of(context).go('$authPageRoute/$settingsPath');
+                    break;
+                  case _MenuItemValues.about:
+                    GoRouter.of(context).go('$authPageRoute/$aboutPath');
+                    break;
+                  case _MenuItemValues.support:
+                    GoRouter.of(context).go('$authPageRoute/$supportPath');
+                    break;
+                }
+              },
             ),
-            body: SafeArea(
-              bottom: false,
-              child: LayoutBuilder(
-                builder: (context, constraints) => Column(
-                  children: [
-                    const SizedBox(height: _logoTopPadding),
-                    AnimatedContainer(
-                      duration: _resizeDuration,
-                      curve: _resizeCurve,
-                      height: isKeyboardVisible
-                          ? 0
-                          : _logoHeight(constraints.maxHeight),
-                      child: AspectRatio(
-                        aspectRatio: _logoAspectRatio,
-                        child: SvgPicture.asset(
-                          _logoAssetPath,
-                          fit: BoxFit.contain,
-                        ),
-                      ),
+          ],
+        ),
+        body: SafeArea(
+          bottom: false,
+          child: LayoutBuilder(
+            builder: (context, constraints) => Column(
+              children: [
+                const SizedBox(height: _logoTopPadding),
+                AnimatedContainer(
+                  duration: _resizeDuration,
+                  curve: _resizeCurve,
+                  height: isKeyboardVisible
+                      ? 0
+                      : _logoHeight(constraints.maxHeight),
+                  child: AspectRatio(
+                    aspectRatio: _logoAspectRatio,
+                    child: SvgPicture.asset(
+                      _logoAssetPath,
+                      fit: BoxFit.contain,
                     ),
-                    Expanded(child: _formCard(context, viewModel)),
-                  ],
+                  ),
                 ),
-              ),
+                Expanded(child: _formCard(context, viewModel)),
+              ],
             ),
-          );
-        },
+          ),
+        ),
       );
+    },
+  );
 
   Widget _formCard(BuildContext context, AuthPageViewModel viewModel) {
     final theme = Theme.of(context);
@@ -236,10 +223,7 @@ class _AuthPageState extends State<AuthPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            AuthErrorText(
-              text: authError,
-              boldPrefix: 'Ошибка: ',
-            ),
+            AuthErrorText(text: authError, boldPrefix: 'Ошибка: '),
             const SizedBox(height: _errorToFieldPadding),
             AutofillGroup(
               child: Column(
@@ -259,28 +243,28 @@ class _AuthPageState extends State<AuthPage> {
   }
 
   Widget _loginField() => AuthTextField(
-        key: _loginFieldKey,
-        controller: _loginTextController,
-        focusNode: _loginFocusNode,
-        labelText: 'Логин',
-        errorText: _validateInputOrElseReturnError(_InputType.login),
-        obscured: false,
-        autofillHints: const [AutofillHints.username],
-        textInputAction: TextInputAction.next,
-        onSubmitted: (value) => _passwordFocusNode.requestFocus(),
-      );
+    key: _loginFieldKey,
+    controller: _loginTextController,
+    focusNode: _loginFocusNode,
+    labelText: 'Логин',
+    errorText: _validateInputOrElseReturnError(_InputType.login),
+    obscured: false,
+    autofillHints: const [AutofillHints.username],
+    textInputAction: TextInputAction.next,
+    onSubmitted: (value) => _passwordFocusNode.requestFocus(),
+  );
 
   Widget _passwordField(AuthPageViewModel viewModel) => AuthTextField(
-        key: _passwordFieldKey,
-        controller: _passwordTextController,
-        focusNode: _passwordFocusNode,
-        labelText: 'Пароль',
-        errorText: _validateInputOrElseReturnError(_InputType.password),
-        obscured: true,
-        autofillHints: const [AutofillHints.password],
-        textInputAction: TextInputAction.done,
-        onSubmitted: (value) => _submit(viewModel),
-      );
+    key: _passwordFieldKey,
+    controller: _passwordTextController,
+    focusNode: _passwordFocusNode,
+    labelText: 'Пароль',
+    errorText: _validateInputOrElseReturnError(_InputType.password),
+    obscured: true,
+    autofillHints: const [AutofillHints.password],
+    textInputAction: TextInputAction.done,
+    onSubmitted: (value) => _submit(viewModel),
+  );
 
   Widget _loginButton(BuildContext context, AuthPageViewModel viewModel) {
     final theme = Theme.of(context);

@@ -21,15 +21,17 @@ class TabBarItemContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final layout = TabBarLabelLayout.maybeOf(context);
-    final style = (layout?.style ??
-            CupertinoTheme.of(context).textTheme.tabLabelTextStyle)
-        .merge(labelStyle)
-        .copyWith(
-          fontSize: layout?.style.fontSize,
-          color: labelStyle?.color ??
-              color ??
-              DefaultTextStyle.of(context).style.color,
-        );
+    final style =
+        (layout?.style ??
+                CupertinoTheme.of(context).textTheme.tabLabelTextStyle)
+            .merge(labelStyle)
+            .copyWith(
+              fontSize: layout?.style.fontSize,
+              color:
+                  labelStyle?.color ??
+                  color ??
+                  DefaultTextStyle.of(context).style.color,
+            );
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,

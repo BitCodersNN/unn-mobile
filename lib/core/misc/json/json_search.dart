@@ -29,11 +29,7 @@ T? findFirstNonNullNotesDeep<T>(dynamic data, String key) {
   return null;
 }
 
-void collectFirstValues(
-  dynamic data,
-  Set<String> keys,
-  JsonMap results,
-) {
+void collectFirstValues(dynamic data, Set<String> keys, JsonMap results) {
   if (data is! JsonMap && data is! List) {
     return;
   }

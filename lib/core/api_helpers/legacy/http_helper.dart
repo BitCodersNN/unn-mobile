@@ -3,6 +3,7 @@
 
 import 'dart:convert';
 import 'dart:io';
+
 import 'package:unn_mobile/core/constants/api/host.dart';
 
 class HttpRequestSender {
@@ -16,27 +17,20 @@ class HttpRequestSender {
   final Map<String, String> _cookies;
 
   HttpRequestSender({
-    required String path,
-    bool useSSL = true,
-    String host = Host.unn,
-    Map<String, dynamic> queryParams = const {},
-    Map<String, String> headers = const {},
-    Map<String, String> cookies = const {},
-  })  : _cookies = cookies,
-        _headers = headers,
-        _useSSL = useSSL,
-        _queryParams = queryParams,
-        _host = host,
-        _path = path;
+    required this._path,
+    this._useSSL = true,
+    this._host = Host.unn,
+    this._queryParams = const {},
+    this._headers = const {},
+    this._cookies = const {},
+  });
 
   /// Конвертирует http ответ в строку
   ///
   /// [response]: результат запроса
   ///
   /// Возращает строку
-  static Future<String> responseToStringBody(
-    HttpClientResponse response,
-  ) =>
+  static Future<String> responseToStringBody(HttpClientResponse response) =>
       response.transform(utf8.decoder).join();
 
   /// Отправляет post запрос на сервер unn-portal
@@ -52,8 +46,10 @@ class HttpRequestSender {
     Map<String, dynamic> body, {
     int timeoutSeconds = maxTimeout,
   }) async {
-    final request =
-        await _prepareHttpClientRequest(_HttpMethod.post, timeoutSeconds);
+    final request = await _prepareHttpClientRequest(
+      _HttpMethod.post,
+      timeoutSeconds,
+    );
 
     request.headers.add('Content-Type', 'application/x-www-form-urlencoded');
 
@@ -78,8 +74,10 @@ class HttpRequestSender {
   ///
   /// Возращает результат запроса
   Future<HttpClientResponse> get({int timeoutSeconds = maxTimeout}) async {
-    final request =
-        await _prepareHttpClientRequest(_HttpMethod.get, timeoutSeconds);
+    final request = await _prepareHttpClientRequest(
+      _HttpMethod.get,
+      timeoutSeconds,
+    );
 
     return request.close();
   }
@@ -89,7 +87,9 @@ class HttpRequestSender {
     int timeoutSeconds,
   ) async {
     final httpClient = HttpClient();
-    final request = await httpClient.openUrl(method.name, _createURI()).timeout(
+    final request = await httpClient
+        .openUrl(method.name, _createURI())
+        .timeout(
           Duration(seconds: timeoutSeconds),
           onTimeout: () => throw TimeoutException('Open url timed out'),
         );
@@ -105,8 +105,9 @@ class HttpRequestSender {
     return request;
   }
 
-  Uri _createURI() => Uri.parse("${_useSSL ? "https" : "http"}://$_host/$_path")
-      .replace(queryParameters: _queryParams);
+  Uri _createURI() =>
+      Uri.parse("${_useSSL ? "https" : "http"}://$_host/$_path")
+          .replace(queryParameters: _queryParams);
 }
 
 extension on HttpClientRequest {
@@ -117,10 +118,7 @@ extension on HttpClientRequest {
       );
 }
 
-enum _HttpMethod {
-  get,
-  post,
-}
+enum _HttpMethod { get, post }
 
 class RequestException implements Exception {
   final String cause;

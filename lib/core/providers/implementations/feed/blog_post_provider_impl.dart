@@ -42,9 +42,7 @@ class BlogPostProviderImpl implements BlogPostProvider {
   }
 
   @override
-  Future<bool> isContained() => _storage.containsKey(
-        key: _key,
-      );
+  Future<bool> isContained() => _storage.containsKey(key: _key);
 
   @override
   Future<void> saveData(List<BlogPost>? data) async {

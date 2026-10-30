@@ -57,18 +57,12 @@ class SettingsScreenViewModel extends BaseViewModel {
   }
 
   Future<void> clearCache() async {
-    await Future.wait([
-      DefaultCacheManager().emptyCache(),
-      clearCacheFolder(),
-    ]);
+    await Future.wait([DefaultCacheManager().emptyCache(), clearCacheFolder()]);
   }
 
   Future<void> clearEverything() async {
     await _scheduleWidget.clear();
-    await Future.wait([
-      _storageService.clear(),
-      clearCache(),
-    ]);
+    await Future.wait([_storageService.clear(), clearCache()]);
   }
 
   Future<void> logout() async {

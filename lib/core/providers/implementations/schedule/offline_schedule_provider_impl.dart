@@ -25,9 +25,7 @@ class OfflineScheduleProviderImpl implements OfflineScheduleProvider {
     }
 
     final JsonMap jsonMap = jsonDecode(
-      (await _storage.read(
-        key: _OfflineScheduleProviderKeys.scheduleKey,
-      ))!,
+      (await _storage.read(key: _OfflineScheduleProviderKeys.scheduleKey))!,
     );
 
     return jsonMap.map(
@@ -54,12 +52,10 @@ class OfflineScheduleProviderImpl implements OfflineScheduleProvider {
   }
 
   @override
-  Future<bool> isContained() => _storage.containsKey(
-        key: _OfflineScheduleProviderKeys.scheduleKey,
-      );
+  Future<bool> isContained() =>
+      _storage.containsKey(key: _OfflineScheduleProviderKeys.scheduleKey);
 
   @override
-  Future<void> removeData() => _storage.remove(
-        key: _OfflineScheduleProviderKeys.scheduleKey,
-      );
+  Future<void> removeData() =>
+      _storage.remove(key: _OfflineScheduleProviderKeys.scheduleKey);
 }

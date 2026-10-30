@@ -40,17 +40,16 @@ class MainPageRouteData {
     List<MainPageRouteData>? subroutes,
     bool? onlineOnly,
     ValueChanged<BuildContext>? onReselect,
-  }) =>
-      MainPageRouteData(
-        selectedIcon ?? this.selectedIcon,
-        unselectedIcon ?? this.unselectedIcon,
-        pageTitle ?? this.pageTitle,
-        pagePath ?? this.pagePath,
-        onlineOnly: onlineOnly ?? this.onlineOnly,
-        onReselect: onReselect ?? this.onReselect,
-        subroutes: subroutes ?? this.subroutes,
-        isDisabled: isDisabled ?? this.isDisabled,
-        userTypes: userTypes ?? this.userTypes,
-        builder: builder ?? this.builder,
-      );
+  }) => MainPageRouteData(
+    selectedIcon ?? this.selectedIcon,
+    unselectedIcon ?? this.unselectedIcon,
+    pageTitle ?? this.pageTitle,
+    pagePath ?? this.pagePath,
+    onlineOnly: onlineOnly ?? this.onlineOnly,
+    onReselect: onReselect ?? this.onReselect,
+    subroutes: subroutes ?? this.subroutes,
+    isDisabled: isDisabled ?? this.isDisabled,
+    userTypes: userTypes ?? this.userTypes,
+    builder: builder ?? this.builder,
+  );
 }

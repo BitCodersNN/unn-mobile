@@ -1,16 +1,20 @@
 package ru.bitcodersnn.unnstudenthub
 
+import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts.PickMultipleVisualMedia
+import androidx.core.content.FileProvider
+import androidx.core.net.toUri
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodChannel
 import ru.bitcodersnn.unnstudenthub.schedulewidget.ScheduleWidgetBridge
 import kotlinx.coroutines.*
-import androidx.core.net.toUri
-import androidx.activity.result.contract.ActivityResultContracts.PickMultipleVisualMedia
-import androidx.activity.result.PickVisualMediaRequest
+import org.json.JSONObject
+import java.io.File
 
 const val FILE_PICKER_REQUEST = 1
 
@@ -24,12 +28,22 @@ const val ARGUMENT_ERROR = "ARGUMENT_ERROR"
 
 const val EXECUTION_ERROR = "EXECUTION_ERROR"
 
+data class OpenResult(val type: Int, val message: String)
+
+
 class MainActivity : FlutterActivity() {
     private var scheduleWidgetBridge: ScheduleWidgetBridge? = null
     class Container<T>(
         obj: T?,
     ) {
         val data: T? = obj
+    }
+
+    fun serializeOpenResult(input : OpenResult) : String {
+        val json = JSONObject();
+        json.put("type", input.type)
+        json.put("message", input.message)
+        return json.toString()
     }
 
     companion object {
@@ -77,13 +91,22 @@ class MainActivity : FlutterActivity() {
                         return@methodCallback
                     }
 
-                    val uri = uriString.toUri()
+                    val uri : Uri;
+
+                    if (uriString.startsWith("/")) {
+                        val file = File(uriString)
+                        uri  = FileProvider.getUriForFile(context, "ru.bitcodersnn.studenthub.fileprovider", file)
+                    }
+                    else {
+                        uri = uriString.toUri()
+                    }
 
                     try {
-                        viewFileFromUri(uri, mimeType)
-                        result.success(0)
+                        viewFileFromUri(uri, mimeType, result)
+                    } catch (e: ActivityNotFoundException) {
+                        result.success(serializeOpenResult(OpenResult(1, "Could not find the app to open")))
                     } catch (e: Exception) {
-                        result.error(EXECUTION_ERROR, "Exception happened: $e", null)
+                        result.success(serializeOpenResult(OpenResult(4, "{Exception happened: \"$e\"}")))
                     }
                 }
                 "pickUploadFiles" -> {
@@ -203,10 +226,12 @@ class MainActivity : FlutterActivity() {
     private fun viewFileFromUri(
         uri: Uri,
         mimeType: String,
+        result: MethodChannel.Result
     ) {
         val fileIntent = Intent(Intent.ACTION_VIEW)
         fileIntent.setDataAndType(uri, mimeType)
         fileIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         startActivity(fileIntent)
+        result.success(serializeOpenResult(OpenResult(0, "done")))
     }
 }
