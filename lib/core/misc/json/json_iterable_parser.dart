@@ -95,7 +95,7 @@ bool _validateItemType<T>(dynamic item, LoggerService loggerService) {
     loggerService.logError(
       FormatException('Invalid JSON item type: ${item.runtimeType}'),
       StackTrace.current,
-      information: [if (item != null) item],
+      information: [?item],
     );
     return false;
   }

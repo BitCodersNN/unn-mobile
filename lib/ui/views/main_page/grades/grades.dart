@@ -143,7 +143,7 @@ class _GradesScreenViewState extends State<GradesScreenView> {
                                               row.date == null
                                                   ? '—'
                                                   : DateFormat.yMd('ru_RU')
-                                                      .format(row.date!),
+                                                        .format(row.date!),
                                               textAlign: TextAlign.center,
                                             ),
                                           ),

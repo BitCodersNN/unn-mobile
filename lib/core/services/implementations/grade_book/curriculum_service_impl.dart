@@ -14,10 +14,7 @@ class CurriculumServiceImpl implements CurriculumService {
   final LoggerService _loggerService;
   final ApiHelper _apiHelper;
 
-  CurriculumServiceImpl(
-    this._loggerService,
-    this._apiHelper,
-  );
+  CurriculumServiceImpl(this._loggerService, this._apiHelper);
 
   @override
   Future<Map<int, CurriculumSemester>?> getCurriculum() async {
@@ -33,8 +30,10 @@ class CurriculumServiceImpl implements CurriculumService {
     }
 
     try {
-      return Curriculum.fromJson(response.data, loggerService: _loggerService)
-          .semesters;
+      return Curriculum.fromJson(
+        response.data,
+        loggerService: _loggerService,
+      ).semesters;
     } catch (error, stackTrace) {
       _loggerService.logError(error, stackTrace);
       return null;
