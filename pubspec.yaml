@@ -2,7 +2,7 @@ name: unn_mobile
 description: A mobile application for UNN Portal website
 publish_to: 'none'
 
-version: 0.7.0+441
+version: 0.7.0+444
 
 environment:
   sdk: '>=3.13.0 <4.0.0'
