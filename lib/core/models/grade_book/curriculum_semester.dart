@@ -38,8 +38,8 @@ class CurriculumSemester {
   CurriculumSemester({
     required Iterable<MarkBySubject> mandatorySubjects,
     required Iterable<MarkBySubject> electiveSubjects,
-  })  : mandatorySubjects = List.unmodifiable(mandatorySubjects),
-        electiveSubjects = List.unmodifiable(electiveSubjects);
+  }) : mandatorySubjects = List.unmodifiable(mandatorySubjects),
+       electiveSubjects = List.unmodifiable(electiveSubjects);
 
   factory CurriculumSemester.fromJson(
     JsonMap json, {
@@ -90,7 +90,7 @@ class CurriculumSemester {
       final subject = _parseSubject(section, terms);
       final isElective =
           ancestors.any((node) => _enabled(node[_JsonKeys.elective])) ||
-              terms.any((term) => _enabled(term[_JsonKeys.elective]));
+          terms.any((term) => _enabled(term[_JsonKeys.elective]));
       (isElective ? electiveSubjects : mandatorySubjects).add(subject);
     }
     return CurriculumSemester(
@@ -100,11 +100,13 @@ class CurriculumSemester {
   }
 
   JsonMap toJson() => {
-        _JsonKeys.mandatorySubjects:
-            mandatorySubjects.map((subject) => subject.toJson()).toList(),
-        _JsonKeys.electiveSubjects:
-            electiveSubjects.map((subject) => subject.toJson()).toList(),
-      };
+    _JsonKeys.mandatorySubjects: mandatorySubjects
+        .map((subject) => subject.toJson())
+        .toList(),
+    _JsonKeys.electiveSubjects: electiveSubjects
+        .map((subject) => subject.toJson())
+        .toList(),
+  };
 
   static MarkBySubject _parseSubject(JsonMap section, List<JsonMap> terms) =>
       MarkBySubject(

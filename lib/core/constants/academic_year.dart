@@ -6,7 +6,8 @@ import 'package:flutter/material.dart';
 class AcademicYear {
   static int semesterForCourse(int course, DateTime date) {
     assert(course > 0);
-    final isFirstSemester = date.isBefore(secondSemester(date.year).start) ||
+    final isFirstSemester =
+        date.isBefore(secondSemester(date.year).start) ||
         !date.isBefore(firstSemester(date.year).start);
     return course * 2 - (isFirstSemester ? 1 : 0);
   }

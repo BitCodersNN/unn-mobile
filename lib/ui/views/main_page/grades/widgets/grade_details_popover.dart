@@ -20,7 +20,8 @@ class GradeDetailsPopover extends StatefulWidget {
     Object?,
     GradeDetailsCallback,
     GradeDetailsDismiss,
-  ) builder;
+  )
+  builder;
 
   final bool openBelow;
 
@@ -83,10 +84,12 @@ class _GradeDetailsPopoverState extends State<GradeDetailsPopover>
       await _closeDetails();
       return;
     }
-    final overlay = Navigator.of(context, rootNavigator: true)
-        .overlay!
-        .context
-        .findRenderObject()! as RenderBox;
+    final overlay =
+        Navigator.of(
+              context,
+              rootNavigator: true,
+            ).overlay!.context.findRenderObject()!
+            as RenderBox;
     final scrollable = Scrollable.maybeOf(context);
     final viewport = scrollable?.context.findRenderObject();
     final source = context.findRenderObject()! as RenderBox;
@@ -94,7 +97,7 @@ class _GradeDetailsPopoverState extends State<GradeDetailsPopover>
         overlay.globalToLocal(source.localToGlobal(Offset.zero)) & source.size;
     final viewportBounds = viewport is RenderBox
         ? overlay.globalToLocal(viewport.localToGlobal(Offset.zero)) &
-            viewport.size
+              viewport.size
         : null;
     if (widget.openBelow &&
         scrollable != null &&
@@ -165,8 +168,9 @@ class _GradeDetailsPopoverState extends State<GradeDetailsPopover>
           child: TapRegion(
             groupId: _tapRegionGroup,
             child: FadeTransition(
-              opacity:
-                  _animation.drive(CurveTween(curve: Curves.easeInOutCubic)),
+              opacity: _animation.drive(
+                CurveTween(curve: Curves.easeInOutCubic),
+              ),
               child: Material(
                 elevation: 4,
                 shadowColor: Colors.black.withValues(alpha: 0.2),
@@ -187,16 +191,15 @@ class _GradeDetailsPopoverState extends State<GradeDetailsPopover>
 
   @override
   Widget build(BuildContext context) => OverlayPortal(
-        overlayLocation: OverlayChildLocation.rootOverlay,
-        controller: _portal,
-        overlayChildBuilder: _buildDetails,
-        child: TapRegion(
-          groupId: _tapRegionGroup,
-          onTapOutside: (_) => _closeDetails(),
-          child:
-              widget.builder(context, _selected, _showDetails, _closeDetails),
-        ),
-      );
+    overlayLocation: OverlayChildLocation.rootOverlay,
+    controller: _portal,
+    overlayChildBuilder: _buildDetails,
+    child: TapRegion(
+      groupId: _tapRegionGroup,
+      onTapOutside: (_) => _closeDetails(),
+      child: widget.builder(context, _selected, _showDetails, _closeDetails),
+    ),
+  );
 }
 
 class _GradeDetailsLayout extends SingleChildLayoutDelegate {

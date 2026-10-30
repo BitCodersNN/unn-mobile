@@ -28,8 +28,10 @@ class CurriculumSemesterPage extends StatefulWidget {
 }
 
 class _CurriculumSemesterPageState extends State<CurriculumSemesterPage> {
-  final AutoScrollController _scroll =
-      AutoScrollController(axis: Axis.vertical, suggestedRowHeight: 100);
+  final AutoScrollController _scroll = AutoScrollController(
+    axis: Axis.vertical,
+    suggestedRowHeight: 100,
+  );
 
   Future<void> _scrollToSubject(MarkBySubject subject) async {
     final subjects = [
@@ -55,59 +57,59 @@ class _CurriculumSemesterPageState extends State<CurriculumSemesterPage> {
 
   @override
   Widget build(BuildContext context) => RefreshIndicator.adaptive(
-        onRefresh: widget.onRefresh,
-        child: CustomScrollView(
-          key: PageStorageKey('curriculum-semester-${widget.number}'),
-          controller: _scroll,
-          physics: const AlwaysScrollableScrollPhysics(),
-          slivers: [
-            if (widget.summary != null)
-              SliverPadding(
-                padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-                sliver: SliverToBoxAdapter(
-                  child: AutoScrollTag(
-                    key: ValueKey('curriculum-summary-${widget.number}'),
-                    controller: _scroll,
-                    index: 0,
-                    child: GradeSemesterSummary(
-                      model: widget.summary!,
-                      onSubjectSelected: _scrollToSubject,
-                    ),
-                  ),
+    onRefresh: widget.onRefresh,
+    child: CustomScrollView(
+      key: PageStorageKey('curriculum-semester-${widget.number}'),
+      controller: _scroll,
+      physics: const AlwaysScrollableScrollPhysics(),
+      slivers: [
+        if (widget.summary != null)
+          SliverPadding(
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+            sliver: SliverToBoxAdapter(
+              child: AutoScrollTag(
+                key: ValueKey('curriculum-summary-${widget.number}'),
+                controller: _scroll,
+                index: 0,
+                child: GradeSemesterSummary(
+                  model: widget.summary!,
+                  onSubjectSelected: _scrollToSubject,
                 ),
               ),
-            if (widget.curriculum.mandatorySubjects.isEmpty &&
-                widget.curriculum.electiveSubjects.isEmpty)
-              const SliverFillRemaining(
-                hasScrollBody: false,
-                child: Center(
-                  child: Padding(
-                    padding: EdgeInsets.all(24),
-                    child: Text(
-                      'В этом семестре пока нет дисциплин учебного плана',
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
+            ),
+          ),
+        if (widget.curriculum.mandatorySubjects.isEmpty &&
+            widget.curriculum.electiveSubjects.isEmpty)
+          const SliverFillRemaining(
+            hasScrollBody: false,
+            child: Center(
+              child: Padding(
+                padding: EdgeInsets.all(24),
+                child: Text(
+                  'В этом семестре пока нет дисциплин учебного плана',
+                  textAlign: TextAlign.center,
                 ),
               ),
-            if (widget.curriculum.mandatorySubjects.isNotEmpty)
-              _CurriculumGroup(
-                title: 'ОБЯЗАТЕЛЬНАЯ ЧАСТЬ',
-                controller: _scroll,
-                startIndex: 1,
-                subjects: widget.curriculum.mandatorySubjects,
-              ),
-            if (widget.curriculum.electiveSubjects.isNotEmpty)
-              _CurriculumGroup(
-                title: 'ДИСЦИПЛИНЫ ПО ВЫБОРУ',
-                controller: _scroll,
-                startIndex: widget.curriculum.mandatorySubjects.length + 1,
-                subjects: widget.curriculum.electiveSubjects,
-              ),
-            const SliverToBoxAdapter(child: SizedBox(height: 24)),
-          ],
-        ),
-      );
+            ),
+          ),
+        if (widget.curriculum.mandatorySubjects.isNotEmpty)
+          _CurriculumGroup(
+            title: 'ОБЯЗАТЕЛЬНАЯ ЧАСТЬ',
+            controller: _scroll,
+            startIndex: 1,
+            subjects: widget.curriculum.mandatorySubjects,
+          ),
+        if (widget.curriculum.electiveSubjects.isNotEmpty)
+          _CurriculumGroup(
+            title: 'ДИСЦИПЛИНЫ ПО ВЫБОРУ',
+            controller: _scroll,
+            startIndex: widget.curriculum.mandatorySubjects.length + 1,
+            subjects: widget.curriculum.electiveSubjects,
+          ),
+        const SliverToBoxAdapter(child: SizedBox(height: 24)),
+      ],
+    ),
+  );
 }
 
 class _CurriculumGroup extends StatelessWidget {
@@ -125,34 +127,34 @@ class _CurriculumGroup extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => SliverMainAxisGroup(
-        slivers: [
-          SliverToBoxAdapter(
+    slivers: [
+      SliverToBoxAdapter(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 24, 20, 12),
+          child: Text(
+            title,
+            style: Theme.of(context).textTheme.labelMedium?.copyWith(
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+              letterSpacing: 1,
+            ),
+          ),
+        ),
+      ),
+      SliverPadding(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        sliver: SliverList.builder(
+          itemCount: subjects.length,
+          itemBuilder: (context, index) => AutoScrollTag(
+            key: ObjectKey(subjects[index]),
+            controller: controller,
+            index: startIndex + index,
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(20, 24, 20, 12),
-              child: Text(
-                title,
-                style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                      letterSpacing: 1,
-                    ),
-              ),
+              padding: const EdgeInsets.only(bottom: 10),
+              child: GradeSubjectCard(mark: subjects[index]),
             ),
           ),
-          SliverPadding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            sliver: SliverList.builder(
-              itemCount: subjects.length,
-              itemBuilder: (context, index) => AutoScrollTag(
-                key: ObjectKey(subjects[index]),
-                controller: controller,
-                index: startIndex + index,
-                child: Padding(
-                  padding: const EdgeInsets.only(bottom: 10),
-                  child: GradeSubjectCard(mark: subjects[index]),
-                ),
-              ),
-            ),
-          ),
-        ],
-      );
+        ),
+      ),
+    ],
+  );
 }

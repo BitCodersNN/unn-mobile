@@ -13,9 +13,9 @@ class GradeBookSemesterViewModel {
   final CurriculumSemester? curriculum;
 
   GradeBookSemesterViewModel.grades(GradeSemesterViewModel model)
-      : number = model.semester.number,
-        grades = model,
-        curriculum = null;
+    : number = model.semester.number,
+      grades = model,
+      curriculum = null;
 
   const GradeBookSemesterViewModel._({
     required this.number,

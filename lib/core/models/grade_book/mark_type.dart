@@ -18,24 +18,24 @@ enum MarkType {
   const MarkType(this.value, this.label);
 
   factory MarkType.fromString(String label) => values.firstWhere(
-        (type) => type.label == label,
-        orElse: () => throw FormatException('Unknown mark label', label),
-      );
+    (type) => type.label == label,
+    orElse: () => throw FormatException('Unknown mark label', label),
+  );
 
   factory MarkType.fromDouble(double value) => values.firstWhere(
-        (type) => type.value == value,
-        orElse: () => throw FormatException('Unknown mark value', value),
-      );
+    (type) => type.value == value,
+    orElse: () => throw FormatException('Unknown mark value', value),
+  );
 
   bool get isNumeric => switch (this) {
-        noShow || notCredited || credited => false,
-        _ => true,
-      };
+    noShow || notCredited || credited => false,
+    _ => true,
+  };
 
   bool get isCredit => this == credited || this == notCredited;
 
   bool get requiresRetake => switch (this) {
-        noShow || notCredited || notSatisfactory => true,
-        _ => false,
-      };
+    noShow || notCredited || notSatisfactory => true,
+    _ => false,
+  };
 }

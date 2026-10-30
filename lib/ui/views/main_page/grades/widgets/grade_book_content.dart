@@ -34,15 +34,16 @@ class _GradeBookContentState extends State<GradeBookContent>
   }
 
   void _syncSemesterNumbers() {
-    _semesterNumbers =
-        widget.model.semesters.map((model) => model.number).toList();
+    _semesterNumbers = widget.model.semesters
+        .map((model) => model.number)
+        .toList();
   }
 
   TabController _createTabs() => TabController(
-        length: _semesterNumbers.length,
-        initialIndex: widget.model.selectedSemesterIndex,
-        vsync: this,
-      )..addListener(_selectSemester);
+    length: _semesterNumbers.length,
+    initialIndex: widget.model.selectedSemesterIndex,
+    vsync: this,
+  )..addListener(_selectSemester);
 
   void _selectSemester() {
     widget.model.selectSemester(_semesterNumbers[_tabs.index]);

@@ -23,8 +23,10 @@ class GradeSemesterPage extends StatefulWidget {
 }
 
 class _GradeSemesterPageState extends State<GradeSemesterPage> {
-  final _scroll =
-      AutoScrollController(axis: Axis.vertical, suggestedRowHeight: 100);
+  final _scroll = AutoScrollController(
+    axis: Axis.vertical,
+    suggestedRowHeight: 100,
+  );
 
   Future<void> _scrollToSubject(MarkBySubject mark) async {
     final index = widget.model.semester.marks.indexOf(mark);

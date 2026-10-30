@@ -65,8 +65,9 @@ class _GradeSubjectCardState extends State<GradeSubjectCard> {
                         children: [
                           Text(
                             mark.subject,
-                            style: theme.textTheme.titleSmall
-                                ?.copyWith(height: 1.35),
+                            style: theme.textTheme.titleSmall?.copyWith(
+                              height: 1.35,
+                            ),
                           ),
                           if (details.isNotEmpty) ...[
                             const SizedBox(height: 5),
@@ -169,45 +170,47 @@ class _SubjectDetail extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.only(top: 12),
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            final theme = Theme.of(context);
-            final title = Text(
-              label,
-              style: theme.textTheme.bodySmall
-                  ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
-            );
-            final content = Text(
-              value,
-              textAlign: TextAlign.right,
-              style: theme.textTheme.bodySmall
-                  ?.copyWith(fontWeight: FontWeight.w600),
-            );
-            return constraints.maxWidth < 300 ||
-                    MediaQuery.textScalerOf(context).scale(14) > 21
-                ? Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      title,
-                      const SizedBox(height: 4),
-                      SizedBox(width: double.infinity, child: content),
-                    ],
-                  )
-                : Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(child: title),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Align(
-                          alignment: Alignment.centerRight,
-                          child: content,
-                        ),
-                      ),
-                    ],
-                  );
-          },
-        ),
-      );
+    padding: const EdgeInsets.only(top: 12),
+    child: LayoutBuilder(
+      builder: (context, constraints) {
+        final theme = Theme.of(context);
+        final title = Text(
+          label,
+          style: theme.textTheme.bodySmall?.copyWith(
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
+        );
+        final content = Text(
+          value,
+          textAlign: TextAlign.right,
+          style: theme.textTheme.bodySmall?.copyWith(
+            fontWeight: FontWeight.w600,
+          ),
+        );
+        return constraints.maxWidth < 300 ||
+                MediaQuery.textScalerOf(context).scale(14) > 21
+            ? Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  title,
+                  const SizedBox(height: 4),
+                  SizedBox(width: double.infinity, child: content),
+                ],
+              )
+            : Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(child: title),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Align(
+                      alignment: Alignment.centerRight,
+                      child: content,
+                    ),
+                  ),
+                ],
+              );
+      },
+    ),
+  );
 }

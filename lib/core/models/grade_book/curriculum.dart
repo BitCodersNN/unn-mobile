@@ -15,10 +15,10 @@ class Curriculum {
   final Map<int, CurriculumSemester> semesters;
 
   Curriculum({required Map<int, CurriculumSemester> semesters})
-      : semesters = Map.unmodifiable(<int, CurriculumSemester>{
-          for (final number in semesters.keys.toList()..sort())
-            number: semesters[number]!,
-        });
+    : semesters = Map.unmodifiable(<int, CurriculumSemester>{
+        for (final number in semesters.keys.toList()..sort())
+          number: semesters[number]!,
+      });
 
   factory Curriculum.fromJson(
     List<Object?> json, {
@@ -32,13 +32,13 @@ class Curriculum {
     ).expand((records) => records);
     final parsedSemesters =
         parseJsonIterable<MapEntry<int, CurriculumSemester>>(
-      records,
-      (record) => MapEntry(
-        (record[_JsonKeys.semester]! as num).toInt(),
-        CurriculumSemester.fromJson(record, loggerService: loggerService),
-      ),
-      loggerService,
-    );
+          records,
+          (record) => MapEntry(
+            (record[_JsonKeys.semester]! as num).toInt(),
+            CurriculumSemester.fromJson(record, loggerService: loggerService),
+          ),
+          loggerService,
+        );
     for (final entry in parsedSemesters) {
       final semester = entry.value;
       semesters.update(
@@ -60,14 +60,11 @@ class Curriculum {
   }
 
   List<JsonMap> toJson() => [
-        {
-          _JsonKeys.semesters: [
-            for (final entry in semesters.entries)
-              {
-                _JsonKeys.semester: entry.key,
-                ...entry.value.toJson(),
-              },
-          ],
-        },
-      ];
+    {
+      _JsonKeys.semesters: [
+        for (final entry in semesters.entries)
+          {_JsonKeys.semester: entry.key, ...entry.value.toJson()},
+      ],
+    },
+  ];
 }

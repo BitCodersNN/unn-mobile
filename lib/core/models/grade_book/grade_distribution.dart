@@ -16,8 +16,8 @@ class GradeDistributionEntry {
     required this.group,
     required this.count,
     required this.total,
-  })  : assert(count > 0),
-        assert(total >= count);
+  }) : assert(count > 0),
+       assert(total >= count);
 
   double get percentage => count * 100 / total;
 }

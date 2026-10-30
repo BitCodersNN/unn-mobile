@@ -59,8 +59,8 @@ class _GradeSemesterSummaryState extends State<GradeSemesterSummary> {
     final differenceColor = difference == null || difference == 0
         ? null
         : difference > 0
-            ? theme.getColorOfMarkType(MarkType.excellent)
-            : theme.getColorOfMarkType(MarkType.notSatisfactory);
+        ? theme.getColorOfMarkType(MarkType.excellent)
+        : theme.getColorOfMarkType(MarkType.notSatisfactory);
     return GradeDetailsPopover(
       openBelow: true,
       builder: (popoverContext, selected, showDetails, dismiss) => Container(
@@ -94,8 +94,9 @@ class _GradeSemesterSummaryState extends State<GradeSemesterSummary> {
                   child: InkWell(
                     key: const ValueKey('grade-summary-toggle'),
                     borderRadius: BorderRadius.circular(12),
-                    overlayColor:
-                        const WidgetStatePropertyAll(Colors.transparent),
+                    overlayColor: const WidgetStatePropertyAll(
+                      Colors.transparent,
+                    ),
                     splashFactory: NoSplash.splashFactory,
                     onTap: () => _toggle(dismiss),
                     child: ConstrainedBox(
@@ -144,7 +145,8 @@ class _GradeSemesterSummaryState extends State<GradeSemesterSummary> {
                           const SizedBox(height: 12),
                           LayoutBuilder(
                             builder: (context, constraints) {
-                              final singleColumn = constraints.maxWidth < 260 ||
+                              final singleColumn =
+                                  constraints.maxWidth < 260 ||
                                   MediaQuery.textScalerOf(context).scale(14) >
                                       21;
                               final width = singleColumn
@@ -157,8 +159,9 @@ class _GradeSemesterSummaryState extends State<GradeSemesterSummary> {
                                   _SummaryMetric(
                                     width: width,
                                     label: 'Средний за семестр',
-                                    value:
-                                        formatGradeAverage(statistics.average),
+                                    value: formatGradeAverage(
+                                      statistics.average,
+                                    ),
                                     suffix: difference == null
                                         ? null
                                         : '${difference > 0 ? '+' : ''}${NumberFormat('0.##', 'ru_RU').format(difference)}%',
@@ -249,8 +252,9 @@ class _GradeSemesterSummaryState extends State<GradeSemesterSummary> {
                           const SizedBox(height: 12),
                           Text(
                             'Распределение оценок',
-                            style: theme.textTheme.labelLarge
-                                ?.copyWith(color: theme.colorScheme.onPrimary),
+                            style: theme.textTheme.labelLarge?.copyWith(
+                              color: theme.colorScheme.onPrimary,
+                            ),
                           ),
                           GradeDistributionBar(
                             entries: widget.model.distributionEntries,
@@ -343,7 +347,8 @@ class _SummaryMetric extends StatelessWidget {
                           child: Text(
                             suffix!,
                             style: theme.textTheme.labelSmall?.copyWith(
-                              color: suffixColor ??
+                              color:
+                                  suffixColor ??
                                   foreground.withValues(alpha: 0.8),
                             ),
                           ),
@@ -353,8 +358,9 @@ class _SummaryMetric extends StatelessWidget {
                   const SizedBox(height: 4),
                   Text(
                     label,
-                    style: theme.textTheme.bodySmall
-                        ?.copyWith(color: foreground.withValues(alpha: 0.85)),
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: foreground.withValues(alpha: 0.85),
+                    ),
                   ),
                 ],
               ),
@@ -391,8 +397,9 @@ class _SubjectDetails extends StatelessWidget {
             _SummaryDetails.exams => 'Экзамены',
             _SummaryDetails.retakes => 'Требуют пересдачи',
           },
-          style: theme.textTheme.titleSmall
-              ?.copyWith(color: theme.colorScheme.onSurface),
+          style: theme.textTheme.titleSmall?.copyWith(
+            color: theme.colorScheme.onSurface,
+          ),
         ),
         const SizedBox(height: 12),
         if (marks.isEmpty)
@@ -400,8 +407,9 @@ class _SubjectDetails extends StatelessWidget {
             kind == _SummaryDetails.disciplines
                 ? 'В этом семестре нет дисциплин'
                 : 'В этом семестре нет экзаменов',
-            style: theme.textTheme.bodySmall
-                ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
           )
         else
           for (final mark in marks)
@@ -426,8 +434,8 @@ class _SubjectDetails extends StatelessWidget {
                       mark.markType == null
                           ? '${mark.controlType} · Без оценки'
                           : kind == _SummaryDetails.retakes
-                              ? '${mark.controlType} · ${mark.markType!.label}'
-                              : '${gradeLabel(mark.markType!)}${mark.markType!.isNumeric ? ' · ${mark.markType!.label}' : ''}',
+                          ? '${mark.controlType} · ${mark.markType!.label}'
+                          : '${gradeLabel(mark.markType!)}${mark.markType!.isNumeric ? ' · ${mark.markType!.label}' : ''}',
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: mark.markType == null
                             ? theme.colorScheme.onSurfaceVariant
