@@ -25,31 +25,32 @@ class ScheduleWidgetLesson {
       ScheduleWidgetLesson(
         title: subject.name,
         type: subject.subjectType,
-        location: [subject.address.auditorium, subject.address.building]
-            .where((part) => part.trim().isNotEmpty)
-            .join(' / '),
+        location: [
+          subject.address.auditorium,
+          subject.address.building,
+        ].where((part) => part.trim().isNotEmpty).join(' / '),
         lecturer: subject.lecturer,
         start: subject.dateTimeRange.start,
         end: subject.dateTimeRange.end,
       );
 
   factory ScheduleWidgetLesson.fromJson(JsonMap json) => ScheduleWidgetLesson(
-        title: json['title']! as String,
-        type: json['type']! as String,
-        location: json['location']! as String,
-        lecturer: json['lecturer']! as String,
-        start: DateTime.fromMillisecondsSinceEpoch(json['start']! as int),
-        end: DateTime.fromMillisecondsSinceEpoch(json['end']! as int),
-      );
+    title: json['title']! as String,
+    type: json['type']! as String,
+    location: json['location']! as String,
+    lecturer: json['lecturer']! as String,
+    start: DateTime.fromMillisecondsSinceEpoch(json['start']! as int),
+    end: DateTime.fromMillisecondsSinceEpoch(json['end']! as int),
+  );
 
   JsonMap toJson() => {
-        'title': title,
-        'type': type,
-        'location': location,
-        'lecturer': lecturer,
-        'start': start.millisecondsSinceEpoch,
-        'end': end.millisecondsSinceEpoch,
-      };
+    'title': title,
+    'type': type,
+    'location': location,
+    'lecturer': lecturer,
+    'start': start.millisecondsSinceEpoch,
+    'end': end.millisecondsSinceEpoch,
+  };
 }
 
 class ScheduleWidgetData {
@@ -70,8 +71,8 @@ class ScheduleWidgetData {
     required this.validUntil,
     required Iterable<ScheduleWidgetLesson> lessons,
   }) : lessons = List.unmodifiable(
-          lessons.toList()..sort((a, b) => a.start.compareTo(b.start)),
-        );
+         lessons.toList()..sort((a, b) => a.start.compareTo(b.start)),
+       );
 
   factory ScheduleWidgetData.fromJson(JsonMap json) {
     if (json['version'] != schemaVersion) {
@@ -82,8 +83,9 @@ class ScheduleWidgetData {
       ownerLabel: json['ownerLabel']! as String,
       updatedAt: DateTime.fromMillisecondsSinceEpoch(json['updatedAt']! as int),
       validFrom: DateTime.fromMillisecondsSinceEpoch(json['validFrom']! as int),
-      validUntil:
-          DateTime.fromMillisecondsSinceEpoch(json['validUntil']! as int),
+      validUntil: DateTime.fromMillisecondsSinceEpoch(
+        json['validUntil']! as int,
+      ),
       lessons: (json['lessons']! as List<Object?>).map(
         (lesson) => ScheduleWidgetLesson.fromJson(lesson! as JsonMap),
       ),
@@ -91,12 +93,12 @@ class ScheduleWidgetData {
   }
 
   JsonMap toJson() => {
-        'version': schemaVersion,
-        'ownerId': ownerId,
-        'ownerLabel': ownerLabel,
-        'updatedAt': updatedAt.millisecondsSinceEpoch,
-        'validFrom': validFrom.millisecondsSinceEpoch,
-        'validUntil': validUntil.millisecondsSinceEpoch,
-        'lessons': lessons.map((lesson) => lesson.toJson()).toList(),
-      };
+    'version': schemaVersion,
+    'ownerId': ownerId,
+    'ownerLabel': ownerLabel,
+    'updatedAt': updatedAt.millisecondsSinceEpoch,
+    'validFrom': validFrom.millisecondsSinceEpoch,
+    'validUntil': validUntil.millisecondsSinceEpoch,
+    'lessons': lessons.map((lesson) => lesson.toJson()).toList(),
+  };
 }

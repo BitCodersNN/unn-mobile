@@ -74,8 +74,8 @@ class UnnMobile extends StatefulWidget {
 class _UnnMobileState extends State<UnnMobile> {
   late final MainPageRoutesViewModelsFactory _routesViewModelsFactory =
       widget.routesViewModelsFactory;
-  late final Future<bool> _widgetLaunch =
-      widget.scheduleWidgetPlatform.consumeLaunch();
+  late final Future<bool> _widgetLaunch = widget.scheduleWidgetPlatform
+      .consumeLaunch();
   late final AppRouter _router = AppRouter(
     userType: widget.currentUserStorage,
     initialDestination: _widgetLaunch.then(

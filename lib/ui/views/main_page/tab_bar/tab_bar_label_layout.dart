@@ -21,33 +21,32 @@ class TabBarLabelLayout extends StatelessWidget {
   });
 
   static ({TextStyle style, TextScaler scaler})? maybeOf(BuildContext context) {
-    final theme =
-        context.dependOnInheritedWidgetOfExactType<_TabBarLabelTheme>();
+    final theme = context
+        .dependOnInheritedWidgetOfExactType<_TabBarLabelTheme>();
     return theme == null ? null : (style: theme.style, scaler: theme.scaler);
   }
 
   @override
   Widget build(BuildContext context) => LayoutBuilder(
-        builder: (context, constraints) {
-          final scaler = MediaQuery.textScalerOf(context);
-          final base = CupertinoTheme.of(context).textTheme.tabLabelTextStyle;
-          final style = MediaQuery.boldTextOf(context)
-              ? base.copyWith(fontWeight: FontWeight.bold)
-              : base;
-          final width = labels.isEmpty
-              ? constraints.maxWidth
-              : constraints.maxWidth / labels.length -
-                  2 * (horizontalLabelPadding + itemHorizontalPadding);
-          return _TabBarLabelTheme(
-            style: style.copyWith(
-              fontSize:
-                  _fitFontSize(context, style, scaler, math.max(0, width)),
-            ),
-            scaler: scaler,
-            child: child,
-          );
-        },
+    builder: (context, constraints) {
+      final scaler = MediaQuery.textScalerOf(context);
+      final base = CupertinoTheme.of(context).textTheme.tabLabelTextStyle;
+      final style = MediaQuery.boldTextOf(context)
+          ? base.copyWith(fontWeight: FontWeight.bold)
+          : base;
+      final width = labels.isEmpty
+          ? constraints.maxWidth
+          : constraints.maxWidth / labels.length -
+                2 * (horizontalLabelPadding + itemHorizontalPadding);
+      return _TabBarLabelTheme(
+        style: style.copyWith(
+          fontSize: _fitFontSize(context, style, scaler, math.max(0, width)),
+        ),
+        scaler: scaler,
+        child: child,
       );
+    },
+  );
 
   double _fitFontSize(
     BuildContext context,
@@ -55,7 +54,8 @@ class TabBarLabelLayout extends StatelessWidget {
     TextScaler scaler,
     double width,
   ) {
-    final maximum = style.fontSize ??
+    final maximum =
+        style.fontSize ??
         const CupertinoTextThemeData().tabLabelTextStyle.fontSize!;
     if (labels.isEmpty) {
       return maximum;

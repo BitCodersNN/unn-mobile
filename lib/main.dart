@@ -71,8 +71,8 @@ void main() async {
       routesViewModelsFactory: Injector.appInstance
           .get<MainPageRoutesViewModelsFactory>(),
       currentUserStorage: Injector.appInstance.get<CurrentUserSyncStorage>(),
-      scheduleWidgetPlatform:
-          Injector.appInstance.get<ScheduleWidgetPlatform>(),
+      scheduleWidgetPlatform: Injector.appInstance
+          .get<ScheduleWidgetPlatform>(),
       scheduleWidgetService: Injector.appInstance.get<ScheduleWidgetService>(),
     ),
   );

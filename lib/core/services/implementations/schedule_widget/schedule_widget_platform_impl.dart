@@ -11,8 +11,9 @@ import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
 import 'package:unn_mobile/core/services/interfaces/schedule_widget/schedule_widget_platform.dart';
 
 class ScheduleWidgetPlatformImpl implements ScheduleWidgetPlatform {
-  static const MethodChannel _channel =
-      MethodChannel('ru.bitcodersnn.unnstudenthub/schedule_widget');
+  static const MethodChannel _channel = MethodChannel(
+    'ru.bitcodersnn.unnstudenthub/schedule_widget',
+  );
   final LoggerService _logger;
 
   ScheduleWidgetPlatformImpl(this._logger);
@@ -39,9 +40,9 @@ class ScheduleWidgetPlatformImpl implements ScheduleWidgetPlatform {
 
   @override
   Future<void> write(ScheduleWidgetData? data) => _invoke<void>(
-        data == null ? 'clear' : 'write',
-        data == null ? null : jsonEncode(data.toJson()),
-      );
+    data == null ? 'clear' : 'write',
+    data == null ? null : jsonEncode(data.toJson()),
+  );
 
   @override
   Future<bool> consumeLaunch() async =>
