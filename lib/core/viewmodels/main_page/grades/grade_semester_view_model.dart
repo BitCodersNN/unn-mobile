@@ -24,17 +24,17 @@ class GradeSemesterViewModel {
   final List<GradeDistributionEntry> distributionEntries;
 
   GradeSemesterViewModel({required this.semester, required this.overall})
-      : distributionEntries = List.unmodifiable(
-          semester.statistics.distribution.entries.toList()
-            ..sort((first, second) {
-              final byType = _distributionOrder
-                  .indexOf(first.type)
-                  .compareTo(_distributionOrder.indexOf(second.type));
-              return byType != 0
-                  ? byType
-                  : first.group.index.compareTo(second.group.index);
-            }),
-        );
+    : distributionEntries = List.unmodifiable(
+        semester.statistics.distribution.entries.toList()
+          ..sort((first, second) {
+            final byType = _distributionOrder
+                .indexOf(first.type)
+                .compareTo(_distributionOrder.indexOf(second.type));
+            return byType != 0
+                ? byType
+                : first.group.index.compareTo(second.group.index);
+          }),
+      );
 
   double? get averageDifference {
     final currentAverage = semester.statistics.average;

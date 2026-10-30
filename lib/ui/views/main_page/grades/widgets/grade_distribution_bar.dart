@@ -69,21 +69,21 @@ class GradeDistributionBar extends StatelessWidget {
                         curve: Curves.easeInOutCubic,
                         height: selected == entry ? 14 : 8,
                         decoration: BoxDecoration(
-                          color: Color.lerp(
-                            Theme.of(context).getColorOfMarkType(entry.type),
-                            Colors.white,
-                            0.3,
-                          )!
-                              .withValues(
-                            alpha:
-                                selected == null || selected == entry ? 1 : 0.5,
-                          ),
+                          color:
+                              Color.lerp(
+                                Theme.of(context)
+                                    .getColorOfMarkType(entry.type),
+                                Colors.white,
+                                0.3,
+                              )!.withValues(
+                                alpha: selected == null || selected == entry
+                                    ? 1
+                                    : 0.5,
+                              ),
                           borderRadius: BorderRadius.circular(5),
                           border: selected == entry
                               ? Border.all(
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .onPrimary
+                                  color: Theme.of(context).colorScheme.onPrimary
                                       .withValues(alpha: 0.85),
                                 )
                               : null,
@@ -118,14 +118,16 @@ class _DistributionDetails extends StatelessWidget {
       children: [
         Text(
           '${gradeLabel(entry.type)}${entry.type.isNumeric ? ' · ${entry.type.label}' : ''}',
-          style: theme.textTheme.titleSmall
-              ?.copyWith(color: theme.colorScheme.onSurface),
+          style: theme.textTheme.titleSmall?.copyWith(
+            color: theme.colorScheme.onSurface,
+          ),
         ),
         const SizedBox(height: 6),
         Text(
           '$percentage% среди $group · ${entry.count} из ${entry.total}',
-          style: theme.textTheme.bodySmall
-              ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+          style: theme.textTheme.bodySmall?.copyWith(
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
         ),
       ],
     );

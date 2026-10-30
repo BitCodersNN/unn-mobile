@@ -8,9 +8,6 @@ String formatGradeAverage(double? average) =>
     average == null ? '—' : NumberFormat('0.00', 'ru_RU').format(average);
 
 String gradeLabel(MarkType type) => switch (type) {
-      MarkType.credited ||
-      MarkType.notCredited ||
-      MarkType.noShow =>
-        type.label,
-      _ => NumberFormat('0.#', 'ru_RU').format(type.value),
-    };
+  MarkType.credited || MarkType.notCredited || MarkType.noShow => type.label,
+  _ => NumberFormat('0.#', 'ru_RU').format(type.value),
+};

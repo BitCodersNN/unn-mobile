@@ -21,6 +21,6 @@ extension GradeAssessment on MarkBySubject {
 
   GradeResultGroup get resultGroup =>
       markType.isCredit || (markType == MarkType.noShow && isCreditControl)
-          ? GradeResultGroup.credits
-          : GradeResultGroup.grades;
+      ? GradeResultGroup.credits
+      : GradeResultGroup.grades;
 }
