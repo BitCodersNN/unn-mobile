@@ -21,32 +21,15 @@ class MessageReactionMutatorServiceImpl
   final LoggerService _loggerService;
   final ApiHelper _apiHelper;
 
-  MessageReactionMutatorServiceImpl(
-    this._loggerService,
-    this._apiHelper,
-  );
+  MessageReactionMutatorServiceImpl(this._loggerService, this._apiHelper);
 
   @override
-  Future<bool> addReaction(
-    int messageId,
-    ReactionType reactionType,
-  ) =>
-      _handleReaction(
-        messageId,
-        reactionType,
-        ApiPath.messageReactionsAdd,
-      );
+  Future<bool> addReaction(int messageId, ReactionType reactionType) =>
+      _handleReaction(messageId, reactionType, ApiPath.messageReactionsAdd);
 
   @override
-  Future<bool> removeReaction(
-    int messageId,
-    ReactionType reactionType,
-  ) =>
-      _handleReaction(
-        messageId,
-        reactionType,
-        ApiPath.messageReactionsDelete,
-      );
+  Future<bool> removeReaction(int messageId, ReactionType reactionType) =>
+      _handleReaction(messageId, reactionType, ApiPath.messageReactionsDelete);
 
   Future<bool> _handleReaction(
     int messageId,

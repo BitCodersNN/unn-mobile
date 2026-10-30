@@ -107,22 +107,24 @@ class LoadingPageModel {
   }
 
   JsonMap toJson() => {
-        _LoadingPageModelJsonKeys.logoPath: imagePath,
-        _LoadingPageModelJsonKeys.startDate:
-            dateTimeRangeToUseOn?.start.toString().substring(5, 10),
-        _LoadingPageModelJsonKeys.endDate:
-            dateTimeRangeToUseOn?.end.toString().substring(5, 10),
-        _LoadingPageModelJsonKeys.title: {
-          _LoadingPageModelJsonKeys.text: title,
-          _LoadingPageModelJsonKeys.color: titleStyle.color!.toARGB(),
-          _LoadingPageModelJsonKeys.fontSize: titleStyle.fontSize.toString(),
-        },
-        if (description != null)
-          _LoadingPageModelJsonKeys.description: {
-            _LoadingPageModelJsonKeys.text: description,
-            _LoadingPageModelJsonKeys.color: descriptionStyle?.color!.toARGB(),
-            _LoadingPageModelJsonKeys.fontSize:
-                descriptionStyle?.fontSize.toString(),
-          },
-      };
+    _LoadingPageModelJsonKeys.logoPath: imagePath,
+    _LoadingPageModelJsonKeys.startDate: dateTimeRangeToUseOn?.start
+        .toString()
+        .substring(5, 10),
+    _LoadingPageModelJsonKeys.endDate: dateTimeRangeToUseOn?.end
+        .toString()
+        .substring(5, 10),
+    _LoadingPageModelJsonKeys.title: {
+      _LoadingPageModelJsonKeys.text: title,
+      _LoadingPageModelJsonKeys.color: titleStyle.color!.toARGB(),
+      _LoadingPageModelJsonKeys.fontSize: titleStyle.fontSize.toString(),
+    },
+    if (description != null)
+      _LoadingPageModelJsonKeys.description: {
+        _LoadingPageModelJsonKeys.text: description,
+        _LoadingPageModelJsonKeys.color: descriptionStyle?.color!.toARGB(),
+        _LoadingPageModelJsonKeys.fontSize: descriptionStyle?.fontSize
+            .toString(),
+      },
+  };
 }

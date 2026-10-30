@@ -37,7 +37,7 @@ final class CalendarChatSetting extends IrregularChatSetting {
 
   @override
   JsonMap toJson() => {
-        ...super.toJson(),
-        GroupDialogJsonKeys.type: GroupDialogJsonKeys.calendar,
-      };
+    ...super.toJson(),
+    GroupDialogJsonKeys.type: GroupDialogJsonKeys.calendar,
+  };
 }

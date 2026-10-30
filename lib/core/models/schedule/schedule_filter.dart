@@ -3,13 +3,7 @@
 
 import 'package:flutter/material.dart';
 
-enum IdType {
-  group,
-  student,
-  person,
-  lecturer,
-  auditorium,
-}
+enum IdType { group, student, person, lecturer, auditorium }
 
 class IdForSchedule {
   final IdType _idType;
@@ -37,20 +31,19 @@ class ScheduleFilter {
     IdType? idType,
     String? id,
     DateTimeRange? dateTimeRange,
-  }) =>
-      ScheduleFilter(
-        idType ?? this.idType,
-        id ?? this.id,
-        dateTimeRange ?? this.dateTimeRange,
-      );
+  }) => ScheduleFilter(
+    idType ?? this.idType,
+    id ?? this.id,
+    dateTimeRange ?? this.dateTimeRange,
+  );
 }
 
 extension IdTypeExtensions on IdType {
   String get displayName => switch (this) {
-        IdType.group => 'Группа',
-        IdType.student => 'Студент',
-        IdType.lecturer => 'Преподаватель',
-        IdType.person => 'Преподаватель',
-        IdType.auditorium => 'Аудитория',
-      };
+    IdType.group => 'Группа',
+    IdType.student => 'Студент',
+    IdType.lecturer => 'Преподаватель',
+    IdType.person => 'Преподаватель',
+    IdType.auditorium => 'Аудитория',
+  };
 }

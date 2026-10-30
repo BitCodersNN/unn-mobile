@@ -25,16 +25,10 @@ class MessageUpdaterServiceImpl implements MessageUpdaterService {
   final LoggerService _loggerService;
   final ApiHelper _apiHelper;
 
-  MessageUpdaterServiceImpl(
-    this._loggerService,
-    this._apiHelper,
-  );
+  MessageUpdaterServiceImpl(this._loggerService, this._apiHelper);
 
   @override
-  Future<bool> update({
-    required int messageId,
-    required String text,
-  }) async {
+  Future<bool> update({required int messageId, required String text}) async {
     Response response;
     try {
       response = await _apiHelper.post(
@@ -42,10 +36,7 @@ class MessageUpdaterServiceImpl implements MessageUpdaterService {
         queryParameters: {
           AjaxActionStrings.actionKey: AjaxActionStrings.updateMessage,
         },
-        data: {
-          _DataKeys.id: messageId,
-          _DataKeys.message: text,
-        },
+        data: {_DataKeys.id: messageId, _DataKeys.message: text},
         options: OptionsWithTimeoutAndExpectedTypeFactory.options(
           10,
           ResponseDataType.jsonMap,

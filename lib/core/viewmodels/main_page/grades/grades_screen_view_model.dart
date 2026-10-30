@@ -26,8 +26,8 @@ class GradesScreenViewModel extends BaseViewModel {
   int? get selectedSemesterNumber => _selectedSemesterNumber;
 
   int get selectedSemesterIndex => _semesters.indexWhere(
-        (model) => model.semester.number == _selectedSemesterNumber,
-      );
+    (model) => model.semester.number == _selectedSemesterNumber,
+  );
 
   bool get hasGradeBook => _hasGradeBook;
 
@@ -84,20 +84,18 @@ class GradesScreenViewModel extends BaseViewModel {
     );
     _hasGradeBook = summary != null;
     if (selectedSemesterIndex < 0) {
-      _selectedSemesterNumber =
-          _semesters.isEmpty ? null : _semesters.last.semester.number;
+      _selectedSemesterNumber = _semesters.isEmpty
+          ? null
+          : _semesters.last.semester.number;
     }
   }
 
   Future<Map<int, List<MarkBySubject>>?> _getGradeBook() =>
-      tryLoginAndRetrieveData(
-        () async {
-          final gradeBook = await _gradeBookService.getGradeBook();
-          if (gradeBook != null) {
-            await _markBySubjectProvider.saveData(gradeBook);
-          }
-          return gradeBook;
-        },
-        _markBySubjectProvider.getData,
-      );
+      tryLoginAndRetrieveData(() async {
+        final gradeBook = await _gradeBookService.getGradeBook();
+        if (gradeBook != null) {
+          await _markBySubjectProvider.saveData(gradeBook);
+        }
+        return gradeBook;
+      }, _markBySubjectProvider.getData);
 }

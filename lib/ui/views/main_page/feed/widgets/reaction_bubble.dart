@@ -37,8 +37,7 @@ class ReactionBubble extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.all(4.0),
                 child: SizedBox(
-                  height: MediaQuery.of(context)
-                      .textScaler
+                  height: MediaQuery.of(context).textScaler
                       .clamp(maxScaleFactor: 1.3)
                       .scale(16),
                   child: icon,

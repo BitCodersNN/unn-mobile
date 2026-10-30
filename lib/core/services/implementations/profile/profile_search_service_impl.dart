@@ -33,10 +33,7 @@ class ProfileSearchServiceImpl implements ProfileSearchService {
   final LoggerService _loggerService;
   final ApiHelper _apiHelper;
 
-  ProfileSearchServiceImpl(
-    this._loggerService,
-    this._apiHelper,
-  );
+  ProfileSearchServiceImpl(this._loggerService, this._apiHelper);
 
   @override
   Future<ResultWithTotal<PreviewEmployee>?> getEmployees(
@@ -44,16 +41,15 @@ class ProfileSearchServiceImpl implements ProfileSearchService {
     int ordinalNumberFirst = 0,
     int count = 10,
     bool reverse = false,
-  }) =>
-      _fetchPaginatedData(
-        ApiPath.employees,
-        searchFilter,
-        SortField.fullname,
-        reverse,
-        ordinalNumberFirst,
-        count,
-        PreviewEmployee.fromJson,
-      );
+  }) => _fetchPaginatedData(
+    ApiPath.employees,
+    searchFilter,
+    SortField.fullname,
+    reverse,
+    ordinalNumberFirst,
+    count,
+    PreviewEmployee.fromJson,
+  );
 
   @override
   Future<ResultWithTotal<PreviewStudent>?> getStudents(
@@ -62,16 +58,15 @@ class ProfileSearchServiceImpl implements ProfileSearchService {
     int count = 10,
     SortField sortField = SortField.fullname,
     bool reverse = false,
-  }) =>
-      _fetchPaginatedData(
-        ApiPath.students,
-        searchFilter,
-        sortField,
-        reverse,
-        ordinalNumberFirst,
-        count,
-        PreviewStudent.fromJson,
-      );
+  }) => _fetchPaginatedData(
+    ApiPath.students,
+    searchFilter,
+    sortField,
+    reverse,
+    ordinalNumberFirst,
+    count,
+    PreviewStudent.fromJson,
+  );
 
   Future<ResultWithTotal<T>?> _fetchPaginatedData<T>(
     String path,

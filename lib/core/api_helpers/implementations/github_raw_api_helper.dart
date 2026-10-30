@@ -6,10 +6,5 @@ import 'package:unn_mobile/core/api_helpers/base_options_factory.dart';
 import 'package:unn_mobile/core/constants/api/host.dart';
 
 final class GitHubRawApiHelper extends ApiHelper {
-  GitHubRawApiHelper()
-      : super(
-          options: createBaseOptions(
-            host: Host.gitHub,
-          ),
-        );
+  GitHubRawApiHelper() : super(options: createBaseOptions(host: Host.gitHub));
 }

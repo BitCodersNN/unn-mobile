@@ -21,28 +21,28 @@ class GradesScreenView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => OfflineOverlayDisplayer(
-        child: Scaffold(
-          backgroundColor: Theme.of(context).colorScheme.surfaceContainerLow,
-          appBar: AppBar(
-            title: const Text('Зачётная книжка'),
-            backgroundColor: Theme.of(context).colorScheme.surfaceContainerLow,
-            scrolledUnderElevation: 0,
-          ),
-          body: SafeArea(
-            top: false,
-            child: BaseView<GradesScreenViewModel>(
-              onModelReady: (model) => unawaited(model.refresh()),
-              builder: (context, model, _) => Align(
-                alignment: Alignment.topCenter,
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 720),
-                  child: _buildContent(model),
-                ),
-              ),
+    child: Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.surfaceContainerLow,
+      appBar: AppBar(
+        title: const Text('Зачётная книжка'),
+        backgroundColor: Theme.of(context).colorScheme.surfaceContainerLow,
+        scrolledUnderElevation: 0,
+      ),
+      body: SafeArea(
+        top: false,
+        child: BaseView<GradesScreenViewModel>(
+          onModelReady: (model) => unawaited(model.refresh()),
+          builder: (context, model, _) => Align(
+            alignment: Alignment.topCenter,
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 720),
+              child: _buildContent(model),
             ),
           ),
         ),
-      );
+      ),
+    ),
+  );
 
   Widget _buildContent(GradesScreenViewModel model) {
     if (model.isBusy && !model.hasGradeBook) {
@@ -68,10 +68,7 @@ class GradesScreenView extends StatelessWidget {
         onRefresh: () => _refresh(model),
       );
     }
-    return GradeBookContent(
-      model: model,
-      onRefresh: () => _refresh(model),
-    );
+    return GradeBookContent(model: model, onRefresh: () => _refresh(model));
   }
 
   Widget _emptyState({
@@ -79,28 +76,27 @@ class GradesScreenView extends StatelessWidget {
     required String title,
     required String caption,
     required Future<void> Function() onRefresh,
-  }) =>
-      LayoutBuilder(
-        builder: (context, constraints) => RefreshIndicator.adaptive(
-          onRefresh: onRefresh,
-          child: SingleChildScrollView(
-            physics: const AlwaysScrollableScrollPhysics(),
-            child: ConstrainedBox(
-              constraints: BoxConstraints(minHeight: constraints.maxHeight),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  EmptyStateWidget(icon: icon, title: title, caption: caption),
-                  TextButton.icon(
-                    onPressed: onRefresh,
-                    icon: const Icon(Icons.refresh_rounded),
-                    label: const Text('Обновить'),
-                  ),
-                  const SizedBox(height: 24),
-                ],
+  }) => LayoutBuilder(
+    builder: (context, constraints) => RefreshIndicator.adaptive(
+      onRefresh: onRefresh,
+      child: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        child: ConstrainedBox(
+          constraints: BoxConstraints(minHeight: constraints.maxHeight),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              EmptyStateWidget(icon: icon, title: title, caption: caption),
+              TextButton.icon(
+                onPressed: onRefresh,
+                icon: const Icon(Icons.refresh_rounded),
+                label: const Text('Обновить'),
               ),
-            ),
+              const SizedBox(height: 24),
+            ],
           ),
         ),
-      );
+      ),
+    ),
+  );
 }

@@ -27,26 +27,26 @@ class BaseEmployeeProfile {
   });
 
   JsonMap toJson() => {
-        _BaseEmployeeProfileJsonKeys.id: id,
-        _BaseEmployeeProfileJsonKeys.departmentId: departmentId?.toString(),
-        _BaseEmployeeProfileJsonKeys.jobTitle: jobTitle,
-        _BaseEmployeeProfileJsonKeys.department: [
-          for (final department in departments) department.toJson(),
-        ],
-      };
+    _BaseEmployeeProfileJsonKeys.id: id,
+    _BaseEmployeeProfileJsonKeys.departmentId: departmentId?.toString(),
+    _BaseEmployeeProfileJsonKeys.jobTitle: jobTitle,
+    _BaseEmployeeProfileJsonKeys.department: [
+      for (final department in departments) department.toJson(),
+    ],
+  };
 
   factory BaseEmployeeProfile.fromJson(JsonMap json) => BaseEmployeeProfile(
-        id: json[_BaseEmployeeProfileJsonKeys.id]! as int,
-        departmentId: json[_BaseEmployeeProfileJsonKeys.departmentId] != null
-            ? int.tryParse(
-                json[_BaseEmployeeProfileJsonKeys.departmentId]! as String,
-              )
-            : null,
-        jobTitle: json[_BaseEmployeeProfileJsonKeys.jobTitle]! as String,
-        departments: _parseDepartments(
-          json[_BaseEmployeeProfileJsonKeys.department],
-        ),
-      );
+    id: json[_BaseEmployeeProfileJsonKeys.id]! as int,
+    departmentId: json[_BaseEmployeeProfileJsonKeys.departmentId] != null
+        ? int.tryParse(
+            json[_BaseEmployeeProfileJsonKeys.departmentId]! as String,
+          )
+        : null,
+    jobTitle: json[_BaseEmployeeProfileJsonKeys.jobTitle]! as String,
+    departments: _parseDepartments(
+      json[_BaseEmployeeProfileJsonKeys.department],
+    ),
+  );
 
   static List<Department> _parseDepartments(dynamic departmentJson) {
     if (departmentJson == null) {

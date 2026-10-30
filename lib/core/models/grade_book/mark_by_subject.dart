@@ -35,22 +35,22 @@ class MarkBySubject {
   int get creditedHours => hours ~/ _hoursPerCreditedHour;
 
   factory MarkBySubject.fromJson(JsonMap jsonMap) => MarkBySubject(
-        controlType: jsonMap[_MarkBySubjectJsonKeys.controlType]! as String,
-        date: DateTime.parse(jsonMap[_MarkBySubjectJsonKeys.date]! as String),
-        hours: int.parse(jsonMap[_MarkBySubjectJsonKeys.hours]! as String),
-        lecturers: jsonMap[_MarkBySubjectJsonKeys.lecturers] as String?,
-        markType: MarkType.fromDouble(
-          (jsonMap[_MarkBySubjectJsonKeys.mark]! as num).toDouble(),
-        ),
-        subject: jsonMap[_MarkBySubjectJsonKeys.subject]! as String,
-      );
+    controlType: jsonMap[_MarkBySubjectJsonKeys.controlType]! as String,
+    date: DateTime.parse(jsonMap[_MarkBySubjectJsonKeys.date]! as String),
+    hours: int.parse(jsonMap[_MarkBySubjectJsonKeys.hours]! as String),
+    lecturers: jsonMap[_MarkBySubjectJsonKeys.lecturers] as String?,
+    markType: MarkType.fromDouble(
+      (jsonMap[_MarkBySubjectJsonKeys.mark]! as num).toDouble(),
+    ),
+    subject: jsonMap[_MarkBySubjectJsonKeys.subject]! as String,
+  );
 
   JsonMap toJson() => {
-        _MarkBySubjectJsonKeys.controlType: controlType,
-        _MarkBySubjectJsonKeys.date: date.toIso8601String(),
-        _MarkBySubjectJsonKeys.hours: hours.toString(),
-        _MarkBySubjectJsonKeys.lecturers: lecturers,
-        _MarkBySubjectJsonKeys.mark: markType.value,
-        _MarkBySubjectJsonKeys.subject: subject,
-      };
+    _MarkBySubjectJsonKeys.controlType: controlType,
+    _MarkBySubjectJsonKeys.date: date.toIso8601String(),
+    _MarkBySubjectJsonKeys.hours: hours.toString(),
+    _MarkBySubjectJsonKeys.lecturers: lecturers,
+    _MarkBySubjectJsonKeys.mark: markType.value,
+    _MarkBySubjectJsonKeys.subject: subject,
+  };
 }

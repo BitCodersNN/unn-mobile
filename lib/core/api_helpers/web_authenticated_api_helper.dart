@@ -33,14 +33,12 @@ abstract class WebAuthenticatedApiHelper extends AuthenticatedApiHelper {
     required AuthorisationService authorizationService,
     List<Interceptor> interceptors = const [],
     ProtocolType protocol = ProtocolType.https,
-  })  : _baseUrl = '${protocol.name}://$host/',
-        super(
-          authorizationService,
-          options: createBaseOptions(
-            host: HostWithBasePath.redirect,
-          ),
-          interceptors: interceptors,
-        ) {
+  }) : _baseUrl = '${protocol.name}://$host/',
+       super(
+         authorizationService,
+         options: createBaseOptions(host: HostWithBasePath.redirect),
+         interceptors: interceptors,
+       ) {
     onAuthChanged();
   }
 
@@ -64,15 +62,14 @@ abstract class WebAuthenticatedApiHelper extends AuthenticatedApiHelper {
     Options? options,
     CancelToken? cancelToken,
     ProgressCallback? onReceiveProgress,
-  }) =>
-      _request(
-        httpMethod: HttpMethod.get,
-        path: path,
-        queryParameters: queryParameters,
-        options: options,
-        cancelToken: cancelToken,
-        onReceiveProgress: onReceiveProgress,
-      );
+  }) => _request(
+    httpMethod: HttpMethod.get,
+    path: path,
+    queryParameters: queryParameters,
+    options: options,
+    cancelToken: cancelToken,
+    onReceiveProgress: onReceiveProgress,
+  );
 
   @override
   Future<Response> post({
@@ -83,17 +80,16 @@ abstract class WebAuthenticatedApiHelper extends AuthenticatedApiHelper {
     CancelToken? cancelToken,
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
-  }) =>
-      _request(
-        httpMethod: HttpMethod.post,
-        path: path,
-        body: data,
-        queryParameters: queryParameters,
-        options: options,
-        cancelToken: cancelToken,
-        onReceiveProgress: onReceiveProgress,
-        onSendProgress: onSendProgress,
-      );
+  }) => _request(
+    httpMethod: HttpMethod.post,
+    path: path,
+    body: data,
+    queryParameters: queryParameters,
+    options: options,
+    cancelToken: cancelToken,
+    onReceiveProgress: onReceiveProgress,
+    onSendProgress: onSendProgress,
+  );
 
   Future<Response> _request({
     required HttpMethod httpMethod,
@@ -107,13 +103,7 @@ abstract class WebAuthenticatedApiHelper extends AuthenticatedApiHelper {
   }) async {
     final response = await super.post(
       path: '',
-      data: _buildRequestData(
-        httpMethod,
-        path,
-        body,
-        queryParameters,
-        options,
-      ),
+      data: _buildRequestData(httpMethod, path, body, queryParameters, options),
       options: options,
       cancelToken: cancelToken,
       onReceiveProgress: onReceiveProgress,
@@ -136,9 +126,9 @@ abstract class WebAuthenticatedApiHelper extends AuthenticatedApiHelper {
       ..write(';')
       ..write(optionsCookie ?? '');
     return cookieString.toString().replaceAll(
-          RegularExpressions.cookieCleanupRegExp,
-          '',
-        );
+      RegularExpressions.cookieCleanupRegExp,
+      '',
+    );
   }
 
   Map<String, String> _buildRequestData(

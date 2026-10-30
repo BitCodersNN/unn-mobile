@@ -69,10 +69,13 @@ class Subject {
   factory Subject.fromJson(JsonMap jsonMap) {
     final String date = getStringFromJson(jsonMap, _SubjectJsonKeys.date);
 
-    final String streamString =
-        getStringFromJson(jsonMap, _SubjectJsonKeys.stream);
-    final match =
-        RegularExpressions.streamContentRegExp.firstMatch(streamString);
+    final String streamString = getStringFromJson(
+      jsonMap,
+      _SubjectJsonKeys.stream,
+    );
+    final match = RegularExpressions.streamContentRegExp.firstMatch(
+      streamString,
+    );
     final streamContent = match?.group(1) ?? streamString;
 
     return Subject(
@@ -137,27 +140,21 @@ class Subject {
   }
 
   JsonMap toJson() => {
-        _SubjectJsonKeys.date:
-            dateTimeRange.start.format(DatePattern.yyyymmddDash),
-        _SubjectJsonKeys.beginLesson:
-            dateTimeRange.start.format(DatePattern.hhmm),
-        _SubjectJsonKeys.endLesson: dateTimeRange.end.format(DatePattern.hhmm),
-        _SubjectJsonKeys.discipline: name,
-        _SubjectJsonKeys.kindOfWork: subjectType,
-        _SubjectJsonKeys.auditorium: address.auditorium,
-        _SubjectJsonKeys.building: address.building,
-        _SubjectJsonKeys.stream: groups.join(';'),
-        _SubjectJsonKeys.lecturer: lecturer,
-        _SubjectJsonKeys.lecturerUID: syncId,
-      };
+    _SubjectJsonKeys.date: dateTimeRange.start.format(DatePattern.yyyymmddDash),
+    _SubjectJsonKeys.beginLesson: dateTimeRange.start.format(DatePattern.hhmm),
+    _SubjectJsonKeys.endLesson: dateTimeRange.end.format(DatePattern.hhmm),
+    _SubjectJsonKeys.discipline: name,
+    _SubjectJsonKeys.kindOfWork: subjectType,
+    _SubjectJsonKeys.auditorium: address.auditorium,
+    _SubjectJsonKeys.building: address.building,
+    _SubjectJsonKeys.stream: groups.join(';'),
+    _SubjectJsonKeys.lecturer: lecturer,
+    _SubjectJsonKeys.lecturerUID: syncId,
+  };
 
   static DateTime _parseDateTime(
     String date,
     String time, {
     pattern = DatePattern.ymmddhm,
-  }) =>
-      DateTimeParser.parse(
-        '$date $time',
-        pattern,
-      );
+  }) => DateTimeParser.parse('$date $time', pattern);
 }

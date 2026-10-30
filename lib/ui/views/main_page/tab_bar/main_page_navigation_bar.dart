@@ -69,8 +69,10 @@ class _MainPageNavigationBarState extends State<MainPageNavigationBar> {
             activeColor: theme.colorScheme.primary,
             inactiveColor: theme.colorScheme.onSurfaceVariant,
             iconSize: 24,
-            currentIndex:
-                MainPageNavigationBar.getSelectedBarIndex(context, paths),
+            currentIndex: MainPageNavigationBar.getSelectedBarIndex(
+              context,
+              paths,
+            ),
             onTap: (index) =>
                 widget.onDestinationSelected?.call(visible[index]),
             items: [
@@ -90,21 +92,20 @@ class _MainPageNavigationBarState extends State<MainPageNavigationBar> {
     MainPageRouteData route,
     IconData icon,
     List<String> paths,
-  ) =>
-      Builder(
-        builder: (context) => TabBarGestureDetector(
-          onTap: () => widget.onDestinationSelected?.call(route),
-          onHoldStart: (pointer) =>
-              _showCustomizationMenu(context, route, paths, pointer),
-          onHoldMove: (pointer) => _session?.move(pointer),
-          onHoldEnd: () => _session?.end(),
-          child: SizedBox.expand(
-            child: Center(
-              child: TabBarItemContent(icon: icon, label: route.pageTitle),
-            ),
-          ),
+  ) => Builder(
+    builder: (context) => TabBarGestureDetector(
+      onTap: () => widget.onDestinationSelected?.call(route),
+      onHoldStart: (pointer) =>
+          _showCustomizationMenu(context, route, paths, pointer),
+      onHoldMove: (pointer) => _session?.move(pointer),
+      onHoldEnd: () => _session?.end(),
+      child: SizedBox.expand(
+        child: Center(
+          child: TabBarItemContent(icon: icon, label: route.pageTitle),
         ),
-      );
+      ),
+    ),
+  );
 
   Future<void> _showCustomizationMenu(
     BuildContext context,
@@ -115,10 +116,12 @@ class _MainPageNavigationBarState extends State<MainPageNavigationBar> {
     if (_session != null) {
       return;
     }
-    final overlay = Navigator.of(context, rootNavigator: true)
-        .overlay!
-        .context
-        .findRenderObject()! as RenderBox;
+    final overlay =
+        Navigator.of(
+              context,
+              rootNavigator: true,
+            ).overlay!.context.findRenderObject()!
+            as RenderBox;
     final anchor = context.findRenderObject()! as RenderBox;
     final bar = _barKey.currentContext!.findRenderObject()! as RenderBox;
     final session = TabBarContextMenuSession(

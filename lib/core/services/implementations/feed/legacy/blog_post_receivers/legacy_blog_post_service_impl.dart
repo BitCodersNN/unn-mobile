@@ -21,10 +21,7 @@ class BlogPostServiceImpl implements BlogPostService {
   final LoggerService _loggerService;
   final ApiHelper _apiHelper;
 
-  BlogPostServiceImpl(
-    this._loggerService,
-    this._apiHelper,
-  );
+  BlogPostServiceImpl(this._loggerService, this._apiHelper);
 
   @override
   Future<BlogPost?> getBlogPost({required int id}) async {
@@ -32,9 +29,7 @@ class BlogPostServiceImpl implements BlogPostService {
     try {
       response = await _apiHelper.get(
         path: ApiPath.blogPostWithLoadedInfo,
-        queryParameters: {
-          _QueryParamNames.id: id,
-        },
+        queryParameters: {_QueryParamNames.id: id},
         options: OptionsWithTimeoutAndExpectedTypeFactory.options(
           30,
           ResponseDataType.list,

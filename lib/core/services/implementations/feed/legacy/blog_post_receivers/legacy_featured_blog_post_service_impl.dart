@@ -19,10 +19,7 @@ class FeaturedBlogPostServiceImpl implements FeaturedBlogPostService {
   final LoggerService _loggerService;
   final ApiHelper _apiHelper;
 
-  FeaturedBlogPostServiceImpl(
-    this._loggerService,
-    this._apiHelper,
-  );
+  FeaturedBlogPostServiceImpl(this._loggerService, this._apiHelper);
 
   @override
   Future<Map<BlogPostType, List<BlogPost>>?> getFeaturedBlogPosts() async {

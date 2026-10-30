@@ -27,39 +27,39 @@ class _MessageDialogState extends State<MessageDialog> {
   bool ignoreCheckbox = false;
   @override
   Widget build(BuildContext context) => AlertDialog.adaptive(
-        content: SingleChildScrollView(
-          child: Column(
-            children: [
-              widget.message,
-              if (widget.canBeIgnored && widget.messageKey.isNotEmpty)
-                Row(
-                  children: [
-                    Checkbox.adaptive(
-                      value: ignoreCheckbox,
-                      onChanged: (value) {
-                        setState(() {
-                          ignoreCheckbox = value ?? false;
-                        });
-                      },
-                    ),
-                    const Text('Больше не показывать'),
-                  ],
+    content: SingleChildScrollView(
+      child: Column(
+        children: [
+          widget.message,
+          if (widget.canBeIgnored && widget.messageKey.isNotEmpty)
+            Row(
+              children: [
+                Checkbox.adaptive(
+                  value: ignoreCheckbox,
+                  onChanged: (value) {
+                    setState(() {
+                      ignoreCheckbox = value ?? false;
+                    });
+                  },
                 ),
-            ],
-          ),
-        ),
-        contentPadding: const EdgeInsets.fromLTRB(20, 20, 20, 12),
-        buttonPadding: EdgeInsets.zero,
-        actionsPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-        actions: <Widget>[
-          AdaptiveDialogAction(
-            child: const Text('OK'),
-            onPressed: () {
-              Navigator.of(context).pop<bool>(ignoreCheckbox);
-            },
-          ),
+                const Text('Больше не показывать'),
+              ],
+            ),
         ],
-      );
+      ),
+    ),
+    contentPadding: const EdgeInsets.fromLTRB(20, 20, 20, 12),
+    buttonPadding: EdgeInsets.zero,
+    actionsPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+    actions: <Widget>[
+      AdaptiveDialogAction(
+        child: const Text('OK'),
+        onPressed: () {
+          Navigator.of(context).pop<bool>(ignoreCheckbox);
+        },
+      ),
+    ],
+  );
 }
 
 /// Показывает сообщение. Параметр [messageKey] присваивает данному
@@ -81,10 +81,7 @@ Future<void> showMessage(
   final ignoredNow = await showDialog(
     context: context,
     builder: (context) => MessageDialog(
-      message: Text(
-        text,
-        textAlign: TextAlign.center,
-      ),
+      message: Text(text, textAlign: TextAlign.center),
       messageKey: messageKey ?? '',
       canBeIgnored: messageKey != null,
     ),

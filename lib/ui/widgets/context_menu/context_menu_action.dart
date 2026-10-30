@@ -10,82 +10,70 @@ class ContextMenuAction {
   final PopupMenuEntry<void> entry;
   final VoidCallback? onTap;
 
-  const ContextMenuAction({
-    required this.entry,
-    this.onTap,
-  });
+  const ContextMenuAction({required this.entry, this.onTap});
 
   factory ContextMenuAction.text({
     required String label,
     VoidCallback? onTap,
     Widget? leadingIcon,
-  }) =>
-      ContextMenuAction(
-        entry: PopupMenuItem<void>(
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (leadingIcon != null) ...[
-                leadingIcon,
-                const SizedBox(width: 12),
-              ],
-              Text(label),
-            ],
-          ),
-        ),
-        onTap: onTap,
-      );
+  }) => ContextMenuAction(
+    entry: PopupMenuItem<void>(
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (leadingIcon != null) ...[leadingIcon, const SizedBox(width: 12)],
+          Text(label),
+        ],
+      ),
+    ),
+    onTap: onTap,
+  );
 
   factory ContextMenuAction.reaction({
     required BuildContext context,
     required ReactionViewModelBase reactionViewModel,
-  }) =>
-      ContextMenuAction(
-        entry: PopupMenuItem<void>(
-          enabled: false,
-          child: SizedBox(
-            width: 280,
-            child: Scrollbar(
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(vertical: 4.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    for (final reaction in ReactionType.values)
-                      GestureDetector(
-                        onTap: () {
-                          triggerHaptic(HapticIntensity.selection);
-                          if (reactionViewModel.currentReaction != reaction) {
-                            reactionViewModel.toggleReaction(reaction);
-                          }
-                          Navigator.pop(context);
-                        },
-                        child: Padding(
-                          padding: const EdgeInsets.all(4.0),
-                          child: CircleAvatar(
-                            radius: 16,
-                            backgroundImage: AssetImage(reaction.assetName),
-                          ),
-                        ),
+  }) => ContextMenuAction(
+    entry: PopupMenuItem<void>(
+      enabled: false,
+      child: SizedBox(
+        width: 280,
+        child: Scrollbar(
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.symmetric(vertical: 4.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                for (final reaction in ReactionType.values)
+                  GestureDetector(
+                    onTap: () {
+                      triggerHaptic(HapticIntensity.selection);
+                      if (reactionViewModel.currentReaction != reaction) {
+                        reactionViewModel.toggleReaction(reaction);
+                      }
+                      Navigator.pop(context);
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.all(4.0),
+                      child: CircleAvatar(
+                        radius: 16,
+                        backgroundImage: AssetImage(reaction.assetName),
                       ),
-                  ],
-                ),
-              ),
+                    ),
+                  ),
+              ],
             ),
           ),
         ),
-      );
+      ),
+    ),
+  );
 
   factory ContextMenuAction.custom({
     required Widget child,
     VoidCallback? onTap,
-  }) =>
-      ContextMenuAction(
-        entry: PopupMenuItem<void>(
-          enabled: false,
-          child: child,
-        ),
-        onTap: onTap,
-      );
+  }) => ContextMenuAction(
+    entry: PopupMenuItem<void>(enabled: false, child: child),
+    onTap: onTap,
+  );
 }

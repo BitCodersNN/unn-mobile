@@ -21,7 +21,7 @@ class TabBarDragController extends ChangeNotifier {
   bool _dragging = false;
 
   TabBarDragController({required this.itemCount, required this.editableCount})
-      : assert(editableCount > 0 && editableCount <= itemCount);
+    : assert(editableCount > 0 && editableCount <= itemCount);
 
   int? get heldIndex => _source;
   bool get isDragging => _dragging;

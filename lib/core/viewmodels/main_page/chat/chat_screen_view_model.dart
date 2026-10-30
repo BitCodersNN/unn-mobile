@@ -53,31 +53,30 @@ class ChatScreenViewModel extends BaseViewModel {
   }
 
   FutureOr<void> loadMore() => busyCallAsync(() async {
-        _hasError = false;
-        final dialogItems = await _getDialogItems(
-          limit: dialogLimit,
-          lastMessageDate: _dialogs.last.previewMessage.dateTime,
-        );
-        if (dialogItems == null) {
-          return;
-        }
-        _dialogs.addAll(dialogItems.items);
-        _hasMoreDialogs = dialogItems.hasMore;
-      });
+    _hasError = false;
+    final dialogItems = await _getDialogItems(
+      limit: dialogLimit,
+      lastMessageDate: _dialogs.last.previewMessage.dateTime,
+    );
+    if (dialogItems == null) {
+      return;
+    }
+    _dialogs.addAll(dialogItems.items);
+    _hasMoreDialogs = dialogItems.hasMore;
+  });
 
   Future<PartialResult<Dialog>?> _getDialogItems({
     required int limit,
     DateTime? lastMessageDate,
-  }) =>
-      tryLoginAndRetrieveData<PartialResult<Dialog>>(
-        () => _dialogService.getDialogs(
-          dialogQueryParameter: DialogQueryParameter(
-            limit: limit,
-            lastMessageDate: lastMessageDate,
-          ),
-        ),
-        () => null,
-      );
+  }) => tryLoginAndRetrieveData<PartialResult<Dialog>>(
+    () => _dialogService.getDialogs(
+      dialogQueryParameter: DialogQueryParameter(
+        limit: limit,
+        lastMessageDate: lastMessageDate,
+      ),
+    ),
+    () => null,
+  );
 
   FutureOr<void> _init(int failedAttempts) async {
     if (failedAttempts == maxRetryAttempts) {

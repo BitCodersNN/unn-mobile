@@ -32,17 +32,17 @@ class DialogQueryParameter {
   });
 
   JsonMap toJson() => {
-        _DialogQueryParameterJsonKeys.limit: limit,
-        _DialogQueryParameterJsonKeys.lastMessageDate:
-            lastMessageDate?.toIso8601String(),
-        _DialogQueryParameterJsonKeys.skipOpenlines: skipOpenlines
-            ? _DialogQueryParameterJsonValue.y
-            : _DialogQueryParameterJsonValue.n,
-        _DialogQueryParameterJsonKeys.getOriginalText: getOriginalText
-            ? _DialogQueryParameterJsonValue.y
-            : _DialogQueryParameterJsonValue.n,
-        _DialogQueryParameterJsonKeys.parseText: parseText
-            ? _DialogQueryParameterJsonValue.y
-            : _DialogQueryParameterJsonValue.n,
-      };
+    _DialogQueryParameterJsonKeys.limit: limit,
+    _DialogQueryParameterJsonKeys.lastMessageDate: lastMessageDate
+        ?.toIso8601String(),
+    _DialogQueryParameterJsonKeys.skipOpenlines: skipOpenlines
+        ? _DialogQueryParameterJsonValue.y
+        : _DialogQueryParameterJsonValue.n,
+    _DialogQueryParameterJsonKeys.getOriginalText: getOriginalText
+        ? _DialogQueryParameterJsonValue.y
+        : _DialogQueryParameterJsonValue.n,
+    _DialogQueryParameterJsonKeys.parseText: parseText
+        ? _DialogQueryParameterJsonValue.y
+        : _DialogQueryParameterJsonValue.n,
+  };
 }

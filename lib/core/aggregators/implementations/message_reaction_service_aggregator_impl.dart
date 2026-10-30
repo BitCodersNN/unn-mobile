@@ -21,16 +21,10 @@ class MessageReactionServiceAggregatorImpl
       _reactionFetcherService.fetch(messageId);
 
   @override
-  Future<bool> addReaction(
-    int messageId,
-    ReactionType reactionType,
-  ) =>
+  Future<bool> addReaction(int messageId, ReactionType reactionType) =>
       _reactionMutatorService.addReaction(messageId, reactionType);
 
   @override
-  Future<bool> removeReaction(
-    int messageId,
-    ReactionType reactionType,
-  ) =>
+  Future<bool> removeReaction(int messageId, ReactionType reactionType) =>
       _reactionMutatorService.removeReaction(messageId, reactionType);
 }

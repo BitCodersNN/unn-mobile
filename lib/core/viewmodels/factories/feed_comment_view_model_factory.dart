@@ -7,13 +7,12 @@ import 'package:unn_mobile/core/viewmodels/main_page/feed/feed_comment_view_mode
 
 typedef FeedCommentCacheKey = int;
 
-class FeedCommentViewModelFactory extends CachedViewModelFactoryBase<
-    FeedCommentCacheKey, FeedCommentViewModel> {
+class FeedCommentViewModelFactory
+    extends
+        CachedViewModelFactoryBase<FeedCommentCacheKey, FeedCommentViewModel> {
   FeedCommentViewModelFactory() : super(100);
 
   @override
   FeedCommentViewModel createViewModel(FeedCommentCacheKey key) =>
-      FeedCommentViewModel(
-        getService<UnnAuthService>(),
-      );
+      FeedCommentViewModel(getService<UnnAuthService>());
 }

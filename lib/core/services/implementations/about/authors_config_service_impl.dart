@@ -13,14 +13,12 @@ import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
 class AuthorsConfigServiceImpl implements AuthorsConfigService {
   final GitConfigLoader gitConfigLoader;
 
-  AuthorsConfigServiceImpl(
-    LoggerService loggerService,
-    ApiHelper apiHelper,
-  ) : gitConfigLoader = GitConfigLoader(
-          loggerService,
-          apiHelper,
-          path: '${ApiPath.authors}/authors_config.json',
-        );
+  AuthorsConfigServiceImpl(LoggerService loggerService, ApiHelper apiHelper)
+    : gitConfigLoader = GitConfigLoader(
+        loggerService,
+        apiHelper,
+        path: '${ApiPath.authors}/authors_config.json',
+      );
 
   @override
   Future<Map<String, List<Author>>?> getAuthors() async {

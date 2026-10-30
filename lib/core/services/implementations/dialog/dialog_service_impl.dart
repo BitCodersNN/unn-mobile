@@ -33,10 +33,7 @@ class DialogServiceImpl implements DialogService {
   final LoggerService _loggerService;
   final ApiHelper _apiHelper;
 
-  DialogServiceImpl(
-    this._loggerService,
-    this._apiHelper,
-  );
+  DialogServiceImpl(this._loggerService, this._apiHelper);
 
   @override
   Future<PartialResult<Dialog>?> getDialogs({
@@ -49,12 +46,9 @@ class DialogServiceImpl implements DialogService {
       response = await _apiHelper.post(
         path: ApiPath.dialog,
         data: dialogQueryParameter.toJson()
-          ..addAll(
-            {
-              _DataKeys.sessid:
-                  (_apiHelper as AuthenticatedApiHelper).sessionId,
-            },
-          ),
+          ..addAll({
+            _DataKeys.sessid: (_apiHelper as AuthenticatedApiHelper).sessionId,
+          }),
         options: OptionsWithTimeoutAndExpectedTypeFactory.options(
           10,
           ResponseDataType.jsonMap,
@@ -67,7 +61,8 @@ class DialogServiceImpl implements DialogService {
 
     final dialogs = parseJsonIterable<Dialog>(
       ((response.data as JsonMap)[_ResponseJsonKeys.result]!
-          as JsonMap)[_ResponseJsonKeys.items]! as Iterable,
+              as JsonMap)[_ResponseJsonKeys.items]!
+          as Iterable,
       (json) {
         final type = json[_ResponseJsonKeys.type]! as String;
         switch (type) {
@@ -84,8 +79,10 @@ class DialogServiceImpl implements DialogService {
 
     return PartialResult(
       items: dialogs,
-      hasMore: ((response.data as JsonMap)[_ResponseJsonKeys.result]!
-          as JsonMap)[PartialResultJsonKeys.hasMore]! as bool,
+      hasMore:
+          ((response.data as JsonMap)[_ResponseJsonKeys.result]!
+                  as JsonMap)[PartialResultJsonKeys.hasMore]!
+              as bool,
     );
   }
 }

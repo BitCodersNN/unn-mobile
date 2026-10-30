@@ -58,10 +58,7 @@ class DayHeader extends StatelessWidget {
         if (isToday) ...[
           const SizedBox(width: 12),
           Container(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 8,
-              vertical: 2,
-            ),
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
             decoration: BoxDecoration(
               color: theme.colorScheme.primary,
               borderRadius: BorderRadius.circular(12),

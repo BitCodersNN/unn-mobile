@@ -14,11 +14,7 @@ class GitConfigLoader {
   final ApiHelper apiHelper;
   final String path;
 
-  GitConfigLoader(
-    this.loggerService,
-    this.apiHelper, {
-    required this.path,
-  });
+  GitConfigLoader(this.loggerService, this.apiHelper, {required this.path});
 
   Future<Map<String, dynamic>?> getConfig() async {
     Response response;

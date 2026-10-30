@@ -31,7 +31,5 @@ abstract interface class ReactionActionService {
   ///   4. Реакции и так не было
   /// true:
   ///   в остальных случаях
-  Future<bool> removeReaction(
-    String voteKeySigned,
-  );
+  Future<bool> removeReaction(String voteKeySigned);
 }

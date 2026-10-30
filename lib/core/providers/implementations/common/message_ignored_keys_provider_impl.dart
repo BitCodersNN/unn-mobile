@@ -29,14 +29,14 @@ class MessageIgnoredKeysProviderImpl implements MessageIgnoredKeysProvider {
 
   @override
   Future<bool> isContained() => _storage.containsKey(
-        key: _MessageIgnoredKeysProviderKeys.ignoredMessagesKey,
-      );
+    key: _MessageIgnoredKeysProviderKeys.ignoredMessagesKey,
+  );
 
   @override
   Future<void> saveData(Set<String> data) => _storage.write(
-        key: _MessageIgnoredKeysProviderKeys.ignoredMessagesKey,
-        value: data.join(';'),
-      );
+    key: _MessageIgnoredKeysProviderKeys.ignoredMessagesKey,
+    value: data.join(';'),
+  );
 
   @override
   Future<void> removeData() =>
