@@ -81,10 +81,12 @@ class _BirthdayGreetingState extends State<BirthdayGreeting>
       return;
     }
     do {
-      final progress = ((_nextHapticAt - _hapticsStart).inMicroseconds /
-              _hapticRampDuration.inMicroseconds)
-          .clamp(0.0, 1.0);
-      _nextHapticAt += _initialHapticInterval +
+      final progress =
+          ((_nextHapticAt - _hapticsStart).inMicroseconds /
+                  _hapticRampDuration.inMicroseconds)
+              .clamp(0.0, 1.0);
+      _nextHapticAt +=
+          _initialHapticInterval +
           (_finalHapticInterval - _initialHapticInterval) * progress;
     } while (_nextHapticAt <= elapsed && _nextHapticAt <= _hapticsEnd);
     triggerHaptic(HapticIntensity.light);
@@ -123,115 +125,113 @@ class _BirthdayGreetingState extends State<BirthdayGreeting>
 
   @override
   Widget build(BuildContext context) => PopScope<void>(
-        onPopInvokedWithResult: (didPop, _) {
-          if (didPop) {
-            _closing = true;
-            _controller.stop();
-          }
-        },
-        child: _buildGreeting(context),
-      );
+    onPopInvokedWithResult: (didPop, _) {
+      if (didPop) {
+        _closing = true;
+        _controller.stop();
+      }
+    },
+    child: _buildGreeting(context),
+  );
 
   Widget _buildGreeting(BuildContext context) => Material(
-        color: const Color(0xFFF8FAF7),
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
-            const DecoratedBox(
-              decoration: BoxDecoration(
-                gradient: RadialGradient(
-                  center: Alignment(0, -0.25),
-                  radius: 1.15,
-                  colors: [Color(0xFFE5F4EF), Color(0xFFFAF5EF)],
-                ),
-              ),
+    color: const Color(0xFFF8FAF7),
+    child: Stack(
+      fit: StackFit.expand,
+      children: [
+        const DecoratedBox(
+          decoration: BoxDecoration(
+            gradient: RadialGradient(
+              center: Alignment(0, -0.25),
+              radius: 1.15,
+              colors: [Color(0xFFE5F4EF), Color(0xFFFAF5EF)],
             ),
-            SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 32),
-                child: FadeTransition(
-                  opacity: _reveal,
-                  child: SlideTransition(
-                    position: Tween<Offset>(
-                      begin: const Offset(0, 0.08),
-                      end: Offset.zero,
-                    ).animate(_reveal),
-                    child: Center(
-                      child: SingleChildScrollView(
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const Icon(
-                              Icons.auto_awesome_rounded,
-                              color: Color(0xFFB89050),
-                              size: 36,
-                            ),
-                            const SizedBox(height: 24),
-                            Text(
-                              widget.greeting.title,
-                              textAlign: TextAlign.center,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .displaySmall
-                                  ?.copyWith(
-                                    fontSize: 44,
-                                    fontWeight: FontWeight.w700,
-                                    height: 1.13,
-                                    letterSpacing: -1.5,
-                                    color: const Color(0xFF244D46),
-                                  ),
-                            ),
-                            const SizedBox(height: 24),
-                            Text(
-                              widget.greeting.message,
-                              textAlign: TextAlign.center,
-                              style: const TextStyle(
-                                fontSize: 17,
-                                height: 1.55,
-                                color: Color(0xFF5B756F),
-                              ),
-                            ),
-                            const SizedBox(height: 36),
-                            FilledButton(
-                              onPressed: () => Navigator.of(context).pop(),
-                              style: FilledButton.styleFrom(
-                                backgroundColor: const Color(0xFF286F62),
-                                foregroundColor: Colors.white,
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 40,
-                                  vertical: 16,
-                                ),
-                              ),
-                              child: const Text('Спасибо!'),
-                            ),
-                          ],
+          ),
+        ),
+        SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 32),
+            child: FadeTransition(
+              opacity: _reveal,
+              child: SlideTransition(
+                position: Tween<Offset>(
+                  begin: const Offset(0, 0.08),
+                  end: Offset.zero,
+                ).animate(_reveal),
+                child: Center(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(
+                          Icons.auto_awesome_rounded,
+                          color: Color(0xFFB89050),
+                          size: 36,
                         ),
-                      ),
+                        const SizedBox(height: 24),
+                        Text(
+                          widget.greeting.title,
+                          textAlign: TextAlign.center,
+                          style: Theme.of(context).textTheme.displaySmall
+                              ?.copyWith(
+                                fontSize: 44,
+                                fontWeight: FontWeight.w700,
+                                height: 1.13,
+                                letterSpacing: -1.5,
+                                color: const Color(0xFF244D46),
+                              ),
+                        ),
+                        const SizedBox(height: 24),
+                        Text(
+                          widget.greeting.message,
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            fontSize: 17,
+                            height: 1.55,
+                            color: Color(0xFF5B756F),
+                          ),
+                        ),
+                        const SizedBox(height: 36),
+                        FilledButton(
+                          onPressed: () => Navigator.of(context).pop(),
+                          style: FilledButton.styleFrom(
+                            backgroundColor: const Color(0xFF286F62),
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 40,
+                              vertical: 16,
+                            ),
+                          ),
+                          child: const Text('Спасибо!'),
+                        ),
+                      ],
                     ),
                   ),
                 ),
               ),
             ),
-            IgnorePointer(
-              child: RepaintBoundary(
-                child: CustomPaint(painter: BirthdayBalloons(_controller)),
-              ),
-            ),
-            SafeArea(
-              child: Align(
-                alignment: Alignment.topRight,
-                child: Padding(
-                  padding: const EdgeInsets.all(12),
-                  child: IconButton(
-                    tooltip: 'Закрыть поздравление',
-                    onPressed: () => Navigator.of(context).pop(),
-                    color: const Color(0xFF5B756F),
-                    icon: const Icon(Icons.close_rounded),
-                  ),
-                ),
-              ),
-            ),
-          ],
+          ),
         ),
-      );
+        IgnorePointer(
+          child: RepaintBoundary(
+            child: CustomPaint(painter: BirthdayBalloons(_controller)),
+          ),
+        ),
+        SafeArea(
+          child: Align(
+            alignment: Alignment.topRight,
+            child: Padding(
+              padding: const EdgeInsets.all(12),
+              child: IconButton(
+                tooltip: 'Закрыть поздравление',
+                onPressed: () => Navigator.of(context).pop(),
+                color: const Color(0xFF5B756F),
+                icon: const Icon(Icons.close_rounded),
+              ),
+            ),
+          ),
+        ),
+      ],
+    ),
+  );
 }

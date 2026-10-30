@@ -13,14 +13,12 @@ class LoadingPageResourceSource
   final GitJsonResourceSource<LoadingPageCatalog> _source;
   final LogoDownloaderService _logos;
 
-  LoadingPageResourceSource(
-    GitConfigService configService,
-    this._logos,
-  ) : _source = GitJsonResourceSource(
-          configService,
-          LoadingPageCatalog.fromJson,
-          path: GitPath.loadingScreen,
-        );
+  LoadingPageResourceSource(GitConfigService configService, this._logos)
+    : _source = GitJsonResourceSource(
+        configService,
+        LoadingPageCatalog.fromJson,
+        path: GitPath.loadingScreen,
+      );
 
   @override
   GitPath get path => _source.path;
@@ -35,10 +33,7 @@ class LoadingPageResourceSource
     return pages;
   }
 
-  Future<void> _prepareLogos(
-    LoadingPageCatalog pages,
-    String revision,
-  ) async {
+  Future<void> _prepareLogos(LoadingPageCatalog pages, String revision) async {
     final files = await _logos.downloadFiles(
       fileNames: pages.pages.map((page) => page.imagePath).toSet().toList(),
       revision: revision,

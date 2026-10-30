@@ -34,7 +34,8 @@ class BirthdayBalloons extends CustomPainter {
         final delay = row * 0.045 + (column.isEven ? 0 : 0.018);
         final flight = ((progress - delay) / 0.74).clamp(0.0, 1.0);
         final eased = Curves.easeInOutCubic.transform(flight);
-        final x = column * size.width / (columns - 1) +
+        final x =
+            column * size.width / (columns - 1) +
             math.sin(flight * math.pi * 2 + index) * width * 0.13;
         final y = size.height + height - eased * (size.height + height * 3.2);
         canvas

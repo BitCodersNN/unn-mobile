@@ -11,9 +11,8 @@ class _BirthdayGreetingCatalogJsonKeys {
 class BirthdayGreetingCatalog {
   final List<BirthdayGreetingData> greetings;
 
-  BirthdayGreetingCatalog({
-    required Iterable<BirthdayGreetingData> greetings,
-  }) : greetings = List.unmodifiable(greetings);
+  BirthdayGreetingCatalog({required Iterable<BirthdayGreetingData> greetings})
+    : greetings = List.unmodifiable(greetings);
 
   factory BirthdayGreetingCatalog.fromJson(Object? json) {
     final config = json! as JsonMap;
@@ -24,8 +23,8 @@ class BirthdayGreetingCatalog {
   }
 
   JsonMap toJson() => {
-        _BirthdayGreetingCatalogJsonKeys.greetings: [
-          for (final greeting in greetings) greeting.toJson(),
-        ],
-      };
+    _BirthdayGreetingCatalogJsonKeys.greetings: [
+      for (final greeting in greetings) greeting.toJson(),
+    ],
+  };
 }

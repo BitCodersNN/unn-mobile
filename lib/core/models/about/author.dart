@@ -32,13 +32,13 @@ class Author {
   });
 
   Author withAvatarBaseUrl(String baseUrl) => Author(
-        userId: userId,
-        fullname: fullname,
-        educationGroup: educationGroup,
-        avatar: (Uri.tryParse(avatar)?.hasScheme ?? false)
-            ? avatar
-            : '$baseUrl/$avatar',
-      );
+    userId: userId,
+    fullname: fullname,
+    educationGroup: educationGroup,
+    avatar: (Uri.tryParse(avatar)?.hasScheme ?? false)
+        ? avatar
+        : '$baseUrl/$avatar',
+  );
 
   factory Author.fromJson(JsonMap json) => Author(
     userId: json[_AuthorJsonKeys.userId] as int?,

@@ -57,11 +57,7 @@ class GitResourceCacheProviderImpl<T> implements GitResourceCacheProvider<T> {
     final sha = shaKey == null
         ? (json is JsonMap ? json[_GitResourceCacheKeys.sha] as String? : null)
         : await _storage.read(key: shaKey);
-    return CachedGitResource(
-      data: _fromJson(json),
-      sha: sha,
-      isLegacy: true,
-    );
+    return CachedGitResource(data: _fromJson(json), sha: sha, isLegacy: true);
   }
 
   @override

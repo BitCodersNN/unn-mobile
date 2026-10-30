@@ -24,10 +24,7 @@ class BirthdayGreetingProviderImpl implements BirthdayGreetingProvider {
       return _shownYears[userId];
     }
     final savedYear = await _storage.read(key: _key(userId));
-    return _shownYears.putIfAbsent(
-      userId,
-      () => int.tryParse(savedYear ?? ''),
-    );
+    return _shownYears.putIfAbsent(userId, () => int.tryParse(savedYear ?? ''));
   }
 
   @override
@@ -38,8 +35,8 @@ class BirthdayGreetingProviderImpl implements BirthdayGreetingProvider {
 
   @override
   Future<String?> getLastGreetingId(int userId) => _storage.read(
-        key: '${_BirthdayGreetingProviderKeys.lastGreetingIdPrefix}.$userId',
-      );
+    key: '${_BirthdayGreetingProviderKeys.lastGreetingIdPrefix}.$userId',
+  );
 
   @override
   Future<void> saveLastGreetingId(int userId, String greetingId) =>

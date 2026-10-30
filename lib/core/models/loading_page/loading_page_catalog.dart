@@ -13,7 +13,7 @@ class LoadingPageCatalog {
   final List<LoadingPageModel> pages;
 
   LoadingPageCatalog(Iterable<LoadingPageModel> pages)
-      : pages = List.unmodifiable(pages);
+    : pages = List.unmodifiable(pages);
 
   LoadingPageModel? pageForDate(DateTime date) =>
       pages
@@ -35,8 +35,8 @@ class LoadingPageCatalog {
   }
 
   JsonMap toJson() => {
-        _LoadingPageCatalogJsonKeys.pages: [
-          for (final page in pages) page.toJson(),
-        ],
-      };
+    _LoadingPageCatalogJsonKeys.pages: [
+      for (final page in pages) page.toJson(),
+    ],
+  };
 }

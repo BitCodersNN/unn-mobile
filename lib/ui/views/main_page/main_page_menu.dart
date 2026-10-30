@@ -61,12 +61,17 @@ class MainPageMenu extends StatelessWidget {
                     ListenableBuilder(
                       listenable: router.router.routeInformationProvider,
                       builder: (context, _) => BirthdayBanner(
-                        userStorage:
-                            Injector.appInstance.get<CurrentUserSyncStorage>(),
-                        manager:
-                            Injector.appInstance.get<BirthdayGreetingManager>(),
-                        isActive: router.router.routeInformationProvider.value
-                                .uri.path ==
+                        userStorage: Injector.appInstance
+                            .get<CurrentUserSyncStorage>(),
+                        manager: Injector.appInstance
+                            .get<BirthdayGreetingManager>(),
+                        isActive:
+                            router
+                                .router
+                                .routeInformationProvider
+                                .value
+                                .uri
+                                .path ==
                             router.locationFor(MainPagePaths.more),
                       ),
                     ),

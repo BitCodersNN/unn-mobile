@@ -136,8 +136,9 @@ class _BirthdayCard extends StatelessWidget {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
     final reduceMotion = MediaQuery.disableAnimationsOf(context);
-    final transitionDuration =
-        reduceMotion ? Duration.zero : const Duration(milliseconds: 300);
+    final transitionDuration = reduceMotion
+        ? Duration.zero
+        : const Duration(milliseconds: 300);
     return Semantics(
       container: true,
       child: DecoratedBox(
@@ -155,23 +156,19 @@ class _BirthdayCard extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
           child: LayoutBuilder(
             builder: (context, constraints) {
-              final showBalloons = constraints.maxWidth >= 290 &&
+              final showBalloons =
+                  constraints.maxWidth >= 290 &&
                   MediaQuery.textScalerOf(context).scale(20) <= 28;
               final text = AnimatedSwitcher(
                 key: ValueKey(reduceMotion),
                 duration: transitionDuration,
                 switchInCurve: Curves.easeOutCubic,
                 switchOutCurve: Curves.easeInCubic,
-                transitionBuilder: (child, animation) => FadeTransition(
-                  opacity: animation,
-                  child: child,
-                ),
+                transitionBuilder: (child, animation) =>
+                    FadeTransition(opacity: animation, child: child),
                 layoutBuilder: (current, previous) => Stack(
                   alignment: Alignment.topLeft,
-                  children: [
-                    ...previous,
-                    if (current != null) current,
-                  ],
+                  children: [...previous, if (current != null) current],
                 ),
                 child: Column(
                   key: ValueKey(greeting.id),

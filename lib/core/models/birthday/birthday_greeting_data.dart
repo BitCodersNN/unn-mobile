@@ -24,18 +24,18 @@ class BirthdayGreetingData {
   });
 
   factory BirthdayGreetingData.fromJson(JsonMap json) => BirthdayGreetingData(
-        id: _readText(json, _BirthdayGreetingJsonKeys.id),
-        title: _readText(json, _BirthdayGreetingJsonKeys.title),
-        message: _readText(json, _BirthdayGreetingJsonKeys.message),
-        shortMessage: _readText(json, _BirthdayGreetingJsonKeys.shortMessage),
-      );
+    id: _readText(json, _BirthdayGreetingJsonKeys.id),
+    title: _readText(json, _BirthdayGreetingJsonKeys.title),
+    message: _readText(json, _BirthdayGreetingJsonKeys.message),
+    shortMessage: _readText(json, _BirthdayGreetingJsonKeys.shortMessage),
+  );
 
   JsonMap toJson() => {
-        _BirthdayGreetingJsonKeys.id: id,
-        _BirthdayGreetingJsonKeys.title: title,
-        _BirthdayGreetingJsonKeys.message: message,
-        _BirthdayGreetingJsonKeys.shortMessage: shortMessage,
-      };
+    _BirthdayGreetingJsonKeys.id: id,
+    _BirthdayGreetingJsonKeys.title: title,
+    _BirthdayGreetingJsonKeys.message: message,
+    _BirthdayGreetingJsonKeys.shortMessage: shortMessage,
+  };
 
   static String _readText(JsonMap json, String key) =>
       (json[key]! as String).trim();

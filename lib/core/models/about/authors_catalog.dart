@@ -12,31 +12,30 @@ class AuthorsCatalog {
   AuthorsCatalog({
     required Iterable<Author> authors,
     required Iterable<Author> pastAuthors,
-  })  : authors = List.unmodifiable(authors),
-        pastAuthors = List.unmodifiable(pastAuthors);
+  }) : authors = List.unmodifiable(authors),
+       pastAuthors = List.unmodifiable(pastAuthors);
 
   AuthorsCatalog withAvatarBaseUrl(String baseUrl) => AuthorsCatalog(
-        authors: authors.map((author) => author.withAvatarBaseUrl(baseUrl)),
-        pastAuthors:
-            pastAuthors.map((author) => author.withAvatarBaseUrl(baseUrl)),
-      );
+    authors: authors.map((author) => author.withAvatarBaseUrl(baseUrl)),
+    pastAuthors: pastAuthors.map((author) => author.withAvatarBaseUrl(baseUrl)),
+  );
 
   factory AuthorsCatalog.fromJson(Object? json) {
     final config = json! as JsonMap;
     return AuthorsCatalog(
-      authors: (config[AuthorsConfigKeys.authors]! as List)
-          .map((item) => Author.fromJson(item as JsonMap)),
-      pastAuthors: (config[AuthorsConfigKeys.pastAuthors]! as List)
-          .map((item) => Author.fromJson(item as JsonMap)),
+      authors: (config[AuthorsConfigKeys.authors]! as List).map(
+        (item) => Author.fromJson(item as JsonMap),
+      ),
+      pastAuthors: (config[AuthorsConfigKeys.pastAuthors]! as List).map(
+        (item) => Author.fromJson(item as JsonMap),
+      ),
     );
   }
 
   JsonMap toJson() => {
-        AuthorsConfigKeys.authors: [
-          for (final author in authors) author.toJson(),
-        ],
-        AuthorsConfigKeys.pastAuthors: [
-          for (final author in pastAuthors) author.toJson(),
-        ],
-      };
+    AuthorsConfigKeys.authors: [for (final author in authors) author.toJson()],
+    AuthorsConfigKeys.pastAuthors: [
+      for (final author in pastAuthors) author.toJson(),
+    ],
+  };
 }
