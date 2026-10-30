@@ -100,66 +100,63 @@ class _AnchoredPopupRoute<T> extends PopupRoute<T> {
     BuildContext context,
     Animation<double> animation,
     Animation<double> secondaryAnimation,
-  ) =>
-      themes.wrap(
-        LayoutBuilder(
-          builder: (context, constraints) {
-            final media = MediaQuery.of(context);
-            final safeArea = EdgeInsets.fromLTRB(
-              media.padding.left + 16,
-              media.padding.top + 12,
-              media.padding.right + 16,
-              math.max(media.padding.bottom, media.viewInsets.bottom) + 12,
-            ).deflateRect(Offset.zero & constraints.biggest);
-            return AnimatedBuilder(
-              animation: animation,
-              builder: (context, child) {
-                final progress =
-                    Curves.easeInOutCubic.transform(animation.value);
-                final backdrop = ColoredBox(
-                  color:
-                      Colors.black.withValues(alpha: barrierOpacity * progress),
-                );
-                return Stack(
-                  children: [
-                    Positioned.fill(
-                      child: IgnorePointer(
-                        child: blurSigma > 0
-                            ? BackdropFilter(
-                                filter: ui.ImageFilter.blur(
-                                  sigmaX: blurSigma * progress,
-                                  sigmaY: blurSigma * progress,
-                                ),
-                                child: backdrop,
-                              )
-                            : backdrop,
-                      ),
+  ) => themes.wrap(
+    LayoutBuilder(
+      builder: (context, constraints) {
+        final media = MediaQuery.of(context);
+        final safeArea = EdgeInsets.fromLTRB(
+          media.padding.left + 16,
+          media.padding.top + 12,
+          media.padding.right + 16,
+          math.max(media.padding.bottom, media.viewInsets.bottom) + 12,
+        ).deflateRect(Offset.zero & constraints.biggest);
+        return AnimatedBuilder(
+          animation: animation,
+          builder: (context, child) {
+            final progress = Curves.easeInOutCubic.transform(animation.value);
+            final backdrop = ColoredBox(
+              color: Colors.black.withValues(alpha: barrierOpacity * progress),
+            );
+            return Stack(
+              children: [
+                Positioned.fill(
+                  child: IgnorePointer(
+                    child: blurSigma > 0
+                        ? BackdropFilter(
+                            filter: ui.ImageFilter.blur(
+                              sigmaX: blurSigma * progress,
+                              sigmaY: blurSigma * progress,
+                            ),
+                            child: backdrop,
+                          )
+                        : backdrop,
+                  ),
+                ),
+                CustomSingleChildLayout(
+                  delegate: _AnchoredPopupLayout(
+                    anchor: anchor,
+                    safeArea: safeArea,
+                    width: width,
+                    gap: gap,
+                    placement: placement,
+                    alignment: alignment,
+                  ),
+                  child: Opacity(
+                    opacity: progress,
+                    child: Transform.scale(
+                      scale: 0.96 + 0.04 * progress,
+                      child: child,
                     ),
-                    CustomSingleChildLayout(
-                      delegate: _AnchoredPopupLayout(
-                        anchor: anchor,
-                        safeArea: safeArea,
-                        width: width,
-                        gap: gap,
-                        placement: placement,
-                        alignment: alignment,
-                      ),
-                      child: Opacity(
-                        opacity: progress,
-                        child: Transform.scale(
-                          scale: 0.96 + 0.04 * progress,
-                          child: child,
-                        ),
-                      ),
-                    ),
-                  ],
-                );
-              },
-              child: Builder(builder: builder),
+                  ),
+                ),
+              ],
             );
           },
-        ),
-      );
+          child: Builder(builder: builder),
+        );
+      },
+    ),
+  );
 }
 
 class _AnchoredPopupLayout extends SingleChildLayoutDelegate {

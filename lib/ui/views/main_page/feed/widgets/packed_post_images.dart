@@ -77,7 +77,7 @@ class _PackedPostImagesState extends State<PackedPostImages> {
                           widget.authorizationHeaders,
                         ),
                         fit: BoxFit.cover,
-                        placeholder: (_, __) => ColoredBox(
+                        placeholder: (_, _) => ColoredBox(
                           color: colors.surfaceContainerHigh,
                           child: const Center(
                             child: CircularProgressIndicator.adaptive(
@@ -85,7 +85,7 @@ class _PackedPostImagesState extends State<PackedPostImages> {
                             ),
                           ),
                         ),
-                        errorWidget: (_, __, ___) => ColoredBox(
+                        errorWidget: (_, _, _) => ColoredBox(
                           color: colors.surfaceContainerHigh,
                           child: Icon(
                             Icons.broken_image_outlined,

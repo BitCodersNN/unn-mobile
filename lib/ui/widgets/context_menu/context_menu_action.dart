@@ -18,23 +18,17 @@ class ContextMenuAction {
     required String label,
     VoidCallback? onTap,
     Widget? leadingIcon,
-  }) =>
-      ContextMenuAction(
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (leadingIcon != null) ...[
-              leadingIcon,
-              const SizedBox(width: 12),
-            ],
-            Flexible(child: Text(label)),
-          ],
-        ),
-        onTap: onTap,
-      );
+  }) => ContextMenuAction(
+    child: Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (leadingIcon != null) ...[leadingIcon, const SizedBox(width: 12)],
+        Flexible(child: Text(label)),
+      ],
+    ),
+    onTap: onTap,
+  );
 
-  factory ContextMenuAction.custom({
-    required Widget child,
-  }) =>
+  factory ContextMenuAction.custom({required Widget child}) =>
       ContextMenuAction(child: child, enabled: false);
 }

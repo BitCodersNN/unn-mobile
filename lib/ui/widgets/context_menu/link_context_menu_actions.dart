@@ -9,23 +9,21 @@ List<ContextMenuAction> createLinkActions({
   required BuildContext context,
   required String url,
   required VoidCallback onOpen,
-}) =>
-    [
-      ContextMenuAction.text(
-        label: 'Открыть',
-        onTap: onOpen,
-        leadingIcon: const Icon(Icons.open_in_new, size: 18),
-      ),
-      ContextMenuAction.text(
-        label: 'Скопировать ссылку',
-        onTap: () {
-          Clipboard.setData(ClipboardData(text: url));
-          if (context.mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Ссылка скопирована')),
-            );
-          }
-        },
-        leadingIcon: const Icon(Icons.link, size: 18),
-      ),
-    ];
+}) => [
+  ContextMenuAction.text(
+    label: 'Открыть',
+    onTap: onOpen,
+    leadingIcon: const Icon(Icons.open_in_new, size: 18),
+  ),
+  ContextMenuAction.text(
+    label: 'Скопировать ссылку',
+    onTap: () {
+      Clipboard.setData(ClipboardData(text: url));
+      if (context.mounted) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(const SnackBar(content: Text('Ссылка скопирована')));
+      }
+    },
+    leadingIcon: const Icon(Icons.link, size: 18),
+  ),
+];

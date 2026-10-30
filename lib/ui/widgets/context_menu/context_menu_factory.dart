@@ -16,93 +16,89 @@ List<ContextMenuAction> createMessageActions({
   required ReactionViewModelBase model,
   required String? text,
   required VoidCallback onReply,
-}) =>
-    [
-      _reactionAction(context, model),
-      if (text != null) _copyTextAction(text),
-      ContextMenuAction.text(
-        label: 'Ответить',
-        onTap: onReply,
-        leadingIcon: const Icon(Icons.reply, size: 18),
-      ),
-    ];
+}) => [
+  _reactionAction(context, model),
+  if (text != null) _copyTextAction(text),
+  ContextMenuAction.text(
+    label: 'Ответить',
+    onTap: onReply,
+    leadingIcon: const Icon(Icons.reply, size: 18),
+  ),
+];
 
 List<ContextMenuAction> createPostActions({
   required BuildContext context,
   required FeedPostViewModel model,
   required ValueChanged<FeedPostViewModel> onShare,
   bool includeReactions = true,
-}) =>
-    [
-      if (includeReactions && model.reactionViewModel != null)
-        _reactionAction(context, model.reactionViewModel!),
-      _copyTextAction(htmlToPlainText(model.postText)),
-      ContextMenuAction.text(
-        label: model.isPinned ? 'Открепить' : 'Закрепить',
-        onTap: model.togglePin,
-        leadingIcon: Icon(
-          model.isPinned ? Icons.push_pin : Icons.push_pin_outlined,
-          size: 18,
-        ),
-      ),
-      ContextMenuAction.text(
-        label: 'Поделиться',
-        onTap: () => onShare(model),
-        leadingIcon: const Icon(Icons.share, size: 18),
-      ),
-    ];
+}) => [
+  if (includeReactions && model.reactionViewModel != null)
+    _reactionAction(context, model.reactionViewModel!),
+  _copyTextAction(htmlToPlainText(model.postText)),
+  ContextMenuAction.text(
+    label: model.isPinned ? 'Открепить' : 'Закрепить',
+    onTap: model.togglePin,
+    leadingIcon: Icon(
+      model.isPinned ? Icons.push_pin : Icons.push_pin_outlined,
+      size: 18,
+    ),
+  ),
+  ContextMenuAction.text(
+    label: 'Поделиться',
+    onTap: () => onShare(model),
+    leadingIcon: const Icon(Icons.share, size: 18),
+  ),
+];
 
 List<ContextMenuAction> createCommentActions({
   required BuildContext context,
   required FeedCommentViewModel model,
   bool includeReactions = true,
-}) =>
-    [
-      if (includeReactions && model.reactionViewModel != null)
-        _reactionAction(context, model.reactionViewModel!),
-      _copyTextAction(htmlToPlainText(model.message)),
-    ];
+}) => [
+  if (includeReactions && model.reactionViewModel != null)
+    _reactionAction(context, model.reactionViewModel!),
+  _copyTextAction(htmlToPlainText(model.message)),
+];
 
 ContextMenuAction _copyTextAction(String text) => ContextMenuAction.text(
-      label: 'Скопировать текст',
-      onTap: () => Clipboard.setData(ClipboardData(text: text)),
-      leadingIcon: const Icon(Icons.content_copy, size: 18),
-    );
+  label: 'Скопировать текст',
+  onTap: () => Clipboard.setData(ClipboardData(text: text)),
+  leadingIcon: const Icon(Icons.content_copy, size: 18),
+);
 
 ContextMenuAction _reactionAction(
   BuildContext context,
   ReactionViewModelBase model,
-) =>
-    ContextMenuAction.custom(
-      child: SizedBox(
-        width: 280,
-        child: Scrollbar(
-          child: SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(vertical: 4),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                for (final reaction in ReactionType.values)
-                  GestureDetector(
-                    onTap: () {
-                      triggerHaptic(HapticIntensity.selection);
-                      if (model.currentReaction != reaction) {
-                        model.toggleReaction(reaction);
-                      }
-                      Navigator.pop(context);
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.all(4),
-                      child: CircleAvatar(
-                        radius: 16,
-                        backgroundImage: AssetImage(reaction.assetName),
-                      ),
-                    ),
+) => ContextMenuAction.custom(
+  child: SizedBox(
+    width: 280,
+    child: Scrollbar(
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.symmetric(vertical: 4),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            for (final reaction in ReactionType.values)
+              GestureDetector(
+                onTap: () {
+                  triggerHaptic(HapticIntensity.selection);
+                  if (model.currentReaction != reaction) {
+                    model.toggleReaction(reaction);
+                  }
+                  Navigator.pop(context);
+                },
+                child: Padding(
+                  padding: const EdgeInsets.all(4),
+                  child: CircleAvatar(
+                    radius: 16,
+                    backgroundImage: AssetImage(reaction.assetName),
                   ),
-              ],
-            ),
-          ),
+                ),
+              ),
+          ],
         ),
       ),
-    );
+    ),
+  ),
+);

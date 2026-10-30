@@ -14,37 +14,37 @@ class TextHtmlWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => HtmlWidget(
-        text,
-        textStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
-              height: 1.55,
+    text,
+    textStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
+      color: Theme.of(context).colorScheme.onSurfaceVariant,
+      height: 1.55,
+    ),
+    onTapUrl: htmlWidgetOnTapUrl,
+    onTapImage: (imageMetadata) => showFeedImages(
+      context,
+      images: [imageMetadata.sources.first.url],
+      headers: headers,
+    ),
+    customWidgetBuilder: (element) {
+      if (element.localName == 'a') {
+        final href = element.attributes['href'];
+        final text = element.text;
+        if (href != null) {
+          return LinkContextMenu(
+            url: href,
+            label: text,
+            onOpen: () => htmlWidgetOnTapUrl(href),
+            child: Text(
+              text,
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.primary,
+                decoration: TextDecoration.underline,
+              ),
             ),
-        onTapUrl: htmlWidgetOnTapUrl,
-        onTapImage: (imageMetadata) => showFeedImages(
-          context,
-          images: [imageMetadata.sources.first.url],
-          headers: headers,
-        ),
-        customWidgetBuilder: (element) {
-          if (element.localName == 'a') {
-            final href = element.attributes['href'];
-            final text = element.text;
-            if (href != null) {
-              return LinkContextMenu(
-                url: href,
-                label: text,
-                onOpen: () => htmlWidgetOnTapUrl(href),
-                child: Text(
-                  text,
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.primary,
-                    decoration: TextDecoration.underline,
-                  ),
-                ),
-              );
-            }
-          }
-          return null;
-        },
-      );
+          );
+        }
+      }
+      return null;
+    },
+  );
 }

@@ -17,8 +17,8 @@ class LinkPreview extends StatelessWidget {
     final heading = title.isNotEmpty && title != url
         ? title
         : host.isNotEmpty
-            ? host
-            : 'Ссылка';
+        ? host
+        : 'Ссылка';
     return Padding(
       padding: const EdgeInsets.all(16),
       child: Row(

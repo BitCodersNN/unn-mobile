@@ -60,7 +60,7 @@ class FeedAuthorHeader extends StatelessWidget {
                       ? CachedNetworkImage(
                           imageUrl: model.avatarUrl!,
                           fit: BoxFit.cover,
-                          errorWidget: (_, __, ___) =>
+                          errorWidget: (_, _, _) =>
                               _initials(context, model),
                         )
                       : _initials(context, model),
@@ -111,15 +111,15 @@ class FeedAuthorHeader extends StatelessWidget {
   }
 
   Widget _initials(BuildContext context, ProfileViewModel model) => Center(
-        child: Text(
-          model.initials,
-          style: TextStyle(
-            fontSize: compact ? 12 : 14,
-            fontWeight: FontWeight.w700,
-            color: Theme.of(context).colorScheme.onPrimaryContainer,
-          ),
-        ),
-      );
+    child: Text(
+      model.initials,
+      style: TextStyle(
+        fontSize: compact ? 12 : 14,
+        fontWeight: FontWeight.w700,
+        color: Theme.of(context).colorScheme.onPrimaryContainer,
+      ),
+    ),
+  );
 
   void _openProfile(BuildContext context, ProfileViewModel model) {
     final id = model.userData?.bitrixId;

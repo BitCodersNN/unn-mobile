@@ -160,8 +160,8 @@ class FeedScreenViewState extends State<FeedScreenView>
     var posts = model.filter == FeedFilter.pinned
         ? model.pinnedPosts
         : online
-            ? model.posts
-            : model.offlinePosts;
+        ? model.posts
+        : model.offlinePosts;
     if (model.filter == FeedFilter.important) {
       posts = posts.where((post) => post.isAnnouncement).toList();
     }
@@ -171,9 +171,9 @@ class FeedScreenViewState extends State<FeedScreenView>
           .where(
             (post) =>
                 htmlToPlainText(post.postText).toLowerCase().contains(query) ||
-                (post.profileViewModel?.fullname
-                        .toLowerCase()
-                        .contains(query) ??
+                (post.profileViewModel?.fullname.toLowerCase().contains(
+                      query,
+                    ) ??
                     false),
           )
           .toList();
@@ -183,74 +183,74 @@ class FeedScreenViewState extends State<FeedScreenView>
 
   @override
   Widget build(BuildContext context) => OfflineOverlayDisplayer(
-        child: OnlineStatusBuilder(
-          builder: (context, online) => BaseView<FeedScreenViewModel>(
-            model: _viewModel,
-            onModelReady: (model) => model.init(),
-            builder: (context, model, _) {
-              final theme = Theme.of(context);
-              return Scaffold(
-                backgroundColor: theme.colorScheme.surfaceContainerLow,
-                appBar: AppBar(
-                  backgroundColor: theme.colorScheme.surfaceContainerLow,
-                  scrolledUnderElevation: 0,
-                  toolbarHeight:
-                      12 + MediaQuery.textScalerOf(context).scale(48),
-                  title: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        DateFormat('EEEE, d MMMM', 'ru_RU')
-                            .format(DateTime.now())
-                            .toUpperCase(),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: theme.textTheme.labelSmall?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant,
-                        ),
-                      ),
-                      Text(
-                        'Лента',
-                        style: theme.textTheme.headlineSmall
-                            ?.copyWith(fontWeight: FontWeight.w400),
-                      ),
-                    ],
-                  ),
-                  automaticallyImplyLeading: false,
-                  actions: [
-                    if (!_search.isOpen && !model.hasSearch)
-                      IconButton(
-                        onPressed: online && !model.isBusy && !model.loadingMore
-                            ? _openSearch
-                            : null,
-                        tooltip: 'Поиск по ленте',
-                        icon: const Icon(Icons.search_rounded),
-                      ),
-                  ],
-                ),
-                body: Column(
-                  children: [
-                    Center(
-                      child: ConstrainedBox(
-                        constraints: const BoxConstraints(maxWidth: 720),
-                        child: FeedFiltersBar(
-                          selected: _previewFilter ?? model.filter,
-                          onSelected:
-                              online && !model.isBusy && !model.loadingMore
-                                  ? _selectFilter
-                                  : null,
-                        ),
-                      ),
+    child: OnlineStatusBuilder(
+      builder: (context, online) => BaseView<FeedScreenViewModel>(
+        model: _viewModel,
+        onModelReady: (model) => model.init(),
+        builder: (context, model, _) {
+          final theme = Theme.of(context);
+          return Scaffold(
+            backgroundColor: theme.colorScheme.surfaceContainerLow,
+            appBar: AppBar(
+              backgroundColor: theme.colorScheme.surfaceContainerLow,
+              scrolledUnderElevation: 0,
+              toolbarHeight: 12 + MediaQuery.textScalerOf(context).scale(48),
+              title: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    DateFormat(
+                      'EEEE, d MMMM',
+                      'ru_RU',
+                    ).format(DateTime.now()).toUpperCase(),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
                     ),
-                    Expanded(child: _feedBody(context, model, online)),
-                  ],
+                  ),
+                  Text(
+                    'Лента',
+                    style: theme.textTheme.headlineSmall?.copyWith(
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                ],
+              ),
+              automaticallyImplyLeading: false,
+              actions: [
+                if (!_search.isOpen && !model.hasSearch)
+                  IconButton(
+                    onPressed: online && !model.isBusy && !model.loadingMore
+                        ? _openSearch
+                        : null,
+                    tooltip: 'Поиск по ленте',
+                    icon: const Icon(Icons.search_rounded),
+                  ),
+              ],
+            ),
+            body: Column(
+              children: [
+                Center(
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 720),
+                    child: FeedFiltersBar(
+                      selected: _previewFilter ?? model.filter,
+                      onSelected: online && !model.isBusy && !model.loadingMore
+                          ? _selectFilter
+                          : null,
+                    ),
+                  ),
                 ),
-              );
-            },
-          ),
-        ),
-      );
+                Expanded(child: _feedBody(context, model, online)),
+              ],
+            ),
+          );
+        },
+      ),
+    ),
+  );
 
   Widget _feedBody(
     BuildContext context,
@@ -325,7 +325,8 @@ class FeedScreenViewState extends State<FeedScreenView>
                     if (model.isReplacingPosts || posts.isEmpty)
                       SliverFillRemaining(
                         hasScrollBody: false,
-                        child: model.isReplacingPosts ||
+                        child:
+                            model.isReplacingPosts ||
                                 model.isBusy ||
                                 (online && model.loadingMore)
                             ? const Center(
@@ -347,8 +348,8 @@ class FeedScreenViewState extends State<FeedScreenView>
                                 caption: model.hasSearch
                                     ? 'Попробуйте другой запрос'
                                     : !online
-                                        ? 'Подключитесь к сети, чтобы загрузить ленту'
-                                        : 'Потяните вниз, чтобы обновить ленту',
+                                    ? 'Подключитесь к сети, чтобы загрузить ленту'
+                                    : 'Потяните вниз, чтобы обновить ленту',
                               ),
                       )
                     else
@@ -358,8 +359,8 @@ class FeedScreenViewState extends State<FeedScreenView>
                         title: model.hasSearch
                             ? 'Результаты поиска'
                             : model.filter == FeedFilter.all
-                                ? null
-                                : model.filter.caption,
+                            ? null
+                            : model.filter.caption,
                       ),
                     if ((model.loadingMore || model.isBusy) &&
                         !model.isReplacingPosts &&
@@ -390,11 +391,11 @@ class FeedScreenViewState extends State<FeedScreenView>
   }
 
   Widget _notice(String message, Color color) => SliverToBoxAdapter(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
-          child: Text(message, style: TextStyle(color: color)),
-        ),
-      );
+    child: Padding(
+      padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
+      child: Text(message, style: TextStyle(color: color)),
+    ),
+  );
 
   @override
   void dispose() {

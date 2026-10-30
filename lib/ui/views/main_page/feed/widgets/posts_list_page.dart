@@ -24,64 +24,64 @@ class PostsListPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        backgroundColor: Theme.of(context).colorScheme.surfaceContainerLow,
-        appBar: AppBar(
-          title: Text(title),
-          backgroundColor: Theme.of(context).colorScheme.surfaceContainerLow,
-          scrolledUnderElevation: 0,
-        ),
-        body: OnlineStatusBuilder(
-          builder: (context, online) => LayoutBuilder(
-            builder: (context, constraints) => RefreshIndicator.adaptive(
-              onRefresh: () async {
-                if (online && viewModel != null) {
-                  triggerHaptic(HapticIntensity.light);
-                  await viewModel?.refreshFeatured();
-                }
-              },
-              child: Builder(
-                builder: (context) {
-                  if (viewModel == null) {
-                    return const Text('Что-то пошло не так');
-                  }
-                  if (postsList.isEmpty) {
-                    final child = Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Center(
-                        child: Text(
-                          noPostsText,
-                          style: Theme.of(context).textTheme.bodyLarge,
-                        ),
-                      ),
-                    );
-                    return SingleChildScrollView(
-                      physics: const AlwaysScrollableScrollPhysics(),
-                      child: ConstrainedBox(
-                        constraints: BoxConstraints(
-                          minWidth: constraints.maxWidth,
-                          minHeight: constraints.maxHeight,
-                        ),
-                        child: child,
-                      ),
-                    );
-                  }
-                  return SingleChildScrollView(
-                    physics: const AlwaysScrollableScrollPhysics(),
-                    child: Column(
-                      children: [
-                        for (final post in postsList)
-                          FeedPost(
-                            key: ValueKey(post),
-                            post: post,
-                            showingComments: false,
-                          ),
-                      ],
+    backgroundColor: Theme.of(context).colorScheme.surfaceContainerLow,
+    appBar: AppBar(
+      title: Text(title),
+      backgroundColor: Theme.of(context).colorScheme.surfaceContainerLow,
+      scrolledUnderElevation: 0,
+    ),
+    body: OnlineStatusBuilder(
+      builder: (context, online) => LayoutBuilder(
+        builder: (context, constraints) => RefreshIndicator.adaptive(
+          onRefresh: () async {
+            if (online && viewModel != null) {
+              triggerHaptic(HapticIntensity.light);
+              await viewModel?.refreshFeatured();
+            }
+          },
+          child: Builder(
+            builder: (context) {
+              if (viewModel == null) {
+                return const Text('Что-то пошло не так');
+              }
+              if (postsList.isEmpty) {
+                final child = Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Center(
+                    child: Text(
+                      noPostsText,
+                      style: Theme.of(context).textTheme.bodyLarge,
                     ),
-                  );
-                },
-              ),
-            ),
+                  ),
+                );
+                return SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      minWidth: constraints.maxWidth,
+                      minHeight: constraints.maxHeight,
+                    ),
+                    child: child,
+                  ),
+                );
+              }
+              return SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                child: Column(
+                  children: [
+                    for (final post in postsList)
+                      FeedPost(
+                        key: ValueKey(post),
+                        post: post,
+                        showingComments: false,
+                      ),
+                  ],
+                ),
+              );
+            },
           ),
         ),
-      );
+      ),
+    ),
+  );
 }

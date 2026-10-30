@@ -44,7 +44,8 @@ class ReactionBubble extends StatelessWidget {
                         : theme.colorScheme.outlineVariant,
                   ),
             ),
-            color: backgroundColor ??
+            color:
+                backgroundColor ??
                 (isSelected
                     ? theme.colorScheme.primaryContainer
                     : theme.colorScheme.surface),
@@ -57,8 +58,7 @@ class ReactionBubble extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.all(4.0),
                   child: SizedBox(
-                    height: MediaQuery.of(context)
-                        .textScaler
+                    height: MediaQuery.of(context).textScaler
                         .clamp(maxScaleFactor: 1.3)
                         .scale(16),
                     child: icon,
@@ -67,7 +67,8 @@ class ReactionBubble extends StatelessWidget {
                 Text(
                   text,
                   style: theme.textTheme.labelMedium?.copyWith(
-                    color: foregroundColor ??
+                    color:
+                        foregroundColor ??
                         (isSelected
                             ? theme.colorScheme.primary
                             : theme.colorScheme.onSurfaceVariant),

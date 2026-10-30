@@ -57,10 +57,10 @@ class _FeedPostState extends State<FeedPost> {
       final viewport = RenderAbstractViewport.maybeOf(source);
       if (viewport != null) {
         final position = scrollable.position;
-        final target = viewport.getOffsetToReveal(source, 0).offset.clamp(
-              position.minScrollExtent,
-              position.maxScrollExtent,
-            );
+        final target = viewport
+            .getOffsetToReveal(source, 0)
+            .offset
+            .clamp(position.minScrollExtent, position.maxScrollExtent);
         if (position.pixels > target) {
           position.jumpTo(target);
         }
@@ -77,289 +77,284 @@ class _FeedPostState extends State<FeedPost> {
 
   @override
   Widget build(BuildContext context) => BaseView<FeedPostViewModel>(
-        model: widget.post,
-        builder: (context, model, _) {
-          final theme = Theme.of(context);
-          return GestureDetector(
-            onTap:
-                widget.showingComments ? null : () => _openPost(context, model),
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-              child: FeedItemContextMenu(
-                previewKey: _previewKey,
-                reactions: model.reactionViewModel,
-                actionsBuilder: (context) => createPostActions(
-                  context: context,
-                  model: model,
-                  onShare: _sharePost,
-                  includeReactions: false,
-                ),
-                child: Shimmer(
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 100),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(24),
-                      color: theme.colorScheme.surfaceContainerLowest,
-                      gradient: model.isAnnouncement
-                          ? LinearGradient(
-                              begin: Alignment.topCenter,
-                              end: Alignment.bottomCenter,
-                              colors: [
-                                Color.alphaBlend(
-                                  theme.colorScheme.error
-                                      .withValues(alpha: 0.07),
-                                  theme.colorScheme.surfaceContainerLowest,
-                                ),
-                                theme.colorScheme.surfaceContainerLowest,
-                              ],
-                            )
-                          : null,
-                      border: Border.all(
-                        color: model.isAnnouncement
-                            ? theme.colorScheme.error.withValues(alpha: 0.2)
-                            : theme.colorScheme.outlineVariant
-                                .withValues(alpha: 0.6),
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          offset: const Offset(0, 6),
-                          blurRadius: 20,
-                          color: theme.shadowColor.withValues(alpha: 0.04),
-                        ),
-                      ],
+    model: widget.post,
+    builder: (context, model, _) {
+      final theme = Theme.of(context);
+      return GestureDetector(
+        onTap: widget.showingComments ? null : () => _openPost(context, model),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+          child: FeedItemContextMenu(
+            previewKey: _previewKey,
+            reactions: model.reactionViewModel,
+            actionsBuilder: (context) => createPostActions(
+              context: context,
+              model: model,
+              onShare: _sharePost,
+              includeReactions: false,
+            ),
+            child: Shimmer(
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 100),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(24),
+                  color: theme.colorScheme.surfaceContainerLowest,
+                  gradient: model.isAnnouncement
+                      ? LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            Color.alphaBlend(
+                              theme.colorScheme.error.withValues(alpha: 0.07),
+                              theme.colorScheme.surfaceContainerLowest,
+                            ),
+                            theme.colorScheme.surfaceContainerLowest,
+                          ],
+                        )
+                      : null,
+                  border: Border.all(
+                    color: model.isAnnouncement
+                        ? theme.colorScheme.error.withValues(alpha: 0.2)
+                        : theme.colorScheme.outlineVariant.withValues(
+                            alpha: 0.6,
+                          ),
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      offset: const Offset(0, 6),
+                      blurRadius: 20,
+                      color: theme.shadowColor.withValues(alpha: 0.04),
                     ),
-                    child: Column(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.all(16),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                  ],
+                ),
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Row(
                             children: [
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: FeedAuthorHeader(
-                                      dateTime: model.postTime == null
-                                          ? ''
-                                          : formatFeedPostTime(
-                                              model.postTime!,
-                                            ),
-                                      canOpenProfile: true,
-                                      viewModel: model.profileViewModel ??
-                                          ProfileViewModel.empty(),
-                                    ),
-                                  ),
-                                  if (model.isAnnouncement)
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 10,
-                                        vertical: 5,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        color: theme.colorScheme.error
-                                            .withValues(alpha: 0.1),
-                                        borderRadius: BorderRadius.circular(20),
-                                      ),
-                                      child: Text(
-                                        'ВАЖНО',
-                                        style: theme.textTheme.labelSmall
-                                            ?.copyWith(
-                                          color: theme.colorScheme.error,
-                                          fontWeight: FontWeight.w700,
-                                          letterSpacing: 0.5,
-                                        ),
-                                      ),
-                                    ),
-                                  IconButton(
-                                    onPressed: () {
-                                      triggerHaptic(HapticIntensity.selection);
-                                      model.togglePin();
-                                    },
-                                    tooltip: model.isPinned
-                                        ? 'Открепить пост'
-                                        : 'Закрепить пост',
-                                    icon: Icon(
-                                      model.isPinned
-                                          ? Icons.bookmark_rounded
-                                          : Icons.bookmark_border_rounded,
-                                      color: model.isPinned
-                                          ? theme.colorScheme.primary
-                                          : theme.colorScheme.onSurfaceVariant,
-                                      size: 22,
-                                    ),
-                                  ),
-                                ],
+                              Expanded(
+                                child: FeedAuthorHeader(
+                                  dateTime: model.postTime == null
+                                      ? ''
+                                      : formatFeedPostTime(model.postTime!),
+                                  canOpenProfile: true,
+                                  viewModel:
+                                      model.profileViewModel ??
+                                      ProfileViewModel.empty(),
+                                ),
                               ),
-                              const SizedBox(height: 16.0),
-                              if (isCollapsed)
-                                HeightLimiter(
-                                  maxHeight: 240,
-                                  fadeEffectHeight: 40,
-                                  overflowIndicatorOutside: true,
-                                  overflowIndicatorBuilder: (context) =>
-                                      Padding(
-                                    padding: const EdgeInsets.only(top: 8),
-                                    child: _PostExpansionButton(
-                                      onPressed: () =>
-                                          setState(() => isCollapsed = false),
-                                      label: 'РАЗВЕРНУТЬ',
-                                    ),
-                                  ),
-                                  child: _buildPostContent(model),
-                                )
-                              else
-                                _buildPostContent(model),
-                              if (!isCollapsed && widget.isCollapsed)
-                                _PostExpansionButton(
-                                  onPressed: _collapse,
-                                  label: 'СКРЫТЬ',
-                                ),
-                              if (model.attachedImages.isNotEmpty)
-                                Padding(
-                                  padding: const EdgeInsets.only(top: 12),
-                                  child: PackedPostImages(
-                                    attachedImages: model.attachedImages,
-                                    authorizationHeaders: model.authHeaders,
-                                  ),
-                                ),
                               if (model.isAnnouncement)
-                                Padding(
-                                  padding: EdgeInsets.only(
-                                    top: 12,
-                                    bottom: model.attachedFileViewModels.isEmpty
-                                        ? 4
-                                        : 0,
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 10,
+                                    vertical: 5,
                                   ),
-                                  child: FilledButton(
-                                    style: FilledButton.styleFrom(
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(14),
-                                      ),
-                                      padding: const EdgeInsets.symmetric(
-                                        vertical: 12,
-                                      ),
+                                  decoration: BoxDecoration(
+                                    color: theme.colorScheme.error.withValues(
+                                      alpha: 0.1,
                                     ),
-                                    onPressed: model.isAnnouncementRead
-                                        ? null
-                                        : () {
-                                            triggerHaptic(
-                                              HapticIntensity.light,
-                                            );
-                                            model.markReadIfImportant();
-                                          },
-                                    child: Text(
-                                      model.isAnnouncementRead
-                                          ? 'Сообщение прочитано'
-                                          : 'Прочитать',
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  child: Text(
+                                    'ВАЖНО',
+                                    style: theme.textTheme.labelSmall?.copyWith(
+                                      color: theme.colorScheme.error,
+                                      fontWeight: FontWeight.w700,
+                                      letterSpacing: 0.5,
                                     ),
                                   ),
-                                )
-                              else if (model.attachedFileViewModels.isEmpty)
-                                const SizedBox(height: 16.0),
-                              AttachedFiles(
-                                files: model.attachedFileViewModels,
-                                useCardStyle: true,
-                              ),
-                              Padding(
-                                padding: EdgeInsets.only(
-                                  left: 4,
-                                  right: 4,
-                                  top: model.attachedFileViewModels.isEmpty
-                                      ? 10
-                                      : 0,
                                 ),
-                                child: Divider(
-                                  height: model.attachedFileViewModels.isEmpty
-                                      ? null
-                                      : 1,
-                                  thickness: 0.4,
-                                  color: theme.colorScheme.outlineVariant,
+                              IconButton(
+                                onPressed: () {
+                                  triggerHaptic(HapticIntensity.selection);
+                                  model.togglePin();
+                                },
+                                tooltip: model.isPinned
+                                    ? 'Открепить пост'
+                                    : 'Закрепить пост',
+                                icon: Icon(
+                                  model.isPinned
+                                      ? Icons.bookmark_rounded
+                                      : Icons.bookmark_border_rounded,
+                                  color: model.isPinned
+                                      ? theme.colorScheme.primary
+                                      : theme.colorScheme.onSurfaceVariant,
+                                  size: 22,
                                 ),
-                              ),
-                              const SizedBox(height: 8),
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                spacing: 12.0,
-                                children: [
-                                  _ReactionButton(
-                                    model.reactionViewModel ??
-                                        ReactionViewModel.empty(),
-                                    showCounter: true,
-                                  ),
-                                  InkWell(
-                                    onTap: widget.showingComments
-                                        ? null
-                                        : () => _openPost(
-                                              context,
-                                              model,
-                                              scrollToComments: true,
-                                            ),
-                                    borderRadius: feedActionBorderRadius,
-                                    child: Container(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 12,
-                                        vertical: 6,
-                                      ).copyWith(right: 8),
-                                      decoration: BoxDecoration(
-                                        color: theme
-                                            .colorScheme.surfaceContainerLow,
-                                        borderRadius: feedActionBorderRadius,
-                                      ),
-                                      child: Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          Icon(
-                                            Icons.chat_bubble_outline_rounded,
-                                            color: theme.colorScheme
-                                                .onSecondaryContainer,
-                                            size: 20,
-                                          ),
-                                          const SizedBox(width: 6),
-                                          Text(
-                                            '${model.commentsCount}',
-                                            style: TextStyle(
-                                              fontSize: 14,
-                                              color: theme
-                                                  .colorScheme.onSurfaceVariant,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                  Expanded(child: Container()),
-                                  IconButton(
-                                    onPressed: () async {
-                                      triggerHaptic(
-                                        HapticIntensity.light,
-                                      );
-                                      await _sharePost(model);
-                                    },
-                                    tooltip: 'Поделиться постом',
-                                    icon: Icon(
-                                      theme.platform == TargetPlatform.iOS
-                                          ? Icons.ios_share_rounded
-                                          : Icons.share_outlined,
-                                      size: 20,
-                                      color: theme.colorScheme.onSurfaceVariant,
-                                    ),
-                                  ),
-                                ],
                               ),
                             ],
                           ),
-                        ),
-                      ],
+                          const SizedBox(height: 16.0),
+                          if (isCollapsed)
+                            HeightLimiter(
+                              maxHeight: 240,
+                              fadeEffectHeight: 40,
+                              overflowIndicatorOutside: true,
+                              overflowIndicatorBuilder: (context) => Padding(
+                                padding: const EdgeInsets.only(top: 8),
+                                child: _PostExpansionButton(
+                                  onPressed: () =>
+                                      setState(() => isCollapsed = false),
+                                  label: 'РАЗВЕРНУТЬ',
+                                ),
+                              ),
+                              child: _buildPostContent(model),
+                            )
+                          else
+                            _buildPostContent(model),
+                          if (!isCollapsed && widget.isCollapsed)
+                            _PostExpansionButton(
+                              onPressed: _collapse,
+                              label: 'СКРЫТЬ',
+                            ),
+                          if (model.attachedImages.isNotEmpty)
+                            Padding(
+                              padding: const EdgeInsets.only(top: 12),
+                              child: PackedPostImages(
+                                attachedImages: model.attachedImages,
+                                authorizationHeaders: model.authHeaders,
+                              ),
+                            ),
+                          if (model.isAnnouncement)
+                            Padding(
+                              padding: EdgeInsets.only(
+                                top: 12,
+                                bottom: model.attachedFileViewModels.isEmpty
+                                    ? 4
+                                    : 0,
+                              ),
+                              child: FilledButton(
+                                style: FilledButton.styleFrom(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(14),
+                                  ),
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 12,
+                                  ),
+                                ),
+                                onPressed: model.isAnnouncementRead
+                                    ? null
+                                    : () {
+                                        triggerHaptic(HapticIntensity.light);
+                                        model.markReadIfImportant();
+                                      },
+                                child: Text(
+                                  model.isAnnouncementRead
+                                      ? 'Сообщение прочитано'
+                                      : 'Прочитать',
+                                ),
+                              ),
+                            )
+                          else if (model.attachedFileViewModels.isEmpty)
+                            const SizedBox(height: 16.0),
+                          AttachedFiles(
+                            files: model.attachedFileViewModels,
+                            useCardStyle: true,
+                          ),
+                          Padding(
+                            padding: EdgeInsets.only(
+                              left: 4,
+                              right: 4,
+                              top: model.attachedFileViewModels.isEmpty
+                                  ? 10
+                                  : 0,
+                            ),
+                            child: Divider(
+                              height: model.attachedFileViewModels.isEmpty
+                                  ? null
+                                  : 1,
+                              thickness: 0.4,
+                              color: theme.colorScheme.outlineVariant,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            spacing: 12.0,
+                            children: [
+                              _ReactionButton(
+                                model.reactionViewModel ??
+                                    ReactionViewModel.empty(),
+                                showCounter: true,
+                              ),
+                              InkWell(
+                                onTap: widget.showingComments
+                                    ? null
+                                    : () => _openPost(
+                                        context,
+                                        model,
+                                        scrollToComments: true,
+                                      ),
+                                borderRadius: feedActionBorderRadius,
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                    vertical: 6,
+                                  ).copyWith(right: 8),
+                                  decoration: BoxDecoration(
+                                    color:
+                                        theme.colorScheme.surfaceContainerLow,
+                                    borderRadius: feedActionBorderRadius,
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(
+                                        Icons.chat_bubble_outline_rounded,
+                                        color: theme
+                                            .colorScheme
+                                            .onSecondaryContainer,
+                                        size: 20,
+                                      ),
+                                      const SizedBox(width: 6),
+                                      Text(
+                                        '${model.commentsCount}',
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          color: theme
+                                              .colorScheme
+                                              .onSurfaceVariant,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              Expanded(child: Container()),
+                              IconButton(
+                                onPressed: () async {
+                                  triggerHaptic(HapticIntensity.light);
+                                  await _sharePost(model);
+                                },
+                                tooltip: 'Поделиться постом',
+                                icon: Icon(
+                                  theme.platform == TargetPlatform.iOS
+                                      ? Icons.ios_share_rounded
+                                      : Icons.share_outlined,
+                                  size: 20,
+                                  color: theme.colorScheme.onSurfaceVariant,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
+                  ],
                 ),
               ),
             ),
-          );
-        },
-        onModelReady: (p0) => p0.onError.subscribe(_onPostRefreshError),
-        onDispose: (p0) => p0.onError.unsubscribe(_onPostRefreshError),
+          ),
+        ),
       );
+    },
+    onModelReady: (p0) => p0.onError.subscribe(_onPostRefreshError),
+    onDispose: (p0) => p0.onError.unsubscribe(_onPostRefreshError),
+  );
 
   void _openPost(
     BuildContext context,
@@ -370,12 +365,14 @@ class _FeedPostState extends State<FeedPost> {
       return;
     }
     triggerHaptic(HapticIntensity.light);
-    Injector.appInstance
-        .get<FeedPostViewModelFactory>()
-        .putInCache(model.blogData!.id, model);
+    Injector.appInstance.get<FeedPostViewModelFactory>().putInCache(
+      model.blogData!.id,
+      model,
+    );
     final router = GoRouter.of(context);
     final location = Uri(
-      path: '${router.routeInformationProvider.value.uri.path}/'
+      path:
+          '${router.routeInformationProvider.value.uri.path}/'
           '${postCommentsRoute.pagePath.replaceAll(':postId', model.blogData!.id.toString())}',
       fragment: scrollToComments ? 'comments' : null,
     );
@@ -397,7 +394,7 @@ class _FeedPostState extends State<FeedPost> {
 
     final fetchedImages = await Future.wait(
       model.attachedImages.map(
-        (url) => _imageUrlToXFile(url).onError((_, __) => null),
+        (url) => _imageUrlToXFile(url).onError((_, _) => null),
       ),
     );
     xFiles.addAll(fetchedImages.whereType<XFile>());
@@ -418,28 +415,20 @@ class _FeedPostState extends State<FeedPost> {
     if (data.statusCode != 200) {
       return null;
     }
-    return XFile.fromData(
-      data.bodyBytes,
-      mimeType: mimeType,
-    );
+    return XFile.fromData(data.bodyBytes, mimeType: mimeType);
   }
 
   void _onPostRefreshError(EventArgs e) {
-    const snackBar = SnackBar(
-      content: Text('Не удалось обновить пост'),
-    );
+    const snackBar = SnackBar(content: Text('Не удалось обновить пост'));
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 
   Widget _buildPostContent(FeedPostViewModel model) => Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          TextHtmlWidget(
-            text: model.postText,
-            headers: model.authHeaders,
-          ),
-        ],
-      );
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      TextHtmlWidget(text: model.postText, headers: model.authHeaders),
+    ],
+  );
 }
 
 class _PostExpansionButton extends StatelessWidget {
@@ -450,24 +439,24 @@ class _PostExpansionButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Row(
-        children: [
-          Expanded(
-            child: Divider(color: Theme.of(context).colorScheme.outlineVariant),
-          ),
-          const SizedBox(width: 8),
-          TextButton(
-            onPressed: () {
-              triggerHaptic(HapticIntensity.light);
-              onPressed();
-            },
-            child: Text(label),
-          ),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Divider(color: Theme.of(context).colorScheme.outlineVariant),
-          ),
-        ],
-      );
+    children: [
+      Expanded(
+        child: Divider(color: Theme.of(context).colorScheme.outlineVariant),
+      ),
+      const SizedBox(width: 8),
+      TextButton(
+        onPressed: () {
+          triggerHaptic(HapticIntensity.light);
+          onPressed();
+        },
+        child: Text(label),
+      ),
+      const SizedBox(width: 8),
+      Expanded(
+        child: Divider(color: Theme.of(context).colorScheme.outlineVariant),
+      ),
+    ],
+  );
 }
 
 class _ReactionButton extends StatelessWidget {
@@ -478,22 +467,18 @@ class _ReactionButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => BaseView<ReactionViewModel>(
-        model: viewModel,
-        builder: (context, viewModel, _) => GestureDetector(
-          onTap: () {
-            triggerHaptic(HapticIntensity.selection);
-            viewModel.toggleLike();
-          },
-          onLongPress: () {
-            showAnchoredReactionChoice(context, viewModel);
-          },
-          child: _reactionButton(
-            context,
-            viewModel,
-            showCounter,
-          ),
-        ),
-      );
+    model: viewModel,
+    builder: (context, viewModel, _) => GestureDetector(
+      onTap: () {
+        triggerHaptic(HapticIntensity.selection);
+        viewModel.toggleLike();
+      },
+      onLongPress: () {
+        showAnchoredReactionChoice(context, viewModel);
+      },
+      child: _reactionButton(context, viewModel, showCounter),
+    ),
+  );
 
   static Widget _reactionButton(
     BuildContext context,
@@ -548,11 +533,7 @@ class _ReactionButton extends StatelessWidget {
         height: height,
       );
     } else {
-      return Image.asset(
-        reaction.assetName,
-        width: width,
-        height: height,
-      );
+      return Image.asset(reaction.assetName, width: width, height: height);
     }
   }
 }

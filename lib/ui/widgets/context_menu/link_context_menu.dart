@@ -71,11 +71,11 @@ class _LinkContextMenuState extends State<LinkContextMenu> {
 
   @override
   Widget build(BuildContext context) => GestureDetector(
-        onTap: () {
-          triggerHaptic(HapticIntensity.light);
-          widget.onOpen();
-        },
-        onLongPress: _showMenu,
-        child: widget.child,
-      );
+    onTap: () {
+      triggerHaptic(HapticIntensity.light);
+      widget.onOpen();
+    },
+    onLongPress: _showMenu,
+    child: widget.child,
+  );
 }

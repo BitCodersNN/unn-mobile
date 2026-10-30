@@ -107,8 +107,9 @@ class _CommentsPageState extends State<CommentsPage> {
                       title: model.commentsCount > 0
                           ? 'Комментарии'
                           : 'Нет комментариев',
-                      count:
-                          model.commentsCount > 0 ? model.commentsCount : null,
+                      count: model.commentsCount > 0
+                          ? model.commentsCount
+                          : null,
                     ),
                     Column(
                       verticalDirection: AppSettings.reverseComments

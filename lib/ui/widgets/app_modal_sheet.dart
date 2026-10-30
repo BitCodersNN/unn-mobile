@@ -6,23 +6,20 @@ import 'package:flutter/material.dart';
 Future<T?> showAppModalSheet<T>({
   required BuildContext context,
   required WidgetBuilder builder,
-}) =>
-    showModalBottomSheet<T>(
-      context: context,
-      useRootNavigator: true,
-      isScrollControlled: true,
-      useSafeArea: true,
-      showDragHandle: true,
-      enableDrag: true,
-      clipBehavior: Clip.antiAlias,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
-      ),
-      builder: (context) => FractionallySizedBox(
-        heightFactor: 0.94,
-        child: builder(context),
-      ),
-    );
+}) => showModalBottomSheet<T>(
+  context: context,
+  useRootNavigator: true,
+  isScrollControlled: true,
+  useSafeArea: true,
+  showDragHandle: true,
+  enableDrag: true,
+  clipBehavior: Clip.antiAlias,
+  shape: const RoundedRectangleBorder(
+    borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+  ),
+  builder: (context) =>
+      FractionallySizedBox(heightFactor: 0.94, child: builder(context)),
+);
 
 class AppModalSheet extends StatelessWidget {
   final String? title;
@@ -62,16 +59,14 @@ class AppModalSheet extends StatelessWidget {
                           fit: BoxFit.scaleDown,
                           child: Text(
                             title!,
-                            style: theme.textTheme.titleLarge
-                                ?.copyWith(fontWeight: FontWeight.w600),
+                            style: theme.textTheme.titleLarge?.copyWith(
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                         ),
                       ),
                     if (leading != null)
-                      Align(
-                        alignment: Alignment.centerLeft,
-                        child: leading,
-                      ),
+                      Align(alignment: Alignment.centerLeft, child: leading),
                     if (showCloseButton)
                       Align(
                         alignment: Alignment.centerRight,
@@ -87,7 +82,7 @@ class AppModalSheet extends StatelessWidget {
               ),
             ),
           Expanded(child: child),
-          if (footer != null) footer!,
+          ?footer,
         ],
       ),
     );

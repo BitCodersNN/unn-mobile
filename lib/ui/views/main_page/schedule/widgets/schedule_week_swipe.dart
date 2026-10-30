@@ -35,17 +35,16 @@ class _ScheduleWeekSwipeState extends State<ScheduleWeekSwipe> {
 
   @override
   Widget build(BuildContext context) => SwipePager(
-        selectedPage: _initialPageIndex + widget.weekOffset - _anchorWeekOffset,
-        enabled: widget.enabled,
-        onUserPageChanged: (page) => widget.onWeekChanged(
-          _anchorWeekOffset + page - _initialPageIndex,
-        ),
-        itemBuilder: (context, page) {
-          final weekOffset = _anchorWeekOffset + page - _initialPageIndex;
-          return KeyedSubtree(
-            key: ValueKey(weekOffset),
-            child: widget.weekBuilder(context, weekOffset),
-          );
-        },
+    selectedPage: _initialPageIndex + widget.weekOffset - _anchorWeekOffset,
+    enabled: widget.enabled,
+    onUserPageChanged: (page) =>
+        widget.onWeekChanged(_anchorWeekOffset + page - _initialPageIndex),
+    itemBuilder: (context, page) {
+      final weekOffset = _anchorWeekOffset + page - _initialPageIndex;
+      return KeyedSubtree(
+        key: ValueKey(weekOffset),
+        child: widget.weekBuilder(context, weekOffset),
       );
+    },
+  );
 }

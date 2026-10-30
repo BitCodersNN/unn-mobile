@@ -28,47 +28,48 @@ class HeightLimiter extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => _HeightLimitedContent(
-        maxHeight: maxHeight,
-        indicatorOutside: overflowIndicatorOutside,
-        content: overflowIndicatorOutside && fadeEffectHeight > 0
-            ? ShaderMask(
-                blendMode: BlendMode.dstIn,
-                shaderCallback: (bounds) {
-                  if (bounds.height <= maxHeight) {
-                    return const LinearGradient(
-                      colors: [Colors.white, Colors.white],
-                    ).createShader(bounds);
-                  }
-                  final fadeHeight = math.min(fadeEffectHeight, maxHeight);
-                  return const LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [Colors.white, Colors.transparent],
-                  ).createShader(
-                    Rect.fromLTWH(
-                      0,
-                      maxHeight - fadeHeight,
-                      bounds.width,
-                      fadeHeight,
-                    ),
-                  );
-                },
-                child: child,
-              )
-            : child,
-        indicator: overflowIndicatorBuilder?.call(context) ??
-            Container(
-              height: fadeEffectHeight,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.bottomCenter,
-                  end: Alignment.topCenter,
-                  colors: [baseColor.withAlpha(200), baseColor.withAlpha(0)],
-                  tileMode: TileMode.clamp,
+    maxHeight: maxHeight,
+    indicatorOutside: overflowIndicatorOutside,
+    content: overflowIndicatorOutside && fadeEffectHeight > 0
+        ? ShaderMask(
+            blendMode: BlendMode.dstIn,
+            shaderCallback: (bounds) {
+              if (bounds.height <= maxHeight) {
+                return const LinearGradient(
+                  colors: [Colors.white, Colors.white],
+                ).createShader(bounds);
+              }
+              final fadeHeight = math.min(fadeEffectHeight, maxHeight);
+              return const LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [Colors.white, Colors.transparent],
+              ).createShader(
+                Rect.fromLTWH(
+                  0,
+                  maxHeight - fadeHeight,
+                  bounds.width,
+                  fadeHeight,
                 ),
-              ),
+              );
+            },
+            child: child,
+          )
+        : child,
+    indicator:
+        overflowIndicatorBuilder?.call(context) ??
+        Container(
+          height: fadeEffectHeight,
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.bottomCenter,
+              end: Alignment.topCenter,
+              colors: [baseColor.withAlpha(200), baseColor.withAlpha(0)],
+              tileMode: TileMode.clamp,
             ),
-      );
+          ),
+        ),
+  );
 }
 
 class _HeightLimitedContent extends MultiChildRenderObjectWidget {
@@ -104,20 +105,23 @@ class _HeightLimitedParentData extends ContainerBoxParentData<RenderBox> {}
 
 class _RenderHeightLimitedContent extends RenderBox
     with
-        ContainerRenderObjectMixin<RenderBox,
-            ContainerBoxParentData<RenderBox>>,
-        RenderBoxContainerDefaultsMixin<RenderBox,
-            ContainerBoxParentData<RenderBox>> {
+        ContainerRenderObjectMixin<
+          RenderBox,
+          ContainerBoxParentData<RenderBox>
+        >,
+        RenderBoxContainerDefaultsMixin<
+          RenderBox,
+          ContainerBoxParentData<RenderBox>
+        > {
   double _maxHeight;
   bool _indicatorOutside;
   bool _hasOverflow = false;
   double _visibleHeight = 0;
 
   _RenderHeightLimitedContent({
-    required double maxHeight,
-    required bool indicatorOutside,
-  })  : _maxHeight = maxHeight,
-        _indicatorOutside = indicatorOutside;
+    required this._maxHeight,
+    required this._indicatorOutside,
+  });
 
   double get maxHeight => _maxHeight;
   set maxHeight(double value) {
@@ -162,19 +166,21 @@ class _RenderHeightLimitedContent extends RenderBox
       markNeedsSemanticsUpdate();
     }
     _visibleHeight = math.min(content.size.height, _maxHeight);
-    final indicatorHeight =
-        _hasOverflow && _indicatorOutside ? indicator.size.height : 0.0;
-    size = constraints
-        .constrain(Size(content.size.width, _visibleHeight + indicatorHeight));
+    final indicatorHeight = _hasOverflow && _indicatorOutside
+        ? indicator.size.height
+        : 0.0;
+    size = constraints.constrain(
+      Size(content.size.width, _visibleHeight + indicatorHeight),
+    );
     (content.parentData! as ContainerBoxParentData<RenderBox>).offset =
         Offset.zero;
     (indicator.parentData! as ContainerBoxParentData<RenderBox>).offset =
         Offset(
-      0,
-      _indicatorOutside
-          ? _visibleHeight
-          : math.max(0, _visibleHeight - indicator.size.height),
-    );
+          0,
+          _indicatorOutside
+              ? _visibleHeight
+              : math.max(0, _visibleHeight - indicator.size.height),
+        );
   }
 
   @override

@@ -82,7 +82,8 @@ class _FeedFilterSwipeState extends State<FeedFilterSwipe> {
             enabled: filter == _visibleFilter,
             child: ExcludeFocus(
               excluding: filter != widget.selected,
-              child: _contents[filter] ??
+              child:
+                  _contents[filter] ??
                   const Center(child: CircularProgressIndicator.adaptive()),
             ),
           ),

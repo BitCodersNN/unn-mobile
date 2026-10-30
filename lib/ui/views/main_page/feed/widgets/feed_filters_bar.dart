@@ -59,8 +59,9 @@ class FeedFiltersBar extends StatelessWidget {
                       ? Colors.transparent
                       : colors.outlineVariant,
                 ),
-                onSelected:
-                    onSelected == null ? null : (_) => onSelected!(filter),
+                onSelected: onSelected == null
+                    ? null
+                    : (_) => onSelected!(filter),
               ),
             ),
         ],

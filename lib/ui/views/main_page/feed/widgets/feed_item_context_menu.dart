@@ -47,8 +47,8 @@ class _FeedItemContextMenuState extends State<FeedItemContextMenu> {
     if (_openingMenu) {
       return;
     }
-    final source =
-        (widget.previewKey ?? _previewKey).currentContext?.findRenderObject();
+    final source = (widget.previewKey ?? _previewKey).currentContext
+        ?.findRenderObject();
     if (source is! RenderRepaintBoundary) {
       return;
     }
@@ -71,15 +71,15 @@ class _FeedItemContextMenuState extends State<FeedItemContextMenu> {
 
   @override
   Widget build(BuildContext context) => GestureDetector(
-        onLongPress: _showMenu,
-        child: Opacity(
-          opacity: _menuOpen ? 0 : 1,
-          child: RepaintBoundary(
-            key: widget.previewKey ?? _previewKey,
-            child: widget.child,
-          ),
-        ),
-      );
+    onLongPress: _showMenu,
+    child: Opacity(
+      opacity: _menuOpen ? 0 : 1,
+      child: RepaintBoundary(
+        key: widget.previewKey ?? _previewKey,
+        child: widget.child,
+      ),
+    ),
+  );
 }
 
 Future<void> _showFeedItemContextMenu({
@@ -93,8 +93,8 @@ Future<void> _showFeedItemContextMenu({
 }) async {
   final navigator = Navigator.of(context, rootNavigator: true);
   final themes = InheritedTheme.capture(from: context, to: navigator.context);
-  final dismissLabel =
-      MaterialLocalizations.of(context).modalBarrierDismissLabel;
+  final dismissLabel = MaterialLocalizations.of(context)
+      .modalBarrierDismissLabel;
   final devicePixelRatio = MediaQuery.devicePixelRatioOf(context);
   final overlay = navigator.overlay!.context.findRenderObject()! as RenderBox;
   triggerHaptic(HapticIntensity.medium);
@@ -190,147 +190,139 @@ class _FeedItemMenuRoute extends PopupRoute<VoidCallback> {
     BuildContext context,
     Animation<double> animation,
     Animation<double> secondaryAnimation,
-  ) =>
-      themes.wrap(
-        AnimatedBuilder(
-          animation: animation,
-          builder: (context, _) {
-            final progress = Curves.easeInOutCubic.transform(animation.value);
-            final menuProgress = const Interval(
-              0.12,
-              1,
-              curve: Curves.easeInOutCubic,
-            ).transform(animation.value);
-            final insets = MediaQuery.of(context);
-            return Material(
-              type: MaterialType.transparency,
-              child: Stack(
-                children: [
-                  Positioned.fill(
-                    child: GestureDetector(
-                      behavior: HitTestBehavior.opaque,
-                      onTap: () => Navigator.of(context).pop(),
-                      child: BackdropFilter(
-                        filter: ui.ImageFilter.blur(
-                          sigmaX: 5 * progress,
-                          sigmaY: 5 * progress,
-                        ),
-                        child: ColoredBox(
-                          color:
-                              Colors.black.withValues(alpha: 0.18 * progress),
-                        ),
-                      ),
+  ) => themes.wrap(
+    AnimatedBuilder(
+      animation: animation,
+      builder: (context, _) {
+        final progress = Curves.easeInOutCubic.transform(animation.value);
+        final menuProgress = const Interval(
+          0.12,
+          1,
+          curve: Curves.easeInOutCubic,
+        ).transform(animation.value);
+        final insets = MediaQuery.of(context);
+        return Material(
+          type: MaterialType.transparency,
+          child: Stack(
+            children: [
+              Positioned.fill(
+                child: GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: () => Navigator.of(context).pop(),
+                  child: BackdropFilter(
+                    filter: ui.ImageFilter.blur(
+                      sigmaX: 5 * progress,
+                      sigmaY: 5 * progress,
+                    ),
+                    child: ColoredBox(
+                      color: Colors.black.withValues(alpha: 0.18 * progress),
                     ),
                   ),
-                  Positioned.fill(
-                    child: CustomMultiChildLayout(
-                      delegate: _FeedItemMenuLayout(
-                        sourceRect: sourceRect,
-                        progress: progress,
-                        padding: EdgeInsets.fromLTRB(
-                          insets.padding.left + 16,
-                          insets.padding.top + 12,
-                          insets.padding.right + 16,
-                          math.max(
-                                insets.padding.bottom,
-                                insets.viewInsets.bottom,
-                              ) +
-                              12,
-                        ),
-                      ),
-                      children: [
-                        LayoutId(
-                          id: _FeedItemMenuSlot.preview,
-                          child: IgnorePointer(
-                            child: DecoratedBox(
-                              key: const ValueKey('feed-menu-preview'),
-                              decoration: BoxDecoration(
-                                borderRadius: borderRadius,
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black
-                                        .withValues(alpha: 0.18 * progress),
-                                    blurRadius: 24,
-                                    offset: const Offset(0, 8),
-                                  ),
-                                ],
-                              ),
-                              child: ClipRRect(
-                                borderRadius: borderRadius,
-                                child: LayoutBuilder(
-                                  builder: (context, constraints) =>
-                                      OverflowBox(
-                                    alignment: Alignment.topCenter,
-                                    minWidth: constraints.maxWidth,
-                                    maxWidth: constraints.maxWidth,
-                                    minHeight: sourceRect.height *
-                                        constraints.maxWidth /
-                                        sourceRect.width,
-                                    maxHeight: sourceRect.height *
-                                        constraints.maxWidth /
-                                        sourceRect.width,
-                                    child: RawImage(
-                                      image: image,
-                                      fit: BoxFit.fill,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                        if (reactions != null)
-                          LayoutId(
-                            id: _FeedItemMenuSlot.reactions,
-                            child: _FeedItemMenuReveal(
-                              progress: menuProgress,
-                              child: FeedReactionPicker(
-                                key: const ValueKey('feed-menu-reactions'),
-                                selected: reactions!.currentReaction,
-                                onSelected: (reaction) {
-                                  if (ModalRoute.of(context)?.isCurrent !=
-                                      true) {
-                                    return;
-                                  }
-                                  triggerHaptic(HapticIntensity.selection);
-                                  Navigator.of(context).pop<VoidCallback>(
-                                    () {
-                                      if (reactions!.currentReaction !=
-                                          reaction) {
-                                        reactions!.toggleReaction(reaction);
-                                      }
-                                    },
-                                  );
-                                },
-                              ),
-                            ),
-                          ),
-                        LayoutId(
-                          id: _FeedItemMenuSlot.actions,
-                          child: _FeedItemMenuReveal(
-                            progress: menuProgress,
-                            child: ContextMenuActions(
-                              key: const ValueKey('feed-menu-actions'),
-                              actions: actions,
-                              onSelected: (action) {
-                                if (ModalRoute.of(context)?.isCurrent ??
-                                    false) {
-                                  triggerHaptic(HapticIntensity.light);
-                                  Navigator.of(context).pop(action.onTap);
-                                }
-                              },
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
+                ),
               ),
-            );
-          },
-        ),
-      );
+              Positioned.fill(
+                child: CustomMultiChildLayout(
+                  delegate: _FeedItemMenuLayout(
+                    sourceRect: sourceRect,
+                    progress: progress,
+                    padding: EdgeInsets.fromLTRB(
+                      insets.padding.left + 16,
+                      insets.padding.top + 12,
+                      insets.padding.right + 16,
+                      math.max(
+                            insets.padding.bottom,
+                            insets.viewInsets.bottom,
+                          ) +
+                          12,
+                    ),
+                  ),
+                  children: [
+                    LayoutId(
+                      id: _FeedItemMenuSlot.preview,
+                      child: IgnorePointer(
+                        child: DecoratedBox(
+                          key: const ValueKey('feed-menu-preview'),
+                          decoration: BoxDecoration(
+                            borderRadius: borderRadius,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withValues(
+                                  alpha: 0.18 * progress,
+                                ),
+                                blurRadius: 24,
+                                offset: const Offset(0, 8),
+                              ),
+                            ],
+                          ),
+                          child: ClipRRect(
+                            borderRadius: borderRadius,
+                            child: LayoutBuilder(
+                              builder: (context, constraints) => OverflowBox(
+                                alignment: Alignment.topCenter,
+                                minWidth: constraints.maxWidth,
+                                maxWidth: constraints.maxWidth,
+                                minHeight:
+                                    sourceRect.height *
+                                    constraints.maxWidth /
+                                    sourceRect.width,
+                                maxHeight:
+                                    sourceRect.height *
+                                    constraints.maxWidth /
+                                    sourceRect.width,
+                                child: RawImage(image: image, fit: BoxFit.fill),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    if (reactions != null)
+                      LayoutId(
+                        id: _FeedItemMenuSlot.reactions,
+                        child: _FeedItemMenuReveal(
+                          progress: menuProgress,
+                          child: FeedReactionPicker(
+                            key: const ValueKey('feed-menu-reactions'),
+                            selected: reactions!.currentReaction,
+                            onSelected: (reaction) {
+                              if (ModalRoute.of(context)?.isCurrent != true) {
+                                return;
+                              }
+                              triggerHaptic(HapticIntensity.selection);
+                              Navigator.of(context).pop<VoidCallback>(() {
+                                if (reactions!.currentReaction != reaction) {
+                                  reactions!.toggleReaction(reaction);
+                                }
+                              });
+                            },
+                          ),
+                        ),
+                      ),
+                    LayoutId(
+                      id: _FeedItemMenuSlot.actions,
+                      child: _FeedItemMenuReveal(
+                        progress: menuProgress,
+                        child: ContextMenuActions(
+                          key: const ValueKey('feed-menu-actions'),
+                          actions: actions,
+                          onSelected: (action) {
+                            if (ModalRoute.of(context)?.isCurrent ?? false) {
+                              triggerHaptic(HapticIntensity.light);
+                              Navigator.of(context).pop(action.onTap);
+                            }
+                          },
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    ),
+  );
 }
 
 enum _FeedItemMenuSlot { preview, reactions, actions }
@@ -383,10 +375,7 @@ class _FeedItemMenuLayout extends MultiChildLayoutDelegate {
           ),
         )
         .toDouble();
-    final left = sourceRect.left.clamp(
-      available.left,
-      available.right - width,
-    );
+    final left = sourceRect.left.clamp(available.left, available.right - width);
     final preview = Rect.lerp(
       sourceRect,
       Rect.fromLTWH(left, top, width, height),
@@ -421,10 +410,10 @@ class _FeedItemMenuReveal extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Opacity(
-        opacity: progress,
-        child: Transform.translate(
-          offset: Offset(0, 8 * (1 - progress)),
-          child: child,
-        ),
-      );
+    opacity: progress,
+    child: Transform.translate(
+      offset: Offset(0, 8 * (1 - progress)),
+      child: child,
+    ),
+  );
 }

@@ -2,6 +2,7 @@
 // Copyright 2025 BitCodersNN
 
 import 'dart:io';
+
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:open_filex/open_filex.dart';
@@ -73,8 +74,9 @@ class _AttachedFileState extends State<AttachedFile> {
               triggerHaptic(HapticIntensity.medium);
               await Future.wait([
                 _downloadAndOpenFile(model, true, context),
-                FirebaseAnalytics.instance
-                    .logEvent(name: 'feed_attached_file_long_press'),
+                FirebaseAnalytics.instance.logEvent(
+                  name: 'feed_attached_file_long_press',
+                ),
               ]);
             },
             child: Container(
@@ -87,8 +89,9 @@ class _AttachedFileState extends State<AttachedFile> {
                       color: theme.colorScheme.surfaceContainerLow,
                       borderRadius: BorderRadius.circular(14),
                       border: Border.all(
-                        color: theme.colorScheme.outlineVariant
-                            .withValues(alpha: 0.6),
+                        color: theme.colorScheme.outlineVariant.withValues(
+                          alpha: 0.6,
+                        ),
                       ),
                     )
                   : null,
@@ -133,8 +136,9 @@ class _AttachedFileState extends State<AttachedFile> {
                                           height: scaler.scale(20),
                                           decoration: BoxDecoration(
                                             color: Colors.black,
-                                            borderRadius:
-                                                BorderRadius.circular(16),
+                                            borderRadius: BorderRadius.circular(
+                                              16,
+                                            ),
                                           ),
                                         )
                                       : Text(
@@ -147,20 +151,20 @@ class _AttachedFileState extends State<AttachedFile> {
                                           textScaler: scaler,
                                           style: widget.useCardStyle
                                               ? theme.textTheme.bodySmall
-                                                  ?.copyWith(
-                                                  fontWeight: FontWeight.w700,
-                                                )
-                                              : const TextStyle(
-                                                  fontSize: 16,
-                                                ),
+                                                    ?.copyWith(
+                                                      fontWeight:
+                                                          FontWeight.w700,
+                                                    )
+                                              : const TextStyle(fontSize: 16),
                                         ),
                                 ),
                               ),
                               if (!model.isLoadingData &&
                                   model.isDownloadingFile)
                                 const Padding(
-                                  padding:
-                                      EdgeInsets.symmetric(horizontal: 8.0),
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 8.0,
+                                  ),
                                   child: SizedBox(
                                     height: 16,
                                     width: 16,
@@ -230,10 +234,7 @@ class _AttachedFileState extends State<AttachedFile> {
       case AttachedFileType.image:
       case AttachedFileType.gif:
         if (context.mounted) {
-          await showImageViewerSheet(
-            context,
-            images: [FileImage(file)],
-          );
+          await showImageViewerSheet(context, images: [FileImage(file)]);
         }
         break;
       default:
@@ -242,27 +243,21 @@ class _AttachedFileState extends State<AttachedFile> {
           case ResultType.error:
             if (context.mounted) {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Неизвестная ошибка'),
-                ),
+                const SnackBar(content: Text('Неизвестная ошибка')),
               );
             }
             break;
           case ResultType.noAppToOpen:
             if (context.mounted) {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Нет подходящей программы'),
-                ),
+                const SnackBar(content: Text('Нет подходящей программы')),
               );
             }
             break;
           case ResultType.permissionDenied:
             if (context.mounted) {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Нет доступа к файлам'),
-                ),
+                const SnackBar(content: Text('Нет доступа к файлам')),
               );
             }
             break;
