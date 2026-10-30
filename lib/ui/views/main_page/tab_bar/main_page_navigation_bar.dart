@@ -17,6 +17,7 @@ import 'package:unn_mobile/ui/views/main_page/tab_bar/tab_bar_context_menu_sessi
 import 'package:unn_mobile/ui/views/main_page/tab_bar/tab_bar_customization_sheet.dart';
 import 'package:unn_mobile/ui/views/main_page/tab_bar/tab_bar_gesture_detector.dart';
 import 'package:unn_mobile/ui/views/main_page/tab_bar/tab_bar_item_content.dart';
+import 'package:unn_mobile/ui/views/main_page/tab_bar/tab_bar_label_layout.dart';
 
 class MainPageNavigationBar extends StatefulWidget {
   final ValueChanged<MainPageRouteData>? onDestinationSelected;
@@ -62,26 +63,29 @@ class _MainPageNavigationBarState extends State<MainPageNavigationBar> {
         final visible = configuration.tabs;
         return MediaQuery.withClampedTextScaling(
           maxScaleFactor: 1.3,
-          child: CupertinoTabBar(
-            key: _barKey,
-            height: MainPageNavigationBar.navbarHeight,
-            backgroundColor: theme.colorScheme.surface,
-            activeColor: theme.colorScheme.primary,
-            inactiveColor: theme.colorScheme.onSurfaceVariant,
-            iconSize: 24,
-            currentIndex: MainPageNavigationBar.getSelectedBarIndex(
-              context,
-              paths,
+          child: TabBarLabelLayout(
+            labels: [for (final route in visible) route.pageTitle],
+            child: CupertinoTabBar(
+              key: _barKey,
+              height: MainPageNavigationBar.navbarHeight,
+              backgroundColor: theme.colorScheme.surface,
+              activeColor: theme.colorScheme.primary,
+              inactiveColor: theme.colorScheme.onSurfaceVariant,
+              iconSize: 24,
+              currentIndex: MainPageNavigationBar.getSelectedBarIndex(
+                context,
+                paths,
+              ),
+              onTap: (index) =>
+                  widget.onDestinationSelected?.call(visible[index]),
+              items: [
+                for (final route in visible)
+                  BottomNavigationBarItem(
+                    icon: _tabButton(route, route.unselectedIcon, paths),
+                    activeIcon: _tabButton(route, route.selectedIcon, paths),
+                  ),
+              ],
             ),
-            onTap: (index) =>
-                widget.onDestinationSelected?.call(visible[index]),
-            items: [
-              for (final route in visible)
-                BottomNavigationBarItem(
-                  icon: _tabButton(route, route.unselectedIcon, paths),
-                  activeIcon: _tabButton(route, route.selectedIcon, paths),
-                ),
-            ],
           ),
         );
       },

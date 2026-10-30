@@ -4,6 +4,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:unn_mobile/core/misc/user/current_user_sync_storage.dart';
+import 'package:unn_mobile/core/models/grade_book/mark_type.dart';
 import 'package:unn_mobile/core/models/schedule/subject_type.dart';
 import 'package:unn_mobile/core/viewmodels/factories/main_page_routes_view_models_factory.dart';
 import 'package:unn_mobile/ui/router.dart';
@@ -50,6 +51,17 @@ class UnnMobile extends StatefulWidget {
             SubjectType.exam: Color(0xFFAA4B7E),
             SubjectType.consult: Color(0xFF7D60D1),
             SubjectType.unknown: Color(0xFF6E757C),
+          },
+          gradeMarkTypeColors: {
+            MarkType.perfect: Color(0xFF15803D),
+            MarkType.excellent: Color(0xFF15803D),
+            MarkType.veryGood: Color(0xFF9A6700),
+            MarkType.good: Color(0xFF9A6700),
+            MarkType.satisfactory: Color(0xFFB45309),
+            MarkType.notSatisfactory: Color(0xFFB42318),
+            MarkType.notCredited: Color(0xFFB42318),
+            MarkType.credited: Color(0xFF2563EB),
+            MarkType.noShow: Color(0xFF64748B),
           },
           ligtherTextColor: Color(0xFF717A84),
           idkWhatColor: Color(0xFF989EA9),

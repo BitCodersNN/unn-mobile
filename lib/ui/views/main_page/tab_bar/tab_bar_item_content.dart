@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2026 BitCodersNN
 
-import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:unn_mobile/ui/views/main_page/tab_bar/tab_bar_label_layout.dart';
 
 class TabBarItemContent extends StatelessWidget {
   final IconData icon;
@@ -18,22 +19,42 @@ class TabBarItemContent extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) => Column(
-    mainAxisSize: MainAxisSize.min,
-    crossAxisAlignment: CrossAxisAlignment.stretch,
-    children: [
-      Icon(icon, size: 24, color: color),
-      const SizedBox(height: 4),
-      SizedBox(
-        height: 14,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 4),
-          child: FittedBox(
-            fit: BoxFit.scaleDown,
-            child: Text(label, maxLines: 1, style: labelStyle),
+  Widget build(BuildContext context) {
+    final layout = TabBarLabelLayout.maybeOf(context);
+    final baseStyle =
+        layout?.style ?? CupertinoTheme.of(context).textTheme.tabLabelTextStyle;
+    final style = baseStyle
+        .merge(labelStyle)
+        .copyWith(
+          fontSize: baseStyle.fontSize,
+          color:
+              labelStyle?.color ??
+              color ??
+              DefaultTextStyle.of(context).style.color,
+        );
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Icon(icon, size: 24, color: color),
+        const SizedBox(height: 4),
+        SizedBox(
+          height: TabBarLabelLayout.labelHeight,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: TabBarLabelLayout.horizontalLabelPadding,
+            ),
+            child: Text(
+              label,
+              maxLines: 1,
+              softWrap: false,
+              textAlign: TextAlign.center,
+              textScaler: layout?.scaler,
+              style: style,
+            ),
           ),
         ),
-      ),
-    ],
-  );
+      ],
+    );
+  }
 }
