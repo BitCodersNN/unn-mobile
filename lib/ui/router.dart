@@ -21,9 +21,9 @@ import 'package:unn_mobile/ui/views/main_page/settings/settings.dart';
 
 class AppRouter extends ChangeNotifier {
   final ValueListenable<List<String>> _tabPaths;
-  final ValueListenable<Type>? _userType;
+  final ValueListenable<Type>? userType;
   final List<MainPageRouteData> _routes;
-  final StatefulShellRouteBuilder? _shellBuilder;
+  final StatefulShellRouteBuilder? shellBuilder;
   final GlobalKey<StatefulNavigationShellState> _shellKey =
       GlobalKey<StatefulNavigationShellState>();
   final Map<String, ({MainPageRouteData route, StatefulShellBranch branch})>
@@ -36,17 +36,14 @@ class AppRouter extends ChangeNotifier {
   late final GoRouter _router;
 
   AppRouter({
+    this._initialDestination,
+    this.userType,
+    this.shellBuilder,
     ValueListenable<List<String>>? tabPaths,
-    this._userType,
     List<MainPageRouteData>? routes,
-    this._shellBuilder,
     String initialLocation = loadingPageRoute,
-    Future<String?>? initialDestination,
-  }) : _initialDestination = initialDestination,
-       _tabPaths = tabPaths ?? AppSettings.tabBarPaths,
-       _userType = userType,
-       _routes = List.unmodifiable(routes ?? mainPageRoutes),
-       _shellBuilder = shellBuilder {
+  }) : _tabPaths = tabPaths ?? AppSettings.tabBarPaths,
+       _routes = List.unmodifiable(routes ?? mainPageRoutes) {
     _configuration = _buildConfiguration();
     _routingConfig = ValueNotifier(_buildRoutingConfig());
     _router = GoRouter.routingConfig(
@@ -55,7 +52,7 @@ class AppRouter extends ChangeNotifier {
     );
     _router.routerDelegate.addListener(_rememberLocation);
     _tabPaths.addListener(_updateRoutes);
-    _userType?.addListener(_updateRoutes);
+    userType?.addListener(_updateRoutes);
   }
 
   static AppRouter of(BuildContext context) =>
@@ -130,7 +127,7 @@ class AppRouter extends ChangeNotifier {
       MainPageRouteConfiguration(
         routes: _routes,
         paths: _tabPaths.value,
-        userType: _userType?.value,
+        userType: userType?.value,
       );
 
   void _updateRoutes() {
@@ -260,7 +257,7 @@ class AppRouter extends ChangeNotifier {
             router: this,
             child: Builder(
               builder: (context) =>
-                  _shellBuilder?.call(context, state, shell) ??
+                  shellBuilder?.call(context, state, shell) ??
                   MainPage(shell: shell),
             ),
           ),
@@ -274,7 +271,7 @@ class AppRouter extends ChangeNotifier {
   @override
   void dispose() {
     _tabPaths.removeListener(_updateRoutes);
-    _userType?.removeListener(_updateRoutes);
+    userType?.removeListener(_updateRoutes);
     _router.routerDelegate.removeListener(_rememberLocation);
     _router.dispose();
     _routingConfig.dispose();
