@@ -44,19 +44,14 @@ class ScheduleScreenViewModel extends BaseViewModel
   int weekOffset = 0;
 
   List<IdType> get sortedUserTypeList => switch (_userStorage.typeOfUser) {
-        const (EmployeeData) => [
-            IdType.lecturer,
-            IdType.auditorium,
-            IdType.group,
-            IdType.student,
-          ],
-        _ => [
-            IdType.student,
-            IdType.group,
-            IdType.lecturer,
-            IdType.auditorium,
-          ]
-      };
+    const (EmployeeData) => [
+      IdType.lecturer,
+      IdType.auditorium,
+      IdType.group,
+      IdType.student,
+    ],
+    _ => [IdType.student, IdType.group, IdType.lecturer, IdType.auditorium],
+  };
 
   ScheduleTabViewModel? get currentTab => modelsByType[selectedUser];
 
@@ -90,29 +85,25 @@ class ScheduleScreenViewModel extends BaseViewModel
   }
 
   FutureOr<void> init() => busyCallAsync(() async {
-        offlineData = await _offlineScheduleProvider.getData();
+    offlineData = await _offlineScheduleProvider.getData();
 
-        selectedUser = sortedUserTypeList.first;
-        for (final type in sortedUserTypeList) {
-          modelsByType[type] = ScheduleTabViewModel(
-            type,
-            this,
-            _userStorage,
-            _searchIdOnPortalService,
-            _scheduleService,
-            _searchHistoryService,
-          )..offlineSchedule = offlineData![type];
-        }
-        await Future.wait(modelsByType.values.map((v) async => await v.init()));
-        await saveOfflineSchedule();
-      });
+    selectedUser = sortedUserTypeList.first;
+    for (final type in sortedUserTypeList) {
+      modelsByType[type] = ScheduleTabViewModel(
+        type,
+        this,
+        _userStorage,
+        _searchIdOnPortalService,
+        _scheduleService,
+        _searchHistoryService,
+      )..offlineSchedule = offlineData![type];
+    }
+    await Future.wait(modelsByType.values.map((v) async => await v.init()));
+    await saveOfflineSchedule();
+  });
 
   Future<void> refreshTab() async {
-    await Future.wait(
-      modelsByType.values.map(
-        (e) async => await e.refresh(),
-      ),
-    );
+    await Future.wait(modelsByType.values.map((e) async => await e.refresh()));
     await saveOfflineSchedule();
   }
 
@@ -142,8 +133,10 @@ class ScheduleScreenViewModel extends BaseViewModel
   }
 
   void recalculateDateTimeRange() {
-    selectedWeek =
-        WeekRange(weekOffset: weekOffset, reference: selectedWeek.reference);
+    selectedWeek = WeekRange(
+      weekOffset: weekOffset,
+      reference: selectedWeek.reference,
+    );
   }
 
   Future<RequestCalendarPermissionResult> askForExportPermission() =>
@@ -155,15 +148,17 @@ class ScheduleScreenViewModel extends BaseViewModel
       referenceDate: selectedWeek.end,
     );
 
-    final exportScheduleFilter =
-        currentTab?.searchFilter?.copyWith(dateTimeRange: range);
+    final exportScheduleFilter = currentTab?.searchFilter?.copyWith(
+      dateTimeRange: range,
+    );
 
     if (exportScheduleFilter == null) {
       return false;
     }
 
-    final res =
-        await _exportScheduleService.exportSchedule(exportScheduleFilter);
+    final res = await _exportScheduleService.exportSchedule(
+      exportScheduleFilter,
+    );
     return res == ExportScheduleResult.success;
   }
 
@@ -194,8 +189,8 @@ class ScheduleScreenViewModel extends BaseViewModel
 
   static DateTimeRange _nextSemester(DateTimeRange semester) =>
       semester.start.month == DateTime.september
-          ? AcademicYear.secondSemester(semester.start.year + 1)
-          : AcademicYear.firstSemester(semester.start.year);
+      ? AcademicYear.secondSemester(semester.start.year + 1)
+      : AcademicYear.firstSemester(semester.start.year);
 
   static int _weeksFromSemester(DateTimeRange semester, DateTime monday) {
     final semesterMonday = semester.start.startOfWeek;

@@ -75,9 +75,9 @@ class _ContactTile extends StatelessWidget {
   Future<void> _openUrl() async {
     final uri = Uri.parse(url);
     if (!await launchUrl(uri)) {
-      Injector.appInstance
-          .get<LoggerService>()
-          .log('Could not launch url $url');
+      Injector.appInstance.get<LoggerService>().log(
+        'Could not launch url $url',
+      );
     }
   }
 }

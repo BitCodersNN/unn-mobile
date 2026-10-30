@@ -2,7 +2,7 @@
 // Copyright 2025 BitCodersNN
 
 const String changelogString = //
-    '''
+'''
 [SIZE=18pt][B]Версия 0.7.0:[/B][/SIZE]
 - Переделана навигация в приложении. Убрано боковое меню. Добавлена кастомизация нижнего меню
 [SIZE=18pt][B]Версия 0.6.1:[/B][/SIZE]

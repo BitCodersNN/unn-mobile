@@ -22,18 +22,18 @@ class OfflineOverlayDisplayer extends StatefulWidget {
 }
 
 class _OfflineOverlayDisplayerState extends State<OfflineOverlayDisplayer> {
-  final OnlineStatusData _onlineStatusData =
-      Injector.appInstance.get<OnlineStatusData>();
+  final OnlineStatusData _onlineStatusData = Injector.appInstance
+      .get<OnlineStatusData>();
 
   bool _isOnline = false;
 
   @override
   Widget build(BuildContext context) => Stack(
-        children: [
-          widget.child,
-          if (!_isOnline) OfflineOverlay(bottomOffset: widget.bottomOffset),
-        ],
-      );
+    children: [
+      widget.child,
+      if (!_isOnline) OfflineOverlay(bottomOffset: widget.bottomOffset),
+    ],
+  );
 
   @override
   void initState() {

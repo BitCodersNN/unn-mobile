@@ -21,8 +21,7 @@ class ContextTag extends StyleTag {
   TextStyle transformStyle(
     TextStyle oldStyle,
     Map<String, String>? attributes,
-  ) =>
-      oldStyle;
+  ) => oldStyle;
 }
 
 class PTag extends StyleTag {
@@ -32,8 +31,7 @@ class PTag extends StyleTag {
   TextStyle transformStyle(
     TextStyle oldStyle,
     Map<String, String>? attributes,
-  ) =>
-      oldStyle;
+  ) => oldStyle;
 }
 
 class SizeTag extends StyleTag {
@@ -52,9 +50,7 @@ class SizeTag extends StyleTag {
       return oldStyle;
     }
     return oldStyle.copyWith(
-      fontSize: double.tryParse(
-        size.substring(0, size.length - 2),
-      ),
+      fontSize: double.tryParse(size.substring(0, size.length - 2)),
     );
   }
 }
@@ -87,18 +83,17 @@ class JustifyAlignTag extends WrappedStyleTag {
     FlutterRenderer renderer,
     bbob.Element element,
     List<InlineSpan> spans,
-  ) =>
-      [
-        WidgetSpan(
-          child: SizedBox(
-            width: double.infinity,
-            child: SelectableText.rich(
-              TextSpan(children: spans),
-              textAlign: TextAlign.justify,
-            ),
-          ),
+  ) => [
+    WidgetSpan(
+      child: SizedBox(
+        width: double.infinity,
+        child: SelectableText.rich(
+          TextSpan(children: spans),
+          textAlign: TextAlign.justify,
         ),
-      ];
+      ),
+    ),
+  ];
 }
 
 class VideoTag extends StyleTag {
@@ -133,11 +128,10 @@ class VideoTag extends StyleTag {
   TextStyle transformStyle(
     TextStyle oldStyle,
     Map<String, String>? attributes,
-  ) =>
-      oldStyle.copyWith(
-        decoration: TextDecoration.underline,
-        color: Colors.blue,
-      );
+  ) => oldStyle.copyWith(
+    decoration: TextDecoration.underline,
+    color: Colors.blue,
+  );
 }
 
 class FontTag extends StyleTag {
@@ -164,26 +158,23 @@ class CodeTag extends WrappedStyleTag {
     FlutterRenderer renderer,
     bbob.Element element,
     List<InlineSpan> spans,
-  ) =>
-      [
-        WidgetSpan(
-          child: Container(
-            decoration: const BoxDecoration(
-              color: Colors.black12,
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: SizedBox(
-                width: double.infinity,
-                child: SelectableText.rich(
-                  TextSpan(children: spans),
-                  textAlign: TextAlign.left,
-                ),
-              ),
+  ) => [
+    WidgetSpan(
+      child: Container(
+        decoration: const BoxDecoration(color: Colors.black12),
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: SizedBox(
+            width: double.infinity,
+            child: SelectableText.rich(
+              TextSpan(children: spans),
+              textAlign: TextAlign.left,
             ),
           ),
         ),
-      ];
+      ),
+    ),
+  ];
 }
 
 class DiskTag extends StyleTag {
@@ -193,8 +184,7 @@ class DiskTag extends StyleTag {
   TextStyle transformStyle(
     TextStyle oldStyle,
     Map<String, String>? attributes,
-  ) =>
-      oldStyle;
+  ) => oldStyle;
 }
 
 class TableTag extends WrappedStyleTag {
@@ -238,24 +228,22 @@ class TRTag extends WrappedStyleTag {
     FlutterRenderer renderer,
     bbob.Element element,
     List<InlineSpan> spans,
-  ) =>
-      spans
-          .map(
-            (e) => WidgetSpan(
-              child: Container(
-                decoration:
-                    BoxDecoration(border: Border.all(color: Colors.black)),
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: RichText(
-                    text: e,
-                    textWidthBasis: TextWidthBasis.longestLine,
-                  ),
-                ),
+  ) => spans
+      .map(
+        (e) => WidgetSpan(
+          child: Container(
+            decoration: BoxDecoration(border: Border.all(color: Colors.black)),
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: RichText(
+                text: e,
+                textWidthBasis: TextWidthBasis.longestLine,
               ),
             ),
-          )
-          .toList();
+          ),
+        ),
+      )
+      .toList();
 }
 
 class TDTag extends StyleTag {
@@ -265,8 +253,7 @@ class TDTag extends StyleTag {
   TextStyle transformStyle(
     TextStyle oldStyle,
     Map<String, String>? attributes,
-  ) =>
-      oldStyle;
+  ) => oldStyle;
 }
 
 class ImgTag extends AdvancedTag {
@@ -299,19 +286,12 @@ class ImgTag extends AdvancedTag {
     if (renderer.peekTapAction() != null) {
       return [
         WidgetSpan(
-          child: GestureDetector(
-            onTap: renderer.peekTapAction(),
-            child: image,
-          ),
+          child: GestureDetector(onTap: renderer.peekTapAction(), child: image),
         ),
       ];
     }
 
-    return [
-      WidgetSpan(
-        child: image,
-      ),
-    ];
+    return [WidgetSpan(child: image)];
   }
 }
 
@@ -350,18 +330,14 @@ class UserTag extends StyleTag {
   TextStyle transformStyle(
     TextStyle oldStyle,
     Map<String, String>? attributes,
-  ) =>
-      oldStyle;
+  ) => oldStyle;
 }
 
 class UrlTag extends WrappedStyleTag {
   final Future<void> Function(String url)? onTap;
   final void Function(String url, BuildContext context)? onLongPress;
 
-  UrlTag({
-    this.onTap,
-    this.onLongPress,
-  }) : super('url');
+  UrlTag({this.onTap, this.onLongPress}) : super('url');
 
   @override
   List<InlineSpan> wrap(
@@ -369,7 +345,8 @@ class UrlTag extends WrappedStyleTag {
     bbob.Element element,
     List<InlineSpan> spans,
   ) {
-    final String url = element.attributes.keys.firstOrNull ??
+    final String url =
+        element.attributes.keys.firstOrNull ??
         (spans.isNotEmpty && spans[0] is TextSpan
             ? (spans[0] as TextSpan).text ?? ''
             : 'URL is missing!');
@@ -378,9 +355,9 @@ class UrlTag extends WrappedStyleTag {
       text: spans.isEmpty ? url : null,
       children: spans,
       style: renderer.getCurrentStyle().copyWith(
-            color: Colors.blue,
-            decoration: TextDecoration.underline,
-          ),
+        color: Colors.blue,
+        decoration: TextDecoration.underline,
+      ),
     );
 
     return [
@@ -388,8 +365,9 @@ class UrlTag extends WrappedStyleTag {
         child: Builder(
           builder: (ctx) => GestureDetector(
             onTap: () => onTap?.call(url),
-            onLongPress:
-                onLongPress != null ? () => onLongPress!(url, ctx) : null,
+            onLongPress: onLongPress != null
+                ? () => onLongPress!(url, ctx)
+                : null,
             child: RichText(
               text: textSpan,
               textAlign: TextAlign.left,
@@ -411,9 +389,9 @@ BBStylesheet getBBStyleSheet({ThemeData? theme}) => defaultBBStylesheet()
       UrlTag(
         onTap: (url) async {
           if (!await launchUrl(Uri.parse(url))) {
-            Injector.appInstance
-                .get<LoggerService>()
-                .log('Could not launch url $url');
+            Injector.appInstance.get<LoggerService>().log(
+              'Could not launch url $url',
+            );
           }
         },
         onLongPress: (url, ctx) {
@@ -438,9 +416,9 @@ BBStylesheet getBBStyleSheet({ThemeData? theme}) => defaultBBStylesheet()
             Uri.parse(url),
             mode: LaunchMode.platformDefault,
           )) {
-            Injector.appInstance
-                .get<LoggerService>()
-                .log('Could not launch url $url');
+            Injector.appInstance.get<LoggerService>().log(
+              'Could not launch url $url',
+            );
           }
         },
       ),

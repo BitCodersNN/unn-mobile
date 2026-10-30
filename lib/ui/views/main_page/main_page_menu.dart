@@ -32,8 +32,8 @@ class MainPageMenu extends StatelessWidget {
           return SafeArea(
             bottom: false,
             child: ScrollConfiguration(
-              behavior:
-                  ScrollConfiguration.of(context).copyWith(overscroll: false),
+              behavior: ScrollConfiguration.of(context)
+                  .copyWith(overscroll: false),
               child: SingleChildScrollView(
                 padding: const EdgeInsets.fromLTRB(16, 24, 16, 32),
                 child: Column(
@@ -60,9 +60,11 @@ class MainPageMenu extends StatelessWidget {
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          for (int index = 0;
-                              index < routes.length;
-                              index++) ...[
+                          for (
+                            int index = 0;
+                            index < routes.length;
+                            index++
+                          ) ...[
                             if (index > 0)
                               Divider(
                                 height: 1,
@@ -105,18 +107,19 @@ class MainPageMenu extends StatelessWidget {
         color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
       ),
       enabled: !route.isDisabled,
-      onTap: () => AppRouter.of(context)
-          .goToDestination(route.pagePath, initialLocation: true),
+      onTap: () =>
+          AppRouter.of(context)
+              .goToDestination(route.pagePath, initialLocation: true),
     );
   }
 
   Widget _buildProfile(BuildContext context) => Shimmer(
-        child: BaseView<ProfileViewModel>(
-          createModel: ProfileViewModel.currentUser,
-          onDispose: (model) => model.dispose(),
-          builder: (context, model, _) => _profileContent(context, model),
-        ),
-      );
+    child: BaseView<ProfileViewModel>(
+      createModel: ProfileViewModel.currentUser,
+      onDispose: (model) => model.dispose(),
+      builder: (context, model, _) => _profileContent(context, model),
+    ),
+  );
 
   Widget _profileContent(BuildContext context, ProfileViewModel profile) {
     final theme = Theme.of(context);
@@ -135,26 +138,25 @@ class MainPageMenu extends StatelessWidget {
                   ? CachedNetworkImageProvider(profile.avatarUrl!)
                   : null,
               child: !profile.hasAvatar
-                  ? Text(
-                      profile.initials,
-                      style: theme.textTheme.headlineLarge,
-                    )
+                  ? Text(profile.initials, style: theme.textTheme.headlineLarge)
                   : null,
             ),
             const SizedBox(height: 18),
             Text(
               isLoading ? 'Загрузка профиля' : profile.fullname,
               textAlign: TextAlign.center,
-              style: theme.textTheme.headlineSmall
-                  ?.copyWith(fontWeight: FontWeight.w600),
+              style: theme.textTheme.headlineSmall?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
             ),
             if (profile.description.isNotEmpty) ...[
               const SizedBox(height: 6),
               Text(
                 profile.description,
                 textAlign: TextAlign.center,
-                style: theme.textTheme.bodyLarge
-                    ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                style: theme.textTheme.bodyLarge?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
               ),
             ],
           ],

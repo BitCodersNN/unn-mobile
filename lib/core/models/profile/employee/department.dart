@@ -14,21 +14,17 @@ class Department {
   final String title;
   final String shortTitle;
 
-  Department({
-    required this.id,
-    required this.title,
-    required this.shortTitle,
-  });
+  Department({required this.id, required this.title, required this.shortTitle});
 
   factory Department.fromJson(JsonMap json) => Department(
-        id: json[_DepartmentJsonKeys.id]! as int,
-        title: json[_DepartmentJsonKeys.title]! as String,
-        shortTitle: json[_DepartmentJsonKeys.shortTitle]! as String,
-      );
+    id: json[_DepartmentJsonKeys.id]! as int,
+    title: json[_DepartmentJsonKeys.title]! as String,
+    shortTitle: json[_DepartmentJsonKeys.shortTitle]! as String,
+  );
 
   JsonMap toJson() => {
-        _DepartmentJsonKeys.id: id,
-        _DepartmentJsonKeys.title: title,
-        _DepartmentJsonKeys.shortTitle: shortTitle,
-      };
+    _DepartmentJsonKeys.id: id,
+    _DepartmentJsonKeys.title: title,
+    _DepartmentJsonKeys.shortTitle: shortTitle,
+  };
 }

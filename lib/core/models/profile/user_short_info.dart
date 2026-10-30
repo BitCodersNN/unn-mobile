@@ -75,19 +75,15 @@ class UserShortInfo
         ProfileJsonSerializable {
   static const _profileJsonKeys = _ProfileUserInfoKeys();
   static Set<String> get profileJsonKeys => {
-        _profileJsonKeys.fullname,
-        _profileJsonKeys.id,
-        _profileJsonKeys.photoSrc,
-      };
+    _profileJsonKeys.fullname,
+    _profileJsonKeys.id,
+    _profileJsonKeys.photoSrc,
+  };
   final int? bitrixId;
   final String? fullname;
   final String? photoSrc;
 
-  UserShortInfo({
-    this.bitrixId,
-    this.fullname,
-    this.photoSrc,
-  });
+  UserShortInfo({this.bitrixId, this.fullname, this.photoSrc});
 
   @override
   bool operator ==(Object other) {
@@ -138,16 +134,10 @@ class UserShortInfo
   }
 
   factory UserShortInfo.fromJson(JsonMap json) =>
-      UserShortInfo._fromJsonWithKeys(
-        json,
-        const DefaultUserInfoKeys(),
-      );
+      UserShortInfo._fromJsonWithKeys(json, const DefaultUserInfoKeys());
 
   factory UserShortInfo.fromBitrixJson(JsonMap json) =>
-      UserShortInfo._fromJsonWithKeys(
-        json,
-        const _BitrixUserInfoKeys(),
-      );
+      UserShortInfo._fromJsonWithKeys(json, const _BitrixUserInfoKeys());
 
   factory UserShortInfo.fromJsonImportantBlogPost(JsonMap json) =>
       UserShortInfo._fromJsonWithKeys(
@@ -157,10 +147,7 @@ class UserShortInfo
       );
 
   factory UserShortInfo.fromMessageJson(JsonMap json) =>
-      UserShortInfo._fromJsonWithKeys(
-        json,
-        const _MessageUserInfoKeys(),
-      );
+      UserShortInfo._fromJsonWithKeys(json, const _MessageUserInfoKeys());
 
   factory UserShortInfo.fromProfileJson(JsonMap json) {
     const keys = _ProfileUserInfoKeys();
@@ -180,12 +167,12 @@ class UserShortInfo
   @protected
   @override
   Map<JsonKeyFormat, JsonKeys> get availableFormats => const {
-        JsonKeyFormat.standard: DefaultUserInfoKeys(),
-        JsonKeyFormat.bitrix: _BitrixUserInfoKeys(),
-        JsonKeyFormat.blogPost: _BlogPostUserInfoKeys(),
-        JsonKeyFormat.message: _MessageUserInfoKeys(),
-        JsonKeyFormat.profile: _ProfileUserInfoKeys(),
-      };
+    JsonKeyFormat.standard: DefaultUserInfoKeys(),
+    JsonKeyFormat.bitrix: _BitrixUserInfoKeys(),
+    JsonKeyFormat.blogPost: _BlogPostUserInfoKeys(),
+    JsonKeyFormat.message: _MessageUserInfoKeys(),
+    JsonKeyFormat.profile: _ProfileUserInfoKeys(),
+  };
 
   @protected
   @override

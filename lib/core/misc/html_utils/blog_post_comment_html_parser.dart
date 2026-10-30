@@ -17,8 +17,9 @@ class BlogPostCommentHtmlParser {
     UserShortInfo currentUserData,
   ) {
     final document = parser.parse(htmlText);
-    final commentElements =
-        document.querySelectorAll(FeedHtmlParserStrings.feedComBlockCover);
+    final commentElements = document.querySelectorAll(
+      FeedHtmlParserStrings.feedComBlockCover,
+    );
 
     return commentElements
         .map((element) => _parseComment(element, currentUserData))
@@ -66,12 +67,14 @@ class BlogPostCommentHtmlParser {
     return BlogPostCommentData(
       authorBitrixId: authorInfo.bitrixId ?? FeedHtmlParserStrings.unknownId,
       id: commentId,
-      dateTime: commentElement
+      dateTime:
+          commentElement
               .querySelector(FeedHtmlParserStrings.feedComTime)
               ?.text
               .trim() ??
           FeedHtmlParserStrings.unknownValue,
-      message: commentElement
+      message:
+          commentElement
               .querySelector(FeedHtmlParserStrings.feedComTextInnerInner)
               ?.innerHtml
               .trim() ??

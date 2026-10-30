@@ -13,17 +13,12 @@ import 'package:unn_mobile/ui/views/main_page/feed/widgets/feed_post.dart';
 
 class CommentsPage extends StatelessWidget {
   final int postId;
-  const CommentsPage({
-    required this.postId,
-    super.key,
-  });
+  const CommentsPage({required this.postId, super.key});
   @override
   Widget build(BuildContext context) {
     final post = FeedPostViewModel.cached(postId);
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Запись'),
-      ),
+      appBar: AppBar(title: const Text('Запись')),
       body: BaseView<FeedPostViewModel>(
         builder: (context, model, child) => LayoutBuilder(
           builder: (context, constraints) {

@@ -13,12 +13,7 @@ import 'package:unn_mobile/core/services/interfaces/feed/feed_file_downloader_se
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/factories/attached_file_view_model_factory.dart';
 
-enum AttachedFileType {
-  image,
-  audio,
-  gif,
-  unknown,
-}
+enum AttachedFileType { image, audio, gif, unknown }
 
 class AttachedFileViewModel extends BaseViewModel {
   static const Map<String, AttachedFileType> _fileTypes = {
@@ -51,10 +46,10 @@ class AttachedFileViewModel extends BaseViewModel {
     this._loggerService,
     this._feedFileDownloaderService,
   );
-  factory AttachedFileViewModel.cached(AttachedFileCacheKey key) =>
-      Injector.appInstance
-          .get<AttachedFileViewModelFactory>()
-          .getViewModel(key);
+  factory AttachedFileViewModel.cached(AttachedFileCacheKey key) => Injector
+      .appInstance
+      .get<AttachedFileViewModelFactory>()
+      .getViewModel(key);
 
   String get error => _error ?? '';
 
@@ -126,15 +121,18 @@ class AttachedFileViewModel extends BaseViewModel {
 
   void init(int fileId) {
     _isLoadingData = true;
-    _loadData(fileId).then((file) {
-      _loadedData = file;
-    }).catchError((error, stack) {
-      _loggerService.logError(error, stack);
-      _hasError = true;
-    }).whenComplete(() {
-      _isLoadingData = false;
-      notifyListeners(); // Я надеюсь, это выполнится после строчек выше
-    });
+    _loadData(fileId)
+        .then((file) {
+          _loadedData = file;
+        })
+        .catchError((error, stack) {
+          _loggerService.logError(error, stack);
+          _hasError = true;
+        })
+        .whenComplete(() {
+          _isLoadingData = false;
+          notifyListeners(); // Я надеюсь, это выполнится после строчек выше
+        });
   }
 
   Future<FileData?> _loadData(int fileId) =>

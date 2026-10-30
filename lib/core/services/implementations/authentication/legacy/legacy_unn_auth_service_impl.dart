@@ -39,9 +39,9 @@ class UnnAuthServiceImpl extends ChangeNotifier implements UnnAuthService {
 
   @override
   Map<String, dynamic>? get headers => {
-        SessionIdentifierKeys.csrfToken: csrf,
-        'Cookie': '${SessionIdentifierKeys.sessionIdCookieKey}=$sessionId',
-      };
+    SessionIdentifierKeys.csrfToken: csrf,
+    'Cookie': '${SessionIdentifierKeys.sessionIdCookieKey}=$sessionId',
+  };
 
   @override
   String? get guestId => _headers?[_bxPortatlUnnGuestId];
@@ -53,28 +53,16 @@ class UnnAuthServiceImpl extends ChangeNotifier implements UnnAuthService {
   ) {
     _authorisationHelper = AuthorisationHelper(
       _onlineStatus,
-      ApiHelper(
-        options: createBaseOptions(
-          host: Host.unnMobile,
-        ),
-      ),
+      ApiHelper(options: createBaseOptions(host: Host.unnMobile)),
       _loggerService,
       ApiPath.authWithCookie,
     );
   }
 
   @override
-  Future<AuthRequestResult> auth(
-    String login,
-    String password,
-  ) async {
+  Future<AuthRequestResult> auth(String login, String password) async {
     try {
-      return await _auth(
-        {
-          _userLogin: login,
-          _userPassword: password,
-        },
-      );
+      return await _auth({_userLogin: login, _userPassword: password});
     } finally {
       // Сообщаем, что авторизация могла измениться
       // Это надо делать независимо от того, как мы выйдем отсюда
@@ -93,14 +81,9 @@ class UnnAuthServiceImpl extends ChangeNotifier implements UnnAuthService {
 
   Future<AuthRequestResult> _auth(Map<String, dynamic> formData) async {
     _isAuthorised = false;
-    final result = await _authorisationHelper.auth(
-      formData,
-    );
+    final result = await _authorisationHelper.auth(formData);
 
-    return result.fold(
-      _handleAuthResult,
-      _parseResponse,
-    );
+    return result.fold(_handleAuthResult, _parseResponse);
   }
 
   Future<AuthRequestResult> _handleAuthResult(

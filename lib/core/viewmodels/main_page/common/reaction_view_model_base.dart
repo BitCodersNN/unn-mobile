@@ -18,17 +18,15 @@ abstract class ReactionViewModelBase extends BaseViewModel {
 
   bool _isChangingReaction = false;
 
-  ReactionViewModelBase(
-    this._currentUserSyncStorage,
-  );
+  ReactionViewModelBase(this._currentUserSyncStorage);
 
   bool get canAddReaction =>
       ReactionType.values.map(getReactionCount).where((e) => e > 0).length <
       ReactionType.values.length;
 
   ReactionType? get currentReaction => ratingList?.getReactionByUser(
-        _currentUserSyncStorage.currentUserData?.bitrixId ?? noId,
-      );
+    _currentUserSyncStorage.currentUserData?.bitrixId ?? noId,
+  );
 
   int get profileId =>
       _currentUserSyncStorage.currentUserData?.bitrixId ?? noId;

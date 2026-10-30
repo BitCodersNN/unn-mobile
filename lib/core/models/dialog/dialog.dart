@@ -60,16 +60,15 @@ class Dialog extends BaseDialogInfo {
     final IntOrString dialogId = switch (jsonMap[_DialogJsonKeys.dialogId]!) {
       final int value => IntValue(value),
       final String value => StringValue(value),
-      _ => throw ArgumentError(
-          'Expected int or String',
-        ),
+      _ => throw ArgumentError('Expected int or String'),
     };
 
     return Dialog(
       dialogId: dialogId,
       title: jsonMap[_DialogJsonKeys.title]! as String,
-      avatarUrl: (jsonMap[_DialogJsonKeys.avatar]!
-          as JsonMap)[_DialogJsonKeys.url]! as String,
+      avatarUrl:
+          (jsonMap[_DialogJsonKeys.avatar]! as JsonMap)[_DialogJsonKeys.url]!
+              as String,
       chatId: jsonMap[_DialogJsonKeys.chatId]! as int,
       previewMessage: MessageShortInfo.fromJson({
         ...messageMap,
@@ -90,9 +89,7 @@ class Dialog extends BaseDialogInfo {
     return {
       _DialogJsonKeys.dialogId: dialogId.value,
       _DialogJsonKeys.title: title,
-      _DialogJsonKeys.avatar: {
-        _DialogJsonKeys.url: avatarUrl,
-      },
+      _DialogJsonKeys.avatar: {_DialogJsonKeys.url: avatarUrl},
       _DialogJsonKeys.message: {
         ...messageMap,
         _DialogJsonKeys.status: lastMessageStatus.toString().split('.').last,

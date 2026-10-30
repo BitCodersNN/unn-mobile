@@ -48,8 +48,7 @@ enum ReactionType {
   wonder,
   cry,
   facepalm,
-  angry,
-  ;
+  angry;
 
   String get assetName => _reactionAssets[this]!;
   String get caption => _reactionNames[this]!;
@@ -101,10 +100,7 @@ class RatingList {
     }
   }
 
-  void addReactions(
-    ReactionType reactionType,
-    Set<UserShortInfo> userInfo,
-  ) {
+  void addReactions(ReactionType reactionType, Set<UserShortInfo> userInfo) {
     _ratingList.putIfAbsent(reactionType, () => <UserShortInfo>{});
     final countBefore = _ratingList[reactionType]!.length;
     _ratingList[reactionType]!.addAll(userInfo);
@@ -192,9 +188,9 @@ class RatingList {
     for (final userMap in usersList) {
       final userInfo = UserShortInfo.fromJson(userMap);
       final userReaction = ReactionType.values.firstWhere(
-        (reaction) => reaction
-            .toString()
-            .endsWith(userMap[_UserInfoJsonKeys.reaction]! as String),
+        (reaction) => reaction.toString().endsWith(
+          userMap[_UserInfoJsonKeys.reaction]! as String,
+        ),
       );
 
       ratingList.putIfAbsent(userReaction, () => {});
@@ -215,9 +211,7 @@ class RatingList {
       }
     });
 
-    return {
-      _UserInfoJsonKeys.users: usersList,
-    };
+    return {_UserInfoJsonKeys.users: usersList};
   }
 
   factory RatingList.fromBitrixJson(JsonMap jsonMap) {

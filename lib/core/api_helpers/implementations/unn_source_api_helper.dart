@@ -8,14 +8,13 @@ import 'package:unn_mobile/core/misc/dio_interceptor/source_unn_interceptor.dart
 import 'package:unn_mobile/core/services/interfaces/authorisation/authorisation_service.dart';
 
 final class UnnSourceApiHelper extends AuthenticatedApiHelper {
-  UnnSourceApiHelper({
-    required AuthorisationService authorizationService,
-  }) : super(
-          authorizationService,
-          options: createBaseOptions(
-            host: Host.unnSource,
-            headers: authorizationService.headers,
-          ),
-          interceptors: [SourceUnnInterceptor()],
-        );
+  UnnSourceApiHelper({required AuthorisationService authorizationService})
+    : super(
+        authorizationService,
+        options: createBaseOptions(
+          host: Host.unnSource,
+          headers: authorizationService.headers,
+        ),
+        interceptors: [SourceUnnInterceptor()],
+      );
 }

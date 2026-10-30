@@ -29,12 +29,15 @@ base class IrregularChatSetting extends ChatSetting {
   factory IrregularChatSetting.fromJson(JsonMap json) {
     final chatSetting = ChatSetting.fromJson(json);
     return IrregularChatSetting(
-      entityId:
-          int.parse(json[_IrregularChatSettingJsonKeys.entityId]! as String),
+      entityId: int.parse(
+        json[_IrregularChatSettingJsonKeys.entityId]! as String,
+      ),
       // для вложенных мап не делаем лишние касты
       // ignore: avoid_dynamic_calls
-      url: (json[_IrregularChatSettingJsonKeys.entityLink]!
-          as JsonMap)[_IrregularChatSettingJsonKeys.url]! as String,
+      url:
+          (json[_IrregularChatSettingJsonKeys.entityLink]!
+                  as JsonMap)[_IrregularChatSettingJsonKeys.url]!
+              as String,
       managerList: chatSetting.managerList,
       muteList: chatSetting.muteList,
       owner: chatSetting.owner,
@@ -47,10 +50,10 @@ base class IrregularChatSetting extends ChatSetting {
 
   @override
   JsonMap toJson() => {
-        ...super.toJson(),
-        _IrregularChatSettingJsonKeys.entityId: entityId.toString(),
-        _IrregularChatSettingJsonKeys.entityLink: {
-          _IrregularChatSettingJsonKeys.url: url,
-        },
-      };
+    ...super.toJson(),
+    _IrregularChatSettingJsonKeys.entityId: entityId.toString(),
+    _IrregularChatSettingJsonKeys.entityLink: {
+      _IrregularChatSettingJsonKeys.url: url,
+    },
+  };
 }

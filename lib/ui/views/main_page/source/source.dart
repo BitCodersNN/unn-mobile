@@ -36,12 +36,8 @@ class SourcePageView extends StatelessWidget {
                 forceMaterialTransparency: true,
                 bottom: const TabBar.secondary(
                   tabs: [
-                    Tab(
-                      child: Text('Учебные материалы'),
-                    ),
-                    Tab(
-                      child: Text('Онлайн-занятия'),
-                    ),
+                    Tab(child: Text('Учебные материалы')),
+                    Tab(child: Text('Онлайн-занятия')),
                   ],
                 ),
                 actions: [
@@ -74,14 +70,14 @@ class SourcePageView extends StatelessWidget {
 
                             final selectedSem =
                                 await showConfirmationDialog<int>(
-                              context: context,
-                              title: 'Выберите семестр',
-                              actions: actions,
-                              cancelLabel: 'Отмена',
-                              shrinkWrap: true,
-                              initialSelectedActionKey:
-                                  model.currentSemesterIndex,
-                            );
+                                  context: context,
+                                  title: 'Выберите семестр',
+                                  actions: actions,
+                                  cancelLabel: 'Отмена',
+                                  shrinkWrap: true,
+                                  initialSelectedActionKey:
+                                      model.currentSemesterIndex,
+                                );
 
                             if (selectedSem == null) {
                               return;
@@ -113,22 +109,23 @@ class SourcePageView extends StatelessWidget {
                           child: LayoutBuilder(
                             builder: (context, constraints) =>
                                 SingleChildScrollView(
-                              physics: const AlwaysScrollableScrollPhysics(),
-                              child: ConstrainedBox(
-                                constraints: BoxConstraints(
-                                  minWidth: constraints.maxWidth,
-                                  minHeight: constraints.maxHeight,
-                                ),
-                                child: Center(
-                                  child: Text(
-                                    model.materialsError ??
-                                        (model.courses.isEmpty
-                                            ? 'Нет доступных материалов'
-                                            : ''),
+                                  physics:
+                                      const AlwaysScrollableScrollPhysics(),
+                                  child: ConstrainedBox(
+                                    constraints: BoxConstraints(
+                                      minWidth: constraints.maxWidth,
+                                      minHeight: constraints.maxHeight,
+                                    ),
+                                    child: Center(
+                                      child: Text(
+                                        model.materialsError ??
+                                            (model.courses.isEmpty
+                                                ? 'Нет доступных материалов'
+                                                : ''),
+                                      ),
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ),
                           ),
                         );
                       }
@@ -164,27 +161,30 @@ class SourcePageView extends StatelessWidget {
                           child: LayoutBuilder(
                             builder: (context, constraints) =>
                                 SingleChildScrollView(
-                              physics: const AlwaysScrollableScrollPhysics(),
-                              child: ConstrainedBox(
-                                constraints: BoxConstraints(
-                                  minWidth: constraints.maxWidth,
-                                  minHeight: constraints.maxHeight,
-                                ),
-                                child: Center(
-                                  child: Text(
-                                    model.webinarsError ??
-                                        (model.webinars.isEmpty
-                                            ? 'Нет доступных ссылок'
-                                            : ''),
+                                  physics:
+                                      const AlwaysScrollableScrollPhysics(),
+                                  child: ConstrainedBox(
+                                    constraints: BoxConstraints(
+                                      minWidth: constraints.maxWidth,
+                                      minHeight: constraints.maxHeight,
+                                    ),
+                                    child: Center(
+                                      child: Text(
+                                        model.webinarsError ??
+                                            (model.webinars.isEmpty
+                                                ? 'Нет доступных ссылок'
+                                                : ''),
+                                      ),
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ),
                           ),
                         );
                       }
-                      final dates =
-                          model.webinars.keys.toList().reversed.toList();
+                      final dates = model.webinars.keys
+                          .toList()
+                          .reversed
+                          .toList();
                       final theme = Theme.of(context);
                       return RefreshIndicator(
                         onRefresh: () async => await model.refresh(),

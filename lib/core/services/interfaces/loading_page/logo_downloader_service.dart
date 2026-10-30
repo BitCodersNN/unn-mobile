@@ -16,7 +16,5 @@ abstract interface class LogoDownloaderService {
   /// [fileNames] - список имен файлов логотипов для загрузки.
   ///
   /// Возвращает список [File], если загрузка прошла успешно, или `null`, если произошла ошибка.
-  Future<List<File>?> downloadFiles({
-    required List<String> fileNames,
-  });
+  Future<List<File>?> downloadFiles({required List<String> fileNames});
 }

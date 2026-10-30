@@ -25,17 +25,21 @@ class PreviewUserDialog extends PreviewDialog {
 
   factory PreviewUserDialog.fromJson(JsonMap json) {
     final dialog = PreviewDialog.fromJson(json, idIsString: false);
-    final lastActivityAt = (json[_PreviewUserDialogJsonKeys.customData]!
-        as JsonMap)[_PreviewUserDialogJsonKeys.lastActivityDate];
+    final lastActivityAt =
+        (json[_PreviewUserDialogJsonKeys.customData]!
+            as JsonMap)[_PreviewUserDialogJsonKeys.lastActivityDate];
     return PreviewUserDialog(
       dialogId: dialog.dialogId,
       title: dialog.title,
       avatarUrl: dialog.avatarUrl,
-      lastActivityAt:
-          lastActivityAt is String ? DateTime.tryParse(lastActivityAt) : null,
-      workPosition: ((json[_PreviewUserDialogJsonKeys.customData]!
-              as JsonMap)[_PreviewUserDialogJsonKeys.user]!
-          as JsonMap)[_PreviewUserDialogJsonKeys.workPosition]! as String,
+      lastActivityAt: lastActivityAt is String
+          ? DateTime.tryParse(lastActivityAt)
+          : null,
+      workPosition:
+          ((json[_PreviewUserDialogJsonKeys.customData]!
+                      as JsonMap)[_PreviewUserDialogJsonKeys.user]!
+                  as JsonMap)[_PreviewUserDialogJsonKeys.workPosition]!
+              as String,
     );
   }
 
@@ -48,8 +52,8 @@ class PreviewUserDialog extends PreviewDialog {
       ...superJson,
       _PreviewUserDialogJsonKeys.customData: {
         ...existingCustomData,
-        _PreviewUserDialogJsonKeys.lastActivityDate:
-            lastActivityAt?.toIso8601String(),
+        _PreviewUserDialogJsonKeys.lastActivityDate: lastActivityAt
+            ?.toIso8601String(),
         _PreviewUserDialogJsonKeys.workPosition: workPosition,
       },
     };

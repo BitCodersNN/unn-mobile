@@ -24,15 +24,10 @@ class MessageRemoverServiceImpl implements MessageRemoverService {
   final LoggerService _loggerService;
   final ApiHelper _apiHelper;
 
-  MessageRemoverServiceImpl(
-    this._loggerService,
-    this._apiHelper,
-  );
+  MessageRemoverServiceImpl(this._loggerService, this._apiHelper);
 
   @override
-  Future<bool> remove({
-    required int messageId,
-  }) async {
+  Future<bool> remove({required int messageId}) async {
     Response response;
     try {
       response = await _apiHelper.post(
@@ -40,9 +35,7 @@ class MessageRemoverServiceImpl implements MessageRemoverService {
         queryParameters: {
           AjaxActionStrings.actionKey: AjaxActionStrings.removeMessage,
         },
-        data: {
-          _DataKeys.id: messageId,
-        },
+        data: {_DataKeys.id: messageId},
         options: OptionsWithTimeoutAndExpectedTypeFactory.options(
           10,
           ResponseDataType.jsonMap,

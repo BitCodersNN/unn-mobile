@@ -12,8 +12,5 @@ abstract interface class CertificatePathService {
   ///
   /// Примечание:
   /// - URL формируется на основе хост-адреса API и пути к документам.
-  Future<String?> getCertificatePath({
-    required int sendtype,
-    int number = 0,
-  });
+  Future<String?> getCertificatePath({required int sendtype, int number = 0});
 }

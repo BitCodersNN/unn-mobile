@@ -12,7 +12,7 @@ class _WeekRangeJsonKeys {
 
 class WeekRange {
   WeekRange({required this.weekOffset, DateTime? reference})
-      : reference = reference ?? DateTime.now();
+    : reference = reference ?? DateTime.now();
 
   final int weekOffset;
   final DateTime reference;
@@ -29,13 +29,12 @@ class WeekRange {
   DateTimeRange get dateTimeRange => DateTimeRange(start: start, end: end);
 
   factory WeekRange.fromJson(JsonMap jsonMap) => WeekRange(
-        weekOffset: jsonMap[_WeekRangeJsonKeys.weekOffset]! as int,
-        reference:
-            DateTime.parse(jsonMap[_WeekRangeJsonKeys.reference]! as String),
-      );
+    weekOffset: jsonMap[_WeekRangeJsonKeys.weekOffset]! as int,
+    reference: DateTime.parse(jsonMap[_WeekRangeJsonKeys.reference]! as String),
+  );
 
   JsonMap toJson() => {
-        _WeekRangeJsonKeys.weekOffset: weekOffset,
-        _WeekRangeJsonKeys.reference: reference.toString(),
-      };
+    _WeekRangeJsonKeys.weekOffset: weekOffset,
+    _WeekRangeJsonKeys.reference: reference.toString(),
+  };
 }

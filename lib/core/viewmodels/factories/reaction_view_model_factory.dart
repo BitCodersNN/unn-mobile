@@ -17,10 +17,10 @@ class ReactionViewModelFactory
   @override
   @protected
   ReactionViewModel createViewModel(ReactionCacheKey key) => ReactionViewModel(
-        getService<ReactionRatingListService>(),
-        getService<ReactionActionService>(),
-        getService<CurrentUserSyncStorage>(),
-      );
+    getService<ReactionRatingListService>(),
+    getService<ReactionActionService>(),
+    getService<CurrentUserSyncStorage>(),
+  );
 
   ReactionViewModel getEmptyViewModel() => createViewModel(0)..init();
 }
