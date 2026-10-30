@@ -60,8 +60,7 @@ class FeedAuthorHeader extends StatelessWidget {
                       ? CachedNetworkImage(
                           imageUrl: model.avatarUrl!,
                           fit: BoxFit.cover,
-                          errorWidget: (_, _, _) =>
-                              _initials(context, model),
+                          errorWidget: (_, _, _) => _initials(context, model),
                         )
                       : _initials(context, model),
                 ),
