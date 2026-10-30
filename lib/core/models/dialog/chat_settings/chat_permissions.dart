@@ -32,33 +32,32 @@ class ChatPermissions {
   });
 
   factory ChatPermissions.fromJson(JsonMap json) => ChatPermissions(
-        canPost: _parseRole(json[_ChatPermissionsJsonKeys.canPost] as String?),
-        manageMessages: _parseRole(
-          json[_ChatPermissionsJsonKeys.manageMessages] as String?,
-        ),
-        manageSettings: _parseRole(
-          json[_ChatPermissionsJsonKeys.manageSettings] as String?,
-        ),
-        manageUI: _parseRole(
-          json[_ChatPermissionsJsonKeys.manageUI] as String?,
-        ),
-        manageUsersAdd: _parseRole(
-          json[_ChatPermissionsJsonKeys.manageUsersAdd] as String?,
-        ),
-        manageUsersDelete: _parseRole(
-          json[_ChatPermissionsJsonKeys.manageUsersDelete] as String?,
-        ),
-      );
+    canPost: _parseRole(json[_ChatPermissionsJsonKeys.canPost] as String?),
+    manageMessages: _parseRole(
+      json[_ChatPermissionsJsonKeys.manageMessages] as String?,
+    ),
+    manageSettings: _parseRole(
+      json[_ChatPermissionsJsonKeys.manageSettings] as String?,
+    ),
+    manageUI: _parseRole(json[_ChatPermissionsJsonKeys.manageUI] as String?),
+    manageUsersAdd: _parseRole(
+      json[_ChatPermissionsJsonKeys.manageUsersAdd] as String?,
+    ),
+    manageUsersDelete: _parseRole(
+      json[_ChatPermissionsJsonKeys.manageUsersDelete] as String?,
+    ),
+  );
 
   JsonMap toJson() => {
-        _ChatPermissionsJsonKeys.canPost: _enumToString(canPost),
-        _ChatPermissionsJsonKeys.manageMessages: _enumToString(manageMessages),
-        _ChatPermissionsJsonKeys.manageSettings: _enumToString(manageSettings),
-        _ChatPermissionsJsonKeys.manageUI: _enumToString(manageUI),
-        _ChatPermissionsJsonKeys.manageUsersAdd: _enumToString(manageUsersAdd),
-        _ChatPermissionsJsonKeys.manageUsersDelete:
-            _enumToString(manageUsersDelete),
-      };
+    _ChatPermissionsJsonKeys.canPost: _enumToString(canPost),
+    _ChatPermissionsJsonKeys.manageMessages: _enumToString(manageMessages),
+    _ChatPermissionsJsonKeys.manageSettings: _enumToString(manageSettings),
+    _ChatPermissionsJsonKeys.manageUI: _enumToString(manageUI),
+    _ChatPermissionsJsonKeys.manageUsersAdd: _enumToString(manageUsersAdd),
+    _ChatPermissionsJsonKeys.manageUsersDelete: _enumToString(
+      manageUsersDelete,
+    ),
+  };
 
   static UserRole _parseRole(
     String? value, {

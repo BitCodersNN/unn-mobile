@@ -25,7 +25,7 @@ class AppRouter extends ChangeNotifier {
   final GlobalKey<StatefulNavigationShellState> _shellKey =
       GlobalKey<StatefulNavigationShellState>();
   final Map<String, ({MainPageRouteData route, StatefulShellBranch branch})>
-      _branches = {};
+  _branches = {};
   final Map<String, ({Uri uri, Object? extra})> _locations = {};
   late MainPageRouteConfiguration _configuration;
   late final ValueNotifier<RoutingConfig> _routingConfig;
@@ -33,14 +33,12 @@ class AppRouter extends ChangeNotifier {
 
   AppRouter({
     ValueListenable<List<String>>? tabPaths,
-    ValueListenable<Type>? userType,
+    this._userType,
     List<MainPageRouteData>? routes,
-    StatefulShellRouteBuilder? shellBuilder,
+    this._shellBuilder,
     String initialLocation = loadingPageRoute,
-  })  : _tabPaths = tabPaths ?? AppSettings.tabBarPaths,
-        _userType = userType,
-        _routes = List.unmodifiable(routes ?? mainPageRoutes),
-        _shellBuilder = shellBuilder {
+  }) : _tabPaths = tabPaths ?? AppSettings.tabBarPaths,
+       _routes = List.unmodifiable(routes ?? mainPageRoutes) {
     _configuration = _buildConfiguration();
     _routingConfig = ValueNotifier(_buildRoutingConfig());
     _router = GoRouter.routingConfig(
@@ -168,54 +166,52 @@ class AppRouter extends ChangeNotifier {
   }
 
   RoutingConfig _buildRoutingConfig() => RoutingConfig(
+    routes: [
+      GoRoute(
+        path: loadingPageRoute,
+        pageBuilder: (context, state) =>
+            const NoTransitionPage(child: LoadingPage()),
+      ),
+      GoRoute(
+        path: authPageRoute,
+        name: 'auth',
+        builder: (context, state) => const AuthPage(),
         routes: [
           GoRoute(
-            path: loadingPageRoute,
-            pageBuilder: (context, state) =>
-                const NoTransitionPage(child: LoadingPage()),
+            path: settingsPath,
+            name: 'settings',
+            builder: (_, _) => const SettingsScreenView(hasAccount: false),
           ),
           GoRoute(
-            path: authPageRoute,
-            name: 'auth',
-            builder: (context, state) => const AuthPage(),
-            routes: [
-              GoRoute(
-                path: settingsPath,
-                name: 'settings',
-                builder: (_, __) => const SettingsScreenView(hasAccount: false),
-              ),
-              GoRoute(
-                path: aboutPath,
-                name: 'about',
-                builder: (_, __) => const AboutScreenView(),
-              ),
-              GoRoute(
-                path: supportPath,
-                name: 'support',
-                builder: (_, __) => const DonationsScreenView(),
-              ),
-            ],
+            path: aboutPath,
+            name: 'about',
+            builder: (_, _) => const AboutScreenView(),
           ),
-          StatefulShellRoute.indexedStack(
-            key: _shellKey,
-            pageBuilder: (context, state, shell) => NoTransitionPage(
-              key: const ValueKey('main-shell'),
-              child: AppRouterScope(
-                router: this,
-                child: Builder(
-                  builder: (context) =>
-                      _shellBuilder?.call(context, state, shell) ??
-                      MainPage(shell: shell),
-                ),
-              ),
-            ),
-            branches: [
-              for (final route in _configuration.tabs) _branchFor(route),
-            ],
+          GoRoute(
+            path: supportPath,
+            name: 'support',
+            builder: (_, _) => const DonationsScreenView(),
           ),
         ],
-        redirect: _redirect,
-      );
+      ),
+      StatefulShellRoute.indexedStack(
+        key: _shellKey,
+        pageBuilder: (context, state, shell) => NoTransitionPage(
+          key: const ValueKey('main-shell'),
+          child: AppRouterScope(
+            router: this,
+            child: Builder(
+              builder: (context) =>
+                  _shellBuilder?.call(context, state, shell) ??
+                  MainPage(shell: shell),
+            ),
+          ),
+        ),
+        branches: [for (final route in _configuration.tabs) _branchFor(route)],
+      ),
+    ],
+    redirect: _redirect,
+  );
 
   @override
   void dispose() {
@@ -237,10 +233,10 @@ class AppRouterScope extends InheritedNotifier<AppRouter> {
 }
 
 List<GoRoute> _buildSubroutes(List<MainPageRouteData> routes) => [
-      for (final route in routes)
-        GoRoute(
-          path: route.pagePath,
-          builder: route.builder,
-          routes: _buildSubroutes(route.subroutes),
-        ),
-    ];
+  for (final route in routes)
+    GoRoute(
+      path: route.pagePath,
+      builder: route.builder,
+      routes: _buildSubroutes(route.subroutes),
+    ),
+];

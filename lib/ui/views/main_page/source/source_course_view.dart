@@ -12,41 +12,41 @@ class SourceCourseView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => BaseView<SourceCourseViewModel>(
-        model: model,
-        builder: (context, model, _) {
-          final theme = Theme.of(context);
-          return ExpansionTile(
-            showTrailingIcon: false,
-            title: Container(
-              decoration: BoxDecoration(
-                color: theme.cardColor,
-                borderRadius: BorderRadius.circular(16.0),
-                boxShadow: [
-                  BoxShadow(
-                    offset: Offset.zero,
-                    blurRadius: 16.0,
-                    color: theme.shadowColor.withAlpha(32),
-                  ),
-                ],
+    model: model,
+    builder: (context, model, _) {
+      final theme = Theme.of(context);
+      return ExpansionTile(
+        showTrailingIcon: false,
+        title: Container(
+          decoration: BoxDecoration(
+            color: theme.cardColor,
+            borderRadius: BorderRadius.circular(16.0),
+            boxShadow: [
+              BoxShadow(
+                offset: Offset.zero,
+                blurRadius: 16.0,
+                color: theme.shadowColor.withAlpha(32),
               ),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16.0,
-                  vertical: 15.0,
-                ),
-                child: Text(
-                  model.discipline,
-                  style: const TextStyle(
-                    fontSize: 17.0,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+            ],
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 16.0,
+              vertical: 15.0,
+            ),
+            child: Text(
+              model.discipline,
+              style: const TextStyle(
+                fontSize: 17.0,
+                fontWeight: FontWeight.bold,
               ),
             ),
-            shape: const Border(),
-            expandedCrossAxisAlignment: CrossAxisAlignment.start,
-            children: [for (final i in model.items) SourceItemView(model: i)],
-          );
-        },
+          ),
+        ),
+        shape: const Border(),
+        expandedCrossAxisAlignment: CrossAxisAlignment.start,
+        children: [for (final i in model.items) SourceItemView(model: i)],
       );
+    },
+  );
 }

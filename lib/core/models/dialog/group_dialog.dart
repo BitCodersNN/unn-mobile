@@ -43,17 +43,18 @@ final class GroupDialog extends Dialog {
       pinned: dialog.pinned,
       chatId: dialog.chatId,
       dialogId: StringValue(json[GroupDialogJsonKeys.id]! as String),
-      chatSetting:
-          _parseChatSetting(json[GroupDialogJsonKeys.chat]! as JsonMap),
+      chatSetting: _parseChatSetting(
+        json[GroupDialogJsonKeys.chat]! as JsonMap,
+      ),
     );
   }
 
   @override
   JsonMap toJson() => {
-        ...super.toJson(),
-        GroupDialogJsonKeys.chat: chatSetting.toJson(),
-        GroupDialogJsonKeys.type: GroupDialogJsonKeys.chat,
-      };
+    ...super.toJson(),
+    GroupDialogJsonKeys.chat: chatSetting.toJson(),
+    GroupDialogJsonKeys.type: GroupDialogJsonKeys.chat,
+  };
 
   static ChatSetting _parseChatSetting(JsonMap chatJson) {
     final type = chatJson[GroupDialogJsonKeys.type] as String?;

@@ -16,50 +16,46 @@ List<ContextMenuAction> createMessageActions({
   required BuildContext context,
   required MessageReactionViewModel model,
   required MessageWidget widget,
-}) =>
-    _createActions(
-      context: context,
-      reactionViewModel: model,
-      textToCopy: widget.message.text,
-      onReply: () => widget.chatModel.replyMessage = widget.message,
-    );
+}) => _createActions(
+  context: context,
+  reactionViewModel: model,
+  textToCopy: widget.message.text,
+  onReply: () => widget.chatModel.replyMessage = widget.message,
+);
 
 List<ContextMenuAction> createPostActions({
   required BuildContext context,
   required FeedPostViewModel model,
   required Function(FeedPostViewModel) onShare,
-}) =>
-    _createActions(
-      context: context,
-      reactionViewModel: model.reactionViewModel,
-      textToCopy: htmlToPlainText(model.postText),
-      onTogglePin: model.togglePin,
-      isPinned: model.isPinned,
-      onShare: () => onShare(model),
-    );
+}) => _createActions(
+  context: context,
+  reactionViewModel: model.reactionViewModel,
+  textToCopy: htmlToPlainText(model.postText),
+  onTogglePin: model.togglePin,
+  isPinned: model.isPinned,
+  onShare: () => onShare(model),
+);
 
 List<ContextMenuAction> createCommentActions({
   required BuildContext context,
   required FeedCommentViewModel model,
-}) =>
-    _createActions(
-      context: context,
-      reactionViewModel: model.reactionViewModel,
-      textToCopy: htmlToPlainText(model.message),
-    );
+}) => _createActions(
+  context: context,
+  reactionViewModel: model.reactionViewModel,
+  textToCopy: htmlToPlainText(model.message),
+);
 
 List<ContextMenuAction> createLinkActions({
   required BuildContext context,
   required String url,
   VoidCallback? onOpen,
   VoidCallback? onShare,
-}) =>
-    _createActions(
-      context: context,
-      linkToCopy: url,
-      onOpenLink: onOpen,
-      onShare: onShare,
-    );
+}) => _createActions(
+  context: context,
+  linkToCopy: url,
+  onOpenLink: onOpen,
+  onShare: onShare,
+);
 
 List<ContextMenuAction> _createActions({
   required BuildContext context,
@@ -98,7 +94,8 @@ List<ContextMenuAction> _createActions({
       ..add(
         ContextMenuAction.text(
           label: 'Открыть',
-          onTap: onOpenLink ??
+          onTap:
+              onOpenLink ??
               () {
                 launchUrl(Uri.parse(linkToCopy));
               },

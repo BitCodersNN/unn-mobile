@@ -11,11 +11,10 @@ BaseOptions createBaseOptions({
   Duration sendTimeout = const Duration(seconds: 15),
   Duration receiveTimeout = const Duration(seconds: 15),
   Map<String, dynamic>? headers,
-}) =>
-    BaseOptions(
-      baseUrl: '${protocol.name}://$host/',
-      contentType: contentType,
-      sendTimeout: sendTimeout,
-      receiveTimeout: receiveTimeout,
-      headers: headers,
-    );
+}) => BaseOptions(
+  baseUrl: '${protocol.name}://$host/',
+  contentType: contentType,
+  sendTimeout: sendTimeout,
+  receiveTimeout: receiveTimeout,
+  headers: headers,
+);

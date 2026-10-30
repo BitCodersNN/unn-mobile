@@ -89,8 +89,9 @@ class _ScheduleItemNormalState extends State<ScheduleItemNormal>
                       children: [
                         Text(
                           widget.subject.name,
-                          style: theme.textTheme.titleMedium!
-                              .copyWith(fontWeight: FontWeight.bold),
+                          style: theme.textTheme.titleMedium!.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
                           overflow: _expanded
                               ? TextOverflow.visible
                               : TextOverflow.ellipsis,
@@ -135,10 +136,12 @@ class _ScheduleItemNormalState extends State<ScheduleItemNormal>
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       Text(
-                        timeFormatter
-                            .format(widget.subject.dateTimeRange.start),
-                        style: theme.textTheme.titleMedium!
-                            .copyWith(fontWeight: FontWeight.bold),
+                        timeFormatter.format(
+                          widget.subject.dateTimeRange.start,
+                        ),
+                        style: theme.textTheme.titleMedium!.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                       Text(
                         timeFormatter.format(widget.subject.dateTimeRange.end),
@@ -176,8 +179,9 @@ class _ScheduleItemNormalState extends State<ScheduleItemNormal>
         Expanded(
           child: Text(
             text,
-            style: theme.textTheme.labelLarge!
-                .copyWith(color: extraColors.ligtherTextColor),
+            style: theme.textTheme.labelLarge!.copyWith(
+              color: extraColors.ligtherTextColor,
+            ),
             overflow: _expanded ? TextOverflow.visible : TextOverflow.ellipsis,
             softWrap: _expanded,
           ),

@@ -81,56 +81,41 @@ extension MarkTypeExtension on MarkType {
 class MarkBySubject {
   final int _hoursPerCreditedHour = 36;
 
-  final String _controlType;
-  final DateTime _date;
-  final int _hours;
-  final String? _lecturers;
-  final MarkType _markType;
-  final String _subject;
+  final String controlType;
+  final DateTime date;
+  final int hours;
+  final String? lecturers;
+  final MarkType markType;
+  final String subject;
 
   MarkBySubject({
-    required String controlType,
-    required DateTime date,
-    required int hours,
-    required String? lecturers,
-    required MarkType markType,
-    required String subject,
-  })  : _controlType = controlType,
-        _date = date,
-        _hours = hours,
-        _lecturers = lecturers,
-        _markType = markType,
-        _subject = subject;
+    required this.controlType,
+    required this.date,
+    required this.hours,
+    required this.lecturers,
+    required this.markType,
+    required this.subject,
+  });
 
-  DateTime get date => _date;
-  int get hours => _hours;
-  String? get lecturers => _lecturers;
-  MarkType get markType => _markType;
-  String get controlType => _controlType;
   int get creditedHours => hours ~/ _hoursPerCreditedHour;
-  String get subject => _subject;
 
   factory MarkBySubject.fromJson(JsonMap jsonMap) => MarkBySubject(
-        controlType: jsonMap[_MarkBySubjectJsonKeys.controlType]! as String,
-        date: DateTime.parse(
-          jsonMap[_MarkBySubjectJsonKeys.date]! as String,
-        ),
-        hours: int.parse(
-          jsonMap[_MarkBySubjectJsonKeys.hours]! as String,
-        ),
-        lecturers: jsonMap[_MarkBySubjectJsonKeys.lecturers] as String?,
-        markType: MarkType.fromDouble(
-          (jsonMap[_MarkBySubjectJsonKeys.mark] as dynamic).toDouble(),
-        ),
-        subject: jsonMap[_MarkBySubjectJsonKeys.subject]! as String,
-      );
+    controlType: jsonMap[_MarkBySubjectJsonKeys.controlType]! as String,
+    date: DateTime.parse(jsonMap[_MarkBySubjectJsonKeys.date]! as String),
+    hours: int.parse(jsonMap[_MarkBySubjectJsonKeys.hours]! as String),
+    lecturers: jsonMap[_MarkBySubjectJsonKeys.lecturers] as String?,
+    markType: MarkType.fromDouble(
+      (jsonMap[_MarkBySubjectJsonKeys.mark] as dynamic).toDouble(),
+    ),
+    subject: jsonMap[_MarkBySubjectJsonKeys.subject]! as String,
+  );
 
   JsonMap toJson() => {
-        _MarkBySubjectJsonKeys.controlType: controlType,
-        _MarkBySubjectJsonKeys.date: date.toIso8601String(),
-        _MarkBySubjectJsonKeys.hours: hours.toString(),
-        _MarkBySubjectJsonKeys.lecturers: lecturers,
-        _MarkBySubjectJsonKeys.mark: markType.convertToDouble(),
-        _MarkBySubjectJsonKeys.subject: subject,
-      };
+    _MarkBySubjectJsonKeys.controlType: controlType,
+    _MarkBySubjectJsonKeys.date: date.toIso8601String(),
+    _MarkBySubjectJsonKeys.hours: hours.toString(),
+    _MarkBySubjectJsonKeys.lecturers: lecturers,
+    _MarkBySubjectJsonKeys.mark: markType.convertToDouble(),
+    _MarkBySubjectJsonKeys.subject: subject,
+  };
 }

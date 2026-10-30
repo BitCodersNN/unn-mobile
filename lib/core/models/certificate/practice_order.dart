@@ -55,12 +55,14 @@ class PracticeOrder extends Certificate {
 
   @override
   JsonMap toJson() => {
-        ...super.toJson(),
-        _PracticeOrderJsonKeys.type: type,
-        _PracticeOrderJsonKeys.date1:
-            practiceDateTimeRange.start.format(DatePattern.ddmmyyyy),
-        _PracticeOrderJsonKeys.date2:
-            practiceDateTimeRange.end.format(DatePattern.ddmmyyyy),
-        _PracticeOrderJsonKeys.num: num,
-      };
+    ...super.toJson(),
+    _PracticeOrderJsonKeys.type: type,
+    _PracticeOrderJsonKeys.date1: practiceDateTimeRange.start.format(
+      DatePattern.ddmmyyyy,
+    ),
+    _PracticeOrderJsonKeys.date2: practiceDateTimeRange.end.format(
+      DatePattern.ddmmyyyy,
+    ),
+    _PracticeOrderJsonKeys.num: num,
+  };
 }

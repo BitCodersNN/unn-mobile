@@ -10,24 +10,24 @@ class LoadingPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => BaseView<LoadingPageViewModel>(
-        builder: (context, model, child) => FutureBuilder<void>(
-          future: model.initLoadingPages(),
-          builder: (context, snapshot) {
-            final theme = Theme.of(context);
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return Scaffold(
-                backgroundColor: theme.colorScheme.surfaceContainerLowest,
-              );
-            } else {
-              return Scaffold(
-                backgroundColor: theme.colorScheme.surfaceContainerLowest,
-                body: SafeArea(child: _buildContent(context, model)),
-              );
-            }
-          },
-        ),
-        onModelReady: (model) => model.decideRoute(context),
-      );
+    builder: (context, model, child) => FutureBuilder<void>(
+      future: model.initLoadingPages(),
+      builder: (context, snapshot) {
+        final theme = Theme.of(context);
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Scaffold(
+            backgroundColor: theme.colorScheme.surfaceContainerLowest,
+          );
+        } else {
+          return Scaffold(
+            backgroundColor: theme.colorScheme.surfaceContainerLowest,
+            body: SafeArea(child: _buildContent(context, model)),
+          );
+        }
+      },
+    ),
+    onModelReady: (model) => model.decideRoute(context),
+  );
 
   Widget _buildContent(BuildContext context, LoadingPageViewModel model) =>
       LayoutBuilder(
@@ -64,9 +64,7 @@ class LoadingPage extends StatelessWidget {
                         aspectRatio: 1,
                         child: FittedBox(
                           fit: BoxFit.contain,
-                          child: Image.file(
-                            model.logoImage!,
-                          ),
+                          child: Image.file(model.logoImage!),
                         ),
                       ),
                     ),
@@ -101,12 +99,11 @@ class LoadingPage extends StatelessWidget {
     String title,
     TextStyle textStyle, {
     TextAlign textAlign = TextAlign.center,
-  }) =>
-      Text(
-        title,
-        style: textStyle,
-        textAlign: textAlign,
-        maxLines: 3,
-        overflow: TextOverflow.ellipsis,
-      );
+  }) => Text(
+    title,
+    style: textStyle,
+    textAlign: textAlign,
+    maxLines: 3,
+    overflow: TextOverflow.ellipsis,
+  );
 }

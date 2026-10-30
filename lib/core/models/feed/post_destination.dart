@@ -14,21 +14,17 @@ class PostDestination {
   final int id;
   final String name;
 
-  PostDestination({
-    required this.type,
-    required this.id,
-    required this.name,
-  });
+  PostDestination({required this.type, required this.id, required this.name});
 
   JsonMap toJson() => {
-        _PostDestinationJsonKeys.type: type,
-        _PostDestinationJsonKeys.id: id,
-        _PostDestinationJsonKeys.name: name,
-      };
+    _PostDestinationJsonKeys.type: type,
+    _PostDestinationJsonKeys.id: id,
+    _PostDestinationJsonKeys.name: name,
+  };
 
   factory PostDestination.fromJson(JsonMap json) => PostDestination(
-        type: json[_PostDestinationJsonKeys.type]! as String,
-        id: json[_PostDestinationJsonKeys.id]! as int,
-        name: json[_PostDestinationJsonKeys.name]! as String,
-      );
+    type: json[_PostDestinationJsonKeys.type]! as String,
+    id: json[_PostDestinationJsonKeys.id]! as int,
+    name: json[_PostDestinationJsonKeys.name]! as String,
+  );
 }

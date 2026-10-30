@@ -102,9 +102,9 @@ class _TabBarCustomizationSheetState extends State<TabBarCustomizationSheet> {
 
   @override
   Widget build(BuildContext context) => ListenableBuilder(
-        listenable: _model,
-        builder: (context, _) => _buildSheet(context),
-      );
+    listenable: _model,
+    builder: (context, _) => _buildSheet(context),
+  );
 
   Widget _buildSheet(BuildContext context) {
     final theme = Theme.of(context);
@@ -132,8 +132,9 @@ class _TabBarCustomizationSheetState extends State<TabBarCustomizationSheet> {
                             fit: BoxFit.scaleDown,
                             child: Text(
                               'Быстрый доступ',
-                              style: theme.textTheme.titleLarge
-                                  ?.copyWith(fontWeight: FontWeight.w600),
+                              style: theme.textTheme.titleLarge?.copyWith(
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
                           ),
                         ),
@@ -175,7 +176,7 @@ class _TabBarCustomizationSheetState extends State<TabBarCustomizationSheet> {
                             const columns = 4;
                             final width =
                                 (constraints.maxWidth - 8 * (columns - 1)) /
-                                    columns;
+                                columns;
                             return Wrap(
                               spacing: 8,
                               runSpacing: 12,
@@ -190,7 +191,8 @@ class _TabBarCustomizationSheetState extends State<TabBarCustomizationSheet> {
                                       context,
                                       icon: route.unselectedIcon,
                                       label: route.pageTitle,
-                                      selected: !adding &&
+                                      selected:
+                                          !adding &&
                                           _model.selectedPath == route.pagePath,
                                       onTap: route.isDisabled
                                           ? null
@@ -221,8 +223,9 @@ class _TabBarCustomizationSheetState extends State<TabBarCustomizationSheet> {
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: DecoratedBox(
                     decoration: BoxDecoration(
-                      border:
-                          Border.all(color: theme.colorScheme.outlineVariant),
+                      border: Border.all(
+                        color: theme.colorScheme.outlineVariant,
+                      ),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Padding(
@@ -234,8 +237,8 @@ class _TabBarCustomizationSheetState extends State<TabBarCustomizationSheet> {
                         itemCount: TabBarPreferences.maxTabs,
                         itemKey: (index) =>
                             index == TabBarPreferences.editableSlotCount
-                                ? MainPagePaths.more
-                                : _model.slots[index] ?? 'empty-$index',
+                            ? MainPagePaths.more
+                            : _model.slots[index] ?? 'empty-$index',
                         canDrag: (index) =>
                             !_model.isSaving &&
                             index < TabBarPreferences.editableSlotCount &&
@@ -245,8 +248,8 @@ class _TabBarCustomizationSheetState extends State<TabBarCustomizationSheet> {
                         onMove: _model.move,
                         itemBuilder: (context, index) =>
                             index < TabBarPreferences.editableSlotCount
-                                ? _previewSlot(context, index)
-                                : _morePreview(context),
+                            ? _previewSlot(context, index)
+                            : _morePreview(context),
                       ),
                     ),
                   ),
@@ -287,19 +290,20 @@ class _TabBarCustomizationSheetState extends State<TabBarCustomizationSheet> {
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 2),
           child: TabBarItemContent(
-            icon: (selected ? route?.selectedIcon : route?.unselectedIcon) ??
+            icon:
+                (selected ? route?.selectedIcon : route?.unselectedIcon) ??
                 (selected ? Icons.block : Icons.add),
             label:
                 route?.pageTitle ?? (selected ? 'Не показывать' : 'Добавить'),
             color: selected
                 ? theme.colorScheme.primary
                 : theme.colorScheme.onSurfaceVariant,
-            labelStyle:
-                CupertinoTheme.of(context).textTheme.tabLabelTextStyle.copyWith(
-                      color: selected
-                          ? theme.colorScheme.primary
-                          : theme.colorScheme.onSurfaceVariant,
-                    ),
+            labelStyle: CupertinoTheme.of(context).textTheme.tabLabelTextStyle
+                .copyWith(
+                  color: selected
+                      ? theme.colorScheme.primary
+                      : theme.colorScheme.onSurfaceVariant,
+                ),
           ),
         ),
       ),
@@ -307,8 +311,8 @@ class _TabBarCustomizationSheetState extends State<TabBarCustomizationSheet> {
   }
 
   Widget _morePreview(BuildContext context) {
-    final color =
-        Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.35);
+    final color = Theme.of(context).colorScheme.onSurface
+        .withValues(alpha: 0.35);
     return Semantics(
       enabled: false,
       child: Padding(

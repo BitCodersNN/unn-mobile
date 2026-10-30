@@ -41,16 +41,16 @@ class Author {
       );
 
   factory Author.fromJson(JsonMap json) => Author(
-        userId: json[_AuthorJsonKeys.userId] as int?,
-        fullname: json[_AuthorJsonKeys.fullname]! as String,
-        educationGroup: json[_AuthorJsonKeys.educationGroup] as String?,
-        avatar: json[_AuthorJsonKeys.avatar]! as String,
-      );
+    userId: json[_AuthorJsonKeys.userId] as int?,
+    fullname: json[_AuthorJsonKeys.fullname]! as String,
+    educationGroup: json[_AuthorJsonKeys.educationGroup] as String?,
+    avatar: json[_AuthorJsonKeys.avatar]! as String,
+  );
 
   JsonMap toJson() => {
-        _AuthorJsonKeys.userId: userId,
-        _AuthorJsonKeys.fullname: fullname,
-        _AuthorJsonKeys.educationGroup: educationGroup,
-        _AuthorJsonKeys.avatar: avatar,
-      };
+    _AuthorJsonKeys.userId: userId,
+    _AuthorJsonKeys.fullname: fullname,
+    _AuthorJsonKeys.educationGroup: educationGroup,
+    _AuthorJsonKeys.avatar: avatar,
+  };
 }

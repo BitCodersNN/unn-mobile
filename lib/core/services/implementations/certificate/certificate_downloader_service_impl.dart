@@ -15,14 +15,12 @@ class CertificateDownloaderServiceImpl implements CertificateDownloaderService {
     LoggerService loggerService,
     ApiHelper apiHelper,
   ) : _fileDownloader = FileDownloader(
-          loggerService,
-          apiHelper,
-          downloadFolderName: Platform.isAndroid ? null : 'certificate',
-        );
+        loggerService,
+        apiHelper,
+        downloadFolderName: Platform.isAndroid ? null : 'certificate',
+      );
 
   @override
-  Future<File?> downloadFile(String fileName) => _fileDownloader.downloadFile(
-        fileName,
-        pickLocation: Platform.isAndroid,
-      );
+  Future<File?> downloadFile(String fileName) =>
+      _fileDownloader.downloadFile(fileName, pickLocation: Platform.isAndroid);
 }

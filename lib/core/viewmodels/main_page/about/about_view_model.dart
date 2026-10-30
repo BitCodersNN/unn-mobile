@@ -22,9 +22,9 @@ class AboutViewModel extends BaseViewModel {
   List<Author> get pastAuthors => _authors?.pastAuthors ?? [];
 
   FutureOr<void> init() => busyCallAsync(() async {
-        _updateAuthors(await _authorsRepository.get());
-        unawaited(_refresh());
-      });
+    _updateAuthors(await _authorsRepository.get());
+    unawaited(_refresh());
+  });
 
   Future<void> _refresh() async {
     _updateAuthors(await _authorsRepository.refresh());

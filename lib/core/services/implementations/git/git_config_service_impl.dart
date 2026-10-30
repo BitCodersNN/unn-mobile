@@ -14,10 +14,7 @@ class GitConfigServiceImpl implements GitConfigService {
   final LoggerService loggerService;
   final ApiHelper apiHelper;
 
-  GitConfigServiceImpl(
-    this.loggerService,
-    this.apiHelper,
-  );
+  GitConfigServiceImpl(this.loggerService, this.apiHelper);
 
   @override
   Future<Map<String, dynamic>?> getConfig({

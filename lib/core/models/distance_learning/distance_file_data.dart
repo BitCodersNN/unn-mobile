@@ -44,25 +44,21 @@ final class DistanceFileData extends DistanceMaterialData {
   String get downloadUrl => _fileData.downloadUrl;
 
   factory DistanceFileData.fromJson(JsonMap jsonMap) => DistanceFileData(
-        comment: jsonMap[_FileDataJsonKeys.comment]! as String,
-        dateTime: DateTime.parse(
-          jsonMap[_FileDataJsonKeys.fileDate]! as String,
-        ),
-        id: int.parse(jsonMap[_FileDataJsonKeys.id]! as String),
-        name: jsonMap[_FileDataJsonKeys.fileSrcName]! as String,
-        sizeInBytes: int.parse(
-          jsonMap[_FileDataJsonKeys.fileSize]! as String,
-        ),
-        downloadUrl: '$_baseDownloadUrl${jsonMap[_FileDataJsonKeys.fileHash]}',
-      );
+    comment: jsonMap[_FileDataJsonKeys.comment]! as String,
+    dateTime: DateTime.parse(jsonMap[_FileDataJsonKeys.fileDate]! as String),
+    id: int.parse(jsonMap[_FileDataJsonKeys.id]! as String),
+    name: jsonMap[_FileDataJsonKeys.fileSrcName]! as String,
+    sizeInBytes: int.parse(jsonMap[_FileDataJsonKeys.fileSize]! as String),
+    downloadUrl: '$_baseDownloadUrl${jsonMap[_FileDataJsonKeys.fileHash]}',
+  );
 
   @override
   JsonMap toJson() => {
-        _FileDataJsonKeys.comment: comment,
-        _FileDataJsonKeys.fileDate: dateTime.toIso8601String(),
-        _FileDataJsonKeys.id: id.toString(),
-        _FileDataJsonKeys.fileSrcName: name,
-        _FileDataJsonKeys.fileSize: sizeInBytes.toString(),
-        _FileDataJsonKeys.fileHash: downloadUrl.split('hash=')[1],
-      };
+    _FileDataJsonKeys.comment: comment,
+    _FileDataJsonKeys.fileDate: dateTime.toIso8601String(),
+    _FileDataJsonKeys.id: id.toString(),
+    _FileDataJsonKeys.fileSrcName: name,
+    _FileDataJsonKeys.fileSize: sizeInBytes.toString(),
+    _FileDataJsonKeys.fileHash: downloadUrl.split('hash=')[1],
+  };
 }

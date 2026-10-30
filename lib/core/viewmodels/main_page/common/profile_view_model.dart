@@ -94,31 +94,34 @@ class ProfileViewModel extends BaseViewModel {
               ? _getCurrentUser()
               : _getProfile(userId!, loadFromPost))
           .then((data) {
-        _loadedData = data;
-        _description = switch (data.runtimeType) {
-          const (StudentData) => (data! as StudentData).baseEduInfo.eduGroup,
-          _ => '',
-        };
-      }).catchError((error, stack) {
-        _loggerService.logError(error, stack);
-        if (retryAttempt < maxRetryAttempts) {
-          init(
-            force: force,
-            userId: userId,
-            loadCurrentUser: loadCurrentUser,
-            loadFromPost: loadFromPost,
-            setBusy: setBusy,
-            retryAttempt: retryAttempt + 1,
-          );
-          return;
-        }
-        if (_loadedData == null) {
-          _hasError = true;
-        }
-      }).whenComplete(() {
-        _isLoading = false;
-        notifyListeners();
-      });
+            _loadedData = data;
+            _description = switch (data.runtimeType) {
+              const (StudentData) =>
+                (data! as StudentData).baseEduInfo.eduGroup,
+              _ => '',
+            };
+          })
+          .catchError((error, stack) {
+            _loggerService.logError(error, stack);
+            if (retryAttempt < maxRetryAttempts) {
+              init(
+                force: force,
+                userId: userId,
+                loadCurrentUser: loadCurrentUser,
+                loadFromPost: loadFromPost,
+                setBusy: setBusy,
+                retryAttempt: retryAttempt + 1,
+              );
+              return;
+            }
+            if (_loadedData == null) {
+              _hasError = true;
+            }
+          })
+          .whenComplete(() {
+            _isLoading = false;
+            notifyListeners();
+          });
     }
   }
 
@@ -141,10 +144,6 @@ class ProfileViewModel extends BaseViewModel {
 
   Future<UserData?> _getProfile(int userId, bool loadFromPost) async =>
       loadFromPost
-          ? await _getProfileService.getProfileByAuthorId(
-              authorId: userId,
-            )
-          : await _getProfileService.getProfile(
-              userId: userId,
-            );
+      ? await _getProfileService.getProfileByAuthorId(authorId: userId)
+      : await _getProfileService.getProfile(userId: userId);
 }

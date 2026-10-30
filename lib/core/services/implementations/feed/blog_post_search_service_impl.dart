@@ -74,10 +74,7 @@ class BlogPostSearchServiceImpl implements BlogPostSearchService {
   final LoggerService _loggerService;
   final ApiHelper _apiHelper;
 
-  BlogPostSearchServiceImpl(
-    this._loggerService,
-    this._apiHelper,
-  );
+  BlogPostSearchServiceImpl(this._loggerService, this._apiHelper);
 
   @override
   Future<bool> resetFilter() => setFilter();

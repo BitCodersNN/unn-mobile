@@ -11,7 +11,7 @@ class SourceCourseViewModel extends BaseViewModel {
   final DistanceLearningDownloaderService _downloader;
 
   SourceCourseViewModel(DistanceCourse course, this._downloader)
-      : _course = course;
+    : _course = course;
 
   String get discipline => _course.discipline;
 

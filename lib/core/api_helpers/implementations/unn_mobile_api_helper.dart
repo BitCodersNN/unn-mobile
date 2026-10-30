@@ -7,13 +7,12 @@ import 'package:unn_mobile/core/constants/api/host.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation/authorisation_service.dart';
 
 final class UnnMobileApiHelper extends AuthenticatedApiHelper {
-  UnnMobileApiHelper({
-    required AuthorisationService authorizationService,
-  }) : super(
-          authorizationService,
-          options: createBaseOptions(
-            host: Host.unnMobile,
-            headers: authorizationService.headers,
-          ),
-        );
+  UnnMobileApiHelper({required AuthorisationService authorizationService})
+    : super(
+        authorizationService,
+        options: createBaseOptions(
+          host: Host.unnMobile,
+          headers: authorizationService.headers,
+        ),
+      );
 }

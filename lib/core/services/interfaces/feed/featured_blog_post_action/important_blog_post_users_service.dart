@@ -15,8 +15,5 @@ abstract interface class ImportantBlogPostUsersService {
   /// [postId] - идентификатор поста, для которого запрашиваются пользователи.
   /// [pageNumber] - номер страницы для пагинации (по умолчанию 0).
   /// Возвращает `List<UserShortInfo>?` - список краткой информации о пользователях или `null`, если произошла ошибка.
-  Future<List<UserShortInfo>?> getUsers(
-    int postId, [
-    int pageNumber = 0,
-  ]);
+  Future<List<UserShortInfo>?> getUsers(int postId, [int pageNumber = 0]);
 }

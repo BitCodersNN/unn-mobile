@@ -38,15 +38,10 @@ class AuthErrorText extends StatelessWidget {
           switchOutCurve: Curves.easeIn,
           layoutBuilder: (currentChild, previousChildren) => Stack(
             alignment: AlignmentDirectional.centerStart,
-            children: [
-              ...previousChildren,
-              if (currentChild != null) currentChild,
-            ],
+            children: [...previousChildren, ?currentChild],
           ),
-          transitionBuilder: (child, animation) => FadeTransition(
-            opacity: animation,
-            child: child,
-          ),
+          transitionBuilder: (child, animation) =>
+              FadeTransition(opacity: animation, child: child),
           child: errorText == null || errorText.isEmpty
               ? const SizedBox.shrink(key: ValueKey('empty'))
               : Padding(
@@ -59,9 +54,7 @@ class AuthErrorText extends StatelessWidget {
                         if (boldPrefix != null)
                           TextSpan(
                             text: boldPrefix,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                            ),
+                            style: const TextStyle(fontWeight: FontWeight.bold),
                           ),
                         TextSpan(text: errorText),
                       ],

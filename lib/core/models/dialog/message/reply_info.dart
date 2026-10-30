@@ -14,20 +14,15 @@ class ReplyInfo {
   final MessageShortInfo replyMessage;
   final MessageState messageStatus;
 
-  ReplyInfo({
-    required this.replyMessage,
-    required this.messageStatus,
-  });
+  ReplyInfo({required this.replyMessage, required this.messageStatus});
 
   factory ReplyInfo.fromJson(JsonMap jsonMap) => ReplyInfo(
-        replyMessage: MessageShortInfo.fromJson(
-          jsonMap[ReplyInfoJsonKeys.replyMessage]! as JsonMap,
-        ),
-        messageStatus:
-            jsonMap[ReplyInfoJsonKeys.replyMessageStatus]! as MessageState,
-      );
+    replyMessage: MessageShortInfo.fromJson(
+      jsonMap[ReplyInfoJsonKeys.replyMessage]! as JsonMap,
+    ),
+    messageStatus:
+        jsonMap[ReplyInfoJsonKeys.replyMessageStatus]! as MessageState,
+  );
 
-  JsonMap toJson() => {
-        ReplyInfoJsonKeys.replyMessage: replyMessage.toJson(),
-      };
+  JsonMap toJson() => {ReplyInfoJsonKeys.replyMessage: replyMessage.toJson()};
 }

@@ -12,31 +12,30 @@ class ChangelogDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => AlertDialog.adaptive(
-        title: const Text('Список изменений'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Flexible(
-              child: SingleChildScrollView(
-                child: BBCodeText(
-                  data: changelogString,
-                  stylesheet: getBBStyleSheet(),
-                ),
-              ),
-            ),
-            const Divider(),
-            BBCodeText(
-              data:
-                  'Также, подписывайтесь на наш [URL=https://t.me/unn_mobile]Telegram-канал[/URL]',
+    title: const Text('Список изменений'),
+    content: Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Flexible(
+          child: SingleChildScrollView(
+            child: BBCodeText(
+              data: changelogString,
               stylesheet: getBBStyleSheet(),
             ),
-          ],
-        ),
-        actions: [
-          AdaptiveDialogAction(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('OK'),
           ),
-        ],
-      );
+        ),
+        const Divider(),
+        BBCodeText(
+          data: 'Также, подписывайтесь на наш [URL=https://t.me/unn_mobile]Telegram-канал[/URL]',
+          stylesheet: getBBStyleSheet(),
+        ),
+      ],
+    ),
+    actions: [
+      AdaptiveDialogAction(
+        onPressed: () => Navigator.of(context).pop(),
+        child: const Text('OK'),
+      ),
+    ],
+  );
 }

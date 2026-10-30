@@ -122,8 +122,8 @@ class LoadingPageViewModel extends BaseViewModel {
 
   Future<void> _initUserData() async {
     if (await _appOpenTracker.isFirstTimeOpenOnVersion()) {
-      final profile =
-          await _gettingProfileOfCurrentUser.getProfileOfCurrentUser();
+      final profile = await _gettingProfileOfCurrentUser
+          .getProfileOfCurrentUser();
       unawaited(_userDataProvider.saveData(profile));
     }
 
@@ -139,7 +139,4 @@ class LoadingPageViewModel extends BaseViewModel {
   }
 }
 
-enum _TypeScreen {
-  authScreen,
-  mainScreen,
-}
+enum _TypeScreen { authScreen, mainScreen }

@@ -14,10 +14,7 @@ import 'package:unn_mobile/ui/views/main_page/tab_bar/tab_bar_customization_shee
 class SettingsScreenView extends StatelessWidget {
   final bool hasAccount;
 
-  const SettingsScreenView({
-    super.key,
-    this.hasAccount = true,
-  });
+  const SettingsScreenView({super.key, this.hasAccount = true});
 
   @override
   Widget build(BuildContext context) {
@@ -93,9 +90,7 @@ class SettingsScreenView extends StatelessWidget {
                           await model.clearCache();
                           if (context.mounted) {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Кэш очищен'),
-                              ),
+                              const SnackBar(content: Text('Кэш очищен')),
                             );
                           }
                         },

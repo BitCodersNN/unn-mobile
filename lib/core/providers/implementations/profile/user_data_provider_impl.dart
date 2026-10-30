@@ -46,10 +46,7 @@ class UserDataProviderImpl implements UserDataProvider {
       _loggerService.logError(
         'Отсутствуют данные пользователя',
         null,
-        information: [
-          'userType: $userType',
-          'userInfo: $userInfo',
-        ],
+        information: ['userType: $userType', 'userInfo: $userInfo'],
       );
       return null;
     }
@@ -90,39 +87,31 @@ class UserDataProviderImpl implements UserDataProvider {
       return;
     }
 
-    await Future.wait(
-      [
-        _storage.write(
-          key: _UserDataProvideKeys._userTypeKey,
-          value: userData.runtimeType.toString().toSnakeCase(),
-        ),
-        _storage.write(
-          key: _UserDataProvideKeys._userDataKey,
-          value: jsonEncode(userData.toJson()),
-        ),
-      ],
-    );
+    await Future.wait([
+      _storage.write(
+        key: _UserDataProvideKeys._userTypeKey,
+        value: userData.runtimeType.toString().toSnakeCase(),
+      ),
+      _storage.write(
+        key: _UserDataProvideKeys._userDataKey,
+        value: jsonEncode(userData.toJson()),
+      ),
+    ]);
   }
 
   @override
   Future<bool> isContained() async {
-    final results = await Future.wait(
-      [
-        _storage.containsKey(
-          key: _UserDataProvideKeys._userTypeKey,
-        ),
-        _storage.containsKey(
-          key: _UserDataProvideKeys._userDataKey,
-        ),
-      ],
-    );
+    final results = await Future.wait([
+      _storage.containsKey(key: _UserDataProvideKeys._userTypeKey),
+      _storage.containsKey(key: _UserDataProvideKeys._userDataKey),
+    ]);
 
     return results.every((isPresent) => isPresent);
   }
 
   @override
   Future<void> removeData() => Future.wait([
-        _storage.remove(key: _UserDataProvideKeys._userTypeKey),
-        _storage.remove(key: _UserDataProvideKeys._userTypeKey),
-      ]);
+    _storage.remove(key: _UserDataProvideKeys._userTypeKey),
+    _storage.remove(key: _UserDataProvideKeys._userTypeKey),
+  ]);
 }

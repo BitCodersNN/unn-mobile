@@ -1,14 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2025 BitCodersNN
 
-enum SubjectType {
-  unknown,
-  lecture,
-  practice,
-  lab,
-  exam,
-  consult,
-}
+enum SubjectType { unknown, lecture, practice, lab, exam, consult }
 
 const typeMapping = {
   'экзамен': SubjectType.exam,

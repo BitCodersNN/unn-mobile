@@ -22,20 +22,11 @@ class MessageReaderServiceImpl implements MessageReaderService {
   final LoggerService _loggerService;
   final ApiHelper _apiHelper;
 
-  MessageReaderServiceImpl(
-    this._loggerService,
-    this._apiHelper,
-  );
+  MessageReaderServiceImpl(this._loggerService, this._apiHelper);
 
   @override
-  Future<bool> readMessage({
-    required int chatId,
-    required int messageId,
-  }) =>
-      readMessages(
-        chatId: chatId,
-        messageIds: [messageId],
-      );
+  Future<bool> readMessage({required int chatId, required int messageId}) =>
+      readMessages(chatId: chatId, messageIds: [messageId]);
 
   @override
   Future<bool> readMessages({

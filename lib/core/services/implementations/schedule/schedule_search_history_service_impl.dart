@@ -20,16 +20,13 @@ class ScheduleSearchHistoryServiceImpl implements ScheduleSearchHistoryService {
   final _maxHistoryItems = 5;
   bool _isInitialized = false;
 
-  ScheduleSearchHistoryServiceImpl(
-    this._storage,
-    this._loggerService,
-  );
+  ScheduleSearchHistoryServiceImpl(this._storage, this._loggerService);
 
   Future<void> _initFromStorage() async {
     try {
-      await Future.wait(
-        [for (final type in IdType.values) _loadHistoryQueueForType(type)],
-      );
+      await Future.wait([
+        for (final type in IdType.values) _loadHistoryQueueForType(type),
+      ]);
     } catch (e, stack) {
       _loggerService.logError(e, stack);
     } finally {
@@ -42,10 +39,7 @@ class ScheduleSearchHistoryServiceImpl implements ScheduleSearchHistoryService {
     final rawHistoryJson = await _storage.read(key: key);
 
     if (rawHistoryJson == null) {
-      _historyQueues.putIfAbsent(
-        type,
-        Queue<ScheduleSearchSuggestionItem>.new,
-      );
+      _historyQueues.putIfAbsent(type, Queue<ScheduleSearchSuggestionItem>.new);
       return;
     }
 

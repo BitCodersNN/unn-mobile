@@ -21,15 +21,10 @@ class WebinarServiceImpl implements WebinarService {
   final LoggerService _loggerService;
   final ApiHelper _apiHelper;
 
-  WebinarServiceImpl(
-    this._loggerService,
-    this._apiHelper,
-  );
+  WebinarServiceImpl(this._loggerService, this._apiHelper);
 
   @override
-  Future<List<Webinar>?> getWebinars({
-    required Semester semester,
-  }) async {
+  Future<List<Webinar>?> getWebinars({required Semester semester}) async {
     Response response;
     try {
       response = await _apiHelper.get(

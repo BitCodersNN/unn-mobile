@@ -41,55 +41,52 @@ class BlogPost {
   }) : commentCount = commentCount ?? (comments.length);
 
   factory BlogPost.fromJson(JsonMap jsonMap) => BlogPost(
-        data: BlogPostData.fromJson(jsonMap),
-        ratingList: RatingList.fromJson(
-          jsonMap[_BlogPostJsonKeys.reaction]! as JsonMap,
-        ),
-        userShortInfo: UserShortInfo.fromJson(
-          jsonMap[_BlogPostJsonKeys.author]! as JsonMap,
-        ),
-        attachFiles: [
-          for (final item in jsonMap[_BlogPostJsonKeys.attach]! as List)
-            FileData.fromJson(item),
-        ],
-        comments: [
-          for (final comment in jsonMap[_BlogPostJsonKeys.comments]! as List)
-            BlogPostComment.fromJson(comment),
-        ],
-        commentCount: jsonMap[_BlogPostJsonKeys.commentCount] as int?,
-      );
+    data: BlogPostData.fromJson(jsonMap),
+    ratingList: RatingList.fromJson(
+      jsonMap[_BlogPostJsonKeys.reaction]! as JsonMap,
+    ),
+    userShortInfo: UserShortInfo.fromJson(
+      jsonMap[_BlogPostJsonKeys.author]! as JsonMap,
+    ),
+    attachFiles: [
+      for (final item in jsonMap[_BlogPostJsonKeys.attach]! as List)
+        FileData.fromJson(item),
+    ],
+    comments: [
+      for (final comment in jsonMap[_BlogPostJsonKeys.comments]! as List)
+        BlogPostComment.fromJson(comment),
+    ],
+    commentCount: jsonMap[_BlogPostJsonKeys.commentCount] as int?,
+  );
 
   JsonMap toJson() => {
-        ...data.toJson(),
-        _BlogPostJsonKeys.reaction: ratingList.toJson(),
-        _BlogPostJsonKeys.author: userShortInfo.toJson(),
-        _BlogPostJsonKeys.attach: [
-          for (final file in attachFiles) file.toJson(),
-        ],
-        _BlogPostJsonKeys.comments: [
-          for (final comment in comments) comment.toJson(),
-        ],
-        _BlogPostJsonKeys.commentCount: commentCount,
-      };
+    ...data.toJson(),
+    _BlogPostJsonKeys.reaction: ratingList.toJson(),
+    _BlogPostJsonKeys.author: userShortInfo.toJson(),
+    _BlogPostJsonKeys.attach: [for (final file in attachFiles) file.toJson()],
+    _BlogPostJsonKeys.comments: [
+      for (final comment in comments) comment.toJson(),
+    ],
+    _BlogPostJsonKeys.commentCount: commentCount,
+  };
 
   factory BlogPost.fromBitrixJson(JsonMap jsonMap) => BlogPost(
-        data: BlogPostData.fromBitrixJson(
-          jsonMap[_BlogPostBitrixJsonKeys.post]! as JsonMap,
-        ),
-        ratingList: RatingList.fromBitrixJson(
-          jsonMap[_BlogPostBitrixJsonKeys.ratingList]! as JsonMap,
-        ),
-        userShortInfo: UserShortInfo.fromBitrixJson(
-          jsonMap[_BlogPostBitrixJsonKeys.author]! as JsonMap,
-        ),
-        attachFiles: [
-          for (final item in jsonMap[_BlogPostBitrixJsonKeys.attach]! as List)
-            FileData.fromBitrixJson(item),
-        ],
-        comments: [
-          for (final comment
-              in jsonMap[_BlogPostBitrixJsonKeys.comments]! as List)
-            BlogPostComment.fromBitrixJson(comment),
-        ],
-      );
+    data: BlogPostData.fromBitrixJson(
+      jsonMap[_BlogPostBitrixJsonKeys.post]! as JsonMap,
+    ),
+    ratingList: RatingList.fromBitrixJson(
+      jsonMap[_BlogPostBitrixJsonKeys.ratingList]! as JsonMap,
+    ),
+    userShortInfo: UserShortInfo.fromBitrixJson(
+      jsonMap[_BlogPostBitrixJsonKeys.author]! as JsonMap,
+    ),
+    attachFiles: [
+      for (final item in jsonMap[_BlogPostBitrixJsonKeys.attach]! as List)
+        FileData.fromBitrixJson(item),
+    ],
+    comments: [
+      for (final comment in jsonMap[_BlogPostBitrixJsonKeys.comments]! as List)
+        BlogPostComment.fromBitrixJson(comment),
+    ],
+  );
 }

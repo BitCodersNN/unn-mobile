@@ -18,16 +18,16 @@ class _UserDataJsonKeys {
 
 class UserData extends UserShortInfo {
   static Set<String> get jsonKeys => {
-        _UserDataJsonKeys.id,
-        _UserDataJsonKeys.login,
-        _UserDataJsonKeys.email,
-        _UserDataJsonKeys.phone,
-        _UserDataJsonKeys.sex,
-        _UserDataJsonKeys.notes,
-        _UserDataJsonKeys.web,
-        _UserDataJsonKeys.birthdate,
-        ...UserShortInfo.profileJsonKeys,
-      };
+    _UserDataJsonKeys.id,
+    _UserDataJsonKeys.login,
+    _UserDataJsonKeys.email,
+    _UserDataJsonKeys.phone,
+    _UserDataJsonKeys.sex,
+    _UserDataJsonKeys.notes,
+    _UserDataJsonKeys.web,
+    _UserDataJsonKeys.birthdate,
+    ...UserShortInfo.profileJsonKeys,
+  };
   final int userId;
   final String? login;
   final String? email;
@@ -62,10 +62,10 @@ class UserData extends UserShortInfo {
     this.notes,
     this.web,
   }) : super(
-          bitrixId: userShortInfo.bitrixId,
-          fullname: userShortInfo.fullname,
-          photoSrc: userShortInfo.photoSrc,
-        );
+         bitrixId: userShortInfo.bitrixId,
+         fullname: userShortInfo.fullname,
+         photoSrc: userShortInfo.photoSrc,
+       );
 
   factory UserData.fromJson(JsonMap json) {
     final userJsonMap = (json[_UserDataJsonKeys.user] ?? json) as JsonMap;
@@ -86,15 +86,15 @@ class UserData extends UserShortInfo {
 
   @override
   JsonMap toJson() => {
-        _UserDataJsonKeys.user: {
-          ...super.toProfileJson(),
-          _UserDataJsonKeys.id: userId,
-          _UserDataJsonKeys.login: login,
-          _UserDataJsonKeys.email: email,
-          _UserDataJsonKeys.phone: phone,
-          _UserDataJsonKeys.sex: sex,
-          _UserDataJsonKeys.notes: notes,
-          _UserDataJsonKeys.birthdate: birthdate?.toIso8601String(),
-        },
-      };
+    _UserDataJsonKeys.user: {
+      ...super.toProfileJson(),
+      _UserDataJsonKeys.id: userId,
+      _UserDataJsonKeys.login: login,
+      _UserDataJsonKeys.email: email,
+      _UserDataJsonKeys.phone: phone,
+      _UserDataJsonKeys.sex: sex,
+      _UserDataJsonKeys.notes: notes,
+      _UserDataJsonKeys.birthdate: birthdate?.toIso8601String(),
+    },
+  };
 }

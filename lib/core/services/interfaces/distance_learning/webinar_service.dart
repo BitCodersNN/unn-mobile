@@ -19,7 +19,5 @@ abstract interface class WebinarService {
   ///   от первых 6 символов перед декодированием JSON.
   /// - Парсинг данных выполняется с использованием функции [parseJsonList]
   ///   и метода [Webinar.fromJson].
-  Future<List<Webinar>?> getWebinars({
-    required Semester semester,
-  });
+  Future<List<Webinar>?> getWebinars({required Semester semester});
 }
