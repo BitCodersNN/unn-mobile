@@ -7,10 +7,12 @@ import 'package:unn_mobile/core/misc/file_helpers/file_functions.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation/source_authorisation_service.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation/unn_authorisation_service.dart';
 import 'package:unn_mobile/core/services/interfaces/common/storage_service.dart';
+import 'package:unn_mobile/core/services/interfaces/schedule_widget/schedule_widget_service.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
 
 class SettingsScreenViewModel extends BaseViewModel {
   final StorageService _storageService;
+  final ScheduleWidgetService _scheduleWidget;
 
   final UnnAuthService _authorizationService;
   final SourceAuthService _sourceAuthorizationService;
@@ -19,6 +21,7 @@ class SettingsScreenViewModel extends BaseViewModel {
     this._storageService,
     this._authorizationService,
     this._sourceAuthorizationService,
+    this._scheduleWidget,
   );
 
   bool get vibrationEnabled => AppSettings.vibrationEnabled;
@@ -58,6 +61,7 @@ class SettingsScreenViewModel extends BaseViewModel {
   }
 
   Future<void> clearEverything() async {
+    await _scheduleWidget.clear();
     await Future.wait([_storageService.clear(), clearCache()]);
   }
 

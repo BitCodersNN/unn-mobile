@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="schedule_widget_name">Расписание ННГУ</string>
+    <string name="schedule_widget_description">Оставшиеся занятия на сегодня</string>
+    <string name="schedule_widget_title">Расписание</string>
+    <string name="schedule_widget_open">Открыть расписание</string>
+    <string name="schedule_widget_sign_in">Откройте приложение и войдите в аккаунт</string>
+    <string name="schedule_widget_outdated">Обновите расписание в приложении</string>
+    <string name="schedule_widget_empty">Сегодня занятий нет</string>
+    <string name="schedule_widget_finished">На сегодня занятий больше нет</string>
+    <string name="schedule_widget_more">Ещё %1$d · открыть расписание</string>
+    <string name="schedule_widget_now">Сейчас</string>
+    <color name="schedule_widget_background">#F4FBFA</color>
+    <color name="schedule_widget_text">#172B28</color>
+    <color name="schedule_widget_secondary">#637B77</color>
+    <color name="schedule_widget_accent">#00897F</color>
+    <color name="schedule_widget_current">#1400897F</color>
+</resources>

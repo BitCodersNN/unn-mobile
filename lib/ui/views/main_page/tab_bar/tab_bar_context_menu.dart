@@ -20,6 +20,8 @@ Future<TabBarContextMenuResult?> showTabBarContextMenu(
   required Future<bool> Function(List<String> paths) onReorder,
 }) {
   final completion = Completer<TabBarContextMenuResult?>();
+  final overlay = Navigator.of(context, rootNavigator: true).overlay!;
+  final themes = InheritedTheme.capture(from: context, to: overlay.context);
   late final OverlayEntry entry;
   LocalHistoryEntry? history;
   TabBarContextMenuResult? dismissedResult;
@@ -36,23 +38,25 @@ Future<TabBarContextMenuResult?> showTabBarContextMenu(
   }
 
   entry = OverlayEntry(
-    builder: (_) => _TabBarContextMenu(
-      session: session,
-      routes: routes,
-      onReorder: onReorder,
-      onDismiss: (result) {
-        dismissedResult = result;
-        removeOverlay();
-      },
-      onClosed: () {
-        removeOverlay();
-        completion.complete(dismissedResult);
-      },
+    builder: (_) => themes.wrap(
+      _TabBarContextMenu(
+        session: session,
+        routes: routes,
+        onReorder: onReorder,
+        onDismiss: (result) {
+          dismissedResult = result;
+          removeOverlay();
+        },
+        onClosed: () {
+          removeOverlay();
+          completion.complete(dismissedResult);
+        },
+      ),
     ),
   );
   history = LocalHistoryEntry(onRemove: session.cancel);
   ModalRoute.of(context)?.addLocalHistoryEntry(history);
-  Navigator.of(context, rootNavigator: true).overlay!.insert(entry);
+  overlay.insert(entry);
   return completion.future;
 }
 
