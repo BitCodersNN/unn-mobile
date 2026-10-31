@@ -121,13 +121,14 @@ class MessageWidget extends StatefulWidget {
                   .copyWith(selectableText: false),
             ),
           ),
-          const SizedBox(height: 4.0),
+          if (msg.files.isEmpty) const SizedBox(height: 4),
         ],
-        for (final file in msg.files)
-          AttachedFile(
-            viewModel: AttachedFileViewModel.cached(file.id)
-              ..initFromFileData(file),
-          ),
+        AttachedFiles(
+          files: [
+            for (final file in msg.files)
+              AttachedFileViewModel.cached(file.id)..initFromFileData(file),
+          ],
+        ),
       ],
     );
   }
@@ -218,11 +219,11 @@ class _MessageWidgetState extends State<MessageWidget> {
       builder: (context, model, _) => GestureDetector(
         onLongPress: () => ContextMenuHelper.showContextMenu(
           context: context,
-          model: model,
           actionsBuilder: () => createMessageActions(
             context: context,
             model: model,
-            widget: widget,
+            text: widget.message.text,
+            onReply: () => widget.chatModel.replyMessage = widget.message,
           ),
           onOpen: () => setState(() => _isHighlighted = true),
           onClose: () => setState(() => _isHighlighted = false),
