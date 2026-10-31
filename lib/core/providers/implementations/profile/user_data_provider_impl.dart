@@ -11,6 +11,7 @@ import 'package:unn_mobile/core/models/profile/user_data.dart';
 import 'package:unn_mobile/core/providers/interfaces/profile/user_data_provider.dart';
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
 import 'package:unn_mobile/core/services/interfaces/common/storage_service.dart';
+import 'package:unn_mobile/core/services/interfaces/profile/profile_of_current_user_service.dart';
 
 class _UserDataProvideKeys {
   static const _userTypeKey = 'user_type_key';
@@ -20,10 +21,15 @@ class _UserDataProvideKeys {
 class UserDataProviderImpl implements UserDataProvider {
   final LoggerService _loggerService;
   final StorageService _storage;
+  final ProfileOfCurrentUserService _profileService;
   static const _student = '${ProfilesStrings.student}_data';
   static const _employee = '${ProfilesStrings.employee}_data';
 
-  UserDataProviderImpl(this._storage, this._loggerService);
+  UserDataProviderImpl(
+    this._storage,
+    this._loggerService,
+    this._profileService,
+  );
 
   @override
   Future<UserData?> getData() async {
@@ -47,17 +53,32 @@ class UserDataProviderImpl implements UserDataProvider {
 
     final jsonMap = jsonDecode(userInfo) as Map<String, dynamic>;
 
+    UserData cachedUser;
     try {
-      return switch (userType) {
+      cachedUser = switch (userType) {
         _student => StudentData.fromJson(jsonMap),
         _employee => EmployeeData.fromJson(jsonMap),
         _ => UserData.fromJson(jsonMap),
       };
     } catch (e, stackTrace) {
       _loggerService.logError(e, stackTrace, information: [jsonMap.toString()]);
+      return null;
     }
 
-    return null;
+    final userJson = (jsonMap['user'] ?? jsonMap) as Map<String, dynamic>;
+    if (userJson.containsKey('birthdate')) {
+      return cachedUser;
+    }
+    final updatedUser = await _profileService.getProfileOfCurrentUser();
+    if (updatedUser == null || updatedUser.userId != cachedUser.userId) {
+      return cachedUser;
+    }
+    try {
+      await saveData(updatedUser);
+    } catch (error, stack) {
+      _loggerService.logError(error, stack);
+    }
+    return updatedUser;
   }
 
   @override

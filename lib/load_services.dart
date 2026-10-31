@@ -18,34 +18,37 @@ import 'package:unn_mobile/core/api_helpers/implementations/unn_source_api_helpe
 import 'package:unn_mobile/core/api_helpers/implementations/web_unn_mobile_api_helper.dart';
 import 'package:unn_mobile/core/api_helpers/implementations/web_unn_portal_api_helper.dart';
 import 'package:unn_mobile/core/api_helpers/implementations/web_unn_source_api_helper.dart';
+import 'package:unn_mobile/core/constants/string_keys/git_resource_cache_keys.dart';
 import 'package:unn_mobile/core/misc/app_open_tracker.dart';
 import 'package:unn_mobile/core/misc/app_settings.dart';
+import 'package:unn_mobile/core/misc/birthday/birthday_greeting_manager.dart';
+import 'package:unn_mobile/core/misc/git/git_folder.dart';
+import 'package:unn_mobile/core/misc/json/json_utils.dart';
 import 'package:unn_mobile/core/misc/user/current_user_sync_storage.dart';
+import 'package:unn_mobile/core/models/about/authors_catalog.dart';
+import 'package:unn_mobile/core/models/birthday/birthday_greeting_catalog.dart';
 import 'package:unn_mobile/core/models/common/online_status_data.dart';
 import 'package:unn_mobile/core/models/feed/blog_post_type.dart';
-import 'package:unn_mobile/core/providers/implementations/about/authors_provider_impl.dart';
-import 'package:unn_mobile/core/providers/implementations/about/last_commit_sha_authors_provider_impl.dart';
+import 'package:unn_mobile/core/models/loading_page/loading_page_catalog.dart';
 import 'package:unn_mobile/core/providers/implementations/authorisation/authorisation_data_provider_impl.dart';
+import 'package:unn_mobile/core/providers/implementations/birthday/birthday_greeting_provider_impl.dart';
 import 'package:unn_mobile/core/providers/implementations/common/message_ignored_keys_provider_impl.dart';
 import 'package:unn_mobile/core/providers/implementations/feed/blog_post_provider_impl.dart';
 import 'package:unn_mobile/core/providers/implementations/feed/last_feed_load_date_time_provider_impl.dart';
+import 'package:unn_mobile/core/providers/implementations/git/git_resource_cache_provider_impl.dart';
 import 'package:unn_mobile/core/providers/implementations/grade_book/mark_by_subject_provider_impl.dart';
-import 'package:unn_mobile/core/providers/implementations/loading_page/last_commit_sha_loading_page_provider_impl.dart';
-import 'package:unn_mobile/core/providers/implementations/loading_page/loading_page_provider_impl.dart';
 import 'package:unn_mobile/core/providers/implementations/profile/user_data_provider_impl.dart';
 import 'package:unn_mobile/core/providers/implementations/schedule/offline_schedule_provider_impl.dart';
-import 'package:unn_mobile/core/providers/interfaces/about/authors_provider.dart';
-import 'package:unn_mobile/core/providers/interfaces/about/last_commit_sha_authors_provider.dart';
 import 'package:unn_mobile/core/providers/interfaces/authorisation/auth_data_provider.dart';
+import 'package:unn_mobile/core/providers/interfaces/birthday/birthday_greeting_provider.dart';
 import 'package:unn_mobile/core/providers/interfaces/common/message_ignored_keys_provider.dart';
 import 'package:unn_mobile/core/providers/interfaces/feed/blog_post_provider.dart';
 import 'package:unn_mobile/core/providers/interfaces/feed/last_feed_load_date_time_provider.dart';
 import 'package:unn_mobile/core/providers/interfaces/grade_book/mark_by_subject_provider.dart';
-import 'package:unn_mobile/core/providers/interfaces/loading_page/last_commit_sha_loading_page_provider.dart';
-import 'package:unn_mobile/core/providers/interfaces/loading_page/loading_page_provider.dart';
 import 'package:unn_mobile/core/providers/interfaces/profile/user_data_provider.dart';
 import 'package:unn_mobile/core/providers/interfaces/schedule/offline_schedule_provider.dart';
-import 'package:unn_mobile/core/services/implementations/about/authors_config_service_impl.dart';
+import 'package:unn_mobile/core/repositories/implementations/git/git_resource_repository_impl.dart';
+import 'package:unn_mobile/core/repositories/interfaces/git/git_resource_repository.dart';
 import 'package:unn_mobile/core/services/implementations/authentication/source_auth_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/authentication/stream_auth_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/authentication/unn_auth_refresh_service_impl.dart';
@@ -86,8 +89,10 @@ import 'package:unn_mobile/core/services/implementations/feed/featured_blog_post
 import 'package:unn_mobile/core/services/implementations/feed/feed_file_downloader_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/feed/reaction_action_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/feed/reaction_rating_list_service_impl.dart';
+import 'package:unn_mobile/core/services/implementations/git/git_config_service_impl.dart';
+import 'package:unn_mobile/core/services/implementations/git/git_json_resource_source.dart';
 import 'package:unn_mobile/core/services/implementations/grade_book/grade_book_service_impl.dart';
-import 'package:unn_mobile/core/services/implementations/loading_page/loading_page_config_service_impl.dart';
+import 'package:unn_mobile/core/services/implementations/loading_page/loading_page_resource_source.dart';
 import 'package:unn_mobile/core/services/implementations/loading_page/logo_downloader_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/profile/lecturer_profile_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/profile/profile_of_current_user_service_impl.dart';
@@ -96,7 +101,6 @@ import 'package:unn_mobile/core/services/implementations/profile/profile_service
 import 'package:unn_mobile/core/services/implementations/schedule/export_schedule_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/schedule/schedule_search_history_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/schedule/schedule_service_impl.dart';
-import 'package:unn_mobile/core/services/interfaces/about/authors_config_service.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation/authorisation_refresh_service.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation/source_authorisation_service.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation/stream_auth_service.dart';
@@ -136,8 +140,9 @@ import 'package:unn_mobile/core/services/interfaces/feed/featured_blog_post_acti
 import 'package:unn_mobile/core/services/interfaces/feed/feed_file_downloader_service.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/reaction_action_service.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/reaction_rating_list_service.dart';
+import 'package:unn_mobile/core/services/interfaces/git/git_config_service.dart';
+import 'package:unn_mobile/core/services/interfaces/git/git_resource_source.dart';
 import 'package:unn_mobile/core/services/interfaces/grade_book/grade_book_service.dart';
-import 'package:unn_mobile/core/services/interfaces/loading_page/loading_page_config_service.dart';
 import 'package:unn_mobile/core/services/interfaces/loading_page/logo_downloader_service.dart';
 import 'package:unn_mobile/core/services/interfaces/profile/lecturer_profile_service.dart';
 import 'package:unn_mobile/core/services/interfaces/profile/profile_of_current_user_service.dart';
@@ -192,6 +197,36 @@ void registerDependencies() {
 
   ApiHelper getApiHelper(HostType hostType) => apiHelperFactories[hostType]!();
 
+  void registerGitResource<T>(
+    GitPath path,
+    T Function(Object? json) fromJson, {
+    required String cacheKey,
+    required JsonMap Function(T data) toJson,
+    String? legacyShaKey,
+    GitResourceSource<T>? source,
+  }) {
+    injector.registerSingleton<GitResourceRepository<T>>(
+      () => GitResourceRepositoryImpl(
+        GitResourceCacheProviderImpl(
+          get<StorageService>(),
+          get<LoggerService>(),
+          fromJson,
+          key: cacheKey,
+          toJson: toJson,
+          legacyShaKey: legacyShaKey,
+        ),
+        source ??
+            GitJsonResourceSource(
+              get<GitConfigService>(),
+              fromJson,
+              path: path,
+            ),
+        get<LastCommitShaService>(),
+        get<LoggerService>(),
+      ),
+    );
+  }
+
   injector
     // =========================================================================
     // 1. БАЗОВАЯ ИНФРАСТРУКТУРА И УТИЛИТЫ
@@ -206,6 +241,16 @@ void registerDependencies() {
     ..registerSingleton<StorageService>(StorageServiceImpl.new)
     ..registerSingleton<AppOpenTracker>(
       () => AppOpenTracker(get<StorageService>()),
+    )
+    ..registerSingleton<BirthdayGreetingProvider>(
+      () => BirthdayGreetingProviderImpl(get<StorageService>()),
+    )
+    ..registerSingleton<BirthdayGreetingManager>(
+      () => BirthdayGreetingManager(
+        get<BirthdayGreetingProvider>(),
+        get<LoggerService>(),
+        get<GitResourceRepository<BirthdayGreetingCatalog>>(),
+      ),
     )
     // =========================================================================
     // 2. СЕТЕВЫЕ ПОМОЩНИКИ (API HELPERS)
@@ -266,16 +311,16 @@ void registerDependencies() {
     // =========================================================================
     // 4. КОНФИГУРАЦИЯ И МЕТАДАННЫЕ
     // =========================================================================
+    ..registerSingleton<GitConfigService>(
+      () => GitConfigServiceImpl(
+        get<LoggerService>(),
+        getApiHelper(HostType.githubRaw),
+      ),
+    )
     ..registerSingleton<LastCommitShaService>(
       () => LastCommitShaServiceImpl(
         get<LoggerService>(),
         getApiHelper(HostType.github),
-      ),
-    )
-    ..registerSingleton<LoadingPageConfigService>(
-      () => LoadingPageConfigServiceImpl(
-        get<LoggerService>(),
-        getApiHelper(HostType.githubRaw),
       ),
     )
     ..registerSingleton<LogoDownloaderService>(
@@ -283,25 +328,6 @@ void registerDependencies() {
         get<LoggerService>(),
         get<GitHubRawApiHelper>(),
       ),
-    )
-    ..registerSingleton<AuthorsConfigService>(
-      () => AuthorsConfigServiceImpl(
-        get<LoggerService>(),
-        getApiHelper(HostType.githubRaw),
-      ),
-    )
-    ..registerSingleton<LastCommitShaAuthorsProvider>(
-      () => LastCommitShaAuthorsProviderImpl(get<StorageService>()),
-    )
-    ..registerSingleton<AuthorsProvider>(
-      () => AuthorsProviderImpl(get<StorageService>(), get<LoggerService>()),
-    )
-    ..registerSingleton<LastCommitShaLoadingPageProvider>(
-      () => LastCommitShaLoadingPageProviderImpl(get<StorageService>()),
-    )
-    ..registerSingleton<LoadingPageProvider>(
-      () =>
-          LoadingPageProviderImpl(get<StorageService>(), get<LoggerService>()),
     )
     // =========================================================================
     // 5. ПОЛЬЗОВАТЕЛЬ И ПРОФИЛЬ
@@ -321,7 +347,11 @@ void registerDependencies() {
       ),
     )
     ..registerSingleton<UserDataProvider>(
-      () => UserDataProviderImpl(get<StorageService>(), get<LoggerService>()),
+      () => UserDataProviderImpl(
+        get<StorageService>(),
+        get<LoggerService>(),
+        get<ProfileOfCurrentUserService>(),
+      ),
     )
     ..registerSingleton<CurrentUserSyncStorage>(
       () => CurrentUserSyncStorage(
@@ -638,16 +668,14 @@ void registerDependencies() {
       () => LoadingPageViewModel(
         get<LoggerService>(),
         get<AuthRefreshService>(),
-        get<LastCommitShaService>(),
-        get<LoadingPageConfigService>(),
+        get<GitResourceRepository<LoadingPageCatalog>>(),
         get<LogoDownloaderService>(),
-        get<LastCommitShaLoadingPageProvider>(),
-        get<LoadingPageProvider>(),
         get<CurrentUserSyncStorage>(),
         get<ProfileOfCurrentUserService>(),
         get<UserDataProvider>(),
         get<StreamAuthService>(),
         get<AppOpenTracker>(),
+        get<GitResourceRepository<BirthdayGreetingCatalog>>(),
       ),
     )
     ..registerDependency(
@@ -725,17 +753,37 @@ void registerDependencies() {
       ),
     )
     ..registerDependency(
-      () => AboutViewModel(
-        get<AuthorsConfigService>(),
-        get<AuthorsProvider>(),
-        get<LastCommitShaService>(),
-        get<LastCommitShaAuthorsProvider>(),
-      ),
+      () => AboutViewModel(get<GitResourceRepository<AuthorsCatalog>>()),
     );
 
   // =========================================================================
   // 14. ДИНАМИЧЕСКАЯ РЕГИСТРАЦИЯ
   // =========================================================================
+  registerGitResource<LoadingPageCatalog>(
+    GitPath.loadingScreen,
+    LoadingPageCatalog.fromJson,
+    cacheKey: GitResourceCacheKeys.loadingPages,
+    toJson: (catalog) => catalog.toJson(),
+    legacyShaKey: GitResourceCacheKeys.legacyLoadingPagesSha,
+    source: LoadingPageResourceSource(
+      get<GitConfigService>(),
+      get<LogoDownloaderService>(),
+    ),
+  );
+  registerGitResource<AuthorsCatalog>(
+    GitPath.authors,
+    AuthorsCatalog.fromJson,
+    cacheKey: GitResourceCacheKeys.authors,
+    toJson: (catalog) => catalog.toJson(),
+    legacyShaKey: GitResourceCacheKeys.legacyAuthorsSha,
+  );
+  registerGitResource<BirthdayGreetingCatalog>(
+    GitPath.birthday,
+    BirthdayGreetingCatalog.fromJson,
+    cacheKey: GitResourceCacheKeys.birthday,
+    toJson: (catalog) => catalog.toJson(),
+  );
+
   for (final type in BlogPostType.values) {
     injector.registerDependency<BlogPostProvider>(
       () => BlogPostProviderImpl(

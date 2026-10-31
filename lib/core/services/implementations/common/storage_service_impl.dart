@@ -48,13 +48,15 @@ class StorageServiceImpl implements StorageService {
     bool secure = false,
   }) async {
     await _initIfNeeded();
-    final cacheMap = secure ? _secureCache : _nonSecureCache;
-    // без каскада здесь лучше
-    // ignore: cascade_invocations
-    cacheMap.update(key, (_) => value, ifAbsent: () => value);
-    secure
-        ? await _secureStorage.write(key: key, value: value)
-        : _sharedPreferences!.setString(key, value);
+    if (secure) {
+      await _secureStorage.write(key: key, value: value);
+    } else {
+      final saved = await _sharedPreferences!.setString(key, value);
+      if (!saved) {
+        throw StateError('Could not save storage value: $key');
+      }
+    }
+    (secure ? _secureCache : _nonSecureCache)[key] = value;
   }
 
   @override

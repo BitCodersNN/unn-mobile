@@ -9,19 +9,16 @@ import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:go_router/go_router.dart';
 import 'package:unn_mobile/core/misc/app_open_tracker.dart';
 import 'package:unn_mobile/core/misc/authorisation/authorisation_request_result.dart';
-import 'package:unn_mobile/core/misc/date_time_utilities/date_time_extensions.dart';
 import 'package:unn_mobile/core/misc/git/git_folder.dart';
-import 'package:unn_mobile/core/misc/git/update_last_commit_sha_and_config_if_changed.dart';
 import 'package:unn_mobile/core/misc/user/current_user_sync_storage.dart';
+import 'package:unn_mobile/core/models/birthday/birthday_greeting_catalog.dart';
+import 'package:unn_mobile/core/models/loading_page/loading_page_catalog.dart';
 import 'package:unn_mobile/core/models/loading_page/loading_page_data.dart';
-import 'package:unn_mobile/core/providers/interfaces/loading_page/last_commit_sha_loading_page_provider.dart';
-import 'package:unn_mobile/core/providers/interfaces/loading_page/loading_page_provider.dart';
 import 'package:unn_mobile/core/providers/interfaces/profile/user_data_provider.dart';
+import 'package:unn_mobile/core/repositories/interfaces/git/git_resource_repository.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation/authorisation_refresh_service.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation/stream_auth_service.dart';
-import 'package:unn_mobile/core/services/interfaces/common/last_commit_sha_service.dart';
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
-import 'package:unn_mobile/core/services/interfaces/loading_page/loading_page_config_service.dart';
 import 'package:unn_mobile/core/services/interfaces/loading_page/logo_downloader_service.dart';
 import 'package:unn_mobile/core/services/interfaces/profile/profile_of_current_user_service.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
@@ -30,16 +27,14 @@ import 'package:unn_mobile/ui/main_page_locations.dart';
 class LoadingPageViewModel extends BaseViewModel {
   final LoggerService _loggerService;
   final AuthRefreshService _initializingApplicationService;
-  final LastCommitShaService _lastCommitShaService;
-  final LoadingPageConfigService _loadingPageConfigService;
-  final LogoDownloaderService _logoDownloaderService;
-  final LastCommitShaLoadingPageProvider _lastCommitShaProvider;
-  final LoadingPageProvider _loadingPageProvider;
+  final GitResourceRepository<LoadingPageCatalog> _loadingPages;
+  final LogoDownloaderService _logos;
   final CurrentUserSyncStorage _typeOfCurrentUser;
   final ProfileOfCurrentUserService _gettingProfileOfCurrentUser;
   final StreamAuthService _streamAuthService;
   final UserDataProvider _userDataProvider;
   final AppOpenTracker _appOpenTracker;
+  final GitResourceRepository<BirthdayGreetingCatalog> _birthdayCatalog;
 
   LoadingPageModel? _actualLoadingPage;
   File? _logoImage;
@@ -47,16 +42,14 @@ class LoadingPageViewModel extends BaseViewModel {
   LoadingPageViewModel(
     this._loggerService,
     this._initializingApplicationService,
-    this._lastCommitShaService,
-    this._loadingPageConfigService,
-    this._logoDownloaderService,
-    this._lastCommitShaProvider,
-    this._loadingPageProvider,
+    this._loadingPages,
+    this._logos,
     this._typeOfCurrentUser,
     this._gettingProfileOfCurrentUser,
     this._userDataProvider,
     this._streamAuthService,
     this._appOpenTracker,
+    this._birthdayCatalog,
   );
 
   LoadingPageModel? get defaultPageData => LoadingPageModel(imagePath: '');
@@ -73,40 +66,20 @@ class LoadingPageViewModel extends BaseViewModel {
   }
 
   Future<void> initLoadingPages() async {
-    final loadingPages = await _loadingPageProvider.getData();
-
-    if (loadingPages == null) {
-      throw Exception('Failed to fetch loading pages data');
+    final resource = await _loadingPages.get();
+    final page = resource?.data.pageForDate(DateTime.now());
+    if (resource == null || page == null) {
+      _actualLoadingPage = null;
+      _logoImage = null;
+      return;
     }
-
-    _actualLoadingPage = _getCurrentLoadingPageModel(loadingPages);
-
-    if (_actualLoadingPage == null) {
-      throw Exception('Invalid loading page data');
-    }
-
-    _logoImage = await _logoDownloaderService.downloadFile(
-      _actualLoadingPage!.imagePath,
+    final logo = await _logos.downloadFile(
+      page.imagePath,
+      revision: resource.sha ?? GitPath.branch,
+      allowLegacyFallback: resource.isLegacy,
     );
-
-    if (_logoImage == null) {
-      throw Exception('Failed to download logo image');
-    }
-  }
-
-  LoadingPageModel _getCurrentLoadingPageModel(
-    List<LoadingPageModel> loadingPages,
-  ) {
-    final today = DateTime.now();
-
-    return loadingPages.firstWhere(
-      (model) =>
-          model.dateTimeRangeToUseOn != null &&
-          today.isDateInRangeIgnoringYear(model.dateTimeRangeToUseOn!),
-      orElse: () => loadingPages.firstWhere(
-        (model) => model.dateTimeRangeToUseOn == null,
-      ),
-    );
+    _actualLoadingPage = page;
+    _logoImage = logo;
   }
 
   void _goToScreen(BuildContext context, _TypeScreen typeScreen) {
@@ -120,14 +93,9 @@ class LoadingPageViewModel extends BaseViewModel {
   Future<_TypeScreen> _init() async {
     AuthRequestResult? authRequestResult;
 
-    unawaited(
-      updateLastCommitShaAndConfigIfChanged(
-        lastCommitShaProvider: _lastCommitShaProvider,
-        lastCommitShaService: _lastCommitShaService,
-        gitPath: GitPath.loadingScreen,
-        saveConfig: _saveLoadingPagesConfigFromGit,
-      ),
-    );
+    unawaited(_birthdayCatalog.refresh());
+
+    unawaited(_loadingPages.refresh());
 
     try {
       authRequestResult = await _initializingApplicationService.refreshLogin();
@@ -168,22 +136,6 @@ class LoadingPageViewModel extends BaseViewModel {
         ),
       );
     }
-  }
-
-  Future<void> _saveLoadingPagesConfigFromGit() async {
-    final loadingPagesConfig = await _loadingPageConfigService
-        .getLoadingPages();
-
-    if (loadingPagesConfig == null) {
-      return;
-    }
-
-    await Future.wait([
-      _loadingPageProvider.saveData(loadingPagesConfig),
-      _logoDownloaderService.downloadFiles(
-        fileNames: [for (final model in loadingPagesConfig) model.imagePath],
-      ),
-    ]);
   }
 }
 
