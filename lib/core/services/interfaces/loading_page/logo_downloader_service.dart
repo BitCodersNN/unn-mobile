@@ -8,6 +8,8 @@ abstract interface class LogoDownloaderService {
   ///
   /// [fileName] - имя файла логотипа, который нужно загрузить.
   ///
+  /// Проверяет декодирование изображения и заново загружает повреждённый кэш.
+  ///
   /// Возвращает [File], если загрузка прошла успешно, или `null`, если произошла ошибка.
   Future<File?> downloadFile(
     String fileName, {
