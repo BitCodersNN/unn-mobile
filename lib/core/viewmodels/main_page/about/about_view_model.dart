@@ -23,12 +23,8 @@ class AboutViewModel extends BaseViewModel {
 
   FutureOr<void> init() => busyCallAsync(() async {
     _updateAuthors(await _authorsRepository.get());
-    unawaited(_refresh());
+    unawaited(_authorsRepository.refresh().then(_updateAuthors));
   });
-
-  Future<void> _refresh() async {
-    _updateAuthors(await _authorsRepository.refresh());
-  }
 
   void _updateAuthors(CachedGitResource<AuthorsCatalog>? resource) {
     if (resource == null) {
