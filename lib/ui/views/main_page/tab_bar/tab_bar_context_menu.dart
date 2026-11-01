@@ -20,6 +20,8 @@ Future<TabBarContextMenuResult?> showTabBarContextMenu(
   required Future<bool> Function(List<String> paths) onReorder,
 }) {
   final completion = Completer<TabBarContextMenuResult?>();
+  final overlay = Navigator.of(context, rootNavigator: true).overlay!;
+  final themes = InheritedTheme.capture(from: context, to: overlay.context);
   late final OverlayEntry entry;
   LocalHistoryEntry? history;
   TabBarContextMenuResult? dismissedResult;

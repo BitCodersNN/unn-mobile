@@ -30,10 +30,10 @@ class TabBarLabelLayout extends StatelessWidget {
   Widget build(BuildContext context) => LayoutBuilder(
     builder: (context, constraints) {
       final scaler = MediaQuery.textScalerOf(context);
-      final baseStyle = CupertinoTheme.of(context).textTheme.tabLabelTextStyle;
+      final base = CupertinoTheme.of(context).textTheme.tabLabelTextStyle;
       final style = MediaQuery.boldTextOf(context)
-          ? baseStyle.copyWith(fontWeight: FontWeight.bold)
-          : baseStyle;
+          ? base.copyWith(fontWeight: FontWeight.bold)
+          : base;
       final width = labels.isEmpty
           ? constraints.maxWidth
           : constraints.maxWidth / labels.length -
@@ -57,6 +57,9 @@ class TabBarLabelLayout extends StatelessWidget {
     final maximum =
         style.fontSize ??
         const CupertinoTextThemeData().tabLabelTextStyle.fontSize!;
+    if (labels.isEmpty) {
+      return maximum;
+    }
     final painters = [
       for (final label in labels)
         TextPainter(
@@ -68,12 +71,13 @@ class TabBarLabelLayout extends StatelessWidget {
         ),
     ];
     bool fits(double size) {
-      for (final painter in painters) {
-        painter.text = TextSpan(
-          text: painter.text!.toPlainText(),
-          style: style.copyWith(fontSize: size),
-        );
-        painter.layout();
+      for (int index = 0; index < painters.length; index++) {
+        final painter = painters[index]
+          ..text = TextSpan(
+            text: labels[index],
+            style: style.copyWith(fontSize: size),
+          )
+          ..layout();
         if (painter.width > width || painter.height > labelHeight) {
           return false;
         }
@@ -87,7 +91,7 @@ class TabBarLabelLayout extends StatelessWidget {
       }
       double lower = 0;
       double upper = maximum;
-      for (int iteration = 0; iteration < 12; iteration++) {
+      for (int step = 0; step < 12; step++) {
         final middle = (lower + upper) / 2;
         if (fits(middle)) {
           lower = middle;

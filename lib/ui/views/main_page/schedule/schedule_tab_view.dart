@@ -97,6 +97,7 @@ class _ScheduleTabViewState extends State<ScheduleTabView> {
       slivers: [
         SliverToBoxAdapter(child: SizedBox(height: 4, key: _dayAnchorKeys[i])),
         SliverAppBar(
+          automaticallyImplyLeading: false,
           title: DayHeader(
             dayOfWeek:
                 l.firstOrNull?.dateTimeRange.start.format(DatePattern.e) ??
