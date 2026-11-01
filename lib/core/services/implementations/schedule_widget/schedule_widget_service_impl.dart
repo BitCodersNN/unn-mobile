@@ -13,6 +13,7 @@ import 'package:unn_mobile/core/models/profile/user_data.dart';
 import 'package:unn_mobile/core/models/schedule/schedule_filter.dart';
 import 'package:unn_mobile/core/models/schedule/subject.dart';
 import 'package:unn_mobile/core/models/schedule_widget/schedule_widget_data.dart';
+import 'package:unn_mobile/core/models/schedule_widget/schedule_widget_lesson.dart';
 import 'package:unn_mobile/core/providers/interfaces/authorisation/auth_data_provider.dart';
 import 'package:unn_mobile/core/providers/interfaces/schedule/offline_schedule_provider.dart';
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
