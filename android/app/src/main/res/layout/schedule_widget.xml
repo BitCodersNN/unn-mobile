@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/schedule_widget_root"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:orientation="vertical" android:padding="16dp"
+    android:background="@drawable/schedule_widget_background"
+    android:contentDescription="@string/schedule_widget_open">
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:orientation="horizontal" android:gravity="center_vertical">
+        <TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content"
+            android:text="@string/schedule_widget_title" android:textSize="16sp" android:textStyle="bold"
+            android:textColor="@color/schedule_widget_text" android:maxLines="1" android:ellipsize="end" />
+        <ImageView android:layout_width="20dp" android:layout_height="20dp"
+            android:src="@drawable/ic_schedule_widget_calendar" android:importantForAccessibility="no" />
+    </LinearLayout>
+    <TextView android:id="@+id/schedule_widget_date"
+        android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:layout_marginTop="4dp" android:layout_marginBottom="12dp"
+        android:textSize="12sp" android:textColor="@color/schedule_widget_secondary"
+        android:maxLines="1" android:ellipsize="end" />
+    <LinearLayout android:id="@+id/schedule_widget_lessons"
+        android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1"
+        android:orientation="vertical" />
+    <TextView android:id="@+id/schedule_widget_empty"
+        android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1"
+        android:gravity="center_vertical" android:textSize="14sp"
+        android:text="@string/schedule_widget_sign_in" android:textColor="@color/schedule_widget_secondary" />
+    <TextView android:id="@+id/schedule_widget_footer"
+        android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:layout_marginTop="4dp" android:textSize="11sp" android:maxLines="1" android:ellipsize="end"
+        android:text="@string/schedule_widget_open" android:textColor="@color/schedule_widget_accent" />
+</LinearLayout>
