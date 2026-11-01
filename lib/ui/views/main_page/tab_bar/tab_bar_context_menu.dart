@@ -37,8 +37,6 @@ Future<TabBarContextMenuResult?> showTabBarContextMenu(
       ..dispose();
   }
 
-  final overlay = Navigator.of(context, rootNavigator: true).overlay!;
-  final themes = InheritedTheme.capture(from: context, to: overlay.context);
   entry = OverlayEntry(
     builder: (_) => themes.wrap(
       _TabBarContextMenu(
