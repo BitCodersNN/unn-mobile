@@ -103,7 +103,6 @@ import 'package:unn_mobile/core/services/implementations/schedule/schedule_searc
 import 'package:unn_mobile/core/services/implementations/schedule/schedule_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/schedule_widget/schedule_widget_platform_impl.dart';
 import 'package:unn_mobile/core/services/implementations/schedule_widget/schedule_widget_service_impl.dart';
-import 'package:unn_mobile/core/services/interfaces/about/authors_config_service.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation/authorisation_refresh_service.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation/source_authorisation_service.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation/stream_auth_service.dart';
