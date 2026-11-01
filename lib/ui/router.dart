@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2025 BitCodersNN
 
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -19,23 +21,26 @@ import 'package:unn_mobile/ui/views/main_page/settings/settings.dart';
 
 class AppRouter extends ChangeNotifier {
   final ValueListenable<List<String>> _tabPaths;
-  final ValueListenable<Type>? _userType;
+  final ValueListenable<Type>? userType;
   final List<MainPageRouteData> _routes;
-  final StatefulShellRouteBuilder? _shellBuilder;
+  final StatefulShellRouteBuilder? shellBuilder;
   final GlobalKey<StatefulNavigationShellState> _shellKey =
       GlobalKey<StatefulNavigationShellState>();
   final Map<String, ({MainPageRouteData route, StatefulShellBranch branch})>
   _branches = {};
   final Map<String, ({Uri uri, Object? extra})> _locations = {};
+  Future<String?>? _initialDestination;
+  String? _requestedDestination;
   late MainPageRouteConfiguration _configuration;
   late final ValueNotifier<RoutingConfig> _routingConfig;
   late final GoRouter _router;
 
   AppRouter({
+    this._initialDestination,
+    this.userType,
+    this.shellBuilder,
     ValueListenable<List<String>>? tabPaths,
-    this._userType,
     List<MainPageRouteData>? routes,
-    this._shellBuilder,
     String initialLocation = loadingPageRoute,
   }) : _tabPaths = tabPaths ?? AppSettings.tabBarPaths,
        _routes = List.unmodifiable(routes ?? mainPageRoutes) {
@@ -47,7 +52,7 @@ class AppRouter extends ChangeNotifier {
     );
     _router.routerDelegate.addListener(_rememberLocation);
     _tabPaths.addListener(_updateRoutes);
-    _userType?.addListener(_updateRoutes);
+    userType?.addListener(_updateRoutes);
   }
 
   static AppRouter of(BuildContext context) =>
@@ -57,6 +62,22 @@ class AppRouter extends ChangeNotifier {
   MainPageRouteConfiguration get configuration => _configuration;
 
   String locationFor(String path) => _configuration.locationFor(path);
+
+  void requestDestination(String path) {
+    if (!_routes.any((route) => route.pagePath == path && !route.isDisabled)) {
+      return;
+    }
+    if (_router.routerDelegate.currentConfiguration.uri.toString() ==
+        locationFor(path)) {
+      _requestedDestination = null;
+      return;
+    }
+    _requestedDestination = path;
+    final uri = _router.routeInformationProvider.value.uri;
+    if (uri.path == mainPageRoute || mainPageDestinationPath(uri) != null) {
+      _router.refresh();
+    }
+  }
 
   void goToDestination(String path, {bool initialLocation = false}) {
     if (!_configuration.containsDestination(path)) {
@@ -85,6 +106,10 @@ class AppRouter extends ChangeNotifier {
     if (matches.isEmpty || matches.isError) {
       return;
     }
+    final requested = _requestedDestination;
+    if (requested != null && matches.uri.toString() == locationFor(requested)) {
+      _requestedDestination = null;
+    }
     final destination = mainPageDestinationPath(matches.uri);
     if (destination == null) {
       _locations.clear();
@@ -102,7 +127,7 @@ class AppRouter extends ChangeNotifier {
       MainPageRouteConfiguration(
         routes: _routes,
         paths: _tabPaths.value,
-        userType: _userType?.value,
+        userType: userType?.value,
       );
 
   void _updateRoutes() {
@@ -150,7 +175,37 @@ class AppRouter extends ChangeNotifier {
     return branch;
   }
 
-  String? _redirect(BuildContext context, GoRouterState state) {
+  FutureOr<String?> _redirect(BuildContext context, GoRouterState state) {
+    if (state.uri.path != mainPageRoute &&
+        mainPageDestinationPath(state.uri) == null) {
+      return null;
+    }
+    final initial = _initialDestination;
+    if (initial != null) {
+      return _redirectAfterInitialDestination(state, initial);
+    }
+    return _redirectToMainPage(state);
+  }
+
+  Future<String?> _redirectAfterInitialDestination(
+    GoRouterState state,
+    Future<String?> initial,
+  ) async {
+    final destination = await initial;
+    if (_initialDestination == initial) {
+      _initialDestination = null;
+      _requestedDestination ??= destination;
+    }
+    return _redirectToMainPage(state);
+  }
+
+  String? _redirectToMainPage(GoRouterState state) {
+    final requested = _requestedDestination;
+    if (requested != null && _configuration.containsDestination(requested)) {
+      final target = locationFor(requested);
+      return state.uri.toString() == target ? null : target;
+    }
+    _requestedDestination = null;
     if (state.uri.path == mainPageRoute) {
       return locationFor(_configuration.paths.first);
     }
@@ -202,7 +257,7 @@ class AppRouter extends ChangeNotifier {
             router: this,
             child: Builder(
               builder: (context) =>
-                  _shellBuilder?.call(context, state, shell) ??
+                  shellBuilder?.call(context, state, shell) ??
                   MainPage(shell: shell),
             ),
           ),
@@ -216,7 +271,7 @@ class AppRouter extends ChangeNotifier {
   @override
   void dispose() {
     _tabPaths.removeListener(_updateRoutes);
-    _userType?.removeListener(_updateRoutes);
+    userType?.removeListener(_updateRoutes);
     _router.routerDelegate.removeListener(_rememberLocation);
     _router.dispose();
     _routingConfig.dispose();
