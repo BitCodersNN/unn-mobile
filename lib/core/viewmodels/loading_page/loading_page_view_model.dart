@@ -7,20 +7,17 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:go_router/go_router.dart';
-import 'package:unn_mobile/core/misc/app_open_tracker.dart';
 import 'package:unn_mobile/core/misc/authorisation/authorisation_request_result.dart';
 import 'package:unn_mobile/core/misc/git/git_folder.dart';
 import 'package:unn_mobile/core/misc/user/current_user_sync_storage.dart';
 import 'package:unn_mobile/core/models/birthday/birthday_greeting_catalog.dart';
 import 'package:unn_mobile/core/models/loading_page/loading_page_catalog.dart';
 import 'package:unn_mobile/core/models/loading_page/loading_page_data.dart';
-import 'package:unn_mobile/core/providers/interfaces/profile/user_data_provider.dart';
 import 'package:unn_mobile/core/repositories/interfaces/git/git_resource_repository.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation/authorisation_refresh_service.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation/stream_auth_service.dart';
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
 import 'package:unn_mobile/core/services/interfaces/loading_page/logo_downloader_service.dart';
-import 'package:unn_mobile/core/services/interfaces/profile/profile_of_current_user_service.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
 import 'package:unn_mobile/ui/main_page_locations.dart';
 
@@ -30,10 +27,7 @@ class LoadingPageViewModel extends BaseViewModel {
   final GitResourceRepository<LoadingPageCatalog> _loadingPages;
   final LogoDownloaderService _logos;
   final CurrentUserSyncStorage _typeOfCurrentUser;
-  final ProfileOfCurrentUserService _gettingProfileOfCurrentUser;
   final StreamAuthService _streamAuthService;
-  final UserDataProvider _userDataProvider;
-  final AppOpenTracker _appOpenTracker;
   final GitResourceRepository<BirthdayGreetingCatalog> _birthdayCatalog;
 
   LoadingPageModel? _actualLoadingPage;
@@ -45,10 +39,7 @@ class LoadingPageViewModel extends BaseViewModel {
     this._loadingPages,
     this._logos,
     this._typeOfCurrentUser,
-    this._gettingProfileOfCurrentUser,
-    this._userDataProvider,
     this._streamAuthService,
-    this._appOpenTracker,
     this._birthdayCatalog,
   );
 
@@ -137,12 +128,6 @@ class LoadingPageViewModel extends BaseViewModel {
   }
 
   Future<void> _initUserData() async {
-    if (await _appOpenTracker.isFirstTimeOpenOnVersion()) {
-      final profile = await _gettingProfileOfCurrentUser
-          .getProfileOfCurrentUser();
-      unawaited(_userDataProvider.saveData(profile));
-    }
-
     await _typeOfCurrentUser.updateCurrentUserInfo();
     if (_typeOfCurrentUser.currentUserData != null &&
         _typeOfCurrentUser.currentUserData!.photoSrc != null) {

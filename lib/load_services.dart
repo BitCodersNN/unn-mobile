@@ -351,16 +351,14 @@ void registerDependencies() {
       ),
     )
     ..registerSingleton<UserDataProvider>(
-      () => UserDataProviderImpl(
-        get<StorageService>(),
-        get<LoggerService>(),
-        get<ProfileOfCurrentUserService>(),
-      ),
+      () => UserDataProviderImpl(get<StorageService>(), get<LoggerService>()),
     )
     ..registerSingleton<CurrentUserSyncStorage>(
       () => CurrentUserSyncStorage(
         get<UserDataProvider>(),
         get<ProfileOfCurrentUserService>(),
+        get<AppOpenTracker>(),
+        get<LoggerService>(),
       ),
     )
     ..registerSingleton<ProfileService>(
@@ -689,10 +687,7 @@ void registerDependencies() {
         get<GitResourceRepository<LoadingPageCatalog>>(),
         get<LogoDownloaderService>(),
         get<CurrentUserSyncStorage>(),
-        get<ProfileOfCurrentUserService>(),
-        get<UserDataProvider>(),
         get<StreamAuthService>(),
-        get<AppOpenTracker>(),
         get<GitResourceRepository<BirthdayGreetingCatalog>>(),
       ),
     )
