@@ -64,12 +64,28 @@ class LoadingPageViewModel extends BaseViewModel {
 
   File? get logoImage => _logoImage;
 
-  void decideRoute(BuildContext context) {
-    _init().then((value) {
-      if (context.mounted) {
-        _goToScreen(context, value);
-      }
-    });
+  void decideRoute(
+    BuildContext context, {
+    required Future<void> loadingPageReady,
+  }) {
+    final ready = _waitForLoadingPage(loadingPageReady);
+    unawaited(
+      _init().then((value) async {
+        await ready;
+        await WidgetsBinding.instance.endOfFrame;
+        if (context.mounted) {
+          _goToScreen(context, value);
+        }
+      }),
+    );
+  }
+
+  Future<void> _waitForLoadingPage(Future<void> ready) async {
+    try {
+      await ready;
+    } catch (error, stack) {
+      _loggerService.logError(error, stack);
+    }
   }
 
   Future<void> initLoadingPages() async {
