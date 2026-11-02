@@ -47,17 +47,19 @@ class UserDataProviderImpl implements UserDataProvider {
 
     final jsonMap = jsonDecode(userInfo) as Map<String, dynamic>;
 
+    UserData cachedUser;
     try {
-      return switch (userType) {
+      cachedUser = switch (userType) {
         _student => StudentData.fromJson(jsonMap),
         _employee => EmployeeData.fromJson(jsonMap),
         _ => UserData.fromJson(jsonMap),
       };
     } catch (e, stackTrace) {
       _loggerService.logError(e, stackTrace, information: [jsonMap.toString()]);
+      return null;
     }
 
-    return null;
+    return cachedUser;
   }
 
   @override
@@ -91,6 +93,6 @@ class UserDataProviderImpl implements UserDataProvider {
   @override
   Future<void> removeData() => Future.wait([
     _storage.remove(key: _UserDataProvideKeys._userTypeKey),
-    _storage.remove(key: _UserDataProvideKeys._userTypeKey),
+    _storage.remove(key: _UserDataProvideKeys._userDataKey),
   ]);
 }
