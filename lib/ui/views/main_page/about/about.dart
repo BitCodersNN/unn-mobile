@@ -34,7 +34,7 @@ class AboutScreenView extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    if (model.isBusy)
+                    if (model.isBusy && !model.hasAuthorsCatalog)
                       const Expanded(
                         child: Center(child: CircularProgressIndicator()),
                       )

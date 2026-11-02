@@ -4,6 +4,7 @@
 import 'package:unn_mobile/core/constants/api/host.dart';
 import 'package:unn_mobile/core/constants/api/path.dart';
 import 'package:unn_mobile/core/constants/api/protocol_type.dart';
+import 'package:unn_mobile/core/misc/git/git_folder.dart';
 import 'package:unn_mobile/core/misc/json/json_utils.dart';
 
 class _AuthorJsonKeys {
@@ -19,8 +20,9 @@ class Author {
   final String? educationGroup;
   final String avatar;
 
-  String get avatarUrl =>
-      '${ProtocolType.https.name}://${Host.gitHub}/${ApiPath.gitRepository}/${ApiPath.authors}/$avatar';
+  String get avatarUrl => (Uri.tryParse(avatar)?.hasScheme ?? false)
+      ? avatar
+      : '${ProtocolType.https.name}://${Host.gitHub}/${ApiPath.gitRepository}/${GitPath.authors.pathAt(GitPath.branch)}/$avatar';
 
   Author({
     required this.fullname,
@@ -28,6 +30,15 @@ class Author {
     this.userId,
     this.educationGroup,
   });
+
+  Author withAvatarBaseUrl(String baseUrl) => Author(
+    userId: userId,
+    fullname: fullname,
+    educationGroup: educationGroup,
+    avatar: (Uri.tryParse(avatar)?.hasScheme ?? false)
+        ? avatar
+        : '$baseUrl/$avatar',
+  );
 
   factory Author.fromJson(JsonMap json) => Author(
     userId: json[_AuthorJsonKeys.userId] as int?,
