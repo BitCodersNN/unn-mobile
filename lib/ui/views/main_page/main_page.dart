@@ -25,30 +25,23 @@ class MainPage extends StatefulWidget {
 }
 
 class MainPageState extends State<MainPage> {
-  bool _startupDialogsComplete = false;
-
-  @override
-  void initState() {
-    super.initState();
-
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      if (await Injector.appInstance
-          .get<AppOpenTracker>()
-          .isFirstTimeOpenOnVersion()) {
-        if (mounted) {
-          await showAnalyticsConfirmation(context);
-        }
-        if (mounted) {
-          await showDialog(
-            context: context,
-            builder: (context) => const ChangelogDialog(),
-          );
-        }
-      }
-      if (mounted) {
-        setState(() => _startupDialogsComplete = true);
-      }
-    });
+  Future<void> _showStartupDialogs() async {
+    if (!await Injector.appInstance
+        .get<AppOpenTracker>()
+        .isFirstTimeOpenOnVersion()) {
+      return;
+    }
+    if (!mounted) {
+      return;
+    }
+    await showAnalyticsConfirmation(context);
+    if (!mounted) {
+      return;
+    }
+    await showDialog<void>(
+      context: context,
+      builder: (context) => const ChangelogDialog(),
+    );
   }
 
   bool isRootScreen(BuildContext context) {
@@ -61,7 +54,7 @@ class MainPageState extends State<MainPage> {
   Widget build(BuildContext context) => BirthdayGreetingHost(
     userStorage: Injector.appInstance.get<CurrentUserSyncStorage>(),
     manager: Injector.appInstance.get<BirthdayGreetingManager>(),
-    enabled: _startupDialogsComplete,
+    onComplete: _showStartupDialogs,
     child: Scaffold(
       extendBody: false,
       body: Builder(builder: (context) => widget.shell),

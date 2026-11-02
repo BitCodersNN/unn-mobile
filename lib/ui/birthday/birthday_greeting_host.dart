@@ -11,13 +11,13 @@ import 'package:unn_mobile/ui/birthday/birthday_greeting.dart';
 class BirthdayGreetingHost extends StatefulWidget {
   final CurrentUserSyncStorage userStorage;
   final BirthdayGreetingManager manager;
-  final bool enabled;
+  final Future<void> Function() onComplete;
   final Widget child;
 
   const BirthdayGreetingHost({
     required this.userStorage,
     required this.manager,
-    required this.enabled,
+    required this.onComplete,
     required this.child,
     super.key,
   });
@@ -26,61 +26,37 @@ class BirthdayGreetingHost extends StatefulWidget {
   State<BirthdayGreetingHost> createState() => _BirthdayGreetingHostState();
 }
 
-class _BirthdayGreetingHostState extends State<BirthdayGreetingHost>
-    with WidgetsBindingObserver {
-  bool _checking = false;
-
+class _BirthdayGreetingHostState extends State<BirthdayGreetingHost> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addObserver(this);
-    widget.userStorage.addListener(_scheduleCheck);
-    _scheduleCheck();
-  }
-
-  @override
-  void didUpdateWidget(BirthdayGreetingHost oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.userStorage != widget.userStorage) {
-      oldWidget.userStorage.removeListener(_scheduleCheck);
-      widget.userStorage.addListener(_scheduleCheck);
-    }
-    if (widget.enabled && !oldWidget.enabled ||
-        widget.userStorage != oldWidget.userStorage) {
-      _scheduleCheck();
-    }
-  }
-
-  void _scheduleCheck() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         unawaited(_check());
       }
     });
-    WidgetsBinding.instance.ensureVisualUpdate();
   }
 
   bool get _canPresent =>
       mounted &&
-      widget.enabled &&
       (WidgetsBinding.instance.lifecycleState == null ||
           WidgetsBinding.instance.lifecycleState ==
               AppLifecycleState.resumed) &&
       (ModalRoute.of(context)?.isCurrent ?? false);
 
   Future<void> _check() async {
-    if (_checking || !_canPresent) {
-      return;
-    }
-    final user = widget.userStorage.currentUserData;
-    if (user == null) {
-      return;
-    }
-    _checking = true;
     try {
-      await _presentIfEligible(user.userId, DateTime.now());
+      if (!_canPresent) {
+        return;
+      }
+      final user = widget.userStorage.currentUserData;
+      if (user != null) {
+        await _presentIfEligible(user.userId, DateTime.now());
+      }
     } finally {
-      _checking = false;
+      if (mounted) {
+        await widget.onComplete();
+      }
     }
   }
 
@@ -119,20 +95,6 @@ class _BirthdayGreetingHostState extends State<BirthdayGreetingHost>
         child: child,
       ),
     );
-  }
-
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) {
-      _scheduleCheck();
-    }
-  }
-
-  @override
-  void dispose() {
-    widget.userStorage.removeListener(_scheduleCheck);
-    WidgetsBinding.instance.removeObserver(this);
-    super.dispose();
   }
 
   @override
