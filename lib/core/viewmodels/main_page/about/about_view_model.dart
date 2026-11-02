@@ -3,58 +3,67 @@
 
 import 'dart:async';
 
-import 'package:unn_mobile/core/constants/string_keys/authors_config_keys.dart';
+import 'package:async/async.dart';
+import 'package:flutter/foundation.dart';
+import 'package:unn_mobile/core/constants/api/host.dart';
+import 'package:unn_mobile/core/constants/api/path.dart';
 import 'package:unn_mobile/core/misc/git/git_folder.dart';
-import 'package:unn_mobile/core/misc/git/update_last_commit_sha_and_config_if_changed.dart';
 import 'package:unn_mobile/core/models/about/author.dart';
-import 'package:unn_mobile/core/providers/interfaces/about/authors_provider.dart';
-import 'package:unn_mobile/core/providers/interfaces/about/last_commit_sha_authors_provider.dart';
-import 'package:unn_mobile/core/services/interfaces/about/authors_config_service.dart';
-import 'package:unn_mobile/core/services/interfaces/common/last_commit_sha_service.dart';
+import 'package:unn_mobile/core/models/about/authors_catalog.dart';
+import 'package:unn_mobile/core/models/git/cached_git_resource.dart';
+import 'package:unn_mobile/core/repositories/interfaces/git/git_resource_repository.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
 
 class AboutViewModel extends BaseViewModel {
-  final AuthorsConfigService authorsConfigService;
-  final AuthorsProvider authorsProvider;
-  final LastCommitShaService lastCommitShaService;
-  final LastCommitShaAuthorsProvider lastCommitShaProvider;
+  final GitResourceRepository<AuthorsCatalog> _authorsRepository;
+  AuthorsCatalog? _authors;
 
-  Map<String, List<Author>>? _authors;
+  AboutViewModel(this._authorsRepository);
 
-  List<Author> get authors => _authors?[AuthorsConfigKeys.authors] ?? [];
-  List<Author> get pastAuthors =>
-      _authors?[AuthorsConfigKeys.pastAuthors] ?? [];
-
-  AboutViewModel(
-    this.authorsConfigService,
-    this.authorsProvider,
-    this.lastCommitShaService,
-    this.lastCommitShaProvider,
-  );
+  List<Author> get authors => _authors?.authors ?? [];
+  List<Author> get pastAuthors => _authors?.pastAuthors ?? [];
+  bool get hasAuthorsCatalog => _authors != null;
 
   FutureOr<void> init() => busyCallAsync(() async {
-    _authors =
-        await authorsProvider.getData() ??
-        await authorsConfigService.getAuthors();
-
-    unawaited(
-      updateLastCommitShaAndConfigIfChanged(
-        lastCommitShaProvider: lastCommitShaProvider,
-        lastCommitShaService: lastCommitShaService,
-        gitPath: GitPath.authors,
-        saveConfig: _saveAuthorsConfigFromGit,
-      ),
-    );
-    notifyListeners();
+    final refreshed = _authorsRepository.refresh();
+    final cached = CancelableOperation.fromFuture(_authorsRepository.get());
+    try {
+      await Future.wait([
+        cached.valueOrCancellation().then(_updateAuthors),
+        refreshed.then((resource) async {
+          if (resource != null) {
+            await cached.cancel();
+          }
+          _updateAuthors(resource);
+        }),
+      ]);
+    } finally {
+      await cached.cancel();
+    }
   });
 
-  Future<void> _saveAuthorsConfigFromGit() async {
-    final authors = await authorsConfigService.getAuthors();
-
-    if (authors == null) {
+  void _updateAuthors(CachedGitResource<AuthorsCatalog>? resource) {
+    if (resource == null) {
       return;
     }
-
-    unawaited(authorsProvider.saveData(authors));
+    final revision = resource.sha ?? GitPath.branch;
+    final baseUrl =
+        'https://${Host.gitHub}/${ApiPath.gitRepository}/${GitPath.authors.pathAt(revision)}';
+    final updated = resource.data.withAvatarBaseUrl(baseUrl);
+    if (_authors != null &&
+        _sameAuthors(authors, updated.authors) &&
+        _sameAuthors(pastAuthors, updated.pastAuthors)) {
+      return;
+    }
+    _authors = updated;
+    notifyListeners();
   }
+
+  bool _sameAuthors(List<Author> first, List<Author> second) => listEquals(
+    [for (final author in first) _authorValues(author)],
+    [for (final author in second) _authorValues(author)],
+  );
+
+  (int?, String, String?, String) _authorValues(Author author) =>
+      (author.userId, author.fullname, author.educationGroup, author.avatar);
 }

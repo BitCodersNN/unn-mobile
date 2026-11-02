@@ -5,12 +5,6 @@ class ApiPath {
   /// Для доступа к репозиторию с assets
   static const String gitRepository = 'BitCodersNN/unn-mobile.assets';
 
-  /// Для доступа к загрузочным экранам
-  static const String loadingScreen = 'develop/loading_screen';
-
-  /// Для доступа к авторам приложения
-  static const String authors = 'develop/authors';
-
   /// Страница с пожертвованиями
   static const String donation =
       'bitcodersnn.github.io/unn-mobile.assets/donation/donation.html';
