@@ -9,11 +9,11 @@ class _BirthdayGreetingProviderKeys {
   static const String lastGreetingIdPrefix = 'birthday_greeting_last_id';
 }
 
-class BirthdayGreetingProviderImpl implements BirthdayGreetingProvider {
+class BirthdayGreetingMetaProviderImpl implements BirthdayGreetingMetaProvider {
   final StorageService _storage;
   final Map<int, int?> _shownYears = {};
 
-  BirthdayGreetingProviderImpl(this._storage);
+  BirthdayGreetingMetaProviderImpl(this._storage);
 
   String _key(int userId) =>
       '${_BirthdayGreetingProviderKeys.shownYearPrefix}.$userId';

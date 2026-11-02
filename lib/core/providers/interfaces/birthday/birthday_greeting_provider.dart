@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2026 BitCodersNN
 
-abstract interface class BirthdayGreetingProvider {
+abstract interface class BirthdayGreetingMetaProvider {
   /// Возвращает год последнего показа поздравления пользователю.
   Future<int?> getShownYear(int userId);
 

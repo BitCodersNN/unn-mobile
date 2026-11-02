@@ -11,7 +11,7 @@ import 'package:unn_mobile/core/repositories/interfaces/git/git_resource_reposit
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
 
 class BirthdayGreetingManager {
-  final BirthdayGreetingProvider _provider;
+  final BirthdayGreetingMetaProvider _provider;
   final LoggerService _logger;
   final GitResourceRepository<BirthdayGreetingCatalog> _catalog;
   final Random _random = Random();

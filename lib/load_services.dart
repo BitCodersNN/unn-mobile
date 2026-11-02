@@ -244,12 +244,12 @@ void registerDependencies() {
     ..registerSingleton<AppOpenTracker>(
       () => AppOpenTracker(get<StorageService>()),
     )
-    ..registerSingleton<BirthdayGreetingProvider>(
-      () => BirthdayGreetingProviderImpl(get<StorageService>()),
+    ..registerSingleton<BirthdayGreetingMetaProvider>(
+      () => BirthdayGreetingMetaProviderImpl(get<StorageService>()),
     )
     ..registerSingleton<BirthdayGreetingManager>(
       () => BirthdayGreetingManager(
-        get<BirthdayGreetingProvider>(),
+        get<BirthdayGreetingMetaProvider>(),
         get<LoggerService>(),
         get<GitResourceRepository<BirthdayGreetingCatalog>>(),
       ),
