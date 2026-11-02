@@ -83,7 +83,6 @@ class LoadingPageViewModel extends BaseViewModel {
     final logo = await _logos.downloadFile(
       page.imagePath,
       revision: resource.sha ?? GitPath.branch,
-      allowLegacyFallback: resource.isLegacy,
     );
     _actualLoadingPage = page;
     _logoImage = logo;

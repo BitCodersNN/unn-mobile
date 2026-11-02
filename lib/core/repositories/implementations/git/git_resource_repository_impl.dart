@@ -50,8 +50,7 @@ class GitResourceRepositoryImpl<T> implements GitResourceRepository<T> {
     CachedGitResource<T>? cached,
   ) async {
     final sha = await _shaService.getSha(gitPath: _source.path);
-    if (cached != null &&
-        (sha == null || (!cached.isLegacy && sha == cached.sha))) {
+    if (cached != null && (sha == null || sha == cached.sha)) {
       return cached;
     }
     final data = await _source.load(revision: sha ?? GitPath.branch);

@@ -20,7 +20,6 @@ class GitResourceCacheProviderImpl<T> implements GitResourceCacheProvider<T> {
   final T Function(Object? json) _fromJson;
   final JsonMap Function(Object? data) _toJson;
   final String key;
-  final String? legacyShaKey;
 
   GitResourceCacheProviderImpl(
     this._storage,
@@ -28,7 +27,6 @@ class GitResourceCacheProviderImpl<T> implements GitResourceCacheProvider<T> {
     this._fromJson, {
     required this.key,
     required JsonMap Function(T data) toJson,
-    this.legacyShaKey,
   }) : _toJson = ((data) => toJson(data as T));
 
   @override
@@ -47,17 +45,13 @@ class GitResourceCacheProviderImpl<T> implements GitResourceCacheProvider<T> {
       return null;
     }
     final json = jsonDecode(saved);
-    if (json is JsonMap && json.containsKey(_GitResourceCacheKeys.data)) {
-      return CachedGitResource(
-        data: _fromJson(json[_GitResourceCacheKeys.data]),
-        sha: json[_GitResourceCacheKeys.sha] as String?,
-      );
+    if (json is! JsonMap || !json.containsKey(_GitResourceCacheKeys.data)) {
+      return null;
     }
-    final shaKey = legacyShaKey;
-    final sha = shaKey == null
-        ? (json is JsonMap ? json[_GitResourceCacheKeys.sha] as String? : null)
-        : await _storage.read(key: shaKey);
-    return CachedGitResource(data: _fromJson(json), sha: sha, isLegacy: true);
+    return CachedGitResource(
+      data: _fromJson(json[_GitResourceCacheKeys.data]),
+      sha: json[_GitResourceCacheKeys.sha] as String?,
+    );
   }
 
   @override
@@ -78,11 +72,5 @@ class GitResourceCacheProviderImpl<T> implements GitResourceCacheProvider<T> {
   Future<bool> isContained() => _storage.containsKey(key: key);
 
   @override
-  Future<void> removeData() async {
-    await _storage.remove(key: key);
-    final shaKey = legacyShaKey;
-    if (shaKey != null) {
-      await _storage.remove(key: shaKey);
-    }
-  }
+  Future<void> removeData() => _storage.remove(key: key);
 }

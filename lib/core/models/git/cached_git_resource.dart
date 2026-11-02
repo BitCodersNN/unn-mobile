@@ -4,11 +4,6 @@
 class CachedGitResource<T> {
   final T data;
   final String? sha;
-  final bool isLegacy;
 
-  const CachedGitResource({
-    required this.data,
-    this.sha,
-    this.isLegacy = false,
-  });
+  const CachedGitResource({required this.data, this.sha});
 }

@@ -206,7 +206,6 @@ void registerDependencies() {
     T Function(Object? json) fromJson, {
     required String cacheKey,
     required JsonMap Function(T data) toJson,
-    String? legacyShaKey,
     GitResourceSource<T>? source,
   }) {
     injector.registerSingleton<GitResourceRepository<T>>(
@@ -217,7 +216,6 @@ void registerDependencies() {
           fromJson,
           key: cacheKey,
           toJson: toJson,
-          legacyShaKey: legacyShaKey,
         ),
         source ??
             GitJsonResourceSource(
@@ -778,7 +776,6 @@ void registerDependencies() {
     LoadingPageCatalog.fromJson,
     cacheKey: GitResourceCacheKeys.loadingPages,
     toJson: (catalog) => catalog.toJson(),
-    legacyShaKey: GitResourceCacheKeys.legacyLoadingPagesSha,
     source: LoadingPageResourceSource(
       get<GitConfigService>(),
       get<LogoDownloaderService>(),
@@ -789,7 +786,6 @@ void registerDependencies() {
     AuthorsCatalog.fromJson,
     cacheKey: GitResourceCacheKeys.authors,
     toJson: (catalog) => catalog.toJson(),
-    legacyShaKey: GitResourceCacheKeys.legacyAuthorsSha,
   );
   registerGitResource<BirthdayGreetingCatalog>(
     GitPath.birthday,

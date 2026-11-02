@@ -22,40 +22,29 @@ class LogoDownloaderServiceImpl implements LogoDownloaderService {
   Future<File?> downloadFile(
     String fileName, {
     required String revision,
-    bool allowLegacyFallback = false,
   }) async {
     try {
-      return await _downloadFile(fileName, revision, allowLegacyFallback);
+      return await _downloadFile(fileName, revision);
     } catch (error, stack) {
       _logger.logError(error, stack);
       return null;
     }
   }
 
-  Future<File?> _downloadFile(
-    String fileName,
-    String revision,
-    bool allowLegacyFallback,
-  ) async {
+  Future<File?> _downloadFile(String fileName, String revision) async {
     final path = await getDownloadPath();
     if (path == null) {
       return null;
     }
     final name = shortenFileName(fileName);
-    if (allowLegacyFallback) {
-      final legacy = await _validatedFile(File('$path/logos/$name'));
-      if (legacy != null) {
-        return legacy;
-      }
-    }
-    final cached = await _validatedFile(File('$path/logos/$revision/$name'));
+    final cached = await _validatedFile(File('$path/logos/$name'));
     if (cached != null) {
       return cached;
     }
     final downloaded = await FileDownloader(
       _logger,
       _apiHelper,
-      downloadFolderName: 'logos/$revision',
+      downloadFolderName: 'logos',
       basePath:
           '${ApiPath.gitRepository}/${GitPath.loadingScreen.pathAt(revision)}',
     ).downloadFile(fileName, force: true);
