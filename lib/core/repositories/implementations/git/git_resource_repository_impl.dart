@@ -24,8 +24,10 @@ class GitResourceRepositoryImpl<T> implements GitResourceRepository<T> {
   );
 
   @override
-  Future<CachedGitResource<T>?> get() async =>
-      await _cache.getData() ?? await refresh();
+  Future<CachedGitResource<T>?> get() async {
+    final refreshing = _refreshing;
+    return await _cache.getData() ?? await (refreshing ?? refresh());
+  }
 
   @override
   Future<CachedGitResource<T>?> refresh() =>
