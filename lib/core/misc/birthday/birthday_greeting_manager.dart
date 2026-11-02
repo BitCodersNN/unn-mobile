@@ -19,10 +19,11 @@ class BirthdayGreetingManager {
   BirthdayGreetingManager(this._provider, this._logger, this._catalog);
 
   bool isBirthday(UserData user, DateTime today) {
-    final birthdate = user.birthdate;
+    final birthdate = user.birthdate?.toLocal();
+    final localDate = today.toLocal();
     return birthdate != null &&
-        birthdate.month == today.month &&
-        birthdate.day == today.day;
+        birthdate.month == localDate.month &&
+        birthdate.day == localDate.day;
   }
 
   Future<bool> shouldShow(UserData user, DateTime today) async {
@@ -36,12 +37,12 @@ class BirthdayGreetingManager {
       _logger.logError(error, stack);
       return false;
     }
-    return shownYear != today.year;
+    return shownYear != today.toLocal().year;
   }
 
   Future<void> markShown(int userId, DateTime date) async {
     try {
-      await _provider.saveShownYear(userId, date.year);
+      await _provider.saveShownYear(userId, date.toLocal().year);
     } catch (error, stack) {
       _logger.logError(error, stack);
     }
