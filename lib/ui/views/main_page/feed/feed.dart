@@ -51,6 +51,7 @@ class FeedScreenViewState extends State<FeedScreenView>
   late final FeedScreenViewModel _viewModel;
   bool _clearingSearch = false;
   FeedFilter? _previewFilter;
+  final ValueNotifier<double?> _filterPosition = ValueNotifier(null);
   String? _scrollQuery;
 
   @override
@@ -237,8 +238,13 @@ class FeedScreenViewState extends State<FeedScreenView>
                     constraints: const BoxConstraints(maxWidth: 720),
                     child: FeedFiltersBar(
                       selected: _previewFilter ?? model.filter,
+                      unreadCounts: model.unreadCounts,
+                      position: _filterPosition,
                       onSelected: online && !model.isBusy && !model.loadingMore
-                          ? _selectFilter
+                          ? (filter) {
+                              _filterPosition.value = null;
+                              unawaited(_selectFilter(filter));
+                            }
                           : null,
                     ),
                   ),
@@ -266,6 +272,7 @@ class FeedScreenViewState extends State<FeedScreenView>
       enabled: canSelectFilter,
       onSelected: _selectFilter,
       onPreviewChanged: _previewFilterChanged,
+      onPositionChanged: (position) => _filterPosition.value = position,
       cacheKey: model.searchQuery,
       isChangingFilter: model.isReplacingPosts && _previewFilter != null,
       child: PrimaryScrollController(
@@ -290,7 +297,7 @@ class FeedScreenViewState extends State<FeedScreenView>
                 onRefresh: () async {
                   if (online) {
                     triggerHaptic(HapticIntensity.light);
-                    await model.reload();
+                    await model.reload(markLoadedPostsRead: true);
                   }
                 },
                 child: CustomScrollView(
@@ -399,6 +406,7 @@ class FeedScreenViewState extends State<FeedScreenView>
 
   @override
   void dispose() {
+    _filterPosition.dispose();
     if (_viewModel.scrollToTop == refreshTab) {
       _viewModel.scrollToTop = null;
     }

@@ -57,7 +57,24 @@ class FeedScreenViewModel extends BaseViewModel
   List<FeedPostViewModel> get posts =>
       _totalPosts.take(postsPerPage * _page.pageNumber).toList();
 
-  int get numberUnreadMessages => _page.unreadCount;
+  Map<FeedFilter, int> get unreadCounts {
+    final all = _pages[(onlyImportant: false, query: null)];
+    final important = _pages[(onlyImportant: true, query: null)];
+    return {
+      if (all != null)
+        FeedFilter.all: (all.posts.isEmpty ? all.offlinePosts : all.posts)
+            .where((post) => post.isNewPost)
+            .length,
+      if (all != null && all.isLoaded)
+        FeedFilter.pinned: all.pinnedPosts
+            .where((post) => post.isNewPost)
+            .length,
+      if (important != null && important.isLoaded)
+        FeedFilter.important: important.posts
+            .where((post) => post.isAnnouncement && post.isNewPost)
+            .length,
+    };
+  }
 
   bool get failedToLoad => _page.failedToLoad;
   bool get loadingMore => _loadingMore;
@@ -118,15 +135,11 @@ class FeedScreenViewModel extends BaseViewModel
 
   void _addPostsToList(
     List<FeedPostViewModel> posts,
-    List<BlogPost>? newPosts, {
-    bool isRegularPost = true,
-  }) {
+    List<BlogPost>? newPosts,
+  ) {
     final postViewmodels = newPosts?.map((p) {
       final post = FeedPostViewModel.cached(p.data.id)
         ..initFromFullInfo(p, this);
-      if (post.isNewPost && isRegularPost) {
-        _page.unreadCount++;
-      }
       return post;
     });
     posts.addAll(postViewmodels ?? []);
@@ -170,70 +183,93 @@ class FeedScreenViewModel extends BaseViewModel
     loadingMore = false;
   });
 
-  Future<void> reload({bool updateMainPage = true}) async =>
-      await changeState(() async {
-        if (updateMainPage) {
-          failedToLoad = false;
-          loadingMore = true;
-          _page.unreadCount = 0;
-        }
+  Future<void> reload({
+    bool updateMainPage = true,
+    bool markLoadedPostsRead = false,
+  }) async => await changeState(() async {
+    final readThrough = markLoadedPostsRead ? _latestLoadedPostTime() : null;
+    if (updateMainPage) {
+      failedToLoad = false;
+      loadingMore = true;
+    }
 
-        final posts = await tryLoginAndRetrieveData(() async {
-          if (!await _ensureServerSelection(_selection)) {
-            return null;
-          }
-          return _blogPostServiceImpl.refreshBlogPosts(
-            assetsCheckSum: _streamAuthService.sonetLAssetsCheckSum ?? '',
-            signedParameters: _streamAuthService.signedParameters ?? '',
-            commentFormUID: _streamAuthService.commentFormUID ?? '',
-          );
-        }, () => null);
+    final posts = await tryLoginAndRetrieveData(() async {
+      if (!await _ensureServerSelection(_selection)) {
+        return null;
+      }
+      return _blogPostServiceImpl.refreshBlogPosts(
+        assetsCheckSum: _streamAuthService.sonetLAssetsCheckSum ?? '',
+        signedParameters: _streamAuthService.signedParameters ?? '',
+        commentFormUID: _streamAuthService.commentFormUID ?? '',
+      );
+    }, () => null);
 
-        if (posts == null) {
-          if (updateMainPage) {
-            failedToLoad = true;
-            loadingMore = false;
-          }
-          return;
-        }
-
-        pinnedPosts.clear();
-        _addPostsToList(
-          pinnedPosts,
-          posts[BlogPostType.pinned],
-          isRegularPost: false,
-        );
-
-        if (!updateMainPage) {
-          for (final entry in _pages.entries) {
-            if (entry.key != _selection) {
-              entry.value.isLoaded = false;
-            }
-          }
-          return;
-        }
-
-        final freshPosts = posts[BlogPostType.regular] ?? [];
-
-        if (!hasSearch && !showOnlyImportant && freshPosts.isNotEmpty) {
-          await Future.wait([
-            _blogPostProvider.saveData(freshPosts),
-            _lastFeedLoadDateTimeProvider.saveData(
-              freshPosts.first.data.datePublish,
-            ),
-          ]);
-        }
-
-        offlinePosts.clear();
-        _totalPosts.clear();
-
-        _addPostsToList(_totalPosts, freshPosts);
-
-        offlinePosts.addAll(_totalPosts);
+    if (posts == null) {
+      if (updateMainPage) {
+        failedToLoad = true;
         loadingMore = false;
-        _page.pageNumber = 1;
-        _page.isLoaded = true;
-      });
+      }
+      return;
+    }
+
+    if (readThrough != null) {
+      await _lastFeedLoadDateTimeProvider.saveData(readThrough);
+      _lastReadAt = readThrough;
+    }
+
+    pinnedPosts.clear();
+    _addPostsToList(pinnedPosts, posts[BlogPostType.pinned]);
+
+    if (!updateMainPage) {
+      for (final entry in _pages.entries) {
+        if (entry.key != _selection) {
+          entry.value.isLoaded = false;
+        }
+      }
+      return;
+    }
+
+    final freshPosts = posts[BlogPostType.regular] ?? [];
+
+    if (!hasSearch && !showOnlyImportant && freshPosts.isNotEmpty) {
+      await Future.wait([
+        _blogPostProvider.saveData(freshPosts),
+        _lastFeedLoadDateTimeProvider.saveData(
+          _laterDate(freshPosts.first.data.datePublish, _lastReadAt),
+        ),
+      ]);
+    }
+
+    offlinePosts.clear();
+    _totalPosts.clear();
+
+    _addPostsToList(_totalPosts, freshPosts);
+
+    offlinePosts.addAll(_totalPosts);
+    loadingMore = false;
+    _page.pageNumber = 1;
+    _page.isLoaded = true;
+  });
+
+  DateTime? _latestLoadedPostTime() {
+    DateTime? latest = _lastReadAt;
+    for (final page in _pages.values) {
+      for (final post in [
+        ...page.posts,
+        ...page.offlinePosts,
+        ...page.pinnedPosts,
+      ]) {
+        final date = post.postTime;
+        if (date != null) {
+          latest = _laterDate(date, latest);
+        }
+      }
+    }
+    return latest;
+  }
+
+  DateTime _laterDate(DateTime date, DateTime? previous) =>
+      previous != null && previous.isAfter(date) ? previous : date;
 
   Future<void> refreshFeatured() => reload(updateMainPage: false);
   bool isPostPinned(int? id) =>

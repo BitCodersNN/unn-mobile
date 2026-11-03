@@ -9,6 +9,7 @@ class FeedFilterSwipe extends StatefulWidget {
   final FeedFilter selected;
   final Future<FeedFilter> Function(FeedFilter) onSelected;
   final ValueChanged<FeedFilter>? onPreviewChanged;
+  final ValueChanged<double?>? onPositionChanged;
   final Widget child;
   final Object? cacheKey;
   final bool enabled;
@@ -19,6 +20,7 @@ class FeedFilterSwipe extends StatefulWidget {
     required this.onSelected,
     required this.child,
     this.onPreviewChanged,
+    this.onPositionChanged,
     this.cacheKey,
     super.key,
     this.enabled = true,
@@ -68,6 +70,7 @@ class _FeedFilterSwipeState extends State<FeedFilterSwipe> {
       selectedPage: FeedFilter.values.indexOf(widget.selected),
       itemCount: FeedFilter.values.length,
       enabled: widget.enabled,
+      onPagePositionChanged: widget.onPositionChanged,
       onUserPageChanged: (page) {
         final filter = FeedFilter.values[page];
         setState(() => _visibleFilter = filter);

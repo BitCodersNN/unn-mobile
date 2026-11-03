@@ -9,7 +9,6 @@ class FeedPageState {
   final List<FeedPostViewModel> pinnedPosts = [];
 
   int pageNumber = 0;
-  int unreadCount = 0;
   bool failedToLoad = false;
   bool isLoaded = false;
 }

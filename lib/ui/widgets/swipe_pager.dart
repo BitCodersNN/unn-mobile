@@ -11,6 +11,7 @@ class SwipePager extends StatefulWidget {
   final int? itemCount;
   final bool enabled;
   final ValueChanged<int>? onUserPageChanged;
+  final ValueChanged<double?>? onPagePositionChanged;
   final Future<int> Function(int)? onUserPageSettled;
 
   const SwipePager({
@@ -19,6 +20,7 @@ class SwipePager extends StatefulWidget {
     this.itemCount,
     this.enabled = true,
     this.onUserPageChanged,
+    this.onPagePositionChanged,
     this.onUserPageSettled,
     super.key,
   });
@@ -121,8 +123,15 @@ class _SwipePagerState extends State<SwipePager> {
         notification.dragDetails != null) {
       _userScroll = true;
     }
+    if (_userScroll && notification is ScrollUpdateNotification) {
+      final metrics = notification.metrics;
+      if (metrics is PageMetrics) {
+        widget.onPagePositionChanged?.call(metrics.page);
+      }
+    }
     if (notification is ScrollEndNotification && _userScroll) {
       _userScroll = false;
+      widget.onPagePositionChanged?.call(null);
       if (widget.onUserPageSettled != null) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (mounted &&
