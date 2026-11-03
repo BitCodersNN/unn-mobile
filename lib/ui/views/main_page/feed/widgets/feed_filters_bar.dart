@@ -4,6 +4,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:unn_mobile/core/models/feed/feed_filter.dart';
+import 'package:unn_mobile/ui/unn_mobile_colors.dart';
 import 'package:unn_mobile/ui/widgets/segmented_tab_bar.dart';
 
 class FeedFiltersBar extends StatelessWidget {
@@ -24,6 +25,7 @@ class FeedFiltersBar extends StatelessWidget {
   Widget build(BuildContext context) => Padding(
     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
     child: SegmentedTabBar(
+      borderColor: Theme.of(context).alternatingSurfaceColor,
       selectedIndex: FeedFilter.values.indexOf(selected),
       onSelected: onSelected == null
           ? null

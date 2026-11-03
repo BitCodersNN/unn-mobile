@@ -4,7 +4,7 @@
 import 'package:flutter/material.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/feed/feed_post_view_model.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/widgets/feed_post.dart';
-import 'package:unn_mobile/ui/views/main_page/feed/widgets/feed_section_header.dart';
+import 'package:unn_mobile/ui/widgets/section_header.dart';
 
 class FeedPostsSliver extends StatelessWidget {
   final List<FeedPostViewModel> posts;
@@ -22,7 +22,7 @@ class FeedPostsSliver extends StatelessWidget {
       SliverMainAxisGroup(
         slivers: [
           SliverToBoxAdapter(
-            child: FeedSectionHeader(
+            child: SectionHeader(
               title: title,
               count: showCount ? items.length : null,
             ),

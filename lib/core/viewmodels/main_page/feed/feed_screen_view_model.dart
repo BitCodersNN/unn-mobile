@@ -65,10 +65,6 @@ class FeedScreenViewModel extends BaseViewModel
         FeedFilter.all: (all.posts.isEmpty ? all.offlinePosts : all.posts)
             .where((post) => post.isNewPost)
             .length,
-      if (all != null && all.isLoaded)
-        FeedFilter.pinned: all.pinnedPosts
-            .where((post) => post.isNewPost)
-            .length,
       if (important != null && important.isLoaded)
         FeedFilter.important: important.posts
             .where((post) => post.isAnnouncement && post.isNewPost)

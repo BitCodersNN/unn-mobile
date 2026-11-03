@@ -365,9 +365,9 @@ class FeedScreenViewState extends State<FeedScreenView>
                         showCount: model.filter == FeedFilter.pinned,
                         title: model.hasSearch
                             ? 'Результаты поиска'
-                            : model.filter == FeedFilter.all
-                            ? null
-                            : model.filter.caption,
+                            : model.filter == FeedFilter.pinned
+                            ? model.filter.caption
+                            : null,
                       ),
                     if ((model.loadingMore || model.isBusy) &&
                         !model.isReplacingPosts &&

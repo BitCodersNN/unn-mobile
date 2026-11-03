@@ -10,7 +10,7 @@ import 'package:unn_mobile/core/viewmodels/main_page/feed/feed_post_view_model.d
 import 'package:unn_mobile/ui/views/base_view.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/widgets/feed_comment.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/widgets/feed_post.dart';
-import 'package:unn_mobile/ui/views/main_page/feed/widgets/feed_section_header.dart';
+import 'package:unn_mobile/ui/widgets/section_header.dart';
 
 class CommentsPage extends StatefulWidget {
   final int postId;
@@ -102,7 +102,7 @@ class _CommentsPageState extends State<CommentsPage> {
                       showingComments: true,
                       isCollapsed: false,
                     ),
-                    FeedSectionHeader(
+                    SectionHeader(
                       key: _commentsKey,
                       title: model.commentsCount > 0
                           ? 'Комментарии'

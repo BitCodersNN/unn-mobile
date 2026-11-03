@@ -88,6 +88,8 @@ class UnnMobileColors extends ThemeExtension<UnnMobileColors> {
 }
 
 extension ThemeDataExtension on ThemeData {
+  Color get alternatingSurfaceColor => colorScheme.primary.withAlpha(20);
+
   Color getColorOfSubjectType(SubjectType subjectType) {
     final extraColors = extension<UnnMobileColors>()!;
     return extraColors.scheduleSubjectTypeColors![subjectType] ?? primaryColor;
@@ -105,7 +107,7 @@ extension ThemeDataExtension on ThemeData {
       return extraColors.scheduleSubjectHighlight!;
     }
 
-    return isEven ? colorScheme.primary.withAlpha(20) : colorScheme.surface;
+    return isEven ? alternatingSurfaceColor : colorScheme.surface;
   }
 
   UnnMobileColors? get unnMobileColors => extension<UnnMobileColors>();

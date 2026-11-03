@@ -2,19 +2,26 @@
 // Copyright 2026 BitCodersNN
 
 import 'package:flutter/material.dart';
+import 'package:unn_mobile/ui/widgets/count_badge.dart';
 
-class FeedSectionHeader extends StatelessWidget {
+class SectionHeader extends StatelessWidget {
   final String title;
   final int? count;
+  final EdgeInsetsGeometry padding;
 
-  const FeedSectionHeader({required this.title, this.count, super.key});
+  const SectionHeader({
+    required this.title,
+    this.count,
+    this.padding = const EdgeInsets.fromLTRB(16, 22, 16, 4),
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 22, 16, 4),
+      padding: padding,
       child: LayoutBuilder(
         builder: (context, constraints) => Row(
           children: [
@@ -37,20 +44,7 @@ class FeedSectionHeader extends StatelessWidget {
             Expanded(child: Divider(color: colors.outlineVariant)),
             if (count != null) ...[
               const SizedBox(width: 12),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 3),
-                decoration: BoxDecoration(
-                  color: colors.surfaceContainerHighest,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Text(
-                  '$count',
-                  style: theme.textTheme.labelSmall?.copyWith(
-                    color: colors.onSurfaceVariant,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ),
+              CountBadge(count: count!),
             ],
           ],
         ),

@@ -5,6 +5,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:unn_mobile/ui/widgets/count_badge.dart';
 
 class SegmentedTabItem {
   final String label;
@@ -20,18 +21,20 @@ class SegmentedTabItem {
 
 class SegmentedTabBar extends StatelessWidget {
   static const _horizontalPadding = 10.0;
-  static const _badgeGap = 4.0;
+  static const _countGap = 12.0;
 
   final List<SegmentedTabItem> items;
   final int selectedIndex;
   final ValueChanged<int>? onSelected;
   final ValueListenable<double?>? position;
+  final Color? borderColor;
 
   const SegmentedTabBar({
     required this.items,
     required this.selectedIndex,
     required this.onSelected,
     this.position,
+    this.borderColor,
     super.key,
   }) : assert(items.length > 0),
        assert(selectedIndex >= 0 && selectedIndex < items.length);
@@ -46,27 +49,28 @@ class SegmentedTabBar extends StatelessWidget {
       color: colors.onSurface,
       height: 1.2,
     );
-    final badgeStyle = theme.textTheme.labelSmall!.copyWith(
-      fontSize: 11,
-      fontWeight: FontWeight.w600,
-      color: colors.onPrimary,
-      height: 1.2,
-    );
-    final badgeLabels = {
+    final counts = {
       for (final (index, item) in items.indexed)
-        if ((item.count ?? 0) > 0)
-          index: item.count! > 99 ? '99+' : '${item.count}',
+        if ((item.count ?? 0) > 0) index: item.count!,
     };
     final scaler = MediaQuery.textScalerOf(context);
-    final badgeHeight = math.max(18.0, scaler.scale(11) * 1.2 + 6);
-    final badgeWidths = {
-      for (final entry in badgeLabels.entries)
-        entry.key: math.max(
-          badgeHeight,
-          _textWidth(context, entry.value, badgeStyle) + 10,
+    final countSizes = {
+      for (final entry in counts.entries)
+        entry.key: CountBadge.measure(
+          context,
+          entry.value,
+          maximum: 99,
+          compact: true,
         ),
     };
-    final height = math.max(36.0, scaler.scale(13) * 1.2 + 14);
+    final countHeight = countSizes.values.fold(
+      0.0,
+      (height, size) => math.max(height, size.height),
+    );
+    final height = math.max(
+      math.max(36.0, scaler.scale(13) * 1.2 + 14),
+      countHeight + 8,
+    );
     final duration = MediaQuery.disableAnimationsOf(context)
         ? Duration.zero
         : const Duration(milliseconds: 200);
@@ -76,7 +80,7 @@ class SegmentedTabBar extends StatelessWidget {
         color: colors.surfaceContainerLowest,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
-          side: BorderSide(color: colors.outlineVariant),
+          side: BorderSide(color: borderColor ?? colors.outlineVariant),
         ),
       ),
       child: Padding(
@@ -86,10 +90,9 @@ class SegmentedTabBar extends StatelessWidget {
             final widths = [
               for (final (index, item) in items.indexed)
                 _textWidth(context, item.label, labelStyle) +
-                    _horizontalPadding * 2 +
-                    (badgeWidths.containsKey(index)
-                        ? badgeWidths[index]! + _badgeGap
-                        : 0),
+                    (countSizes.containsKey(index)
+                        ? countSizes[index]!.width + _countGap * 3
+                        : _horizontalPadding * 2),
             ];
             final minimumWidth = widths.fold(0.0, (sum, width) => sum + width);
             final width = constraints.hasBoundedWidth
@@ -128,7 +131,7 @@ class SegmentedTabBar extends StatelessWidget {
                               selected: selectedIndex == index,
                               enabled: onSelected != null,
                               label: item.label,
-                              value: badgeLabels.containsKey(index)
+                              value: counts.containsKey(index)
                                   ? item.countSemanticLabel ?? '${item.count}'
                                   : null,
                               excludeSemantics: true,
@@ -142,31 +145,23 @@ class SegmentedTabBar extends StatelessWidget {
                                       ? null
                                       : () => onSelected!(index),
                                   child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: _horizontalPadding,
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: counts.containsKey(index)
+                                          ? 0
+                                          : _horizontalPadding,
                                     ),
                                     child: Row(
                                       mainAxisAlignment:
-                                          MainAxisAlignment.center,
+                                          counts.containsKey(index)
+                                          ? MainAxisAlignment.spaceEvenly
+                                          : MainAxisAlignment.center,
                                       children: [
                                         Text(item.label, style: labelStyle),
-                                        if (badgeLabels.containsKey(index)) ...[
-                                          const SizedBox(width: _badgeGap),
-                                          Container(
-                                            width: badgeWidths[index],
-                                            height: badgeHeight,
-                                            padding: const EdgeInsets.symmetric(
-                                              vertical: 3,
-                                            ),
-                                            decoration: ShapeDecoration(
-                                              color: colors.primary,
-                                              shape: const StadiumBorder(),
-                                            ),
-                                            alignment: Alignment.center,
-                                            child: Text(
-                                              badgeLabels[index]!,
-                                              style: badgeStyle,
-                                            ),
+                                        if (counts.containsKey(index)) ...[
+                                          CountBadge(
+                                            count: counts[index]!,
+                                            maximum: 99,
+                                            compact: true,
                                           ),
                                         ],
                                       ],
