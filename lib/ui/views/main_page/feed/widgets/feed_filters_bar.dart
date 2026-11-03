@@ -23,7 +23,7 @@ class FeedFiltersBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+    padding: const EdgeInsets.fromLTRB(16, 6, 16, 0),
     child: SegmentedTabBar(
       borderColor: Theme.of(context).alternatingSurfaceColor,
       selectedIndex: FeedFilter.values.indexOf(selected),

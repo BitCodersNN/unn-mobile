@@ -20,8 +20,8 @@ import 'package:unn_mobile/ui/views/main_page/feed/widgets/feed_posts_sliver.dar
 import 'package:unn_mobile/ui/views/main_page/main_page_tab_state.dart';
 import 'package:unn_mobile/ui/widgets/empty_state_widget.dart';
 import 'package:unn_mobile/ui/widgets/offline_overlay_displayer.dart';
+import 'package:unn_mobile/ui/widgets/search/animated_search_field.dart';
 import 'package:unn_mobile/ui/widgets/search/search_controller.dart';
-import 'package:unn_mobile/ui/widgets/search/search_field.dart';
 
 class FeedScreenView extends StatefulWidget {
   const FeedScreenView({super.key});
@@ -50,6 +50,7 @@ class FeedScreenViewState extends State<FeedScreenView>
   late final AppSearchController<String> _search;
   late final FeedScreenViewModel _viewModel;
   bool _clearingSearch = false;
+  late bool _searchVisible;
   FeedFilter? _previewFilter;
   final ValueNotifier<double?> _filterPosition = ValueNotifier(null);
   String? _scrollQuery;
@@ -60,6 +61,7 @@ class FeedScreenViewState extends State<FeedScreenView>
     _viewModel = context
         .read<MainPageRoutesViewModelsFactory>()
         .getOrCreate<FeedScreenViewModel>();
+    _searchVisible = _viewModel.hasSearch;
     _search = AppSearchController<String>(loader: (_) async => [])
       ..addListener(_onSearchChanged);
     _search.textController.text = _viewModel.searchQuery ?? '';
@@ -74,16 +76,25 @@ class FeedScreenViewState extends State<FeedScreenView>
     }
   }
 
-  void _openSearch() {
+  void _toggleSearch() {
     triggerHaptic(HapticIntensity.light);
+    if (_searchVisible) {
+      FocusScope.of(context).unfocus();
+      final draft = _search.query;
+      setState(() => _searchVisible = false);
+      _search.close();
+      _search.textController.text = draft;
+      return;
+    }
     refreshTab();
-    _search.textController.text = _viewModel.searchQuery ?? '';
+    setState(() => _searchVisible = true);
     _search.open();
   }
 
   void _closeSearch() {
     _search.close();
     _search.textController.text = _viewModel.searchQuery ?? '';
+    setState(() => _searchVisible = _viewModel.hasSearch);
   }
 
   void _clearSearch() {
@@ -221,14 +232,18 @@ class FeedScreenViewState extends State<FeedScreenView>
               ),
               automaticallyImplyLeading: false,
               actions: [
-                if (!_search.isOpen && !model.hasSearch)
-                  IconButton(
-                    onPressed: online && !model.isBusy && !model.loadingMore
-                        ? _openSearch
-                        : null,
-                    tooltip: 'Поиск по ленте',
-                    icon: const Icon(Icons.search_rounded),
-                  ),
+                IconButton(
+                  onPressed:
+                      _searchVisible ||
+                          (online && !model.isBusy && !model.loadingMore)
+                      ? _toggleSearch
+                      : null,
+                  tooltip: _searchVisible ? 'Скрыть поиск' : 'Поиск по ленте',
+                  icon: const Icon(Icons.search_rounded),
+                  color: _searchVisible || model.hasSearch
+                      ? theme.colorScheme.primary
+                      : null,
+                ),
               ],
             ),
             body: Column(
@@ -306,19 +321,17 @@ class FeedScreenViewState extends State<FeedScreenView>
                   keyboardDismissBehavior:
                       ScrollViewKeyboardDismissBehavior.onDrag,
                   slivers: [
-                    if (!_clearingSearch && (_search.isOpen || model.hasSearch))
-                      SliverToBoxAdapter(
-                        child: Padding(
-                          padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-                          child: SearchField<String>(
-                            controller: _search,
-                            hintText: 'Поиск по ленте',
-                            onSubmitted: _submitSearch,
-                            onClear: _clearSearch,
-                            autofocus: _search.isOpen,
-                          ),
-                        ),
+                    SliverToBoxAdapter(
+                      child: AnimatedSearchField<String>(
+                        visible: _searchVisible && !_clearingSearch,
+                        padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+                        controller: _search,
+                        hintText: 'Поиск по ленте',
+                        onSubmitted: _submitSearch,
+                        onClear: _clearSearch,
+                        autofocus: _search.isOpen,
                       ),
+                    ),
                     if (model.failedToLoad)
                       _notice(
                         'Не удалось обновить ленту. Потяните вниз, чтобы повторить.',

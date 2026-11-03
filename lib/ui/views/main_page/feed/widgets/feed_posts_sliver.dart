@@ -25,6 +25,7 @@ class FeedPostsSliver extends StatelessWidget {
             child: SectionHeader(
               title: title,
               count: showCount ? items.length : null,
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
             ),
           ),
           SliverList.builder(
