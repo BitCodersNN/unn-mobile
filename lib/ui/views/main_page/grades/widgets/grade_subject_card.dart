@@ -61,7 +61,7 @@ class _GradeSubjectCardState extends State<GradeSubjectCard> {
                           ),
                           const SizedBox(height: 5),
                           Text(
-                            '${DateFormat('dd.MM.yyyy').format(mark.date)} · ${mark.controlType}',
+                            '${mark.date == null ? '—' : DateFormat('dd.MM.yyyy').format(mark.date!)} · ${mark.controlType}',
                             style: theme.textTheme.bodySmall?.copyWith(
                               color: theme.colorScheme.onSurfaceVariant,
                             ),
@@ -71,7 +71,7 @@ class _GradeSubjectCardState extends State<GradeSubjectCard> {
                     ),
                     const SizedBox(width: 12),
                     Semantics(
-                      label: 'Оценка: ${mark.markType.label}',
+                      label: 'Оценка: ${mark.markType?.label ?? '—'}',
                       child: Container(
                         constraints: BoxConstraints(
                           maxWidth: MediaQuery.sizeOf(context).width * 0.25,

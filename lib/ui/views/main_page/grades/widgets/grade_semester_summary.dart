@@ -432,8 +432,8 @@ class _SubjectDetails extends StatelessWidget {
                     const SizedBox(height: 3),
                     Text(
                       kind == _SummaryDetails.retakes
-                          ? '${mark.controlType} · ${mark.markType.label}'
-                          : '${gradeLabel(mark.markType)}${mark.markType.isNumeric ? ' · ${mark.markType.label}' : ''}',
+                          ? '${mark.controlType} · ${mark.markType?.label ?? '—'}'
+                          : '${gradeLabel(mark.markType)}${(mark.markType?.isNumeric ?? false) ? ' · ${mark.markType?.label ?? '—'}' : ''}',
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: theme.getColorOfMarkType(mark.markType),
                       ),
