@@ -59,7 +59,7 @@ class ProfileServiceImpl implements ProfileService {
       _loggerService.logError(
         error,
         stackTrace,
-        information: [responseData.toString()],
+        information: [responseData],
       );
     }
     return userData;

@@ -13,6 +13,7 @@ import 'package:unn_mobile/core/constants/string_keys/session_identifier_keys.da
 import 'package:unn_mobile/core/misc/authorisation/authorisation_helper.dart';
 import 'package:unn_mobile/core/misc/authorisation/authorisation_request_result.dart';
 import 'package:unn_mobile/core/misc/json/json_utils.dart';
+import 'package:unn_mobile/core/misc/logging/diagnostic_event.dart';
 import 'package:unn_mobile/core/models/common/online_status_data.dart';
 import 'package:unn_mobile/core/providers/interfaces/authorisation/auth_data_provider.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation/unn_authorisation_service.dart';
@@ -101,8 +102,10 @@ class UnnAuthServiceImpl extends ChangeNotifier implements UnnAuthService {
         options: Options(headers: headers),
       );
     } catch (error, stackTrace) {
-      _loggerService.log(
-        'Не удалось выполнить запрос для получения CSRF-токена. Exception: $error\nStackTrace: $stackTrace',
+      _loggerService.logError(
+        error,
+        stackTrace,
+        reason: DiagnosticEvent.csrfRequestFailed,
       );
       return AuthRequestResult.unknown;
     }
@@ -148,8 +151,10 @@ class UnnAuthServiceImpl extends ChangeNotifier implements UnnAuthService {
     try {
       return _parseAuthResponseData(authResponse);
     } catch (error, stackTrace) {
-      _loggerService.log(
-        'Критическая ошибка при обработке ответа авторизации. Exception: $error\nStackTrace: $stackTrace',
+      _loggerService.logError(
+        error,
+        stackTrace,
+        reason: DiagnosticEvent.authResponseInvalid,
       );
       return AuthRequestResult.unknown;
     }
@@ -163,9 +168,7 @@ class UnnAuthServiceImpl extends ChangeNotifier implements UnnAuthService {
       final errorText = errorMatch.group(1)?.toLowerCase().trim() ?? '';
 
       if (errorText.contains('неверный логин или пароль')) {
-        _loggerService.log(
-          'Авторизация отклонена сервером: неверный логин или пароль',
-        );
+        _loggerService.log(DiagnosticEvent.credentialsRejected);
         return AuthRequestResult.wrongCredentials;
       }
 
@@ -175,9 +178,7 @@ class UnnAuthServiceImpl extends ChangeNotifier implements UnnAuthService {
     final cookies = authResponse.headers.map['set-cookie'];
 
     if (cookies == null || cookies.isEmpty) {
-      _loggerService.log(
-        'Отсутствуют заголовки set-cookie в ответе авторизации',
-      );
+      _loggerService.log(DiagnosticEvent.authCookiesMissing);
       return AuthRequestResult.unknown;
     }
 
@@ -188,18 +189,14 @@ class UnnAuthServiceImpl extends ChangeNotifier implements UnnAuthService {
     );
 
     if (sessionCookie.isEmpty) {
-      _loggerService.log(
-        '${SessionIdentifierKeys.sessionIdCookieKey} не найден в заголовках set-cookie',
-      );
+      _loggerService.log(DiagnosticEvent.authSessionCookieMissing);
       return AuthRequestResult.unknown;
     }
 
     _sessionId = sessionCookie.split(';').first.split('=').last.trim();
 
     if (_sessionId == null || _sessionId!.isEmpty) {
-      _loggerService.log(
-        'Значение ${SessionIdentifierKeys.sessionIdCookieKey} оказалось пустым после парсинга',
-      );
+      _loggerService.log(DiagnosticEvent.authSessionCookieEmpty);
       return AuthRequestResult.unknown;
     }
 
@@ -216,14 +213,16 @@ class UnnAuthServiceImpl extends ChangeNotifier implements UnnAuthService {
                   as JsonMap)[SessionIdentifierKeys.csrf]
               as String?;
     } catch (error, stackTrace) {
-      _loggerService.log(
-        'Не удалось получить CSRF-токен. Exception: $error\nStackTrace: $stackTrace',
+      _loggerService.logError(
+        error,
+        stackTrace,
+        reason: DiagnosticEvent.csrfResponseInvalid,
       );
       return AuthRequestResult.unknown;
     }
 
     if (_csrf == null || _csrf!.isEmpty) {
-      _loggerService.log('_csrf is null or empty');
+      _loggerService.log(DiagnosticEvent.csrfTokenEmpty);
       return AuthRequestResult.unknown;
     }
 
