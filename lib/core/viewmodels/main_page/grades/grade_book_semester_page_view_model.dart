@@ -5,25 +5,25 @@ import 'package:unn_mobile/core/models/grade_book/curriculum_semester.dart';
 import 'package:unn_mobile/core/models/grade_book/grade_semester.dart';
 import 'package:unn_mobile/core/models/grade_book/grade_statistics.dart';
 import 'package:unn_mobile/core/models/grade_book/mark_by_subject.dart';
-import 'package:unn_mobile/core/viewmodels/main_page/grades/grade_semester_view_model.dart';
+import 'package:unn_mobile/core/viewmodels/main_page/grades/grade_semester_summary_view_model.dart';
 
-class GradeBookSemesterViewModel {
+class GradeBookSemesterPageViewModel {
   final int number;
-  final GradeSemesterViewModel? grades;
+  final GradeSemesterSummaryViewModel? grades;
   final CurriculumSemester? curriculum;
 
-  GradeBookSemesterViewModel.grades(GradeSemesterViewModel model)
+  GradeBookSemesterPageViewModel.grades(GradeSemesterSummaryViewModel model)
     : number = model.semester.number,
       grades = model,
       curriculum = null;
 
-  const GradeBookSemesterViewModel._({
+  const GradeBookSemesterPageViewModel._({
     required this.number,
     required this.grades,
     required this.curriculum,
   });
 
-  factory GradeBookSemesterViewModel.fromCurriculum({
+  factory GradeBookSemesterPageViewModel.fromCurriculum({
     required int number,
     required CurriculumSemester curriculum,
     required List<MarkBySubject> marks,
@@ -37,11 +37,11 @@ class GradeBookSemesterViewModel {
       electiveSubjects: elective,
     );
     final subjects = [...merged.mandatorySubjects, ...merged.electiveSubjects];
-    return GradeBookSemesterViewModel._(
+    return GradeBookSemesterPageViewModel._(
       number: number,
       curriculum: merged,
       grades: subjects.any((subject) => subject.markType != null)
-          ? GradeSemesterViewModel(
+          ? GradeSemesterSummaryViewModel(
               semester: GradeSemester(number: number, marks: subjects),
               overall: overall,
             )

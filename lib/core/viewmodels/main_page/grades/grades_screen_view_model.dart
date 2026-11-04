@@ -13,8 +13,8 @@ import 'package:unn_mobile/core/providers/interfaces/grade_book/mark_by_subject_
 import 'package:unn_mobile/core/services/interfaces/grade_book/curriculum_service.dart';
 import 'package:unn_mobile/core/services/interfaces/grade_book/grade_book_service.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
-import 'package:unn_mobile/core/viewmodels/main_page/grades/grade_book_semester_view_model.dart';
-import 'package:unn_mobile/core/viewmodels/main_page/grades/grade_semester_view_model.dart';
+import 'package:unn_mobile/core/viewmodels/main_page/grades/grade_book_semester_page_view_model.dart';
+import 'package:unn_mobile/core/viewmodels/main_page/grades/grade_semester_summary_view_model.dart';
 
 class GradesScreenViewModel extends BaseViewModel {
   final GradeBookService _gradeBookService;
@@ -23,7 +23,7 @@ class GradesScreenViewModel extends BaseViewModel {
   final CurrentUserSyncStorage _userStorage;
   final DateTime Function() _currentTime;
 
-  List<GradeBookSemesterViewModel> _semesters = const [];
+  List<GradeBookSemesterPageViewModel> _semesters = const [];
   int? _selectedSemesterNumber;
   Map<int, CurriculumSemester>? _curriculum;
   bool _hasGradeBook = false;
@@ -38,7 +38,7 @@ class GradesScreenViewModel extends BaseViewModel {
     DateTime Function()? currentTime,
   }) : _currentTime = currentTime ?? DateTime.now;
 
-  List<GradeBookSemesterViewModel> get semesters => _semesters;
+  List<GradeBookSemesterPageViewModel> get semesters => _semesters;
 
   int? get selectedSemesterNumber => _selectedSemesterNumber;
 
@@ -99,11 +99,11 @@ class GradesScreenViewModel extends BaseViewModel {
       book ?? const {},
       summary?.overall ?? GradeStatistics.fromMarks([]),
     );
-    final semesters = <int, GradeBookSemesterViewModel>{
+    final semesters = <int, GradeBookSemesterPageViewModel>{
       if (summary != null)
         for (final semester in summary.semesters)
-          semester.number: GradeBookSemesterViewModel.grades(
-            GradeSemesterViewModel(
+          semester.number: GradeBookSemesterPageViewModel.grades(
+            GradeSemesterSummaryViewModel(
               semester: semester,
               overall: summary.overall,
             ),
@@ -122,7 +122,7 @@ class GradesScreenViewModel extends BaseViewModel {
     }
   }
 
-  List<GradeBookSemesterViewModel> _plannedSemesters(
+  List<GradeBookSemesterPageViewModel> _plannedSemesters(
     Map<int, CurriculumSemester> curriculum,
     Map<int, List<MarkBySubject>> marks,
     GradeStatistics overall,
@@ -146,7 +146,7 @@ class GradesScreenViewModel extends BaseViewModel {
     return [
       for (final number in [current, if (current.isOdd) current + 1])
         if (curriculum[number] case final CurriculumSemester semester)
-          GradeBookSemesterViewModel.fromCurriculum(
+          GradeBookSemesterPageViewModel.fromCurriculum(
             number: number,
             curriculum: semester,
             marks: marks[number] ?? const [],
