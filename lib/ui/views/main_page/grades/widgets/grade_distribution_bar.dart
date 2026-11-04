@@ -3,11 +3,11 @@
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:unn_mobile/core/misc/grade_formatters.dart';
 import 'package:unn_mobile/core/models/grade_book/grade_assessment.dart';
 import 'package:unn_mobile/core/models/grade_book/grade_distribution.dart';
 import 'package:unn_mobile/ui/unn_mobile_colors.dart';
 import 'package:unn_mobile/ui/views/main_page/grades/widgets/grade_details_popover.dart';
-import 'package:unn_mobile/ui/views/main_page/grades/widgets/grade_style.dart';
 
 class GradeDistributionBar extends StatelessWidget {
   final List<GradeDistributionEntry> entries;
@@ -117,7 +117,7 @@ class _DistributionDetails extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Text(
-          '${gradeLabel(entry.type)}${entry.type.isNumeric ? ' · ${entry.type.label}' : ''}',
+          '${entry.type.labelFormatted}${entry.type.isNumeric ? ' · ${entry.type.label}' : ''}',
           style: theme.textTheme.titleSmall?.copyWith(
             color: theme.colorScheme.onSurface,
           ),

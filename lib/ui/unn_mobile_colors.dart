@@ -101,7 +101,10 @@ class UnnMobileColors extends ThemeExtension<UnnMobileColors> {
 }
 
 extension ThemeDataExtension on ThemeData {
-  Color getColorOfMarkType(MarkType markType) {
+  Color getColorOfMarkType(MarkType? markType) {
+    if (markType == null) {
+      return colorScheme.onSurfaceVariant;
+    }
     final extraColors = extension<UnnMobileColors>()!;
     return extraColors.gradeMarkTypeColors![markType] ?? primaryColor;
   }

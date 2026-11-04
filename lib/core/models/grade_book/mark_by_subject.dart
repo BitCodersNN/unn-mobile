@@ -23,7 +23,7 @@ class MarkBySubject {
   final MarkType? markType;
   final String subject;
 
-  MarkBySubject({
+  const MarkBySubject({
     required this.controlType,
     required this.date,
     required this.hours,

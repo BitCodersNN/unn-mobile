@@ -3,6 +3,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:unn_mobile/core/misc/grade_formatters.dart';
 import 'package:unn_mobile/core/misc/haptic_utils.dart';
 import 'package:unn_mobile/core/models/grade_book/mark_by_subject.dart';
 import 'package:unn_mobile/core/models/grade_book/mark_type.dart';
@@ -10,7 +11,6 @@ import 'package:unn_mobile/core/viewmodels/main_page/grades/grade_semester_view_
 import 'package:unn_mobile/ui/unn_mobile_colors.dart';
 import 'package:unn_mobile/ui/views/main_page/grades/widgets/grade_details_popover.dart';
 import 'package:unn_mobile/ui/views/main_page/grades/widgets/grade_distribution_bar.dart';
-import 'package:unn_mobile/ui/views/main_page/grades/widgets/grade_style.dart';
 
 enum _SummaryDetails { disciplines, exams, retakes }
 
@@ -159,9 +159,7 @@ class _GradeSemesterSummaryState extends State<GradeSemesterSummary> {
                                   _SummaryMetric(
                                     width: width,
                                     label: 'Средний за семестр',
-                                    value: formatGradeAverage(
-                                      statistics.average,
-                                    ),
+                                    value: statistics.average.formattedAverage,
                                     suffix: difference == null
                                         ? null
                                         : '${difference > 0 ? '+' : ''}${NumberFormat('0.##', 'ru_RU').format(difference)}%',
@@ -170,9 +168,11 @@ class _GradeSemesterSummaryState extends State<GradeSemesterSummary> {
                                   _SummaryMetric(
                                     width: width,
                                     label: 'За всё обучение',
-                                    value: formatGradeAverage(
-                                      widget.model.overall.average,
-                                    ),
+                                    value: widget
+                                        .model
+                                        .overall
+                                        .average
+                                        .formattedAverage,
                                   ),
                                   _SummaryMetric(
                                     key: const ValueKey(
@@ -435,11 +435,11 @@ class _SubjectDetails extends StatelessWidget {
                           ? '${mark.controlType} · Без оценки'
                           : kind == _SummaryDetails.retakes
                           ? '${mark.controlType} · ${mark.markType!.label}'
-                          : '${gradeLabel(mark.markType!)}${mark.markType!.isNumeric ? ' · ${mark.markType!.label}' : ''}',
+                          : '${mark.markType.labelFormatted}${mark.markType!.isNumeric ? ' · ${mark.markType!.label}' : ''}',
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: mark.markType == null
                             ? theme.colorScheme.onSurfaceVariant
-                            : theme.getColorOfMarkType(mark.markType!),
+                            : theme.getColorOfMarkType(mark.markType),
                       ),
                     ),
                   ],
