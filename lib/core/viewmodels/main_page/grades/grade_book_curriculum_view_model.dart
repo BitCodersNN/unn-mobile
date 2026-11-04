@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2026 BitCodersNN
 
-import 'package:unn_mobile/core/viewmodels/main_page/grades/grade_book_subject.dart';
+import 'package:unn_mobile/core/models/grade_book/grade_book_subject.dart';
 
 class GradeBookCurriculumViewModel {
   final List<GradeBookSubject> mandatorySubjects;

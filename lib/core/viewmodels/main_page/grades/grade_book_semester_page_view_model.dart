@@ -3,11 +3,11 @@
 
 import 'package:unn_mobile/core/models/grade_book/curriculum_semester.dart';
 import 'package:unn_mobile/core/models/grade_book/curriculum_subject.dart';
+import 'package:unn_mobile/core/models/grade_book/grade_book_subject.dart';
 import 'package:unn_mobile/core/models/grade_book/grade_semester.dart';
 import 'package:unn_mobile/core/models/grade_book/grade_statistics.dart';
 import 'package:unn_mobile/core/models/grade_book/mark_by_subject.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/grades/grade_book_curriculum_view_model.dart';
-import 'package:unn_mobile/core/viewmodels/main_page/grades/grade_book_subject.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/grades/grade_semester_summary_view_model.dart';
 
 class GradeBookSemesterPageViewModel {
