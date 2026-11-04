@@ -6,7 +6,7 @@ import 'package:unn_mobile/core/models/grade_book/grade_semester.dart';
 import 'package:unn_mobile/core/models/grade_book/grade_statistics.dart';
 import 'package:unn_mobile/core/models/grade_book/mark_type.dart';
 
-class GradeSemesterViewModel {
+class GradeSemesterSummaryViewModel {
   static const List<MarkType> _distributionOrder = [
     MarkType.perfect,
     MarkType.excellent,
@@ -23,7 +23,7 @@ class GradeSemesterViewModel {
   final GradeStatistics overall;
   final List<GradeDistributionEntry> distributionEntries;
 
-  GradeSemesterViewModel({required this.semester, required this.overall})
+  GradeSemesterSummaryViewModel({required this.semester, required this.overall})
     : distributionEntries = List.unmodifiable(
         semester.statistics.distribution.entries.toList()
           ..sort((first, second) {

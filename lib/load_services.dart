@@ -91,6 +91,7 @@ import 'package:unn_mobile/core/services/implementations/feed/reaction_action_se
 import 'package:unn_mobile/core/services/implementations/feed/reaction_rating_list_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/git/git_config_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/git/git_json_resource_source.dart';
+import 'package:unn_mobile/core/services/implementations/grade_book/curriculum_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/grade_book/grade_book_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/loading_page/loading_page_resource_source.dart';
 import 'package:unn_mobile/core/services/implementations/loading_page/logo_downloader_service_impl.dart';
@@ -144,6 +145,7 @@ import 'package:unn_mobile/core/services/interfaces/feed/reaction_action_service
 import 'package:unn_mobile/core/services/interfaces/feed/reaction_rating_list_service.dart';
 import 'package:unn_mobile/core/services/interfaces/git/git_config_service.dart';
 import 'package:unn_mobile/core/services/interfaces/git/git_resource_source.dart';
+import 'package:unn_mobile/core/services/interfaces/grade_book/curriculum_service.dart';
 import 'package:unn_mobile/core/services/interfaces/grade_book/grade_book_service.dart';
 import 'package:unn_mobile/core/services/interfaces/loading_page/logo_downloader_service.dart';
 import 'package:unn_mobile/core/services/interfaces/profile/lecturer_profile_service.dart';
@@ -419,6 +421,12 @@ void registerDependencies() {
       () => ScheduleSearchHistoryServiceImpl(
         get<StorageService>(),
         get<LoggerService>(),
+      ),
+    )
+    ..registerSingleton<CurriculumService>(
+      () => CurriculumServiceImpl(
+        get<LoggerService>(),
+        getApiHelper(HostType.unnPortal),
       ),
     )
     ..registerSingleton<GradeBookService>(
@@ -719,6 +727,8 @@ void registerDependencies() {
       () => GradesScreenViewModel(
         get<GradeBookService>(),
         get<MarkBySubjectProvider>(),
+        get<CurriculumService>(),
+        get<CurrentUserSyncStorage>(),
       ),
     )
     ..registerDependency(

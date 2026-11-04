@@ -4,12 +4,12 @@
 import 'package:flutter/material.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
 import 'package:unn_mobile/core/models/grade_book/mark_by_subject.dart';
-import 'package:unn_mobile/core/viewmodels/main_page/grades/grade_semester_view_model.dart';
+import 'package:unn_mobile/core/viewmodels/main_page/grades/grade_semester_summary_view_model.dart';
 import 'package:unn_mobile/ui/views/main_page/grades/widgets/grade_semester_summary.dart';
 import 'package:unn_mobile/ui/views/main_page/grades/widgets/grade_subject_card.dart';
 
 class GradeSemesterPage extends StatefulWidget {
-  final GradeSemesterViewModel model;
+  final GradeSemesterSummaryViewModel model;
   final Future<void> Function() onRefresh;
 
   const GradeSemesterPage({

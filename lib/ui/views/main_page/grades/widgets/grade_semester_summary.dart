@@ -7,7 +7,7 @@ import 'package:unn_mobile/core/misc/grade_formatters.dart';
 import 'package:unn_mobile/core/misc/haptic_utils.dart';
 import 'package:unn_mobile/core/models/grade_book/mark_by_subject.dart';
 import 'package:unn_mobile/core/models/grade_book/mark_type.dart';
-import 'package:unn_mobile/core/viewmodels/main_page/grades/grade_semester_view_model.dart';
+import 'package:unn_mobile/core/viewmodels/main_page/grades/grade_semester_summary_view_model.dart';
 import 'package:unn_mobile/ui/unn_mobile_colors.dart';
 import 'package:unn_mobile/ui/views/main_page/grades/widgets/grade_details_popover.dart';
 import 'package:unn_mobile/ui/views/main_page/grades/widgets/grade_distribution_bar.dart';
@@ -15,7 +15,7 @@ import 'package:unn_mobile/ui/views/main_page/grades/widgets/grade_distribution_
 enum _SummaryDetails { disciplines, exams, retakes }
 
 class GradeSemesterSummary extends StatefulWidget {
-  final GradeSemesterViewModel model;
+  final GradeSemesterSummaryViewModel model;
   final Future<void> Function(MarkBySubject)? onSubjectSelected;
 
   const GradeSemesterSummary({
@@ -431,11 +431,15 @@ class _SubjectDetails extends StatelessWidget {
                     ),
                     const SizedBox(height: 3),
                     Text(
-                      kind == _SummaryDetails.retakes
-                          ? '${mark.controlType} · ${mark.markType?.label ?? '—'}'
-                          : '${mark.markType.labelFormatted}${(mark.markType?.isNumeric ?? false) ? ' · ${mark.markType?.label ?? '—'}' : ''}',
+                      mark.markType == null
+                          ? '${mark.controlType} · Без оценки'
+                          : kind == _SummaryDetails.retakes
+                          ? '${mark.controlType} · ${mark.markType!.label}'
+                          : '${mark.markType.labelFormatted}${mark.markType!.isNumeric ? ' · ${mark.markType!.label}' : ''}',
                       style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.getColorOfMarkType(mark.markType),
+                        color: mark.markType == null
+                            ? theme.colorScheme.onSurfaceVariant
+                            : theme.getColorOfMarkType(mark.markType),
                       ),
                     ),
                   ],

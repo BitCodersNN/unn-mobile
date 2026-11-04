@@ -3,7 +3,8 @@
 
 import 'package:unn_mobile/core/misc/json/json_iterable_parser.dart';
 import 'package:unn_mobile/core/misc/json/json_utils.dart';
-import 'package:unn_mobile/core/models/grade_book/mark_by_subject.dart';
+import 'package:unn_mobile/core/models/grade_book/curriculum_hours.dart';
+import 'package:unn_mobile/core/models/grade_book/curriculum_subject.dart';
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
 
 class _JsonKeys {
@@ -32,12 +33,12 @@ class _JsonKeys {
 }
 
 class CurriculumSemester {
-  final List<MarkBySubject> mandatorySubjects;
-  final List<MarkBySubject> electiveSubjects;
+  final List<CurriculumSubject> mandatorySubjects;
+  final List<CurriculumSubject> electiveSubjects;
 
   CurriculumSemester({
-    required Iterable<MarkBySubject> mandatorySubjects,
-    required Iterable<MarkBySubject> electiveSubjects,
+    required Iterable<CurriculumSubject> mandatorySubjects,
+    required Iterable<CurriculumSubject> electiveSubjects,
   }) : mandatorySubjects = List.unmodifiable(mandatorySubjects),
        electiveSubjects = List.unmodifiable(electiveSubjects);
 
@@ -49,14 +50,14 @@ class CurriculumSemester {
       return CurriculumSemester._fromSections(json);
     }
     return CurriculumSemester(
-      mandatorySubjects: parseJsonIterable<MarkBySubject>(
+      mandatorySubjects: parseJsonIterable<CurriculumSubject>(
         json[_JsonKeys.mandatorySubjects] as Iterable<Object?>? ?? const [],
-        MarkBySubject.fromJson,
+        CurriculumSubject.fromJson,
         loggerService,
       ),
-      electiveSubjects: parseJsonIterable<MarkBySubject>(
+      electiveSubjects: parseJsonIterable<CurriculumSubject>(
         json[_JsonKeys.electiveSubjects] as Iterable<Object?>? ?? const [],
-        MarkBySubject.fromJson,
+        CurriculumSubject.fromJson,
         loggerService,
       ),
     );
@@ -69,8 +70,8 @@ class CurriculumSemester {
       for (final section in sections)
         if (section[_JsonKeys.id] case final num id) id.toInt(): section,
     };
-    final mandatorySubjects = <MarkBySubject>[];
-    final electiveSubjects = <MarkBySubject>[];
+    final mandatorySubjects = <CurriculumSubject>[];
+    final electiveSubjects = <CurriculumSubject>[];
     for (final section in sections) {
       if (section[_JsonKeys.type] == 'section') {
         continue;
@@ -108,18 +109,18 @@ class CurriculumSemester {
         .toList(),
   };
 
-  static MarkBySubject _parseSubject(JsonMap section, List<JsonMap> terms) =>
-      MarkBySubject(
-        controlType: [
-          for (final control in _JsonKeys.controlTypes.entries)
-            if (terms.any((term) => _enabled(term[control.key]))) control.value,
-        ].join(', '),
-        date: null,
-        hours: (section[_JsonKeys.hours]! as num).toInt(),
-        lecturers: null,
-        markType: null,
-        subject: section[_JsonKeys.title]! as String,
-      );
+  static CurriculumSubject _parseSubject(
+    JsonMap section,
+    List<JsonMap> terms,
+  ) => CurriculumSubject(
+    controlType: [
+      for (final control in _JsonKeys.controlTypes.entries)
+        if (terms.any((term) => _enabled(term[control.key]))) control.value,
+    ].join(', '),
+    hours: (section[_JsonKeys.hours]! as num).toInt(),
+    subject: section[_JsonKeys.title]! as String,
+    hoursBreakdown: CurriculumHours.fromTerms(terms),
+  );
 
   static Iterable<JsonMap> _objects(Object? value) =>
       (value as Iterable<Object?>? ?? const []).cast<JsonMap>();
