@@ -3,15 +3,17 @@
 
 import 'package:flutter/material.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
-import 'package:unn_mobile/core/models/grade_book/curriculum_semester.dart';
 import 'package:unn_mobile/core/models/grade_book/mark_by_subject.dart';
+import 'package:unn_mobile/core/viewmodels/main_page/grades/grade_book_curriculum_view_model.dart';
+import 'package:unn_mobile/core/viewmodels/main_page/grades/grade_book_subject.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/grades/grade_semester_summary_view_model.dart';
+import 'package:unn_mobile/ui/views/main_page/grades/widgets/curriculum_subject_card.dart';
 import 'package:unn_mobile/ui/views/main_page/grades/widgets/grade_semester_summary.dart';
 import 'package:unn_mobile/ui/views/main_page/grades/widgets/grade_subject_card.dart';
 
 class CurriculumSemesterPage extends StatefulWidget {
   final int number;
-  final CurriculumSemester curriculum;
+  final GradeBookCurriculumViewModel curriculum;
   final GradeSemesterSummaryViewModel? summary;
   final Future<void> Function() onRefresh;
 
@@ -38,7 +40,9 @@ class _CurriculumSemesterPageState extends State<CurriculumSemesterPage> {
       ...widget.curriculum.mandatorySubjects,
       ...widget.curriculum.electiveSubjects,
     ];
-    final index = subjects.indexOf(subject);
+    final index = subjects.indexWhere(
+      (entry) => identical(entry.summaryMark, subject),
+    );
     if (index < 0 || !_scroll.hasClients) {
       return;
     }
@@ -114,7 +118,7 @@ class _CurriculumSemesterPageState extends State<CurriculumSemesterPage> {
 
 class _CurriculumGroup extends StatelessWidget {
   final String title;
-  final List<MarkBySubject> subjects;
+  final List<GradeBookSubject> subjects;
   final AutoScrollController controller;
   final int startIndex;
 
@@ -150,7 +154,12 @@ class _CurriculumGroup extends StatelessWidget {
             index: startIndex + index,
             child: Padding(
               padding: const EdgeInsets.only(bottom: 10),
-              child: GradeSubjectCard(mark: subjects[index]),
+              child: switch (subjects[index]) {
+                PlannedSubject(:final subject) => CurriculumSubjectCard(
+                  subject: subject,
+                ),
+                GradedSubject(:final mark) => GradeSubjectCard(mark: mark),
+              },
             ),
           ),
         ),

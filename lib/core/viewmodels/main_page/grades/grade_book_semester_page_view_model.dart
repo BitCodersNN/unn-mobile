@@ -2,15 +2,18 @@
 // Copyright 2026 BitCodersNN
 
 import 'package:unn_mobile/core/models/grade_book/curriculum_semester.dart';
+import 'package:unn_mobile/core/models/grade_book/curriculum_subject.dart';
 import 'package:unn_mobile/core/models/grade_book/grade_semester.dart';
 import 'package:unn_mobile/core/models/grade_book/grade_statistics.dart';
 import 'package:unn_mobile/core/models/grade_book/mark_by_subject.dart';
+import 'package:unn_mobile/core/viewmodels/main_page/grades/grade_book_curriculum_view_model.dart';
+import 'package:unn_mobile/core/viewmodels/main_page/grades/grade_book_subject.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/grades/grade_semester_summary_view_model.dart';
 
 class GradeBookSemesterPageViewModel {
   final int number;
   final GradeSemesterSummaryViewModel? grades;
-  final CurriculumSemester? curriculum;
+  final GradeBookCurriculumViewModel? curriculum;
 
   GradeBookSemesterPageViewModel.grades(GradeSemesterSummaryViewModel model)
     : number = model.semester.number,
@@ -32,11 +35,14 @@ class GradeBookSemesterPageViewModel {
     final unmatched = marks.toList();
     final mandatory = _mergeSubjects(curriculum.mandatorySubjects, unmatched);
     final elective = _mergeSubjects(curriculum.electiveSubjects, unmatched);
-    final merged = CurriculumSemester(
-      mandatorySubjects: [...mandatory, ...unmatched],
+    final merged = GradeBookCurriculumViewModel(
+      mandatorySubjects: [...mandatory, ...unmatched.map(GradedSubject.new)],
       electiveSubjects: elective,
     );
-    final subjects = [...merged.mandatorySubjects, ...merged.electiveSubjects];
+    final subjects = [
+      ...merged.mandatorySubjects,
+      ...merged.electiveSubjects,
+    ].map((subject) => subject.summaryMark).toList();
     return GradeBookSemesterPageViewModel._(
       number: number,
       curriculum: merged,
@@ -51,11 +57,11 @@ class GradeBookSemesterPageViewModel {
 
   String get title => 'Семестр $number';
 
-  static List<MarkBySubject> _mergeSubjects(
-    List<MarkBySubject> subjects,
+  static List<GradeBookSubject> _mergeSubjects(
+    List<CurriculumSubject> subjects,
     List<MarkBySubject> unmatched,
   ) {
-    final result = <MarkBySubject>[];
+    final result = <GradeBookSubject>[];
     for (final subject in subjects) {
       final controls = subject.controlType
           .split(',')
@@ -71,20 +77,20 @@ class GradeBookSemesterPageViewModel {
             )
             .toList();
         if (matching.isNotEmpty) {
-          result.addAll(matching);
+          result.addAll(matching.map(GradedSubject.new));
           unmatched.removeWhere(matching.contains);
         } else {
           result.add(
-            controls.length == 1
-                ? subject
-                : MarkBySubject(
-                    subject: subject.subject,
-                    controlType: control,
-                    date: subject.date,
-                    hours: subject.hours,
-                    lecturers: subject.lecturers,
-                    markType: subject.markType,
-                  ),
+            PlannedSubject(
+              controls.length == 1
+                  ? subject
+                  : CurriculumSubject(
+                      subject: subject.subject,
+                      controlType: control,
+                      hours: subject.hours,
+                      hoursBreakdown: subject.hoursBreakdown,
+                    ),
+            ),
           );
         }
       }
