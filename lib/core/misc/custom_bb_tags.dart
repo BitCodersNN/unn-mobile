@@ -8,6 +8,7 @@ import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/constants/api/protocol_type.dart';
 import 'package:unn_mobile/core/misc/hex_color.dart';
 import 'package:unn_mobile/core/misc/html_utils/html_widget_callbacks.dart';
+import 'package:unn_mobile/core/misc/logging/diagnostic_event.dart';
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
 import 'package:unn_mobile/ui/widgets/context_menu/context_menu_factory.dart';
 import 'package:unn_mobile/ui/widgets/context_menu/context_menu_helper.dart';
@@ -390,7 +391,7 @@ BBStylesheet getBBStyleSheet({ThemeData? theme}) => defaultBBStylesheet()
         onTap: (url) async {
           if (!await launchUrl(Uri.parse(url))) {
             Injector.appInstance.get<LoggerService>().log(
-              'Could not launch url $url',
+              DiagnosticEvent.urlLaunchFailed,
             );
           }
         },
@@ -417,7 +418,7 @@ BBStylesheet getBBStyleSheet({ThemeData? theme}) => defaultBBStylesheet()
             mode: LaunchMode.platformDefault,
           )) {
             Injector.appInstance.get<LoggerService>().log(
-              'Could not launch url $url',
+              DiagnosticEvent.urlLaunchFailed,
             );
           }
         },

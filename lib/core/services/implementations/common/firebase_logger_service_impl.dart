@@ -1,46 +1,47 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2025 BitCodersNN
 
+import 'dart:async';
+
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
+import 'package:unn_mobile/core/misc/logging/diagnostic_event.dart';
+import 'package:unn_mobile/core/misc/logging/diagnostic_sanitizer.dart';
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
 
 class FirebaseLoggerServiceImpl implements LoggerService {
+  static const DiagnosticSanitizer _sanitizer = DiagnosticSanitizer();
+
   @override
-  void log(String message) {
-    FirebaseCrashlytics.instance.log(
-      '[ ${_getCaller(StackTrace.current)} ]: $message',
+  void log(DiagnosticEvent event, {Iterable<Object?> information = const []}) {
+    unawaited(
+      FirebaseCrashlytics.instance.log(
+        '[${_sanitizer.caller(StackTrace.current)}] ${_sanitizer.event(event, information)}',
+      ),
     );
   }
 
   @override
   void logError(
-    dynamic exception,
+    Object? exception,
     StackTrace? stack, {
     bool fatal = false,
-    dynamic reason,
-    Iterable<Object> information = const [],
+    Object? reason,
+    Iterable<Object?> information = const [],
   }) {
-    FirebaseCrashlytics.instance.recordError(
-      exception,
-      stack,
-      fatal: fatal,
-      information: information,
-      printDetails: true,
-      reason: reason,
+    unawaited(
+      FirebaseCrashlytics.instance.recordError(
+        _sanitizer.error(exception),
+        _sanitizer.stack(stack ?? StackTrace.current),
+        fatal: fatal,
+        information: _sanitizer.information(information),
+        printDetails: false,
+        reason: reason == null ? null : _sanitizer.describe(reason),
+      ),
     );
   }
 
   @override
-  void handleFlutterFatalError(FlutterErrorDetails error) {
-    FirebaseCrashlytics.instance.recordFlutterFatalError(error);
-  }
-
-  static String _getCaller(StackTrace currentStack) {
-    final stack = currentStack.toString();
-    final newLineNum = stack.indexOf('\n', 0);
-    final secondLine = stack.substring(newLineNum + 9);
-    final endIndex = secondLine.indexOf(' ', 0);
-    return secondLine.substring(0, endIndex);
-  }
+  void handleFlutterFatalError(FlutterErrorDetails error) =>
+      logError(error.exception, error.stack, fatal: true);
 }

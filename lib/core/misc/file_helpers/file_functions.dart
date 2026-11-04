@@ -59,11 +59,7 @@ Future<OpenResult> viewFile(String uri, String mimeType) async {
       _ => await _viewFileDefault(uri, mimeType),
     };
   } catch (error, stack) {
-    Injector.appInstance.get<LoggerService>().log(
-      'Could not open file.\n'
-      'Exception: $error\n'
-      'stack: $stack',
-    );
+    Injector.appInstance.get<LoggerService>().logError(error, stack);
     return OpenResult(OpenResultType.error, error.toString());
   }
 }

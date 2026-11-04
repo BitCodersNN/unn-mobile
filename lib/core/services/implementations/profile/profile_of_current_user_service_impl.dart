@@ -43,7 +43,7 @@ class ProfileOfCurrentUserServiceImpl implements ProfileOfCurrentUserService {
           ? EmployeeData.fromJson(jsonMap)
           : null;
     } catch (e, stackTrace) {
-      _loggerService.logError(e, stackTrace, information: [jsonMap.toString()]);
+      _loggerService.logError(e, stackTrace, information: [jsonMap]);
     }
 
     return userData;
