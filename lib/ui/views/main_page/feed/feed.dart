@@ -254,6 +254,7 @@ class FeedScreenViewState extends State<FeedScreenView>
                     child: FeedFiltersBar(
                       selected: _previewFilter ?? model.filter,
                       unreadCounts: model.unreadCounts,
+                      pinnedPostCount: model.pinnedPostCount,
                       position: _filterPosition,
                       onSelected: online && !model.isBusy && !model.loadingMore
                           ? (filter) {
@@ -375,7 +376,6 @@ class FeedScreenViewState extends State<FeedScreenView>
                     else
                       FeedPostsSliver(
                         posts: posts,
-                        showCount: model.filter == FeedFilter.pinned,
                         title: model.hasSearch
                             ? 'Результаты поиска'
                             : model.filter == FeedFilter.pinned

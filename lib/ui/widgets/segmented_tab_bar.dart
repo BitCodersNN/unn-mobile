@@ -11,11 +11,13 @@ class SegmentedTabItem {
   final String label;
   final int? count;
   final String? countSemanticLabel;
+  final CountBadgeTone countTone;
 
   const SegmentedTabItem({
     required this.label,
     this.count,
     this.countSemanticLabel,
+    this.countTone = CountBadgeTone.accent,
   });
 }
 
@@ -162,6 +164,7 @@ class SegmentedTabBar extends StatelessWidget {
                                             count: counts[index]!,
                                             maximum: 99,
                                             compact: true,
+                                            tone: item.countTone,
                                           ),
                                         ],
                                       ],

@@ -5,25 +5,35 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
+enum CountBadgeTone { accent, neutral }
+
 class CountBadge extends StatelessWidget {
   final int count;
   final int? maximum;
   final bool compact;
+  final CountBadgeTone tone;
 
   const CountBadge({
     required this.count,
     this.maximum,
     this.compact = false,
+    this.tone = CountBadgeTone.accent,
     super.key,
   });
 
   static String _label(int count, int? maximum) =>
       maximum != null && count > maximum ? '$maximum+' : '$count';
 
-  static TextStyle _style(BuildContext context, {required bool compact}) {
+  static TextStyle _style(
+    BuildContext context, {
+    required bool compact,
+    CountBadgeTone tone = CountBadgeTone.accent,
+  }) {
     final theme = Theme.of(context);
     return theme.textTheme.labelMedium!.copyWith(
-      color: theme.colorScheme.primary,
+      color: tone == CountBadgeTone.neutral
+          ? theme.colorScheme.onSurfaceVariant
+          : theme.colorScheme.primary,
       fontWeight: FontWeight.w600,
       fontSize: compact ? 11 : null,
     );
@@ -55,19 +65,24 @@ class CountBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
     final size = measure(context, count, maximum: maximum, compact: compact);
     return Container(
       width: size.width,
       height: size.height,
       decoration: ShapeDecoration(
         shape: const StadiumBorder(),
-        color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.12),
+        color:
+            (tone == CountBadgeTone.neutral
+                    ? colors.onSurfaceVariant
+                    : colors.primary)
+                .withValues(alpha: 0.12),
       ),
       alignment: Alignment.center,
       child: Text(
         _label(count, maximum),
         maxLines: 1,
-        style: _style(context, compact: compact),
+        style: _style(context, compact: compact, tone: tone),
       ),
     );
   }

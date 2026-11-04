@@ -9,14 +9,8 @@ import 'package:unn_mobile/ui/widgets/section_header.dart';
 class FeedPostsSliver extends StatelessWidget {
   final List<FeedPostViewModel> posts;
   final String? title;
-  final bool showCount;
 
-  const FeedPostsSliver({
-    required this.posts,
-    this.title,
-    this.showCount = false,
-    super.key,
-  });
+  const FeedPostsSliver({required this.posts, this.title, super.key});
 
   Widget _section(String title, List<FeedPostViewModel> items) =>
       SliverMainAxisGroup(
@@ -24,7 +18,6 @@ class FeedPostsSliver extends StatelessWidget {
           SliverToBoxAdapter(
             child: SectionHeader(
               title: title,
-              count: showCount ? items.length : null,
               padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
             ),
           ),

@@ -50,6 +50,7 @@ class FeedScreenViewModel extends BaseViewModel
 
   String? _searchQuery;
   DateTime? _lastReadAt;
+  int? _pinnedPostCount;
   bool _isReplacingPosts = false;
 
   DateTime? get lastReadAt => _lastReadAt;
@@ -71,6 +72,8 @@ class FeedScreenViewModel extends BaseViewModel
             .length,
     };
   }
+
+  int? get pinnedPostCount => _pinnedPostCount;
 
   bool get failedToLoad => _page.failedToLoad;
   bool get loadingMore => _loadingMore;
@@ -215,6 +218,9 @@ class FeedScreenViewModel extends BaseViewModel
 
     pinnedPosts.clear();
     _addPostsToList(pinnedPosts, posts[BlogPostType.pinned]);
+    if (!hasSearch && !showOnlyImportant) {
+      _pinnedPostCount = pinnedPosts.length;
+    }
 
     if (!updateMainPage) {
       for (final entry in _pages.entries) {
