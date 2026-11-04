@@ -204,6 +204,8 @@ class FeedScreenViewState extends State<FeedScreenView>
           return Scaffold(
             backgroundColor: theme.colorScheme.surfaceContainerLow,
             appBar: AppBar(
+              centerTitle: false,
+              titleSpacing: 16,
               backgroundColor: theme.colorScheme.surfaceContainerLow,
               scrolledUnderElevation: 0,
               toolbarHeight: 12 + MediaQuery.textScalerOf(context).scale(48),
