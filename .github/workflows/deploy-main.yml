@@ -1,4 +1,4 @@
-name: deploy-develop-mobile
+name: deploy-main
 run-name: Build and deploy develop build for Android & iOS
 on:
   push:
