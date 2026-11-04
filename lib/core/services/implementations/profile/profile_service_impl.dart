@@ -56,11 +56,7 @@ class ProfileServiceImpl implements ProfileService {
         _ => UserData.fromJson(_getUserJson(responseData)),
       };
     } catch (error, stackTrace) {
-      _loggerService.logError(
-        error,
-        stackTrace,
-        information: [responseData],
-      );
+      _loggerService.logError(error, stackTrace, information: [responseData]);
     }
     return userData;
   }

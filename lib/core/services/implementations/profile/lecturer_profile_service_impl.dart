@@ -42,9 +42,7 @@ class LecturerProfileServiceImpl implements LecturerProfileService {
       );
 
       if (employees == null) {
-        _loggerService.log(
-          DiagnosticEvent.employeeListFailed,
-        );
+        _loggerService.log(DiagnosticEvent.employeeListFailed);
         return LecturerSearchResult.error();
       }
       total ??= employees.total;
@@ -58,18 +56,14 @@ class LecturerProfileServiceImpl implements LecturerProfileService {
         return result;
       }
       if (result.isError) {
-        _loggerService.log(
-          DiagnosticEvent.employeeSearchFailed,
-        );
+        _loggerService.log(DiagnosticEvent.employeeSearchFailed);
         return result;
       }
 
       offset += pageSize;
     } while (true);
 
-    _loggerService.log(
-      DiagnosticEvent.employeeNotFound,
-    );
+    _loggerService.log(DiagnosticEvent.employeeNotFound);
 
     return LecturerSearchResult.notFound();
   }
