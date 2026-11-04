@@ -5,6 +5,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:injector/injector.dart';
+import 'package:unn_mobile/core/misc/logging/diagnostic_event.dart';
 import 'package:unn_mobile/core/models/about/author.dart';
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/about/about_view_model.dart';
@@ -111,7 +112,7 @@ class AboutScreenView extends StatelessWidget {
                         onTapUrl: (url) async {
                           if (!await launchUrl(Uri.parse(url))) {
                             Injector.appInstance.get<LoggerService>().log(
-                              'Could not launch url $url',
+                              DiagnosticEvent.urlLaunchFailed,
                             );
                           }
                           return true;

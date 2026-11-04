@@ -5,6 +5,7 @@ import 'dart:convert';
 
 import 'package:unn_mobile/core/constants/profiles_strings.dart';
 import 'package:unn_mobile/core/misc/camel_case_converter.dart';
+import 'package:unn_mobile/core/misc/logging/diagnostic_event.dart';
 import 'package:unn_mobile/core/models/profile/employee/employee_data.dart';
 import 'package:unn_mobile/core/models/profile/student/student_data.dart';
 import 'package:unn_mobile/core/models/profile/user_data.dart';
@@ -38,9 +39,9 @@ class UserDataProviderImpl implements UserDataProvider {
 
     if (userType == null || userInfo == null) {
       _loggerService.logError(
-        'Отсутствуют данные пользователя',
+        DiagnosticEvent.cachedUserDataMissing,
         null,
-        information: ['userType: $userType', 'userInfo: $userInfo'],
+        information: [userType, userInfo],
       );
       return null;
     }
@@ -55,7 +56,7 @@ class UserDataProviderImpl implements UserDataProvider {
         _ => UserData.fromJson(jsonMap),
       };
     } catch (e, stackTrace) {
-      _loggerService.logError(e, stackTrace, information: [jsonMap.toString()]);
+      _loggerService.logError(e, stackTrace, information: [jsonMap]);
       return null;
     }
 

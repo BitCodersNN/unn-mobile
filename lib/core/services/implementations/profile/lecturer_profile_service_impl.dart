@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2025 BitCodersNN
 
+import 'package:unn_mobile/core/misc/logging/diagnostic_event.dart';
 import 'package:unn_mobile/core/models/profile/employee/employee_data.dart';
 import 'package:unn_mobile/core/models/profile/employee/preview_employee.dart';
 import 'package:unn_mobile/core/models/profile/lecturer_search_result.dart';
@@ -41,9 +42,7 @@ class LecturerProfileServiceImpl implements LecturerProfileService {
       );
 
       if (employees == null) {
-        _loggerService.log(
-          'Не удалось получить список сотрудников для фильтра: $fullname',
-        );
+        _loggerService.log(DiagnosticEvent.employeeListFailed);
         return LecturerSearchResult.error();
       }
       total ??= employees.total;
@@ -57,18 +56,14 @@ class LecturerProfileServiceImpl implements LecturerProfileService {
         return result;
       }
       if (result.isError) {
-        _loggerService.log(
-          'Ошибка при поиске профиля среди сотрудников: $fullname, syncId: $syncId',
-        );
+        _loggerService.log(DiagnosticEvent.employeeSearchFailed);
         return result;
       }
 
       offset += pageSize;
     } while (true);
 
-    _loggerService.log(
-      'Сотрудник с фамилией "$fullname" и syncId "$syncId" не найден.',
-    );
+    _loggerService.log(DiagnosticEvent.employeeNotFound);
 
     return LecturerSearchResult.notFound();
   }

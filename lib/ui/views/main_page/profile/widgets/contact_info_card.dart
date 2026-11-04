@@ -3,6 +3,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:injector/injector.dart';
+import 'package:unn_mobile/core/misc/logging/diagnostic_event.dart';
 import 'package:unn_mobile/core/models/profile/user_data.dart';
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
 import 'package:unn_mobile/ui/views/main_page/profile/widgets/profile_card.dart';
@@ -76,7 +77,7 @@ class _ContactTile extends StatelessWidget {
     final uri = Uri.parse(url);
     if (!await launchUrl(uri)) {
       Injector.appInstance.get<LoggerService>().log(
-        'Could not launch url $url',
+        DiagnosticEvent.urlLaunchFailed,
       );
     }
   }

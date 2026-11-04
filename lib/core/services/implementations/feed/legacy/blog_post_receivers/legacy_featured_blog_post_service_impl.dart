@@ -52,9 +52,7 @@ class FeaturedBlogPostServiceImpl implements FeaturedBlogPostService {
       try {
         blogPost = BlogPost.fromJson(jsonMap);
       } catch (error, stackTrace) {
-        _loggerService.log(
-          'Failed to parse BlogPost from jsonMap: $jsonMap  Exception: $error\nStackTrace: $stackTrace',
-        );
+        _loggerService.logError(error, stackTrace, information: [jsonMap]);
         continue;
       }
 

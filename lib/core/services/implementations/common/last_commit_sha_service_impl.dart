@@ -37,7 +37,7 @@ class LastCommitShaServiceImpl implements LastCommitShaService {
     try {
       return _readSha(response.data);
     } catch (error, stackTrace) {
-      _loggerService.log('Exception: $error\nStackTrace: $stackTrace');
+      _loggerService.logError(error, stackTrace);
       return null;
     }
   }
