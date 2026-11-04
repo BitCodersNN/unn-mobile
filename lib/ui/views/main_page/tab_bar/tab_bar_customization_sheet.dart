@@ -11,6 +11,7 @@ import 'package:unn_mobile/ui/views/main_page/main_page_route_data.dart';
 import 'package:unn_mobile/ui/views/main_page/tab_bar/tab_bar_item_content.dart';
 import 'package:unn_mobile/ui/views/main_page/tab_bar/tab_bar_label_layout.dart';
 import 'package:unn_mobile/ui/views/main_page/tab_bar/tab_bar_reorder_preview.dart';
+import 'package:unn_mobile/ui/widgets/sheets/app_bottom_sheet.dart';
 
 Future<List<String>?> showTabBarCustomizationSheet(
   BuildContext context, {
@@ -23,24 +24,13 @@ Future<List<String>?> showTabBarCustomizationSheet(
     initialPaths ?? AppSettings.tabBarPaths.value,
     allowed: routes.map((route) => route.pagePath),
   );
-  return showModalBottomSheet<List<String>>(
-    context: context,
-    useRootNavigator: true,
-    isScrollControlled: true,
-    useSafeArea: true,
-    showDragHandle: true,
-    enableDrag: true,
-    shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
-    ),
-    builder: (_) => FractionallySizedBox(
-      heightFactor: 0.94,
-      child: TabBarCustomizationSheet(
-        routes: routes,
-        initialPaths: paths,
-        selectedPath: selectedPath ?? paths.first,
-        savePaths: savePaths,
-      ),
+  return showAppBottomSheet<List<String>>(
+    context,
+    builder: (_) => TabBarCustomizationSheet(
+      routes: routes,
+      initialPaths: paths,
+      selectedPath: selectedPath ?? paths.first,
+      savePaths: savePaths,
     ),
   );
 }
