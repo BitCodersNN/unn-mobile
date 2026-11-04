@@ -54,7 +54,7 @@ dependencies:
   share_plus: ^11.0.0
   http: ^1.4.0
   file_picker: ^10.1.9
-  device_calendar_plus: ^0.8.0
+  device_calendar_plus: ">=0.8.0 <0.13.0"
   firebase_core: ^4.14.0
   firebase_analytics: ^12.5.0
   firebase_crashlytics: ^5.3.0
