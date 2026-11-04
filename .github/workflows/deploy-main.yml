@@ -215,7 +215,7 @@ jobs:
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: unn-mobile-googleplay
-          path: "build/app/outputs/bundle/GooglePlayStableRelease/app-GooglePlayStable-release.aab"
+          path: "build/app/outputs/bundle/GooglePlayStableRelease/app-GooglePlay-Stable-release.aab"
         
   # ==========================================
   # iOS: Unsigned IPA + dSYM
