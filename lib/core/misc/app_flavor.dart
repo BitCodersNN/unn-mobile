@@ -3,13 +3,16 @@
 
 import 'package:flutter/services.dart';
 
-enum AppFlavor {
-  regular,
-  regularTest,
-  rustore,
-  rustoreTest,
-  googlePlay,
-  googlePlayTest;
+enum AppFlavor({this.store, this.isTesting = false}) {
+  regular(),
+  regularTest(isTesting: true),
+  rustore(store: 'RuStore'),
+  rustoreTest(store: 'RuStore', isTesting: true),
+  googlePlay(store: 'Google Play'),
+  googlePlayTest(store: 'Google Play', isTesting: true);
+
+  final String? store;
+  final bool isTesting;
 
   factory AppFlavor.fromString(String? flavor) => switch (flavor) {
     'defaultStable' => AppFlavor.regular,
@@ -23,15 +26,11 @@ enum AppFlavor {
 
   factory AppFlavor.current() => AppFlavor.fromString(appFlavor);
 
-  String getFormattedVersion(String version, String buildNumber) =>
-      switch (this) {
-        AppFlavor.regular => version,
-        AppFlavor.regularTest => '$version (тестовая сборка $buildNumber)',
-        AppFlavor.rustore => '$version (RuStore)',
-        AppFlavor.rustoreTest =>
-          '$version (RuStore, тестовая сборка $buildNumber)',
-        AppFlavor.googlePlay => '$version (Google Play)',
-        AppFlavor.googlePlayTest =>
-          '$version (Google Play, тестовая сборка $buildNumber)',
-      };
+  String getFormattedVersion(String version, String buildNumber) {
+    final additionals = [?store, if (isTesting) 'тестовая сборка $buildNumber'];
+    if (additionals.isNotEmpty) {
+      return '$version (${additionals.join(', ')})';
+    }
+    return version;
+  }
 }
