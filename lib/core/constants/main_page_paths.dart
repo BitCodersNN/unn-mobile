@@ -8,6 +8,7 @@ abstract final class MainPagePaths {
   static const source = 'source';
   static const more = 'more';
   static const myProfile = 'myProfile';
+  static const people = 'people';
   static const grades = 'grades';
   static const onlineCertificates = 'online_certificates';
   static const settings = 'settings';

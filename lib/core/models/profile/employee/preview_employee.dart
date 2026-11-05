@@ -3,6 +3,7 @@
 
 import 'package:unn_mobile/core/misc/json/json_utils.dart';
 import 'package:unn_mobile/core/models/profile/employee/base_employee_profile.dart';
+import 'package:unn_mobile/core/models/profile/profile_preview.dart';
 import 'package:unn_mobile/core/models/profile/user_short_info.dart';
 
 class _PreviewEmployeeJsonKeys {
@@ -10,7 +11,8 @@ class _PreviewEmployeeJsonKeys {
   static const String profiles = 'profiles';
 }
 
-class PreviewEmployee extends UserShortInfo {
+class PreviewEmployee extends UserShortInfo implements ProfilePreview {
+  @override
   final int userId;
   final List<BaseEmployeeProfile> profiles;
 
