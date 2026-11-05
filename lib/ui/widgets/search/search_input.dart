@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 
 class SearchInput extends StatelessWidget {
   final TextEditingController controller;
+  final FocusNode? focusNode;
   final String? hintText;
   final bool autofocus;
   final ValueChanged<String>? onSubmitted;
@@ -12,6 +13,7 @@ class SearchInput extends StatelessWidget {
 
   const SearchInput({
     required this.controller,
+    this.focusNode,
     this.hintText = 'Поиск...',
     this.autofocus = true,
     this.onSubmitted,
@@ -40,6 +42,7 @@ class SearchInput extends StatelessWidget {
           Expanded(
             child: TextField(
               controller: controller,
+              focusNode: focusNode,
               autofocus: autofocus,
               onSubmitted: onSubmitted,
               textInputAction: TextInputAction.search,

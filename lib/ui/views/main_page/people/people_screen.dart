@@ -17,6 +17,7 @@ import 'package:unn_mobile/ui/views/main_page/people/widgets/person_search_tile.
 import 'package:unn_mobile/ui/widgets/empty_state_widget.dart';
 import 'package:unn_mobile/ui/widgets/mode_tab_bar.dart';
 import 'package:unn_mobile/ui/widgets/offline_overlay_displayer.dart';
+import 'package:unn_mobile/ui/widgets/search/search_backdrop.dart';
 import 'package:unn_mobile/ui/widgets/search/search_input.dart';
 
 class PeopleScreen extends StatefulWidget {
@@ -31,6 +32,7 @@ class _PeopleScreenState extends State<PeopleScreen>
   late final PeopleScreenViewModel _model;
   late final TextEditingController _search;
   late final TabController _tabs;
+  final FocusNode _searchFocus = FocusNode();
   final Map<ProfileSearchMode, ScrollController> _scrolls = {
     for (final mode in ProfileSearchMode.values) mode: ScrollController(),
   };
@@ -39,6 +41,7 @@ class _PeopleScreenState extends State<PeopleScreen>
   @override
   void initState() {
     super.initState();
+    _searchFocus.addListener(_searchFocusChanged);
     _model = context
         .read<MainPageRoutesViewModelsFactory>()
         .getOrCreate<PeopleScreenViewModel>();
@@ -53,6 +56,8 @@ class _PeopleScreenState extends State<PeopleScreen>
       entry.value.addListener(() => _loadMore(entry.key));
     }
   }
+
+  void _searchFocusChanged() => setState(() {});
 
   void _queryChanged() {
     if (_model.query == _search.text.trim()) {
@@ -89,6 +94,9 @@ class _PeopleScreenState extends State<PeopleScreen>
   void dispose() {
     _search.removeListener(_queryChanged);
     _search.dispose();
+    _searchFocus
+      ..removeListener(_searchFocusChanged)
+      ..dispose();
     _tabs.dispose();
     for (final scroll in _scrolls.values) {
       scroll.dispose();
@@ -121,6 +129,7 @@ class _PeopleScreenState extends State<PeopleScreen>
                       padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
                       child: SearchInput(
                         controller: _search,
+                        focusNode: _searchFocus,
                         autofocus: false,
                         hintText: 'Фамилия или имя',
                         onSubmitted: (_) {
@@ -141,15 +150,29 @@ class _PeopleScreenState extends State<PeopleScreen>
                       ),
                     ),
                     Expanded(
-                      child: TabBarView(
-                        controller: _tabs,
-                        children: [
-                          for (final mode in ProfileSearchMode.values)
-                            KeyedSubtree(
-                              key: ValueKey(mode),
-                              child: _results(context, model, mode),
+                      child: GestureDetector(
+                        behavior: HitTestBehavior.translucent,
+                        onTap: _searchFocus.unfocus,
+                        child: Stack(
+                          fit: StackFit.expand,
+                          children: [
+                            TabBarView(
+                              controller: _tabs,
+                              children: [
+                                for (final mode in ProfileSearchMode.values)
+                                  KeyedSubtree(
+                                    key: ValueKey(mode),
+                                    child: _results(context, model, mode),
+                                  ),
+                              ],
                             ),
-                        ],
+                            Positioned.fill(
+                              child: SearchBackdrop(
+                                visible: _searchFocus.hasFocus,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ],
