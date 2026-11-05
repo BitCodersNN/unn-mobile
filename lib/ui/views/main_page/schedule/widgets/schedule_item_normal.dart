@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:unn_mobile/core/models/schedule/subject.dart';
 import 'package:unn_mobile/ui/unn_mobile_colors.dart';
+import 'package:unn_mobile/ui/views/main_page/schedule/widgets/schedule_lesson_progress.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class ScheduleItemNormal extends StatefulWidget {
@@ -40,140 +41,152 @@ class _ScheduleItemNormalState extends State<ScheduleItemNormal> {
           });
         }
       },
-      child: AnimatedCrossFade(
-        duration: const Duration(milliseconds: 360),
-        reverseDuration: const Duration(milliseconds: 360),
-        sizeCurve: Curves.easeInOutCubic,
-        firstCurve: Curves.easeInOut,
-        secondCurve: Curves.easeInOut,
-        alignment: Alignment.topCenter,
-        crossFadeState: _expanded
-            ? CrossFadeState.showSecond
-            : CrossFadeState.showFirst,
-        firstChild: _buildCard(context, expanded: false),
-        secondChild: _buildCard(context, expanded: true),
+      child: Container(
+        decoration: BoxDecoration(
+          color: widget.even
+              ? Theme.of(context).colorScheme.primary.withAlpha(20)
+              : Theme.of(context).colorScheme.surface,
+          borderRadius: const BorderRadius.horizontal(
+            right: Radius.circular(12),
+          ),
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: ScheduleLessonProgress(
+          range: widget.subject.dateTimeRange,
+          color: Theme.of(context)
+              .getColorOfSubjectType(widget.subject.subjectTypeEnum),
+          endTime: _endTime(Theme.of(context)),
+          builder: ({required hasTimeBadge}) => AnimatedCrossFade(
+            duration: const Duration(milliseconds: 360),
+            reverseDuration: const Duration(milliseconds: 360),
+            sizeCurve: Curves.easeInOutCubic,
+            firstCurve: Curves.easeInOut,
+            secondCurve: Curves.easeInOut,
+            alignment: Alignment.topCenter,
+            crossFadeState: _expanded
+                ? CrossFadeState.showSecond
+                : CrossFadeState.showFirst,
+            firstChild: _buildCard(
+              context,
+              expanded: false,
+              hasTimeBadge: hasTimeBadge,
+            ),
+            secondChild: _buildCard(
+              context,
+              expanded: true,
+              hasTimeBadge: hasTimeBadge,
+            ),
+          ),
+        ),
       ),
     ),
   );
 
-  Widget _buildCard(BuildContext context, {required bool expanded}) {
+  Widget _buildCard(
+    BuildContext context, {
+    required bool expanded,
+    required bool hasTimeBadge,
+  }) {
     final theme = Theme.of(context);
-    final extraColors = theme.extension<UnnMobileColors>()!;
     final DateFormat timeFormatter = DateFormat('HH:mm');
     final subjectType = widget.subject.subjectTypeEnum;
     final typeColor = theme.getColorOfSubjectType(subjectType);
     const verticalPadding = 4.0;
     const horizontalPadding = 8.0;
-    const cardRadius = 12.0;
-
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: const BorderRadius.only(
-          topRight: Radius.circular(cardRadius),
-          bottomRight: Radius.circular(cardRadius),
-        ),
-        color: theme.getScheduleSurfaceColor(
-          widget.subject.dateTimeRange,
-          isEven: widget.even,
-        ),
-      ),
-      clipBehavior: Clip.antiAlias,
-      child: IntrinsicHeight(
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Container(
-              width: 4,
-              decoration: BoxDecoration(
-                color: typeColor,
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(cardRadius),
-                  bottomLeft: Radius.circular(cardRadius),
-                ),
-              ),
-            ),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  vertical: verticalPadding,
-                  horizontal: horizontalPadding,
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      widget.subject.name,
-                      style: theme.textTheme.titleMedium!.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                      overflow: expanded
-                          ? TextOverflow.visible
-                          : TextOverflow.ellipsis,
-                      softWrap: true,
-                    ),
-                    _textWithIcon(
-                      context,
-                      Icons.location_on,
-                      '${widget.subject.address.auditorium}/${widget.subject.address.building}',
-                      expanded: expanded,
-                    ),
-                    if (expanded)
-                      _textWithIcon(
-                        context,
-                        Icons.person,
-                        widget.subject.lecturer,
-                        expanded: expanded,
-                      ),
-                    if (expanded)
-                      _textWithIcon(
-                        context,
-                        Icons.school,
-                        "Поток: ${widget.subject.groups.join("|")}",
-                        expanded: expanded,
-                      ),
-                    Text(
-                      widget.subject.subjectType,
-                      style: theme.textTheme.labelLarge!.copyWith(
-                        color: typeColor,
-                        fontStyle: FontStyle.italic,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            Padding(
+    return IntrinsicHeight(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Expanded(
+            child: Padding(
               padding: const EdgeInsets.symmetric(
                 vertical: verticalPadding,
                 horizontal: horizontalPadding,
               ),
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.end,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    timeFormatter.format(widget.subject.dateTimeRange.start),
+                    widget.subject.name,
                     style: theme.textTheme.titleMedium!.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
+                    overflow: expanded
+                        ? TextOverflow.visible
+                        : TextOverflow.ellipsis,
+                    softWrap: true,
                   ),
+                  _textWithIcon(
+                    context,
+                    Icons.location_on,
+                    '${widget.subject.address.auditorium}/${widget.subject.address.building}',
+                    expanded: expanded,
+                  ),
+                  if (expanded)
+                    _textWithIcon(
+                      context,
+                      Icons.person,
+                      widget.subject.lecturer,
+                      expanded: expanded,
+                    ),
+                  if (expanded)
+                    _textWithIcon(
+                      context,
+                      Icons.school,
+                      'Поток: ${widget.subject.groups.join('|')}',
+                      expanded: expanded,
+                    ),
                   Text(
-                    timeFormatter.format(widget.subject.dateTimeRange.end),
-                    style: theme.textTheme.titleMedium!.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: extraColors.ligtherTextColor,
+                    widget.subject.subjectType,
+                    style: theme.textTheme.labelLarge!.copyWith(
+                      color: typeColor,
+                      fontStyle: FontStyle.italic,
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
                 ],
               ),
             ),
-          ],
-        ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(
+              vertical: verticalPadding,
+              horizontal: horizontalPadding,
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Text(
+                  timeFormatter.format(widget.subject.dateTimeRange.start),
+                  style: theme.textTheme.titleMedium!.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                AnimatedSwitcher(
+                  duration: MediaQuery.disableAnimationsOf(context)
+                      ? Duration.zero
+                      : const Duration(milliseconds: 200),
+                  child: hasTimeBadge
+                      ? const SizedBox.shrink()
+                      : _endTime(theme),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
+
+  Widget _endTime(ThemeData theme) => Text(
+    DateFormat('HH:mm').format(widget.subject.dateTimeRange.end),
+    style: theme.textTheme.titleMedium!.copyWith(
+      fontWeight: FontWeight.bold,
+      color: theme.extension<UnnMobileColors>()!.ligtherTextColor,
+    ),
+  );
 
   Widget _textWithIcon(
     BuildContext context,
