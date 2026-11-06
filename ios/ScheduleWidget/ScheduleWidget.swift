@@ -179,7 +179,6 @@ private extension View {
     }
 }
 
-@main
 struct ScheduleWidget: Widget {
     private var configuration: some WidgetConfiguration {
         StaticConfiguration(kind: ScheduleWidgetConstants.kind, provider: ScheduleProvider()) { entry in
@@ -192,5 +191,15 @@ struct ScheduleWidget: Widget {
 
     var body: some WidgetConfiguration {
         configuration.contentMarginsDisabled()
+    }
+}
+
+@main
+struct ScheduleWidgets: WidgetBundle {
+    var body: some Widget {
+        ScheduleWidget()
+        if #available(iOS 16.2, *) {
+            ScheduleLiveActivity()
+        }
     }
 }

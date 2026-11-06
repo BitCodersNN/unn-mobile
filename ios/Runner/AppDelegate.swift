@@ -5,6 +5,7 @@ import Firebase
 
 @main
 @objc class AppDelegate: FlutterAppDelegate {
+  private var scheduleActivityBridge: ScheduleActivityBridge?
   private var scheduleWidgetBridge: ScheduleWidgetBridge?
   override func application(
     _ application: UIApplication,
@@ -13,6 +14,7 @@ import Firebase
     FirebaseApp.configure()
     GeneratedPluginRegistrant.register(with: self)
     if let registrar = registrar(forPlugin: "ScheduleWidgetBridge") {
+      scheduleActivityBridge = ScheduleActivityBridge(messenger: registrar.messenger())
       scheduleWidgetBridge = ScheduleWidgetBridge(
         messenger: registrar.messenger(),
         initialURL: launchOptions?[.url] as? URL

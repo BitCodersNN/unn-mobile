@@ -4,6 +4,7 @@
 import Flutter
 import WidgetKit
 
+@MainActor
 final class ScheduleWidgetBridge {
     private let channel: FlutterMethodChannel
     private var pendingLaunch: Bool
@@ -35,10 +36,12 @@ final class ScheduleWidgetBridge {
             }
             defaults.set(value, forKey: ScheduleWidgetConstants.dataKey)
             WidgetCenter.shared.reloadTimelines(ofKind: ScheduleWidgetConstants.kind)
+            ScheduleActivityCoordinator.synchronize()
             result(nil)
         case "clear":
             defaults.removeObject(forKey: ScheduleWidgetConstants.dataKey)
             WidgetCenter.shared.reloadTimelines(ofKind: ScheduleWidgetConstants.kind)
+            ScheduleActivityCoordinator.synchronize()
             result(nil)
         case "consumeLaunch":
             let launch = pendingLaunch

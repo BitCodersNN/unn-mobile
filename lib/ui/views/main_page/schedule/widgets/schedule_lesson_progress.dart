@@ -7,12 +7,14 @@ import 'package:flutter/material.dart';
 
 class ScheduleLessonProgress extends StatefulWidget {
   final DateTimeRange range;
+  final Duration notice;
   final Color color;
   final Widget Function({required bool hasTimeBadge}) builder;
   final Widget endTime;
 
   const ScheduleLessonProgress({
     required this.range,
+    required this.notice,
     required this.color,
     required this.builder,
     required this.endTime,
@@ -25,8 +27,6 @@ class ScheduleLessonProgress extends StatefulWidget {
 
 class _ScheduleLessonProgressState extends State<ScheduleLessonProgress>
     with WidgetsBindingObserver {
-  static const _upcomingNotice = Duration(minutes: 10);
-
   Timer? _timer;
   DateTime _now = DateTime.now();
 
@@ -38,7 +38,7 @@ class _ScheduleLessonProgressState extends State<ScheduleLessonProgress>
   bool get _isUpcoming =>
       widget.range.end.isAfter(widget.range.start) &&
       _now.isBefore(widget.range.start) &&
-      !_now.isBefore(widget.range.start.subtract(_upcomingNotice));
+      !_now.isBefore(widget.range.start.subtract(widget.notice));
 
   bool get _hasTimeBadge => _isActive || _isUpcoming;
 
@@ -52,7 +52,7 @@ class _ScheduleLessonProgressState extends State<ScheduleLessonProgress>
   @override
   void didUpdateWidget(covariant ScheduleLessonProgress oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.range != widget.range) {
+    if (oldWidget.range != widget.range || oldWidget.notice != widget.notice) {
       _now = DateTime.now();
       _scheduleUpdate();
     }
@@ -84,7 +84,7 @@ class _ScheduleLessonProgressState extends State<ScheduleLessonProgress>
       _timer = Timer(remaining < interval ? remaining : interval, _update);
     } else if (_now.isBefore(widget.range.start) &&
         widget.range.end.isAfter(widget.range.start)) {
-      final noticeStart = widget.range.start.subtract(_upcomingNotice);
+      final noticeStart = widget.range.start.subtract(widget.notice);
       _timer = Timer(noticeStart.difference(_now), _update);
     }
   }

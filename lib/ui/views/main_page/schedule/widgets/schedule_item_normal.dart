@@ -3,6 +3,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:unn_mobile/core/misc/app_settings.dart';
 import 'package:unn_mobile/core/models/schedule/subject.dart';
 import 'package:unn_mobile/ui/unn_mobile_colors.dart';
 import 'package:unn_mobile/ui/views/main_page/schedule/widgets/schedule_lesson_progress.dart';
@@ -51,30 +52,34 @@ class _ScheduleItemNormalState extends State<ScheduleItemNormal> {
           ),
         ),
         clipBehavior: Clip.antiAlias,
-        child: ScheduleLessonProgress(
-          range: widget.subject.dateTimeRange,
-          color: Theme.of(context)
-              .getColorOfSubjectType(widget.subject.subjectTypeEnum),
-          endTime: _endTime(Theme.of(context)),
-          builder: ({required hasTimeBadge}) => AnimatedCrossFade(
-            duration: const Duration(milliseconds: 360),
-            reverseDuration: const Duration(milliseconds: 360),
-            sizeCurve: Curves.easeInOutCubic,
-            firstCurve: Curves.easeInOut,
-            secondCurve: Curves.easeInOut,
-            alignment: Alignment.topCenter,
-            crossFadeState: _expanded
-                ? CrossFadeState.showSecond
-                : CrossFadeState.showFirst,
-            firstChild: _buildCard(
-              context,
-              expanded: false,
-              hasTimeBadge: hasTimeBadge,
-            ),
-            secondChild: _buildCard(
-              context,
-              expanded: true,
-              hasTimeBadge: hasTimeBadge,
+        child: ValueListenableBuilder(
+          valueListenable: AppSettings.scheduleActivity,
+          builder: (context, settings, _) => ScheduleLessonProgress(
+            notice: settings.notice,
+            range: widget.subject.dateTimeRange,
+            color: Theme.of(context)
+                .getColorOfSubjectType(widget.subject.subjectTypeEnum),
+            endTime: _endTime(Theme.of(context)),
+            builder: ({required hasTimeBadge}) => AnimatedCrossFade(
+              duration: const Duration(milliseconds: 360),
+              reverseDuration: const Duration(milliseconds: 360),
+              sizeCurve: Curves.easeInOutCubic,
+              firstCurve: Curves.easeInOut,
+              secondCurve: Curves.easeInOut,
+              alignment: Alignment.topCenter,
+              crossFadeState: _expanded
+                  ? CrossFadeState.showSecond
+                  : CrossFadeState.showFirst,
+              firstChild: _buildCard(
+                context,
+                expanded: false,
+                hasTimeBadge: hasTimeBadge,
+              ),
+              secondChild: _buildCard(
+                context,
+                expanded: true,
+                hasTimeBadge: hasTimeBadge,
+              ),
             ),
           ),
         ),
