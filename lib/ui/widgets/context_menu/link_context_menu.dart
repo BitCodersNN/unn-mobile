@@ -13,6 +13,7 @@ class LinkContextMenu extends StatefulWidget {
   final String url;
   final String label;
   final VoidCallback onOpen;
+  final VoidCallback? onTap;
   final Widget child;
 
   const LinkContextMenu({
@@ -20,6 +21,7 @@ class LinkContextMenu extends StatefulWidget {
     required this.label,
     required this.onOpen,
     required this.child,
+    this.onTap,
     super.key,
   });
 
@@ -73,7 +75,7 @@ class _LinkContextMenuState extends State<LinkContextMenu> {
   Widget build(BuildContext context) => GestureDetector(
     onTap: () {
       triggerHaptic(HapticIntensity.light);
-      widget.onOpen();
+      (widget.onTap ?? widget.onOpen)();
     },
     onLongPress: _showMenu,
     child: widget.child,
