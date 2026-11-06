@@ -30,7 +30,7 @@ final class ScheduleWidgetBridge {
             guard let value = call.arguments as? String,
                   let bytes = value.data(using: .utf8),
                   let decoded = try? JSONDecoder().decode(ScheduleWidgetData.self, from: bytes),
-                  decoded.version == 1 else {
+                  decoded.version == ScheduleWidgetConstants.schemaVersion else {
                 result(FlutterError(code: "INVALID_DATA", message: "Invalid schedule widget data", details: nil))
                 return
             }

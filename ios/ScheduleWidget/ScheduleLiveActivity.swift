@@ -57,12 +57,20 @@ private struct ScheduleLiveActivityView: View {
                 Text(context.attributes.end, style: .time).foregroundStyle(.secondary)
             }
             .font(.subheadline)
-            ProgressView(timerInterval: context.lessonInterval, countsDown: false)
-                .progressViewStyle(.linear)
-                .labelsHidden()
-                .tint(accent)
+            Group {
+                if context.lessonHasStarted {
+                    ProgressView(timerInterval: context.attributes.start...context.attributes.end,
+                                 countsDown: false)
+                } else {
+                    ProgressView(value: 1)
+                }
+            }
+            .progressViewStyle(.linear)
+            .labelsHidden()
+            .tint(accent)
         }
         .padding(14)
+        .environment(\.timeZone, ScheduleWidgetConstants.timeZone)
         .activityBackgroundTint(ScheduleWidgetPalette.background(for: colorScheme))
         .privacySensitive()
     }

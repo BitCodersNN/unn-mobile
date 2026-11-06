@@ -22,6 +22,8 @@ data class ScheduleWidgetData(
     val lessons: List<WidgetLesson>,
 ) {
     companion object {
+        const val SCHEMA_VERSION = 2
+        const val TIME_ZONE = "Europe/Moscow"
         const val PREFERENCES = "schedule_widget"
         const val DATA_KEY = "data"
 
@@ -33,7 +35,7 @@ data class ScheduleWidgetData(
 
         fun decode(value: String): ScheduleWidgetData {
             val json = JSONObject(value)
-            require(json.getInt("version") == 1)
+            require(json.getInt("version") == SCHEMA_VERSION)
             val lessons = json.getJSONArray("lessons")
             return ScheduleWidgetData(
                 ownerLabel = json.getString("ownerLabel"),

@@ -113,9 +113,10 @@ object ScheduleLiveUpdate {
         val dismiss = PendingIntent.getBroadcast(context, 1,
             Intent(context, ScheduleActivityReceiver::class.java).setAction(DISMISS).putExtra(LESSON_ID, lesson.identity()),
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
-        val origin = if (active) lesson.start else lesson.start - ScheduleActivitySettings.read(context).beforeMillis
-        val maximum = (target - origin).coerceAtLeast(1)
-        val progress = (((now - origin).coerceIn(0, maximum) * 1000) / maximum).toInt()
+        val duration = (lesson.end - lesson.start).coerceAtLeast(1)
+        val progress = if (active)
+            (((now - lesson.start).coerceIn(0, duration) * 1000) / duration).toInt()
+        else 1000
         val accent = lesson.accentColor ?: Color.rgb(68, 133, 127)
         val style = Notification.ProgressStyle()
             .setProgressSegments(listOf(Notification.ProgressStyle.Segment(1000).setColor(accent)))

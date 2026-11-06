@@ -11,11 +11,11 @@ struct ScheduleEntry: TimelineEntry {
 
 struct ScheduleProvider: TimelineProvider {
     func placeholder(in context: Context) -> ScheduleEntry {
-        let day = Calendar.current.startOfDay(for: Date())
+        let day = ScheduleWidgetConstants.calendar.startOfDay(for: Date())
         let first = day.addingTimeInterval(10 * 3600)
         let second = day.addingTimeInterval(12 * 3600)
         let data = ScheduleWidgetData(
-            version: 1, ownerLabel: "Ваше расписание", updatedAt: day.timeIntervalSince1970 * 1000,
+            version: ScheduleWidgetConstants.schemaVersion, ownerLabel: "Ваше расписание", updatedAt: day.timeIntervalSince1970 * 1000,
             validFrom: day.timeIntervalSince1970 * 1000,
             validUntil: day.addingTimeInterval(86400).timeIntervalSince1970 * 1000,
             lessons: [
@@ -32,7 +32,7 @@ struct ScheduleProvider: TimelineProvider {
     func getTimeline(in context: Context, completion: @escaping (Timeline<ScheduleEntry>) -> Void) {
         let now = Date()
         let data = ScheduleWidgetData.read()
-        let calendar = Calendar.current
+        let calendar = ScheduleWidgetConstants.calendar
         let midnight = calendar.startOfDay(for: now)
         let days = (1...14).compactMap { calendar.date(byAdding: .day, value: $0, to: midnight) }
         let boundaries = data?.lessons.flatMap { [$0.startDate, $0.endDate] } ?? []
@@ -130,6 +130,7 @@ struct ScheduleWidgetView: View {
 
     private var dateLabel: String {
         let formatter = DateFormatter()
+        formatter.timeZone = ScheduleWidgetConstants.timeZone
         formatter.locale = Locale(identifier: "ru_RU")
         formatter.dateFormat = "EEE, d MMM"
         return [formatter.string(from: entry.date), entry.data?.ownerLabel ?? ""]
@@ -163,6 +164,7 @@ struct ScheduleWidgetView: View {
 
     private func timeLabel(_ date: Date) -> String {
         let formatter = DateFormatter()
+        formatter.timeZone = ScheduleWidgetConstants.timeZone
         formatter.dateFormat = "HH:mm"
         return formatter.string(from: date)
     }

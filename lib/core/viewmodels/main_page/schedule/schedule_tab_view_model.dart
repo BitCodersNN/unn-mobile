@@ -7,6 +7,7 @@ import 'package:dio/dio.dart';
 import 'package:unn_mobile/core/misc/app_settings.dart';
 import 'package:unn_mobile/core/misc/authorisation/try_login_and_retrieve_data.dart';
 import 'package:unn_mobile/core/misc/date_time_utilities/date_time_extensions.dart';
+import 'package:unn_mobile/core/misc/date_time_utilities/schedule_time.dart';
 import 'package:unn_mobile/core/misc/date_time_utilities/week_range.dart';
 import 'package:unn_mobile/core/misc/user/current_user_sync_storage.dart';
 import 'package:unn_mobile/core/models/profile/employee/employee_data.dart';
@@ -48,7 +49,7 @@ class ScheduleTabViewModel extends BaseViewModel {
   bool get hasAnyId => defaultId != null || selectedId != null;
 
   int? get todayOrNextDayIndex =>
-      _firstNonEmptyDayIndex(DateTime.now().weekdayIndex);
+      _firstNonEmptyDayIndex(ScheduleTime.now().weekdayIndex);
 
   WeekRange get selectedWeek => _parent.selectedWeek;
   int get weekOffset => _parent.weekOffset;

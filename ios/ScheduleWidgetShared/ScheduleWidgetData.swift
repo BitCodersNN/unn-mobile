@@ -4,6 +4,13 @@
 import Foundation
 
 enum ScheduleWidgetConstants {
+    static let schemaVersion = 2
+    static let timeZone = TimeZone(identifier: "Europe/Moscow")!
+    static var calendar: Calendar {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = timeZone
+        return calendar
+    }
     static let appGroup = "group.ru.unn.unnMobile"
     static let dataKey = "schedule_widget_data"
     static let kind = "ScheduleWidget"
@@ -38,18 +45,18 @@ struct ScheduleWidgetData: Decodable {
                 .string(forKey: ScheduleWidgetConstants.dataKey),
               let bytes = value.data(using: .utf8),
               let data = try? JSONDecoder().decode(ScheduleWidgetData.self, from: bytes),
-              data.version == 1 else { return nil }
+              data.version == ScheduleWidgetConstants.schemaVersion else { return nil }
         return data
     }
 
     func covers(_ date: Date) -> Bool {
-        let start = Calendar.current.startOfDay(for: date)
-        guard let end = Calendar.current.date(byAdding: .day, value: 1, to: start) else { return false }
+        let start = ScheduleWidgetConstants.calendar.startOfDay(for: date)
+        guard let end = ScheduleWidgetConstants.calendar.date(byAdding: .day, value: 1, to: start) else { return false }
         return validFrom <= start.timeIntervalSince1970 * 1000 && validUntil >= end.timeIntervalSince1970 * 1000
     }
 
     func today(at date: Date) -> [ScheduleWidgetLesson] {
-        lessons.filter { Calendar.current.isDate($0.startDate, inSameDayAs: date) }
+        lessons.filter { ScheduleWidgetConstants.calendar.isDate($0.startDate, inSameDayAs: date) }
             .sorted { $0.start < $1.start }
     }
 
