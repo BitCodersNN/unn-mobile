@@ -6,9 +6,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:unn_mobile/core/constants/main_page_paths.dart';
+import 'package:unn_mobile/core/misc/schedule_activity/schedule_activity_platform.dart';
 import 'package:unn_mobile/core/misc/user/current_user_sync_storage.dart';
 import 'package:unn_mobile/core/models/grade_book/mark_type.dart';
-import 'package:unn_mobile/core/models/schedule/subject_type.dart';
 import 'package:unn_mobile/core/services/interfaces/schedule_widget/schedule_widget_platform.dart';
 import 'package:unn_mobile/core/services/interfaces/schedule_widget/schedule_widget_service.dart';
 import 'package:unn_mobile/core/viewmodels/factories/main_page_routes_view_models_factory.dart';
@@ -22,12 +22,14 @@ class UnnMobile extends StatefulWidget {
   final CurrentUserSyncStorage currentUserStorage;
   final ScheduleWidgetPlatform scheduleWidgetPlatform;
   final ScheduleWidgetService scheduleWidgetService;
+  final ScheduleActivityPlatform scheduleActivityPlatform;
 
   const UnnMobile({
     required this.routesViewModelsFactory,
     required this.currentUserStorage,
     required this.scheduleWidgetPlatform,
     required this.scheduleWidgetService,
+    required this.scheduleActivityPlatform,
     super.key,
   });
 
@@ -55,14 +57,8 @@ class UnnMobile extends StatefulWidget {
         UnnMobileColors(
           scheduleDayHighlight: Color(0xFFEEEEEE),
           scheduleSubjectHighlight: Color(0xFFFFF6E8),
-          scheduleSubjectTypeColors: {
-            SubjectType.lecture: Color(0xFF1CA49C),
-            SubjectType.practice: Color(0xFFCD7255),
-            SubjectType.lab: Color(0xFF0961FF),
-            SubjectType.exam: Color(0xFFAA4B7E),
-            SubjectType.consult: Color(0xFF7D60D1),
-            SubjectType.unknown: Color(0xFF6E757C),
-          },
+          scheduleSubjectTypeColors:
+              UnnMobileColors.defaultScheduleSubjectTypeColors,
           gradeMarkTypeColors: {
             MarkType.perfect: Color(0xFF15803D),
             MarkType.excellent: Color(0xFF15803D),
@@ -106,6 +102,7 @@ class _UnnMobileState extends State<UnnMobile> {
       widget.currentUserStorage,
       _router,
       _openPersonalSchedule,
+      widget.scheduleActivityPlatform,
     )..start(initialLaunch: _widgetLaunch);
   }
 

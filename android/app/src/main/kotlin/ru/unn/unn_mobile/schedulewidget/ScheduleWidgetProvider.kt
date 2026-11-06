@@ -19,6 +19,7 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+import java.util.TimeZone
 import ru.bitcodersnn.unnstudenthub.MainActivity
 import ru.bitcodersnn.unnstudenthub.R
 
@@ -115,7 +116,9 @@ class ScheduleWidgetProvider : AppWidgetProvider() {
             val covered = data != null && data.validFrom <= day.timeInMillis && data.validUntil >= tomorrow
             val today = data?.lessons?.filter { it.start >= day.timeInMillis && it.start < tomorrow }.orEmpty()
             val remaining = today.filter { it.end > now }
-            val date = SimpleDateFormat("EEE, d MMM", Locale("ru")).format(Date(now))
+            val date = SimpleDateFormat("EEE, d MMM", Locale("ru")).apply {
+                timeZone = TimeZone.getTimeZone(ScheduleWidgetData.TIME_ZONE)
+            }.format(Date(now))
             views.setTextViewText(R.id.schedule_widget_date,
                 listOf(date, data?.ownerLabel.orEmpty()).filter { it.isNotBlank() }.joinToString(" · "))
             val message = when {
@@ -152,7 +155,9 @@ class ScheduleWidgetProvider : AppWidgetProvider() {
         private fun lessonView(context: Context, lesson: WidgetLesson, now: Long): RemoteViews {
             val row = RemoteViews(context.packageName, R.layout.schedule_widget_lesson)
             val current = lesson.start <= now && now < lesson.end
-            val formatter = SimpleDateFormat("HH:mm", Locale("ru"))
+            val formatter = SimpleDateFormat("HH:mm", Locale("ru")).apply {
+                timeZone = TimeZone.getTimeZone(ScheduleWidgetData.TIME_ZONE)
+            }
             row.setTextViewText(R.id.schedule_widget_lesson_title, lesson.title)
             row.setTextViewText(R.id.schedule_widget_lesson_detail, listOf(
                 if (current) context.getString(R.string.schedule_widget_now) else lesson.type,
@@ -165,7 +170,7 @@ class ScheduleWidgetProvider : AppWidgetProvider() {
             return row
         }
 
-        private fun dayStart(time: Long): Calendar = Calendar.getInstance().apply {
+        private fun dayStart(time: Long): Calendar = Calendar.getInstance(TimeZone.getTimeZone(ScheduleWidgetData.TIME_ZONE)).apply {
             timeInMillis = time
             set(Calendar.HOUR_OF_DAY, 0)
             set(Calendar.MINUTE, 0)

@@ -1,14 +1,19 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2025 BitCodersNN
 
+import 'dart:async';
+
 import 'package:adaptive_dialog/adaptive_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:unn_mobile/core/misc/app_version.dart';
+import 'package:unn_mobile/core/models/schedule_activity/schedule_activity_mode.dart';
+import 'package:unn_mobile/core/models/schedule_activity/schedule_activity_settings.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/settings/settings_screen_view_model.dart';
 import 'package:unn_mobile/ui/main_page_locations.dart';
 import 'package:unn_mobile/ui/router.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
+import 'package:unn_mobile/ui/views/main_page/settings/widgets/settings_minutes_slider.dart';
 import 'package:unn_mobile/ui/views/main_page/settings/widgets/settings_section.dart';
 import 'package:unn_mobile/ui/views/main_page/settings/widgets/settings_tile.dart';
 import 'package:unn_mobile/ui/views/main_page/tab_bar/tab_bar_customization_sheet.dart';
@@ -22,7 +27,29 @@ class SettingsScreenView extends StatefulWidget {
   State<SettingsScreenView> createState() => _SettingsScreenViewState();
 }
 
-class _SettingsScreenViewState extends State<SettingsScreenView> {
+class _SettingsScreenViewState extends State<SettingsScreenView>
+    with WidgetsBindingObserver {
+  SettingsScreenViewModel? _model;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      unawaited(_model?.refreshActivityStatus());
+    }
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
   late final Future<String> _version = getAppVersion();
 
   Future<void> _customizeTabBar() async {
@@ -71,6 +98,115 @@ class _SettingsScreenViewState extends State<SettingsScreenView> {
     }
   }
 
+  Future<void> _selectActivityMode(SettingsScreenViewModel model) async {
+    final mode = await _selectSetting(
+      title: 'Занятие на экране блокировки',
+      current: model.activitySettings.mode,
+      options: {
+        for (final mode in ScheduleActivityMode.values) mode: mode.label,
+      },
+    );
+    if (mounted && mode != null && mode != model.activitySettings.mode) {
+      await model.updateActivitySettings(
+        model.activitySettings.copyWith(mode: mode),
+      );
+    }
+  }
+
+  Widget _scheduleActivitySection(SettingsScreenViewModel model) {
+    final status = model.activityStatus;
+    final isIOS = Theme.of(context).platform == TargetPlatform.iOS;
+    final enabled =
+        model.activitySettings.mode != ScheduleActivityMode.disabled;
+    return SettingsSection(
+      title: 'Расписание',
+      children: [
+        SettingsActionTile(
+          icon: Icons.calendar_today_outlined,
+          title: 'Источник своего расписания',
+          subtitle: model.useRaspSchedule
+              ? 'Загружается с rasp.unn.ru'
+              : 'Загружается с Портала',
+          onTap: () => _selectScheduleSource(model),
+        ),
+        SettingsMinutesSlider(
+          icon: Icons.timer_outlined,
+          title: 'Показывать до начала',
+          subtitle: 'Также для бейджа в расписании. 0 — только с начала пары.',
+          value: model.activitySettings.beforeMinutes,
+          min: ScheduleActivitySettings.minimumMinutes,
+          max: ScheduleActivitySettings.maximumMinutes,
+          onChangeEnd: (minutes) => unawaited(
+            model.updateActivitySettings(
+              model.activitySettings.copyWith(beforeMinutes: minutes),
+            ),
+          ),
+        ),
+        if (widget.hasAccount) ...[
+          SettingsActionTile(
+            icon: Icons.lock_clock_outlined,
+            title: isIOS ? 'Live Activities' : 'Live Updates',
+            subtitle: status?.supported == false
+                ? (isIOS ? 'Доступно с iOS 16.2' : 'Доступно с Android 16')
+                : model.activitySettings.mode.label,
+            onTap: status?.supported == false
+                ? null
+                : () => _selectActivityMode(model),
+          ),
+          if (model.activitySettings.mode == ScheduleActivityMode.brief)
+            SettingsMinutesSlider(
+              icon: Icons.hourglass_bottom_rounded,
+              title: 'Показывать после начала',
+              subtitle: '0 — скрывать с началом пары.',
+              value: model.activitySettings.initialMinutes,
+              min: ScheduleActivitySettings.minimumMinutes,
+              max: ScheduleActivitySettings.maximumMinutes,
+              onChangeEnd: (minutes) => unawaited(
+                model.updateActivitySettings(
+                  model.activitySettings.copyWith(initialMinutes: minutes),
+                ),
+              ),
+            ),
+          if (enabled && status?.authorized == false)
+            SettingsActionTile(
+              icon: Icons.notifications_off_outlined,
+              title: 'Разрешить отображение в системе',
+              subtitle: isIOS
+                  ? 'Включите Live Activities в настройках приложения'
+                  : 'Разрешите уведомления и Live Updates',
+              onTap: () => model.openActivitySettings(),
+            ),
+          if (enabled && !isIOS && status?.exactAlarms == false)
+            SettingsActionTile(
+              icon: Icons.alarm_outlined,
+              title: 'Точное время обновления',
+              subtitle: 'Без разрешения системы начало и завершение могут задерживаться',
+              onTap: () => model.openActivitySettings(exactAlarms: true),
+            ),
+          if (enabled && isIOS)
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Text(
+                'Без сервера переходы и скрытие Live Activity в фоне могут задерживаться. '
+                'Планирование запуска доступно с iOS 26; на более ранних версиях нужно открыть приложение незадолго до пары. '
+                'Число запланированных активностей ограничивает iOS. Используется сохранённое личное расписание.',
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+            ),
+        ],
+      ],
+    );
+  }
+
+  Future<void> _openSystemAppSettings(SettingsScreenViewModel model) async {
+    final opened = await model.openSystemAppSettings();
+    if (mounted && !opened) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Не удалось открыть системные настройки')),
+      );
+    }
+  }
+
   Future<void> _clearCache(SettingsScreenViewModel model) async {
     await model.clearCache();
     if (mounted) {
@@ -111,6 +247,10 @@ class _SettingsScreenViewState extends State<SettingsScreenView> {
       body: SafeArea(
         top: false,
         child: BaseView<SettingsScreenViewModel>(
+          onModelReady: (model) {
+            _model = model;
+            unawaited(model.refreshActivityStatus());
+          },
           builder: (context, model, _) => Align(
             alignment: Alignment.topCenter,
             child: ConstrainedBox(
@@ -129,22 +269,12 @@ class _SettingsScreenViewState extends State<SettingsScreenView> {
                         onChanged: (value) => model.vibrationEnabled = value,
                       ),
                       SettingsActionTile(
-                        icon: Icons.calendar_today_outlined,
-                        title: 'Источник своего расписания',
-                        subtitle: model.useRaspSchedule
-                            ? 'Загружается с rasp.unn.ru'
-                            : 'Загружается с Портала',
-                        onTap: () => _selectScheduleSource(model),
+                        icon: Icons.app_settings_alt_outlined,
+                        title: 'Системные настройки приложения',
+                        subtitle: 'Разрешения, уведомления и другие параметры',
+                        onTap: () => _openSystemAppSettings(model),
                       ),
                       if (widget.hasAccount) ...[
-                        SettingsActionTile(
-                          icon: Icons.chat_bubble_outline_rounded,
-                          title: 'Порядок комментариев',
-                          subtitle: model.reverseComments
-                              ? 'Сначала новые'
-                              : 'Сначала старые',
-                          onTap: () => _selectCommentOrder(model),
-                        ),
                         SettingsActionTile(
                           icon: Icons.tune_rounded,
                           title: 'Быстрый доступ',
@@ -154,6 +284,21 @@ class _SettingsScreenViewState extends State<SettingsScreenView> {
                       ],
                     ],
                   ),
+                  if (widget.hasAccount)
+                    SettingsSection(
+                      title: 'Лента',
+                      children: [
+                        SettingsActionTile(
+                          icon: Icons.chat_bubble_outline_rounded,
+                          title: 'Порядок комментариев',
+                          subtitle: model.reverseComments
+                              ? 'Сначала новые'
+                              : 'Сначала старые',
+                          onTap: () => _selectCommentOrder(model),
+                        ),
+                      ],
+                    ),
+                  _scheduleActivitySection(model),
                   SettingsSection(
                     title: 'Данные приложения',
                     children: [

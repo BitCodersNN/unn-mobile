@@ -3,6 +3,7 @@
 
 package ru.bitcodersnn.unnstudenthub.schedulewidget
 
+import ru.bitcodersnn.unnstudenthub.scheduleactivity.ScheduleLiveUpdate
 import android.content.Context
 import android.content.Intent
 import io.flutter.embedding.engine.FlutterEngine
@@ -33,11 +34,13 @@ class ScheduleWidgetBridge(private val context: Context, engine: FlutterEngine, 
                 ScheduleWidgetData.decode(value)
                 preferences.edit().putString(ScheduleWidgetData.DATA_KEY, value).apply()
                 ScheduleWidgetProvider.updateAll(context)
+                ScheduleLiveUpdate.update(context)
                 result.success(null)
             }
             "clear" -> {
                 preferences.edit().remove(ScheduleWidgetData.DATA_KEY).apply()
                 ScheduleWidgetProvider.updateAll(context)
+                ScheduleLiveUpdate.clear(context)
                 result.success(null)
             }
             "consumeLaunch" -> {

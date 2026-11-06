@@ -27,6 +27,11 @@
 		97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FD1CF9000F007C117D /* Assets.xcassets */; };
 		97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */; };
 		F2F46BB174734AC0E15AEBC9 /* ScheduleWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4637A8A7A0F382B37CC5B2C7 /* ScheduleWidget.swift */; };
+		D20000000000000000000001 /* ScheduleActivityAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = D10000000000000000000001 /* ScheduleActivityAttributes.swift */; };
+		D20000000000000000000002 /* ScheduleActivityAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = D10000000000000000000001 /* ScheduleActivityAttributes.swift */; };
+		D20000000000000000000003 /* ScheduleActivityBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = D10000000000000000000002 /* ScheduleActivityBridge.swift */; };
+		D20000000000000000000004 /* ScheduleLiveActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = D10000000000000000000003 /* ScheduleLiveActivity.swift */; };
+		D20000000000000000000005 /* ScheduleWidgetPalette.swift in Sources */ = {isa = PBXBuildFile; fileRef = D10000000000000000000004 /* ScheduleWidgetPalette.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -106,6 +111,10 @@
 		E07E4DFE1539AE2BD35F49E2 /* Pods-Runner.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.debug.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.debug.xcconfig"; sourceTree = "<group>"; };
 		E72D2425580297B898FDCBC2 /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		FDF070D8AEB1523A0A2C5A78 /* Pods-RunnerTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RunnerTests.release.xcconfig"; path = "Target Support Files/Pods-RunnerTests/Pods-RunnerTests.release.xcconfig"; sourceTree = "<group>"; };
+		D10000000000000000000001 /* ScheduleActivityAttributes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleActivityAttributes.swift; sourceTree = "<group>"; };
+		D10000000000000000000002 /* ScheduleActivityBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleActivityBridge.swift; sourceTree = "<group>"; };
+		D10000000000000000000003 /* ScheduleLiveActivity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleLiveActivity.swift; sourceTree = "<group>"; };
+		D10000000000000000000004 /* ScheduleWidgetPalette.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleWidgetPalette.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -220,6 +229,7 @@
 				74858FAE1ED2DC5600515810 /* AppDelegate.swift */,
 				74858FAD1ED2DC5600515810 /* Runner-Bridging-Header.h */,
 				6AF29A9D0397CA1CD192FB00 /* ScheduleWidgetBridge.swift */,
+				D10000000000000000000002 /* ScheduleActivityBridge.swift */,
 			);
 			path = Runner;
 			sourceTree = "<group>";
@@ -238,6 +248,7 @@
 			isa = PBXGroup;
 			children = (
 				3FFA8D783634CDC0B542F43C /* ScheduleWidgetData.swift */,
+				D10000000000000000000001 /* ScheduleActivityAttributes.swift */,
 			);
 			name = ScheduleWidgetShared;
 			path = ScheduleWidgetShared;
@@ -247,6 +258,8 @@
 			isa = PBXGroup;
 			children = (
 				4637A8A7A0F382B37CC5B2C7 /* ScheduleWidget.swift */,
+				D10000000000000000000003 /* ScheduleLiveActivity.swift */,
+				D10000000000000000000004 /* ScheduleWidgetPalette.swift */,
 				E72D2425580297B898FDCBC2 /* Info.plist */,
 				5DC52E254EEDBC43C300D8DC /* ScheduleWidget.entitlements */,
 				97D18268252906290F19661D /* Widget.xcconfig */,
@@ -534,7 +547,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				6C5E4BC21D655F3CA33065AE /* ScheduleWidgetData.swift in Sources */,
+				D20000000000000000000001 /* ScheduleActivityAttributes.swift in Sources */,
 				F2F46BB174734AC0E15AEBC9 /* ScheduleWidget.swift in Sources */,
+				D20000000000000000000004 /* ScheduleLiveActivity.swift in Sources */,
+				D20000000000000000000005 /* ScheduleWidgetPalette.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -545,7 +561,9 @@
 				74858FAF1ED2DC5600515810 /* AppDelegate.swift in Sources */,
 				1498D2341E8E89220040F4C2 /* GeneratedPluginRegistrant.m in Sources */,
 				83FE5F3DC772EC4DC9227599 /* ScheduleWidgetData.swift in Sources */,
+				D20000000000000000000002 /* ScheduleActivityAttributes.swift in Sources */,
 				6ED0DE77FD85FA8888759669 /* ScheduleWidgetBridge.swift in Sources */,
+				D20000000000000000000003 /* ScheduleActivityBridge.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

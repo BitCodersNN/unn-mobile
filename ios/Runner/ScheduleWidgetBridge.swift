@@ -4,6 +4,7 @@
 import Flutter
 import WidgetKit
 
+@MainActor
 final class ScheduleWidgetBridge {
     private let channel: FlutterMethodChannel
     private var pendingLaunch: Bool
@@ -29,16 +30,18 @@ final class ScheduleWidgetBridge {
             guard let value = call.arguments as? String,
                   let bytes = value.data(using: .utf8),
                   let decoded = try? JSONDecoder().decode(ScheduleWidgetData.self, from: bytes),
-                  decoded.version == 1 else {
+                  decoded.version == ScheduleWidgetConstants.schemaVersion else {
                 result(FlutterError(code: "INVALID_DATA", message: "Invalid schedule widget data", details: nil))
                 return
             }
             defaults.set(value, forKey: ScheduleWidgetConstants.dataKey)
             WidgetCenter.shared.reloadTimelines(ofKind: ScheduleWidgetConstants.kind)
+            ScheduleActivityCoordinator.synchronize()
             result(nil)
         case "clear":
             defaults.removeObject(forKey: ScheduleWidgetConstants.dataKey)
             WidgetCenter.shared.reloadTimelines(ofKind: ScheduleWidgetConstants.kind)
+            ScheduleActivityCoordinator.synchronize()
             result(nil)
         case "consumeLaunch":
             let launch = pendingLaunch

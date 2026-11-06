@@ -11,11 +11,11 @@ struct ScheduleEntry: TimelineEntry {
 
 struct ScheduleProvider: TimelineProvider {
     func placeholder(in context: Context) -> ScheduleEntry {
-        let day = Calendar.current.startOfDay(for: Date())
+        let day = ScheduleWidgetConstants.calendar.startOfDay(for: Date())
         let first = day.addingTimeInterval(10 * 3600)
         let second = day.addingTimeInterval(12 * 3600)
         let data = ScheduleWidgetData(
-            version: 1, ownerLabel: "Ваше расписание", updatedAt: day.timeIntervalSince1970 * 1000,
+            version: ScheduleWidgetConstants.schemaVersion, ownerLabel: "Ваше расписание", updatedAt: day.timeIntervalSince1970 * 1000,
             validFrom: day.timeIntervalSince1970 * 1000,
             validUntil: day.addingTimeInterval(86400).timeIntervalSince1970 * 1000,
             lessons: [
@@ -32,7 +32,7 @@ struct ScheduleProvider: TimelineProvider {
     func getTimeline(in context: Context, completion: @escaping (Timeline<ScheduleEntry>) -> Void) {
         let now = Date()
         let data = ScheduleWidgetData.read()
-        let calendar = Calendar.current
+        let calendar = ScheduleWidgetConstants.calendar
         let midnight = calendar.startOfDay(for: now)
         let days = (1...14).compactMap { calendar.date(byAdding: .day, value: $0, to: midnight) }
         let boundaries = data?.lessons.flatMap { [$0.startDate, $0.endDate] } ?? []
@@ -45,7 +45,7 @@ struct ScheduleProvider: TimelineProvider {
 struct ScheduleWidgetView: View {
     let entry: ScheduleEntry
     @Environment(\.widgetFamily) private var family
-    private let accent = Color(red: 0, green: 0.54, blue: 0.50)
+    private let accent = ScheduleWidgetPalette.accent
 
     private var rowHeight: CGFloat {
         switch family {
@@ -130,6 +130,7 @@ struct ScheduleWidgetView: View {
 
     private var dateLabel: String {
         let formatter = DateFormatter()
+        formatter.timeZone = ScheduleWidgetConstants.timeZone
         formatter.locale = Locale(identifier: "ru_RU")
         formatter.dateFormat = "EEE, d MMM"
         return [formatter.string(from: entry.date), entry.data?.ownerLabel ?? ""]
@@ -163,23 +164,32 @@ struct ScheduleWidgetView: View {
 
     private func timeLabel(_ date: Date) -> String {
         let formatter = DateFormatter()
+        formatter.timeZone = ScheduleWidgetConstants.timeZone
         formatter.dateFormat = "HH:mm"
         return formatter.string(from: date)
     }
 }
 
 private extension View {
-    @ViewBuilder
     func scheduleWidgetBackground() -> some View {
+        modifier(ScheduleWidgetBackground())
+    }
+}
+
+private struct ScheduleWidgetBackground: ViewModifier {
+    @Environment(\.colorScheme) private var colorScheme
+
+    @ViewBuilder
+    func body(content: Content) -> some View {
+        let color = ScheduleWidgetPalette.background(for: colorScheme)
         if #available(iOSApplicationExtension 17.0, *) {
-            containerBackground(for: .widget) { Color(UIColor.secondarySystemBackground) }
+            content.containerBackground(for: .widget) { color }
         } else {
-            background(Color(UIColor.secondarySystemBackground))
+            content.background(color)
         }
     }
 }
 
-@main
 struct ScheduleWidget: Widget {
     private var configuration: some WidgetConfiguration {
         StaticConfiguration(kind: ScheduleWidgetConstants.kind, provider: ScheduleProvider()) { entry in
@@ -192,5 +202,15 @@ struct ScheduleWidget: Widget {
 
     var body: some WidgetConfiguration {
         configuration.contentMarginsDisabled()
+    }
+}
+
+@main
+struct ScheduleWidgets: WidgetBundle {
+    var body: some Widget {
+        ScheduleWidget()
+        if #available(iOS 16.2, *) {
+            ScheduleLiveActivity()
+        }
     }
 }
