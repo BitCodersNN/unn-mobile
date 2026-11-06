@@ -11,6 +11,7 @@ import 'package:unn_mobile/core/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/constants/api/protocol_type.dart';
 import 'package:unn_mobile/core/constants/regular_expressions.dart';
 import 'package:unn_mobile/core/misc/file_helpers/file_functions.dart';
+import 'package:unn_mobile/core/misc/logging/diagnostic_event.dart';
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
 
 class FileDownloader {
@@ -73,7 +74,7 @@ class FileDownloader {
   ) async {
     final downloadsPath = await getDownloadPath();
     if (downloadsPath == null) {
-      _loggerService.log('Download path is null');
+      _loggerService.log(DiagnosticEvent.downloadDirectoryUnavailable);
       return null;
     }
 
@@ -94,7 +95,7 @@ class FileDownloader {
     try {
       await storedFile.writeAsBytes(response!.data);
     } catch (error, stackTrace) {
-      _loggerService.log('Exception: $error\nStackTrace: $stackTrace');
+      _loggerService.logError(error, stackTrace);
       return null;
     }
 
@@ -111,10 +112,7 @@ class FileDownloader {
     try {
       location = await openFilePicker(shortenedFileName, mimeType);
     } catch (error, stack) {
-      _loggerService.log(
-        'Could not get location for file: $error;\n'
-        'stack: $stack',
-      );
+      _loggerService.logError(error, stack);
     }
     if (location == null) {
       return null;
@@ -143,7 +141,7 @@ class FileDownloader {
         },
       );
     } catch (error, stackTrace) {
-      _loggerService.log('Exception: $error\nStackTrace: $stackTrace');
+      _loggerService.logError(error, stackTrace);
       return null;
     }
     return response;
@@ -171,7 +169,7 @@ class FileDownloader {
     final fileList = results.whereType<File>().toList();
 
     if (fileList.length < fileNames.length) {
-      _loggerService.log('Some files failed to download');
+      _loggerService.log(DiagnosticEvent.downloadIncomplete);
     }
 
     return fileList;

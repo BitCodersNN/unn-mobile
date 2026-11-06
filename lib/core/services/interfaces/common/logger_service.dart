@@ -2,21 +2,19 @@
 // Copyright 2025 BitCodersNN
 
 import 'package:flutter/material.dart';
+import 'package:unn_mobile/core/misc/logging/diagnostic_event.dart';
 
 abstract interface class LoggerService {
-  /// Записывает сообщение в лог
-  void log(String message);
+  /// Записывает фиксированное событие с обезличенной структурой [information].
+  void log(DiagnosticEvent event, {Iterable<Object?> information = const []});
 
-  /// Записывает в лог сообщение об ошибке в виде объекта [exception] и стека [stack].
-  ///
-  /// Судя по всему, некоторые места не гарантируют наследование ошибки от [Exception], поэтому это dynamic
-  ///
+  /// Записывает тип ошибки, безопасные диагностические признаки и стек.
   void logError(
-    dynamic exception,
+    Object? exception,
     StackTrace? stack, {
     bool fatal = false,
-    dynamic reason,
-    Iterable<Object> information,
+    Object? reason,
+    Iterable<Object?> information = const [],
   });
 
   /// Метод, нужный исключительно для отлова фатальных ошибок фреймворка

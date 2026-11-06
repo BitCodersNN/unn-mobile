@@ -5,6 +5,7 @@ import 'package:event/event.dart';
 import 'package:html_unescape/html_unescape.dart';
 import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/misc/demo_mode_status.dart';
+import 'package:unn_mobile/core/misc/logging/diagnostic_event.dart';
 import 'package:unn_mobile/core/models/feed/blog_post.dart';
 import 'package:unn_mobile/core/models/feed/blog_post_data.dart';
 import 'package:unn_mobile/core/models/feed/important_blog_post.dart';
@@ -164,13 +165,13 @@ class FeedPostViewModel extends BaseViewModel {
 
   Future<void> refresh({bool loadComments = false}) async {
     if (blogData == null) {
-      _loggerService.log('Error: blog post tried to refresh while not loaded');
+      _loggerService.log(DiagnosticEvent.postNotLoaded);
       return;
     }
     await _feedScreenViewModel?.refreshFeatured();
     final post = await _postsService.getBlogPostById(postId: blogData!.id);
     if (post == null) {
-      _loggerService.log('Failed to refresh post');
+      _loggerService.log(DiagnosticEvent.postRefreshFailed);
       return;
     }
     initFromFullInfo(post, _feedScreenViewModel);

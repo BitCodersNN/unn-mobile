@@ -1,30 +1,14 @@
-name: deploy-develop-mobile
+name: deploy-test
 run-name: Build and deploy develop build for Android & iOS
 on:
-  pull_request:
-    branches:
-      - 'ci/**'
-  push:
-    branches:
-      - "develop"
-    paths:
-      - ".github/**"
-      - "android/**"
-      - "ios/**"
-      - "lib/**"
-      - "pubspec.yaml"
   workflow_dispatch:
-      
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
   
 jobs:
   # ==========================================
-  # ANDROID: Standard APK
+  # ANDROID: RuStore APK
   # ==========================================
-  build-default:
-    name: Build standard app package
+  build-rustore:
+    name: Build RuStore app package
     runs-on: ubuntu-latest
     environment: develop-android
     steps:
@@ -76,24 +60,18 @@ jobs:
       - name: build
         run: |
           flutter doctor --verbose
-          flutter build apk --flavor default
-          mv build/app/outputs/flutter-apk/app-default-release.apk build/unn-mobile-default.apk
-          cd build
-          sha1sum unn-mobile-default.apk > unn-mobile-default.apk.sha1
-          cd ..
-          
+          flutter build apk --flavor RuStoreTest
+          mv build/app/outputs/flutter-apk/app-rustoretest-release.apk build/unn-mobile-rustore-test.apk
       - name: delete old build artifacts
         uses: geekyeggo/delete-artifact@f275313e70c08f6120db482d7a6b98377786765b
         with:
-          name: unn-mobile-default
+          name: unn-mobile-rustore-test
           
       - name: upload build artifacts
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: unn-mobile-default
-          path: |
-            build/unn-mobile-default.apk
-            build/unn-mobile-default.apk.sha1
+          name: unn-mobile-rustore-test
+          path: build/unn-mobile-rustore-test.apk
       
   # ==========================================
   # ANDROID: Google Play AAB
@@ -151,16 +129,16 @@ jobs:
       - name: build
         run: |
           flutter doctor --verbose
-          flutter build appbundle --flavor GooglePlay
+          flutter build appbundle --flavor GooglePlayTest
       - name: delete old build artifact
         uses: geekyeggo/delete-artifact@f275313e70c08f6120db482d7a6b98377786765b
         with:
-          name: unn-mobile-googleplay
+          name: unn-mobile-googleplay-test
       - name: upload build artifact
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: unn-mobile-googleplay
-          path: "build/app/outputs/bundle/GooglePlayRelease/app-GooglePlay-release.aab"
+          name: unn-mobile-googleplay-test
+          path: "build/app/outputs/bundle/GooglePlayTestRelease/app-GooglePlay-Test-release.aab"
         
   # ==========================================
   # iOS: Unsigned IPA + dSYM
@@ -255,7 +233,7 @@ jobs:
       - name: retrieve Android binary
         uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0
         with:
-          name: unn-mobile-googleplay
+          name: unn-mobile-googleplay-test
           
       - name: retrieve iOS binary
         uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0
@@ -266,13 +244,13 @@ jobs:
         run: curl -sL https://firebase.tools | bash
 
       # --- Android Deploy ---
-      - name: deploy android (main)
+      - name: deploy android (develop)
         if: github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/main'
         env:
           firebase_token: ${{ secrets.FIREBASE_TOKEN }}
           app_id: ${{ secrets.FIREBASE_A_APP_ID }}
         run: |
-          firebase --project unn-mobile-1 --token $firebase_token appdistribution:distribute --groups "testers" --app "$app_id" --release-notes "$(git log -1 --pretty=%B)" "${GITHUB_WORKSPACE}/app-GooglePlay-release.aab"
+          firebase --project unn-mobile-1 --token $firebase_token appdistribution:distribute --groups "testers" --app "$app_id" --release-notes "$(git log -1 --pretty=%B)" "${GITHUB_WORKSPACE}/app-GooglePlay-Test-release.aab"
           
       - name: deploy android (PR)
         if: github.ref != 'refs/heads/develop' && github.ref != 'refs/heads/main'
@@ -281,4 +259,4 @@ jobs:
           firebase_token: ${{ secrets.FIREBASE_TOKEN }}
           app_id: ${{ secrets.FIREBASE_A_APP_ID }}
         run: |
-          firebase --project unn-mobile-1 --token $firebase_token appdistribution:distribute --groups "testers" --app "$app_id" --release-notes "$TITLE" "${GITHUB_WORKSPACE}/app-GooglePlay-release.aab"
+          firebase --project unn-mobile-1 --token $firebase_token appdistribution:distribute --groups "testers" --app "$app_id" --release-notes "$TITLE" "${GITHUB_WORKSPACE}/app-GooglePlay-Test-release.aab"

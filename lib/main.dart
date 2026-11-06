@@ -39,7 +39,7 @@ void main() async {
       options: DefaultFirebaseOptions.currentPlatform,
     );
   } on Exception catch (e) {
-    debugPrint('Firebase initialization failed: $e');
+    debugPrint('Firebase initialization failed: ${e.runtimeType}');
   }
 
   registerDependencies();

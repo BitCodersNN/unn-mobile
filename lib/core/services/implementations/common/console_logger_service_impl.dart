@@ -1,40 +1,40 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2026 BitCodersNN
 
-// SPDX-License-Identifier: Apache-2.0
-// Copyright 2025 BitCodersNN
 import 'package:flutter/material.dart';
+import 'package:unn_mobile/core/misc/logging/diagnostic_event.dart';
+import 'package:unn_mobile/core/misc/logging/diagnostic_sanitizer.dart';
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
 
 class ConsoleLoggerServiceImpl implements LoggerService {
+  static const DiagnosticSanitizer _sanitizer = DiagnosticSanitizer();
+
   @override
-  void log(String message) {
-    debugPrint('[ ${_getCaller(StackTrace.current)} ]: $message');
+  void log(DiagnosticEvent event, {Iterable<Object?> information = const []}) {
+    debugPrint(
+      '[${_sanitizer.caller(StackTrace.current)}] ${_sanitizer.event(event, information)}',
+    );
   }
 
   @override
   void logError(
-    dynamic exception,
+    Object? exception,
     StackTrace? stack, {
     bool fatal = false,
-    dynamic reason,
-    Iterable<Object> information = const [],
+    Object? reason,
+    Iterable<Object?> information = const [],
   }) {
-    debugPrint('Exception: $exception. Stack trace:');
-    debugPrintStack(stackTrace: stack);
+    debugPrint('Error: ${_sanitizer.error(exception)}; fatal: $fatal');
+    if (reason != null) {
+      debugPrint('Reason: ${_sanitizer.describe(reason)}');
+    }
+    for (final item in _sanitizer.information(information)) {
+      debugPrint(item);
+    }
+    debugPrintStack(stackTrace: _sanitizer.stack(stack ?? StackTrace.current));
   }
 
   @override
-  void handleFlutterFatalError(FlutterErrorDetails error) {
-    debugPrint('Error: ${error.exception}. Stack trace:');
-    debugPrintStack(stackTrace: error.stack);
-  }
-
-  static String _getCaller(StackTrace currentStack) {
-    final stack = currentStack.toString();
-    final newLineNum = stack.indexOf('\n', 0);
-    final secondLine = stack.substring(newLineNum + 9);
-    final endIndex = secondLine.indexOf(' ', 0);
-    return secondLine.substring(0, endIndex);
-  }
+  void handleFlutterFatalError(FlutterErrorDetails error) =>
+      logError(error.exception, error.stack, fatal: true);
 }

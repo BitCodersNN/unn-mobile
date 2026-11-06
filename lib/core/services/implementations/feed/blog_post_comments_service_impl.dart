@@ -6,6 +6,7 @@ import 'package:unn_mobile/core/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/constants/api/ajax_action.dart';
 import 'package:unn_mobile/core/constants/api/path.dart';
 import 'package:unn_mobile/core/misc/html_utils/blog_post_comment_html_parser.dart';
+import 'package:unn_mobile/core/misc/logging/diagnostic_event.dart';
 import 'package:unn_mobile/core/misc/user/current_user_sync_storage.dart';
 import 'package:unn_mobile/core/models/feed/blog_post_comment.dart';
 import 'package:unn_mobile/core/models/profile/user_short_info.dart';
@@ -61,7 +62,7 @@ class BlogPostCommentsServiceImpl implements BlogPostCommentsService {
         ),
       );
     } catch (error, stackTrace) {
-      _loggerService.log('Exception: $error\nStackTrace: $stackTrace');
+      _loggerService.logError(error, stackTrace);
       return null;
     }
 
@@ -71,7 +72,7 @@ class BlogPostCommentsServiceImpl implements BlogPostCommentsService {
     }
 
     if (!bodyAsJson.containsKey(_JsonKeys._messageListKey)) {
-      _loggerService.log('json doesn\'t contain the messageList key');
+      _loggerService.log(DiagnosticEvent.commentsResponseInvalid);
       return null;
     }
 

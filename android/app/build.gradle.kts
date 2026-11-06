@@ -61,15 +61,27 @@ android {
         }
     }
 
-    flavorDimensions += "default"
+    flavorDimensions += "store"
+    flavorDimensions += "testing"
+
     productFlavors {
         create("default") {
-            dimension = "default"
+            dimension = "store"
+            applicationId = "ru.unn.unn_mobile"
+        }
+        create("RuStore") {
+            dimension = "store"
             applicationId = "ru.unn.unn_mobile"
         }
         create("GooglePlay") {
-            dimension = "default"
+            dimension = "store"
             applicationId = "ru.bitcodersnn.unnstudenthub"
+        }
+        create("Test") {
+            dimension = "testing"
+        }
+        create("Stable") {
+            dimension = "testing"
         }
     }
 }
