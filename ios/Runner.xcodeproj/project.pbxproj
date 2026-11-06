@@ -31,6 +31,7 @@
 		D20000000000000000000002 /* ScheduleActivityAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = D10000000000000000000001 /* ScheduleActivityAttributes.swift */; };
 		D20000000000000000000003 /* ScheduleActivityBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = D10000000000000000000002 /* ScheduleActivityBridge.swift */; };
 		D20000000000000000000004 /* ScheduleLiveActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = D10000000000000000000003 /* ScheduleLiveActivity.swift */; };
+		D20000000000000000000005 /* ScheduleWidgetPalette.swift in Sources */ = {isa = PBXBuildFile; fileRef = D10000000000000000000004 /* ScheduleWidgetPalette.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -113,6 +114,7 @@
 		D10000000000000000000001 /* ScheduleActivityAttributes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleActivityAttributes.swift; sourceTree = "<group>"; };
 		D10000000000000000000002 /* ScheduleActivityBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleActivityBridge.swift; sourceTree = "<group>"; };
 		D10000000000000000000003 /* ScheduleLiveActivity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleLiveActivity.swift; sourceTree = "<group>"; };
+		D10000000000000000000004 /* ScheduleWidgetPalette.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleWidgetPalette.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -257,6 +259,7 @@
 			children = (
 				4637A8A7A0F382B37CC5B2C7 /* ScheduleWidget.swift */,
 				D10000000000000000000003 /* ScheduleLiveActivity.swift */,
+				D10000000000000000000004 /* ScheduleWidgetPalette.swift */,
 				E72D2425580297B898FDCBC2 /* Info.plist */,
 				5DC52E254EEDBC43C300D8DC /* ScheduleWidget.entitlements */,
 				97D18268252906290F19661D /* Widget.xcconfig */,
@@ -547,6 +550,7 @@
 				D20000000000000000000001 /* ScheduleActivityAttributes.swift in Sources */,
 				F2F46BB174734AC0E15AEBC9 /* ScheduleWidget.swift in Sources */,
 				D20000000000000000000004 /* ScheduleLiveActivity.swift in Sources */,
+				D20000000000000000000005 /* ScheduleWidgetPalette.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

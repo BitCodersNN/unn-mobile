@@ -10,7 +10,6 @@ struct ScheduleLiveActivity: Widget {
     var body: some WidgetConfiguration {
         ActivityConfiguration(for: ScheduleActivityAttributes.self) { context in
             ScheduleLiveActivityView(context: context)
-                .activityBackgroundTint(Color(UIColor.secondarySystemBackground))
                 .activitySystemActionForegroundColor(.primary)
                 .widgetURL(ScheduleWidgetConstants.url)
         } dynamicIsland: { context in
@@ -20,7 +19,7 @@ struct ScheduleLiveActivity: Widget {
                 }
             } compactLeading: {
                 Image(systemName: "calendar")
-                    .foregroundStyle(.teal)
+                    .foregroundStyle(ScheduleWidgetPalette.subjectColor(context.attributes.accentColor))
             } compactTrailing: {
                 ScheduleActivityCountdown(context: context)
                     .font(.caption.monospacedDigit())
@@ -29,7 +28,7 @@ struct ScheduleLiveActivity: Widget {
                 Image(systemName: "calendar")
             }
             .widgetURL(ScheduleWidgetConstants.url)
-            .keylineTint(.teal)
+            .keylineTint(ScheduleWidgetPalette.subjectColor(context.attributes.accentColor))
         }
     }
 }
@@ -37,8 +36,8 @@ struct ScheduleLiveActivity: Widget {
 @available(iOS 16.2, *)
 private struct ScheduleLiveActivityView: View {
     let context: ActivityViewContext<ScheduleActivityAttributes>
-    private let accent = Color(red: 0.27, green: 0.52, blue: 0.50)
-    private var started: Bool { context.isStale || Date() >= context.attributes.start }
+    @Environment(\.colorScheme) private var colorScheme
+    private var accent: Color { ScheduleWidgetPalette.subjectColor(context.attributes.accentColor) }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -52,17 +51,19 @@ private struct ScheduleLiveActivityView: View {
                     .font(.caption).foregroundStyle(.secondary).lineLimit(1)
             }
             HStack {
-                Text(started ? "Осталось" : "До начала")
+                Text(context.lessonHasStarted ? "Осталось" : "До начала")
                 ScheduleActivityCountdown(context: context).monospacedDigit()
                 Spacer(minLength: 8)
                 Text(context.attributes.end, style: .time).foregroundStyle(.secondary)
             }
             .font(.subheadline)
-            ProgressView(timerInterval: context.attributes.start...context.attributes.end,
-                         countsDown: false)
-                .labelsHidden().tint(accent)
+            ProgressView(timerInterval: context.lessonInterval, countsDown: false)
+                .progressViewStyle(.linear)
+                .labelsHidden()
+                .tint(accent)
         }
         .padding(14)
+        .activityBackgroundTint(ScheduleWidgetPalette.background(for: colorScheme))
         .privacySensitive()
     }
 }
@@ -72,9 +73,18 @@ private struct ScheduleActivityCountdown: View {
     let context: ActivityViewContext<ScheduleActivityAttributes>
 
     var body: some View {
-        let attributes = context.attributes
-        let started = context.isStale || Date() >= attributes.start
-        Text(timerInterval: started ? attributes.start...attributes.end : attributes.noticeStart...attributes.start,
-             countsDown: true)
+        Text(timerInterval: context.lessonInterval, countsDown: true)
+    }
+}
+
+@available(iOS 16.2, *)
+private extension ActivityViewContext where Attributes == ScheduleActivityAttributes {
+    var lessonHasStarted: Bool { isStale || Date() >= attributes.start }
+
+    var lessonInterval: ClosedRange<Date> {
+        if lessonHasStarted || attributes.noticeStart >= attributes.start {
+            return attributes.start...attributes.end
+        }
+        return attributes.noticeStart...attributes.start
     }
 }

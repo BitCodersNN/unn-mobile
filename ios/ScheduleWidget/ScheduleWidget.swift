@@ -45,7 +45,7 @@ struct ScheduleProvider: TimelineProvider {
 struct ScheduleWidgetView: View {
     let entry: ScheduleEntry
     @Environment(\.widgetFamily) private var family
-    private let accent = Color(red: 0, green: 0.54, blue: 0.50)
+    private let accent = ScheduleWidgetPalette.accent
 
     private var rowHeight: CGFloat {
         switch family {
@@ -169,12 +169,21 @@ struct ScheduleWidgetView: View {
 }
 
 private extension View {
-    @ViewBuilder
     func scheduleWidgetBackground() -> some View {
+        modifier(ScheduleWidgetBackground())
+    }
+}
+
+private struct ScheduleWidgetBackground: ViewModifier {
+    @Environment(\.colorScheme) private var colorScheme
+
+    @ViewBuilder
+    func body(content: Content) -> some View {
+        let color = ScheduleWidgetPalette.background(for: colorScheme)
         if #available(iOSApplicationExtension 17.0, *) {
-            containerBackground(for: .widget) { Color(UIColor.secondarySystemBackground) }
+            content.containerBackground(for: .widget) { color }
         } else {
-            background(Color(UIColor.secondarySystemBackground))
+            content.background(color)
         }
     }
 }

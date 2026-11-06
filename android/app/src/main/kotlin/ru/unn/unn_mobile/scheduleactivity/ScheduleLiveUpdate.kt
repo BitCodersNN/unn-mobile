@@ -116,7 +116,7 @@ object ScheduleLiveUpdate {
         val origin = if (active) lesson.start else lesson.start - ScheduleActivitySettings.read(context).beforeMillis
         val maximum = (target - origin).coerceAtLeast(1)
         val progress = (((now - origin).coerceIn(0, maximum) * 1000) / maximum).toInt()
-        val accent = Color.rgb(68, 133, 127)
+        val accent = lesson.accentColor ?: Color.rgb(68, 133, 127)
         val style = Notification.ProgressStyle()
             .setProgressSegments(listOf(Notification.ProgressStyle.Segment(1000).setColor(accent)))
             .setProgress(progress)

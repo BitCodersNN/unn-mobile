@@ -18,6 +18,7 @@ struct ScheduleActivityAttributes: ActivityAttributes {
     let end: Date
     let noticeStart: Date
     let displayUntil: Date
+    var accentColor: UInt32? = nil
 }
 
 struct ScheduleActivitySettings: Decodable {

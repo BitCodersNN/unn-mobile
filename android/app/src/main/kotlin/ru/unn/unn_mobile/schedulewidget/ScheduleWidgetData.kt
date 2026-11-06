@@ -12,6 +12,7 @@ data class WidgetLesson(
     val location: String,
     val start: Long,
     val end: Long,
+    val accentColor: Int? = null,
 )
 
 data class ScheduleWidgetData(
@@ -46,6 +47,7 @@ data class ScheduleWidgetData(
                         location = lesson.getString("location"),
                         start = lesson.getLong("start"),
                         end = lesson.getLong("end"),
+                        accentColor = if (lesson.has("accentColor")) lesson.getLong("accentColor").toInt() else null,
                     )
                 }.sortedBy { it.start },
             )

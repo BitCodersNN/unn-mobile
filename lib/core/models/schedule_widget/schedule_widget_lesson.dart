@@ -11,6 +11,7 @@ class _ScheduleWidgetLessonJsonKeys {
   static const String lecturer = 'lecturer';
   static const String start = 'start';
   static const String end = 'end';
+  static const String accentColor = 'accentColor';
 }
 
 class ScheduleWidgetLesson {
@@ -20,6 +21,7 @@ class ScheduleWidgetLesson {
   final String lecturer;
   final DateTime start;
   final DateTime end;
+  final int? accentColor;
 
   const ScheduleWidgetLesson({
     required this.title,
@@ -28,22 +30,27 @@ class ScheduleWidgetLesson {
     required this.lecturer,
     required this.start,
     required this.end,
+    this.accentColor,
   });
 
-  factory ScheduleWidgetLesson.fromSubject(Subject subject) =>
-      ScheduleWidgetLesson(
-        title: subject.name,
-        type: subject.subjectType,
-        location: [
-          subject.address.auditorium,
-          subject.address.building,
-        ].where((part) => part.trim().isNotEmpty).join(' / '),
-        lecturer: subject.lecturer,
-        start: subject.dateTimeRange.start,
-        end: subject.dateTimeRange.end,
-      );
+  factory ScheduleWidgetLesson.fromSubject(
+    Subject subject, {
+    int? accentColor,
+  }) => ScheduleWidgetLesson(
+    accentColor: accentColor,
+    title: subject.name,
+    type: subject.subjectType,
+    location: [
+      subject.address.auditorium,
+      subject.address.building,
+    ].where((part) => part.trim().isNotEmpty).join(' / '),
+    lecturer: subject.lecturer,
+    start: subject.dateTimeRange.start,
+    end: subject.dateTimeRange.end,
+  );
 
   factory ScheduleWidgetLesson.fromJson(JsonMap json) => ScheduleWidgetLesson(
+    accentColor: json[_ScheduleWidgetLessonJsonKeys.accentColor] as int?,
     title: json[_ScheduleWidgetLessonJsonKeys.title]! as String,
     type: json[_ScheduleWidgetLessonJsonKeys.type]! as String,
     location: json[_ScheduleWidgetLessonJsonKeys.location]! as String,
@@ -63,5 +70,7 @@ class ScheduleWidgetLesson {
     _ScheduleWidgetLessonJsonKeys.lecturer: lecturer,
     _ScheduleWidgetLessonJsonKeys.start: start.millisecondsSinceEpoch,
     _ScheduleWidgetLessonJsonKeys.end: end.millisecondsSinceEpoch,
+    if (accentColor != null)
+      _ScheduleWidgetLessonJsonKeys.accentColor: accentColor,
   };
 }

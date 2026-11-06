@@ -90,9 +90,10 @@ enum ScheduleActivityCoordinator {
             guard lesson.endDate > lesson.startDate, end > now, end > notice else { return nil }
             if #available(iOS 26.0, *) {} else if notice > now { return nil }
             return ScheduleActivityAttributes(
-                identifier: "\(lesson.id)|\(settings.mode)|\(settings.beforeMinutes)|\(settings.initialMinutes)",
+                identifier: "\(lesson.id)|\(settings.mode)|\(settings.beforeMinutes)|\(settings.initialMinutes)|\(lesson.accentColor ?? 0)",
                 title: lesson.title, type: lesson.type, location: lesson.location,
-                start: lesson.startDate, end: lesson.endDate, noticeStart: notice, displayUntil: end)
+                start: lesson.startDate, end: lesson.endDate, noticeStart: notice, displayUntil: end,
+                accentColor: lesson.accentColor)
         }.sorted { $0.start < $1.start }
         let desired = candidates
         let identifiers = Set(desired.map(\.identifier))
