@@ -8,6 +8,22 @@ struct ScheduleEntry: TimelineEntry {
     let date: Date
     let data: ScheduleSnapshot?
     let settings: ScheduleWidgetSettings
+
+    var remainingLessons: [ScheduleLesson] {
+        guard data?.covers(date) == true else { return [] }
+        return data?.remaining(at: date) ?? []
+    }
+
+    var currentOrNextLesson: ScheduleLesson? {
+        let lessons = remainingLessons
+        return lessons.first { $0.startDate <= date && date < $0.endDate } ?? lessons.first
+    }
+
+    var emptyMessage: String {
+        guard let data = data else { return "Откройте приложение и войдите в аккаунт" }
+        guard data.covers(date) else { return "Обновите расписание в приложении" }
+        return data.today(at: date).isEmpty ? "Сегодня занятий нет" : "На сегодня занятий больше нет"
+    }
 }
 
 enum ScheduleWidgetTimeline {

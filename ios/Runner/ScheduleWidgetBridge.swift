@@ -32,13 +32,11 @@ final class ScheduleWidgetBridge {
                 result(FlutterError(code: "INVALID_DATA", message: "Invalid schedule widget data", details: nil))
                 return
             }
-            WidgetCenter.shared.reloadTimelines(ofKind: ScheduleConstants.widgetKind)
-            ScheduleActivityCoordinator.synchronize()
+            reloadSchedule()
             result(nil)
         case "clear":
             snapshotProvider.clear()
-            WidgetCenter.shared.reloadTimelines(ofKind: ScheduleConstants.widgetKind)
-            ScheduleActivityCoordinator.synchronize()
+            reloadSchedule()
             result(nil)
         case "consumeLaunch":
             let launch = pendingLaunch
@@ -47,6 +45,13 @@ final class ScheduleWidgetBridge {
         default:
             result(FlutterMethodNotImplemented)
         }
+    }
+
+    private func reloadSchedule() {
+        for kind in [ScheduleConstants.widgetKind, ScheduleConstants.lockScreenWidgetKind] {
+            WidgetCenter.shared.reloadTimelines(ofKind: kind)
+        }
+        ScheduleActivityCoordinator.synchronize()
     }
 
     func handleURL(_ url: URL) -> Bool {

@@ -48,6 +48,7 @@
 		B723C270002F4CB7C000000E /* ScheduleActivitySettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = B723C270002F4CB7B0000006 /* ScheduleActivitySettings.swift */; };
 		B723C270002F4CB7C0000010 /* ScheduleActivitySettingsProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = B723C270002F4CB7B0000007 /* ScheduleActivitySettingsProvider.swift */; };
 		B723C270002F4CB7C0000012 /* ScheduleActivityStateProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = B723C270002F4CB7B0000008 /* ScheduleActivityStateProvider.swift */; };
+		C823C270002F4CB7B0000002 /* ScheduleLockScreenWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = C823C270002F4CB7B0000001 /* ScheduleLockScreenWidget.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -142,6 +143,7 @@
 		B723C270002F4CB7B0000006 /* ScheduleActivitySettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleActivitySettings.swift; sourceTree = "<group>"; };
 		B723C270002F4CB7B0000007 /* ScheduleActivitySettingsProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleActivitySettingsProvider.swift; sourceTree = "<group>"; };
 		B723C270002F4CB7B0000008 /* ScheduleActivityStateProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleActivityStateProvider.swift; sourceTree = "<group>"; };
+		C823C270002F4CB7B0000001 /* ScheduleLockScreenWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleLockScreenWidget.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -294,6 +296,7 @@
 			isa = PBXGroup;
 			children = (
 				4637A8A7A0F382B37CC5B2C7 /* ScheduleWidget.swift */,
+				C823C270002F4CB7B0000001 /* ScheduleLockScreenWidget.swift */,
 				D10000000000000000000003 /* ScheduleLiveActivity.swift */,
 				A623C270002F4CB7B0000005 /* ScheduleWidgetTimeline.swift */,
 				A623C270002F4CB7B0000003 /* ScheduleWidgetConfiguration.swift */,
@@ -592,6 +595,7 @@
 				B723C270002F4CB7C0000003 /* ScheduleConstants.swift in Sources */,
 				D20000000000000000000001 /* ScheduleActivityAttributes.swift in Sources */,
 				F2F46BB174734AC0E15AEBC9 /* ScheduleWidget.swift in Sources */,
+				C823C270002F4CB7B0000002 /* ScheduleLockScreenWidget.swift in Sources */,
 				D20000000000000000000004 /* ScheduleLiveActivity.swift in Sources */,
 				D20000000000000000000005 /* SchedulePalette.swift in Sources */,
 				A623C270002F4CB7B0000006 /* ScheduleWidgetTimeline.swift in Sources */,

@@ -37,17 +37,6 @@ struct ScheduleWidgetView: View {
         return min(available, familyLimit, configuredLimit)
     }
 
-    private var remaining: [ScheduleLesson] {
-        guard entry.data?.covers(entry.date) == true else { return [] }
-        return entry.data?.remaining(at: entry.date) ?? []
-    }
-
-    private var emptyMessage: String {
-        guard let data = entry.data else { return "Откройте приложение и войдите в аккаунт" }
-        guard data.covers(entry.date) else { return "Обновите расписание в приложении" }
-        return data.today(at: entry.date).isEmpty ? "Сегодня занятий нет" : "На сегодня занятий больше нет"
-    }
-
     var body: some View {
         GeometryReader { geometry in
             let capacity = lessonCapacity(for: geometry.size.height)
@@ -58,8 +47,8 @@ struct ScheduleWidgetView: View {
                             .font(textFont(13, weight: .semibold))
                             .foregroundColor(accent)
                         Spacer(minLength: 0)
-                        if !remaining.isEmpty {
-                            Text("\(remaining.count)")
+                        if !entry.remainingLessons.isEmpty {
+                            Text("\(entry.remainingLessons.count)")
                                 .font(textFont(11, weight: .semibold))
                                 .foregroundColor(accent)
                                 .frame(
@@ -74,18 +63,18 @@ struct ScheduleWidgetView: View {
                         .foregroundColor(.secondary)
                         .lineLimit(1)
                 }
-                if remaining.isEmpty {
+                if entry.remainingLessons.isEmpty {
                     Spacer(minLength: 0)
-                    Text(emptyMessage).font(textFont(13)).foregroundColor(.secondary)
+                    Text(entry.emptyMessage).font(textFont(13)).foregroundColor(.secondary)
                     Spacer(minLength: 0)
                 } else {
-                    ForEach(remaining.prefix(capacity)) { lesson in
+                    ForEach(entry.remainingLessons.prefix(capacity)) { lesson in
                         lessonRow(lesson)
                     }
                     Spacer(minLength: 0)
                 }
                 HStack(spacing: 4) {
-                    Text(remaining.count > capacity ? "Ещё \(remaining.count - capacity) · открыть" : "Открыть расписание")
+                    Text(entry.remainingLessons.count > capacity ? "Ещё \(entry.remainingLessons.count - capacity) · открыть" : "Открыть расписание")
                         .lineLimit(1).minimumScaleFactor(0.8)
                     Spacer(minLength: 0)
                     Image(systemName: "arrow.up.right")
@@ -152,18 +141,19 @@ struct ScheduleWidgetView: View {
     }
 }
 
-private extension View {
-    func scheduleWidgetBackground() -> some View {
-        modifier(ScheduleWidgetBackground())
+extension View {
+    func scheduleWidgetBackground(transparent: Bool = false) -> some View {
+        modifier(ScheduleWidgetBackground(transparent: transparent))
     }
 }
 
 private struct ScheduleWidgetBackground: ViewModifier {
+    let transparent: Bool
     @Environment(\.colorScheme) private var colorScheme
 
     @ViewBuilder
     func body(content: Content) -> some View {
-        let color = SchedulePalette.background(for: colorScheme)
+        let color = transparent ? Color.clear : SchedulePalette.background(for: colorScheme)
         if #available(iOSApplicationExtension 17.0, *) {
             content.containerBackground(for: .widget) { color }
         } else {
@@ -207,6 +197,9 @@ private extension WidgetConfiguration {
 struct ScheduleWidgets: WidgetBundle {
     var body: some Widget {
         ScheduleWidget()
+        if #available(iOS 16.1, *) {
+            ScheduleLockScreenWidget()
+        }
         if #available(iOS 16.2, *) {
             ScheduleLiveActivity()
         }
