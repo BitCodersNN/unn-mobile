@@ -291,10 +291,10 @@ class _FieldBoxPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final borderWidth = _FieldMetrics.borderWidth;
+    const borderWidth = _FieldMetrics.borderWidth;
     final boxRect = RRect.fromRectAndRadius(
       (Offset.zero & size).deflate(borderWidth / 2),
-      Radius.circular(_FieldMetrics.borderRadius - borderWidth / 2),
+      const Radius.circular(_FieldMetrics.borderRadius - borderWidth / 2),
     );
 
     if (shadowColor != Colors.transparent) {
