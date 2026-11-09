@@ -54,6 +54,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name="ru.bitcodersnn.unnstudenthub.schedulewidget.ScheduleWidgetConfigurationActivity"
+                  android:exported="true"
+                  android:label="@string/schedule_widget_settings"
+                  android:theme="@style/ScheduleWidgetConfigurationTheme">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
+            </intent-filter>
+        </activity>
         <receiver android:name="ru.bitcodersnn.unnstudenthub.schedulewidget.ScheduleWidgetProvider"
                   android:label="@string/schedule_widget_name"
                   android:exported="false">

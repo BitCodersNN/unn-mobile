@@ -1,10 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/schedule_widget_lesson_root"
     android:layout_width="match_parent" android:layout_height="wrap_content"
-    android:orientation="horizontal" android:padding="6dp" android:layout_marginBottom="4dp">
-    <ImageView android:importantForAccessibility="no" android:layout_width="3dp" android:layout_height="match_parent"
-        android:background="@drawable/schedule_widget_accent" />
+    android:layout_marginBottom="4dp">
+    <ImageView android:id="@+id/schedule_widget_lesson_background"
+        android:layout_width="match_parent" android:layout_height="match_parent"
+        android:src="@drawable/schedule_widget_current" android:scaleType="fitXY"
+        android:importantForAccessibility="no" />
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:orientation="horizontal" android:padding="6dp">
+    <ImageView android:id="@+id/schedule_widget_lesson_accent"
+        android:importantForAccessibility="no" android:layout_width="3dp" android:layout_height="match_parent"
+        android:src="@drawable/schedule_widget_accent" android:scaleType="fitXY" />
     <LinearLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content"
         android:orientation="vertical" android:layout_marginStart="8dp">
         <TextView android:id="@+id/schedule_widget_lesson_title"
@@ -15,14 +22,26 @@
             android:layout_width="match_parent" android:layout_height="wrap_content"
             android:layout_marginTop="3dp" android:maxLines="1" android:ellipsize="end" android:textSize="11sp"
             android:textColor="@color/schedule_widget_secondary" />
+        <TextView android:id="@+id/schedule_widget_lesson_location"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:layout_marginTop="3dp" android:maxLines="1" android:ellipsize="end"
+            android:textSize="11sp" android:textColor="@color/schedule_widget_secondary"
+            android:visibility="gone" />
+        <TextView android:id="@+id/schedule_widget_lesson_lecturer"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:layout_marginTop="3dp" android:maxLines="1" android:ellipsize="end"
+            android:textSize="11sp" android:textColor="@color/schedule_widget_secondary"
+            android:visibility="gone" />
     </LinearLayout>
-    <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content"
+    <LinearLayout android:layout_width="wrap_content" android:layout_height="match_parent"
         android:orientation="vertical" android:gravity="end" android:layout_marginStart="8dp">
         <TextView android:id="@+id/schedule_widget_lesson_start"
             android:layout_width="wrap_content" android:layout_height="wrap_content"
             android:textSize="13sp" android:textStyle="bold" android:textColor="@color/schedule_widget_text" />
         <TextView android:id="@+id/schedule_widget_lesson_end"
-            android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:layout_width="wrap_content" android:layout_height="0dp"
+            android:layout_weight="1" android:gravity="bottom|end"
             android:layout_marginTop="3dp" android:textSize="11sp" android:textColor="@color/schedule_widget_secondary" />
     </LinearLayout>
-</LinearLayout>
+    </LinearLayout>
+</FrameLayout>

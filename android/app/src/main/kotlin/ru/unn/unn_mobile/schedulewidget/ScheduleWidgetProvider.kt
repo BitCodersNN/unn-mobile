@@ -13,14 +13,8 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.util.SizeF
-import android.view.View
 import android.widget.RemoteViews
-import java.text.SimpleDateFormat
 import java.util.Calendar
-import java.util.Date
-import java.util.Locale
-import java.util.TimeZone
-import ru.bitcodersnn.unnstudenthub.MainActivity
 import ru.bitcodersnn.unnstudenthub.R
 
 class ScheduleWidgetProvider : AppWidgetProvider() {
@@ -49,9 +43,20 @@ class ScheduleWidgetProvider : AppWidgetProvider() {
         alarmManager(context).cancel(updateIntent(context))
     }
 
+    override fun onDeleted(context: Context, appWidgetIds: IntArray) {
+        ScheduleWidgetPreferences(context).remove(appWidgetIds)
+    }
+
     companion object {
         const val OPEN_SCHEDULE = "open_schedule_widget"
         private const val UPDATE_ACTION = "ru.bitcodersnn.unnstudenthub.UPDATE_SCHEDULE_WIDGET"
+
+        fun preview(context: Context, settings: ScheduleWidgetSettings): RemoteViews =
+            ScheduleWidgetRenderer(context, ScheduleWidgetData.read(context),
+                System.currentTimeMillis(), settings).render(260f).apply {
+                setOnClickPendingIntent(R.id.schedule_widget_root, null)
+                setOnClickPendingIntent(R.id.schedule_widget_settings, null)
+            }
 
         fun updateAll(context: Context) {
             val manager = AppWidgetManager.getInstance(context)
@@ -60,7 +65,7 @@ class ScheduleWidgetProvider : AppWidgetProvider() {
             val data = ScheduleWidgetData.read(context)
             val now = System.currentTimeMillis()
             ids.forEach { id -> manager.updateAppWidget(id, render(context, manager, id, data, now)) }
-            val midnight = dayStart(now).apply { add(Calendar.DAY_OF_MONTH, 1) }.timeInMillis
+            val midnight = ScheduleWidgetTime.dayStart(now).apply { add(Calendar.DAY_OF_MONTH, 1) }.timeInMillis
             val nextBoundary = data?.lessons?.flatMap { listOf(it.start, it.end) }
                 ?.filter { it > now && it < midnight }?.minOrNull() ?: midnight
             alarmManager(context).set(AlarmManager.RTC, nextBoundary, updateIntent(context))
@@ -74,6 +79,17 @@ class ScheduleWidgetProvider : AppWidgetProvider() {
             now: Long,
         ): RemoteViews {
             val options = manager.getAppWidgetOptions(id)
+            val settings = ScheduleWidgetPreferences(context).read(id)
+            val renderer = ScheduleWidgetRenderer(context, data, now, settings)
+            val settingsIntent = PendingIntent.getActivity(
+                context, id, Intent(context, ScheduleWidgetConfigurationActivity::class.java).apply {
+                    putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, id)
+                }, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
+            )
+            fun atHeight(height: Float): RemoteViews =
+                renderer.render(height).apply {
+                    setOnClickPendingIntent(R.id.schedule_widget_settings, settingsIntent)
+                }
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 val sizes = widgetSizes(options)
                     .filter { it.width > 0 && it.height > 0 }
@@ -81,7 +97,7 @@ class ScheduleWidgetProvider : AppWidgetProvider() {
                     .take(16)
                 if (sizes.isNotEmpty()) {
                     return RemoteViews(sizes.associateWith { size ->
-                        renderAtHeight(context, data, now, size.height)
+                        atHeight(size.height)
                     })
                 }
             }
@@ -89,8 +105,8 @@ class ScheduleWidgetProvider : AppWidgetProvider() {
             val maxHeight = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT, minHeight)
                 .coerceAtLeast(minHeight)
             return RemoteViews(
-                renderAtHeight(context, data, now, minHeight.toFloat()),
-                renderAtHeight(context, data, now, maxHeight.toFloat()),
+                atHeight(minHeight.toFloat()),
+                atHeight(maxHeight.toFloat()),
             )
         }
 
@@ -103,80 +119,6 @@ class ScheduleWidgetProvider : AppWidgetProvider() {
                 options.getParcelableArrayList<SizeF>(AppWidgetManager.OPTION_APPWIDGET_SIZES)
                     .orEmpty()
             }
-
-        private fun renderAtHeight(
-            context: Context,
-            data: ScheduleWidgetData?,
-            now: Long,
-            height: Float,
-        ): RemoteViews {
-            val views = RemoteViews(context.packageName, R.layout.schedule_widget)
-            val day = dayStart(now)
-            val tomorrow = (day.clone() as Calendar).apply { add(Calendar.DAY_OF_MONTH, 1) }.timeInMillis
-            val covered = data != null && data.validFrom <= day.timeInMillis && data.validUntil >= tomorrow
-            val today = data?.lessons?.filter { it.start >= day.timeInMillis && it.start < tomorrow }.orEmpty()
-            val remaining = today.filter { it.end > now }
-            val date = SimpleDateFormat("EEE, d MMM", Locale("ru")).apply {
-                timeZone = TimeZone.getTimeZone(ScheduleWidgetData.TIME_ZONE)
-            }.format(Date(now))
-            views.setTextViewText(R.id.schedule_widget_date,
-                listOf(date, data?.ownerLabel.orEmpty()).filter { it.isNotBlank() }.joinToString(" · "))
-            val message = when {
-                data == null -> R.string.schedule_widget_sign_in
-                !covered -> R.string.schedule_widget_outdated
-                today.isEmpty() -> R.string.schedule_widget_empty
-                else -> R.string.schedule_widget_finished
-            }
-            val showLessons = covered && remaining.isNotEmpty()
-            views.setViewVisibility(R.id.schedule_widget_lessons, if (showLessons) View.VISIBLE else View.GONE)
-            views.setViewVisibility(R.id.schedule_widget_empty, if (showLessons) View.GONE else View.VISIBLE)
-            views.setTextViewText(R.id.schedule_widget_empty, context.getString(message))
-            views.removeAllViews(R.id.schedule_widget_lessons)
-            val fontScale = context.resources.configuration.fontScale.coerceAtLeast(1f)
-            val capacity = ((height - 100) / (68 * fontScale)).toInt().coerceIn(1, 6)
-            if (showLessons) {
-                remaining.take(capacity).forEach { lesson ->
-                    views.addView(R.id.schedule_widget_lessons, lessonView(context, lesson, now))
-                }
-            }
-            val more = if (showLessons) (remaining.size - capacity).coerceAtLeast(0) else 0
-            views.setTextViewText(R.id.schedule_widget_footer, if (more > 0)
-                context.getString(R.string.schedule_widget_more, more) else context.getString(R.string.schedule_widget_open))
-            val intent = Intent(context, MainActivity::class.java).apply {
-                action = OPEN_SCHEDULE
-                putExtra(OPEN_SCHEDULE, true)
-                addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP)
-            }
-            views.setOnClickPendingIntent(R.id.schedule_widget_root, PendingIntent.getActivity(
-                context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE))
-            return views
-        }
-
-        private fun lessonView(context: Context, lesson: WidgetLesson, now: Long): RemoteViews {
-            val row = RemoteViews(context.packageName, R.layout.schedule_widget_lesson)
-            val current = lesson.start <= now && now < lesson.end
-            val formatter = SimpleDateFormat("HH:mm", Locale("ru")).apply {
-                timeZone = TimeZone.getTimeZone(ScheduleWidgetData.TIME_ZONE)
-            }
-            row.setTextViewText(R.id.schedule_widget_lesson_title, lesson.title)
-            row.setTextViewText(R.id.schedule_widget_lesson_detail, listOf(
-                if (current) context.getString(R.string.schedule_widget_now) else lesson.type,
-                lesson.location,
-            ).filter { it.isNotBlank() }.joinToString(" · "))
-            row.setTextViewText(R.id.schedule_widget_lesson_start, formatter.format(Date(lesson.start)))
-            row.setTextViewText(R.id.schedule_widget_lesson_end, formatter.format(Date(lesson.end)))
-            row.setInt(R.id.schedule_widget_lesson_root, "setBackgroundResource",
-                if (current) R.drawable.schedule_widget_current else 0)
-            return row
-        }
-
-        private fun dayStart(time: Long): Calendar = Calendar.getInstance(TimeZone.getTimeZone(ScheduleWidgetData.TIME_ZONE)).apply {
-            timeInMillis = time
-            set(Calendar.HOUR_OF_DAY, 0)
-            set(Calendar.MINUTE, 0)
-            set(Calendar.SECOND, 0)
-            set(Calendar.MILLISECOND, 0)
-        }
 
         private fun alarmManager(context: Context): AlarmManager =
             context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
