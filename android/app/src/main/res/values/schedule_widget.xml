@@ -35,5 +35,4 @@
     <color name="schedule_widget_background">#F4FBFA</color>
     <color name="schedule_widget_text">#172B28</color>
     <color name="schedule_widget_secondary">#637B77</color>
-    <color name="schedule_widget_accent">#00897F</color>
 </resources>

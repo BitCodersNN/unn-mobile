@@ -11,7 +11,7 @@ struct ScheduleLiveActivity: Widget {
         ActivityConfiguration(for: ScheduleActivityAttributes.self) { context in
             ScheduleLiveActivityView(context: context)
                 .activitySystemActionForegroundColor(.primary)
-                .widgetURL(ScheduleWidgetConstants.url)
+                .widgetURL(ScheduleNavigation.url)
         } dynamicIsland: { context in
             DynamicIsland {
                 DynamicIslandExpandedRegion(.center) {
@@ -19,7 +19,7 @@ struct ScheduleLiveActivity: Widget {
                 }
             } compactLeading: {
                 Image(systemName: "calendar")
-                    .foregroundStyle(ScheduleWidgetPalette.subjectColor(context.attributes.accentColor))
+                    .foregroundStyle(SchedulePalette.subjectColor(context.attributes.accentColor))
             } compactTrailing: {
                 ScheduleActivityCountdown(context: context)
                     .font(.caption.monospacedDigit())
@@ -27,8 +27,8 @@ struct ScheduleLiveActivity: Widget {
             } minimal: {
                 Image(systemName: "calendar")
             }
-            .widgetURL(ScheduleWidgetConstants.url)
-            .keylineTint(ScheduleWidgetPalette.subjectColor(context.attributes.accentColor))
+            .widgetURL(ScheduleNavigation.url)
+            .keylineTint(SchedulePalette.subjectColor(context.attributes.accentColor))
         }
     }
 }
@@ -37,7 +37,7 @@ struct ScheduleLiveActivity: Widget {
 private struct ScheduleLiveActivityView: View {
     let context: ActivityViewContext<ScheduleActivityAttributes>
     @Environment(\.colorScheme) private var colorScheme
-    private var accent: Color { ScheduleWidgetPalette.subjectColor(context.attributes.accentColor) }
+    private var accent: Color { SchedulePalette.subjectColor(context.attributes.accentColor) }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -70,8 +70,8 @@ private struct ScheduleLiveActivityView: View {
             .tint(accent)
         }
         .padding(14)
-        .environment(\.timeZone, ScheduleWidgetConstants.timeZone)
-        .activityBackgroundTint(ScheduleWidgetPalette.background(for: colorScheme))
+        .environment(\.timeZone, ScheduleTime.timeZone)
+        .activityBackgroundTint(SchedulePalette.background(for: colorScheme))
         .privacySensitive()
     }
 }

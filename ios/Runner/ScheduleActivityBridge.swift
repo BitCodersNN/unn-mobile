@@ -8,6 +8,7 @@ import UIKit
 @MainActor
 final class ScheduleActivityBridge {
     private let channel: FlutterMethodChannel
+    private let settingsProvider = ScheduleActivitySettingsProvider()
 
     init(messenger: FlutterBinaryMessenger) {
         channel = FlutterMethodChannel(name: "ru.bitcodersnn.unnstudenthub/schedule_activity",
@@ -20,13 +21,10 @@ final class ScheduleActivityBridge {
     private func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
         switch call.method {
         case "configure":
-            guard let value = call.arguments as? String,
-                  let bytes = value.data(using: .utf8),
-                  (try? JSONDecoder().decode(ScheduleActivitySettings.self, from: bytes)) != nil else {
+            guard let value = call.arguments as? String, settingsProvider.writeJSON(value) else {
                 result(FlutterError(code: "INVALID_SETTINGS", message: "Invalid activity settings", details: nil))
                 return
             }
-            UserDefaults.standard.set(value, forKey: ScheduleActivitySettings.key)
             ScheduleActivityCoordinator.synchronize()
             result(nil)
         case "status":
@@ -54,7 +52,9 @@ final class ScheduleActivityBridge {
 enum ScheduleActivityCoordinator {
     private static var pending: Task<Void, Never>?
     private static var timer: Timer?
-    private static let requestedKey = "schedule_activity_requested"
+    private static let settingsProvider = ScheduleActivitySettingsProvider()
+    private static let snapshotProvider = ScheduleSnapshotProvider()
+    private static let stateProvider = ScheduleActivityStateProvider()
 
     static func synchronize() {
         guard #available(iOS 16.2, *) else { return }
@@ -69,18 +69,18 @@ enum ScheduleActivityCoordinator {
     private static func reconcile() async {
         timer?.invalidate()
         let now = Date()
-        let settings = ScheduleActivitySettings.read()
-        let data = ScheduleWidgetData.read()
+        let settings = settingsProvider.read()
+        let data = snapshotProvider.read()
         let enabled = settings?.mode == "full" || settings?.mode == "brief"
         guard enabled, let settings = settings, let data = data,
               data.validFrom <= now.timeIntervalSince1970 * 1000,
               data.validUntil > now.timeIntervalSince1970 * 1000,
               ActivityAuthorizationInfo().areActivitiesEnabled else {
             await endAll()
-            UserDefaults.standard.removeObject(forKey: requestedKey)
+            stateProvider.clear()
             return
         }
-        var requested = UserDefaults.standard.dictionary(forKey: requestedKey) as? [String: Double] ?? [:]
+        var requested = stateProvider.read()
         requested = requested.filter { $0.value > now.timeIntervalSince1970 }
         let candidates = data.lessons.compactMap { lesson -> ScheduleActivityAttributes? in
             let end = settings.mode == "brief"
@@ -122,7 +122,7 @@ enum ScheduleActivityCoordinator {
                 requested[attributes.identifier] = attributes.displayUntil.timeIntervalSince1970
             }
         }
-        UserDefaults.standard.set(requested, forKey: requestedKey)
+        stateProvider.save(requested)
         let boundaries = candidates.flatMap { [$0.noticeStart, $0.start, $0.displayUntil] }
             + [Date(timeIntervalSince1970: data.validUntil / 1000)]
         if let next = boundaries.filter({ $0 > now }).min() {

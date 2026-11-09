@@ -16,6 +16,9 @@ import android.util.SizeF
 import android.widget.RemoteViews
 import java.util.Calendar
 import ru.bitcodersnn.unnstudenthub.R
+import ru.bitcodersnn.unnstudenthub.schedule.ScheduleSnapshot
+import ru.bitcodersnn.unnstudenthub.schedule.ScheduleSnapshotProvider
+import ru.bitcodersnn.unnstudenthub.schedule.ScheduleTime
 
 class ScheduleWidgetProvider : AppWidgetProvider() {
     override fun onUpdate(context: Context, manager: AppWidgetManager, ids: IntArray) {
@@ -48,11 +51,10 @@ class ScheduleWidgetProvider : AppWidgetProvider() {
     }
 
     companion object {
-        const val OPEN_SCHEDULE = "open_schedule_widget"
         private const val UPDATE_ACTION = "ru.bitcodersnn.unnstudenthub.UPDATE_SCHEDULE_WIDGET"
 
         fun preview(context: Context, settings: ScheduleWidgetSettings): RemoteViews =
-            ScheduleWidgetRenderer(context, ScheduleWidgetData.read(context),
+            ScheduleWidgetRenderer(context, ScheduleSnapshotProvider(context).read(),
                 System.currentTimeMillis(), settings).render(260f).apply {
                 setOnClickPendingIntent(R.id.schedule_widget_root, null)
                 setOnClickPendingIntent(R.id.schedule_widget_settings, null)
@@ -62,10 +64,10 @@ class ScheduleWidgetProvider : AppWidgetProvider() {
             val manager = AppWidgetManager.getInstance(context)
             val ids = manager.getAppWidgetIds(ComponentName(context, ScheduleWidgetProvider::class.java))
             if (ids.isEmpty()) return
-            val data = ScheduleWidgetData.read(context)
+            val data = ScheduleSnapshotProvider(context).read()
             val now = System.currentTimeMillis()
             ids.forEach { id -> manager.updateAppWidget(id, render(context, manager, id, data, now)) }
-            val midnight = ScheduleWidgetTime.dayStart(now).apply { add(Calendar.DAY_OF_MONTH, 1) }.timeInMillis
+            val midnight = ScheduleTime.dayStart(now).apply { add(Calendar.DAY_OF_MONTH, 1) }.timeInMillis
             val nextBoundary = data?.lessons?.flatMap { listOf(it.start, it.end) }
                 ?.filter { it > now && it < midnight }?.minOrNull() ?: midnight
             alarmManager(context).set(AlarmManager.RTC, nextBoundary, updateIntent(context))
@@ -75,7 +77,7 @@ class ScheduleWidgetProvider : AppWidgetProvider() {
             context: Context,
             manager: AppWidgetManager,
             id: Int,
-            data: ScheduleWidgetData?,
+            data: ScheduleSnapshot?,
             now: Long,
         ): RemoteViews {
             val options = manager.getAppWidgetOptions(id)

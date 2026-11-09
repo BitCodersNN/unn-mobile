@@ -7,7 +7,7 @@ import WidgetKit
 struct ScheduleWidgetView: View {
     let entry: ScheduleEntry
     @Environment(\.widgetFamily) private var family
-    private let accent = ScheduleWidgetPalette.accent
+    private let accent = SchedulePalette.accent
     private var settings: ScheduleWidgetSettings { entry.settings }
 
     private var rowHeight: CGFloat {
@@ -37,7 +37,7 @@ struct ScheduleWidgetView: View {
         return min(available, familyLimit, configuredLimit)
     }
 
-    private var remaining: [ScheduleWidgetLesson] {
+    private var remaining: [ScheduleLesson] {
         guard entry.data?.covers(entry.date) == true else { return [] }
         return entry.data?.remaining(at: entry.date) ?? []
     }
@@ -97,22 +97,18 @@ struct ScheduleWidgetView: View {
         .padding(.horizontal, 14)
         .padding(.vertical, family == .systemMedium ? 8 : 14)
         .scheduleWidgetBackground()
-        .widgetURL(ScheduleWidgetConstants.url)
+        .widgetURL(ScheduleNavigation.url)
     }
 
     private var dateLabel: String {
-        let formatter = DateFormatter()
-        formatter.timeZone = ScheduleWidgetConstants.timeZone
-        formatter.locale = Locale(identifier: "ru_RU")
-        formatter.dateFormat = "EEE, d MMM"
-        return [formatter.string(from: entry.date), entry.data?.ownerLabel ?? ""]
+        return [ScheduleTime.format(entry.date, pattern: "EEE, d MMM"), entry.data?.ownerLabel ?? ""]
             .filter { !$0.isEmpty }.joined(separator: " · ")
     }
 
-    private func lessonRow(_ lesson: ScheduleWidgetLesson) -> some View {
+    private func lessonRow(_ lesson: ScheduleLesson) -> some View {
         let current = lesson.startDate <= entry.date && entry.date < lesson.endDate
         let compact = family == .systemMedium
-        let lessonColor = ScheduleWidgetPalette.subjectColor(lesson.accentColor)
+        let lessonColor = SchedulePalette.subjectColor(lesson.accentColor)
         return HStack(alignment: .top, spacing: 7) {
             RoundedRectangle(cornerRadius: 2).fill(lessonColor).frame(width: 3)
             VStack(alignment: .leading, spacing: compact ? 1 : 3) {
@@ -148,10 +144,7 @@ struct ScheduleWidgetView: View {
     }
 
     private func timeLabel(_ date: Date) -> String {
-        let formatter = DateFormatter()
-        formatter.timeZone = ScheduleWidgetConstants.timeZone
-        formatter.dateFormat = "HH:mm"
-        return formatter.string(from: date)
+        ScheduleTime.format(date, pattern: "HH:mm")
     }
 
     private func textFont(_ size: CGFloat, weight: Font.Weight = .regular) -> Font {
@@ -170,7 +163,7 @@ private struct ScheduleWidgetBackground: ViewModifier {
 
     @ViewBuilder
     func body(content: Content) -> some View {
-        let color = ScheduleWidgetPalette.background(for: colorScheme)
+        let color = SchedulePalette.background(for: colorScheme)
         if #available(iOSApplicationExtension 17.0, *) {
             content.containerBackground(for: .widget) { color }
         } else {
@@ -187,14 +180,14 @@ struct ScheduleWidget: Widget {
     private func makeConfiguration() -> some WidgetConfiguration {
         if #available(iOS 17.0, *) {
             return AppIntentConfiguration(
-                kind: ScheduleWidgetConstants.kind,
+                kind: ScheduleConstants.widgetKind,
                 intent: ScheduleWidgetConfiguration.self,
                 provider: ConfigurableScheduleProvider()
             ) { entry in
                 ScheduleWidgetView(entry: entry)
             }
         } else {
-            return StaticConfiguration(kind: ScheduleWidgetConstants.kind, provider: ScheduleProvider()) { entry in
+            return StaticConfiguration(kind: ScheduleConstants.widgetKind, provider: ScheduleProvider()) { entry in
                 ScheduleWidgetView(entry: entry)
             }
         }

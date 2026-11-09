@@ -10,14 +10,13 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
-import ru.bitcodersnn.unnstudenthub.MainActivity
 import ru.bitcodersnn.unnstudenthub.R
-import ru.bitcodersnn.unnstudenthub.schedulewidget.ScheduleWidgetData
-import ru.bitcodersnn.unnstudenthub.schedulewidget.ScheduleWidgetProvider
-import ru.bitcodersnn.unnstudenthub.schedulewidget.WidgetLesson
+import ru.bitcodersnn.unnstudenthub.schedule.ScheduleLesson
+import ru.bitcodersnn.unnstudenthub.schedule.ScheduleNavigation
+import ru.bitcodersnn.unnstudenthub.schedule.SchedulePalette
+import ru.bitcodersnn.unnstudenthub.schedule.ScheduleSnapshotProvider
 
 object ScheduleLiveUpdate {
     private const val CHANNEL = "schedule_live_updates"
@@ -26,8 +25,6 @@ object ScheduleLiveUpdate {
     const val UPDATE = "ru.bitcodersnn.unnstudenthub.SCHEDULE_LIVE_UPDATE"
     const val DISMISS = "ru.bitcodersnn.unnstudenthub.DISMISS_SCHEDULE_LIVE_UPDATE"
     const val LESSON_ID = "lesson_id"
-
-    private fun WidgetLesson.identity() = "$start|$end|$title|$location"
 
     fun dismiss(context: Context, id: String) {
         val preferences = context.getSharedPreferences(ScheduleActivitySettings.PREFERENCES, Context.MODE_PRIVATE)
@@ -60,19 +57,19 @@ object ScheduleLiveUpdate {
             return
         }
         val now = System.currentTimeMillis()
-        val data = ScheduleWidgetData.read(context)
+        val data = ScheduleSnapshotProvider(context).read()
         if (data == null || now < data.validFrom || now >= data.validUntil) {
             manager.cancel(NOTIFICATION_ID)
             return
         }
         val preferences = context.getSharedPreferences(ScheduleActivitySettings.PREFERENCES, Context.MODE_PRIVATE)
         val validLessons = data.lessons.filter { it.end > it.start && it.end > now }
-        val ids = validLessons.map { it.identity() }.toSet()
+        val ids = validLessons.map { it.identifier }.toSet()
         val dismissed = preferences.getStringSet(ScheduleActivitySettings.DISMISSED, emptySet()).orEmpty().intersect(ids)
         preferences.edit().putStringSet(ScheduleActivitySettings.DISMISSED, dismissed).apply()
-        fun displayEnd(lesson: WidgetLesson) = if (settings.mode == "brief")
+        fun displayEnd(lesson: ScheduleLesson) = if (settings.mode == "brief")
             minOf(lesson.end, lesson.start + settings.initialMillis) else lesson.end
-        val lessons = validLessons.filter { it.identity() !in dismissed }
+        val lessons = validLessons.filter { it.identifier !in dismissed }
         val current = lessons.firstOrNull { it.start <= now && now < displayEnd(it) }
             ?: lessons.firstOrNull { it.start - settings.beforeMillis <= now && now < it.start }
         if (current == null) {
@@ -99,25 +96,21 @@ object ScheduleLiveUpdate {
     }
 
     @android.annotation.TargetApi(36)
-    private fun post(context: Context, manager: NotificationManager, lesson: WidgetLesson, now: Long, displayEnd: Long) {
+    private fun post(context: Context, manager: NotificationManager, lesson: ScheduleLesson, now: Long, displayEnd: Long) {
         manager.createNotificationChannel(NotificationChannel(CHANNEL, "Ход занятия", NotificationManager.IMPORTANCE_LOW))
         val active = now >= lesson.start
         val target = if (active) lesson.end else lesson.start
         val minutes = ((target - now + 59_999) / 60_000).coerceAtLeast(1)
         val label = if (active) "Осталось $minutes мин" else "До начала $minutes мин"
         val details = listOf(label, lesson.type, lesson.location).filter { it.isNotBlank() }.joinToString(" · ")
-        val open = Intent(context, MainActivity::class.java).apply {
-            putExtra(ScheduleWidgetProvider.OPEN_SCHEDULE, true)
-            addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP)
-        }
         val dismiss = PendingIntent.getBroadcast(context, 1,
-            Intent(context, ScheduleActivityReceiver::class.java).setAction(DISMISS).putExtra(LESSON_ID, lesson.identity()),
+            Intent(context, ScheduleActivityReceiver::class.java).setAction(DISMISS).putExtra(LESSON_ID, lesson.identifier),
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
         val duration = (lesson.end - lesson.start).coerceAtLeast(1)
         val progress = if (active)
             (((now - lesson.start).coerceIn(0, duration) * 1000) / duration).toInt()
         else 1000
-        val accent = lesson.accentColor ?: Color.rgb(68, 133, 127)
+        val accent = SchedulePalette.lessonAccent(context, lesson)
         val style = Notification.ProgressStyle()
             .setProgressSegments(listOf(Notification.ProgressStyle.Segment(1000).setColor(accent)))
             .setProgress(progress)
@@ -137,8 +130,7 @@ object ScheduleLiveUpdate {
             .setPublicVersion(Notification.Builder(context, CHANNEL)
                 .setSmallIcon(R.drawable.ic_schedule_widget_calendar)
                 .setContentTitle("Расписание").setContentText("Занятие").build())
-            .setContentIntent(PendingIntent.getActivity(context, 1, open,
-                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE))
+            .setContentIntent(ScheduleNavigation.pendingIntent(context))
             .setDeleteIntent(dismiss)
             .addAction(Notification.Action.Builder(null, "Скрыть пару", dismiss).build())
             .addExtras(Bundle().apply { putBoolean(REQUEST_PROMOTED_ONGOING, true) })

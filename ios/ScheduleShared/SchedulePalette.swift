@@ -3,7 +3,7 @@
 
 import SwiftUI
 
-enum ScheduleWidgetPalette {
+enum SchedulePalette {
     static let accent = Color(red: 0, green: 0.54, blue: 0.50)
 
     static func background(for colorScheme: ColorScheme) -> Color {

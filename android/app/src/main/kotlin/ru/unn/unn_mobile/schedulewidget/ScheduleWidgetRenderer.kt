@@ -3,21 +3,23 @@
 
 package ru.bitcodersnn.unnstudenthub.schedulewidget
 
-import android.app.PendingIntent
 import android.content.Context
-import android.content.Intent
 import android.content.res.Configuration
 import android.os.Build
 import android.util.TypedValue
 import android.view.View
 import android.widget.RemoteViews
 import java.util.Calendar
-import ru.bitcodersnn.unnstudenthub.MainActivity
 import ru.bitcodersnn.unnstudenthub.R
+import ru.bitcodersnn.unnstudenthub.schedule.ScheduleLesson
+import ru.bitcodersnn.unnstudenthub.schedule.ScheduleNavigation
+import ru.bitcodersnn.unnstudenthub.schedule.SchedulePalette
+import ru.bitcodersnn.unnstudenthub.schedule.ScheduleSnapshot
+import ru.bitcodersnn.unnstudenthub.schedule.ScheduleTime
 
 class ScheduleWidgetRenderer(
     private val context: Context,
-    private val data: ScheduleWidgetData?,
+    private val data: ScheduleSnapshot?,
     private val now: Long,
     private val settings: ScheduleWidgetSettings,
 ) {
@@ -44,14 +46,14 @@ class ScheduleWidgetRenderer(
         styleText(views, R.id.schedule_widget_title, 16f, R.color.schedule_widget_text)
         styleText(views, R.id.schedule_widget_date, 12f, R.color.schedule_widget_secondary)
         styleText(views, R.id.schedule_widget_empty, 14f, R.color.schedule_widget_secondary)
-        styleText(views, R.id.schedule_widget_footer, 11f, R.color.schedule_widget_accent)
+        styleText(views, R.id.schedule_widget_footer, 11f, R.color.schedule_accent)
 
-        val day = ScheduleWidgetTime.dayStart(now)
+        val day = ScheduleTime.dayStart(now)
         val tomorrow = (day.clone() as Calendar).apply { add(Calendar.DAY_OF_MONTH, 1) }.timeInMillis
         val covered = data != null && data.validFrom <= day.timeInMillis && data.validUntil >= tomorrow
         val today = data?.lessons?.filter { it.start >= day.timeInMillis && it.start < tomorrow }.orEmpty()
         val remaining = today.filter { it.end > now }
-        val date = ScheduleWidgetTime.format(now, "EEE, d MMM")
+        val date = ScheduleTime.format(now, "EEE, d MMM")
         views.setTextViewText(R.id.schedule_widget_date,
             listOf(date, data?.ownerLabel.orEmpty()).filter { it.isNotBlank() }.joinToString(" · "))
         val message = when {
@@ -74,13 +76,7 @@ class ScheduleWidgetRenderer(
         val more = if (showLessons) (remaining.size - capacity).coerceAtLeast(0) else 0
         views.setTextViewText(R.id.schedule_widget_footer, if (more > 0)
             context.getString(R.string.schedule_widget_more, more) else context.getString(R.string.schedule_widget_open))
-        val intent = Intent(context, MainActivity::class.java).apply {
-            action = ScheduleWidgetProvider.OPEN_SCHEDULE
-            putExtra(ScheduleWidgetProvider.OPEN_SCHEDULE, true)
-            addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP)
-        }
-        views.setOnClickPendingIntent(R.id.schedule_widget_root, PendingIntent.getActivity(
-            context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE))
+        views.setOnClickPendingIntent(R.id.schedule_widget_root, ScheduleNavigation.pendingIntent(context))
         return views
     }
 
@@ -93,9 +89,9 @@ class ScheduleWidgetRenderer(
         return if (settings.maxLessons == 0) available else minOf(available, settings.maxLessons)
     }
 
-    private fun lessonView(lesson: WidgetLesson): RemoteViews {
+    private fun lessonView(lesson: ScheduleLesson): RemoteViews {
         val row = RemoteViews(context.packageName, R.layout.schedule_widget_lesson)
-        val accent = lesson.accentColor ?: color(R.color.schedule_widget_accent)
+        val accent = SchedulePalette.lessonAccent(colors, lesson)
         row.setInt(R.id.schedule_widget_lesson_accent, "setColorFilter", accent)
         val current = lesson.start <= now && now < lesson.end
         row.setViewVisibility(R.id.schedule_widget_lesson_background, if (current) View.VISIBLE else View.GONE)
@@ -110,8 +106,8 @@ class ScheduleWidgetRenderer(
         row.setTextViewText(R.id.schedule_widget_lesson_lecturer, lesson.lecturer)
         row.setViewVisibility(R.id.schedule_widget_lesson_lecturer,
             if (settings.showLecturer && lesson.lecturer.isNotBlank()) View.VISIBLE else View.GONE)
-        row.setTextViewText(R.id.schedule_widget_lesson_start, ScheduleWidgetTime.format(lesson.start, "HH:mm"))
-        row.setTextViewText(R.id.schedule_widget_lesson_end, ScheduleWidgetTime.format(lesson.end, "HH:mm"))
+        row.setTextViewText(R.id.schedule_widget_lesson_start, ScheduleTime.format(lesson.start, "HH:mm"))
+        row.setTextViewText(R.id.schedule_widget_lesson_end, ScheduleTime.format(lesson.end, "HH:mm"))
         styleText(row, R.id.schedule_widget_lesson_title, 13f, R.color.schedule_widget_text)
         styleText(row, R.id.schedule_widget_lesson_detail, 11f, R.color.schedule_widget_secondary)
         styleText(row, R.id.schedule_widget_lesson_location, 11f, R.color.schedule_widget_secondary)

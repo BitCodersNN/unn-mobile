@@ -36,6 +36,6 @@
     <TextView android:id="@+id/schedule_widget_footer"
         android:layout_width="match_parent" android:layout_height="wrap_content"
         android:layout_marginTop="4dp" android:textSize="11sp" android:maxLines="1" android:ellipsize="end"
-        android:text="@string/schedule_widget_open" android:textColor="@color/schedule_widget_accent" />
+        android:text="@string/schedule_widget_open" android:textColor="@color/schedule_accent" />
     </LinearLayout>
 </FrameLayout>

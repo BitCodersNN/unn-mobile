@@ -23,7 +23,7 @@
             <TextView android:id="@+id/schedule_widget_transparency_value"
                 android:layout_width="wrap_content" android:layout_height="wrap_content"
                 android:layout_marginStart="12dp" android:textSize="18sp"
-                android:textColor="@color/schedule_widget_accent" />
+                android:textColor="@color/schedule_accent" />
         </LinearLayout>
         <SeekBar android:id="@+id/schedule_widget_transparency_slider"
             android:layout_width="match_parent" android:layout_height="48dp" android:max="100" />

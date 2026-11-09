@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <style name="ScheduleWidgetConfigurationTheme" parent="android:style/Theme.Material.NoActionBar">
-        <item name="android:colorAccent">@color/schedule_widget_accent</item>
+        <item name="android:colorAccent">@color/schedule_accent</item>
         <item name="android:windowBackground">@color/schedule_widget_background</item>
         <item name="android:windowLightStatusBar">false</item>
         <item name="android:windowLightNavigationBar">false</item>

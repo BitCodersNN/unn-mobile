@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2026 BitCodersNN
 
-package ru.bitcodersnn.unnstudenthub.schedulewidget
+package ru.bitcodersnn.unnstudenthub.schedule
 
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -9,9 +9,11 @@ import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
 
-internal object ScheduleWidgetTime {
+internal object ScheduleTime {
+    private const val TIME_ZONE = "Europe/Moscow"
+
     fun dayStart(time: Long): Calendar =
-        Calendar.getInstance(TimeZone.getTimeZone(ScheduleWidgetData.TIME_ZONE)).apply {
+        Calendar.getInstance(TimeZone.getTimeZone(TIME_ZONE)).apply {
             timeInMillis = time
             set(Calendar.HOUR_OF_DAY, 0)
             set(Calendar.MINUTE, 0)
@@ -21,6 +23,6 @@ internal object ScheduleWidgetTime {
 
     fun format(time: Long, pattern: String): String =
         SimpleDateFormat(pattern, Locale.forLanguageTag("ru")).apply {
-            timeZone = TimeZone.getTimeZone(ScheduleWidgetData.TIME_ZONE)
+            timeZone = TimeZone.getTimeZone(TIME_ZONE)
         }.format(Date(time))
 }
