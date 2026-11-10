@@ -9,8 +9,23 @@ import 'package:unn_mobile/ui/widgets/section_header.dart';
 class FeedPostsSliver extends StatelessWidget {
   final List<FeedPostViewModel> posts;
   final String? title;
+  final bool groupByReadStatus;
 
-  const FeedPostsSliver({required this.posts, this.title, super.key});
+  const FeedPostsSliver({
+    required this.posts,
+    this.title,
+    this.groupByReadStatus = true,
+    super.key,
+  });
+
+  Widget _postList(List<FeedPostViewModel> items) => SliverList.builder(
+    itemCount: items.length,
+    itemBuilder: (context, index) => FeedPost(
+      key: ObjectKey(items[index]),
+      post: items[index],
+      showingComments: false,
+    ),
+  );
 
   Widget _section(String title, List<FeedPostViewModel> items) =>
       SliverMainAxisGroup(
@@ -21,14 +36,7 @@ class FeedPostsSliver extends StatelessWidget {
               padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
             ),
           ),
-          SliverList.builder(
-            itemCount: items.length,
-            itemBuilder: (context, index) => FeedPost(
-              key: ObjectKey(items[index]),
-              post: items[index],
-              showingComments: false,
-            ),
-          ),
+          _postList(items),
         ],
       );
 
@@ -36,6 +44,9 @@ class FeedPostsSliver extends StatelessWidget {
   Widget build(BuildContext context) {
     if (title != null) {
       return _section(title!, posts);
+    }
+    if (!groupByReadStatus) {
+      return _postList(posts);
     }
     final unread = posts.where((post) => post.isNewPost).toList();
     final read = posts.where((post) => !post.isNewPost).toList();

@@ -348,11 +348,8 @@ class FeedScreenViewState extends State<FeedScreenView>
                     else
                       FeedPostsSliver(
                         posts: posts,
-                        title: model.hasSearch
-                            ? 'Результаты поиска'
-                            : model.filter == FeedFilter.pinned
-                            ? model.filter.caption
-                            : null,
+                        title: model.hasSearch ? 'Результаты поиска' : null,
+                        groupByReadStatus: model.filter != FeedFilter.pinned,
                       ),
                     if ((model.loadingMore || model.isBusy) &&
                         !model.isReplacingPosts &&
