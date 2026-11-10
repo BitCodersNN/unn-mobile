@@ -6,6 +6,8 @@ import 'package:html_unescape/html_unescape.dart';
 import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/misc/demo_mode_status.dart';
 import 'package:unn_mobile/core/misc/logging/diagnostic_event.dart';
+import 'package:unn_mobile/core/misc/optimistic_action.dart';
+import 'package:unn_mobile/core/models/common/action_result.dart';
 import 'package:unn_mobile/core/models/feed/blog_post.dart';
 import 'package:unn_mobile/core/models/feed/blog_post_data.dart';
 import 'package:unn_mobile/core/models/feed/important_blog_post.dart';
@@ -34,6 +36,7 @@ class FeedPostViewModel extends BaseViewModel {
   final BlogPostCommentsService _commentsService;
 
   final HtmlUnescape _unescaper = HtmlUnescape();
+  final OptimisticAction _changePin = OptimisticAction();
 
   final List<AttachedFileViewModel> attachedFileViewModels = [];
   final onError = Event();
@@ -217,32 +220,27 @@ class FeedPostViewModel extends BaseViewModel {
     }
   });
 
-  Future<bool> togglePin() async {
+  Future<ActionResult> togglePin() async {
     if (DemoModeStatus.demoModeEnabled || isPinUpdating) {
-      return true;
+      return ActionResult.skipped;
     }
     final feed = _feedScreenViewModel;
     final pinnedId = blogData?.pinnedId;
     if (feed == null || pinnedId == null || pinnedId <= 0) {
-      return false;
+      return ActionResult.skipped;
     }
     final wasPinned = isPinned;
-    feed.setPostPinned(this, pinned: !wasPinned, pending: true);
-    notifyListeners();
-    bool success = false;
-    try {
-      success = await (wasPinned
+    return _changePin.run(
+      apply: () => feed.setPostPinned(this, pinned: !wasPinned, pending: true),
+      save: () => wasPinned
           ? _pinningService.unpin(pinnedId)
-          : _pinningService.pin(pinnedId));
-    } catch (error, stackTrace) {
-      _loggerService.logError(error, stackTrace);
-    }
-    feed.setPostPinned(
-      this,
-      pinned: success ? !wasPinned : wasPinned,
-      pending: false,
+          : _pinningService.pin(pinnedId),
+      rollback: () =>
+          feed.setPostPinned(this, pinned: wasPinned, pending: false),
+      commit: () =>
+          feed.setPostPinned(this, pinned: !wasPinned, pending: false),
+      onChanged: notifyListeners,
+      onError: _loggerService.logError,
     );
-    notifyListeners();
-    return success;
   }
 }

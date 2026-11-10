@@ -7,6 +7,7 @@ import 'package:unn_mobile/core/models/feed/rating_list.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/common/profile_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/feed/feed_comment_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/feed/reaction_view_model.dart';
+import 'package:unn_mobile/ui/actions/reaction_actions.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/functions/anchored_reactions_window.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/widgets/attached_file.dart';
@@ -128,7 +129,7 @@ class _ReactionView extends StatelessWidget {
                   isSelected: model.currentReaction == reaction,
                   onPressed: () {
                     triggerHaptic(HapticIntensity.selection);
-                    model.toggleReaction(reaction);
+                    ReactionActions.of(context, model).toggleReaction(reaction);
                   },
                   icon: Image.asset(reaction.assetName),
                   text: model.getReactionCount(reaction).toString(),

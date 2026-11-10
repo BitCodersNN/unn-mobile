@@ -17,6 +17,8 @@ import 'package:unn_mobile/core/viewmodels/factories/feed_post_view_model_factor
 import 'package:unn_mobile/core/viewmodels/main_page/common/profile_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/feed/feed_post_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/feed/reaction_view_model.dart';
+import 'package:unn_mobile/ui/actions/reaction_actions.dart';
+import 'package:unn_mobile/ui/actions/ui_action_handler.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/functions/anchored_reactions_window.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/widgets/attached_file.dart';
@@ -380,14 +382,11 @@ class _FeedPostState extends State<FeedPost> {
   }
 
   Future<void> _togglePin(FeedPostViewModel model) async {
-    final messenger = ScaffoldMessenger.of(context);
     triggerHaptic(HapticIntensity.selection);
-    final success = await model.togglePin();
-    if (!success && messenger.mounted) {
-      messenger.showSnackBar(
-        const SnackBar(content: Text('Не удалось изменить закрепление поста')),
-      );
-    }
+    await UiActionHandler.of(context).run(
+      model.togglePin,
+      errorMessage: 'Не удалось изменить закрепление поста',
+    );
   }
 
   Future<void> _sharePost(FeedPostViewModel model) async {
@@ -482,7 +481,7 @@ class _ReactionButton extends StatelessWidget {
     builder: (context, viewModel, _) => GestureDetector(
       onTap: () {
         triggerHaptic(HapticIntensity.selection);
-        viewModel.toggleLike();
+        ReactionActions.of(context, viewModel).toggleLike();
       },
       onLongPress: () {
         showAnchoredReactionChoice(context, viewModel);

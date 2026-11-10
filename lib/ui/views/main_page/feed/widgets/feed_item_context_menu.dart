@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:unn_mobile/core/misc/haptic_utils.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/common/reaction_view_model_base.dart';
+import 'package:unn_mobile/ui/actions/reaction_actions.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/widgets/feed_reaction_picker.dart';
 import 'package:unn_mobile/ui/widgets/context_menu/context_menu_action.dart';
 import 'package:unn_mobile/ui/widgets/context_menu/context_menu_actions.dart';
@@ -289,9 +290,13 @@ class _FeedItemMenuRoute extends PopupRoute<VoidCallback> {
                                 return;
                               }
                               triggerHaptic(HapticIntensity.selection);
+                              final actions = ReactionActions.of(
+                                context,
+                                reactions!,
+                              );
                               Navigator.of(context).pop<VoidCallback>(() {
                                 if (reactions!.currentReaction != reaction) {
-                                  reactions!.toggleReaction(reaction);
+                                  actions.toggleReaction(reaction);
                                 }
                               });
                             },

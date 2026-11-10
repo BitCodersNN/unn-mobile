@@ -9,6 +9,7 @@ import 'package:unn_mobile/core/models/feed/rating_list.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/common/reaction_view_model_base.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/feed/feed_comment_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/feed/feed_post_view_model.dart';
+import 'package:unn_mobile/ui/actions/reaction_actions.dart';
 import 'package:unn_mobile/ui/widgets/context_menu/context_menu_action.dart';
 
 List<ContextMenuAction> createMessageActions({
@@ -86,7 +87,7 @@ ContextMenuAction _reactionAction(
                 onTap: () {
                   triggerHaptic(HapticIntensity.selection);
                   if (model.currentReaction != reaction) {
-                    model.toggleReaction(reaction);
+                    ReactionActions.of(context, model).toggleReaction(reaction);
                   }
                   Navigator.pop(context);
                 },
