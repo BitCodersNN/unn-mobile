@@ -20,6 +20,12 @@ import 'package:unn_mobile/core/viewmodels/main_page/feed/feed_post_view_model.d
 import 'package:unn_mobile/core/viewmodels/main_page/main_page_route_view_model.dart';
 
 typedef _FeedSelection = ({bool onlyImportant, String? query});
+typedef _FeedPinChange = ({
+  FeedPostViewModel post,
+  bool pinned,
+  bool pending,
+  int revision,
+});
 
 class FeedScreenViewModel extends BaseViewModel
     implements MainPageRouteViewModel {
@@ -34,6 +40,8 @@ class FeedScreenViewModel extends BaseViewModel
 
   final Map<_FeedSelection, FeedPageState> _pages = {};
   final Map<FeedFilter, double> _scrollPositions = {};
+  final Map<int, _FeedPinChange> _pinChanges = {};
+  int _pinRevision = 0;
   _FeedSelection? _serverSelection;
 
   _FeedSelection get _selection =>
@@ -54,7 +62,34 @@ class FeedScreenViewModel extends BaseViewModel
 
   DateTime? get lastReadAt => _lastReadAt;
 
-  List<FeedPostViewModel> get posts => List.of(_totalPosts);
+  List<FeedPostViewModel> get posts => _postsWithPinChanges(_page, _selection);
+
+  List<FeedPostViewModel> _postsWithPinChanges(
+    FeedPageState page,
+    _FeedSelection selection,
+  ) {
+    final result = List.of(page.posts);
+    for (final change in _pinChanges.values) {
+      if (!change.pinned) {
+        _insertUnpinnedPost(result, selection, change.post);
+      }
+    }
+    return result;
+  }
+
+  void _insertUnpinnedPost(
+    List<FeedPostViewModel> posts,
+    _FeedSelection selection,
+    FeedPostViewModel post,
+  ) {
+    if ((selection.onlyImportant && !post.isAnnouncement) ||
+        !_matchesQuery(post, selection.query) ||
+        posts.any((item) => item.blogData?.id == post.blogData?.id)) {
+      return;
+    }
+    final index = posts.indexWhere((item) => _comparePostDates(post, item) < 0);
+    posts.insert(index < 0 ? posts.length : index, post);
+  }
 
   List<FeedPostViewModel> get visiblePosts => switch (_filter) {
     FeedFilter.all => posts,
@@ -62,19 +97,17 @@ class FeedScreenViewModel extends BaseViewModel
     FeedFilter.important => _importantPosts(posts, _matchingPinnedPosts),
   };
 
-  List<FeedPostViewModel> get _matchingPinnedPosts {
-    final query = searchQuery?.toLowerCase();
+  List<FeedPostViewModel> get _matchingPinnedPosts =>
+      pinnedPosts.where((post) => _matchesQuery(post, searchQuery)).toList();
+
+  bool _matchesQuery(FeedPostViewModel post, String? query) {
     if (query == null) {
-      return pinnedPosts;
+      return true;
     }
-    return pinnedPosts
-        .where(
-          (post) =>
-              htmlToPlainText(post.postText).toLowerCase().contains(query) ||
-              (post.profileViewModel?.fullname.toLowerCase().contains(query) ??
-                  false),
-        )
-        .toList();
+    final normalized = query.toLowerCase();
+    return htmlToPlainText(post.postText).toLowerCase().contains(normalized) ||
+        (post.profileViewModel?.fullname.toLowerCase().contains(normalized) ??
+            false);
   }
 
   List<FeedPostViewModel> _importantPosts(
@@ -88,13 +121,16 @@ class FeedScreenViewModel extends BaseViewModel
         postsById[id] = post;
       }
     }
-    return postsById.values.toList()..sort((first, second) {
-      final dateOrder = (second.postTime?.millisecondsSinceEpoch ?? 0)
-          .compareTo(first.postTime?.millisecondsSinceEpoch ?? 0);
-      return dateOrder != 0
-          ? dateOrder
-          : second.blogData!.id.compareTo(first.blogData!.id);
-    });
+    return postsById.values.toList()..sort(_comparePostDates);
+  }
+
+  int _comparePostDates(FeedPostViewModel first, FeedPostViewModel second) {
+    final dateOrder = (second.postTime?.millisecondsSinceEpoch ?? 0).compareTo(
+      first.postTime?.millisecondsSinceEpoch ?? 0,
+    );
+    return dateOrder != 0
+        ? dateOrder
+        : (second.blogData?.id ?? 0).compareTo(first.blogData?.id ?? 0);
   }
 
   Map<FeedFilter, int> get unreadCounts {
@@ -102,10 +138,13 @@ class FeedScreenViewModel extends BaseViewModel
     final important = _pages[(onlyImportant: true, query: null)];
     return {
       if (all != null)
-        FeedFilter.all: all.posts.where((post) => post.isNewPost).length,
+        FeedFilter.all: _postsWithPinChanges(all, (
+          onlyImportant: false,
+          query: null,
+        )).where((post) => post.isNewPost).length,
       if (important != null && important.isLoaded)
         FeedFilter.important: _importantPosts(
-          important.posts,
+          _postsWithPinChanges(important, (onlyImportant: true, query: null)),
           important.pinnedPosts,
         ).where((post) => post.isNewPost).length,
     };
@@ -184,15 +223,83 @@ class FeedScreenViewModel extends BaseViewModel
     }
   }
 
-  void _updatePinnedPosts(List<BlogPost>? posts, {bool replace = true}) {
+  void _updatePinnedPosts(
+    List<BlogPost>? posts, {
+    required int requestPinRevision,
+    bool replace = true,
+  }) {
     if (replace) {
       pinnedPosts.clear();
     }
     _addPostsToList(pinnedPosts, posts);
+    if (replace && !hasSearch && !showOnlyImportant) {
+      final serverIds = pinnedPosts.map((post) => post.blogData?.id).toSet();
+      _pinChanges.removeWhere((id, change) {
+        final confirmed =
+            !change.pending && change.revision <= requestPinRevision;
+        if (confirmed) {
+          final serverChange = (
+            post: change.post,
+            pinned: serverIds.contains(id),
+            pending: false,
+            revision: change.revision,
+          );
+          for (final entry in _pages.entries) {
+            _applyPinChange(entry.value, serverChange);
+            if (!serverChange.pinned) {
+              _insertUnpinnedPost(entry.value.posts, entry.key, change.post);
+            }
+          }
+        }
+        return confirmed;
+      });
+    }
+    for (final change in _pinChanges.values) {
+      _applyPinChange(_page, change);
+    }
     if (!hasSearch && !showOnlyImportant) {
       _pinnedPostCount = pinnedPosts.length;
     }
   }
+
+  void setPostPinned(
+    FeedPostViewModel post, {
+    required bool pinned,
+    required bool pending,
+  }) {
+    final id = post.blogData?.id;
+    if (id == null || disposed) {
+      return;
+    }
+    final previous = isPostPinned(id);
+    final change = (
+      post: post,
+      pinned: pinned,
+      pending: pending,
+      revision: ++_pinRevision,
+    );
+    _pinChanges[id] = change;
+    for (final page in _pages.values) {
+      _applyPinChange(page, change);
+    }
+    final count = _pinnedPostCount;
+    if (count != null && previous != pinned) {
+      final updated = count + (pinned ? 1 : -1);
+      _pinnedPostCount = updated < 0 ? 0 : updated;
+    }
+    notifyListeners();
+  }
+
+  void _applyPinChange(FeedPageState page, _FeedPinChange change) {
+    final id = change.post.blogData?.id;
+    if (!change.pinned) {
+      page.pinnedPosts.removeWhere((post) => post.blogData?.id == id);
+    } else if (!page.pinnedPosts.any((post) => post.blogData?.id == id)) {
+      page.pinnedPosts.insert(0, change.post);
+    }
+  }
+
+  bool isPostPinUpdating(int? id) => _pinChanges[id]?.pending ?? false;
 
   Set<int> _pagePinIds(Map<BlogPostType, List<BlogPost>> posts) =>
       (posts[BlogPostType.regular] ?? [])
@@ -205,6 +312,7 @@ class FeedScreenViewModel extends BaseViewModel
       return;
     }
     loadingMore = true;
+    final requestPinRevision = _pinRevision;
     final freshPosts =
         await tryLoginAndRetrieveData<Map<BlogPostType, List<BlogPost>>>(
           () async {
@@ -228,7 +336,11 @@ class FeedScreenViewModel extends BaseViewModel
       return;
     }
     _addPostsToList(_totalPosts, freshPosts[BlogPostType.regular]);
-    _updatePinnedPosts(freshPosts[BlogPostType.pinned], replace: false);
+    _updatePinnedPosts(
+      freshPosts[BlogPostType.pinned],
+      requestPinRevision: requestPinRevision,
+      replace: false,
+    );
     _page.lastPagePinIds = _pagePinIds(freshPosts);
 
     failedToLoad = false;
@@ -240,6 +352,7 @@ class FeedScreenViewModel extends BaseViewModel
     bool updateMainPage = true,
     bool markLoadedPostsRead = false,
   }) async => await changeState(() async {
+    final requestPinRevision = _pinRevision;
     final readThrough = markLoadedPostsRead ? _latestLoadedPostTime() : null;
     if (updateMainPage) {
       failedToLoad = false;
@@ -270,7 +383,10 @@ class FeedScreenViewModel extends BaseViewModel
       _lastReadAt = readThrough;
     }
 
-    _updatePinnedPosts(posts[BlogPostType.pinned]);
+    _updatePinnedPosts(
+      posts[BlogPostType.pinned],
+      requestPinRevision: requestPinRevision,
+    );
 
     if (!updateMainPage) {
       if (showOnlyImportant) {
@@ -323,7 +439,8 @@ class FeedScreenViewModel extends BaseViewModel
 
   Future<void> refreshFeatured() => reload(updateMainPage: false);
   bool isPostPinned(int? id) =>
-      id != null && pinnedPosts.any((p) => p.blogData?.id == id);
+      id != null &&
+      (_pinChanges[id]?.pinned ?? pinnedPosts.any((p) => p.blogData?.id == id));
 
   @override
   void refresh() {

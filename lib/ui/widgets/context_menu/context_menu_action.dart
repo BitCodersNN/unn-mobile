@@ -18,6 +18,7 @@ class ContextMenuAction {
     required String label,
     VoidCallback? onTap,
     Widget? leadingIcon,
+    bool enabled = true,
   }) => ContextMenuAction(
     child: Row(
       mainAxisSize: MainAxisSize.min,
@@ -27,6 +28,7 @@ class ContextMenuAction {
       ],
     ),
     onTap: onTap,
+    enabled: enabled,
   );
 
   factory ContextMenuAction.custom({required Widget child}) =>

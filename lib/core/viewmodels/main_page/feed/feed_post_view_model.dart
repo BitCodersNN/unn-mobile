@@ -97,6 +97,9 @@ class FeedPostViewModel extends BaseViewModel {
   bool get isPinned =>
       _feedScreenViewModel?.isPostPinned(blogData?.id) ?? false;
 
+  bool get isPinUpdating =>
+      _feedScreenViewModel?.isPostPinUpdating(blogData?.id) ?? false;
+
   DateTime? get lastUpdated => _feedScreenViewModel == null
       ? _feedUpdateTimeProvider.lastFeedLoadDateTime
       : _feedScreenViewModel!.lastReadAt;
@@ -214,18 +217,32 @@ class FeedPostViewModel extends BaseViewModel {
     }
   });
 
-  Future<void> togglePin() async {
-    if (DemoModeStatus.demoModeEnabled) {
-      return;
+  Future<bool> togglePin() async {
+    if (DemoModeStatus.demoModeEnabled || isPinUpdating) {
+      return true;
     }
-    final pinnedId = blogData?.pinnedId ?? 0;
-    final success = isPinned
-        ? await _pinningService.unpin(pinnedId)
-        : await _pinningService.pin(pinnedId);
-
-    if (success) {
-      await _feedScreenViewModel?.refreshFeatured();
-      notifyListeners();
+    final feed = _feedScreenViewModel;
+    final pinnedId = blogData?.pinnedId;
+    if (feed == null || pinnedId == null || pinnedId <= 0) {
+      return false;
     }
+    final wasPinned = isPinned;
+    feed.setPostPinned(this, pinned: !wasPinned, pending: true);
+    notifyListeners();
+    bool success = false;
+    try {
+      success = await (wasPinned
+          ? _pinningService.unpin(pinnedId)
+          : _pinningService.pin(pinnedId));
+    } catch (error, stackTrace) {
+      _loggerService.logError(error, stackTrace);
+    }
+    feed.setPostPinned(
+      this,
+      pinned: success ? !wasPinned : wasPinned,
+      pending: false,
+    );
+    notifyListeners();
+    return success;
   }
 }

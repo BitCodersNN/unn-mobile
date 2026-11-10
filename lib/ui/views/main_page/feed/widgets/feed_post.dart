@@ -91,6 +91,7 @@ class _FeedPostState extends State<FeedPost> {
               context: context,
               model: model,
               onShare: _sharePost,
+              onTogglePin: () => _togglePin(model),
               includeReactions: false,
             ),
             child: Shimmer(
@@ -169,10 +170,9 @@ class _FeedPostState extends State<FeedPost> {
                                   ),
                                 ),
                               IconButton(
-                                onPressed: () {
-                                  triggerHaptic(HapticIntensity.selection);
-                                  model.togglePin();
-                                },
+                                onPressed: model.isPinUpdating
+                                    ? null
+                                    : () => _togglePin(model),
                                 tooltip: model.isPinned
                                     ? 'Открепить пост'
                                     : 'Закрепить пост',
@@ -377,6 +377,17 @@ class _FeedPostState extends State<FeedPost> {
       fragment: scrollToComments ? 'comments' : null,
     );
     router.go(location.toString());
+  }
+
+  Future<void> _togglePin(FeedPostViewModel model) async {
+    final messenger = ScaffoldMessenger.of(context);
+    triggerHaptic(HapticIntensity.selection);
+    final success = await model.togglePin();
+    if (!success && messenger.mounted) {
+      messenger.showSnackBar(
+        const SnackBar(content: Text('Не удалось изменить закрепление поста')),
+      );
+    }
   }
 
   Future<void> _sharePost(FeedPostViewModel model) async {

@@ -30,6 +30,7 @@ List<ContextMenuAction> createPostActions({
   required BuildContext context,
   required FeedPostViewModel model,
   required ValueChanged<FeedPostViewModel> onShare,
+  required VoidCallback onTogglePin,
   bool includeReactions = true,
 }) => [
   if (includeReactions && model.reactionViewModel != null)
@@ -37,7 +38,8 @@ List<ContextMenuAction> createPostActions({
   _copyTextAction(htmlToPlainText(model.postText)),
   ContextMenuAction.text(
     label: model.isPinned ? 'Открепить' : 'Закрепить',
-    onTap: model.togglePin,
+    onTap: onTogglePin,
+    enabled: !model.isPinUpdating,
     leadingIcon: Icon(
       model.isPinned ? Icons.push_pin : Icons.push_pin_outlined,
       size: 18,
