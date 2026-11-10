@@ -68,6 +68,11 @@ class _PackedPostImagesState extends State<PackedPostImages> {
                         context,
                         images: images,
                         initialIndex: index,
+                        onPageChanged: (page) {
+                          if (mounted && _controller.hasClients) {
+                            _controller.jumpToPage(page);
+                          }
+                        },
                         headers: widget.authorizationHeaders,
                       ),
                       child: CachedNetworkImage(

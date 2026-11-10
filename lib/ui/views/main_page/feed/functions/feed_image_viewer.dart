@@ -7,7 +7,7 @@ import 'package:unn_mobile/core/constants/api/host.dart';
 import 'package:unn_mobile/core/constants/api/protocol_type.dart';
 import 'package:unn_mobile/core/constants/api/user_agents.dart';
 import 'package:unn_mobile/core/misc/haptic_utils.dart';
-import 'package:unn_mobile/ui/widgets/image_viewer_sheet.dart';
+import 'package:unn_mobile/ui/widgets/image_viewer_screen.dart';
 
 String feedImageUrl(String image) => image.startsWith('/')
     ? '${ProtocolType.https.name}://${Host.unn}$image'
@@ -34,14 +34,16 @@ Future<void> showFeedImages(
   required Iterable<String> images,
   Map<String, String>? headers,
   int initialIndex = 0,
+  ValueChanged<int>? onPageChanged,
 }) {
   if (images.isEmpty) {
     return Future<void>.value();
   }
   triggerHaptic(HapticIntensity.light);
-  return showImageViewerSheet(
+  return showImageViewer(
     context,
     initialIndex: initialIndex,
+    onPageChanged: onPageChanged,
     images: [
       for (final image in images)
         CachedNetworkImageProvider(

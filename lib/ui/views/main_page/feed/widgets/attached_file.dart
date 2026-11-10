@@ -11,7 +11,7 @@ import 'package:unn_mobile/core/misc/haptic_utils.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/feed/attached_file_view_model.dart';
 import 'package:unn_mobile/ui/unn_mobile_colors.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
-import 'package:unn_mobile/ui/widgets/image_viewer_sheet.dart';
+import 'package:unn_mobile/ui/widgets/image_viewer_screen.dart';
 import 'package:unn_mobile/ui/widgets/shimmer.dart';
 import 'package:unn_mobile/ui/widgets/shimmer_loading.dart';
 
@@ -234,7 +234,7 @@ class _AttachedFileState extends State<AttachedFile> {
       case AttachedFileType.image:
       case AttachedFileType.gif:
         if (context.mounted) {
-          await showImageViewerSheet(context, images: [FileImage(file)]);
+          await showImageViewer(context, images: [FileImage(file)]);
         }
         break;
       default:
