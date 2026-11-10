@@ -20,14 +20,14 @@ class ChangelogDialog extends StatelessWidget {
           child: SingleChildScrollView(
             child: BBCodeText(
               data: changelogString,
-              stylesheet: getBBStyleSheet(),
+              stylesheet: getBBStyleSheet(theme: Theme.of(context)),
             ),
           ),
         ),
         const Divider(),
         BBCodeText(
           data: 'Также, подписывайтесь на наш [URL=https://t.me/unn_mobile]Telegram-канал[/URL]',
-          stylesheet: getBBStyleSheet(),
+          stylesheet: getBBStyleSheet(theme: Theme.of(context)),
         ),
       ],
     ),

@@ -10,7 +10,7 @@ class HeightLimiter extends StatefulWidget {
   final Widget child;
   final double maxHeight;
   final double fadeEffectHeight;
-  final Color baseColor;
+  final Color? baseColor;
 
   final Widget Function(BuildContext context)? overflowIndicatorBuilder;
 
@@ -20,7 +20,7 @@ class HeightLimiter extends StatefulWidget {
     super.key,
     this.fadeEffectHeight = 72,
     this.overflowIndicatorBuilder,
-    this.baseColor = Colors.white,
+    this.baseColor,
   });
 
   @override
@@ -28,7 +28,7 @@ class HeightLimiter extends StatefulWidget {
 }
 
 class _HeightLimiterState extends State<HeightLimiter> {
-  var _size = Size.zero;
+  Size _size = Size.zero;
   bool _measured = false;
 
   @override
@@ -68,8 +68,12 @@ class _HeightLimiterState extends State<HeightLimiter> {
         begin: Alignment.bottomCenter,
         end: Alignment.topCenter,
         colors: [
-          widget.baseColor.withAlpha(200),
-          widget.baseColor.withAlpha(0),
+          (widget.baseColor ?? Theme.of(context).colorScheme.surface).withAlpha(
+            200,
+          ),
+          (widget.baseColor ?? Theme.of(context).colorScheme.surface).withAlpha(
+            0,
+          ),
         ],
         tileMode: TileMode.clamp,
       ),

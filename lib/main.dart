@@ -13,6 +13,7 @@ import 'package:injector/injector.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:unn_mobile/app.dart';
 import 'package:unn_mobile/core/misc/app_settings.dart';
+import 'package:unn_mobile/core/misc/app_theme_controller.dart';
 import 'package:unn_mobile/core/misc/user/current_user_sync_storage.dart';
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
 import 'package:unn_mobile/core/services/interfaces/schedule_widget/schedule_widget_platform.dart';
@@ -47,6 +48,8 @@ void main() async {
   AppSettings.optionsSaved.subscribe((_) => updateAnalyticsSettings());
 
   await AppSettings.load();
+  final themeController = Injector.appInstance.get<AppThemeController>();
+  await themeController.load();
 
   if (!kDebugMode) {
     FlutterError.onError = (errorDetails) {
@@ -68,6 +71,7 @@ void main() async {
   await initializeDateFormatting('ru_RU', null);
   runApp(
     UnnMobile(
+      themeController: themeController,
       routesViewModelsFactory: Injector.appInstance
           .get<MainPageRoutesViewModelsFactory>(),
       currentUserStorage: Injector.appInstance.get<CurrentUserSyncStorage>(),

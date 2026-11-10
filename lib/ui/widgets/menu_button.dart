@@ -109,7 +109,7 @@ class MenuButton extends StatelessWidget {
                   ),
                   child: SingleChildScrollView(
                     child: Material(
-                      color: theme.colorScheme.surface,
+                      color: theme.colorScheme.surfaceContainerLow,
                       elevation: 6,
                       borderRadius: BorderRadius.circular(16),
                       clipBehavior: Clip.antiAlias,

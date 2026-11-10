@@ -21,6 +21,7 @@ import 'package:unn_mobile/core/api_helpers/implementations/web_unn_source_api_h
 import 'package:unn_mobile/core/constants/string_keys/git_resource_cache_keys.dart';
 import 'package:unn_mobile/core/misc/app_open_tracker.dart';
 import 'package:unn_mobile/core/misc/app_settings.dart';
+import 'package:unn_mobile/core/misc/app_theme_controller.dart';
 import 'package:unn_mobile/core/misc/birthday/birthday_greeting_manager.dart';
 import 'package:unn_mobile/core/misc/git/git_folder.dart';
 import 'package:unn_mobile/core/misc/json/json_utils.dart';
@@ -32,6 +33,7 @@ import 'package:unn_mobile/core/models/feed/blog_post_type.dart';
 import 'package:unn_mobile/core/models/loading_page/loading_page_catalog.dart';
 import 'package:unn_mobile/core/providers/implementations/authorisation/authorisation_data_provider_impl.dart';
 import 'package:unn_mobile/core/providers/implementations/birthday/birthday_greeting_provider_impl.dart';
+import 'package:unn_mobile/core/providers/implementations/common/app_theme_provider_impl.dart';
 import 'package:unn_mobile/core/providers/implementations/common/message_ignored_keys_provider_impl.dart';
 import 'package:unn_mobile/core/providers/implementations/feed/blog_post_provider_impl.dart';
 import 'package:unn_mobile/core/providers/implementations/feed/last_feed_load_date_time_provider_impl.dart';
@@ -41,6 +43,7 @@ import 'package:unn_mobile/core/providers/implementations/profile/user_data_prov
 import 'package:unn_mobile/core/providers/implementations/schedule/offline_schedule_provider_impl.dart';
 import 'package:unn_mobile/core/providers/interfaces/authorisation/auth_data_provider.dart';
 import 'package:unn_mobile/core/providers/interfaces/birthday/birthday_greeting_provider.dart';
+import 'package:unn_mobile/core/providers/interfaces/common/app_theme_provider.dart';
 import 'package:unn_mobile/core/providers/interfaces/common/message_ignored_keys_provider.dart';
 import 'package:unn_mobile/core/providers/interfaces/feed/blog_post_provider.dart';
 import 'package:unn_mobile/core/providers/interfaces/feed/last_feed_load_date_time_provider.dart';
@@ -243,6 +246,12 @@ void registerDependencies() {
     })
     ..registerSingleton<OnlineStatusData>(OnlineStatusData.new)
     ..registerSingleton<StorageService>(StorageServiceImpl.new)
+    ..registerSingleton<AppThemeProvider>(
+      () => AppThemeProviderImpl(get<StorageService>()),
+    )
+    ..registerSingleton<AppThemeController>(
+      () => AppThemeController(get<AppThemeProvider>()),
+    )
     ..registerSingleton<AppOpenTracker>(
       () => AppOpenTracker(get<StorageService>()),
     )
@@ -733,6 +742,7 @@ void registerDependencies() {
     )
     ..registerDependency(
       () => SettingsScreenViewModel(
+        get<AppThemeController>(),
         get<StorageService>(),
         get<UnnAuthService>(),
         get<SourceAuthService>(),

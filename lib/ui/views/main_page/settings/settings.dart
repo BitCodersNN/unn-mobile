@@ -5,6 +5,7 @@ import 'package:adaptive_dialog/adaptive_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:unn_mobile/core/misc/app_version.dart';
+import 'package:unn_mobile/core/models/common/app_theme_mode.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/settings/settings_screen_view_model.dart';
 import 'package:unn_mobile/ui/main_page_locations.dart';
 import 'package:unn_mobile/ui/router.dart';
@@ -24,6 +25,31 @@ class SettingsScreenView extends StatefulWidget {
 
 class _SettingsScreenViewState extends State<SettingsScreenView> {
   late final Future<String> _version = getAppVersion();
+  static const _themeLabels = {
+    AppThemeMode.system: 'Системная',
+    AppThemeMode.light: 'Светлая',
+    AppThemeMode.dark: 'Тёмная',
+  };
+
+  Future<void> _selectTheme(SettingsScreenViewModel model) async {
+    final mode = await _selectSetting(
+      title: 'Тема',
+      current: model.themeMode,
+      options: _themeLabels,
+    );
+    if (!mounted || mode == null || mode == model.themeMode) {
+      return;
+    }
+    try {
+      await model.setThemeMode(mode);
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Не удалось сохранить тему')),
+        );
+      }
+    }
+  }
 
   Future<void> _customizeTabBar() async {
     final routes = AppRouter.of(context).configuration.destinations;
@@ -121,6 +147,12 @@ class _SettingsScreenViewState extends State<SettingsScreenView> {
                   SettingsSection(
                     title: 'Приложение',
                     children: [
+                      SettingsActionTile(
+                        icon: Icons.brightness_6_outlined,
+                        title: 'Тема',
+                        subtitle: _themeLabels[model.themeMode],
+                        onTap: () => _selectTheme(model),
+                      ),
                       SettingsSwitchTile(
                         icon: Icons.vibration_rounded,
                         title: 'Вибрация',

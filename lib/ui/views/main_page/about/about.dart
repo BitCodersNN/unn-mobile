@@ -9,7 +9,6 @@ import 'package:unn_mobile/core/misc/logging/diagnostic_event.dart';
 import 'package:unn_mobile/core/models/about/author.dart';
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/about/about_view_model.dart';
-import 'package:unn_mobile/ui/unn_mobile_colors.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -27,7 +26,6 @@ class AboutScreenView extends StatelessWidget {
       body: LayoutBuilder(
         builder: (context, constraints) {
           final theme = Theme.of(context);
-          final unnColors = theme.unnMobileColors;
           return SingleChildScrollView(
             child: ConstrainedBox(
               constraints: BoxConstraints(minHeight: constraints.maxHeight),
@@ -105,7 +103,7 @@ class AboutScreenView extends StatelessWidget {
                       <p>По всем вопросам можно обращаться: <a href="https://t.me/unn_mobile">t.me/unn_mobile</a></p></center>
                       ''',
                         textStyle: TextStyle(
-                          color: unnColors?.ligtherTextColor,
+                          color: theme.colorScheme.onSurfaceVariant,
                           fontFamily: 'Inter',
                           fontSize: 13,
                         ),
@@ -138,7 +136,6 @@ class _AuthorProfileWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final unnColors = theme.unnMobileColors;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       child: Container(
@@ -167,10 +164,14 @@ class _AuthorProfileWidget extends StatelessWidget {
                   placeholder: (context, url) => const Center(
                     child: CircularProgressIndicator(strokeWidth: 2),
                   ),
-                  errorWidget: (context, url, error) => const CircleAvatar(
+                  errorWidget: (context, url, error) => CircleAvatar(
                     radius: 27.5,
-                    backgroundColor: Colors.grey,
-                    child: Icon(Icons.person, size: 30, color: Colors.white),
+                    backgroundColor: theme.colorScheme.surfaceContainerHighest,
+                    child: Icon(
+                      Icons.person,
+                      size: 30,
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
                   ),
                 ),
               ),
@@ -184,11 +185,11 @@ class _AuthorProfileWidget extends StatelessWidget {
                   Text(
                     profile.fullname,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 15,
                       fontFamily: 'Inter',
                       fontWeight: FontWeight.w600,
-                      color: Color(0xFF282828),
+                      color: theme.colorScheme.onSurface,
                     ),
                   ),
                   if (profile.educationGroup != null)
@@ -198,7 +199,7 @@ class _AuthorProfileWidget extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 13,
                         fontFamily: 'Inter',
-                        color: unnColors?.ligtherTextColor,
+                        color: theme.colorScheme.onSurfaceVariant,
                       ),
                     ),
                 ],
