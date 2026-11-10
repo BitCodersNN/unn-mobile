@@ -4,6 +4,7 @@
 import 'dart:async';
 
 import 'package:unn_mobile/core/misc/authorisation/try_login_and_retrieve_data.dart';
+import 'package:unn_mobile/core/misc/html_utils/html_to_plain_text.dart';
 import 'package:unn_mobile/core/models/feed/blog_post.dart';
 import 'package:unn_mobile/core/models/feed/blog_post_type.dart';
 import 'package:unn_mobile/core/models/feed/feed_filter.dart';
@@ -22,7 +23,6 @@ typedef _FeedSelection = ({bool onlyImportant, String? query});
 
 class FeedScreenViewModel extends BaseViewModel
     implements MainPageRouteViewModel {
-  static const postsPerPage = 20;
   final LastFeedLoadDateTimeProvider _lastFeedLoadDateTimeProvider;
   final BlogPostProvider _blogPostProvider;
   final BlogPostPaginationService _postPaginationService;
@@ -41,7 +41,6 @@ class FeedScreenViewModel extends BaseViewModel
 
   FeedPageState get _page => _pages.putIfAbsent(_selection, FeedPageState.new);
 
-  List<FeedPostViewModel> get offlinePosts => _page.offlinePosts;
   List<FeedPostViewModel> get pinnedPosts => _page.pinnedPosts;
 
   List<FeedPostViewModel> get _totalPosts => _page.posts;
@@ -55,21 +54,60 @@ class FeedScreenViewModel extends BaseViewModel
 
   DateTime? get lastReadAt => _lastReadAt;
 
-  List<FeedPostViewModel> get posts =>
-      _totalPosts.take(postsPerPage * _page.pageNumber).toList();
+  List<FeedPostViewModel> get posts => List.of(_totalPosts);
+
+  List<FeedPostViewModel> get visiblePosts => switch (_filter) {
+    FeedFilter.all => posts,
+    FeedFilter.pinned => _matchingPinnedPosts,
+    FeedFilter.important => _importantPosts(posts, _matchingPinnedPosts),
+  };
+
+  List<FeedPostViewModel> get _matchingPinnedPosts {
+    final query = searchQuery?.toLowerCase();
+    if (query == null) {
+      return pinnedPosts;
+    }
+    return pinnedPosts
+        .where(
+          (post) =>
+              htmlToPlainText(post.postText).toLowerCase().contains(query) ||
+              (post.profileViewModel?.fullname.toLowerCase().contains(query) ??
+                  false),
+        )
+        .toList();
+  }
+
+  List<FeedPostViewModel> _importantPosts(
+    List<FeedPostViewModel> regular,
+    List<FeedPostViewModel> pinned,
+  ) {
+    final postsById = <int, FeedPostViewModel>{};
+    for (final post in [...regular, ...pinned]) {
+      final id = post.blogData?.id;
+      if (id != null && post.isAnnouncement) {
+        postsById[id] = post;
+      }
+    }
+    return postsById.values.toList()..sort((first, second) {
+      final dateOrder = (second.postTime?.millisecondsSinceEpoch ?? 0)
+          .compareTo(first.postTime?.millisecondsSinceEpoch ?? 0);
+      return dateOrder != 0
+          ? dateOrder
+          : second.blogData!.id.compareTo(first.blogData!.id);
+    });
+  }
 
   Map<FeedFilter, int> get unreadCounts {
     final all = _pages[(onlyImportant: false, query: null)];
     final important = _pages[(onlyImportant: true, query: null)];
     return {
       if (all != null)
-        FeedFilter.all: (all.posts.isEmpty ? all.offlinePosts : all.posts)
-            .where((post) => post.isNewPost)
-            .length,
+        FeedFilter.all: all.posts.where((post) => post.isNewPost).length,
       if (important != null && important.isLoaded)
-        FeedFilter.important: important.posts
-            .where((post) => post.isAnnouncement && post.isNewPost)
-            .length,
+        FeedFilter.important: _importantPosts(
+          important.posts,
+          important.pinnedPosts,
+        ).where((post) => post.isNewPost).length,
     };
   }
 
@@ -126,8 +164,8 @@ class FeedScreenViewModel extends BaseViewModel
       return;
     }
     _lastReadAt = lastReadAt;
-    offlinePosts.clear();
-    _addPostsToList(offlinePosts, cachedPosts);
+    _totalPosts.clear();
+    _addPostsToList(_totalPosts, cachedPosts);
     notifyListeners();
     await reload();
   }
@@ -136,13 +174,31 @@ class FeedScreenViewModel extends BaseViewModel
     List<FeedPostViewModel> posts,
     List<BlogPost>? newPosts,
   ) {
-    final postViewmodels = newPosts?.map((p) {
-      final post = FeedPostViewModel.cached(p.data.id)
-        ..initFromFullInfo(p, this);
-      return post;
-    });
-    posts.addAll(postViewmodels ?? []);
+    final ids = posts.map((post) => post.blogData?.id).nonNulls.toSet();
+    for (final post in newPosts ?? <BlogPost>[]) {
+      final model = FeedPostViewModel.cached(post.data.id)
+        ..initFromFullInfo(post, this);
+      if (ids.add(post.data.id)) {
+        posts.add(model);
+      }
+    }
   }
+
+  void _updatePinnedPosts(List<BlogPost>? posts, {bool replace = true}) {
+    if (replace) {
+      pinnedPosts.clear();
+    }
+    _addPostsToList(pinnedPosts, posts);
+    if (!hasSearch && !showOnlyImportant) {
+      _pinnedPostCount = pinnedPosts.length;
+    }
+  }
+
+  Set<int> _pagePinIds(Map<BlogPostType, List<BlogPost>> posts) =>
+      (posts[BlogPostType.regular] ?? [])
+          .map((post) => post.data.pinnedId)
+          .nonNulls
+          .toSet();
 
   Future<void> loadMorePosts() async => await changeState(() async {
     if (loadingMore || isBusy || _page.pageNumber <= 0) {
@@ -157,11 +213,7 @@ class FeedScreenViewModel extends BaseViewModel
             }
             return _postPaginationService.loadNextPageBlogPosts(
               pageNumber: _page.pageNumber + 1,
-              pinIds: _totalPosts
-                  .skip(postsPerPage * (_page.pageNumber - 1))
-                  .map((t) => t.blogData?.pinnedId)
-                  .nonNulls
-                  .toSet(),
+              pinIds: _page.lastPagePinIds,
               signedParameters: _streamAuthService.signedParameters ?? '',
               commentFormUID: _streamAuthService.commentFormUID ?? '',
               blogCommentFormUID: _streamAuthService.blogCommentFormUID ?? '',
@@ -176,6 +228,8 @@ class FeedScreenViewModel extends BaseViewModel
       return;
     }
     _addPostsToList(_totalPosts, freshPosts[BlogPostType.regular]);
+    _updatePinnedPosts(freshPosts[BlogPostType.pinned], replace: false);
+    _page.lastPagePinIds = _pagePinIds(freshPosts);
 
     failedToLoad = false;
     _page.pageNumber++;
@@ -216,13 +270,12 @@ class FeedScreenViewModel extends BaseViewModel
       _lastReadAt = readThrough;
     }
 
-    pinnedPosts.clear();
-    _addPostsToList(pinnedPosts, posts[BlogPostType.pinned]);
-    if (!hasSearch && !showOnlyImportant) {
-      _pinnedPostCount = pinnedPosts.length;
-    }
+    _updatePinnedPosts(posts[BlogPostType.pinned]);
 
     if (!updateMainPage) {
+      if (showOnlyImportant) {
+        _addPostsToList(_totalPosts, posts[BlogPostType.regular]);
+      }
       for (final entry in _pages.entries) {
         if (entry.key != _selection) {
           entry.value.isLoaded = false;
@@ -242,25 +295,20 @@ class FeedScreenViewModel extends BaseViewModel
       ]);
     }
 
-    offlinePosts.clear();
     _totalPosts.clear();
 
     _addPostsToList(_totalPosts, freshPosts);
 
-    offlinePosts.addAll(_totalPosts);
     loadingMore = false;
     _page.pageNumber = 1;
+    _page.lastPagePinIds = _pagePinIds(posts);
     _page.isLoaded = true;
   });
 
   DateTime? _latestLoadedPostTime() {
     DateTime? latest = _lastReadAt;
     for (final page in _pages.values) {
-      for (final post in [
-        ...page.posts,
-        ...page.offlinePosts,
-        ...page.pinnedPosts,
-      ]) {
+      for (final post in [...page.posts, ...page.pinnedPosts]) {
         final date = post.postTime;
         if (date != null) {
           latest = _laterDate(date, latest);
@@ -347,7 +395,6 @@ class FeedScreenViewModel extends BaseViewModel
         _filter = filter;
         _searchQuery = query;
         _totalPosts.clear();
-        offlinePosts.clear();
         _page.pageNumber = 0;
         _page.isLoaded = false;
         await reload();
