@@ -35,7 +35,7 @@ class SettingsActionTile extends StatelessWidget {
   final IconData icon;
   final String title;
   final String? subtitle;
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
   final Color? color;
   final bool showChevron;
 
@@ -63,6 +63,7 @@ class SettingsActionTile extends StatelessWidget {
               size: 22,
             )
           : null,
+      enabled: onTap != null,
       onTap: onTap,
     ),
   );

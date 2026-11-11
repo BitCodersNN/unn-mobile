@@ -7,6 +7,15 @@ import 'package:unn_mobile/core/models/grade_book/mark_type.dart';
 import 'package:unn_mobile/core/models/schedule/subject_type.dart';
 
 class UnnMobileColors extends ThemeExtension<UnnMobileColors> {
+  static const defaultScheduleSubjectTypeColors = {
+    SubjectType.lecture: Color(0xFF1CA49C),
+    SubjectType.practice: Color(0xFFCD7255),
+    SubjectType.lab: Color(0xFF0961FF),
+    SubjectType.exam: Color(0xFFAA4B7E),
+    SubjectType.consult: Color(0xFF7D60D1),
+    SubjectType.unknown: Color(0xFF6E757C),
+  };
+
   final Color? scheduleDayHighlight;
   final Color? scheduleSubjectHighlight;
   final Map<SubjectType, Color>? scheduleSubjectTypeColors;

@@ -8,11 +8,14 @@ import android.content.Intent
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
+import ru.bitcodersnn.unnstudenthub.schedule.ScheduleNavigation
+import ru.bitcodersnn.unnstudenthub.schedule.ScheduleSnapshotProvider
+import ru.bitcodersnn.unnstudenthub.scheduleactivity.ScheduleLiveUpdate
 
 class ScheduleWidgetBridge(private val context: Context, engine: FlutterEngine, initialIntent: Intent?) {
     private val channel = MethodChannel(engine.dartExecutor.binaryMessenger,
         "ru.bitcodersnn.unnstudenthub/schedule_widget")
-    private var pendingLaunch: Boolean = initialIntent?.getBooleanExtra(ScheduleWidgetProvider.OPEN_SCHEDULE, false) == true
+    private var pendingLaunch: Boolean = ScheduleNavigation.isScheduleIntent(initialIntent)
 
     init {
         channel.setMethodCallHandler { call, result ->
@@ -25,19 +28,20 @@ class ScheduleWidgetBridge(private val context: Context, engine: FlutterEngine, 
     }
 
     private fun handle(call: MethodCall, result: MethodChannel.Result) {
-        val preferences = context.getSharedPreferences(ScheduleWidgetData.PREFERENCES, Context.MODE_PRIVATE)
+        val provider = ScheduleSnapshotProvider(context)
         when (call.method) {
-            "read" -> result.success(preferences.getString(ScheduleWidgetData.DATA_KEY, null))
+            "read" -> result.success(provider.readJson())
             "write" -> {
                 val value = requireNotNull(call.arguments as? String)
-                ScheduleWidgetData.decode(value)
-                preferences.edit().putString(ScheduleWidgetData.DATA_KEY, value).apply()
+                provider.writeJson(value)
                 ScheduleWidgetProvider.updateAll(context)
+                ScheduleLiveUpdate.update(context)
                 result.success(null)
             }
             "clear" -> {
-                preferences.edit().remove(ScheduleWidgetData.DATA_KEY).apply()
+                provider.clear()
                 ScheduleWidgetProvider.updateAll(context)
+                ScheduleLiveUpdate.clear(context)
                 result.success(null)
             }
             "consumeLaunch" -> {
@@ -50,7 +54,7 @@ class ScheduleWidgetBridge(private val context: Context, engine: FlutterEngine, 
     }
 
     fun onNewIntent(intent: Intent) {
-        if (!intent.getBooleanExtra(ScheduleWidgetProvider.OPEN_SCHEDULE, false)) return
+        if (!ScheduleNavigation.isScheduleIntent(intent)) return
         channel.invokeMethod("openSchedule", null, object : MethodChannel.Result {
             override fun success(result: Any?) { pendingLaunch = false }
             override fun error(code: String, message: String?, details: Any?) { pendingLaunch = true }

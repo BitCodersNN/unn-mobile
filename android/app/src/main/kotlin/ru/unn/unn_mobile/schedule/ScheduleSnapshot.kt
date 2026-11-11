@@ -1,51 +1,38 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2026 BitCodersNN
 
-package ru.bitcodersnn.unnstudenthub.schedulewidget
+package ru.bitcodersnn.unnstudenthub.schedule
 
-import android.content.Context
 import org.json.JSONObject
 
-data class WidgetLesson(
-    val title: String,
-    val type: String,
-    val location: String,
-    val start: Long,
-    val end: Long,
-)
-
-data class ScheduleWidgetData(
+data class ScheduleSnapshot(
     val ownerLabel: String,
     val validFrom: Long,
     val validUntil: Long,
-    val lessons: List<WidgetLesson>,
+    val lessons: List<ScheduleLesson>,
 ) {
     companion object {
-        const val PREFERENCES = "schedule_widget"
-        const val DATA_KEY = "data"
+        const val SCHEMA_VERSION = 2
 
-        fun read(context: Context): ScheduleWidgetData? {
-            val value = context.getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE)
-                .getString(DATA_KEY, null) ?: return null
-            return runCatching { decode(value) }.getOrNull()
-        }
-
-        fun decode(value: String): ScheduleWidgetData {
+        fun decode(value: String): ScheduleSnapshot {
             val json = JSONObject(value)
-            require(json.getInt("version") == 1)
+            require(json.getInt("version") == SCHEMA_VERSION)
             val lessons = json.getJSONArray("lessons")
-            return ScheduleWidgetData(
+            return ScheduleSnapshot(
                 ownerLabel = json.getString("ownerLabel"),
                 validFrom = json.getLong("validFrom"),
                 validUntil = json.getLong("validUntil"),
                 lessons = List(lessons.length()) { index ->
                     val lesson = lessons.getJSONObject(index)
-                    WidgetLesson(
+                    ScheduleLesson(
                         title = lesson.getString("title"),
                         type = lesson.getString("type"),
                         location = lesson.getString("location"),
                         start = lesson.getLong("start"),
                         end = lesson.getLong("end"),
+                        accentColor = if (lesson.isNull("accentColor")) null
+                            else lesson.getLong("accentColor").toInt(),
+                        lecturer = lesson.optString("lecturer", ""),
                     )
                 }.sortedBy { it.start },
             )

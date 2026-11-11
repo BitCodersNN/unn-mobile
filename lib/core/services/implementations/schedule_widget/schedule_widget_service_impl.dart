@@ -32,6 +32,7 @@ class ScheduleWidgetServiceImpl implements ScheduleWidgetService {
   final OfflineScheduleProvider _offline;
   final ScheduleWidgetPlatform _platform;
   final LoggerService _logger;
+  final ScheduleWidgetLesson Function(Subject) _lessonBuilder;
 
   Future<void>? _pending;
   CancelToken? _request;
@@ -45,8 +46,9 @@ class ScheduleWidgetServiceImpl implements ScheduleWidgetService {
     this._search,
     this._offline,
     this._platform,
-    this._logger,
-  );
+    this._logger, {
+    this._lessonBuilder = ScheduleWidgetLesson.fromSubject,
+  });
 
   @override
   Future<void> refresh() {
@@ -210,7 +212,7 @@ class ScheduleWidgetServiceImpl implements ScheduleWidgetService {
         updatedAt: DateTime.now(),
         validFrom: start,
         validUntil: end,
-        lessons: subjects.map(ScheduleWidgetLesson.fromSubject),
+        lessons: subjects.map(_lessonBuilder),
       ),
     );
   }
