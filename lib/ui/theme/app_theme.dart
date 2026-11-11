@@ -9,20 +9,28 @@ import 'package:unn_mobile/ui/theme/theme_palette.dart';
 import 'package:unn_mobile/ui/unn_mobile_colors.dart';
 
 abstract final class AppTheme {
-  static final ThemeData light = _build(
+  static final ThemeData classicLight = _build(
     ColorScheme.fromSeed(seedColor: const Color(0xFF00BBB0)),
     UnnMobileColors.light,
   );
 
-  static final ThemeData dark = _build(
-    ColorScheme.fromSeed(
-      seedColor: const Color(0xFF79D7CA),
-      brightness: Brightness.dark,
-    ).copyWith(
-      primary: const Color(0xFF79D7CA),
-      onPrimary: const Color(0xFF003832),
-      primaryContainer: const Color(0xFF244E47),
-      onPrimaryContainer: const Color(0xFFC0EEE3),
+  static final ColorScheme _darkBaseColors =
+      ColorScheme.fromSeed(
+        seedColor: const Color(0xFF79D7CA),
+        brightness: Brightness.dark,
+      ).copyWith(
+        primary: const Color(0xFF79D7CA),
+        onPrimary: const Color(0xFF003832),
+        primaryContainer: const Color(0xFF244E47),
+        onPrimaryContainer: const Color(0xFFC0EEE3),
+        error: const Color(0xFFF2B8AD),
+        onError: const Color(0xFF601410),
+        errorContainer: const Color(0xFF6F2923),
+        onErrorContainer: const Color(0xFFFFDAD4),
+      );
+
+  static final ThemeData darkGreen = _build(
+    _darkBaseColors.copyWith(
       surface: const Color(0xFF101D1B),
       onSurface: const Color(0xFFDEEDE8),
       onSurfaceVariant: const Color(0xFFAFC5BE),
@@ -35,16 +43,12 @@ abstract final class AppTheme {
       surfaceContainerHighest: const Color(0xFF334A44),
       outline: const Color(0xFF819B92),
       outlineVariant: const Color(0xFF3A4E48),
-      error: const Color(0xFFF2B8AD),
-      onError: const Color(0xFF601410),
-      errorContainer: const Color(0xFF6F2923),
-      onErrorContainer: const Color(0xFFFFDAD4),
     ),
     UnnMobileColors.dark,
   );
 
-  static final ThemeData graphite = _build(
-    dark.colorScheme.copyWith(
+  static final ThemeData darkGraphite = _build(
+    _darkBaseColors.copyWith(
       surface: const Color(0xFF15151E),
       onSurface: const Color(0xFFE6E5EF),
       onSurfaceVariant: const Color(0xFFC1BECE),
@@ -66,17 +70,21 @@ abstract final class AppTheme {
         ThemePalette(
           value: AppLightTheme.classic,
           label: 'Классическая',
-          theme: light,
+          theme: classicLight,
         ),
       ]);
 
   static final List<ThemePalette<AppDarkTheme>> darkPalettes =
       List.unmodifiable([
-        ThemePalette(value: AppDarkTheme.green, label: 'Зелёная', theme: dark),
+        ThemePalette(
+          value: AppDarkTheme.green,
+          label: 'Тёмно-зелёная',
+          theme: darkGreen,
+        ),
         ThemePalette(
           value: AppDarkTheme.graphite,
           label: 'Графитовая',
-          theme: graphite,
+          theme: darkGraphite,
         ),
       ]);
 
