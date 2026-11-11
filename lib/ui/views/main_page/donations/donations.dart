@@ -4,8 +4,10 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:unn_mobile/core/constants/api/path.dart';
 import 'package:unn_mobile/core/constants/api/protocol_type.dart';
+import 'package:unn_mobile/core/misc/app_theme_controller.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:webview_flutter_android/webview_flutter_android.dart';
 
@@ -21,6 +23,7 @@ class _DonationsScreenViewState extends State<DonationsScreenView> {
   Uri? _pageUri;
   bool _pageLoaded = false;
   String _pageTheme = 'light';
+  String _pagePalette = 'classic';
   Map<String, String> _pageColors = {};
 
   @override
@@ -34,6 +37,9 @@ class _DonationsScreenViewState extends State<DonationsScreenView> {
         NavigationDelegate(
           onPageStarted: (_) => _pageLoaded = false,
           onPageFinished: (_) {
+            if (!mounted) {
+              return;
+            }
             _pageLoaded = true;
             _updatePageTheme();
           },
@@ -50,7 +56,11 @@ class _DonationsScreenViewState extends State<DonationsScreenView> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     final scheme = Theme.of(context).colorScheme;
+    final themeController = context.read<AppThemeController>();
     _pageTheme = scheme.brightness == Brightness.dark ? 'dark' : 'light';
+    _pagePalette = scheme.brightness == Brightness.dark
+        ? themeController.darkTheme.name
+        : themeController.lightTheme.name;
     String hex(Color color) =>
         (color.toARGB32() & 0x00ffffff).toRadixString(16).padLeft(6, '0');
     _pageColors = {
@@ -71,6 +81,7 @@ class _DonationsScreenViewState extends State<DonationsScreenView> {
           ...baseUri.queryParameters,
           'embedded': '1',
           'theme': _pageTheme,
+          'palette': _pagePalette,
           ..._pageColors,
         },
       );
@@ -83,7 +94,7 @@ class _DonationsScreenViewState extends State<DonationsScreenView> {
   void _updatePageTheme() {
     controller.runJavaScript(
       'window.setSupportTheme?.(${jsonEncode(_pageTheme)}, '
-      '${jsonEncode(_pageColors)});',
+      '${jsonEncode(_pageColors)}, ${jsonEncode(_pagePalette)});',
     );
   }
 

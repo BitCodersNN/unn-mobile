@@ -86,22 +86,27 @@ class _UnnMobileState extends State<UnnMobile> {
   }
 
   @override
-  Widget build(BuildContext context) =>
+  Widget build(BuildContext context) => MultiProvider(
+    providers: [
       Provider<MainPageRoutesViewModelsFactory>.value(
         value: _routesViewModelsFactory,
-        child: ListenableBuilder(
-          listenable: widget.themeController,
-          builder: (context, _) => MaterialApp.router(
-            routerConfig: _router.router,
-            theme: AppTheme.lightThemeFor(widget.themeController.lightTheme),
-            darkTheme: AppTheme.darkThemeFor(widget.themeController.darkTheme),
-            themeMode: switch (widget.themeController.mode) {
-              AppThemeMode.system => ThemeMode.system,
-              AppThemeMode.light => ThemeMode.light,
-              AppThemeMode.dark => ThemeMode.dark,
-            },
-            themeAnimationDuration: const Duration(milliseconds: 200),
-          ),
-        ),
-      );
+      ),
+      ChangeNotifierProvider<AppThemeController>.value(
+        value: widget.themeController,
+      ),
+    ],
+    child: Consumer<AppThemeController>(
+      builder: (context, themeController, _) => MaterialApp.router(
+        routerConfig: _router.router,
+        theme: AppTheme.lightThemeFor(themeController.lightTheme),
+        darkTheme: AppTheme.darkThemeFor(themeController.darkTheme),
+        themeMode: switch (themeController.mode) {
+          AppThemeMode.system => ThemeMode.system,
+          AppThemeMode.light => ThemeMode.light,
+          AppThemeMode.dark => ThemeMode.dark,
+        },
+        themeAnimationDuration: const Duration(milliseconds: 200),
+      ),
+    ),
+  );
 }
