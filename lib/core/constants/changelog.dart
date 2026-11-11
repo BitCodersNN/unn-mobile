@@ -5,6 +5,15 @@ import 'package:unn_mobile/core/models/changelog/changelog_release.dart';
 
 const List<ChangelogRelease> changelogReleases = [
   ChangelogRelease(
+    version: '0.7.0 beta 4',
+    changes: [
+      'Редизайн ленты',
+      'Редизайн диалога с изменениями',
+      'Кнопка "показать пароль" при авторизации',
+      'Исправлен небольшой визуальный баг в поиске',
+    ],
+  ),
+  ChangelogRelease(
     version: '0.7.0 beta 3',
     changes: [
       'Убрано лишнее разрешение READ_EXTERNAL_STORAGE',
