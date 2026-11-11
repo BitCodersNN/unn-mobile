@@ -66,6 +66,12 @@ void main() async {
   }
 
   await initializeDateFormatting('ru_RU', null);
+  if (Platform.isIOS) {
+    await SystemChrome.setEnabledSystemUIMode(
+      SystemUiMode.manual,
+      overlays: SystemUiOverlay.values,
+    );
+  }
   runApp(
     UnnMobile(
       routesViewModelsFactory: Injector.appInstance
