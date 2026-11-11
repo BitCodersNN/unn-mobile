@@ -3,6 +3,7 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:unn_mobile/core/models/common/app_dark_theme.dart';
 import 'package:unn_mobile/ui/unn_mobile_colors.dart';
 
 abstract final class AppTheme {
@@ -39,6 +40,29 @@ abstract final class AppTheme {
     ),
     UnnMobileColors.dark,
   );
+
+  static final ThemeData graphite = _build(
+    dark.colorScheme.copyWith(
+      surface: const Color(0xFF15151E),
+      onSurface: const Color(0xFFE6E5EF),
+      onSurfaceVariant: const Color(0xFFC1BECE),
+      surfaceDim: const Color(0xFF101017),
+      surfaceBright: const Color(0xFF404052),
+      surfaceContainerLowest: const Color(0xFF15151E),
+      surfaceContainerLow: const Color(0xFF1D1D28),
+      surfaceContainer: const Color(0xFF252532),
+      surfaceContainerHigh: const Color(0xFF2D2D3C),
+      surfaceContainerHighest: const Color(0xFF363647),
+      outline: const Color(0xFF938F9F),
+      outlineVariant: const Color(0xFF454352),
+    ),
+    UnnMobileColors.graphite,
+  );
+
+  static ThemeData darkThemeFor(AppDarkTheme theme) => switch (theme) {
+    AppDarkTheme.green => dark,
+    AppDarkTheme.graphite => graphite,
+  };
 
   static ThemeData _build(ColorScheme colors, UnnMobileColors extraColors) {
     final isDark = colors.brightness == Brightness.dark;

@@ -10,6 +10,7 @@ import 'package:unn_mobile/core/viewmodels/main_page/settings/settings_screen_vi
 import 'package:unn_mobile/ui/main_page_locations.dart';
 import 'package:unn_mobile/ui/router.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
+import 'package:unn_mobile/ui/views/main_page/settings/widgets/dark_theme_selector.dart';
 import 'package:unn_mobile/ui/views/main_page/settings/widgets/settings_section.dart';
 import 'package:unn_mobile/ui/views/main_page/settings/widgets/settings_tile.dart';
 import 'package:unn_mobile/ui/views/main_page/tab_bar/tab_bar_customization_sheet.dart';
@@ -40,8 +41,12 @@ class _SettingsScreenViewState extends State<SettingsScreenView> {
     if (!mounted || mode == null || mode == model.themeMode) {
       return;
     }
+    await _saveThemeChange(() => model.setThemeMode(mode));
+  }
+
+  Future<void> _saveThemeChange(Future<void> Function() update) async {
     try {
-      await model.setThemeMode(mode);
+      await update();
     } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -145,7 +150,7 @@ class _SettingsScreenViewState extends State<SettingsScreenView> {
                 padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
                 children: [
                   SettingsSection(
-                    title: 'Приложение',
+                    title: 'Оформление',
                     children: [
                       SettingsActionTile(
                         icon: Icons.brightness_6_outlined,
@@ -153,6 +158,18 @@ class _SettingsScreenViewState extends State<SettingsScreenView> {
                         subtitle: _themeLabels[model.themeMode],
                         onTap: () => _selectTheme(model),
                       ),
+                      if (model.themeMode != AppThemeMode.light)
+                        DarkThemeSelector(
+                          selected: model.darkTheme,
+                          onChanged: (palette) => _saveThemeChange(
+                            () => model.setDarkTheme(palette),
+                          ),
+                        ),
+                    ],
+                  ),
+                  SettingsSection(
+                    title: 'Приложение',
+                    children: [
                       SettingsSwitchTile(
                         icon: Icons.vibration_rounded,
                         title: 'Вибрация',

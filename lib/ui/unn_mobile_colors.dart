@@ -87,8 +87,17 @@ class UnnMobileColors extends ThemeExtension<UnnMobileColors> {
     shimmerHighlightColor: Color(0xFF334A44),
   );
 
+  static final graphite = dark.copyWith(
+    scheduleDayHighlight: const Color(0xFF303040),
+    scheduleSubjectHighlight: const Color(0xFF40362D),
+    ligtherTextColor: const Color(0xFFC1BECE),
+    idkWhatColor: const Color(0xFFAAA5B8),
+    shimmerBaseColor: const Color(0xFF252532),
+    shimmerHighlightColor: const Color(0xFF3D3D4D),
+  );
+
   @override
-  ThemeExtension<UnnMobileColors> copyWith({
+  UnnMobileColors copyWith({
     Color? scheduleDayHighlight,
     Color? scheduleSubjectHighlight,
     Map<SubjectType, Color>? scheduleSubjectTypeColors,

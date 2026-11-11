@@ -3,6 +3,7 @@
 
 class AppSettingsKeys {
   static const String themeMode = 'themeMode';
+  static const String darkTheme = 'darkTheme';
   static const String tabBarPaths = 'tabBarPaths';
   static const String vibrationEnabled = 'vibrationEnabled';
   static const String analyticsEnabled = 'analyticsEnabled';
