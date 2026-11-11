@@ -177,6 +177,11 @@ class UnnMobileColors extends ThemeExtension<UnnMobileColors> {
 }
 
 extension ThemeDataExtension on ThemeData {
+  Color get subduedButtonBackgroundColor => Color.alphaBlend(
+    colorScheme.primary.withValues(alpha: 0.18),
+    colorScheme.surfaceContainerLowest,
+  );
+
   Color get alternatingSurfaceColor => colorScheme.primary.withAlpha(20);
 
   Color getColorOfMarkType(MarkType? markType) {

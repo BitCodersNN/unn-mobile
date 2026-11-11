@@ -7,6 +7,7 @@ import 'package:unn_mobile/core/constants/main_page_paths.dart';
 import 'package:unn_mobile/core/misc/app_settings.dart';
 import 'package:unn_mobile/core/misc/tab_bar_preferences.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/tab_bar_customization_view_model.dart';
+import 'package:unn_mobile/ui/unn_mobile_colors.dart';
 import 'package:unn_mobile/ui/views/main_page/main_page_route_data.dart';
 import 'package:unn_mobile/ui/views/main_page/tab_bar/tab_bar_item_content.dart';
 import 'package:unn_mobile/ui/views/main_page/tab_bar/tab_bar_label_layout.dart';
@@ -99,6 +100,7 @@ class _TabBarCustomizationSheetState extends State<TabBarCustomizationSheet> {
 
   Widget _buildSheet(BuildContext context) {
     final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
     final adding = _model.selectedPath == null;
     final canRemove = _model.canRemove;
     return MediaQuery.withNoTextScaling(
@@ -169,6 +171,12 @@ class _TabBarCustomizationSheetState extends State<TabBarCustomizationSheet> {
                     child: FilledButton(
                       onPressed: _model.isSaving ? null : _save,
                       style: FilledButton.styleFrom(
+                        backgroundColor: isDark
+                            ? theme.subduedButtonBackgroundColor
+                            : null,
+                        foregroundColor: isDark
+                            ? theme.colorScheme.primary
+                            : null,
                         padding: const EdgeInsets.symmetric(vertical: 16),
                       ),
                       child: Text(_model.isSaving ? 'Сохранение…' : 'Готово'),
@@ -301,6 +309,7 @@ class _TabBarCustomizationSheetState extends State<TabBarCustomizationSheet> {
     required VoidCallback? onTap,
   }) {
     final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
     return Semantics(
       selected: selected,
       button: true,
@@ -320,14 +329,18 @@ class _TabBarCustomizationSheetState extends State<TabBarCustomizationSheet> {
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     color: selected
-                        ? theme.colorScheme.primary
+                        ? (isDark
+                              ? theme.subduedButtonBackgroundColor
+                              : theme.colorScheme.primary)
                         : theme.colorScheme.surfaceContainerHighest,
                   ),
                   child: Icon(
                     icon,
                     size: 26,
                     color: selected
-                        ? theme.colorScheme.onPrimary
+                        ? (isDark
+                              ? theme.colorScheme.primary
+                              : theme.colorScheme.onPrimary)
                         : theme.colorScheme.onSurface,
                   ),
                 ),

@@ -89,6 +89,7 @@ class _LoadingPageState extends State<LoadingPage> {
                   child: FittedBox(
                     fit: BoxFit.scaleDown,
                     child: _text(
+                      context,
                       page?.title ?? '',
                       page?.titleStyle ?? const TextStyle(),
                     ),
@@ -133,8 +134,10 @@ class _LoadingPageState extends State<LoadingPage> {
                           maxWidth: constraints.maxWidth * 0.8,
                         ),
                         child: _text(
+                          context,
                           page!.description!,
                           page.descriptionStyle!,
+                          isDescription: true,
                         ),
                       ),
                     ),
@@ -149,14 +152,26 @@ class _LoadingPageState extends State<LoadingPage> {
   }
 
   Text _text(
+    BuildContext context,
     String title,
     TextStyle textStyle, {
     TextAlign textAlign = TextAlign.center,
-  }) => Text(
-    title,
-    style: textStyle,
-    textAlign: textAlign,
-    maxLines: 3,
-    overflow: TextOverflow.ellipsis,
-  );
+    bool isDescription = false,
+  }) {
+    final theme = Theme.of(context);
+    final textColor = isDescription
+        ? theme.colorScheme.onSurfaceVariant
+        : theme.colorScheme.onSurface;
+    return Text(
+      title,
+      style: textStyle.copyWith(
+        color: theme.brightness == Brightness.dark
+            ? textColor
+            : textStyle.color ?? textColor,
+      ),
+      textAlign: textAlign,
+      maxLines: 3,
+      overflow: TextOverflow.ellipsis,
+    );
+  }
 }

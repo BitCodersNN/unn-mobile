@@ -134,16 +134,16 @@ class _AuthPageState extends State<AuthPage> {
           actions: [
             MenuButton(
               enabled: true,
-              items: [
-                const SideMenuItem(
+              items: const [
+                SideMenuItem(
                   title: 'Настройки',
                   value: _MenuItemValues.settings,
                 ),
-                const SideMenuItem(
+                SideMenuItem(
                   title: 'Поддержать',
                   value: _MenuItemValues.support,
                 ),
-                const SideMenuItem(
+                SideMenuItem(
                   title: 'О нас',
                   value: _MenuItemValues.about,
                 ),
