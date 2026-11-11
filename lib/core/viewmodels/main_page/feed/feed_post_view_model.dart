@@ -6,6 +6,8 @@ import 'package:html_unescape/html_unescape.dart';
 import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/misc/demo_mode_status.dart';
 import 'package:unn_mobile/core/misc/logging/diagnostic_event.dart';
+import 'package:unn_mobile/core/misc/optimistic_action.dart';
+import 'package:unn_mobile/core/models/common/action_result.dart';
 import 'package:unn_mobile/core/models/feed/blog_post.dart';
 import 'package:unn_mobile/core/models/feed/blog_post_data.dart';
 import 'package:unn_mobile/core/models/feed/important_blog_post.dart';
@@ -34,6 +36,7 @@ class FeedPostViewModel extends BaseViewModel {
   final BlogPostCommentsService _commentsService;
 
   final HtmlUnescape _unescaper = HtmlUnescape();
+  final OptimisticAction _changePin = OptimisticAction();
 
   final List<AttachedFileViewModel> attachedFileViewModels = [];
   final onError = Event();
@@ -86,7 +89,7 @@ class FeedPostViewModel extends BaseViewModel {
   int get filesCount => blogData?.fileIds?.length ?? 0;
 
   bool get isNewPost =>
-      postTime != null && (lastUpdated?.isBefore(postTime!) ?? false);
+      postTime != null && (lastUpdated?.isBefore(postTime!) ?? true);
 
   bool get isAnnouncement => _isAnnouncement;
 
@@ -97,7 +100,12 @@ class FeedPostViewModel extends BaseViewModel {
   bool get isPinned =>
       _feedScreenViewModel?.isPostPinned(blogData?.id) ?? false;
 
-  DateTime? get lastUpdated => _feedUpdateTimeProvider.lastFeedLoadDateTime;
+  bool get isPinUpdating =>
+      _feedScreenViewModel?.isPostPinUpdating(blogData?.id) ?? false;
+
+  DateTime? get lastUpdated => _feedScreenViewModel == null
+      ? _feedUpdateTimeProvider.lastFeedLoadDateTime
+      : _feedScreenViewModel!.lastReadAt;
 
   String get postText => _unescaper.convert(blogData?.detailText.trim() ?? '');
 
@@ -192,10 +200,11 @@ class FeedPostViewModel extends BaseViewModel {
     );
     if (newComments == null) {
       _commentsError = true;
+      return;
     }
     comments.insertAll(
       0,
-      newComments!.map(
+      newComments.map(
         (c) => FeedCommentViewModel.cached(c.data.id)..initFromFullInfo(c),
       ),
     );
@@ -211,18 +220,27 @@ class FeedPostViewModel extends BaseViewModel {
     }
   });
 
-  Future<void> togglePin() async {
-    if (DemoModeStatus.demoModeEnabled) {
-      return;
+  Future<ActionResult> togglePin() async {
+    if (DemoModeStatus.demoModeEnabled || isPinUpdating) {
+      return ActionResult.skipped;
     }
-    final pinnedId = blogData?.pinnedId ?? 0;
-    final success = isPinned
-        ? await _pinningService.unpin(pinnedId)
-        : await _pinningService.pin(pinnedId);
-
-    if (success) {
-      await _feedScreenViewModel?.refreshFeatured();
-      notifyListeners();
+    final feed = _feedScreenViewModel;
+    final pinnedId = blogData?.pinnedId;
+    if (feed == null || pinnedId == null || pinnedId <= 0) {
+      return ActionResult.skipped;
     }
+    final wasPinned = isPinned;
+    return _changePin.run(
+      apply: () => feed.setPostPinned(this, pinned: !wasPinned, pending: true),
+      save: () => wasPinned
+          ? _pinningService.unpin(pinnedId)
+          : _pinningService.pin(pinnedId),
+      rollback: () =>
+          feed.setPostPinned(this, pinned: wasPinned, pending: false),
+      commit: () =>
+          feed.setPostPinned(this, pinned: !wasPinned, pending: false),
+      onChanged: notifyListeners,
+      onError: _loggerService.logError,
+    );
   }
 }

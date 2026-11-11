@@ -7,10 +7,16 @@ import 'package:unn_mobile/ui/widgets/search/search_controller.dart';
 class SearchField<T> extends StatelessWidget {
   final AppSearchController<T> controller;
   final String? hintText;
+  final ValueChanged<String>? onSubmitted;
+  final VoidCallback? onClear;
+  final bool autofocus;
 
   const SearchField({
     required this.controller,
     this.hintText = 'Поиск...',
+    this.onSubmitted,
+    this.onClear,
+    this.autofocus = true,
     super.key,
   });
 
@@ -35,8 +41,9 @@ class SearchField<T> extends StatelessWidget {
           Expanded(
             child: TextField(
               controller: controller.textController,
-              autofocus: true,
+              autofocus: autofocus,
               textInputAction: TextInputAction.search,
+              onSubmitted: onSubmitted,
               style: theme.textTheme.bodyLarge,
               decoration: InputDecoration(
                 isCollapsed: true,
@@ -58,7 +65,7 @@ class SearchField<T> extends StatelessWidget {
               return IconButton(
                 icon: const Icon(Icons.close, size: 18),
                 tooltip: 'Очистить',
-                onPressed: controller.clearQuery,
+                onPressed: onClear ?? controller.clearQuery,
               );
             },
           ),
