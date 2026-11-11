@@ -177,6 +177,8 @@ class UnnMobileColors extends ThemeExtension<UnnMobileColors> {
 }
 
 extension ThemeDataExtension on ThemeData {
+  Color get alternatingSurfaceColor => colorScheme.primary.withAlpha(20);
+
   Color getColorOfMarkType(MarkType? markType) {
     if (markType == null) {
       return colorScheme.onSurfaceVariant;
@@ -202,7 +204,7 @@ extension ThemeDataExtension on ThemeData {
       return extraColors.scheduleSubjectHighlight!;
     }
 
-    return isEven ? colorScheme.primary.withAlpha(20) : colorScheme.surface;
+    return isEven ? alternatingSurfaceColor : colorScheme.surface;
   }
 
   UnnMobileColors? get unnMobileColors => extension<UnnMobileColors>();

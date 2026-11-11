@@ -2,6 +2,7 @@
 // Copyright 2026 BitCodersNN
 
 import 'package:flutter/material.dart';
+import 'package:unn_mobile/ui/widgets/count_badge.dart';
 
 class DayHeader extends StatelessWidget {
   final String dayOfWeek;
@@ -38,22 +39,7 @@ class DayHeader extends StatelessWidget {
           ),
         ),
         const SizedBox(width: 10),
-        Container(
-          width: 24,
-          height: 24,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: theme.colorScheme.primary.withValues(alpha: 0.12),
-          ),
-          alignment: Alignment.center,
-          child: Text(
-            '$lessonsCount',
-            style: theme.textTheme.labelMedium!.copyWith(
-              color: theme.colorScheme.primary,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ),
+        CountBadge(count: lessonsCount),
         const SizedBox(width: 12),
         if (isToday) ...[
           const SizedBox(width: 12),

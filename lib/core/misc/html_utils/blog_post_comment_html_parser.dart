@@ -6,6 +6,7 @@ import 'package:html/parser.dart' as parser;
 import 'package:unn_mobile/core/constants/regular_expressions.dart';
 import 'package:unn_mobile/core/constants/string_keys/feed_html_parser_strings.dart';
 import 'package:unn_mobile/core/misc/html_utils/bitrix_html_parser.dart';
+import 'package:unn_mobile/core/misc/html_utils/html_image_utils.dart';
 import 'package:unn_mobile/core/models/common/file_data.dart';
 import 'package:unn_mobile/core/models/feed/blog_post_comment.dart';
 import 'package:unn_mobile/core/models/feed/blog_post_comment_data.dart';
@@ -63,6 +64,15 @@ class BlogPostCommentHtmlParser {
   ) {
     final commentId =
         _extractCommentId(commentElement) ?? FeedHtmlParserStrings.unknownId;
+    final textElement = commentElement.querySelector(
+      FeedHtmlParserStrings.feedComTextInnerInner,
+    );
+    final content = textElement == null
+        ? (
+            cleanedText: FeedHtmlParserStrings.unknownValue,
+            imageUrls: const <String>[],
+          )
+        : extractImagesAndCleanHtmlElement(textElement);
 
     return BlogPostCommentData(
       authorBitrixId: authorInfo.bitrixId ?? FeedHtmlParserStrings.unknownId,
@@ -73,18 +83,16 @@ class BlogPostCommentHtmlParser {
               ?.text
               .trim() ??
           FeedHtmlParserStrings.unknownValue,
-      message:
-          commentElement
-              .querySelector(FeedHtmlParserStrings.feedComTextInnerInner)
-              ?.innerHtml
-              .trim() ??
-          FeedHtmlParserStrings.unknownValue,
+      message: content.cleanedText.trim(),
       keySigned: BitrixHtmlParserUtils.extractKeySigned(
         commentElement,
         FeedHtmlParserStrings.blogCommentPrefix,
         commentId.toString(),
       ),
-      imageUrls: _extractImageUrls(commentElement),
+      imageUrls: {
+        ...content.imageUrls,
+        ..._extractImageUrls(commentElement),
+      }.toList(),
       attachedFiles: attachFiles.map((f) => f.id).toList(),
     );
   }
