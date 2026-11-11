@@ -1,9 +1,13 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2025 BitCodersNN
 
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:unn_mobile/core/constants/api/path.dart';
 import 'package:unn_mobile/core/constants/api/protocol_type.dart';
+import 'package:unn_mobile/core/misc/app_theme_controller.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:webview_flutter_android/webview_flutter_android.dart';
 
@@ -16,7 +20,11 @@ class DonationsScreenView extends StatefulWidget {
 
 class _DonationsScreenViewState extends State<DonationsScreenView> {
   late final WebViewController controller;
-  String htmlContent = '';
+  Uri? _pageUri;
+  bool _pageLoaded = false;
+  String _pageTheme = 'light';
+  String _pagePalette = 'classic';
+  Map<String, String> _pageColors = {};
 
   @override
   void initState() {
@@ -25,8 +33,17 @@ class _DonationsScreenViewState extends State<DonationsScreenView> {
     controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..enableZoom(false)
-      ..loadRequest(
-        Uri.parse('${ProtocolType.https.name}://${ApiPath.donation}'),
+      ..setNavigationDelegate(
+        NavigationDelegate(
+          onPageStarted: (_) => _pageLoaded = false,
+          onPageFinished: (_) {
+            if (!mounted) {
+              return;
+            }
+            _pageLoaded = true;
+            _updatePageTheme();
+          },
+        ),
       );
 
     final platform = controller.platform;
@@ -36,16 +53,57 @@ class _DonationsScreenViewState extends State<DonationsScreenView> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Поддержать'),
-        forceMaterialTransparency: true,
-      ),
-      body: WebViewWidget(
-        controller: controller..setBackgroundColor(theme.colorScheme.surface),
-      ),
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final scheme = Theme.of(context).colorScheme;
+    final themeController = context.read<AppThemeController>();
+    _pageTheme = scheme.brightness == Brightness.dark ? 'dark' : 'light';
+    _pagePalette = scheme.brightness == Brightness.dark
+        ? themeController.darkTheme.name
+        : themeController.lightTheme.name;
+    String hex(Color color) =>
+        (color.toARGB32() & 0x00ffffff).toRadixString(16).padLeft(6, '0');
+    _pageColors = {
+      'background': hex(scheme.surface),
+      'surface': hex(scheme.surfaceContainerLow),
+      'foreground': hex(scheme.onSurface),
+      'muted': hex(scheme.onSurfaceVariant),
+      'primary': hex(scheme.primary),
+      'outline': hex(scheme.outlineVariant),
+    };
+    controller.setBackgroundColor(scheme.surface);
+    if (_pageUri == null) {
+      final baseUri = Uri.parse(
+        '${ProtocolType.https.name}://${ApiPath.donation}',
+      );
+      _pageUri = baseUri.replace(
+        queryParameters: {
+          ...baseUri.queryParameters,
+          'embedded': '1',
+          'theme': _pageTheme,
+          'palette': _pagePalette,
+          ..._pageColors,
+        },
+      );
+      controller.loadRequest(_pageUri!);
+    } else if (_pageLoaded) {
+      _updatePageTheme();
+    }
+  }
+
+  void _updatePageTheme() {
+    controller.runJavaScript(
+      'window.setSupportTheme?.(${jsonEncode(_pageTheme)}, '
+      '${jsonEncode(_pageColors)}, ${jsonEncode(_pagePalette)});',
     );
   }
+
+  @override
+  Widget build(BuildContext context) => Scaffold(
+    appBar: AppBar(
+      title: const Text('Поддержать'),
+      forceMaterialTransparency: true,
+    ),
+    body: WebViewWidget(controller: controller),
+  );
 }

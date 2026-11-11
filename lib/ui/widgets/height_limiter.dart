@@ -12,7 +12,7 @@ class HeightLimiter extends StatelessWidget {
   final Widget child;
   final double maxHeight;
   final double fadeEffectHeight;
-  final Color baseColor;
+  final Color? baseColor;
   final bool overflowIndicatorOutside;
   final Widget Function(BuildContext context)? overflowIndicatorBuilder;
 
@@ -22,7 +22,7 @@ class HeightLimiter extends StatelessWidget {
     super.key,
     this.fadeEffectHeight = 72,
     this.overflowIndicatorBuilder,
-    this.baseColor = Colors.white,
+    this.baseColor,
     this.overflowIndicatorOutside = false,
   });
 
@@ -64,7 +64,14 @@ class HeightLimiter extends StatelessWidget {
             gradient: LinearGradient(
               begin: Alignment.bottomCenter,
               end: Alignment.topCenter,
-              colors: [baseColor.withAlpha(200), baseColor.withAlpha(0)],
+              colors: [
+                (baseColor ?? Theme.of(context).colorScheme.surface).withAlpha(
+                  200,
+                ),
+                (baseColor ?? Theme.of(context).colorScheme.surface).withAlpha(
+                  0,
+                ),
+              ],
               tileMode: TileMode.clamp,
             ),
           ),

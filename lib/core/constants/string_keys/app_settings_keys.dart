@@ -2,6 +2,9 @@
 // Copyright 2025 BitCodersNN
 
 class AppSettingsKeys {
+  static const String themeMode = 'themeMode';
+  static const String darkTheme = 'darkTheme';
+  static const String lightTheme = 'lightTheme';
   static const String tabBarPaths = 'tabBarPaths';
   static const String vibrationEnabled = 'vibrationEnabled';
   static const String analyticsEnabled = 'analyticsEnabled';

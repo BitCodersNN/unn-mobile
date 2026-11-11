@@ -109,7 +109,7 @@ class MenuButton extends StatelessWidget {
                   ),
                   child: SingleChildScrollView(
                     child: Material(
-                      color: theme.colorScheme.surface,
+                      color: theme.colorScheme.surfaceContainerLow,
                       elevation: 6,
                       borderRadius: BorderRadius.circular(16),
                       clipBehavior: Clip.antiAlias,
@@ -204,7 +204,7 @@ class _MenuItemViewState extends State<_MenuItemView> {
 
   Widget _getIcon(BuildContext context, SideMenuItem data) {
     final theme = Theme.of(context);
-    final iconSize = 24.0;
+    const iconSize = 24.0;
 
     if (data is SideMenuItemWithIcon) {
       return Icon(data.icon, size: iconSize, color: theme.colorScheme.primary);
@@ -233,7 +233,7 @@ class _MenuItemViewState extends State<_MenuItemView> {
       );
     }
     if (widget.shiftNonIconItems) {
-      return SizedBox(width: iconSize, height: iconSize);
+      return const SizedBox(width: iconSize, height: iconSize);
     }
     return Container();
   }

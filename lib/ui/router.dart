@@ -18,6 +18,7 @@ import 'package:unn_mobile/ui/views/main_page/main_page.dart';
 import 'package:unn_mobile/ui/views/main_page/main_page_route_data.dart';
 import 'package:unn_mobile/ui/views/main_page/main_page_routing.dart';
 import 'package:unn_mobile/ui/views/main_page/settings/settings.dart';
+import 'package:unn_mobile/ui/widgets/theme_aware_indexed_stack.dart';
 
 class AppRouter extends ChangeNotifier {
   final ValueListenable<List<String>> _tabPaths;
@@ -249,7 +250,12 @@ class AppRouter extends ChangeNotifier {
           ),
         ],
       ),
-      StatefulShellRoute.indexedStack(
+      StatefulShellRoute(
+        navigatorContainerBuilder: (context, shell, children) =>
+            ThemeAwareIndexedStack(
+              index: shell.currentIndex,
+              children: children,
+            ),
         key: _shellKey,
         pageBuilder: (context, state, shell) => NoTransitionPage(
           key: const ValueKey('main-shell'),
