@@ -11,6 +11,7 @@ import 'package:unn_mobile/ui/views/main_page/main_page_route_data.dart';
 import 'package:unn_mobile/ui/views/main_page/tab_bar/tab_bar_item_content.dart';
 import 'package:unn_mobile/ui/views/main_page/tab_bar/tab_bar_label_layout.dart';
 import 'package:unn_mobile/ui/views/main_page/tab_bar/tab_bar_reorder_preview.dart';
+import 'package:unn_mobile/ui/widgets/app_modal_sheet.dart';
 import 'package:unn_mobile/ui/widgets/sheets/app_bottom_sheet.dart';
 
 Future<List<String>?> showTabBarCustomizationSheet(
@@ -106,110 +107,15 @@ class _TabBarCustomizationSheetState extends State<TabBarCustomizationSheet> {
         canPop: !_model.isSaving,
         child: AbsorbPointer(
           absorbing: _model.isSaving,
-          child: SafeArea(
-            top: false,
-            child: Column(
+          child: AppModalSheet(
+            title: 'Быстрый доступ',
+            leading: TextButton(
+              onPressed: _model.reset,
+              child: const Text('Сброс'),
+            ),
+            footer: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
-                  child: SizedBox(
-                    height: 56,
-                    child: Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 80),
-                          child: FittedBox(
-                            fit: BoxFit.scaleDown,
-                            child: Text(
-                              'Быстрый доступ',
-                              style: theme.textTheme.titleLarge?.copyWith(
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ),
-                        ),
-                        Align(
-                          alignment: Alignment.centerLeft,
-                          child: TextButton(
-                            onPressed: _model.reset,
-                            child: const Text('Сброс'),
-                          ),
-                        ),
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: IconButton(
-                            tooltip: 'Закрыть',
-                            color: theme.colorScheme.onSurfaceVariant,
-                            onPressed: () => Navigator.of(context).pop(),
-                            icon: const Icon(Icons.close),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: SingleChildScrollView(
-                    padding: const EdgeInsets.fromLTRB(20, 24, 20, 20),
-                    child: Column(
-                      children: [
-                        Text(
-                          'Вы можете менять некоторые вкладки в нижнем меню. Нажмите на иконку внизу, а затем выберите нужный раздел.',
-                          textAlign: TextAlign.center,
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            color: theme.colorScheme.onSurfaceVariant,
-                          ),
-                        ),
-                        const SizedBox(height: 20),
-                        LayoutBuilder(
-                          builder: (context, constraints) {
-                            const columns = 4;
-                            final width =
-                                (constraints.maxWidth - 8 * (columns - 1)) /
-                                columns;
-                            return Wrap(
-                              spacing: 8,
-                              runSpacing: 12,
-                              children: [
-                                for (final route in widget.routes.where(
-                                  (route) =>
-                                      route.pagePath != MainPagePaths.more,
-                                ))
-                                  SizedBox(
-                                    width: width,
-                                    child: _option(
-                                      context,
-                                      icon: route.unselectedIcon,
-                                      label: route.pageTitle,
-                                      selected:
-                                          !adding &&
-                                          _model.selectedPath == route.pagePath,
-                                      onTap: route.isDisabled
-                                          ? null
-                                          : () => _model.choose(route.pagePath),
-                                    ),
-                                  ),
-                                SizedBox(
-                                  width: width,
-                                  child: _option(
-                                    context,
-                                    icon: Icons.block,
-                                    label: 'Не показывать',
-                                    selected: adding,
-                                    onTap: canRemove
-                                        ? _model.removeSelected
-                                        : null,
-                                  ),
-                                ),
-                              ],
-                            );
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: DecoratedBox(
@@ -271,6 +177,61 @@ class _TabBarCustomizationSheetState extends State<TabBarCustomizationSheet> {
                   ),
                 ),
               ],
+            ),
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.fromLTRB(20, 24, 20, 20),
+              child: Column(
+                children: [
+                  Text(
+                    'Вы можете менять некоторые вкладки в нижнем меню. Нажмите на иконку внизу, а затем выберите нужный раздел.',
+                    textAlign: TextAlign.center,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  LayoutBuilder(
+                    builder: (context, constraints) {
+                      const columns = 4;
+                      final width =
+                          (constraints.maxWidth - 8 * (columns - 1)) / columns;
+                      return Wrap(
+                        spacing: 8,
+                        runSpacing: 12,
+                        children: [
+                          for (final route in widget.routes.where(
+                            (route) => route.pagePath != MainPagePaths.more,
+                          ))
+                            SizedBox(
+                              width: width,
+                              child: _option(
+                                context,
+                                icon: route.unselectedIcon,
+                                label: route.pageTitle,
+                                selected:
+                                    !adding &&
+                                    _model.selectedPath == route.pagePath,
+                                onTap: route.isDisabled
+                                    ? null
+                                    : () => _model.choose(route.pagePath),
+                              ),
+                            ),
+                          SizedBox(
+                            width: width,
+                            child: _option(
+                              context,
+                              icon: Icons.block,
+                              label: 'Не показывать',
+                              selected: adding,
+                              onTap: canRemove ? _model.removeSelected : null,
+                            ),
+                          ),
+                        ],
+                      );
+                    },
+                  ),
+                ],
+              ),
             ),
           ),
         ),

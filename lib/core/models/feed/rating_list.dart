@@ -71,6 +71,14 @@ class RatingList {
 
   RatingList() : this.ratingList();
 
+  RatingList.copy(RatingList source) {
+    _ratingList = {
+      for (final entry in source._ratingList.entries)
+        entry.key: Set.of(entry.value),
+    };
+    _reactionCounts = Map.of(source._reactionCounts);
+  }
+
   RatingList.ratingList([Map<ReactionType, Set<UserShortInfo>>? ratingList]) {
     ratingList ??= {};
     _ratingList = ratingList;
