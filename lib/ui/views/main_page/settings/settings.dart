@@ -9,10 +9,11 @@ import 'package:unn_mobile/core/models/common/app_theme_mode.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/settings/settings_screen_view_model.dart';
 import 'package:unn_mobile/ui/main_page_locations.dart';
 import 'package:unn_mobile/ui/router.dart';
+import 'package:unn_mobile/ui/theme/app_theme.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
-import 'package:unn_mobile/ui/views/main_page/settings/widgets/dark_theme_selector.dart';
 import 'package:unn_mobile/ui/views/main_page/settings/widgets/settings_section.dart';
 import 'package:unn_mobile/ui/views/main_page/settings/widgets/settings_tile.dart';
+import 'package:unn_mobile/ui/views/main_page/settings/widgets/theme_palette_selector.dart';
 import 'package:unn_mobile/ui/views/main_page/tab_bar/tab_bar_customization_sheet.dart';
 
 class SettingsScreenView extends StatefulWidget {
@@ -158,8 +159,19 @@ class _SettingsScreenViewState extends State<SettingsScreenView> {
                         subtitle: _themeLabels[model.themeMode],
                         onTap: () => _selectTheme(model),
                       ),
+                      if (model.themeMode != AppThemeMode.dark)
+                        ThemePaletteSelector(
+                          title: 'Светлая палитра',
+                          palettes: AppTheme.lightPalettes,
+                          selected: model.lightTheme,
+                          onChanged: (palette) => _saveThemeChange(
+                            () => model.setLightTheme(palette),
+                          ),
+                        ),
                       if (model.themeMode != AppThemeMode.light)
-                        DarkThemeSelector(
+                        ThemePaletteSelector(
+                          title: 'Тёмная палитра',
+                          palettes: AppTheme.darkPalettes,
                           selected: model.darkTheme,
                           onChanged: (palette) => _saveThemeChange(
                             () => model.setDarkTheme(palette),

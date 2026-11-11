@@ -2,6 +2,7 @@
 // Copyright 2026 BitCodersNN
 
 import 'package:unn_mobile/core/models/common/app_dark_theme.dart';
+import 'package:unn_mobile/core/models/common/app_light_theme.dart';
 import 'package:unn_mobile/core/models/common/app_theme_mode.dart';
 
 abstract interface class AppThemeProvider {
@@ -16,4 +17,10 @@ abstract interface class AppThemeProvider {
 
   /// Сохраняет тёмную палитру независимо от режима оформления.
   Future<void> saveDarkTheme(AppDarkTheme theme);
+
+  /// Возвращает сохранённую светлую палитру.
+  Future<AppLightTheme> readLightTheme();
+
+  /// Сохраняет светлую палитру независимо от режима оформления.
+  Future<void> saveLightTheme(AppLightTheme theme);
 }

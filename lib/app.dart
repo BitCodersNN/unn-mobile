@@ -93,7 +93,7 @@ class _UnnMobileState extends State<UnnMobile> {
           listenable: widget.themeController,
           builder: (context, _) => MaterialApp.router(
             routerConfig: _router.router,
-            theme: AppTheme.light,
+            theme: AppTheme.lightThemeFor(widget.themeController.lightTheme),
             darkTheme: AppTheme.darkThemeFor(widget.themeController.darkTheme),
             themeMode: switch (widget.themeController.mode) {
               AppThemeMode.system => ThemeMode.system,

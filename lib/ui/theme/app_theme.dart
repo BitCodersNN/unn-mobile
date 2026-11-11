@@ -4,6 +4,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:unn_mobile/core/models/common/app_dark_theme.dart';
+import 'package:unn_mobile/core/models/common/app_light_theme.dart';
+import 'package:unn_mobile/ui/theme/theme_palette.dart';
 import 'package:unn_mobile/ui/unn_mobile_colors.dart';
 
 abstract final class AppTheme {
@@ -59,10 +61,35 @@ abstract final class AppTheme {
     UnnMobileColors.graphite,
   );
 
-  static ThemeData darkThemeFor(AppDarkTheme theme) => switch (theme) {
-    AppDarkTheme.green => dark,
-    AppDarkTheme.graphite => graphite,
-  };
+  static final List<ThemePalette<AppLightTheme>> lightPalettes =
+      List.unmodifiable([
+        ThemePalette(
+          value: AppLightTheme.classic,
+          label: 'Классическая',
+          theme: light,
+        ),
+      ]);
+
+  static final List<ThemePalette<AppDarkTheme>> darkPalettes =
+      List.unmodifiable([
+        ThemePalette(value: AppDarkTheme.green, label: 'Зелёная', theme: dark),
+        ThemePalette(
+          value: AppDarkTheme.graphite,
+          label: 'Графитовая',
+          theme: graphite,
+        ),
+      ]);
+
+  static ThemeData lightThemeFor(AppLightTheme theme) =>
+      _themeFor(theme, lightPalettes);
+
+  static ThemeData darkThemeFor(AppDarkTheme theme) =>
+      _themeFor(theme, darkPalettes);
+
+  static ThemeData _themeFor<T extends Enum>(
+    T value,
+    List<ThemePalette<T>> palettes,
+  ) => palettes.singleWhere((palette) => palette.value == value).theme;
 
   static ThemeData _build(ColorScheme colors, UnnMobileColors extraColors) {
     final isDark = colors.brightness == Brightness.dark;

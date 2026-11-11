@@ -6,6 +6,7 @@ import 'package:unn_mobile/core/misc/app_settings.dart';
 import 'package:unn_mobile/core/misc/app_theme_controller.dart';
 import 'package:unn_mobile/core/misc/file_helpers/file_functions.dart';
 import 'package:unn_mobile/core/models/common/app_dark_theme.dart';
+import 'package:unn_mobile/core/models/common/app_light_theme.dart';
 import 'package:unn_mobile/core/models/common/app_theme_mode.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation/source_authorisation_service.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation/unn_authorisation_service.dart';
@@ -30,19 +31,21 @@ class SettingsScreenViewModel extends BaseViewModel {
   );
 
   AppThemeMode get themeMode => _themeController.mode;
+  AppLightTheme get lightTheme => _themeController.lightTheme;
   AppDarkTheme get darkTheme => _themeController.darkTheme;
 
-  Future<void> setDarkTheme(AppDarkTheme theme) async {
-    try {
-      await _themeController.setDarkTheme(theme);
-    } finally {
-      notifyListeners();
-    }
-  }
+  Future<void> setThemeMode(AppThemeMode mode) =>
+      _updateTheme(() => _themeController.setMode(mode));
 
-  Future<void> setThemeMode(AppThemeMode mode) async {
+  Future<void> setLightTheme(AppLightTheme theme) =>
+      _updateTheme(() => _themeController.setLightTheme(theme));
+
+  Future<void> setDarkTheme(AppDarkTheme theme) =>
+      _updateTheme(() => _themeController.setDarkTheme(theme));
+
+  Future<void> _updateTheme(Future<void> Function() update) async {
     try {
-      await _themeController.setMode(mode);
+      await update();
     } finally {
       notifyListeners();
     }

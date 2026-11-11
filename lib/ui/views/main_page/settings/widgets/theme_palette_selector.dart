@@ -2,16 +2,21 @@
 // Copyright 2026 BitCodersNN
 
 import 'package:flutter/material.dart';
-import 'package:unn_mobile/core/models/common/app_dark_theme.dart';
-import 'package:unn_mobile/ui/theme/app_theme.dart';
+import 'package:unn_mobile/ui/theme/theme_palette.dart';
 
-class DarkThemeSelector extends StatelessWidget {
-  final AppDarkTheme selected;
-  final ValueChanged<AppDarkTheme> onChanged;
+class ThemePaletteSelector<T extends Enum> extends StatelessWidget {
+  final String title;
+  final T selected;
+  final List<ThemePalette<T>> palettes;
+  // Обработчик вызывается только с T из списка палитр этого компонента.
+  // ignore: unsafe_variance
+  final ValueChanged<T> _onChanged;
 
-  const DarkThemeSelector({
+  const ThemePaletteSelector({
+    required this.title,
+    required this.palettes,
     required this.selected,
-    required this.onChanged,
+    required this._onChanged,
     super.key,
   });
 
@@ -23,7 +28,7 @@ class DarkThemeSelector extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Тёмная палитра', style: theme.textTheme.titleSmall),
+          Text(title, style: theme.textTheme.titleSmall),
           const SizedBox(height: 4),
           Text(
             'Используется и при автоматической смене темы системой',
@@ -32,19 +37,28 @@ class DarkThemeSelector extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 14),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            spacing: 12,
-            children: [
-              for (final palette in AppDarkTheme.values)
-                Expanded(
-                  child: _PaletteOption(
-                    palette: palette,
-                    selected: selected == palette,
-                    onTap: () => onChanged(palette),
-                  ),
-                ),
-            ],
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final columns = constraints.maxWidth < 280 ? 1 : 2;
+              final width =
+                  (constraints.maxWidth - 12 * (columns - 1)) / columns;
+              return Wrap(
+                spacing: 12,
+                runSpacing: 12,
+                children: [
+                  for (final palette in palettes)
+                    SizedBox(
+                      width: width,
+                      child: _PaletteOption(
+                        label: palette.label,
+                        colors: palette.theme.colorScheme,
+                        selected: selected == palette.value,
+                        onTap: () => _onChanged(palette.value),
+                      ),
+                    ),
+                ],
+              );
+            },
           ),
         ],
       ),
@@ -53,12 +67,14 @@ class DarkThemeSelector extends StatelessWidget {
 }
 
 class _PaletteOption extends StatelessWidget {
-  final AppDarkTheme palette;
+  final String label;
+  final ColorScheme colors;
   final bool selected;
   final VoidCallback onTap;
 
   const _PaletteOption({
-    required this.palette,
+    required this.label,
+    required this.colors,
     required this.selected,
     required this.onTap,
   });
@@ -66,11 +82,6 @@ class _PaletteOption extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colors = AppTheme.darkThemeFor(palette).colorScheme;
-    final label = switch (palette) {
-      AppDarkTheme.green => 'Зелёная',
-      AppDarkTheme.graphite => 'Графитовая',
-    };
     return Semantics(
       button: true,
       selected: selected,
