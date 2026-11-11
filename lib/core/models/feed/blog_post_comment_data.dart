@@ -79,20 +79,26 @@ class BlogPostCommentData {
     ],
   };
 
-  factory BlogPostCommentData.fromBitrixJson(
-    JsonMap jsonMap,
-  ) => BlogPostCommentData(
-    id: int.parse(jsonMap[_BlogPostCommentDataBitrixJsonKeys.id]! as String),
-    authorBitrixId: int.parse(
-      jsonMap[_BlogPostCommentDataBitrixJsonKeys.authorId]! as String,
-    ),
-    dateTime: jsonMap[_BlogPostCommentDataBitrixJsonKeys.dateTime]! as String,
-    message: jsonMap[_BlogPostCommentDataBitrixJsonKeys.message]! as String,
-    keySigned: jsonMap[_BlogPostCommentDataBitrixJsonKeys.keySigned]! as String,
-    attachedFiles: [
-      for (final element
-          in jsonMap[_BlogPostCommentDataBitrixJsonKeys.attachedFiles]! as List)
-        int.parse(element.toString()),
-    ],
-  );
+  factory BlogPostCommentData.fromBitrixJson(JsonMap jsonMap) {
+    final result = extractImagesAndCleanHtmlString(
+      jsonMap[_BlogPostCommentDataBitrixJsonKeys.message]! as String,
+    );
+    return BlogPostCommentData(
+      id: int.parse(jsonMap[_BlogPostCommentDataBitrixJsonKeys.id]! as String),
+      authorBitrixId: int.parse(
+        jsonMap[_BlogPostCommentDataBitrixJsonKeys.authorId]! as String,
+      ),
+      dateTime: jsonMap[_BlogPostCommentDataBitrixJsonKeys.dateTime]! as String,
+      message: result.cleanedText,
+      imageUrls: result.imageUrls,
+      keySigned:
+          jsonMap[_BlogPostCommentDataBitrixJsonKeys.keySigned]! as String,
+      attachedFiles: [
+        for (final element
+            in jsonMap[_BlogPostCommentDataBitrixJsonKeys.attachedFiles]!
+                as List)
+          int.parse(element.toString()),
+      ],
+    );
+  }
 }
