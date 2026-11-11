@@ -89,10 +89,10 @@ class _DonationsScreenViewState extends State<DonationsScreenView> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-      appBar: AppBar(
-        title: const Text('Поддержать'),
-        forceMaterialTransparency: true,
-      ),
-      body: WebViewWidget(controller: controller),
-    );
+    appBar: AppBar(
+      title: const Text('Поддержать'),
+      forceMaterialTransparency: true,
+    ),
+    body: WebViewWidget(controller: controller),
+  );
 }

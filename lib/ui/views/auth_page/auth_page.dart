@@ -143,10 +143,7 @@ class _AuthPageState extends State<AuthPage> {
                   title: 'Поддержать',
                   value: _MenuItemValues.support,
                 ),
-                SideMenuItem(
-                  title: 'О нас',
-                  value: _MenuItemValues.about,
-                ),
+                SideMenuItem(title: 'О нас', value: _MenuItemValues.about),
               ],
               onSelected: (item) {
                 switch (item) {
