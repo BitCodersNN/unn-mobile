@@ -94,15 +94,30 @@ class _ImageViewerScreenState extends State<ImageViewerScreen> {
                           const AlwaysStoppedAnimation<double>(1))
                       .drive(CurveTween(curve: Curves.easeInOutCubic))
                       .drive(Tween<double>(begin: 0.96, end: 1)),
-              child: ExtendedImageGesturePageView.builder(
-                controller: _controller,
-                physics: const BouncingScrollPhysics(),
-                itemCount: widget.images.length,
-                onPageChanged: (index) {
-                  setState(() => _index = index);
-                  widget.onPageChanged?.call(index);
-                },
-                itemBuilder: (context, index) => _buildImage(index),
+              child: ExtendedImageSlidePage(
+                slideAxis: SlideAxis.vertical,
+                resetPageDuration: const Duration(milliseconds: 200),
+                slidePageBackgroundHandler: (_, _) => Colors.transparent,
+                slideEndHandler:
+                    (
+                      Offset offset, {
+                      ExtendedImageSlidePageState? state,
+                      ScaleEndDetails? details,
+                    }) =>
+                        offset.dy.abs() > 100 ||
+                        (offset.dy.abs() > 24 &&
+                            (details?.velocity.pixelsPerSecond.dy.abs() ?? 0) >
+                                900),
+                child: ExtendedImageGesturePageView.builder(
+                  controller: _controller,
+                  physics: const BouncingScrollPhysics(),
+                  itemCount: widget.images.length,
+                  onPageChanged: (index) {
+                    setState(() => _index = index);
+                    widget.onPageChanged?.call(index);
+                  },
+                  itemBuilder: (context, index) => _buildImage(index),
+                ),
               ),
             ),
             Positioned(
@@ -133,6 +148,7 @@ class _ImageViewerScreenState extends State<ImageViewerScreen> {
     image: widget.images[index],
     fit: BoxFit.contain,
     mode: ExtendedImageMode.gesture,
+    enableSlideOutPage: true,
     initGestureConfigHandler: (_) => GestureConfig(
       minScale: 0.9,
       animationMinScale: 0.7,
