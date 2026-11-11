@@ -2,9 +2,7 @@
 // Copyright 2025 BitCodersNN
 
 import 'package:injector/injector.dart';
-import 'package:unn_mobile/core/misc/demo_mode_status.dart';
 import 'package:unn_mobile/core/models/feed/rating_list.dart';
-import 'package:unn_mobile/core/models/profile/user_short_info.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/reaction_action_service.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/reaction_rating_list_service.dart';
 import 'package:unn_mobile/core/viewmodels/factories/reaction_view_model_factory.dart';
@@ -22,6 +20,7 @@ class ReactionViewModel extends ReactionViewModelBase {
     this._gettingRatingList,
     this._reactionManager,
     super._currentUserSyncStorage,
+    super._loggerService,
   );
 
   factory ReactionViewModel.cached(ReactionCacheKey key) =>
@@ -32,6 +31,9 @@ class ReactionViewModel extends ReactionViewModelBase {
   bool get isLoading => _isLoading;
 
   void init({String? voteKeySigned, int? postId, int? authorId}) {
+    if (isChangingReaction) {
+      return;
+    }
     _isLoading = true;
     if (postId == null && authorId == null && voteKeySigned == null) {
       return;
@@ -49,6 +51,9 @@ class ReactionViewModel extends ReactionViewModelBase {
   }
 
   void initFull(String voteKeySigned, RatingList ratingList) {
+    if (isChangingReaction) {
+      return;
+    }
     this.ratingList = ratingList;
     _voteKeySigned = voteKeySigned;
     _isLoading = false;
@@ -66,51 +71,30 @@ class ReactionViewModel extends ReactionViewModelBase {
     if (_voteKeySigned == null) {
       return;
     }
-    ratingList = await _gettingRatingList.getRatingList(
+    final revision = reactionRevision;
+    final loaded = await _gettingRatingList.getRatingList(
       voteKeySigned: _voteKeySigned!,
     );
+    if (revision == reactionRevision) {
+      ratingList = loaded;
+    }
   }
 
   @override
-  Future<void> setReaction(ReactionType? reaction) async {
-    if (DemoModeStatus.demoModeEnabled) {
-      return;
+  bool get hasReactionTarget => _voteKeySigned != null && !_isLoading;
+
+  @override
+  Future<bool> addReaction(ReactionType reaction) async {
+    final user = await _reactionManager.addReaction(reaction, _voteKeySigned!);
+    if (user == null) {
+      return false;
     }
-    if (profileId == ReactionViewModelBase.noId) {
-      return;
-    }
-    if (_voteKeySigned == null) {
-      return;
-    }
-    if (reaction == null) {
-      final currentReactionInfo = ratingList?.getReactionInfoByUser(profileId);
-      final currentReactionType = ratingList?.getReactionByUser(profileId);
-      if (currentReactionInfo == null || currentReactionType == null) {
-        return;
-      }
-      // Временно удаляем реакцию, чтобы показать действие
-      ratingList!.removeReaction(profileId);
-      notifyListeners();
-      if (!await _reactionManager.removeReaction(_voteKeySigned!)) {
-        // Если реакция не удалилась - восстанавливаем её
-        ratingList!.addReactions(currentReactionType, {currentReactionInfo});
-        notifyListeners();
-      }
-    } else {
-      // Добавляем временно, чтобы сразу показать действие
-      ratingList?.addReactions(reaction, {UserShortInfo(bitrixId: profileId)});
-      notifyListeners();
-      final reactionUserInfo = await _reactionManager.addReaction(
-        reaction,
-        _voteKeySigned!,
-      );
-      // Удаляем временную реакцию
-      ratingList?.removeReaction(profileId);
-      if (reactionUserInfo != null) {
-        // Если реакция реально добавилась - фиксируем это
-        ratingList?.addReactions(reaction, {reactionUserInfo});
-      }
-      notifyListeners();
-    }
+    ratingList?.removeReaction(profileId);
+    ratingList?.addReactions(reaction, {user});
+    return true;
   }
+
+  @override
+  Future<bool> removeReaction(ReactionType reaction) =>
+      _reactionManager.removeReaction(_voteKeySigned!);
 }

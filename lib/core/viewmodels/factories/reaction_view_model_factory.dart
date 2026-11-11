@@ -3,6 +3,7 @@
 
 import 'package:flutter/foundation.dart';
 import 'package:unn_mobile/core/misc/user/current_user_sync_storage.dart';
+import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/reaction_action_service.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/reaction_rating_list_service.dart';
 import 'package:unn_mobile/core/viewmodels/factories/cached_view_model_factory_base.dart';
@@ -20,6 +21,7 @@ class ReactionViewModelFactory
     getService<ReactionRatingListService>(),
     getService<ReactionActionService>(),
     getService<CurrentUserSyncStorage>(),
+    getService<LoggerService>(),
   );
 
   ReactionViewModel getEmptyViewModel() => createViewModel(0)..init();

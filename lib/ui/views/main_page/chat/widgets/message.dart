@@ -18,6 +18,7 @@ import 'package:unn_mobile/core/models/feed/rating_list.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/chat/chat_inside_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/chat/message_reaction_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/feed/attached_file_view_model.dart';
+import 'package:unn_mobile/ui/actions/reaction_actions.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/widgets/attached_file.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/widgets/reaction_bubble.dart';
@@ -121,13 +122,14 @@ class MessageWidget extends StatefulWidget {
                   .copyWith(selectableText: false),
             ),
           ),
-          const SizedBox(height: 4.0),
+          if (msg.files.isEmpty) const SizedBox(height: 4),
         ],
-        for (final file in msg.files)
-          AttachedFile(
-            viewModel: AttachedFileViewModel.cached(file.id)
-              ..initFromFileData(file),
-          ),
+        AttachedFiles(
+          files: [
+            for (final file in msg.files)
+              AttachedFileViewModel.cached(file.id)..initFromFileData(file),
+          ],
+        ),
       ],
     );
   }
@@ -218,11 +220,11 @@ class _MessageWidgetState extends State<MessageWidget> {
       builder: (context, model, _) => GestureDetector(
         onLongPress: () => ContextMenuHelper.showContextMenu(
           context: context,
-          model: model,
           actionsBuilder: () => createMessageActions(
             context: context,
             model: model,
-            widget: widget,
+            text: widget.message.text,
+            onReply: () => widget.chatModel.replyMessage = widget.message,
           ),
           onOpen: () => setState(() => _isHighlighted = true),
           onClose: () => setState(() => _isHighlighted = false),
@@ -336,7 +338,7 @@ class MessageReactionView extends StatelessWidget {
                 isSelected: model.currentReaction == reaction,
                 onPressed: () {
                   triggerHaptic(HapticIntensity.selection);
-                  model.toggleReaction(reaction);
+                  ReactionActions.of(context, model).toggleReaction(reaction);
                 },
                 icon: Image.asset(reaction.assetName),
                 text: model.getReactionCount(reaction).toString(),

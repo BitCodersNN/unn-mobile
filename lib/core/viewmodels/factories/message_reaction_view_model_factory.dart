@@ -3,6 +3,7 @@
 
 import 'package:unn_mobile/core/aggregators/interfaces/message_reaction_service_aggregator.dart';
 import 'package:unn_mobile/core/misc/user/current_user_sync_storage.dart';
+import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
 import 'package:unn_mobile/core/viewmodels/factories/cached_view_model_factory_base.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/chat/message_reaction_view_model.dart';
 
@@ -21,5 +22,6 @@ class MessageReactionViewModelFactory
       MessageReactionViewModel(
         getService<MessageReactionServiceAggregator>(),
         getService<CurrentUserSyncStorage>(),
+        getService<LoggerService>(),
       );
 }
