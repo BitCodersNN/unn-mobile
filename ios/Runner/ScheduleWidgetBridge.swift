@@ -23,22 +23,21 @@ final class ScheduleWidgetBridge {
             return
         }
         switch call.method {
-        case "read":
+        case "readCache":
             result(defaults.string(forKey: ScheduleWidgetConstants.dataKey))
-        case "write":
+        case "writeCache", "writeCacheOrder":
             guard let value = call.arguments as? String,
                   let bytes = value.data(using: .utf8),
-                  let decoded = try? JSONDecoder().decode(ScheduleWidgetData.self, from: bytes),
+                  let decoded = try? JSONDecoder().decode(ScheduleCacheData.self, from: bytes),
                   decoded.version == 1 else {
                 result(FlutterError(code: "INVALID_DATA", message: "Invalid schedule widget data", details: nil))
                 return
             }
             defaults.set(value, forKey: ScheduleWidgetConstants.dataKey)
-            WidgetCenter.shared.reloadTimelines(ofKind: ScheduleWidgetConstants.kind)
-            result(nil)
-        case "clear":
-            defaults.removeObject(forKey: ScheduleWidgetConstants.dataKey)
-            WidgetCenter.shared.reloadTimelines(ofKind: ScheduleWidgetConstants.kind)
+            defaults.removeObject(forKey: ScheduleWidgetConstants.previousDataKey)
+            if call.method == "writeCache" {
+                WidgetCenter.shared.reloadTimelines(ofKind: ScheduleWidgetConstants.kind)
+            }
             result(nil)
         case "consumeLaunch":
             let launch = pendingLaunch

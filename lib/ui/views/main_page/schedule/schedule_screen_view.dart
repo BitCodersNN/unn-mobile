@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:unn_mobile/core/constants/date_pattern.dart';
 import 'package:unn_mobile/core/misc/date_time_utilities/date_time_extensions.dart';
-import 'package:unn_mobile/core/misc/date_time_utilities/week_range.dart';
 import 'package:unn_mobile/core/models/schedule/schedule_filter.dart';
 import 'package:unn_mobile/core/models/schedule/schedule_search_suggestion_item.dart';
 import 'package:unn_mobile/core/viewmodels/factories/main_page_routes_view_models_factory.dart';
@@ -87,14 +86,7 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView> {
           builder: (context, online) {
             final theme = Theme.of(context);
 
-            WeekRange week = model.selectedWeek;
-
-            if (!online &&
-                model.currentTab != null &&
-                !model.currentTab!.hasAnyId &&
-                model.currentTab!.offlineSchedule != null) {
-              week = model.currentTab!.offlineSchedule!.week;
-            }
+            final week = model.selectedWeek;
 
             return DefaultTabController(
               length: model.sortedUserTypeList.length,
@@ -160,11 +152,7 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView> {
                                 Row(
                                   children: [
                                     IconButton(
-                                      onPressed: online
-                                          ? () {
-                                              model.previousWeek();
-                                            }
-                                          : null,
+                                      onPressed: model.previousWeek,
                                       icon: const Icon(Icons.arrow_left),
                                       iconSize: 32.0,
                                     ),
@@ -179,11 +167,7 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView> {
                                       ),
                                     ),
                                     IconButton(
-                                      onPressed: online
-                                          ? () {
-                                              model.nextWeek();
-                                            }
-                                          : null,
+                                      onPressed: model.nextWeek,
                                       icon: const Icon(Icons.arrow_right),
                                       iconSize: 32.0,
                                     ),
@@ -236,7 +220,7 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView> {
                 body: Stack(
                   children: [
                     ScheduleWeekSwipe(
-                      enabled: online && !_search.isOpen,
+                      enabled: !_search.isOpen,
                       weekOffset: model.weekOffset,
                       onWeekChanged: model.selectWeek,
                       weekBuilder: (context, weekOffset) => TabBarView(
@@ -287,9 +271,15 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView> {
               ),
             );
           },
-          statusChanged: (_) => Future.wait(
-            model.modelsByType.values.map((t) async => await t.refresh()),
-          ).then((_) => model.saveOfflineSchedule()),
+          statusChanged: (online) async {
+            if (online) {
+              await Future.wait(
+                model.modelsByType.values
+                    .where((tab) => !tab.isBusy)
+                    .map((tab) async => await tab.refresh()),
+              );
+            }
+          },
         );
       },
       model: _viewModel,

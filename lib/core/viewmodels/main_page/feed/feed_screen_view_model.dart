@@ -4,6 +4,7 @@
 import 'dart:async';
 
 import 'package:unn_mobile/core/misc/authorisation/try_login_and_retrieve_data.dart';
+import 'package:unn_mobile/core/misc/cache/restore_cache_then_refresh.dart';
 import 'package:unn_mobile/core/misc/html_utils/html_to_plain_text.dart';
 import 'package:unn_mobile/core/models/feed/blog_post.dart';
 import 'package:unn_mobile/core/models/feed/blog_post_type.dart';
@@ -54,6 +55,7 @@ class FeedScreenViewModel extends BaseViewModel
   List<FeedPostViewModel> get _totalPosts => _page.posts;
 
   Future<void>? _initialization;
+  Future<bool>? _streamAuthInitialization;
 
   String? _searchQuery;
   DateTime? _lastReadAt;
@@ -198,15 +200,20 @@ class FeedScreenViewModel extends BaseViewModel
 
   Future<void> _loadInitialPosts() async {
     final lastReadAt = await _lastFeedLoadDateTimeProvider.getData();
-    final cachedPosts = await _blogPostProvider.getData();
     if (disposed) {
       return;
     }
     _lastReadAt = lastReadAt;
-    _totalPosts.clear();
-    _addPostsToList(_totalPosts, cachedPosts);
-    notifyListeners();
-    await reload();
+    await restoreCacheThenRefresh<List<BlogPost>>(
+      readCache: _blogPostProvider.getData,
+      restore: (posts) {
+        _totalPosts.clear();
+        _addPostsToList(_totalPosts, posts);
+        notifyListeners();
+      },
+      refresh: reload,
+      isCurrent: () => !disposed,
+    );
   }
 
   void _addPostsToList(
@@ -479,7 +486,25 @@ class FeedScreenViewModel extends BaseViewModel
         await _applySelection(filter: value, query: _searchQuery);
       });
 
+  Future<bool> _ensureStreamAuth() async {
+    final request = _streamAuthInitialization ??= _streamAuthService
+        .getStreamAuthParams()
+        .then((parameters) => parameters != null && parameters.isNotEmpty);
+    bool ready = false;
+    try {
+      ready = await request;
+    } finally {
+      if (!ready && identical(_streamAuthInitialization, request)) {
+        _streamAuthInitialization = null;
+      }
+    }
+    return ready && !disposed;
+  }
+
   Future<bool> _ensureServerSelection(_FeedSelection selection) async {
+    if (!await _ensureStreamAuth()) {
+      return false;
+    }
     if (_serverSelection == selection) {
       return true;
     }

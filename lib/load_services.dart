@@ -406,7 +406,11 @@ void registerDependencies() {
       () => ExportScheduleServiceImpl(getApiHelper(HostType.unnPortal)),
     )
     ..registerSingleton<OfflineScheduleProvider>(
-      () => OfflineScheduleProviderImpl(get<StorageService>()),
+      () => OfflineScheduleProviderImpl(
+        get<StorageService>(),
+        get<LoggerService>(),
+        get<ScheduleWidgetPlatform>(),
+      ),
     )
     ..registerSingleton<ScheduleWidgetPlatform>(
       () => ScheduleWidgetPlatformImpl(get<LoggerService>()),
@@ -698,7 +702,6 @@ void registerDependencies() {
         get<GitResourceRepository<LoadingPageCatalog>>(),
         get<LogoDownloaderService>(),
         get<CurrentUserSyncStorage>(),
-        get<StreamAuthService>(),
         get<GitResourceRepository<BirthdayGreetingCatalog>>(),
       ),
     )

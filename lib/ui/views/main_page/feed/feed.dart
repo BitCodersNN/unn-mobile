@@ -18,6 +18,7 @@ import 'package:unn_mobile/ui/views/main_page/feed/widgets/feed_posts_sliver.dar
 import 'package:unn_mobile/ui/views/main_page/main_page_tab_state.dart';
 import 'package:unn_mobile/ui/widgets/empty_state_widget.dart';
 import 'package:unn_mobile/ui/widgets/offline_overlay_displayer.dart';
+import 'package:unn_mobile/ui/widgets/refresh_loading_overlay.dart';
 import 'package:unn_mobile/ui/widgets/search/animated_search_field.dart';
 import 'package:unn_mobile/ui/widgets/search/search_controller.dart';
 
@@ -171,6 +172,7 @@ class FeedScreenViewState extends State<FeedScreenView>
         onModelReady: (model) => model.init(),
         builder: (context, model, _) {
           final theme = Theme.of(context);
+          final canSelectFilter = _canSelectFilter(model, online);
           return Scaffold(
             backgroundColor: theme.colorScheme.surfaceContainerLow,
             appBar: AppBar(
@@ -228,7 +230,7 @@ class FeedScreenViewState extends State<FeedScreenView>
                       unreadCounts: model.unreadCounts,
                       pinnedPostCount: model.pinnedPostCount,
                       position: _filterPosition,
-                      onSelected: online && !model.isBusy && !model.loadingMore
+                      onSelected: canSelectFilter
                           ? (filter) {
                               _filterPosition.value = null;
                               unawaited(_selectFilter(filter));
@@ -237,7 +239,16 @@ class FeedScreenViewState extends State<FeedScreenView>
                     ),
                   ),
                 ),
-                Expanded(child: _feedBody(context, model, online)),
+                Expanded(
+                  child: RefreshLoadingOverlay(
+                    isRefreshing:
+                        model.isBusy &&
+                        !model.isReplacingPosts &&
+                        model.visiblePosts.isNotEmpty,
+                    semanticsLabel: 'Обновление ленты',
+                    child: _feedBody(context, model, online),
+                  ),
+                ),
               ],
             ),
           );
@@ -245,6 +256,9 @@ class FeedScreenViewState extends State<FeedScreenView>
       ),
     ),
   );
+
+  bool _canSelectFilter(FeedScreenViewModel model, bool online) =>
+      online && !model.isBusy && !model.loadingMore;
 
   Widget _feedBody(
     BuildContext context,
@@ -254,7 +268,7 @@ class FeedScreenViewState extends State<FeedScreenView>
     final filter = model.filter;
     final posts = model.visiblePosts;
     final colors = Theme.of(context).colorScheme;
-    final canSelectFilter = online && !model.isBusy && !model.loadingMore;
+    final canSelectFilter = _canSelectFilter(model, online);
     return FeedFilterSwipe(
       selected: model.filter,
       enabled: canSelectFilter,
@@ -283,10 +297,11 @@ class FeedScreenViewState extends State<FeedScreenView>
               },
               child: RefreshIndicator.adaptive(
                 onRefresh: () async {
-                  if (online) {
-                    triggerHaptic(HapticIntensity.light);
-                    await model.reload(markLoadedPostsRead: true);
+                  if (model.isBusy || model.loadingMore) {
+                    return;
                   }
+                  triggerHaptic(HapticIntensity.light);
+                  await model.reload(markLoadedPostsRead: true);
                 },
                 child: CustomScrollView(
                   primary: true,
@@ -309,11 +324,6 @@ class FeedScreenViewState extends State<FeedScreenView>
                       _notice(
                         'Не удалось обновить ленту. Потяните вниз, чтобы повторить.',
                         colors.error,
-                      ),
-                    if (!online && posts.isNotEmpty)
-                      _notice(
-                        'Показаны последние загруженные посты',
-                        colors.onSurfaceVariant,
                       ),
                     if (model.isReplacingPosts || posts.isEmpty)
                       SliverFillRemaining(
@@ -351,7 +361,8 @@ class FeedScreenViewState extends State<FeedScreenView>
                         title: model.hasSearch ? 'Результаты поиска' : null,
                         groupByReadStatus: model.filter != FeedFilter.pinned,
                       ),
-                    if ((model.loadingMore || model.isBusy) &&
+                    if (model.loadingMore &&
+                        !model.isBusy &&
                         !model.isReplacingPosts &&
                         posts.isNotEmpty &&
                         online)

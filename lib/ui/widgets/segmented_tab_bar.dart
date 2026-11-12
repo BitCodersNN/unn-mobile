@@ -152,22 +152,29 @@ class SegmentedTabBar extends StatelessWidget {
                                           ? 0
                                           : _horizontalPadding,
                                     ),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          counts.containsKey(index)
-                                          ? MainAxisAlignment.spaceEvenly
-                                          : MainAxisAlignment.center,
-                                      children: [
-                                        Text(item.label, style: labelStyle),
-                                        if (counts.containsKey(index)) ...[
-                                          CountBadge(
-                                            count: counts[index]!,
-                                            maximum: 99,
-                                            compact: true,
-                                            tone: item.countTone,
-                                          ),
+                                    child: Opacity(
+                                      opacity:
+                                          onSelected == null &&
+                                              index != selectedIndex
+                                          ? 0.38
+                                          : 1,
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            counts.containsKey(index)
+                                            ? MainAxisAlignment.spaceEvenly
+                                            : MainAxisAlignment.center,
+                                        children: [
+                                          Text(item.label, style: labelStyle),
+                                          if (counts.containsKey(index)) ...[
+                                            CountBadge(
+                                              count: counts[index]!,
+                                              maximum: 99,
+                                              compact: true,
+                                              tone: item.countTone,
+                                            ),
+                                          ],
                                         ],
-                                      ],
+                                      ),
                                     ),
                                   ),
                                 ),

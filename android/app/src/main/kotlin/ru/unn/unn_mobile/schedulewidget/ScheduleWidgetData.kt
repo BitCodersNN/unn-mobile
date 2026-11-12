@@ -16,13 +16,16 @@ data class WidgetLesson(
 
 data class ScheduleWidgetData(
     val ownerLabel: String,
-    val validFrom: Long,
-    val validUntil: Long,
+    val coverage: List<Pair<Long, Long>>,
     val lessons: List<WidgetLesson>,
 ) {
+    fun covers(start: Long, end: Long): Boolean =
+        coverage.any { (weekStart, weekEnd) -> weekStart <= start && weekEnd >= end }
+
     companion object {
         const val PREFERENCES = "schedule_widget"
-        const val DATA_KEY = "data"
+        const val DATA_KEY = "schedule_cache"
+        const val PREVIOUS_DATA_KEY = "data"
 
         fun read(context: Context): ScheduleWidgetData? {
             val value = context.getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE)
@@ -30,24 +33,38 @@ data class ScheduleWidgetData(
             return runCatching { decode(value) }.getOrNull()
         }
 
-        fun decode(value: String): ScheduleWidgetData {
+        fun decode(value: String): ScheduleWidgetData? {
             val json = JSONObject(value)
             require(json.getInt("version") == 1)
-            val lessons = json.getJSONArray("lessons")
+            val entries = json.getJSONArray("entries")
+            val configuration = json.optJSONObject("widget") ?: return null
+            val coverage = mutableListOf<Pair<Long, Long>>()
+            val lessons = mutableListOf<WidgetLesson>()
+            for (index in 0 until entries.length()) {
+                val entry = entries.getJSONObject(index)
+                if (entry.getInt("ownerId") != configuration.getInt("ownerId") ||
+                    entry.getString("type") != configuration.getString("type") ||
+                    entry.getBoolean("useRasp") != configuration.getBoolean("useRasp") ||
+                    !entry.isNull("id")) continue
+                val week = entry.getJSONObject("schedule")
+                coverage.add(week.getLong("start") to week.getLong("end"))
+                val subjects = week.getJSONArray("subjects")
+                for (subjectIndex in 0 until subjects.length()) {
+                    val subject = subjects.getJSONObject(subjectIndex)
+                    lessons.add(WidgetLesson(
+                        title = subject.getString("name"),
+                        type = subject.getString("type"),
+                        location = listOf(subject.getString("auditorium"), subject.getString("building"))
+                            .filter { it.isNotBlank() }.joinToString(" / "),
+                        start = subject.getLong("start"),
+                        end = subject.getLong("end"),
+                    ))
+                }
+            }
             return ScheduleWidgetData(
-                ownerLabel = json.getString("ownerLabel"),
-                validFrom = json.getLong("validFrom"),
-                validUntil = json.getLong("validUntil"),
-                lessons = List(lessons.length()) { index ->
-                    val lesson = lessons.getJSONObject(index)
-                    WidgetLesson(
-                        title = lesson.getString("title"),
-                        type = lesson.getString("type"),
-                        location = lesson.getString("location"),
-                        start = lesson.getLong("start"),
-                        end = lesson.getLong("end"),
-                    )
-                }.sortedBy { it.start },
+                ownerLabel = configuration.getString("ownerLabel"),
+                coverage = coverage,
+                lessons = lessons.sortedBy { it.start },
             )
         }
     }

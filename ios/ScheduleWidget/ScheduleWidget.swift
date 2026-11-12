@@ -15,12 +15,13 @@ struct ScheduleProvider: TimelineProvider {
         let first = day.addingTimeInterval(10 * 3600)
         let second = day.addingTimeInterval(12 * 3600)
         let data = ScheduleWidgetData(
-            version: 1, ownerLabel: "Ваше расписание", updatedAt: day.timeIntervalSince1970 * 1000,
-            validFrom: day.timeIntervalSince1970 * 1000,
-            validUntil: day.addingTimeInterval(86400).timeIntervalSince1970 * 1000,
+            ownerLabel: "Ваше расписание",
+            coverage: [ScheduleCoverage(
+                start: day.timeIntervalSince1970 * 1000,
+                end: day.addingTimeInterval(86400).timeIntervalSince1970 * 1000)],
             lessons: [
-                ScheduleWidgetLesson(title: "Разработка мобильных приложений", type: "Лекция", location: "301 / 2", lecturer: "", start: first.timeIntervalSince1970 * 1000, end: first.addingTimeInterval(5400).timeIntervalSince1970 * 1000),
-                ScheduleWidgetLesson(title: "Программная инженерия", type: "Практика", location: "412 / 2", lecturer: "", start: second.timeIntervalSince1970 * 1000, end: second.addingTimeInterval(5400).timeIntervalSince1970 * 1000)
+                ScheduleWidgetLesson(title: "Разработка мобильных приложений", type: "Лекция", auditorium: "301", building: "2", lecturer: "", start: first.timeIntervalSince1970 * 1000, end: first.addingTimeInterval(5400).timeIntervalSince1970 * 1000),
+                ScheduleWidgetLesson(title: "Программная инженерия", type: "Практика", auditorium: "412", building: "2", lecturer: "", start: second.timeIntervalSince1970 * 1000, end: second.addingTimeInterval(5400).timeIntervalSince1970 * 1000)
             ])
         return ScheduleEntry(date: first, data: data)
     }

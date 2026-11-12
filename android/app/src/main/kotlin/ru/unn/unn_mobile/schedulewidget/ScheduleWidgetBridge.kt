@@ -27,17 +27,13 @@ class ScheduleWidgetBridge(private val context: Context, engine: FlutterEngine, 
     private fun handle(call: MethodCall, result: MethodChannel.Result) {
         val preferences = context.getSharedPreferences(ScheduleWidgetData.PREFERENCES, Context.MODE_PRIVATE)
         when (call.method) {
-            "read" -> result.success(preferences.getString(ScheduleWidgetData.DATA_KEY, null))
-            "write" -> {
+            "readCache" -> result.success(preferences.getString(ScheduleWidgetData.DATA_KEY, null))
+            "writeCache", "writeCacheOrder" -> {
                 val value = requireNotNull(call.arguments as? String)
                 ScheduleWidgetData.decode(value)
-                preferences.edit().putString(ScheduleWidgetData.DATA_KEY, value).apply()
-                ScheduleWidgetProvider.updateAll(context)
-                result.success(null)
-            }
-            "clear" -> {
-                preferences.edit().remove(ScheduleWidgetData.DATA_KEY).apply()
-                ScheduleWidgetProvider.updateAll(context)
+                check(preferences.edit().putString(ScheduleWidgetData.DATA_KEY, value)
+                    .remove(ScheduleWidgetData.PREVIOUS_DATA_KEY).commit())
+                if (call.method == "writeCache") ScheduleWidgetProvider.updateAll(context)
                 result.success(null)
             }
             "consumeLaunch" -> {
