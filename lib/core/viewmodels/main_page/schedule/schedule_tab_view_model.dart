@@ -4,8 +4,11 @@
 import 'dart:async';
 
 import 'package:dio/dio.dart';
+import 'package:unn_mobile/core/constants/schedule_cache_limits.dart';
 import 'package:unn_mobile/core/misc/app_settings.dart';
 import 'package:unn_mobile/core/misc/authorisation/try_login_and_retrieve_data.dart';
+import 'package:unn_mobile/core/misc/cache/lru_cache.dart';
+import 'package:unn_mobile/core/misc/cache/restore_cache_then_refresh.dart';
 import 'package:unn_mobile/core/misc/date_time_utilities/date_time_extensions.dart';
 import 'package:unn_mobile/core/misc/date_time_utilities/week_range.dart';
 import 'package:unn_mobile/core/misc/user/current_user_sync_storage.dart';
@@ -13,9 +16,11 @@ import 'package:unn_mobile/core/models/profile/employee/employee_data.dart';
 import 'package:unn_mobile/core/models/profile/student/student_data.dart';
 import 'package:unn_mobile/core/models/profile/user_data.dart';
 import 'package:unn_mobile/core/models/schedule/offline_schedule.dart';
+import 'package:unn_mobile/core/models/schedule/schedule_cache_key.dart';
 import 'package:unn_mobile/core/models/schedule/schedule_filter.dart';
 import 'package:unn_mobile/core/models/schedule/schedule_search_suggestion_item.dart';
 import 'package:unn_mobile/core/models/schedule/subject.dart';
+import 'package:unn_mobile/core/providers/interfaces/schedule/offline_schedule_provider.dart';
 import 'package:unn_mobile/core/services/interfaces/common/search_id_on_portal_service.dart';
 import 'package:unn_mobile/core/services/interfaces/schedule/schedule_search_history_service.dart';
 import 'package:unn_mobile/core/services/interfaces/schedule/schedule_service.dart';
@@ -29,31 +34,36 @@ class ScheduleTabViewModel extends BaseViewModel {
   final SearchIdOnPortalService _searchIdService;
   final ScheduleService _scheduleService;
   final ScheduleSearchHistoryService _searchHistoryService;
+  final OfflineScheduleProvider _offlineScheduleProvider;
+  final LRUCache<ScheduleCacheKey, OfflineSchedule> _cachedSchedules = LRUCache(
+    ScheduleCacheLimits.maxEntries,
+  );
+
+  bool failedToLoad = false;
 
   String? defaultId;
   String? selectedId;
   String? foundName;
 
-  List<List<Subject>>? schedule;
-  WeekRange? scheduleWeek;
+  List<List<Subject>>? get schedule {
+    final cached = cachedScheduleFor(selectedWeek);
+    return cached == null ? null : partitionSchedule(cached.subjects);
+  }
 
   ScheduleFilter? searchFilter;
 
   bool needsDefaultIdRefresh = true;
   bool triggerScrollToToday = false;
   bool _refreshRequested = false;
-  bool _offlineUpdateRequested = false;
   CancelToken? _scheduleRequest;
 
-  bool get hasAnyId => defaultId != null || selectedId != null;
+  bool get hasAnyId => _useRasp || defaultId != null || selectedId != null;
 
   int? get todayOrNextDayIndex =>
       _firstNonEmptyDayIndex(DateTime.now().weekdayIndex);
 
   WeekRange get selectedWeek => _parent.selectedWeek;
   int get weekOffset => _parent.weekOffset;
-
-  OfflineSchedule? offlineSchedule;
 
   ScheduleTabViewModel(
     this._userType,
@@ -62,6 +72,7 @@ class ScheduleTabViewModel extends BaseViewModel {
     this._searchIdService,
     this._scheduleService,
     this._searchHistoryService,
+    this._offlineScheduleProvider,
   );
 
   @override
@@ -77,12 +88,17 @@ class ScheduleTabViewModel extends BaseViewModel {
     if (profile == null) {
       return;
     }
+    if (!isIdTypeMatchingUser(_userType, profile) &&
+        !(_userType == IdType.group && profile is StudentData)) {
+      needsDefaultIdRefresh = false;
+      return;
+    }
     if (_userType == IdType.group && profile is StudentData) {
       final groupId = await _searchIdService.findIdOnPortal(
         profile.baseEduInfo.eduGroup,
         IdType.group,
       );
-      defaultId = groupId?.first.id;
+      defaultId = groupId?.firstOrNull?.id;
       if (defaultId != null) {
         needsDefaultIdRefresh = false;
       }
@@ -100,7 +116,7 @@ class ScheduleTabViewModel extends BaseViewModel {
       );
       if (isIdTypeMatchingUser(_userType, profile)) {
         defaultId = currentUserId?.id;
-        needsDefaultIdRefresh = false;
+        needsDefaultIdRefresh = defaultId == null;
       }
     }
   }
@@ -139,77 +155,68 @@ class ScheduleTabViewModel extends BaseViewModel {
     );
   }
 
-  Future<void> loadSchedule({bool useRasp = false}) async {
-    final cancelToken = CancelToken();
-    _scheduleRequest = cancelToken;
-    try {
-      await _loadSchedule(useRasp: useRasp, cancelToken: cancelToken);
-    } on DioException catch (error) {
-      if (!CancelToken.isCancel(error)) {
-        rethrow;
-      }
-    } finally {
-      if (identical(_scheduleRequest, cancelToken)) {
-        _scheduleRequest = null;
-      }
-    }
+  bool get _useRasp =>
+      AppSettings.useRaspSchedule &&
+      selectedId == null &&
+      isIdTypeMatchingUser(_userType, _userStorage.currentUserData);
+
+  ScheduleCacheKey cacheKeyFor(WeekRange week) => (
+    ownerId: _userStorage.currentUserData?.userId ?? 0,
+    type: _userType,
+    id: selectedId,
+    useRasp: _useRasp,
+    weekStart: week.start,
+  );
+
+  OfflineSchedule? cachedScheduleFor(WeekRange week) =>
+      _cachedSchedules.get(cacheKeyFor(week));
+
+  bool _isCurrent(ScheduleCacheKey key, CancelToken token) =>
+      !disposed && !token.isCancelled && key == cacheKeyFor(selectedWeek);
+
+  void _showSchedule(ScheduleCacheKey key, OfflineSchedule data) {
+    _cachedSchedules.save(key, data);
+    notifyListeners();
   }
 
-  Future<void> _loadSchedule({
-    required bool useRasp,
-    required CancelToken cancelToken,
-  }) async {
-    final week = selectedWeek;
+  Future<void> _loadFreshSchedule(
+    WeekRange week,
+    ScheduleCacheKey key,
+    CancelToken token,
+  ) async {
+    if (!key.useRasp && selectedId == null && needsDefaultIdRefresh) {
+      await refreshDefaultId();
+    }
+    if (!_isCurrent(key, token)) {
+      return;
+    }
+    updateFilter();
     final filter = searchFilter;
-    if (useRasp) {
-      if (_userStorage.currentUserData?.login == null) {
-        return;
-      }
-
-      final foundSchedule =
-          await _scheduleService.getCurrentUserSchedule(
-            _userStorage.currentUserData!.login!,
-            week.start,
-            cancelToken: cancelToken,
-          ) ??
-          [];
-      if (disposed ||
-          cancelToken.isCancelled ||
-          week.start != selectedWeek.start ||
-          selectedId != null ||
-          !AppSettings.useRaspSchedule) {
-        return;
-      }
-      schedule = partitionSchedule(foundSchedule);
-      scheduleWeek = week;
+    final login = _userStorage.currentUserData?.login;
+    if (key.useRasp ? login == null : filter == null) {
+      failedToLoad = key.useRasp || needsDefaultIdRefresh;
       return;
     }
-
-    if (filter == null) {
-      return;
-    }
-    final foundSchedule = await tryLoginAndRetrieveData<List<Subject>>(
-      () => _scheduleService.getSchedule(filter, cancelToken: cancelToken),
-      () => scheduleWeek?.start == week.start
-          ? schedule?.expand((subject) => subject).toList()
-          : null,
+    final subjects = await tryLoginAndRetrieveData<List<Subject>>(
+      () => key.useRasp
+          ? _scheduleService.getCurrentUserSchedule(
+              login!,
+              week.start,
+              cancelToken: token,
+            )
+          : _scheduleService.getSchedule(filter!, cancelToken: token),
+      () => null,
     );
-    if (disposed ||
-        cancelToken.isCancelled ||
-        foundSchedule == null ||
-        week.start != selectedWeek.start ||
-        filter.id != (selectedId ?? defaultId)) {
+    if (!_isCurrent(key, token)) {
       return;
     }
-    foundSchedule.sort(
-      (first, second) =>
-          first.dateTimeRange.start.compareTo(second.dateTimeRange.start),
-    );
-    if (defaultId != null && filter.id == defaultId) {
-      offlineSchedule = OfflineSchedule(week, foundSchedule);
+    failedToLoad = subjects == null;
+    if (subjects == null) {
+      return;
     }
-    schedule = partitionSchedule(foundSchedule);
-    scheduleWeek = week;
+    final data = OfflineSchedule(week, subjects);
+    _showSchedule(key, data);
+    await _offlineScheduleProvider.saveSchedule(key, data);
   }
 
   List<List<Subject>> partitionSchedule(List<Subject> schedule) =>
@@ -231,9 +238,8 @@ class ScheduleTabViewModel extends BaseViewModel {
         <ScheduleSearchSuggestionItem>[];
   }
 
-  FutureOr<void> refresh({bool triggerOfflineUpdate = false}) {
+  FutureOr<void> refresh() {
     _refreshRequested = true;
-    _offlineUpdateRequested |= triggerOfflineUpdate;
     _scheduleRequest?.cancel();
     return busyCallAsync(_refreshSchedule);
   }
@@ -241,24 +247,29 @@ class ScheduleTabViewModel extends BaseViewModel {
   Future<void> _refreshSchedule() async {
     do {
       _refreshRequested = false;
-      final saveOffline = _offlineUpdateRequested;
-      _offlineUpdateRequested = false;
-      final useRasp =
-          AppSettings.useRaspSchedule &&
-          selectedId == null &&
-          isIdTypeMatchingUser(_userType, _userStorage.currentUserData);
-      if (useRasp) {
-        defaultId = '';
-      } else if (needsDefaultIdRefresh) {
-        await refreshDefaultId();
-      }
-      if (disposed) {
-        return;
-      }
-      updateFilter();
-      await loadSchedule(useRasp: useRasp);
-      if (saveOffline && !disposed) {
-        await _parent.saveOfflineSchedule();
+      failedToLoad = false;
+      final week = selectedWeek;
+      final key = cacheKeyFor(week);
+      final token = CancelToken();
+      _scheduleRequest = token;
+      final cached = _cachedSchedules.get(key);
+      notifyListeners();
+      try {
+        await restoreCacheThenRefresh<OfflineSchedule>(
+          readCache: () async =>
+              await _offlineScheduleProvider.getSchedule(key) ?? cached,
+          restore: (data) => _showSchedule(key, data),
+          refresh: () => _loadFreshSchedule(week, key, token),
+          isCurrent: () => _isCurrent(key, token),
+        );
+      } on DioException catch (error) {
+        if (!CancelToken.isCancel(error)) {
+          rethrow;
+        }
+      } finally {
+        if (identical(_scheduleRequest, token)) {
+          _scheduleRequest = null;
+        }
       }
     } while (_refreshRequested && !disposed);
   }

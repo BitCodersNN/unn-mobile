@@ -15,6 +15,7 @@ import 'package:unn_mobile/ui/views/main_page/schedule/widgets/day_header.dart';
 import 'package:unn_mobile/ui/views/main_page/schedule/widgets/query_chip.dart';
 import 'package:unn_mobile/ui/views/main_page/schedule/widgets/schedule_item_normal.dart';
 import 'package:unn_mobile/ui/widgets/empty_state_widget.dart';
+import 'package:unn_mobile/ui/widgets/refresh_loading_overlay.dart';
 
 class ScheduleTabView extends StatefulWidget {
   final ScheduleTabViewModel viewModel;
@@ -38,6 +39,7 @@ class _ScheduleTabViewState extends State<ScheduleTabView> {
   final GlobalKey _scrollAreaKey = GlobalKey();
 
   bool _pendingScrollToToday = false;
+  bool _refreshingByGesture = false;
   String? _scrollContextKey;
   List<List<Subject>>? _displayedSchedule;
   WeekRange? _displayedWeek;
@@ -89,6 +91,17 @@ class _ScheduleTabViewState extends State<ScheduleTabView> {
         curve: Curves.easeInOut,
       );
     });
+  }
+
+  Future<void> _refreshFromGesture() async {
+    setState(() => _refreshingByGesture = true);
+    try {
+      await widget.viewModel.refresh();
+    } finally {
+      if (mounted) {
+        setState(() => _refreshingByGesture = false);
+      }
+    }
   }
 
   Widget _dayGroup(int i, List<Subject> l, ThemeData theme, DateTime now) {
@@ -179,50 +192,36 @@ class _ScheduleTabViewState extends State<ScheduleTabView> {
         reference: model.selectedWeek.reference,
       );
       final isSelectedWeek = widget.weekOffset == model.weekOffset;
-      if (model.scheduleWeek?.start == pageWeek.start) {
-        _displayedSchedule = model.schedule;
-        _displayedWeek = model.scheduleWeek;
-      }
+      final cached = model.cachedScheduleFor(pageWeek);
+      _displayedSchedule = cached == null
+          ? null
+          : model.partitionSchedule(cached.subjects);
+      _displayedWeek = pageWeek;
 
       return OnlineStatusBuilder(
         builder: (context, isOnline) {
-          final offline = model.offlineSchedule;
-          if (!isOnline &&
-              offline != null &&
-              (!model.hasAnyId || _displayedSchedule == null)) {
-            _displayedSchedule = model.partitionSchedule(offline.subjects);
-            _displayedWeek = offline.week;
-          }
-          if (isOnline &&
-              _displayedSchedule == null &&
-              (!isSelectedWeek || model.isBusy)) {
-            return const Center(
-              child: SizedBox(
-                width: 64,
-                height: 64,
-                child: CircularProgressIndicator.adaptive(),
-              ),
-            );
-          }
-
-          if (!model.hasAnyId && (isOnline || offline == null)) {
-            return EmptyStateWidget(
-              icon: Icons.search_outlined,
-              title: 'Расписание не выбрано',
-              caption: isOnline
-                  ? 'Введите группу, фамилию или предмет в поиске, '
-                        'чтобы посмотреть расписание'
-                  : 'Нет сохранённого расписания',
-              onIconTap: isOnline ? widget.onSearchRequested : null,
-            );
-          }
-
-          if (!isOnline && _displayedSchedule == null) {
-            return const EmptyStateWidget(
-              icon: Icons.cloud_off_outlined,
-              title: 'Нет сохранённого расписания',
-              caption: 'Подключитесь к сети, чтобы загрузить расписание',
-            );
+          if (_displayedSchedule == null) {
+            if (!isSelectedWeek || model.isBusy) {
+              return const Center(child: CircularProgressIndicator.adaptive());
+            }
+            if (model.failedToLoad || !isOnline) {
+              return EmptyStateWidget(
+                icon: Icons.cloud_off_outlined,
+                title: 'Нет сохранённого расписания',
+                caption: 'Не удалось загрузить эту неделю. Попробуйте ещё раз',
+                onIconTap: () => model.refresh(),
+              );
+            }
+            if (!model.hasAnyId) {
+              return EmptyStateWidget(
+                icon: Icons.search_outlined,
+                title: 'Расписание не выбрано',
+                caption:
+                    'Введите группу, фамилию или предмет в поиске, '
+                    'чтобы посмотреть расписание',
+                onIconTap: widget.onSearchRequested,
+              );
+            }
           }
 
           final schedule = _displayedSchedule ?? <List<Subject>>[];
@@ -234,65 +233,75 @@ class _ScheduleTabViewState extends State<ScheduleTabView> {
           }
 
           if (schedule.every((d) => d.isEmpty)) {
-            return Center(
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Text('На этой неделе занятий нет :)', softWrap: true),
-                    if (model.foundName != null) ...[
-                      const SizedBox(height: 12),
-                      _queryResetChip(context, model),
-                      const SizedBox(height: 4),
+            return RefreshLoadingOverlay(
+              isRefreshing: isSelectedWeek && model.isBusy,
+              semanticsLabel: 'Обновление расписания',
+              child: Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Text(
+                        'На этой неделе занятий нет :)',
+                        softWrap: true,
+                      ),
+                      if (model.foundName != null) ...[
+                        const SizedBox(height: 12),
+                        _queryResetChip(context, model),
+                        const SizedBox(height: 4),
+                      ],
+                      TextButton(
+                        onPressed: () async {
+                          await model.refresh();
+                        },
+                        child: const Text('Обновить'),
+                      ),
                     ],
-                    TextButton(
-                      onPressed: () async {
-                        await model.refresh(triggerOfflineUpdate: true);
-                      },
-                      child: const Text('Обновить'),
-                    ),
-                  ],
+                  ),
                 ),
               ),
             );
           }
 
-          return Stack(
-            children: [
-              RefreshIndicator(
-                onRefresh: () async {
-                  await model.refresh(triggerOfflineUpdate: true);
-                },
-                child: CustomScrollView(
-                  key: _scrollAreaKey,
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  slivers: [
-                    if (schedule.any((d) => d.isNotEmpty))
-                      for (final (i, l) in schedule.indexed)
-                        if (l.isNotEmpty) _dayGroup(i, l, theme, now),
-                    const SliverToBoxAdapter(child: SizedBox(height: 20.0)),
-                  ],
+          return RefreshLoadingOverlay(
+            isRefreshing:
+                isSelectedWeek && model.isBusy && !_refreshingByGesture,
+            semanticsLabel: 'Обновление расписания',
+            child: Stack(
+              children: [
+                RefreshIndicator(
+                  onRefresh: _refreshFromGesture,
+                  child: CustomScrollView(
+                    key: _scrollAreaKey,
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    slivers: [
+                      if (schedule.any((d) => d.isNotEmpty))
+                        for (final (i, l) in schedule.indexed)
+                          if (l.isNotEmpty) _dayGroup(i, l, theme, now),
+                      const SliverToBoxAdapter(child: SizedBox(height: 20.0)),
+                    ],
+                  ),
                 ),
-              ),
-              if (model.foundName != null)
-                Align(
-                  alignment: AlignmentGeometry.topRight,
-                  child: Container(
-                    constraints: const BoxConstraints(
-                      maxWidth: 200.0,
-                      maxHeight: 60.0,
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: QueryChip(
-                        label: model.foundName!,
-                        onClear: model.clearSearch,
+                if (model.foundName != null)
+                  Align(
+                    alignment: AlignmentGeometry.topRight,
+                    child: Container(
+                      constraints: const BoxConstraints(
+                        maxWidth: 200.0,
+                        maxHeight: 60.0,
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: QueryChip(
+                          label: model.foundName!,
+                          onClear: model.clearSearch,
+                        ),
                       ),
                     ),
                   ),
-                ),
-            ],
+              ],
+            ),
           );
         },
       );

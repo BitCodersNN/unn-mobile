@@ -112,7 +112,7 @@ class ScheduleWidgetProvider : AppWidgetProvider() {
             val views = RemoteViews(context.packageName, R.layout.schedule_widget)
             val day = dayStart(now)
             val tomorrow = (day.clone() as Calendar).apply { add(Calendar.DAY_OF_MONTH, 1) }.timeInMillis
-            val covered = data != null && data.validFrom <= day.timeInMillis && data.validUntil >= tomorrow
+            val covered = data?.covers(day.timeInMillis, tomorrow) == true
             val today = data?.lessons?.filter { it.start >= day.timeInMillis && it.start < tomorrow }.orEmpty()
             val remaining = today.filter { it.end > now }
             val date = SimpleDateFormat("EEE, d MMM", Locale("ru")).format(Date(now))

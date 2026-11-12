@@ -23,6 +23,18 @@ class _SubjectJsonKeys {
   static const String date = 'date';
 }
 
+class _SubjectCacheJsonKeys {
+  static const String name = 'name';
+  static const String type = 'type';
+  static const String auditorium = 'auditorium';
+  static const String building = 'building';
+  static const String groups = 'groups';
+  static const String lecturer = 'lecturer';
+  static const String syncId = 'syncId';
+  static const String start = 'start';
+  static const String end = 'end';
+}
+
 class _SubjectRaspJsonKeys {
   static const String dis = 'dis';
   static const String typework = 'typework';
@@ -138,6 +150,38 @@ class Subject {
       ),
     );
   }
+
+  factory Subject.fromCacheJson(JsonMap json) => Subject(
+    name: json[_SubjectCacheJsonKeys.name]! as String,
+    subjectType: json[_SubjectCacheJsonKeys.type]! as String,
+    address: Address(
+      auditorium: json[_SubjectCacheJsonKeys.auditorium]! as String,
+      building: json[_SubjectCacheJsonKeys.building]! as String,
+    ),
+    groups: List<String>.from(json[_SubjectCacheJsonKeys.groups]! as List),
+    lecturer: json[_SubjectCacheJsonKeys.lecturer]! as String,
+    syncId: json[_SubjectCacheJsonKeys.syncId]! as String,
+    dateTimeRange: DateTimeRange(
+      start: DateTime.fromMillisecondsSinceEpoch(
+        json[_SubjectCacheJsonKeys.start]! as int,
+      ),
+      end: DateTime.fromMillisecondsSinceEpoch(
+        json[_SubjectCacheJsonKeys.end]! as int,
+      ),
+    ),
+  );
+
+  JsonMap toCacheJson() => {
+    _SubjectCacheJsonKeys.name: name,
+    _SubjectCacheJsonKeys.type: subjectType,
+    _SubjectCacheJsonKeys.auditorium: address.auditorium,
+    _SubjectCacheJsonKeys.building: address.building,
+    _SubjectCacheJsonKeys.groups: groups,
+    _SubjectCacheJsonKeys.lecturer: lecturer,
+    _SubjectCacheJsonKeys.syncId: syncId,
+    _SubjectCacheJsonKeys.start: dateTimeRange.start.millisecondsSinceEpoch,
+    _SubjectCacheJsonKeys.end: dateTimeRange.end.millisecondsSinceEpoch,
+  };
 
   JsonMap toJson() => {
     _SubjectJsonKeys.date: dateTimeRange.start.format(DatePattern.yyyymmddDash),

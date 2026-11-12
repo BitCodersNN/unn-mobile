@@ -3,7 +3,6 @@
 
 import 'dart:async';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -19,6 +18,7 @@ import 'package:unn_mobile/ui/views/main_page/feed/widgets/feed_posts_sliver.dar
 import 'package:unn_mobile/ui/views/main_page/main_page_tab_state.dart';
 import 'package:unn_mobile/ui/widgets/empty_state_widget.dart';
 import 'package:unn_mobile/ui/widgets/offline_overlay_displayer.dart';
+import 'package:unn_mobile/ui/widgets/refresh_loading_overlay.dart';
 import 'package:unn_mobile/ui/widgets/search/animated_search_field.dart';
 import 'package:unn_mobile/ui/widgets/search/search_controller.dart';
 
@@ -240,33 +240,13 @@ class FeedScreenViewState extends State<FeedScreenView>
                   ),
                 ),
                 Expanded(
-                  child: Stack(
-                    fit: StackFit.expand,
-                    children: [
-                      _feedBody(context, model, online),
-                      if (model.isBusy &&
-                          !model.isReplacingPosts &&
-                          model.visiblePosts.isNotEmpty)
-                        Positioned(
-                          top: 12,
-                          left: 0,
-                          right: 0,
-                          child: IgnorePointer(
-                            child: Center(
-                              child: switch (theme.platform) {
-                                TargetPlatform.iOS ||
-                                TargetPlatform.macOS => Semantics(
-                                  label: 'Обновление ленты',
-                                  child: const CupertinoActivityIndicator(),
-                                ),
-                                _ => const RefreshProgressIndicator(
-                                  semanticsLabel: 'Обновление ленты',
-                                ),
-                              },
-                            ),
-                          ),
-                        ),
-                    ],
+                  child: RefreshLoadingOverlay(
+                    isRefreshing:
+                        model.isBusy &&
+                        !model.isReplacingPosts &&
+                        model.visiblePosts.isNotEmpty,
+                    semanticsLabel: 'Обновление ленты',
+                    child: _feedBody(context, model, online),
                   ),
                 ),
               ],

@@ -1,29 +1,20 @@
 // SPDX-License-Identifier: Apache-2.0
-// Copyright 2025 BitCodersNN
+// Copyright 2026 BitCodersNN
 
 import 'package:unn_mobile/core/models/schedule/offline_schedule.dart';
-import 'package:unn_mobile/core/models/schedule/schedule_filter.dart';
-import 'package:unn_mobile/core/providers/interfaces/data_provider.dart';
+import 'package:unn_mobile/core/models/schedule/schedule_cache_key.dart';
+import 'package:unn_mobile/core/models/schedule_widget/schedule_widget_configuration.dart';
 
-abstract interface class OfflineScheduleProvider
-    implements DataProvider<Map<IdType, OfflineSchedule>> {
-  /// Загрузка расписания из хранилища
-  ///
-  /// Возвращает список предметов или 'null', если нет сохранённого расписания в хранилище
-  @override
-  Future<Map<IdType, OfflineSchedule>> getData();
+abstract interface class OfflineScheduleProvider {
+  /// Получает сохранённую неделю для выбранного пользователя и источника.
+  Future<OfflineSchedule?> getSchedule(ScheduleCacheKey key);
 
-  /// Сохраняет расписание в хранилище. Если расписание уже сохранено в хранилище, то старое удаляется и записывается новое
-  ///
-  /// [schedule]: Список предметов
-  @override
-  Future<void> saveData(Map<IdType, OfflineSchedule>? schedule);
+  /// Сохраняет неделю, не заменяя кэш других недель и результатов поиска.
+  Future<void> saveSchedule(ScheduleCacheKey key, OfflineSchedule schedule);
 
-  /// Проверяет наличие расписания в хранилище
-  @override
-  Future<bool> isContained();
+  /// Сохраняет несколько недель одним обновлением общего хранилища.
+  Future<void> saveSchedules(Map<ScheduleCacheKey, OfflineSchedule> schedules);
 
-  /// Удаляет расписание из хранилища
-  @override
-  Future<void> removeData();
+  /// Выбирает расписание виджета; null отключает его отображение.
+  Future<void> configureWidget(ScheduleWidgetConfiguration? configuration);
 }
