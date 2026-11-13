@@ -2,7 +2,6 @@
 // Copyright 2026 BitCodersNN
 
 import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
 import 'package:unn_mobile/core/misc/app_settings.dart';
 import 'package:unn_mobile/core/misc/authorisation/try_login_and_retrieve_data.dart';
 import 'package:unn_mobile/core/misc/date_time_utilities/week_range.dart';
@@ -35,6 +34,7 @@ class ScheduleWidgetServiceImpl implements ScheduleWidgetService {
 
   Future<void>? _pending;
   CancelToken? _request;
+  bool? _requestUseRasp;
   int _generation = 0;
   bool _refreshRequested = false;
 
@@ -54,6 +54,10 @@ class ScheduleWidgetServiceImpl implements ScheduleWidgetService {
       return Future.value();
     }
     _refreshRequested = true;
+    if (_requestUseRasp != null &&
+        _requestUseRasp != AppSettings.useRaspSchedule) {
+      _request?.cancel();
+    }
     return _pending ??= _refreshAll().whenComplete(() => _pending = null);
   }
 
@@ -66,6 +70,9 @@ class ScheduleWidgetServiceImpl implements ScheduleWidgetService {
         if (error is! DioException || !CancelToken.isCancel(error)) {
           _logger.logError(error, stack);
         }
+      } finally {
+        _request = null;
+        _requestUseRasp = null;
       }
     }
   }
@@ -83,24 +90,33 @@ class ScheduleWidgetServiceImpl implements ScheduleWidgetService {
     if (credentials.login != user.login || generation != _generation) {
       return;
     }
+    final useRasp = AppSettings.useRaspSchedule;
     final cached = await _platform.read();
     if (generation != _generation ||
         _userStorage.currentUserData?.userId != user.userId) {
       return;
     }
-    if (cached != null && cached.ownerId != user.userId) {
+    final cacheMatches =
+        cached != null &&
+        cached.ownerId == user.userId &&
+        cached.useRasp == useRasp;
+    if (cached != null && !cacheMatches) {
       await _platform.write(null);
     }
     final token = CancelToken();
     _request = token;
     final week = WeekRange(weekOffset: 0);
     final next = WeekRange(weekOffset: 1, reference: week.reference);
-    final useRasp = AppSettings.useRaspSchedule;
-    final loaded = await tryLoginAndRetrieveData<_LoadedSchedule>(
-      () => _loadOnline(user, week, next, token, useRasp: useRasp),
-      () => null,
-    );
-    if (generation != _generation || token.isCancelled) {
+    _requestUseRasp = useRasp;
+    final loaded = useRasp
+        ? await _loadOnline(user, week, next, token, useRasp: true)
+        : await tryLoginAndRetrieveData<_LoadedSchedule>(
+            () => _loadOnline(user, week, next, token, useRasp: false),
+            () => null,
+          );
+    if (generation != _generation ||
+        token.isCancelled ||
+        useRasp != AppSettings.useRaspSchedule) {
       return;
     }
     _request = null;
@@ -115,7 +131,7 @@ class ScheduleWidgetServiceImpl implements ScheduleWidgetService {
       );
       return;
     }
-    if (cached != null && cached.ownerId == user.userId) {
+    if (cacheMatches) {
       return;
     }
     final offline = await _offline.getData();
@@ -124,7 +140,7 @@ class ScheduleWidgetServiceImpl implements ScheduleWidgetService {
     }
     final saved =
         offline[user is StudentData ? IdType.student : IdType.lecturer];
-    if (saved != null) {
+    if (saved != null && saved.useRasp == useRasp) {
       await _publish(
         user,
         saved.subjects,
@@ -143,44 +159,54 @@ class ScheduleWidgetServiceImpl implements ScheduleWidgetService {
     CancelToken token, {
     required bool useRasp,
   }) async {
-    if (useRasp && user.login != null) {
-      final results = await Future.wait([
-        _scheduleService.getCurrentUserSchedule(
-          user.login!,
-          week.start,
-          cancelToken: token,
-        ),
-        _scheduleService.getCurrentUserSchedule(
-          user.login!,
-          next.start,
-          cancelToken: token,
-        ),
-      ]);
-      final current = results.first;
-      if (current == null) {
+    if (useRasp) {
+      final login = user.login;
+      if (login == null) {
         return null;
       }
-      final upcoming = results.last;
-      return (
-        subjects: [...current, ...?upcoming],
-        validUntil: upcoming == null ? week.endExclusive : next.endExclusive,
+      return _loadWeeks(
+        week,
+        next,
+        (range) => _scheduleService.getCurrentUserSchedule(
+          login,
+          range.start,
+          cancelToken: token,
+        ),
       );
     }
     final id = await _search.getIdOfLoggedInUser();
     if (id == null || token.isCancelled) {
       return null;
     }
-    final subjects = await _scheduleService.getSchedule(
-      ScheduleFilter(
-        user is StudentData ? IdType.student : IdType.lecturer,
-        id.id,
-        DateTimeRange(start: week.start, end: next.end),
+    return _loadWeeks(
+      week,
+      next,
+      (range) => _scheduleService.getSchedule(
+        ScheduleFilter(
+          user is StudentData ? IdType.student : IdType.lecturer,
+          id.id,
+          range.dateTimeRange,
+        ),
+        cancelToken: token,
       ),
-      cancelToken: token,
     );
-    return subjects == null
-        ? null
-        : (subjects: subjects, validUntil: next.endExclusive);
+  }
+
+  Future<_LoadedSchedule?> _loadWeeks(
+    WeekRange week,
+    WeekRange next,
+    Future<List<Subject>?> Function(WeekRange week) load,
+  ) async {
+    final results = await Future.wait([load(week), load(next)]);
+    final current = results.first;
+    if (current == null) {
+      return null;
+    }
+    final upcoming = results.last;
+    return (
+      subjects: [...current, ...?upcoming],
+      validUntil: upcoming == null ? week.endExclusive : next.endExclusive,
+    );
   }
 
   Future<void> _publish(
@@ -204,6 +230,7 @@ class ScheduleWidgetServiceImpl implements ScheduleWidgetService {
     await _platform.write(
       ScheduleWidgetData(
         ownerId: user.userId,
+        useRasp: useRasp,
         ownerLabel: user is StudentData
             ? user.baseEduInfo.eduGroup
             : 'Личное расписание',
@@ -221,6 +248,7 @@ class ScheduleWidgetServiceImpl implements ScheduleWidgetService {
     _refreshRequested = false;
     _request?.cancel();
     _request = null;
+    _requestUseRasp = null;
     await _platform.write(null);
   }
 }

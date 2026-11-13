@@ -6,8 +6,10 @@ import 'package:unn_mobile/core/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/constants/api/path.dart';
 import 'package:unn_mobile/core/constants/date_pattern.dart';
 import 'package:unn_mobile/core/misc/date_time_utilities/date_time_parser.dart';
+import 'package:unn_mobile/core/misc/date_time_utilities/week_range.dart';
 import 'package:unn_mobile/core/misc/dio_options_factory/options_with_expected_type_factory.dart';
 import 'package:unn_mobile/core/misc/json/json_iterable_parser.dart';
+import 'package:unn_mobile/core/misc/requests/shared_request_pool.dart';
 import 'package:unn_mobile/core/models/schedule/schedule_filter.dart';
 import 'package:unn_mobile/core/models/schedule/subject.dart';
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
@@ -29,6 +31,13 @@ class ScheduleServiceImpl implements ScheduleService {
   final LoggerService _loggerService;
   final ApiHelper _unnApiHelper;
   final ApiHelper _raspApiHelper;
+  final _portalRequests =
+      SharedRequestPool<
+        ({IdType type, String id, DateTime start, DateTime end}),
+        List<Subject>?
+      >();
+  final _raspRequests =
+      SharedRequestPool<({String login, DateTime week}), List<Subject>?>();
 
   ScheduleServiceImpl(
     this._loggerService,
@@ -41,6 +50,24 @@ class ScheduleServiceImpl implements ScheduleService {
     ScheduleFilter scheduleFilter, {
     CancelToken? cancelToken,
   }) async {
+    final range = scheduleFilter.dateTimeRange;
+    final subjects = await _portalRequests.run(
+      (
+        type: scheduleFilter.idType,
+        id: scheduleFilter.id,
+        start: DateTime(range.start.year, range.start.month, range.start.day),
+        end: DateTime(range.end.year, range.end.month, range.end.day),
+      ),
+      (token) => _loadPortalSchedule(scheduleFilter, token),
+      cancelToken: cancelToken,
+    );
+    return subjects == null ? null : List<Subject>.of(subjects);
+  }
+
+  Future<List<Subject>?> _loadPortalSchedule(
+    ScheduleFilter scheduleFilter,
+    CancelToken cancelToken,
+  ) async {
     final path =
         '${ApiPath.schedule}${scheduleFilter.idType.name}/${scheduleFilter.id}';
 
@@ -83,6 +110,20 @@ class ScheduleServiceImpl implements ScheduleService {
     DateTime date, {
     CancelToken? cancelToken,
   }) async {
+    final week = WeekRange(weekOffset: 0, reference: date);
+    final subjects = await _raspRequests.run(
+      (login: login, week: week.start),
+      (token) => _loadRaspSchedule(login, week.start, token),
+      cancelToken: cancelToken,
+    );
+    return subjects == null ? null : List<Subject>.of(subjects);
+  }
+
+  Future<List<Subject>?> _loadRaspSchedule(
+    String login,
+    DateTime date,
+    CancelToken cancelToken,
+  ) async {
     Response response;
     try {
       response = await _raspApiHelper.post(
