@@ -7,6 +7,7 @@ import 'package:unn_mobile/core/misc/logging/diagnostic_event.dart';
 import 'package:unn_mobile/core/models/profile/user_data.dart';
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
 import 'package:unn_mobile/ui/views/main_page/profile/widgets/profile_card.dart';
+import 'package:unn_mobile/ui/views/main_page/profile/widgets/profile_info_tile.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class ContactInfoCard extends StatelessWidget {
@@ -62,16 +63,8 @@ class _ContactTile extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return ListTile(
-      leading: Icon(icon),
-      title: Text(value),
-      subtitle: Text(label, style: theme.textTheme.bodySmall),
-      trailing: const Icon(Icons.chevron_right),
-      onTap: _openUrl,
-    );
-  }
+  Widget build(BuildContext context) =>
+      ProfileInfoTile(icon: icon, label: label, value: value, onTap: _openUrl);
 
   Future<void> _openUrl() async {
     final uri = Uri.parse(url);
