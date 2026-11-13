@@ -37,6 +37,7 @@ import 'package:unn_mobile/core/providers/implementations/feed/blog_post_provide
 import 'package:unn_mobile/core/providers/implementations/feed/last_feed_load_date_time_provider_impl.dart';
 import 'package:unn_mobile/core/providers/implementations/git/git_resource_cache_provider_impl.dart';
 import 'package:unn_mobile/core/providers/implementations/grade_book/mark_by_subject_provider_impl.dart';
+import 'package:unn_mobile/core/providers/implementations/main_page/menu_order_provider_impl.dart';
 import 'package:unn_mobile/core/providers/implementations/profile/user_data_provider_impl.dart';
 import 'package:unn_mobile/core/providers/implementations/schedule/offline_schedule_provider_impl.dart';
 import 'package:unn_mobile/core/providers/interfaces/authorisation/auth_data_provider.dart';
@@ -45,6 +46,7 @@ import 'package:unn_mobile/core/providers/interfaces/common/message_ignored_keys
 import 'package:unn_mobile/core/providers/interfaces/feed/blog_post_provider.dart';
 import 'package:unn_mobile/core/providers/interfaces/feed/last_feed_load_date_time_provider.dart';
 import 'package:unn_mobile/core/providers/interfaces/grade_book/mark_by_subject_provider.dart';
+import 'package:unn_mobile/core/providers/interfaces/main_page/menu_order_provider.dart';
 import 'package:unn_mobile/core/providers/interfaces/profile/user_data_provider.dart';
 import 'package:unn_mobile/core/providers/interfaces/schedule/offline_schedule_provider.dart';
 import 'package:unn_mobile/core/repositories/implementations/git/git_resource_repository_impl.dart';
@@ -242,6 +244,9 @@ void registerDependencies() {
       }
       return ConsoleLoggerServiceImpl();
     })
+    ..registerSingleton<MenuOrderProvider>(
+      () => MenuOrderProviderImpl(get<StorageService>()),
+    )
     ..registerSingleton<OnlineStatusData>(OnlineStatusData.new)
     ..registerSingleton<StorageService>(StorageServiceImpl.new)
     ..registerSingleton<AppOpenTracker>(
