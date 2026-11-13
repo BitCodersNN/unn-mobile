@@ -8,6 +8,7 @@ struct ScheduleEntry: TimelineEntry {
     let date: Date
     let data: ScheduleSnapshot?
     let settings: ScheduleWidgetSettings
+    var readError: ScheduleSnapshotReadError? = nil
 
     var remainingLessons: [ScheduleLesson] {
         guard data?.covers(date) == true else { return [] }
@@ -20,7 +21,13 @@ struct ScheduleEntry: TimelineEntry {
     }
 
     var emptyMessage: String {
-        guard let data = data else { return "Откройте приложение и войдите в аккаунт" }
+        guard let data = data else {
+            switch readError {
+            case .storageUnavailable: return "Нет доступа к общему хранилищу приложения"
+            case .invalid: return "Не удалось прочитать расписание. Обновите его в приложении"
+            case .missing, nil: return "Откройте приложение и обновите расписание"
+            }
+        }
         guard data.covers(date) else { return "Обновите расписание в приложении" }
         return data.today(at: date).isEmpty ? "Сегодня занятий нет" : "На сегодня занятий больше нет"
     }
@@ -43,19 +50,21 @@ enum ScheduleWidgetTimeline {
     }
 
     static func snapshot(isPreview: Bool, settings: ScheduleWidgetSettings = ScheduleWidgetSettings()) -> ScheduleEntry {
-        isPreview ? placeholder(settings: settings)
-            : ScheduleEntry(date: Date(), data: ScheduleSnapshotProvider().read(), settings: settings)
+        if isPreview { return placeholder(settings: settings) }
+        let result = ScheduleSnapshotProvider().readResult()
+        return ScheduleEntry(date: Date(), data: result.data, settings: settings, readError: result.error)
     }
 
     static func timeline(settings: ScheduleWidgetSettings = ScheduleWidgetSettings()) -> Timeline<ScheduleEntry> {
         let now = Date()
-        let data = ScheduleSnapshotProvider().read()
+        let result = ScheduleSnapshotProvider().readResult()
+        let data = result.data
         let calendar = ScheduleTime.calendar
         let midnight = calendar.startOfDay(for: now)
         let days = (1...14).compactMap { calendar.date(byAdding: .day, value: $0, to: midnight) }
         let boundaries = data?.lessons.flatMap { [$0.startDate, $0.endDate] } ?? []
         let dates = Array(Set([now] + days + boundaries.filter { $0 > now })).sorted().prefix(64)
-        let entries = dates.map { ScheduleEntry(date: $0, data: data, settings: settings) }
+        let entries = dates.map { ScheduleEntry(date: $0, data: data, settings: settings, readError: result.error) }
         return Timeline(entries: entries, policy: .after((dates.last ?? now).addingTimeInterval(60)))
     }
 }
