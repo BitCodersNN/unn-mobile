@@ -10,6 +10,7 @@ import 'package:unn_mobile/core/viewmodels/factories/main_page_routes_view_model
 import 'package:unn_mobile/core/viewmodels/main_page/chat/chat_screen_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/feed/feed_screen_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/main_page_route_view_model.dart';
+import 'package:unn_mobile/core/viewmodels/main_page/people/people_screen_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/schedule/schedule_screen_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/source/source_page_view_model.dart';
 import 'package:unn_mobile/ui/views/main_page/about/about.dart';
@@ -23,6 +24,7 @@ import 'package:unn_mobile/ui/views/main_page/feed/widgets/pinned_posts_page.dar
 import 'package:unn_mobile/ui/views/main_page/grades/grades.dart';
 import 'package:unn_mobile/ui/views/main_page/main_page_menu.dart';
 import 'package:unn_mobile/ui/views/main_page/main_page_route_data.dart';
+import 'package:unn_mobile/ui/views/main_page/people/people_screen.dart';
 import 'package:unn_mobile/ui/views/main_page/profile/profile_page.dart';
 import 'package:unn_mobile/ui/views/main_page/schedule/schedule_screen_view.dart';
 import 'package:unn_mobile/ui/views/main_page/settings/settings.dart';
@@ -137,6 +139,28 @@ final List<MainPageRouteData> mainPageRoutes = [
     MainPagePaths.myProfile,
     userTypes: [],
     builder: (_, _) => const ProfilePage(isMe: true),
+  ),
+  MainPageRouteData(
+    Icons.person_search,
+    Icons.person_search_outlined,
+    'Поиск людей',
+    MainPagePaths.people,
+    userTypes: [],
+    onlineOnly: true,
+    builder: (_, _) => const PeopleScreen(),
+    onReselect: _refresh<PeopleScreenViewModel>,
+    subroutes: [
+      MainPageRouteData(
+        Icons.person,
+        Icons.person_outline,
+        'Профиль',
+        'profile/:userId',
+        userTypes: [],
+        builder: (_, state) => ProfilePage(
+          userId: int.tryParse(state.pathParameters['userId'] ?? ''),
+        ),
+      ),
+    ],
   ),
   MainPageRouteData(
     Icons.book,
