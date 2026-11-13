@@ -32,7 +32,6 @@ import 'package:unn_mobile/ui/views/main_page/feed/widgets/text_html_widget.dart
 import 'package:unn_mobile/ui/views/main_page/main_page_routing.dart';
 import 'package:unn_mobile/ui/widgets/context_menu/context_menu_factory.dart';
 import 'package:unn_mobile/ui/widgets/height_limiter.dart';
-import 'package:unn_mobile/ui/widgets/platform_share_icon.dart';
 import 'package:unn_mobile/ui/widgets/shimmer.dart';
 
 class FeedPost extends StatefulWidget {
@@ -302,32 +301,22 @@ class _FeedPostState extends State<FeedPost> {
                                               scrollToComments: true,
                                             ),
                                     ),
-                                    FeedMetricButton(
-                                      icon: Icons.visibility_outlined,
-                                      count: model.viewsCount,
-                                      label: 'Просмотры',
-                                      onTap: model.blogData == null
-                                          ? null
-                                          : () => showBlogPostViewers(
-                                              context,
-                                              postId: model.blogData!.id,
-                                              totalCount: model.viewsCount,
-                                            ),
-                                    ),
                                   ],
                                 ),
                               ),
                               const SizedBox(width: 8),
-                              IconButton(
-                                onPressed: () async {
-                                  triggerHaptic(HapticIntensity.light);
-                                  await _sharePost(model);
-                                },
-                                tooltip: 'Поделиться постом',
-                                icon: PlatformShareIcon(
-                                  size: 20,
-                                  color: theme.colorScheme.onSurfaceVariant,
-                                ),
+                              FeedMetricButton(
+                                icon: Icons.visibility_outlined,
+                                count: model.viewsCount,
+                                label: 'Просмотры',
+                                backgroundColor: Colors.transparent,
+                                onTap: model.blogData == null
+                                    ? null
+                                    : () => showBlogPostViewers(
+                                        context,
+                                        postId: model.blogData!.id,
+                                        totalCount: model.viewsCount,
+                                      ),
                               ),
                             ],
                           ),
