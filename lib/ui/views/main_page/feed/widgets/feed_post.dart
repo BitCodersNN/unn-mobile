@@ -22,14 +22,17 @@ import 'package:unn_mobile/ui/actions/ui_action_handler.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/functions/anchored_reactions_window.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/widgets/attached_file.dart';
+import 'package:unn_mobile/ui/views/main_page/feed/widgets/blog_post_viewers_sheet.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/widgets/feed_action_style.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/widgets/feed_author_header.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/widgets/feed_item_context_menu.dart';
+import 'package:unn_mobile/ui/views/main_page/feed/widgets/feed_metric_button.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/widgets/packed_post_images.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/widgets/text_html_widget.dart';
 import 'package:unn_mobile/ui/views/main_page/main_page_routing.dart';
 import 'package:unn_mobile/ui/widgets/context_menu/context_menu_factory.dart';
 import 'package:unn_mobile/ui/widgets/height_limiter.dart';
+import 'package:unn_mobile/ui/widgets/platform_share_icon.dart';
 import 'package:unn_mobile/ui/widgets/shimmer.dart';
 
 class FeedPost extends StatefulWidget {
@@ -275,68 +278,53 @@ class _FeedPostState extends State<FeedPost> {
                           ),
                           const SizedBox(height: 8),
                           Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            spacing: 12.0,
                             children: [
-                              _ReactionButton(
-                                model.reactionViewModel ??
-                                    ReactionViewModel.empty(),
-                                showCounter: true,
-                              ),
-                              InkWell(
-                                onTap: widget.showingComments
-                                    ? null
-                                    : () => _openPost(
-                                        context,
-                                        model,
-                                        scrollToComments: true,
-                                      ),
-                                borderRadius: feedActionBorderRadius,
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 12,
-                                    vertical: 6,
-                                  ).copyWith(right: 8),
-                                  decoration: BoxDecoration(
-                                    color:
-                                        theme.colorScheme.surfaceContainerLow,
-                                    borderRadius: feedActionBorderRadius,
-                                  ),
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Icon(
-                                        Icons.chat_bubble_outline_rounded,
-                                        color: theme
-                                            .colorScheme
-                                            .onSecondaryContainer,
-                                        size: 20,
-                                      ),
-                                      const SizedBox(width: 6),
-                                      Text(
-                                        '${model.commentsCount}',
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                          color: theme
-                                              .colorScheme
-                                              .onSurfaceVariant,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
+                              Expanded(
+                                child: Wrap(
+                                  spacing: 8,
+                                  runSpacing: 8,
+                                  crossAxisAlignment: WrapCrossAlignment.center,
+                                  children: [
+                                    _ReactionButton(
+                                      model.reactionViewModel ??
+                                          ReactionViewModel.empty(),
+                                      showCounter: true,
+                                    ),
+                                    FeedMetricButton(
+                                      icon: Icons.chat_bubble_outline_rounded,
+                                      count: model.commentsCount,
+                                      label: 'Комментарии',
+                                      onTap: widget.showingComments
+                                          ? null
+                                          : () => _openPost(
+                                              context,
+                                              model,
+                                              scrollToComments: true,
+                                            ),
+                                    ),
+                                    FeedMetricButton(
+                                      icon: Icons.visibility_outlined,
+                                      count: model.viewsCount,
+                                      label: 'Просмотры',
+                                      onTap: model.blogData == null
+                                          ? null
+                                          : () => showBlogPostViewers(
+                                              context,
+                                              postId: model.blogData!.id,
+                                              totalCount: model.viewsCount,
+                                            ),
+                                    ),
+                                  ],
                                 ),
                               ),
-                              Expanded(child: Container()),
+                              const SizedBox(width: 8),
                               IconButton(
                                 onPressed: () async {
                                   triggerHaptic(HapticIntensity.light);
                                   await _sharePost(model);
                                 },
                                 tooltip: 'Поделиться постом',
-                                icon: Icon(
-                                  theme.platform == TargetPlatform.iOS
-                                      ? Icons.ios_share_rounded
-                                      : Icons.share_outlined,
+                                icon: PlatformShareIcon(
                                   size: 20,
                                   color: theme.colorScheme.onSurfaceVariant,
                                 ),

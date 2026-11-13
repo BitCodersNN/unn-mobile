@@ -86,6 +86,8 @@ class FeedPostViewModel extends BaseViewModel {
 
   int get commentsCount => blogData?.numberOfComments ?? 0;
 
+  int? get viewsCount => blogData?.numberOfViews;
+
   int get filesCount => blogData?.fileIds?.length ?? 0;
 
   bool get isNewPost =>
