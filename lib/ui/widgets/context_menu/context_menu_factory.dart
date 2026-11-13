@@ -11,6 +11,7 @@ import 'package:unn_mobile/core/viewmodels/main_page/feed/feed_comment_view_mode
 import 'package:unn_mobile/core/viewmodels/main_page/feed/feed_post_view_model.dart';
 import 'package:unn_mobile/ui/actions/reaction_actions.dart';
 import 'package:unn_mobile/ui/widgets/context_menu/context_menu_action.dart';
+import 'package:unn_mobile/ui/widgets/platform_share_icon.dart';
 
 List<ContextMenuAction> createMessageActions({
   required BuildContext context,
@@ -49,7 +50,7 @@ List<ContextMenuAction> createPostActions({
   ContextMenuAction.text(
     label: 'Поделиться',
     onTap: () => onShare(model),
-    leadingIcon: const Icon(Icons.share, size: 18),
+    leadingIcon: const PlatformShareIcon(size: 18),
   ),
 ];
 

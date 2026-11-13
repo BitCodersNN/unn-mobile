@@ -2,26 +2,33 @@
 // Copyright 2025 BitCodersNN
 
 class AjaxActionStrings {
+  // Общие query-параметры
   /// QueryParams для указания action
   static const String actionKey = 'action';
 
   /// QueryParams для указания action
   static const String c = 'c';
 
-  /// Для получения следующей страниц живой ленты в формате html
+  // Живая лента
+  /// Для обновления живой ленты
+  static const String refreshBlogPosts = 'socialnetwork.api.livefeed.refresh';
+
+  /// Для получения следующей страницы живой ленты в формате html
   static const String getNextPage = 'socialnetwork.api.livefeed.getNextPage';
 
-  /// Для получения информации о комментарии
-  static const String navigateComment = 'navigateComment';
+  /// Для получения постов из живой ленты
+  static const String logBlogPosts = 'bitrix:socialnetwork.log.ex';
 
-  /// Для получения информации о комментарии
-  static const String comment = 'bitrix:socialnetwork.blog.post.comment';
+  /// Для установки фильтра в живой ленте
+  static const String filter = 'bitrix:main.ui.filter';
 
-  /// Для получения реакций к посту/комментарию в живой ленте
-  static const String ratingList = 'main.rating.list';
+  /// Для установки фильтра в живой ленте
+  static const String setFilter = 'setFilter';
 
-  /// Для управления реакцией к посту/комментарию в живой ленте
-  static const String ratingVote = 'main.rating.vote';
+  // Действия с постами в живой ленте
+  /// Для получения списка пользователей, просмотревших пост
+  static const String getContentViewList =
+      'socialnetwork.api.contentview.getlist';
 
   /// Для закрепления поста в живой ленте
   static const String pinBlogPost = 'socialnetwork.api.livefeed.logentry.pin';
@@ -38,6 +45,20 @@ class AjaxActionStrings {
   static const String importantBlogPostUsers =
       'socialnetwork.api.livefeed.blogpost.important.getUsers';
 
+  // Комментарии и реакции
+  /// Для получения информации о комментарии
+  static const String comment = 'bitrix:socialnetwork.blog.post.comment';
+
+  /// Для получения информации о комментарии
+  static const String navigateComment = 'navigateComment';
+
+  /// Для получения реакций к посту/комментарию в живой ленте
+  static const String ratingList = 'main.rating.list';
+
+  /// Для управления реакцией к посту/комментарию в живой ленте
+  static const String ratingVote = 'main.rating.vote';
+
+  // Сообщения чата
   /// Для получения первых N сообщений в чате по chat id
   static const String fetchFirstMessageByChatId = 'im.v2.Chat.Message.list';
 
@@ -59,24 +80,13 @@ class AjaxActionStrings {
   /// Для прочтения сообщений в чате
   static const String readMessage = 'im.v2.Chat.Message.read';
 
+  // Диалоги и поиск
   /// Для поиска диалогов
   static const String searchDialog = 'ui.entityselector.doSearch';
 
   /// Для загрузки ранее запрошенных диалогов
   static const String loadDialog = 'ui.entityselector.load';
 
-  /// Для сохранения диолога в истории поиска
+  /// Для сохранения диалога в истории поиска
   static const String saveDialog = 'ui.entityselector.saveRecentItems';
-
-  /// Для обновления живой ленты
-  static const String refreshBlogPosts = 'socialnetwork.api.livefeed.refresh';
-
-  /// Для установки фильтра в живой ленты
-  static const String setFilter = 'setFilter';
-
-  /// Для установки фильтра в живой ленты
-  static const String filter = 'bitrix:main.ui.filter';
-
-  /// Для получения постов из живой ленты
-  static const String logBlogPosts = 'bitrix:socialnetwork.log.ex';
 }
