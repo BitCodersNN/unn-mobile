@@ -12,7 +12,6 @@ import 'package:unn_mobile/ui/views/main_page/profile/widgets/general_info_card.
 import 'package:unn_mobile/ui/views/main_page/profile/widgets/profile_page_header.dart';
 import 'package:unn_mobile/ui/views/main_page/profile/widgets/study_info_card.dart';
 import 'package:unn_mobile/ui/widgets/shimmer.dart';
-import 'package:unn_mobile/ui/widgets/shimmer_loading.dart';
 
 /// Экран профиля пользователя.
 ///
@@ -66,6 +65,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     force: true,
                     retryAttempt: 0,
                     userId: _getUserId(),
+                    loadFromPost: widget.loadFromPost,
                   ),
           );
         }
@@ -80,17 +80,16 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
             child: ListView(
               physics: const AlwaysScrollableScrollPhysics(),
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
               children: [
-                AnimatedContainer(
-                  duration: const Duration(milliseconds: 100),
-                  child: ShimmerLoading(
-                    isLoading: model.isLoading,
-                    child: ProfilePageHeader(model: model),
+                ProfilePageHeader(model: model),
+                if (model.isLoading && data != null)
+                  const Padding(
+                    padding: EdgeInsets.only(top: 12),
+                    child: LinearProgressIndicator(minHeight: 2),
                   ),
-                ),
-                const SizedBox(height: 16),
-                if (!model.isLoading && data != null) ...[
+                const SizedBox(height: 24),
+                if (data != null) ...[
                   GeneralInfoCard(data: data, isMe: model.isMe),
                   if (model.studentData != null)
                     StudyInfoCard(data: model.studentData!),

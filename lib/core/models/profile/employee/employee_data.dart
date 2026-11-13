@@ -34,6 +34,7 @@ class EmployeeData extends UserData {
     required super.birthdate,
     required this.syncId,
     required this.profiles,
+    super.lastActivityAt,
   });
 
   EmployeeData.withUserData({
@@ -52,6 +53,7 @@ class EmployeeData extends UserData {
          notes: userData.notes,
          web: userData.web,
          birthdate: userData.birthdate,
+         lastActivityAt: userData.lastActivityAt,
        );
 
   @override
