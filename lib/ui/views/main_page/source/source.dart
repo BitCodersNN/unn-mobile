@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2025 BitCodersNN
 
-import 'package:adaptive_dialog/adaptive_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:unn_mobile/core/constants/date_pattern.dart';
@@ -11,12 +10,14 @@ import 'package:unn_mobile/core/viewmodels/main_page/source/source_page_view_mod
 import 'package:unn_mobile/ui/builders/online_status_builder.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
 import 'package:unn_mobile/ui/views/main_page/source/source_course_view.dart';
+import 'package:unn_mobile/ui/views/main_page/source/source_semester_selector.dart';
 import 'package:unn_mobile/ui/views/main_page/source/source_webinar_view.dart';
+import 'package:unn_mobile/ui/widgets/empty_state_widget.dart';
 import 'package:unn_mobile/ui/widgets/offline_overlay_displayer.dart';
+import 'package:unn_mobile/ui/widgets/section_header.dart';
+import 'package:unn_mobile/ui/widgets/segmented_tab_bar.dart';
 
 class SourcePageView extends StatelessWidget {
-  static const _selectSemesterKey = 'selectSemester';
-
   const SourcePageView({super.key});
 
   @override
@@ -28,202 +29,184 @@ class SourcePageView extends StatelessWidget {
       child: OnlineStatusBuilder(
         builder: (context, online) => BaseView<SourcePageViewModel>(
           model: viewModel,
-          builder: (context, model, child) => DefaultTabController(
+          onModelReady: (model) => model.init(),
+          builder: (context, model, _) => DefaultTabController(
             length: 2,
-            child: Scaffold(
-              appBar: AppBar(
-                title: const Text('Материалы'),
-                forceMaterialTransparency: true,
-                bottom: const TabBar.secondary(
-                  tabs: [
-                    Tab(child: Text('Учебные материалы')),
-                    Tab(child: Text('Онлайн-занятия')),
-                  ],
-                ),
-                actions: [
-                  if (model.semesters.isNotEmpty)
-                    PopupMenuButton(
-                      itemBuilder: (context) => [
-                        const PopupMenuItem(
-                          value: _selectSemesterKey,
-                          child: Text('Выбрать семестр'),
-                        ),
-                      ],
-                      onSelected: (value) async {
-                        switch (value) {
-                          case _selectSemesterKey:
-                            final actions = model.semesters
-                                .asMap()
-                                .map(
-                                  (index, semester) => MapEntry(
-                                    index,
-                                    AlertDialogAction<int>(
-                                      key: index,
-                                      label: semester.toString(),
-                                      isDefaultAction:
-                                          index == model.currentSemesterIndex,
+            child: Builder(
+              builder: (context) {
+                final tabs = DefaultTabController.of(context);
+                return Scaffold(
+                  appBar: AppBar(
+                    title: const Text('Материалы'),
+                    centerTitle: false,
+                    forceMaterialTransparency: true,
+                  ),
+                  body: SafeArea(
+                    top: false,
+                    child: Center(
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(maxWidth: 800),
+                        child: Column(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                              ),
+                              child: SourceSemesterSelector(
+                                model: model,
+                                enabled: online,
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+                              child: AnimatedBuilder(
+                                animation: tabs,
+                                builder: (context, _) => SegmentedTabBar(
+                                  items: const [
+                                    SegmentedTabItem(
+                                      label: 'Учебные материалы',
                                     ),
-                                  ),
-                                )
-                                .values
-                                .toList();
-
-                            final selectedSem =
-                                await showConfirmationDialog<int>(
-                                  context: context,
-                                  title: 'Выберите семестр',
-                                  actions: actions,
-                                  cancelLabel: 'Отмена',
-                                  shrinkWrap: true,
-                                  initialSelectedActionKey:
-                                      model.currentSemesterIndex,
-                                );
-
-                            if (selectedSem == null) {
-                              return;
-                            }
-
-                            model.setSemester(selectedSem);
-                            break;
-                        }
-                      },
+                                    SegmentedTabItem(label: 'Онлайн-занятия'),
+                                  ],
+                                  selectedIndex: tabs.index,
+                                  position: tabs.animation,
+                                  onSelected: tabs.animateTo,
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                              child: TabBarView(
+                                children: [
+                                  _SourceList(model: model),
+                                  _SourceList(model: model, webinars: true),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
-                ],
-              ),
-              body: TabBarView(
-                children: [
-                  Builder(
-                    builder: (context) {
-                      if (model.isBusy) {
-                        return const Center(
-                          child: SizedBox(
-                            width: 40,
-                            height: 40,
-                            child: CircularProgressIndicator(),
-                          ),
-                        );
-                      }
-                      if (model.hasMaterialsError || model.courses.isEmpty) {
-                        return RefreshIndicator(
-                          onRefresh: () async => await model.refresh(),
-                          child: LayoutBuilder(
-                            builder: (context, constraints) =>
-                                SingleChildScrollView(
-                                  physics:
-                                      const AlwaysScrollableScrollPhysics(),
-                                  child: ConstrainedBox(
-                                    constraints: BoxConstraints(
-                                      minWidth: constraints.maxWidth,
-                                      minHeight: constraints.maxHeight,
-                                    ),
-                                    child: Center(
-                                      child: Text(
-                                        model.materialsError ??
-                                            (model.courses.isEmpty
-                                                ? 'Нет доступных материалов'
-                                                : ''),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                          ),
-                        );
-                      }
-                      final list = model.courses.toList();
-                      return RefreshIndicator(
-                        onRefresh: () async => model.refresh(),
-                        child: ListView.builder(
-                          physics: const AlwaysScrollableScrollPhysics(),
-                          itemCount: list.length,
-                          itemBuilder: (context, index) =>
-                              SourceCourseView(model: list[index]),
-                        ),
-                      );
-                    },
                   ),
-                  // --------------------------
-                  // ссылки
-                  // --------------------------
-                  Builder(
-                    builder: (context) {
-                      if (model.isBusy) {
-                        return const Center(
-                          child: SizedBox(
-                            width: 40,
-                            height: 40,
-                            child: CircularProgressIndicator(),
-                          ),
-                        );
-                      }
-                      if (model.hasWebinarsError || model.webinars.isEmpty) {
-                        return RefreshIndicator(
-                          onRefresh: () async => await model.refresh(),
-                          child: LayoutBuilder(
-                            builder: (context, constraints) =>
-                                SingleChildScrollView(
-                                  physics:
-                                      const AlwaysScrollableScrollPhysics(),
-                                  child: ConstrainedBox(
-                                    constraints: BoxConstraints(
-                                      minWidth: constraints.maxWidth,
-                                      minHeight: constraints.maxHeight,
-                                    ),
-                                    child: Center(
-                                      child: Text(
-                                        model.webinarsError ??
-                                            (model.webinars.isEmpty
-                                                ? 'Нет доступных ссылок'
-                                                : ''),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                          ),
-                        );
-                      }
-                      final dates = model.webinars.keys
-                          .toList()
-                          .reversed
-                          .toList();
-                      final theme = Theme.of(context);
-                      return RefreshIndicator(
-                        onRefresh: () async => await model.refresh(),
-                        child: ListView.builder(
-                          physics: const AlwaysScrollableScrollPhysics(),
-                          itemCount: dates.length,
-                          itemBuilder: (context, index) {
-                            final date = dates[index];
-
-                            return Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 12.0,
-                                    horizontal: 28.0,
-                                  ),
-                                  child: Text(
-                                    date.format(DatePattern.dMMMM),
-                                    style: theme.textTheme.headlineSmall,
-                                  ),
-                                ),
-                                for (final webinar
-                                    in model.webinars[date] ?? [])
-                                  SourceWebinarView(model: webinar),
-                              ],
-                            );
-                          },
-                        ),
-                      );
-                    },
-                  ),
-                ],
-              ),
+                );
+              },
             ),
           ),
-          onModelReady: (model) => model.init(),
         ),
       ),
     );
+  }
+}
+
+class _SourceList extends StatelessWidget {
+  final SourcePageViewModel model;
+  final bool webinars;
+
+  const _SourceList({required this.model, this.webinars = false});
+
+  @override
+  Widget build(BuildContext context) {
+    final hasError = webinars
+        ? model.hasWebinarsError
+        : model.hasMaterialsError;
+    final isEmpty = webinars ? model.webinars.isEmpty : model.courses.isEmpty;
+    final error = webinars ? model.webinarsError : model.materialsError;
+    final semesterKey = model.currentSemester?.toString();
+    return RefreshIndicator(
+      onRefresh: () async => await model.refresh(),
+      child: CustomScrollView(
+        key: PageStorageKey('$semesterKey-$webinars'),
+        physics: const AlwaysScrollableScrollPhysics(),
+        slivers: [
+          if (model.isBusy)
+            const SliverFillRemaining(
+              hasScrollBody: false,
+              child: Center(child: CircularProgressIndicator.adaptive()),
+            )
+          else if (hasError || isEmpty)
+            SliverLayoutBuilder(
+              builder: (context, constraints) => SliverToBoxAdapter(
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    minHeight: constraints.remainingPaintExtent,
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      EmptyStateWidget(
+                        icon: hasError
+                            ? Icons.cloud_off_outlined
+                            : webinars
+                            ? Icons.videocam_outlined
+                            : Icons.folder_open_outlined,
+                        title: hasError
+                            ? 'Не удалось загрузить'
+                            : webinars
+                            ? 'Нет онлайн-занятий'
+                            : 'Пока нет материалов',
+                        caption: hasError
+                            ? (error ??
+                                  'Проверьте подключение и попробуйте ещё раз')
+                            : 'Попробуйте выбрать другой семестр или обновить страницу',
+                      ),
+                      if (hasError)
+                        TextButton.icon(
+                          onPressed: model.refresh,
+                          icon: const Icon(Icons.refresh_rounded),
+                          label: const Text('Повторить'),
+                        ),
+                    ],
+                  ),
+                ),
+              ),
+            )
+          else if (webinars)
+            ..._webinars(context)
+          else
+            SliverPadding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+              sliver: SliverList.builder(
+                itemCount: model.courses.length,
+                itemBuilder: (context, index) {
+                  final course = model.courses.elementAt(index);
+                  return Padding(
+                    key: ObjectKey(course),
+                    padding: const EdgeInsets.only(bottom: 12),
+                    child: SourceCourseView(model: course, even: index.isEven),
+                  );
+                },
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  List<Widget> _webinars(BuildContext context) {
+    final dates = model.webinars.keys.toList()..sort((a, b) => b.compareTo(a));
+    return [
+      for (final date in dates) ...[
+        SliverToBoxAdapter(
+          child: SectionHeader(
+            title: date.format(DatePattern.dMMMM),
+            count: model.webinars[date]!.length,
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
+          ),
+        ),
+        SliverPadding(
+          padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+          sliver: SliverList.builder(
+            itemCount: model.webinars[date]!.length,
+            itemBuilder: (context, index) {
+              final webinar = model.webinars[date]![index];
+              return Padding(
+                key: ObjectKey(webinar),
+                padding: const EdgeInsets.only(bottom: 12),
+                child: SourceWebinarView(model: webinar, even: index.isEven),
+              );
+            },
+          ),
+        ),
+      ],
+    ];
   }
 }

@@ -63,11 +63,7 @@ class AttachedFileViewModel extends BaseViewModel {
     if (_loadedData == null) {
       return '';
     }
-    final sizeNoUnits = sizeConverter
-        .convertBytesToSize(_loadedData!.sizeInBytes)
-        .toStringAsFixed(2);
-    final unitString = sizeConverter.lastUsedUnit!.getUnitStringRu();
-    return '$sizeNoUnits $unitString';
+    return sizeConverter.formatBytes(_loadedData!.sizeInBytes);
   }
 
   AttachedFileType get fileType =>

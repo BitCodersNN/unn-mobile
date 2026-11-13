@@ -52,6 +52,12 @@ class SizeConverter {
   /// Возвращает единицы измерения, используемые в последней операции
   SizeUnit? get lastUsedUnit => _lastUsedUnit;
 
+  /// Форматирует размер файла с единицей измерения.
+  String formatBytes(int bytes) {
+    final size = convertBytesToSize(bytes).toStringAsFixed(2);
+    return '$size ${lastUsedUnit!.getUnitStringRu()}';
+  }
+
   /// Парсит строку с размером файла (например, "1.5 ГБ", "100 КБ", "2.3 TB")
   /// и возвращает размер в байтах.
   ///

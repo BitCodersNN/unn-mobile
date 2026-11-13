@@ -3,50 +3,60 @@
 
 import 'package:flutter/material.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/source/source_course_view_model.dart';
-import 'package:unn_mobile/ui/views/base_view.dart';
 import 'package:unn_mobile/ui/views/main_page/source/source_item_view.dart';
+import 'package:unn_mobile/ui/widgets/count_badge.dart';
+import 'package:unn_mobile/ui/widgets/expandable_card.dart';
 
 class SourceCourseView extends StatelessWidget {
   final SourceCourseViewModel model;
-  const SourceCourseView({required this.model, super.key});
+  final bool even;
+
+  const SourceCourseView({required this.model, this.even = false, super.key});
 
   @override
-  Widget build(BuildContext context) => BaseView<SourceCourseViewModel>(
-    model: model,
-    builder: (context, model, _) {
-      final theme = Theme.of(context);
-      return ExpansionTile(
-        showTrailingIcon: false,
-        title: Container(
-          decoration: BoxDecoration(
-            color: theme.cardColor,
-            borderRadius: BorderRadius.circular(16.0),
-            boxShadow: [
-              BoxShadow(
-                offset: Offset.zero,
-                blurRadius: 16.0,
-                color: theme.shadowColor.withAlpha(32),
-              ),
-            ],
-          ),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 16.0,
-              vertical: 15.0,
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return ExpandableCard(
+      key: PageStorageKey(model.discipline),
+      title: Row(
+        children: [
+          Container(
+            width: 4,
+            height: 36,
+            decoration: BoxDecoration(
+              color: even
+                  ? theme.colorScheme.primary
+                  : theme.colorScheme.secondary,
+              borderRadius: BorderRadius.circular(2),
             ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
             child: Text(
               model.discipline,
-              style: const TextStyle(
-                fontSize: 17.0,
-                fontWeight: FontWeight.bold,
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w600,
               ),
             ),
           ),
-        ),
-        shape: const Border(),
-        expandedCrossAxisAlignment: CrossAxisAlignment.start,
-        children: [for (final i in model.items) SourceItemView(model: i)],
-      );
-    },
-  );
+        ],
+      ),
+      trailing: CountBadge(count: model.items.length),
+      child: model.items.isEmpty
+          ? Text(
+              'Материалы пока не добавлены',
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            )
+          : Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              mainAxisSize: MainAxisSize.min,
+              spacing: 16,
+              children: [
+                for (final item in model.items) SourceItemView(model: item),
+              ],
+            ),
+    );
+  }
 }
