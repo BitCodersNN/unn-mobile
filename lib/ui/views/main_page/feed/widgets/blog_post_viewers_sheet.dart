@@ -107,28 +107,13 @@ class _BlogPostViewersSheetState extends State<BlogPostViewersSheet> {
             : Padding(
                 padding: const EdgeInsets.only(left: 8),
                 child: FeedMetricButton(
+                  icon: Icons.visibility_outlined,
                   count: widget.totalCount,
                   label: 'Просмотры',
-                  backgroundColor: Theme.of(context)
-                      .colorScheme
-                      .onSurfaceVariant
-                      .withValues(alpha: 0.12),
+                  backgroundColor: Colors.transparent,
                 ),
               ),
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
-              child: Text(
-                'Кто просмотрел этот пост',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                ),
-              ),
-            ),
-            Expanded(child: _buildBody(context, model, viewers)),
-          ],
-        ),
+        child: _buildBody(context, model, viewers),
       );
     },
   );

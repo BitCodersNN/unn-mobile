@@ -182,8 +182,8 @@ class _FeedPostState extends State<FeedPost> {
                                     : 'Закрепить пост',
                                 icon: Icon(
                                   model.isPinned
-                                      ? Icons.bookmark_rounded
-                                      : Icons.bookmark_border_rounded,
+                                      ? Icons.push_pin
+                                      : Icons.push_pin_outlined,
                                   color: model.isPinned
                                       ? theme.colorScheme.primary
                                       : theme.colorScheme.onSurfaceVariant,
