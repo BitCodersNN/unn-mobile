@@ -54,6 +54,7 @@ class FeedScreenViewModel extends BaseViewModel
   List<FeedPostViewModel> get _totalPosts => _page.posts;
 
   Future<void>? _initialization;
+  Future<bool>? _streamAuthInitialization;
 
   String? _searchQuery;
   DateTime? _lastReadAt;
@@ -479,7 +480,25 @@ class FeedScreenViewModel extends BaseViewModel
         await _applySelection(filter: value, query: _searchQuery);
       });
 
+  Future<bool> _ensureStreamAuth() async {
+    final request = _streamAuthInitialization ??= _streamAuthService
+        .getStreamAuthParams()
+        .then((parameters) => parameters != null && parameters.isNotEmpty);
+    bool ready = false;
+    try {
+      ready = await request;
+    } finally {
+      if (!ready && identical(_streamAuthInitialization, request)) {
+        _streamAuthInitialization = null;
+      }
+    }
+    return ready && !disposed;
+  }
+
   Future<bool> _ensureServerSelection(_FeedSelection selection) async {
+    if (!await _ensureStreamAuth()) {
+      return false;
+    }
     if (_serverSelection == selection) {
       return true;
     }

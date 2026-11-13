@@ -12,12 +12,14 @@ class _ScheduleWidgetDataJsonKeys {
   static const String validFrom = 'validFrom';
   static const String validUntil = 'validUntil';
   static const String lessons = 'lessons';
+  static const String useRasp = 'useRasp';
 }
 
 class ScheduleWidgetData {
   static const int schemaVersion = 1;
 
   final int ownerId;
+  final bool? useRasp;
   final String ownerLabel;
   final DateTime updatedAt;
   final DateTime validFrom;
@@ -31,6 +33,7 @@ class ScheduleWidgetData {
     required this.validFrom,
     required this.validUntil,
     required Iterable<ScheduleWidgetLesson> lessons,
+    this.useRasp,
   }) : lessons = List.unmodifiable(
          lessons.toList()..sort((a, b) => a.start.compareTo(b.start)),
        );
@@ -40,6 +43,7 @@ class ScheduleWidgetData {
       throw const FormatException('Unsupported schedule widget data version');
     }
     return ScheduleWidgetData(
+      useRasp: json[_ScheduleWidgetDataJsonKeys.useRasp] as bool?,
       ownerId: json[_ScheduleWidgetDataJsonKeys.ownerId]! as int,
       ownerLabel: json[_ScheduleWidgetDataJsonKeys.ownerLabel]! as String,
       updatedAt: DateTime.fromMillisecondsSinceEpoch(
@@ -59,6 +63,7 @@ class ScheduleWidgetData {
   JsonMap toJson() => {
     _ScheduleWidgetDataJsonKeys.version: schemaVersion,
     _ScheduleWidgetDataJsonKeys.ownerId: ownerId,
+    _ScheduleWidgetDataJsonKeys.useRasp: useRasp,
     _ScheduleWidgetDataJsonKeys.ownerLabel: ownerLabel,
     _ScheduleWidgetDataJsonKeys.updatedAt: updatedAt.millisecondsSinceEpoch,
     _ScheduleWidgetDataJsonKeys.validFrom: validFrom.millisecondsSinceEpoch,
