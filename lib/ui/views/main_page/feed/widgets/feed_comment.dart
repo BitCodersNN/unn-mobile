@@ -54,6 +54,7 @@ class FeedCommentView extends StatelessWidget {
                 FeedAuthorHeader(
                   dateTime: model.comment?.dateTime ?? '',
                   viewModel: model.profileViewModel ?? ProfileViewModel.empty(),
+                  canOpenProfile: true,
                   isLoading: model.isBusy,
                   compact: true,
                 ),
