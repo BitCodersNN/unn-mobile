@@ -6,14 +6,11 @@ import 'dart:io';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:open_filex/open_filex.dart';
-import 'package:path/path.dart' as path;
 import 'package:unn_mobile/core/misc/haptic_utils.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/feed/attached_file_view_model.dart';
-import 'package:unn_mobile/ui/unn_mobile_colors.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
+import 'package:unn_mobile/ui/widgets/files/file_attachment_tile.dart';
 import 'package:unn_mobile/ui/widgets/image_viewer_screen.dart';
-import 'package:unn_mobile/ui/widgets/shimmer.dart';
-import 'package:unn_mobile/ui/widgets/shimmer_loading.dart';
 
 class AttachedFiles extends StatelessWidget {
   final Iterable<AttachedFileViewModel> files;
@@ -56,154 +53,38 @@ class AttachedFile extends StatefulWidget {
 
 class _AttachedFileState extends State<AttachedFile> {
   @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final extraColors = theme.extension<UnnMobileColors>();
-    final scaler = MediaQuery.of(context).textScaler.clamp(maxScaleFactor: 1.3);
-    return BaseView<AttachedFileViewModel>(
-      model: widget.viewModel,
-      builder: (context, model, _) {
-        final iconData = _iconDataByFileType(model);
-        return SizedBox(
-          width: double.infinity,
-          child: GestureDetector(
-            onTap: () async {
-              await _downloadAndOpenFile(model, false, context);
-            },
-            onLongPress: () async {
-              triggerHaptic(HapticIntensity.medium);
-              await Future.wait([
-                _downloadAndOpenFile(model, true, context),
-                FirebaseAnalytics.instance.logEvent(
-                  name: 'feed_attached_file_long_press',
-                ),
-              ]);
-            },
-            child: Container(
-              padding: widget.useCardStyle
-                  ? const EdgeInsets.all(12)
-                  : EdgeInsets.zero,
-              color: widget.useCardStyle ? null : Colors.transparent,
-              decoration: widget.useCardStyle
-                  ? BoxDecoration(
-                      color: theme.colorScheme.surfaceContainerLow,
-                      borderRadius: BorderRadius.circular(14),
-                      border: Border.all(
-                        color: theme.colorScheme.outlineVariant.withValues(
-                          alpha: 0.6,
-                        ),
-                      ),
-                    )
-                  : null,
-              child: Shimmer(
-                child: Row(
-                  children: [
-                    ShimmerLoading(
-                      isLoading: model.isLoadingData,
-                      child: widget.useCardStyle
-                          ? Container(
-                              width: 36,
-                              height: 36,
-                              decoration: BoxDecoration(
-                                color: _fileColor(model),
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: Icon(
-                                iconData,
-                                size: 20,
-                                color: Colors.white,
-                              ),
-                            )
-                          : Icon(
-                              iconData,
-                              size: 30,
-                              color: theme.primaryColorLight,
-                            ),
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Expanded(
-                                child: ShimmerLoading(
-                                  isLoading: model.isLoadingData,
-                                  child: model.isLoadingData
-                                      ? Container(
-                                          width: double.infinity,
-                                          height: scaler.scale(20),
-                                          decoration: BoxDecoration(
-                                            color: Colors.black,
-                                            borderRadius: BorderRadius.circular(
-                                              16,
-                                            ),
-                                          ),
-                                        )
-                                      : Text(
-                                          widget.useCardStyle
-                                              ? model.fileName
-                                              : path.withoutExtension(
-                                                  model.fileName,
-                                                ),
-                                          overflow: TextOverflow.ellipsis,
-                                          textScaler: scaler,
-                                          style: widget.useCardStyle
-                                              ? theme.textTheme.bodySmall
-                                                    ?.copyWith(
-                                                      fontWeight:
-                                                          FontWeight.w700,
-                                                    )
-                                              : const TextStyle(fontSize: 16),
-                                        ),
-                                ),
-                              ),
-                              if (!model.isLoadingData &&
-                                  model.isDownloadingFile)
-                                const Padding(
-                                  padding: EdgeInsets.symmetric(
-                                    horizontal: 8.0,
-                                  ),
-                                  child: SizedBox(
-                                    height: 16,
-                                    width: 16,
-                                    child: CircularProgressIndicator(),
-                                  ),
-                                ),
-                            ],
-                          ),
-                          Text(
-                            widget.useCardStyle
-                                ? '${model.fileExtension.toUpperCase()} · ${model.fileSizeText}'
-                                : '${model.fileExtension} | ${model.fileSizeText}',
-                            style: TextStyle(
-                              color: widget.useCardStyle
-                                  ? theme.colorScheme.onSurfaceVariant
-                                  : extraColors?.ligtherTextColor,
-                              fontSize: widget.useCardStyle ? 11 : null,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    if (widget.useCardStyle) ...[
-                      const SizedBox(width: 8),
-                      Icon(
-                        Icons.download_rounded,
-                        size: 20,
-                        color: theme.colorScheme.primary,
-                      ),
-                    ],
-                  ],
-                ),
+  Widget build(BuildContext context) => BaseView<AttachedFileViewModel>(
+    model: widget.viewModel,
+    builder: (context, model, _) {
+      final iconData = _iconDataByFileType(model);
+      return SizedBox(
+        width: double.infinity,
+        child: GestureDetector(
+          onTap: () async {
+            await _downloadAndOpenFile(model, false, context);
+          },
+          onLongPress: () async {
+            triggerHaptic(HapticIntensity.medium);
+            await Future.wait([
+              _downloadAndOpenFile(model, true, context),
+              FirebaseAnalytics.instance.logEvent(
+                name: 'feed_attached_file_long_press',
               ),
-            ),
+            ]);
+          },
+          child: FileAttachmentTile(
+            name: model.fileName,
+            extension: model.fileExtension,
+            sizeText: model.fileSizeText,
+            icon: iconData,
+            isLoading: model.isLoadingData,
+            isDownloading: model.isDownloadingFile,
+            useCardStyle: widget.useCardStyle,
           ),
-        );
-      },
-    );
-  }
+        ),
+      );
+    },
+  );
 
   Future<void> _downloadAndOpenFile(
     AttachedFileViewModel model,
@@ -267,15 +148,6 @@ class _AttachedFileState extends State<AttachedFile> {
         break;
     }
   }
-
-  Color _fileColor(AttachedFileViewModel model) =>
-      switch (model.fileExtension.toLowerCase()) {
-        'pdf' => const Color(0xFFE5484D),
-        'doc' || 'docx' => const Color(0xFF2F6DD6),
-        'xls' || 'xlsx' || 'csv' => const Color(0xFF1C9459),
-        'zip' || 'rar' || '7z' => const Color(0xFF8E5FC1),
-        _ => Theme.of(context).colorScheme.primary,
-      };
 
   IconData _iconDataByFileType(AttachedFileViewModel model) {
     final IconData iconData;

@@ -21,6 +21,7 @@ import 'package:unn_mobile/ui/views/main_page/schedule/widgets/schedule_search_s
 import 'package:unn_mobile/ui/views/main_page/schedule/widgets/schedule_week_swipe.dart';
 import 'package:unn_mobile/ui/widgets/menu_button.dart';
 import 'package:unn_mobile/ui/widgets/offline_overlay_displayer.dart';
+import 'package:unn_mobile/ui/widgets/period_navigation.dart';
 import 'package:unn_mobile/ui/widgets/search/search_controller.dart';
 import 'package:unn_mobile/ui/widgets/search/search_field.dart';
 import 'package:unn_mobile/ui/widgets/search/search_overlay.dart';
@@ -157,37 +158,21 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView> {
                                       ),
                                 )
                               else ...[
-                                Row(
-                                  children: [
-                                    IconButton(
-                                      onPressed: online
-                                          ? () {
-                                              model.previousWeek();
-                                            }
-                                          : null,
-                                      icon: const Icon(Icons.arrow_left),
-                                      iconSize: 32.0,
-                                    ),
-                                    Expanded(
-                                      child: Text(
-                                        '${week.start.format(DatePattern.dMMM)} - ${week.end.format(DatePattern.dMMM)}',
-                                        textAlign: TextAlign.center,
-                                        style: theme.textTheme.titleLarge,
-                                        textScaler: MediaQuery.of(context)
-                                            .textScaler
-                                            .clamp(maxScaleFactor: 1.3),
-                                      ),
-                                    ),
-                                    IconButton(
-                                      onPressed: online
-                                          ? () {
-                                              model.nextWeek();
-                                            }
-                                          : null,
-                                      icon: const Icon(Icons.arrow_right),
-                                      iconSize: 32.0,
-                                    ),
-                                  ],
+                                PeriodNavigation(
+                                  onPrevious: online
+                                      ? () => model.previousWeek()
+                                      : null,
+                                  onNext: online
+                                      ? () => model.nextWeek()
+                                      : null,
+                                  child: Text(
+                                    '${week.start.format(DatePattern.dMMM)} - ${week.end.format(DatePattern.dMMM)}',
+                                    textAlign: TextAlign.center,
+                                    style: theme.textTheme.titleLarge,
+                                    textScaler: MediaQuery.of(context)
+                                        .textScaler
+                                        .clamp(maxScaleFactor: 1.3),
+                                  ),
                                 ),
                                 Text.rich(
                                   TextSpan(

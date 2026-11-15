@@ -25,6 +25,7 @@ class _RegularExpressionSource {
   static const commentFormUID = r"commentFormUID:\s*'([^']+)'";
   static const blogCommentFormUID = r"blogCommentFormUID:\s*'([^']+)'";
   static const urlPattern = r'''url\(['"]?([^'")]+)['"]?\)''';
+  static const plainTextUrl = r'''https?://[^\s<>"']+''';
   static const recordBlogPattern = r'record-BLOG_\d+-(\d+)-cover';
   static const blogPostIdPattern = r'BLOG_POST-(\d+)';
   static const digitsPattern = r'(\d+)';
@@ -97,6 +98,11 @@ class RegularExpressions {
   );
 
   static final urlRegExp = RegExp(_RegularExpressionSource.urlPattern);
+
+  static final plainTextUrlRegExp = RegExp(
+    _RegularExpressionSource.plainTextUrl,
+    caseSensitive: false,
+  );
 
   static final recordBlogRegExp = RegExp(
     _RegularExpressionSource.recordBlogPattern,

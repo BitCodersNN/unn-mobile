@@ -15,6 +15,8 @@ class SourceCourseViewModel extends BaseViewModel {
 
   String get discipline => _course.discipline;
 
-  Iterable<SourceItemViewModel> get items =>
-      _course.materials.map((m) => SourceItemViewModel(m, _downloader));
+  late final List<SourceItemViewModel> items = [
+    for (final material in _course.materials)
+      SourceItemViewModel(material, _downloader),
+  ];
 }

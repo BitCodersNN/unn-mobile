@@ -67,8 +67,10 @@ class SourcePageViewModel extends BaseViewModel {
   Map<DateTime, List<SourceWebinarViewModel>> get webinars =>
       _webinarsMap[currentSemester] ?? {};
 
-  void init() {
-    busyCallAsync(_init);
+  Future<void> init() async {
+    if (_semesters.isEmpty) {
+      await busyCallAsync(_init);
+    }
   }
 
   FutureOr<void> _init() async {
@@ -84,7 +86,9 @@ class SourcePageViewModel extends BaseViewModel {
     _semesters = semesters ?? [];
 
     final index = _semesters.indexWhere((s) => s.contains(DateTime.now()));
-    _currentSemester = index == -1 ? null : index;
+    _currentSemester = index == -1
+        ? (_semesters.isEmpty ? null : _semesters.length - 1)
+        : index;
 
     await _initCurrentSemester();
   }
@@ -109,7 +113,10 @@ class SourcePageViewModel extends BaseViewModel {
       () => _courseService.getDistanceCourses(semester: currentSemester!),
     );
     _materialsMap[currentSemester!] =
-        courses?.map((c) => SourceCourseViewModel(c, _downloader)) ?? [];
+        courses
+            ?.map((c) => SourceCourseViewModel(c, _downloader))
+            .toList(growable: false) ??
+        [];
     if (courses == null) {
       setMaterialsError(_ErrorTexts.failedLoad);
     }
@@ -137,11 +144,16 @@ class SourcePageViewModel extends BaseViewModel {
   }
 
   FutureOr<void> setSemester(int semester) async {
-    if (semester < 0 || semester >= semesters.length) {
+    if (isBusy ||
+        semester == _currentSemester ||
+        semester < 0 ||
+        semester >= semesters.length) {
       return;
     }
     _currentSemester = semester;
-    if (_materialsMap[currentSemester]?.isEmpty ?? true) {
+    notifyListeners();
+    if (!_materialsMap.containsKey(currentSemester) ||
+        !_webinarsMap.containsKey(currentSemester)) {
       await refresh();
     }
     notifyListeners();
