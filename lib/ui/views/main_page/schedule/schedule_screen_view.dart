@@ -20,7 +20,9 @@ import 'package:unn_mobile/ui/views/main_page/schedule/schedule_tab_view.dart';
 import 'package:unn_mobile/ui/views/main_page/schedule/widgets/schedule_search_suggestion_item_view.dart';
 import 'package:unn_mobile/ui/views/main_page/schedule/widgets/schedule_week_swipe.dart';
 import 'package:unn_mobile/ui/widgets/menu_button.dart';
+import 'package:unn_mobile/ui/widgets/mode_tab_bar.dart';
 import 'package:unn_mobile/ui/widgets/offline_overlay_displayer.dart';
+import 'package:unn_mobile/ui/widgets/search/search_backdrop.dart';
 import 'package:unn_mobile/ui/widgets/search/search_controller.dart';
 import 'package:unn_mobile/ui/widgets/search/search_field.dart';
 import 'package:unn_mobile/ui/widgets/search/search_overlay.dart';
@@ -215,13 +217,11 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView> {
                                       ),
                                 ),
                               ],
-                              TabBar(
-                                tabAlignment: TabAlignment.center,
-                                tabs: model.sortedUserTypeList
-                                    .map((t) => Tab(text: t.displayName))
+                              ModeTabBar(
+                                labels: model.sortedUserTypeList
+                                    .map((type) => type.displayName)
                                     .toList(),
-                                isScrollable: true,
-                                onTap: (value) {
+                                onSelected: (value) {
                                   model.selectedUser =
                                       model.sortedUserTypeList[value];
                                 },
@@ -262,11 +262,13 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView> {
                             .toList(),
                       ),
                     ),
-                    if (_search.isOpen) ...[
-                      GestureDetector(
-                        onTap: _search.close,
-                        child: Container(color: Colors.black.withAlpha(80)),
+                    Positioned.fill(
+                      child: SearchBackdrop(
+                        visible: _search.isOpen,
+                        onDismiss: _search.close,
                       ),
+                    ),
+                    if (_search.isOpen) ...[
                       if (_search.suggestions.isNotEmpty ||
                           _search.isLoading ||
                           _search.query.isNotEmpty)

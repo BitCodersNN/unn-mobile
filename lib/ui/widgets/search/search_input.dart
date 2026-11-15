@@ -1,0 +1,78 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright 2026 BitCodersNN
+
+import 'package:flutter/material.dart';
+
+class SearchInput extends StatelessWidget {
+  final TextEditingController controller;
+  final FocusNode? focusNode;
+  final String? hintText;
+  final bool autofocus;
+  final ValueChanged<String>? onSubmitted;
+  final VoidCallback? onClear;
+
+  const SearchInput({
+    required this.controller,
+    this.focusNode,
+    this.hintText = 'Поиск...',
+    this.autofocus = true,
+    this.onSubmitted,
+    this.onClear,
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Container(
+      height: 48,
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surfaceContainerHighest,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 12),
+      child: Row(
+        children: [
+          Icon(
+            Icons.search,
+            size: 20,
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: TextField(
+              controller: controller,
+              focusNode: focusNode,
+              autofocus: autofocus,
+              onSubmitted: onSubmitted,
+              textInputAction: TextInputAction.search,
+              style: theme.textTheme.bodyLarge,
+              decoration: InputDecoration(
+                isCollapsed: true,
+                border: InputBorder.none,
+                hintText: hintText,
+                hintStyle: theme.textTheme.bodyLarge?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                  fontWeight: FontWeight.normal,
+                ),
+              ),
+            ),
+          ),
+          ListenableBuilder(
+            listenable: controller,
+            builder: (context, _) {
+              if (controller.text.isEmpty) {
+                return const SizedBox.shrink();
+              }
+              return IconButton(
+                icon: const Icon(Icons.close, size: 18),
+                tooltip: 'Очистить',
+                onPressed: onClear ?? controller.clear,
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+}

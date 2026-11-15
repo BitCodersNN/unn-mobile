@@ -2,6 +2,7 @@
 // Copyright 2025 BitCodersNN
 
 import 'package:unn_mobile/core/misc/json/json_utils.dart';
+import 'package:unn_mobile/core/models/profile/profile_preview.dart';
 import 'package:unn_mobile/core/models/profile/student/base_edu_info.dart';
 import 'package:unn_mobile/core/models/profile/user_short_info.dart';
 
@@ -9,7 +10,8 @@ class _PreviewStudentJsonKeys {
   static const String userId = 'user_id';
 }
 
-class PreviewStudent extends UserShortInfo {
+class PreviewStudent extends UserShortInfo implements ProfilePreview {
+  @override
   final int userId;
   final BaseEduInfo baseEduInfo;
 
