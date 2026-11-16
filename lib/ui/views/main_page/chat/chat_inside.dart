@@ -7,15 +7,17 @@ import 'package:go_router/go_router.dart';
 import 'package:unn_mobile/core/constants/date_pattern.dart';
 import 'package:unn_mobile/core/misc/date_time_utilities/date_time_extensions.dart';
 import 'package:unn_mobile/core/misc/user/user_functions.dart';
+import 'package:unn_mobile/core/models/dialog/base_dialog_info.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/chat/chat_inside_view_model.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
 import 'package:unn_mobile/ui/views/main_page/chat/widgets/message_group.dart';
 import 'package:unn_mobile/ui/views/main_page/chat/widgets/send_field.dart';
 
 class ChatInside extends StatefulWidget {
-  const ChatInside({this.chatId, super.key});
+  const ChatInside({this.chatId, this.dialogInfo, super.key});
 
   final int? chatId;
+  final BaseDialogInfo? dialogInfo;
   @override
   State<ChatInside> createState() => _ChatInsideState();
 }
@@ -63,7 +65,10 @@ class _ChatInsideState extends State<ChatInside> {
                   )
                 : IconButton(
                     onPressed: () async {
-                      await model.init(widget.chatId);
+                      await model.init(
+                        widget.chatId,
+                        dialogInfo: widget.dialogInfo,
+                      );
                     },
                     icon: const Icon(Icons.refresh),
                   ),
@@ -157,7 +162,7 @@ class _ChatInsideState extends State<ChatInside> {
       );
     },
     onModelReady: (model) {
-      model.init(widget.chatId);
+      model.init(widget.chatId, dialogInfo: widget.dialogInfo);
     },
     onDispose: (model) {
       model.refreshLoopStopFlag = true;

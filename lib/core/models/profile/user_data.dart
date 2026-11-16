@@ -14,9 +14,11 @@ class _UserDataJsonKeys {
   static const String notes = 'notes';
   static const String web = 'web';
   static const String birthdate = 'birthdate';
+  static const String lastActivityDate = 'last_activity_date';
 }
 
 class UserData extends UserShortInfo {
+  static const String _portalTimeZoneOffset = '+03:00';
   static Set<String> get jsonKeys => {
     _UserDataJsonKeys.id,
     _UserDataJsonKeys.login,
@@ -26,6 +28,7 @@ class UserData extends UserShortInfo {
     _UserDataJsonKeys.notes,
     _UserDataJsonKeys.web,
     _UserDataJsonKeys.birthdate,
+    _UserDataJsonKeys.lastActivityDate,
     ...UserShortInfo.profileJsonKeys,
   };
   final int userId;
@@ -36,6 +39,7 @@ class UserData extends UserShortInfo {
   final String? notes;
   final String? web;
   final DateTime? birthdate;
+  final DateTime? lastActivityAt;
 
   UserData({
     required super.bitrixId,
@@ -49,6 +53,7 @@ class UserData extends UserShortInfo {
     required this.notes,
     required this.web,
     required this.birthdate,
+    this.lastActivityAt,
   });
 
   UserData.withUserShortInfo({
@@ -56,6 +61,7 @@ class UserData extends UserShortInfo {
     required this.userId,
     required this.sex,
     this.birthdate,
+    this.lastActivityAt,
     this.login,
     this.email,
     this.phone,
@@ -76,12 +82,31 @@ class UserData extends UserShortInfo {
       email: userJsonMap[_UserDataJsonKeys.email] as String?,
       phone: userJsonMap[_UserDataJsonKeys.phone] as String?,
       sex: userJsonMap[_UserDataJsonKeys.sex]! as String,
-      notes: userJsonMap[_UserDataJsonKeys.notes] as String?,
-      web: userJsonMap[_UserDataJsonKeys.web] as String?,
+      notes:
+          (userJsonMap[_UserDataJsonKeys.notes] ??
+                  json[_UserDataJsonKeys.notes])
+              as String?,
+      web:
+          (userJsonMap[_UserDataJsonKeys.web] ?? json[_UserDataJsonKeys.web])
+              as String?,
       birthdate: DateTime.tryParse(
         userJsonMap[_UserDataJsonKeys.birthdate] as String? ?? '',
       ),
+      lastActivityAt: _parseLastActivity(
+        (json[_UserDataJsonKeys.lastActivityDate] ??
+                    userJsonMap[_UserDataJsonKeys.lastActivityDate])
+                as String? ??
+            '',
+      ),
     );
+  }
+
+  static DateTime? _parseLastActivity(String value) {
+    final date = DateTime.tryParse(value);
+    if (date == null || date.isUtc) {
+      return date;
+    }
+    return DateTime.tryParse('$value$_portalTimeZoneOffset');
   }
 
   @override
@@ -94,7 +119,9 @@ class UserData extends UserShortInfo {
       _UserDataJsonKeys.phone: phone,
       _UserDataJsonKeys.sex: sex,
       _UserDataJsonKeys.notes: notes,
+      _UserDataJsonKeys.web: web,
       _UserDataJsonKeys.birthdate: birthdate?.toIso8601String(),
+      _UserDataJsonKeys.lastActivityDate: lastActivityAt?.toIso8601String(),
     },
   };
 }

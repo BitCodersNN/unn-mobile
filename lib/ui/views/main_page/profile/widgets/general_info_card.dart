@@ -2,6 +2,8 @@
 // Copyright 2025 BitCodersNN
 
 import 'package:flutter/material.dart';
+import 'package:unn_mobile/core/constants/date_pattern.dart';
+import 'package:unn_mobile/core/misc/date_time_utilities/date_time_extensions.dart';
 import 'package:unn_mobile/core/models/profile/user_data.dart';
 import 'package:unn_mobile/ui/views/main_page/profile/widgets/profile_card.dart';
 import 'package:unn_mobile/ui/views/main_page/profile/widgets/profile_info_tile.dart';
@@ -14,12 +16,27 @@ class GeneralInfoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final birthdate = data.birthdate?.toLocal();
     final tiles = <Widget>[
+      if (birthdate != null)
+        ProfileInfoTile(
+          label: 'Дата рождения',
+          value: '${birthdate.format(DatePattern.dMMMM)} ${birthdate.year}',
+          icon: Icons.cake_outlined,
+        ),
       if (data.login != null && data.login!.isNotEmpty)
-        ProfileInfoTile(label: 'Логин', value: data.login!),
+        ProfileInfoTile(
+          label: 'Логин',
+          value: data.login!,
+          icon: Icons.alternate_email,
+        ),
       if (isMe) ...[
         if (data.sex.isNotEmpty)
-          ProfileInfoTile(label: 'Пол', value: _displaySex(data.sex)),
+          ProfileInfoTile(
+            label: 'Пол',
+            value: _displaySex(data.sex),
+            icon: Icons.person_outline,
+          ),
       ],
     ];
     if (tiles.isEmpty) {

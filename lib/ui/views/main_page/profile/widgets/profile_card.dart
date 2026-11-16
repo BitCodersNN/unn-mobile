@@ -12,24 +12,49 @@ class ProfileCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Card(
-      margin: const EdgeInsets.only(bottom: 12),
+    final colors = theme.colorScheme;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 24),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         mainAxisSize: MainAxisSize.min,
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+            padding: const EdgeInsets.only(left: 4, bottom: 10),
             child: Text(
               title,
-              style: theme.textTheme.titleMedium?.copyWith(
-                color: theme.colorScheme.primary,
+              style: theme.textTheme.titleSmall?.copyWith(
+                color: colors.onSurfaceVariant,
+                fontWeight: FontWeight.w600,
               ),
             ),
           ),
-          for (var index = 0; index < tiles.length; index++) ...[
-            if (index > 0) const Divider(height: 1, indent: 16, endIndent: 16),
-            tiles[index],
-          ],
+          Material(
+            color: colors.surfaceContainerLow,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+              side: BorderSide(
+                color: colors.outlineVariant.withValues(alpha: 0.5),
+              ),
+            ),
+            clipBehavior: Clip.antiAlias,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                for (final (index, tile) in tiles.indexed) ...[
+                  if (index > 0)
+                    Divider(
+                      height: 1,
+                      indent: 16,
+                      endIndent: 16,
+                      color: colors.outlineVariant.withValues(alpha: 0.5),
+                    ),
+                  tile,
+                ],
+              ],
+            ),
+          ),
         ],
       ),
     );

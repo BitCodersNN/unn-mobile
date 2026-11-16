@@ -29,6 +29,8 @@ class ChatInsideViewModel extends BaseViewModel {
 
   BaseDialogInfo? _dialog;
 
+  BaseDialogInfo? _initialDialog;
+
   int? chatId;
 
   bool _hasError = false;
@@ -121,11 +123,11 @@ class ChatInsideViewModel extends BaseViewModel {
             .length;
 
     if (refreshLoopRunning && !refreshLoopStopFlag) {
-      await _dialogsViewModel!.init();
+      await _dialogsViewModel?.init();
 
       fetchDialogFromRoot(chatId);
 
-      _dialogsViewModel!.notifyListeners();
+      _dialogsViewModel?.notifyListeners();
     }
     _unpartitionedMessages
       ..removeRange(0, min(messagesToRemove, _unpartitionedMessages.length))
@@ -138,25 +140,18 @@ class ChatInsideViewModel extends BaseViewModel {
 
   void fetchDialogFromRoot(int? chatId) {
     final viewModel = _dialogsViewModel;
-    final storedInfo = viewModel?.storedDialogInfo;
-
-    if (viewModel == null && storedInfo == null) {
-      _dialog = null;
-      return;
-    }
-
     _dialog =
-        viewModel?.dialogs.cast<BaseDialogInfo>().firstWhere(
-          (d) => d is Dialog && d.chatId == chatId,
-          orElse: () => storedInfo!,
-        ) ??
-        storedInfo;
+        viewModel?.dialogs
+            .where((dialog) => dialog.chatId == chatId)
+            .firstOrNull ??
+        _initialDialog ??
+        viewModel?.storedDialogInfo;
   }
 
-  FutureOr<void> init(int? chatId) async {
+  FutureOr<void> init(int? chatId, {BaseDialogInfo? dialogInfo}) async {
     _isInitializing = true;
     try {
-      await busyCallAsync(() => _init(chatId));
+      await busyCallAsync(() => _init(chatId, dialogInfo: dialogInfo));
     } finally {
       _isInitializing = false;
     }
@@ -237,16 +232,22 @@ class ChatInsideViewModel extends BaseViewModel {
               ),
       );
 
-  FutureOr<void> _init(int? chatId) async {
+  FutureOr<void> _init(int? chatId, {BaseDialogInfo? dialogInfo}) async {
     _hasError = false;
     _hasMessagesBefore = false;
     _hasMessagesAfter = false;
     this.chatId = chatId;
+    _initialDialog = dialogInfo;
+    _lastReadMessageId = null;
     _messages.clear();
     _unpartitionedMessages.clear();
     _dialogsViewModel = _routesViewModelFactory
         .getCached<ChatScreenViewModel>();
     fetchDialogFromRoot(chatId);
+    if (_dialog == null) {
+      _hasError = true;
+      return;
+    }
     final messages = await tryLoginAndRetrieveData<PaginatedResult<Message>>(
       () => this.chatId == null
           ? getMessagesByDialogId(_dialog!.dialogId.stringValue)

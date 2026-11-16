@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2026 BitCodersNN
 
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:injector/injector.dart';
@@ -18,8 +17,7 @@ import 'package:unn_mobile/ui/router.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
 import 'package:unn_mobile/ui/views/main_page/main_page_route_data.dart';
 import 'package:unn_mobile/ui/views/main_page/menu/reorderable_menu_list.dart';
-import 'package:unn_mobile/ui/widgets/shimmer.dart';
-import 'package:unn_mobile/ui/widgets/shimmer_loading.dart';
+import 'package:unn_mobile/ui/widgets/user_profile_card.dart';
 
 class MainPageMenu extends StatelessWidget {
   const MainPageMenu({super.key});
@@ -155,55 +153,17 @@ class MainPageMenu extends StatelessWidget {
     );
   }
 
-  Widget _buildProfile(BuildContext context) => Shimmer(
-    child: BaseView<ProfileViewModel>(
-      createModel: ProfileViewModel.currentUser,
-      onDispose: (model) => model.dispose(),
-      builder: (context, model, _) => _profileContent(context, model),
+  Widget _buildProfile(BuildContext context) => BaseView<ProfileViewModel>(
+    createModel: ProfileViewModel.currentUser,
+    onDispose: (model) => model.dispose(),
+    builder: (context, model, _) => UserProfileCard(
+      name: model.fullname,
+      initials: model.initials,
+      subtitle: model.description,
+      avatarUrl: model.avatarUrl,
+      isLoading: model.isLoading && model.userData == null,
+      enablePhotoViewer: false,
+      layout: UserProfileCardLayout.centered,
     ),
   );
-
-  Widget _profileContent(BuildContext context, ProfileViewModel profile) {
-    final theme = Theme.of(context);
-    final isLoading = profile.isLoading;
-    return ShimmerLoading(
-      isLoading: isLoading,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12),
-        child: Column(
-          children: [
-            CircleAvatar(
-              radius: 52,
-              backgroundColor: theme.colorScheme.primaryContainer,
-              foregroundColor: theme.colorScheme.onPrimaryContainer,
-              backgroundImage: profile.hasAvatar
-                  ? CachedNetworkImageProvider(profile.avatarUrl!)
-                  : null,
-              child: !profile.hasAvatar
-                  ? Text(profile.initials, style: theme.textTheme.headlineLarge)
-                  : null,
-            ),
-            const SizedBox(height: 18),
-            Text(
-              isLoading ? 'Загрузка профиля' : profile.fullname,
-              textAlign: TextAlign.center,
-              style: theme.textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            if (profile.description.isNotEmpty) ...[
-              const SizedBox(height: 6),
-              Text(
-                profile.description,
-                textAlign: TextAlign.center,
-                style: theme.textTheme.bodyLarge?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
-                ),
-              ),
-            ],
-          ],
-        ),
-      ),
-    );
-  }
 }

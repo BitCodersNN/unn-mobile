@@ -37,6 +37,7 @@ class StudentData extends UserData {
     required this.baseEduInfo,
     required this.eduStatus,
     required this.eduYear,
+    super.lastActivityAt,
   });
 
   StudentData.withUserData({
@@ -56,6 +57,7 @@ class StudentData extends UserData {
          notes: userData.notes,
          web: userData.web,
          birthdate: userData.birthdate,
+         lastActivityAt: userData.lastActivityAt,
        );
 
   factory StudentData.fromJson(JsonMap json) => StudentData.withUserData(

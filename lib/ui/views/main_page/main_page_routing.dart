@@ -4,7 +4,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:unn_mobile/core/constants/main_page_paths.dart';
+import 'package:unn_mobile/core/misc/custom_types/int_or_string.dart';
+import 'package:unn_mobile/core/models/dialog/preview_dialog.dart';
 import 'package:unn_mobile/core/models/profile/student/student_data.dart';
+import 'package:unn_mobile/core/models/profile/user_short_info.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/factories/main_page_routes_view_models_factory.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/chat/chat_screen_view_model.dart';
@@ -27,6 +30,28 @@ import 'package:unn_mobile/ui/views/main_page/profile/profile_page.dart';
 import 'package:unn_mobile/ui/views/main_page/schedule/schedule_screen_view.dart';
 import 'package:unn_mobile/ui/views/main_page/settings/settings.dart';
 import 'package:unn_mobile/ui/views/main_page/source/source.dart';
+
+final MainPageRouteData userDialogRoute = MainPageRouteData(
+  Icons.chat,
+  Icons.chat_bubble_outline,
+  'Диалог',
+  'user/:userId',
+  userTypes: [],
+  builder: (_, state) {
+    final userId = int.parse(state.pathParameters['userId']!);
+    final user = state.extra is UserShortInfo
+        ? state.extra! as UserShortInfo
+        : null;
+    return ChatInside(
+      key: ValueKey('user-dialog-$userId'),
+      dialogInfo: PreviewDialog(
+        dialogId: IntValue(userId),
+        title: user?.fullname ?? 'Диалог',
+        avatarUrl: user?.photoSrc ?? '',
+      ),
+    );
+  },
+);
 
 final MainPageRouteData postCommentsRoute = MainPageRouteData(
   Icons.comment,
@@ -90,6 +115,7 @@ final List<MainPageRouteData> mainPageRoutes = [
     builder: (_, _) => const ChatScreenView(),
     onReselect: _refresh<ChatScreenViewModel>,
     subroutes: [
+      userDialogRoute,
       MainPageRouteData(
         Icons.chat,
         Icons.chat,

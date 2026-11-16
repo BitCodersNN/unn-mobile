@@ -60,11 +60,20 @@ class ProfileViewModel extends BaseViewModel {
 
   String get description => _description ?? '';
 
+  String get profileSubtitle => switch (_loadedData) {
+    final StudentData student => [
+      'Студент',
+      if (student.baseEduInfo.eduGroup.isNotEmpty) student.baseEduInfo.eduGroup,
+    ].join(' · '),
+    EmployeeData() => 'Сотрудник',
+    _ => '',
+  };
+
   String get fullname =>
       _loadedData?.fullname.toString() ?? //
       'Не удалось загрузить';
 
-  bool get hasAvatar => _loadedData?.photoSrc != null;
+  bool get hasAvatar => _loadedData?.photoSrc?.isNotEmpty ?? false;
 
   bool get hasError => _hasError;
 
@@ -72,6 +81,16 @@ class ProfileViewModel extends BaseViewModel {
       generateInitials(_loadedData?.fullname?.split(' ') ?? []);
 
   bool get isLoading => _isLoading;
+
+  bool get canWriteMessage {
+    final user = _loadedData;
+    final currentUser = _currentUserSyncStorage.currentUserData;
+    return !isMe &&
+        user != null &&
+        (user.bitrixId ?? 0) > 0 &&
+        user.bitrixId != currentUser?.bitrixId &&
+        user.userId != currentUser?.userId;
+  }
 
   FutureOr<void> init({
     bool force = false,
