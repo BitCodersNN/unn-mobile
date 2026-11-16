@@ -9,6 +9,7 @@ import 'package:unn_mobile/core/models/profile/employee/employee_profile.dart';
 import 'package:unn_mobile/core/models/profile/user_short_info.dart';
 import 'package:unn_mobile/ui/views/main_page/profile/widgets/profile_card.dart';
 import 'package:unn_mobile/ui/views/main_page/profile/widgets/profile_info_tile.dart';
+import 'package:unn_mobile/ui/widgets/context_menu/copyable_context_menu.dart';
 
 class EmploymentInfoCard extends StatelessWidget {
   final EmployeeData data;
@@ -67,23 +68,29 @@ class _ManagerTile extends StatelessWidget {
     final theme = Theme.of(context);
     final photoSrc = manager.photoSrc;
     final hasPhoto = photoSrc != null && photoSrc.isNotEmpty;
-    return ListTile(
-      dense: true,
-      leading: CircleAvatar(
-        radius: 16,
-        backgroundColor: theme.colorScheme.surfaceContainerHighest,
-        backgroundImage: hasPhoto ? CachedNetworkImageProvider(photoSrc) : null,
-        child: hasPhoto
-            ? null
-            : Text(
-                generateInitials(manager.fullname?.split(' ') ?? []),
-                style: theme.textTheme.labelMedium,
-              ),
+    return CopyableContextMenu(
+      label: 'Руководитель',
+      value: manager.fullname ?? '',
+      child: ListTile(
+        dense: true,
+        leading: CircleAvatar(
+          radius: 16,
+          backgroundColor: theme.colorScheme.surfaceContainerHighest,
+          backgroundImage: hasPhoto
+              ? CachedNetworkImageProvider(photoSrc)
+              : null,
+          child: hasPhoto
+              ? null
+              : Text(
+                  generateInitials(manager.fullname?.split(' ') ?? []),
+                  style: theme.textTheme.labelMedium,
+                ),
+        ),
+        title: Text('Руководитель', style: theme.textTheme.bodySmall),
+        subtitle: Text(manager.fullname ?? ''),
+        textColor: theme.colorScheme.onSurface,
+        contentPadding: const EdgeInsets.all(16),
       ),
-      title: Text('Руководитель', style: theme.textTheme.bodySmall),
-      subtitle: Text(manager.fullname ?? ''),
-      textColor: theme.colorScheme.onSurface,
-      contentPadding: const EdgeInsets.all(16),
     );
   }
 }

@@ -2,18 +2,24 @@
 // Copyright 2025 BitCodersNN
 
 import 'package:flutter/material.dart';
+import 'package:unn_mobile/ui/widgets/context_menu/context_menu_action.dart';
+import 'package:unn_mobile/ui/widgets/context_menu/copyable_context_menu.dart';
 
 class ProfileInfoTile extends StatelessWidget {
   final String label;
   final String value;
   final IconData? icon;
   final VoidCallback? onTap;
+  final bool enableCopyMenu;
+  final List<ContextMenuAction> menuActions;
 
   const ProfileInfoTile({
     required this.label,
     required this.value,
     this.icon,
     this.onTap,
+    this.enableCopyMenu = true,
+    this.menuActions = const [],
     super.key,
   });
 
@@ -21,7 +27,7 @@ class ProfileInfoTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
-    return InkWell(
+    final tile = InkWell(
       onTap: onTap,
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -72,5 +78,13 @@ class ProfileInfoTile extends StatelessWidget {
         ),
       ),
     );
+    return enableCopyMenu
+        ? CopyableContextMenu(
+            label: label,
+            value: value,
+            actions: menuActions,
+            child: tile,
+          )
+        : tile;
   }
 }

@@ -4,6 +4,8 @@
 import 'package:flutter/material.dart';
 import 'package:unn_mobile/core/models/profile/user_data.dart';
 import 'package:unn_mobile/ui/views/main_page/profile/widgets/profile_card.dart';
+import 'package:unn_mobile/ui/widgets/context_menu/copyable_context_menu.dart';
+import 'package:unn_mobile/ui/widgets/linkified_text.dart';
 
 class AboutInfoCard extends StatelessWidget {
   final UserData data;
@@ -20,9 +22,17 @@ class AboutInfoCard extends StatelessWidget {
     return ProfileCard(
       title: 'О себе',
       tiles: [
-        Padding(
-          padding: const EdgeInsets.all(16),
-          child: Text(notes, style: theme.textTheme.bodyLarge),
+        CopyableContextMenu(
+          label: 'О себе',
+          value: notes,
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: LinkifiedText(
+              text: notes,
+              style: theme.textTheme.bodyLarge,
+              selectable: false,
+            ),
+          ),
         ),
       ],
     );

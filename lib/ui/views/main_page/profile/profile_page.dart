@@ -11,7 +11,6 @@ import 'package:unn_mobile/ui/views/main_page/profile/widgets/employment_info_ca
 import 'package:unn_mobile/ui/views/main_page/profile/widgets/general_info_card.dart';
 import 'package:unn_mobile/ui/views/main_page/profile/widgets/profile_page_header.dart';
 import 'package:unn_mobile/ui/views/main_page/profile/widgets/study_info_card.dart';
-import 'package:unn_mobile/ui/widgets/shimmer.dart';
 
 /// Экран профиля пользователя.
 ///
@@ -70,36 +69,34 @@ class _ProfilePageState extends State<ProfilePage> {
           );
         }
         final data = model.userData;
-        return Shimmer(
-          child: RefreshIndicator(
-            onRefresh: () async => await model.init(
-              force: true,
-              loadCurrentUser: widget.isMe,
-              userId: _getUserId(),
-              loadFromPost: widget.loadFromPost,
-            ),
-            child: ListView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
-              children: [
-                ProfilePageHeader(model: model),
-                if (model.isLoading && data != null)
-                  const Padding(
-                    padding: EdgeInsets.only(top: 12),
-                    child: LinearProgressIndicator(minHeight: 2),
-                  ),
-                const SizedBox(height: 24),
-                if (data != null) ...[
-                  GeneralInfoCard(data: data, isMe: model.isMe),
-                  if (model.studentData != null)
-                    StudyInfoCard(data: model.studentData!),
-                  if (model.employeeData != null)
-                    EmploymentInfoCard(data: model.employeeData!),
-                  ContactInfoCard(data: data),
-                  AboutInfoCard(data: data),
-                ],
+        return RefreshIndicator(
+          onRefresh: () async => await model.init(
+            force: true,
+            loadCurrentUser: widget.isMe,
+            userId: _getUserId(),
+            loadFromPost: widget.loadFromPost,
+          ),
+          child: ListView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+            children: [
+              ProfilePageHeader(model: model),
+              if (model.isLoading && data != null)
+                const Padding(
+                  padding: EdgeInsets.only(top: 12),
+                  child: LinearProgressIndicator(minHeight: 2),
+                ),
+              const SizedBox(height: 24),
+              if (data != null) ...[
+                GeneralInfoCard(data: data, isMe: model.isMe),
+                if (model.studentData != null)
+                  StudyInfoCard(data: model.studentData!),
+                if (model.employeeData != null)
+                  EmploymentInfoCard(data: model.employeeData!),
+                ContactInfoCard(data: data),
+                AboutInfoCard(data: data),
               ],
-            ),
+            ],
           ),
         );
       },

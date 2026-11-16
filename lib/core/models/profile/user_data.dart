@@ -82,8 +82,13 @@ class UserData extends UserShortInfo {
       email: userJsonMap[_UserDataJsonKeys.email] as String?,
       phone: userJsonMap[_UserDataJsonKeys.phone] as String?,
       sex: userJsonMap[_UserDataJsonKeys.sex]! as String,
-      notes: userJsonMap[_UserDataJsonKeys.notes] as String?,
-      web: userJsonMap[_UserDataJsonKeys.web] as String?,
+      notes:
+          (userJsonMap[_UserDataJsonKeys.notes] ??
+                  json[_UserDataJsonKeys.notes])
+              as String?,
+      web:
+          (userJsonMap[_UserDataJsonKeys.web] ?? json[_UserDataJsonKeys.web])
+              as String?,
       birthdate: DateTime.tryParse(
         userJsonMap[_UserDataJsonKeys.birthdate] as String? ?? '',
       ),
@@ -114,6 +119,7 @@ class UserData extends UserShortInfo {
       _UserDataJsonKeys.phone: phone,
       _UserDataJsonKeys.sex: sex,
       _UserDataJsonKeys.notes: notes,
+      _UserDataJsonKeys.web: web,
       _UserDataJsonKeys.birthdate: birthdate?.toIso8601String(),
       _UserDataJsonKeys.lastActivityDate: lastActivityAt?.toIso8601String(),
     },
