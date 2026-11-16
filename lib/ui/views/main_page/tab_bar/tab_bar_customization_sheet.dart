@@ -12,6 +12,7 @@ import 'package:unn_mobile/ui/views/main_page/tab_bar/tab_bar_item_content.dart'
 import 'package:unn_mobile/ui/views/main_page/tab_bar/tab_bar_label_layout.dart';
 import 'package:unn_mobile/ui/views/main_page/tab_bar/tab_bar_reorder_preview.dart';
 import 'package:unn_mobile/ui/widgets/app_modal_sheet.dart';
+import 'package:unn_mobile/ui/widgets/sheets/app_bottom_sheet.dart';
 
 Future<List<String>?> showTabBarCustomizationSheet(
   BuildContext context, {
@@ -24,8 +25,8 @@ Future<List<String>?> showTabBarCustomizationSheet(
     initialPaths ?? AppSettings.tabBarPaths.value,
     allowed: routes.map((route) => route.pagePath),
   );
-  return showAppModalSheet<List<String>>(
-    context: context,
+  return showAppBottomSheet<List<String>>(
+    context,
     builder: (_) => TabBarCustomizationSheet(
       routes: routes,
       initialPaths: paths,

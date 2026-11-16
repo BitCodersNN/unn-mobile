@@ -38,10 +38,7 @@ class MainPageState extends State<MainPage> {
     if (!mounted) {
       return;
     }
-    await showDialog<void>(
-      context: context,
-      builder: (context) => const ChangelogDialog(),
-    );
+    await showChangelogDialog(context);
   }
 
   bool isRootScreen(BuildContext context) {

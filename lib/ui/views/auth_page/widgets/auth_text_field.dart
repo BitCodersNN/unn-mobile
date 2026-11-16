@@ -45,6 +45,8 @@ class AuthTextField extends StatefulWidget {
 }
 
 class _AuthTextFieldState extends State<AuthTextField> {
+  bool _passwordVisible = false;
+
   bool get _isLabelFloating =>
       widget.focusNode.hasFocus ||
       widget.errorText != null ||
@@ -65,6 +67,11 @@ class _AuthTextFieldState extends State<AuthTextField> {
     if (oldWidget.controller != widget.controller) {
       oldWidget.controller.removeListener(_handleStateChanged);
       widget.controller.addListener(_handleStateChanged);
+      _passwordVisible = false;
+    }
+
+    if (oldWidget.obscured != widget.obscured) {
+      _passwordVisible = false;
     }
 
     if (oldWidget.focusNode != widget.focusNode) {
@@ -218,21 +225,39 @@ class _AuthTextFieldState extends State<AuthTextField> {
         focusNode: widget.focusNode,
         autocorrect: false,
         enableSuggestions: false,
-        obscureText: widget.obscured,
+        obscureText: widget.obscured && !_passwordVisible,
         autofillHints: widget.autofillHints,
         textInputAction: widget.textInputAction,
         onSubmitted: widget.onSubmitted,
         cursorColor: cursorColor,
         style: valueStyle,
         textAlignVertical: TextAlignVertical.center,
-        decoration: const InputDecoration(
+        decoration: InputDecoration(
+          suffixIcon: widget.obscured
+              ? Padding(
+                  padding: const EdgeInsetsDirectional.only(end: 4),
+                  child: IconButton(
+                    tooltip: _passwordVisible
+                        ? 'Скрыть пароль'
+                        : 'Показать пароль',
+                    isSelected: _passwordVisible,
+                    icon: const Icon(Icons.visibility_outlined, size: 22),
+                    selectedIcon: const Icon(
+                      Icons.visibility_off_outlined,
+                      size: 22,
+                    ),
+                    onPressed: () =>
+                        setState(() => _passwordVisible = !_passwordVisible),
+                  ),
+                )
+              : null,
           isDense: true,
           border: InputBorder.none,
           enabledBorder: InputBorder.none,
           focusedBorder: InputBorder.none,
           errorBorder: InputBorder.none,
           focusedErrorBorder: InputBorder.none,
-          contentPadding: EdgeInsets.only(
+          contentPadding: const EdgeInsets.only(
             left: _FieldMetrics.contentPadding,
             right: _FieldMetrics.contentPadding,
           ),

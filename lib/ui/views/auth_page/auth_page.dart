@@ -408,9 +408,6 @@ class _AuthPageState extends State<AuthPage> {
       return;
     }
 
-    await showDialog<void>(
-      context: context,
-      builder: (context) => const ChangelogDialog(),
-    );
+    await showChangelogDialog(context);
   }
 }

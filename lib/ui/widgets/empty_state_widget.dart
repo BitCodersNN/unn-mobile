@@ -29,7 +29,7 @@ class EmptyStateWidget extends StatelessWidget {
       ),
       child: Icon(icon, size: 40, color: theme.colorScheme.primary),
     );
-    return Center(
+    final content = Center(
       child: Padding(
         padding: const EdgeInsets.all(32.0),
         child: Column(
@@ -59,6 +59,20 @@ class EmptyStateWidget extends StatelessWidget {
           ],
         ),
       ),
+    );
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        if (!constraints.hasBoundedHeight) {
+          return content;
+        }
+        return SingleChildScrollView(
+          primary: false,
+          child: ConstrainedBox(
+            constraints: BoxConstraints(minHeight: constraints.maxHeight),
+            child: content,
+          ),
+        );
+      },
     );
   }
 }
