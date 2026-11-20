@@ -30,43 +30,11 @@ Future<void> _shareFeedPost(
 ) async {
   final logger = Injector.appInstance.get<LoggerService>();
   final messenger = ScaffoldMessenger.maybeOf(context);
-  messenger?.clearSnackBars();
-  messenger?.removeCurrentSnackBar();
-  final preparing = messenger?.showSnackBar(
-    const SnackBar(
-      duration: Duration(minutes: 1),
-      content: Row(
-        children: [
-          SizedBox(
-            width: 18,
-            height: 18,
-            child: CircularProgressIndicator(
-              strokeWidth: 2,
-              color: Colors.white,
-            ),
-          ),
-          SizedBox(width: 12),
-          Expanded(child: Text('Подготовка поста к отправке…')),
-        ],
-      ),
-    ),
-  );
-  bool preparationClosed = preparing == null;
-  unawaited(
-    preparing?.closed.then((_) {
-      preparationClosed = true;
-    }),
-  );
-  void closePreparation() {
-    if (!preparationClosed) {
-      preparationClosed = true;
-      preparing?.close();
-    }
-  }
+  final preparation = _SharePreparationIndicator.show(messenger);
 
   triggerHaptic(HapticIntensity.light);
   try {
-    await _prepareAndShare(context, post, logger, closePreparation);
+    await _prepareAndShare(context, post, logger, preparation.close);
   } catch (error, stack) {
     logger.logError(error, stack);
     if (messenger != null && messenger.mounted) {
@@ -75,7 +43,7 @@ Future<void> _shareFeedPost(
       );
     }
   } finally {
-    closePreparation();
+    preparation.close();
   }
 }
 
@@ -126,5 +94,53 @@ Future<void> _prepareAndShare(
         ),
       ),
     );
+  }
+}
+
+class _SharePreparationIndicator {
+  final ScaffoldFeatureController<SnackBar, SnackBarClosedReason>? _controller;
+  bool _closed;
+
+  _SharePreparationIndicator._(this._controller)
+    : _closed = _controller == null {
+    unawaited(_controller?.closed.then(_markClosed));
+  }
+
+  factory _SharePreparationIndicator.show(ScaffoldMessengerState? messenger) {
+    messenger?.clearSnackBars();
+    messenger?.removeCurrentSnackBar();
+    return _SharePreparationIndicator._(
+      messenger?.showSnackBar(
+        const SnackBar(
+          duration: Duration(minutes: 1),
+          content: Row(
+            children: [
+              SizedBox(
+                width: 18,
+                height: 18,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: Colors.white,
+                ),
+              ),
+              SizedBox(width: 12),
+              Expanded(child: Text('Подготовка поста к отправке…')),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _markClosed(SnackBarClosedReason _) {
+    _closed = true;
+  }
+
+  void close() {
+    if (_closed) {
+      return;
+    }
+    _closed = true;
+    _controller?.close();
   }
 }
