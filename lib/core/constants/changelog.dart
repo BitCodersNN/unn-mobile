@@ -5,6 +5,12 @@ import 'package:unn_mobile/core/models/changelog/changelog_release.dart';
 
 const List<ChangelogRelease> changelogReleases = [
   ChangelogRelease(
+    version: '0.7.0 beta 5',
+    changes: [
+      'Добавлено прикрепление картинок при использовании «Поделиться» в ленте',
+    ],
+  ),
+  ChangelogRelease(
     version: '0.7.0 beta 4',
     changes: [
       'Редизайн ленты',

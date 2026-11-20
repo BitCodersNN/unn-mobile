@@ -5,18 +5,14 @@ import 'package:event/event.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:go_router/go_router.dart';
-import 'package:http/http.dart' as http;
 import 'package:injector/injector.dart';
-import 'package:mime/mime.dart';
-import 'package:path/path.dart' as p;
-import 'package:share_plus/share_plus.dart';
 import 'package:unn_mobile/core/misc/haptic_utils.dart';
-import 'package:unn_mobile/core/misc/html_utils/html_to_plain_text.dart';
 import 'package:unn_mobile/core/models/feed/rating_list.dart';
 import 'package:unn_mobile/core/viewmodels/factories/feed_post_view_model_factory.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/common/profile_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/feed/feed_post_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/feed/reaction_view_model.dart';
+import 'package:unn_mobile/ui/actions/feed_post_share_action.dart';
 import 'package:unn_mobile/ui/actions/reaction_actions.dart';
 import 'package:unn_mobile/ui/actions/ui_action_handler.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
@@ -92,7 +88,7 @@ class _FeedPostState extends State<FeedPost> {
             actionsBuilder: (context) => createPostActions(
               context: context,
               model: model,
-              onShare: _sharePost,
+              onShare: (post) => shareFeedPost(context, post),
               onTogglePin: () => _togglePin(model),
               includeReactions: false,
             ),
@@ -328,10 +324,7 @@ class _FeedPostState extends State<FeedPost> {
                               ),
                               Expanded(child: Container()),
                               IconButton(
-                                onPressed: () async {
-                                  triggerHaptic(HapticIntensity.light);
-                                  await _sharePost(model);
-                                },
+                                onPressed: () => shareFeedPost(context, model),
                                 tooltip: 'Поделиться постом',
                                 icon: Icon(
                                   theme.platform == TargetPlatform.iOS
@@ -387,45 +380,6 @@ class _FeedPostState extends State<FeedPost> {
       model.togglePin,
       errorMessage: 'Не удалось изменить закрепление поста',
     );
-  }
-
-  Future<void> _sharePost(FeedPostViewModel model) async {
-    if (model.profileViewModel == null) {
-      return;
-    }
-    final List<XFile> xFiles = [];
-
-    for (final fileViewModel in model.attachedFileViewModels) {
-      final file = await fileViewModel.getFile();
-      if (file?.existsSync() ?? false) {
-        xFiles.add(XFile(file!.path));
-      }
-    }
-
-    final fetchedImages = await Future.wait(
-      model.attachedImages.map(
-        (url) => _imageUrlToXFile(url).onError((_, _) => null),
-      ),
-    );
-    xFiles.addAll(fetchedImages.whereType<XFile>());
-
-    await SharePlus.instance.share(
-      ShareParams(
-        files: xFiles.isEmpty ? null : xFiles,
-        text:
-            '${htmlToPlainText(model.postText)}\n\nИсточник: Портал ННГУ\nАвтор: ${model.profileViewModel!.fullname}',
-      ),
-    );
-  }
-
-  Future<XFile?> _imageUrlToXFile(String imageUrl) async {
-    final data = await http.get(Uri.parse(imageUrl));
-    final mimeType =
-        data.headers['Content-Type'] ?? lookupMimeType(p.basename(imageUrl));
-    if (data.statusCode != 200) {
-      return null;
-    }
-    return XFile.fromData(data.bodyBytes, mimeType: mimeType);
   }
 
   void _onPostRefreshError(EventArgs e) {
