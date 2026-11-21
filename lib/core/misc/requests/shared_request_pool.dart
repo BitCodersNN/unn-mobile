@@ -44,28 +44,12 @@ class _SharedRequest<Value> {
   Future<Value> subscribe(CancelToken? cancelToken) {
     final result = Completer<Value>();
     StreamSubscription<DioException>? cancellation;
-    bool released = false;
     _consumers++;
-
-    void release() {
-      if (released) {
-        return;
-      }
-      released = true;
-      unawaited(cancellation?.cancel());
-      _consumers--;
-      if (_consumers == 0) {
-        onUnused();
-        if (!_completed) {
-          _token.cancel();
-        }
-      }
-    }
 
     cancellation = cancelToken?.whenCancel.asStream().listen((error) {
       if (!result.isCompleted) {
         result.completeError(error, error.stackTrace);
-        release();
+        _release(cancellation);
       }
     });
     unawaited(
@@ -74,18 +58,29 @@ class _SharedRequest<Value> {
           _completed = true;
           if (!result.isCompleted) {
             result.complete(value);
-            release();
+            _release(cancellation);
           }
         },
         onError: (Object error, StackTrace stack) {
           _completed = true;
           if (!result.isCompleted) {
             result.completeError(error, stack);
-            release();
+            _release(cancellation);
           }
         },
       ),
     );
     return result.future;
+  }
+
+  void _release(StreamSubscription<DioException>? cancellation) {
+    unawaited(cancellation?.cancel());
+    _consumers--;
+    if (_consumers == 0) {
+      onUnused();
+      if (!_completed) {
+        _token.cancel();
+      }
+    }
   }
 }
