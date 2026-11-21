@@ -118,6 +118,7 @@ class BlogPostData {
         ?.map((hash) => hash.toString())
         .toList(),
     _BlogPostDataJsonKeys.pinnedId: pinnedId,
+    _BlogPostDataJsonKeys.numberOfViews: numberOfViews,
     _BlogPostDataJsonKeys.keySigned: keySigned,
     _BlogPostDataJsonKeys.destinations: destinations
         ?.map((destination) => destination.toJson())
