@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2025 BitCodersNN
 
+import 'dart:io';
+
 import 'package:unn_mobile/core/misc/app_flavor.dart';
 import 'package:unn_mobile/core/models/changelog/changelog_release.dart';
 
@@ -221,5 +223,7 @@ const List<ChangelogRelease> changelogReleases = [
 ];
 
 final filteredChangelog = changelogReleases
-    .where((c) => AppFlavor.current().isTesting || !c.isTesting)
+    .where(
+      (c) => Platform.isIOS || AppFlavor.current().isTesting || !c.isTesting,
+    )
     .toList(growable: false);
