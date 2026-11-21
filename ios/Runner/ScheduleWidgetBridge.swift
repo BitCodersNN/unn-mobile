@@ -20,7 +20,7 @@ final class ScheduleWidgetBridge {
     }
 
     private func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
-        guard snapshotProvider.isAvailable else {
+        if ["read", "write", "clear"].contains(call.method) && !snapshotProvider.isAvailable {
             result(FlutterError(code: "APP_GROUP_UNAVAILABLE", message: "Schedule widget App Group is unavailable", details: nil))
             return
         }

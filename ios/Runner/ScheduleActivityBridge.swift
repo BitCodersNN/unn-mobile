@@ -21,6 +21,10 @@ final class ScheduleActivityBridge {
     private func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
         switch call.method {
         case "configure":
+            guard ScheduleSnapshotProvider().isAvailable else {
+                result(FlutterError(code: "APP_GROUP_UNAVAILABLE", message: "Schedule App Group is unavailable", details: nil))
+                return
+            }
             guard let value = call.arguments as? String, settingsProvider.writeJSON(value) else {
                 result(FlutterError(code: "INVALID_SETTINGS", message: "Invalid activity settings", details: nil))
                 return
@@ -117,6 +121,8 @@ enum ScheduleActivityCoordinator {
                 do {
                     try request(attributes, now: now)
                 } catch {
+                    let failure = error as NSError
+                    NSLog("Schedule activity request failed (%@, %ld)", failure.domain, failure.code)
                     break
                 }
                 requested[attributes.identifier] = attributes.displayUntil.timeIntervalSince1970

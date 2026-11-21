@@ -188,6 +188,20 @@ jobs:
           flutter doctor --verbose
           flutter build ipa --no-codesign
           
+      - name: Embed capabilities for sideload signing
+        run: |
+          APP_PATH="build/ios/archive/Runner.xcarchive/Products/Applications/Runner.app"
+          for FRAMEWORK in "$APP_PATH"/Frameworks/*; do
+            [ -e "$FRAMEWORK" ] || continue
+            codesign --force --sign - "$FRAMEWORK"
+          done
+          codesign --force --sign - --generate-entitlement-der \
+            --entitlements ios/ScheduleWidget/ScheduleWidget.entitlements \
+            "$APP_PATH/PlugIns/ScheduleWidgetExtension.appex"
+          codesign --force --sign - --generate-entitlement-der \
+            --entitlements ios/Runner/Runner.entitlements \
+            "$APP_PATH"
+
       - name: Pack IPA
         id: pack_ipa
         run: |

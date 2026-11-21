@@ -3,11 +3,21 @@
 
 import Foundation
 
+enum ScheduleSnapshotReadError {
+    case storageUnavailable
+    case missing
+    case invalid
+}
+
 final class ScheduleSnapshotProvider {
     private static let key = "schedule_widget_data"
     private let defaults: UserDefaults?
 
-    init(defaults: UserDefaults? = UserDefaults(suiteName: ScheduleConstants.appGroup)) {
+    convenience init() {
+        self.init(defaults: ScheduleAppGroup.resolve().flatMap { UserDefaults(suiteName: $0) })
+    }
+
+    init(defaults: UserDefaults?) {
         self.defaults = defaults
     }
 
@@ -18,7 +28,14 @@ final class ScheduleSnapshotProvider {
     }
 
     func read() -> ScheduleSnapshot? {
-        readJSON().flatMap(ScheduleSnapshot.decode)
+        readResult().data
+    }
+
+    func readResult() -> (data: ScheduleSnapshot?, error: ScheduleSnapshotReadError?) {
+        guard isAvailable else { return (nil, .storageUnavailable) }
+        guard let json = readJSON() else { return (nil, .missing) }
+        guard let data = ScheduleSnapshot.decode(json) else { return (nil, .invalid) }
+        return (data, nil)
     }
 
     func writeJSON(_ value: String) -> Bool {
