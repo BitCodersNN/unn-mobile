@@ -178,6 +178,7 @@ class _AuthPageState extends State<AuthPage> {
                     child: SvgPicture.asset(
                       _logoAssetPath,
                       fit: BoxFit.contain,
+                      colorMapper: _AuthLogoColorMapper(theme.colorScheme),
                     ),
                   ),
                 ),
@@ -413,4 +414,42 @@ class _AuthPageState extends State<AuthPage> {
       builder: (context) => const ChangelogDialog(),
     );
   }
+}
+
+class _AuthLogoColorMapper extends ColorMapper {
+  final ColorScheme colors;
+
+  const _AuthLogoColorMapper(this.colors);
+
+  Color _accentTint(double amount) =>
+      Color.lerp(colors.surfaceContainerLowest, colors.primary, amount)!;
+
+  @override
+  Color substitute(
+    String? id,
+    String elementName,
+    String attributeName,
+    Color color,
+  ) => switch (color.toARGB32()) {
+    0xFF1D60AD => colors.primary,
+    0xFF61A9FF =>
+      colors.brightness == Brightness.dark
+          ? colors.onPrimary
+          : colors.primaryContainer,
+    0xFF283252 => colors.onSurface,
+    0xFFA8BAE0 => _accentTint(0.36),
+    0xFFC6D3ED => _accentTint(0.23),
+    0xFFE5EAF2 => _accentTint(0.10),
+    0xFFF2F7FC => colors.surfaceContainerLow,
+    0xFFF9F9F9 => colors.onPrimary,
+    0xFFFFFFFF => colors.surfaceBright,
+    _ => color,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      other is _AuthLogoColorMapper && other.colors == colors;
+
+  @override
+  int get hashCode => colors.hashCode;
 }

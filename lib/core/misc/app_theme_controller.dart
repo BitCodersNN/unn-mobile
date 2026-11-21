@@ -10,7 +10,7 @@ import 'package:unn_mobile/core/providers/interfaces/common/app_theme_provider.d
 class AppThemeController extends ChangeNotifier {
   final AppThemeProvider _provider;
   final _mode = _ThemePreference(AppThemeMode.system);
-  final _lightTheme = _ThemePreference(AppLightTheme.classic);
+  final _lightTheme = _ThemePreference(AppLightTheme.green);
   final _darkTheme = _ThemePreference(AppDarkTheme.green);
 
   AppThemeController(this._provider);

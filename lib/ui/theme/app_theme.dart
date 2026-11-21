@@ -9,20 +9,39 @@ import 'package:unn_mobile/ui/theme/theme_palette.dart';
 import 'package:unn_mobile/ui/unn_mobile_colors.dart';
 
 abstract final class AppTheme {
-  static final ThemeData classicLight = _build(
+  static final ThemeData greenLight = _build(
     ColorScheme.fromSeed(seedColor: const Color(0xFF00BBB0)),
     UnnMobileColors.light,
+    snackBarActionColor: const Color(0xFF00BBB0),
   );
 
-  static final ColorScheme _darkBaseColors =
+  static final ThemeData blueLight = _build(
+    ColorScheme.fromSeed(seedColor: const Color(0xFF0969DA)).copyWith(
+      primary: const Color(0xFF0969DA),
+      onPrimary: Colors.white,
+      primaryContainer: const Color(0xFFDDF4FF),
+      onPrimaryContainer: const Color(0xFF0550AE),
+      surface: Colors.white,
+      onSurface: const Color(0xFF1F2328),
+      onSurfaceVariant: const Color(0xFF59636E),
+      surfaceBright: Colors.white,
+      surfaceDim: const Color(0xFFD1D9E0),
+      surfaceContainerLowest: Colors.white,
+      surfaceContainerLow: const Color(0xFFF6F8FA),
+      surfaceContainer: const Color(0xFFF0F3F6),
+      surfaceContainerHigh: const Color(0xFFEFF2F5),
+      surfaceContainerHighest: const Color(0xFFE8EDF2),
+      outline: const Color(0xFF818B98),
+      outlineVariant: const Color(0xFFD1D9E0),
+    ),
+    UnnMobileColors.blueLight,
+  );
+
+  static ColorScheme _darkColors(Color seed) =>
       ColorScheme.fromSeed(
-        seedColor: const Color(0xFF79D7CA),
+        seedColor: seed,
         brightness: Brightness.dark,
       ).copyWith(
-        primary: const Color(0xFF79D7CA),
-        onPrimary: const Color(0xFF003832),
-        primaryContainer: const Color(0xFF244E47),
-        onPrimaryContainer: const Color(0xFFC0EEE3),
         error: const Color(0xFFF2B8AD),
         onError: const Color(0xFF601410),
         errorContainer: const Color(0xFF6F2923),
@@ -30,7 +49,11 @@ abstract final class AppTheme {
       );
 
   static final ThemeData darkGreen = _build(
-    _darkBaseColors.copyWith(
+    _darkColors(const Color(0xFF79D7CA)).copyWith(
+      primary: const Color(0xFF79D7CA),
+      onPrimary: const Color(0xFF003832),
+      primaryContainer: const Color(0xFF244E47),
+      onPrimaryContainer: const Color(0xFFC0EEE3),
       surface: const Color(0xFF101D1B),
       onSurface: const Color(0xFFDEEDE8),
       onSurfaceVariant: const Color(0xFFAFC5BE),
@@ -48,7 +71,11 @@ abstract final class AppTheme {
   );
 
   static final ThemeData darkGraphite = _build(
-    _darkBaseColors.copyWith(
+    _darkColors(const Color(0xFFC3B2EF)).copyWith(
+      primary: const Color(0xFFC3B2EF),
+      onPrimary: const Color(0xFF33244D),
+      primaryContainer: const Color(0xFF44365C),
+      onPrimaryContainer: const Color(0xFFECE2FF),
       surface: const Color(0xFF15151E),
       onSurface: const Color(0xFFE6E5EF),
       onSurfaceVariant: const Color(0xFFC1BECE),
@@ -68,9 +95,14 @@ abstract final class AppTheme {
   static final List<ThemePalette<AppLightTheme>> lightPalettes =
       List.unmodifiable([
         ThemePalette(
-          value: AppLightTheme.classic,
-          label: 'Классическая',
-          theme: classicLight,
+          value: AppLightTheme.green,
+          label: 'Зелёная',
+          theme: greenLight,
+        ),
+        ThemePalette(
+          value: AppLightTheme.blue,
+          label: 'Бело-синяя',
+          theme: blueLight,
         ),
       ]);
 
@@ -99,7 +131,11 @@ abstract final class AppTheme {
     List<ThemePalette<T>> palettes,
   ) => palettes.singleWhere((palette) => palette.value == value).theme;
 
-  static ThemeData _build(ColorScheme colors, UnnMobileColors extraColors) {
+  static ThemeData _build(
+    ColorScheme colors,
+    UnnMobileColors extraColors, {
+    Color? snackBarActionColor,
+  }) {
     final isDark = colors.brightness == Brightness.dark;
     return ThemeData(
       useMaterial3: true,
@@ -169,7 +205,9 @@ abstract final class AppTheme {
           color: isDark ? colors.onSurface : const Color(0xFFF0F0F0),
           fontSize: 16,
         ),
-        actionTextColor: isDark ? colors.primary : const Color(0xFF00BBB0),
+        actionTextColor:
+            snackBarActionColor ??
+            (isDark ? colors.primary : colors.inversePrimary),
       ),
       extensions: [extraColors],
     );

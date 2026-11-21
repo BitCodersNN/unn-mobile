@@ -23,7 +23,7 @@ class _DonationsScreenViewState extends State<DonationsScreenView> {
   Uri? _pageUri;
   bool _pageLoaded = false;
   String _pageTheme = 'light';
-  String _pagePalette = 'classic';
+  late String _pagePalette;
   Map<String, String> _pageColors = {};
 
   @override

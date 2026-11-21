@@ -32,7 +32,7 @@ class AppThemeProviderImpl implements AppThemeProvider {
   Future<AppLightTheme> readLightTheme() => _readEnum(
     AppSettingsKeys.lightTheme,
     AppLightTheme.values,
-    AppLightTheme.classic,
+    AppLightTheme.green,
   );
 
   Future<T> _readEnum<T extends Enum>(
