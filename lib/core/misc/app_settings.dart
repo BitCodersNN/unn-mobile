@@ -9,10 +9,19 @@ import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/constants/string_keys/app_settings_keys.dart';
 import 'package:unn_mobile/core/misc/tab_bar_preferences.dart';
 import 'package:unn_mobile/core/models/schedule_activity/schedule_activity_settings.dart';
+import 'package:unn_mobile/core/providers/interfaces/main_page/menu_order_provider.dart';
 import 'package:unn_mobile/core/providers/interfaces/schedule_activity/schedule_activity_settings_provider.dart';
 import 'package:unn_mobile/core/services/interfaces/common/storage_service.dart';
 
 class AppSettings {
+  static final moreMenuPaths = ValueNotifier<List<String>>(const []);
+
+  static Future<void> updateMoreMenuPaths(List<String> paths) {
+    final snapshot = List<String>.unmodifiable(paths);
+    moreMenuPaths.value = snapshot;
+    return Injector.appInstance.get<MenuOrderProvider>().saveData(snapshot);
+  }
+
   static final scheduleActivity = ValueNotifier<ScheduleActivitySettings>(
     const ScheduleActivitySettings(),
   );
@@ -20,7 +29,7 @@ class AppSettings {
   static Future<void> updateScheduleActivity(
     ScheduleActivitySettings settings,
   ) async {
-    await Injector.appInstance.get<ScheduleActivitySettingsProvider>().save(
+    await Injector.appInstance.get<ScheduleActivitySettingsProvider>().saveData(
       settings,
     );
     scheduleActivity.value = settings;
@@ -49,9 +58,12 @@ class AppSettings {
   static Event optionsSaved = Event('optionsSaved');
 
   static Future<void> load() async {
+    moreMenuPaths.value = await Injector.appInstance
+        .get<MenuOrderProvider>()
+        .getData();
     scheduleActivity.value = await Injector.appInstance
         .get<ScheduleActivitySettingsProvider>()
-        .load();
+        .getData();
     vibrationEnabled = await _readValue(
       AppSettingsKeys.vibrationEnabled,
       defaultValue: true,

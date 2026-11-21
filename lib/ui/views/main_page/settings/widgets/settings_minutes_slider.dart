@@ -2,6 +2,7 @@
 // Copyright 2026 BitCodersNN
 
 import 'package:flutter/material.dart';
+import 'package:unn_mobile/ui/views/main_page/settings/widgets/settings_icon.dart';
 
 class SettingsMinutesSlider extends StatefulWidget {
   final IconData icon;
@@ -48,7 +49,7 @@ class _SettingsMinutesSliderState extends State<SettingsMinutesSlider> {
         children: [
           Row(
             children: [
-              Icon(widget.icon, color: theme.colorScheme.onSurfaceVariant),
+              SettingsIcon(icon: widget.icon),
               const SizedBox(width: 12),
               Expanded(
                 child: Text(widget.title, style: theme.textTheme.bodyLarge),

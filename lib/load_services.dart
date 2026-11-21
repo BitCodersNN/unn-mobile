@@ -39,6 +39,7 @@ import 'package:unn_mobile/core/providers/implementations/feed/blog_post_provide
 import 'package:unn_mobile/core/providers/implementations/feed/last_feed_load_date_time_provider_impl.dart';
 import 'package:unn_mobile/core/providers/implementations/git/git_resource_cache_provider_impl.dart';
 import 'package:unn_mobile/core/providers/implementations/grade_book/mark_by_subject_provider_impl.dart';
+import 'package:unn_mobile/core/providers/implementations/main_page/menu_order_provider_impl.dart';
 import 'package:unn_mobile/core/providers/implementations/profile/user_data_provider_impl.dart';
 import 'package:unn_mobile/core/providers/implementations/schedule/offline_schedule_provider_impl.dart';
 import 'package:unn_mobile/core/providers/implementations/schedule_activity/schedule_activity_settings_provider_impl.dart';
@@ -48,6 +49,7 @@ import 'package:unn_mobile/core/providers/interfaces/common/message_ignored_keys
 import 'package:unn_mobile/core/providers/interfaces/feed/blog_post_provider.dart';
 import 'package:unn_mobile/core/providers/interfaces/feed/last_feed_load_date_time_provider.dart';
 import 'package:unn_mobile/core/providers/interfaces/grade_book/mark_by_subject_provider.dart';
+import 'package:unn_mobile/core/providers/interfaces/main_page/menu_order_provider.dart';
 import 'package:unn_mobile/core/providers/interfaces/profile/user_data_provider.dart';
 import 'package:unn_mobile/core/providers/interfaces/schedule/offline_schedule_provider.dart';
 import 'package:unn_mobile/core/providers/interfaces/schedule_activity/schedule_activity_settings_provider.dart';
@@ -87,6 +89,7 @@ import 'package:unn_mobile/core/services/implementations/feed/blog_post_receiver
 import 'package:unn_mobile/core/services/implementations/feed/blog_post_receivers/blog_post_pagination_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/feed/blog_post_receivers/refresh_blog_post_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/feed/blog_post_search_service_impl.dart';
+import 'package:unn_mobile/core/services/implementations/feed/blog_post_viewers_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/feed/featured_blog_post_action/important_blog_post_acknowledgement_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/feed/featured_blog_post_action/important_blog_post_users_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/feed/featured_blog_post_action/pinning_blog_post_service_impl.dart';
@@ -141,6 +144,7 @@ import 'package:unn_mobile/core/services/interfaces/feed/blog_post_receivers/blo
 import 'package:unn_mobile/core/services/interfaces/feed/blog_post_receivers/blog_post_pagination_service.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/blog_post_receivers/refresh_blog_post_service.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/blog_post_search_service.dart';
+import 'package:unn_mobile/core/services/interfaces/feed/blog_post_viewers_service.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/featured_blog_post_action/important_blog_post_acknowledgement_service.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/featured_blog_post_action/important_blog_post_users_service.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/featured_blog_post_action/pinning_blog_post_service.dart';
@@ -246,6 +250,9 @@ void registerDependencies() {
       }
       return ConsoleLoggerServiceImpl();
     })
+    ..registerSingleton<MenuOrderProvider>(
+      () => MenuOrderProviderImpl(get<StorageService>()),
+    )
     ..registerSingleton<OnlineStatusData>(OnlineStatusData.new)
     ..registerSingleton<StorageService>(StorageServiceImpl.new)
     ..registerSingleton<AppOpenTracker>(
@@ -485,6 +492,12 @@ void registerDependencies() {
     )
     ..registerDependency<ImportantBlogPostAcknowledgementService>(
       () => ImportantBlogPostAcknowledgementServiceImpl(
+        get<LoggerService>(),
+        getApiHelper(HostType.unnPortal),
+      ),
+    )
+    ..registerDependency<BlogPostViewersService>(
+      () => BlogPostViewersServiceImpl(
         get<LoggerService>(),
         getApiHelper(HostType.unnPortal),
       ),
