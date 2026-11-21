@@ -723,7 +723,6 @@ void registerDependencies() {
         get<GitResourceRepository<LoadingPageCatalog>>(),
         get<LogoDownloaderService>(),
         get<CurrentUserSyncStorage>(),
-        get<StreamAuthService>(),
         get<GitResourceRepository<BirthdayGreetingCatalog>>(),
       ),
     )

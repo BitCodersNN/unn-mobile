@@ -15,7 +15,6 @@ import 'package:unn_mobile/core/models/loading_page/loading_page_catalog.dart';
 import 'package:unn_mobile/core/models/loading_page/loading_page_data.dart';
 import 'package:unn_mobile/core/repositories/interfaces/git/git_resource_repository.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation/authorisation_refresh_service.dart';
-import 'package:unn_mobile/core/services/interfaces/authorisation/stream_auth_service.dart';
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
 import 'package:unn_mobile/core/services/interfaces/loading_page/logo_downloader_service.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
@@ -27,7 +26,6 @@ class LoadingPageViewModel extends BaseViewModel {
   final GitResourceRepository<LoadingPageCatalog> _loadingPages;
   final LogoDownloaderService _logos;
   final CurrentUserSyncStorage _typeOfCurrentUser;
-  final StreamAuthService _streamAuthService;
   final GitResourceRepository<BirthdayGreetingCatalog> _birthdayCatalog;
 
   LoadingPageModel? _actualLoadingPage;
@@ -39,7 +37,6 @@ class LoadingPageViewModel extends BaseViewModel {
     this._loadingPages,
     this._logos,
     this._typeOfCurrentUser,
-    this._streamAuthService,
     this._birthdayCatalog,
   );
 
@@ -117,10 +114,7 @@ class LoadingPageViewModel extends BaseViewModel {
     };
 
     if (typeScreen == _TypeScreen.mainScreen) {
-      await Future.wait([
-        _initUserData(),
-        _streamAuthService.getStreamAuthParams(),
-      ]);
+      await _initUserData();
     }
 
     return typeScreen;

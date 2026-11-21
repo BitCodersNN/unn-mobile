@@ -37,6 +37,7 @@ class ScheduleTabViewModel extends BaseViewModel {
 
   List<List<Subject>>? schedule;
   WeekRange? scheduleWeek;
+  String? _scheduleId;
 
   ScheduleFilter? searchFilter;
 
@@ -167,20 +168,21 @@ class ScheduleTabViewModel extends BaseViewModel {
         return;
       }
 
-      final foundSchedule =
-          await _scheduleService.getCurrentUserSchedule(
-            _userStorage.currentUserData!.login!,
-            week.start,
-            cancelToken: cancelToken,
-          ) ??
-          [];
+      final foundSchedule = await _scheduleService.getCurrentUserSchedule(
+        _userStorage.currentUserData!.login!,
+        week.start,
+        cancelToken: cancelToken,
+      );
       if (disposed ||
+          foundSchedule == null ||
           cancelToken.isCancelled ||
           week.start != selectedWeek.start ||
           selectedId != null ||
           !AppSettings.useRaspSchedule) {
         return;
       }
+      _scheduleId = null;
+      offlineSchedule = OfflineSchedule(week, foundSchedule, useRasp: true);
       schedule = partitionSchedule(foundSchedule);
       scheduleWeek = week;
       return;
@@ -191,7 +193,7 @@ class ScheduleTabViewModel extends BaseViewModel {
     }
     final foundSchedule = await tryLoginAndRetrieveData<List<Subject>>(
       () => _scheduleService.getSchedule(filter, cancelToken: cancelToken),
-      () => scheduleWeek?.start == week.start
+      () => _scheduleId == filter.id && scheduleWeek?.start == week.start
           ? schedule?.expand((subject) => subject).toList()
           : null,
     );
@@ -209,6 +211,7 @@ class ScheduleTabViewModel extends BaseViewModel {
     if (defaultId != null && filter.id == defaultId) {
       offlineSchedule = OfflineSchedule(week, foundSchedule);
     }
+    _scheduleId = filter.id;
     schedule = partitionSchedule(foundSchedule);
     scheduleWeek = week;
   }
@@ -250,6 +253,7 @@ class ScheduleTabViewModel extends BaseViewModel {
           isIdTypeMatchingUser(_userType, _userStorage.currentUserData);
       if (useRasp) {
         defaultId = '';
+        needsDefaultIdRefresh = true;
       } else if (needsDefaultIdRefresh) {
         await refreshDefaultId();
       }

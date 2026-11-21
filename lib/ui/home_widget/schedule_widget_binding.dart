@@ -22,6 +22,8 @@ class ScheduleWidgetBinding with WidgetsBindingObserver {
   final VoidCallback _onOpen;
   bool _pendingOpen = false;
   bool _disposed = false;
+  bool _mainPageVisible = false;
+  bool _refreshScheduled = false;
   late bool _useRasp;
 
   ScheduleWidgetBinding(
@@ -37,12 +39,11 @@ class ScheduleWidgetBinding with WidgetsBindingObserver {
     _useRasp = AppSettings.useRaspSchedule;
     WidgetsBinding.instance.addObserver(this);
     _user.addListener(_refresh);
-    _router.router.routerDelegate.addListener(_openIfReady);
+    _router.router.routerDelegate.addListener(_onRouteChanged);
     AppSettings.optionsSaved.subscribe(_onSettingsChanged);
     _platform.setOpenHandler(_requestOpen);
     unawaited(_consumeLaunch(initialLaunch));
-    unawaited(_configureActivity());
-    _refresh();
+    _onRouteChanged();
   }
 
   Future<void> _configureActivity() =>
@@ -58,6 +59,17 @@ class ScheduleWidgetBinding with WidgetsBindingObserver {
     _pendingOpen = true;
     _router.requestDestination(MainPagePaths.schedule);
     _openIfReady();
+  }
+
+  void _onRouteChanged() {
+    final uri = _router.router.routerDelegate.currentConfiguration.uri;
+    final mainPageVisible = mainPageDestinationPath(uri) != null;
+    final enteredMainPage = mainPageVisible && !_mainPageVisible;
+    _mainPageVisible = mainPageVisible;
+    _openIfReady();
+    if (enteredMainPage) {
+      _refresh();
+    }
   }
 
   void _openIfReady() {
@@ -81,23 +93,35 @@ class ScheduleWidgetBinding with WidgetsBindingObserver {
   }
 
   void _refresh() {
-    if (_user.currentUserData != null) {
-      unawaited(_service.refresh());
+    if (_disposed ||
+        !_mainPageVisible ||
+        _refreshScheduled ||
+        _user.currentUserData == null) {
+      return;
     }
+    _refreshScheduled = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _refreshScheduled = false;
+      if (!_disposed && _mainPageVisible && _user.currentUserData != null) {
+        unawaited(_configureActivity());
+        unawaited(_service.refresh());
+      }
+    });
+    WidgetsBinding.instance.ensureVisualUpdate();
   }
 
   void _onSettingsChanged(dynamic _) {
-    unawaited(_configureActivity());
     if (_useRasp != AppSettings.useRaspSchedule) {
       _useRasp = AppSettings.useRaspSchedule;
       _refresh();
+    } else {
+      unawaited(_configureActivity());
     }
   }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
-      unawaited(_configureActivity());
       unawaited(_consumeLaunch());
       _refresh();
     }
@@ -107,7 +131,7 @@ class ScheduleWidgetBinding with WidgetsBindingObserver {
     _disposed = true;
     WidgetsBinding.instance.removeObserver(this);
     _user.removeListener(_refresh);
-    _router.router.routerDelegate.removeListener(_openIfReady);
+    _router.router.routerDelegate.removeListener(_onRouteChanged);
     AppSettings.optionsSaved.unsubscribe(_onSettingsChanged);
     _platform.setOpenHandler(null);
   }
