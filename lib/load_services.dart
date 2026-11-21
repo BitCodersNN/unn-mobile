@@ -221,6 +221,7 @@ void registerDependencies() {
     required String cacheKey,
     required JsonMap Function(T data) toJson,
     GitResourceSource<T>? source,
+    bool Function(T)? needsRefresh,
   }) {
     injector.registerSingleton<GitResourceRepository<T>>(
       () => GitResourceRepositoryImpl(
@@ -239,6 +240,7 @@ void registerDependencies() {
             ),
         get<LastCommitShaService>(),
         get<LoggerService>(),
+        needsRefresh: needsRefresh,
       ),
     );
   }
@@ -826,6 +828,7 @@ void registerDependencies() {
     LoadingPageCatalog.fromJson,
     cacheKey: GitResourceCacheKeys.loadingPages,
     toJson: (catalog) => catalog.toJson(),
+    needsRefresh: (catalog) => !catalog.isCurrentFormat,
     source: LoadingPageResourceSource(
       get<GitConfigService>(),
       get<LogoDownloaderService>(),

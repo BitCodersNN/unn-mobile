@@ -40,8 +40,8 @@ class LoadingPageViewModel extends BaseViewModel {
     this._birthdayCatalog,
   );
 
-  LoadingPageModel? get defaultPageData => LoadingPageModel(imagePath: '');
-  LoadingPageModel? get loadingPageData => _actualLoadingPage;
+  LoadingPageModel get loadingPageData =>
+      _actualLoadingPage ?? const LoadingPageModel();
 
   File? get logoImage => _logoImage;
 
@@ -69,20 +69,27 @@ class LoadingPageViewModel extends BaseViewModel {
     }
   }
 
-  Future<void> initLoadingPages() async {
-    final resource = await _loadingPages.get();
-    final page = resource?.data.pageForDate(DateTime.now());
-    if (resource == null || page == null) {
-      _actualLoadingPage = null;
-      _logoImage = null;
-      return;
-    }
-    final logo = await _logos.downloadFile(
-      page.imagePath,
-      revision: resource.sha ?? GitPath.branch,
+  Future<void> initLoadingPages({
+    required Brightness brightness,
+    required String palette,
+  }) async {
+    final cached = await _loadingPages.get();
+    final resource = cached?.data.isCurrentFormat == false
+        ? await _loadingPages.refresh() ?? cached
+        : cached;
+    final page = resource?.data.pageForDate(
+      DateTime.now(),
+      brightness: brightness,
+      palette: palette,
     );
     _actualLoadingPage = page;
-    _logoImage = logo;
+    final logoPath = page?.imagePath;
+    _logoImage = logoPath == null
+        ? null
+        : await _logos.downloadFile(
+            logoPath,
+            revision: resource?.sha ?? GitPath.branch,
+          );
   }
 
   void _goToScreen(BuildContext context, _TypeScreen typeScreen) {

@@ -5,6 +5,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
+import 'package:unn_mobile/core/misc/app_theme_controller.dart';
 import 'package:unn_mobile/core/viewmodels/loading_page/loading_page_view_model.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
 
@@ -20,36 +22,46 @@ class _LoadingPageState extends State<LoadingPage> {
   final Completer<void> _logoFrame = Completer<void>();
 
   @override
-  Widget build(BuildContext context) => BaseView<LoadingPageViewModel>(
-    builder: (context, model, child) => FutureBuilder<void>(
-      future: _loadingPages,
-      builder: (context, snapshot) {
-        final theme = Theme.of(context);
-        final backgroundColor = theme.colorScheme.surfaceContainerLowest;
-        final overlay =
-            ThemeData.estimateBrightnessForColor(backgroundColor) ==
-                Brightness.dark
-            ? SystemUiOverlayStyle.light
-            : SystemUiOverlayStyle.dark;
-        return AnnotatedRegion<SystemUiOverlayStyle>(
-          value: SystemUiOverlayStyle(
-            statusBarColor: backgroundColor,
-            statusBarBrightness: overlay.statusBarBrightness,
-            statusBarIconBrightness: overlay.statusBarIconBrightness,
-            systemStatusBarContrastEnforced: false,
-          ),
-          child: Scaffold(
-            backgroundColor: backgroundColor,
-            body: SafeArea(child: _buildContent(context, model)),
-          ),
+  Widget build(BuildContext context) {
+    final brightness = Theme.of(context).brightness;
+    final themeController = context.read<AppThemeController>();
+    final palette = brightness == Brightness.dark
+        ? themeController.darkTheme.name
+        : themeController.lightTheme.name;
+    return BaseView<LoadingPageViewModel>(
+      builder: (context, model, child) => FutureBuilder<void>(
+        future: _loadingPages,
+        builder: (context, snapshot) {
+          final theme = Theme.of(context);
+          final backgroundColor = theme.colorScheme.surfaceContainerLowest;
+          final overlay =
+              ThemeData.estimateBrightnessForColor(backgroundColor) ==
+                  Brightness.dark
+              ? SystemUiOverlayStyle.light
+              : SystemUiOverlayStyle.dark;
+          return AnnotatedRegion<SystemUiOverlayStyle>(
+            value: SystemUiOverlayStyle(
+              statusBarColor: backgroundColor,
+              statusBarBrightness: overlay.statusBarBrightness,
+              statusBarIconBrightness: overlay.statusBarIconBrightness,
+              systemStatusBarContrastEnforced: false,
+            ),
+            child: Scaffold(
+              backgroundColor: backgroundColor,
+              body: SafeArea(child: _buildContent(context, model)),
+            ),
+          );
+        },
+      ),
+      onModelReady: (model) {
+        _loadingPages = model.initLoadingPages(
+          brightness: brightness,
+          palette: palette,
         );
+        model.decideRoute(context, loadingPageReady: _waitForLogo(model));
       },
-    ),
-    onModelReady: (model) {
-      _loadingPages = model.initLoadingPages();
-      model.decideRoute(context, loadingPageReady: _waitForLogo(model));
-    },
-  );
+    );
+  }
 
   Future<void> _waitForLogo(LoadingPageViewModel model) async {
     await _loadingPages;
@@ -67,7 +79,7 @@ class _LoadingPageState extends State<LoadingPage> {
   }
 
   Widget _buildContent(BuildContext context, LoadingPageViewModel model) {
-    final page = model.loadingPageData ?? model.defaultPageData;
+    final page = model.loadingPageData;
     return LayoutBuilder(
       builder: (context, constraints) => Center(
         child: ConstrainedBox(
@@ -88,11 +100,7 @@ class _LoadingPageState extends State<LoadingPage> {
                   flex: 0,
                   child: FittedBox(
                     fit: BoxFit.scaleDown,
-                    child: _text(
-                      context,
-                      page?.title ?? '',
-                      page?.titleStyle ?? const TextStyle(),
-                    ),
+                    child: _text(context, page.title, page.titleStyle),
                   ),
                 ),
                 if (model.logoImage != null) ...[
@@ -122,8 +130,8 @@ class _LoadingPageState extends State<LoadingPage> {
                     ),
                   ),
                 ],
-                if (page?.description != null &&
-                    page?.descriptionStyle != null) ...[
+                if (page.description != null &&
+                    page.descriptionStyle != null) ...[
                   const SizedBox(height: 20),
                   Flexible(
                     flex: 0,
@@ -135,7 +143,7 @@ class _LoadingPageState extends State<LoadingPage> {
                         ),
                         child: _text(
                           context,
-                          page!.description!,
+                          page.description!,
                           page.descriptionStyle!,
                           isDescription: true,
                         ),
@@ -164,11 +172,7 @@ class _LoadingPageState extends State<LoadingPage> {
         : theme.colorScheme.onSurface;
     return Text(
       title,
-      style: textStyle.copyWith(
-        color: theme.brightness == Brightness.dark
-            ? textColor
-            : textStyle.color ?? textColor,
-      ),
+      style: textStyle.copyWith(color: textStyle.color ?? textColor),
       textAlign: textAlign,
       maxLines: 3,
       overflow: TextOverflow.ellipsis,
