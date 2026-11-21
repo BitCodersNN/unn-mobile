@@ -6,6 +6,7 @@ class AppSettingsKeys {
   static const String darkTheme = 'darkTheme';
   static const String lightTheme = 'lightTheme';
   static const String tabBarPaths = 'tabBarPaths';
+  static const String moreMenuPaths = 'moreMenuPaths';
   static const String vibrationEnabled = 'vibrationEnabled';
   static const String analyticsEnabled = 'analyticsEnabled';
   static const String reverseComments = 'reverseComments';

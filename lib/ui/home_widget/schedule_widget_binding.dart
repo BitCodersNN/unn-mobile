@@ -6,6 +6,7 @@ import 'dart:async';
 import 'package:flutter/widgets.dart';
 import 'package:unn_mobile/core/constants/main_page_paths.dart';
 import 'package:unn_mobile/core/misc/app_settings.dart';
+import 'package:unn_mobile/core/misc/schedule_activity/schedule_activity_platform.dart';
 import 'package:unn_mobile/core/misc/user/current_user_sync_storage.dart';
 import 'package:unn_mobile/core/services/interfaces/schedule_widget/schedule_widget_platform.dart';
 import 'package:unn_mobile/core/services/interfaces/schedule_widget/schedule_widget_service.dart';
@@ -14,12 +15,15 @@ import 'package:unn_mobile/ui/router.dart';
 
 class ScheduleWidgetBinding with WidgetsBindingObserver {
   final ScheduleWidgetService _service;
+  final ScheduleActivityPlatform _activityPlatform;
   final ScheduleWidgetPlatform _platform;
   final CurrentUserSyncStorage _user;
   final AppRouter _router;
   final VoidCallback _onOpen;
   bool _pendingOpen = false;
   bool _disposed = false;
+  bool _mainPageVisible = false;
+  bool _refreshScheduled = false;
   late bool _useRasp;
 
   ScheduleWidgetBinding(
@@ -28,18 +32,22 @@ class ScheduleWidgetBinding with WidgetsBindingObserver {
     this._user,
     this._router,
     this._onOpen,
+    this._activityPlatform,
   );
 
   void start({Future<bool>? initialLaunch}) {
     _useRasp = AppSettings.useRaspSchedule;
     WidgetsBinding.instance.addObserver(this);
     _user.addListener(_refresh);
-    _router.router.routerDelegate.addListener(_openIfReady);
+    _router.router.routerDelegate.addListener(_onRouteChanged);
     AppSettings.optionsSaved.subscribe(_onSettingsChanged);
     _platform.setOpenHandler(_requestOpen);
     unawaited(_consumeLaunch(initialLaunch));
-    _refresh();
+    _onRouteChanged();
   }
+
+  Future<void> _configureActivity() =>
+      _activityPlatform.configure(AppSettings.scheduleActivity.value);
 
   Future<void> _consumeLaunch([Future<bool>? launch]) async {
     if (await (launch ?? _platform.consumeLaunch()) && !_disposed) {
@@ -51,6 +59,17 @@ class ScheduleWidgetBinding with WidgetsBindingObserver {
     _pendingOpen = true;
     _router.requestDestination(MainPagePaths.schedule);
     _openIfReady();
+  }
+
+  void _onRouteChanged() {
+    final uri = _router.router.routerDelegate.currentConfiguration.uri;
+    final mainPageVisible = mainPageDestinationPath(uri) != null;
+    final enteredMainPage = mainPageVisible && !_mainPageVisible;
+    _mainPageVisible = mainPageVisible;
+    _openIfReady();
+    if (enteredMainPage) {
+      _refresh();
+    }
   }
 
   void _openIfReady() {
@@ -74,15 +93,29 @@ class ScheduleWidgetBinding with WidgetsBindingObserver {
   }
 
   void _refresh() {
-    if (_user.currentUserData != null) {
-      unawaited(_service.refresh());
+    if (_disposed ||
+        !_mainPageVisible ||
+        _refreshScheduled ||
+        _user.currentUserData == null) {
+      return;
     }
+    _refreshScheduled = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _refreshScheduled = false;
+      if (!_disposed && _mainPageVisible && _user.currentUserData != null) {
+        unawaited(_configureActivity());
+        unawaited(_service.refresh());
+      }
+    });
+    WidgetsBinding.instance.ensureVisualUpdate();
   }
 
   void _onSettingsChanged(dynamic _) {
     if (_useRasp != AppSettings.useRaspSchedule) {
       _useRasp = AppSettings.useRaspSchedule;
       _refresh();
+    } else {
+      unawaited(_configureActivity());
     }
   }
 
@@ -98,7 +131,7 @@ class ScheduleWidgetBinding with WidgetsBindingObserver {
     _disposed = true;
     WidgetsBinding.instance.removeObserver(this);
     _user.removeListener(_refresh);
-    _router.router.routerDelegate.removeListener(_openIfReady);
+    _router.router.routerDelegate.removeListener(_onRouteChanged);
     AppSettings.optionsSaved.unsubscribe(_onSettingsChanged);
     _platform.setOpenHandler(null);
   }

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:unn_mobile/core/constants/date_pattern.dart';
 import 'package:unn_mobile/core/misc/date_time_utilities/date_time_extensions.dart';
 import 'package:unn_mobile/core/misc/date_time_utilities/date_time_parser.dart';
+import 'package:unn_mobile/core/misc/date_time_utilities/schedule_time.dart';
 import 'package:unn_mobile/core/misc/date_time_utilities/week_range.dart';
 import 'package:unn_mobile/core/misc/user/user_functions.dart';
 import 'package:unn_mobile/core/models/schedule/subject.dart';
@@ -227,7 +228,7 @@ class _ScheduleTabViewState extends State<ScheduleTabView> {
 
           final schedule = _displayedSchedule ?? <List<Subject>>[];
           final theme = Theme.of(context);
-          final now = DateTime.now();
+          final now = ScheduleTime.now();
 
           if (isSelectedWeek) {
             _maybeScrollToToday(model);

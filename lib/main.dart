@@ -14,6 +14,7 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:unn_mobile/app.dart';
 import 'package:unn_mobile/core/misc/app_settings.dart';
 import 'package:unn_mobile/core/misc/app_theme_controller.dart';
+import 'package:unn_mobile/core/misc/schedule_activity/schedule_activity_platform.dart';
 import 'package:unn_mobile/core/misc/user/current_user_sync_storage.dart';
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
 import 'package:unn_mobile/core/services/interfaces/schedule_widget/schedule_widget_platform.dart';
@@ -69,6 +70,12 @@ void main() async {
   }
 
   await initializeDateFormatting('ru_RU', null);
+  if (Platform.isIOS) {
+    await SystemChrome.setEnabledSystemUIMode(
+      SystemUiMode.manual,
+      overlays: SystemUiOverlay.values,
+    );
+  }
   runApp(
     UnnMobile(
       themeController: themeController,
@@ -78,6 +85,8 @@ void main() async {
       scheduleWidgetPlatform: Injector.appInstance
           .get<ScheduleWidgetPlatform>(),
       scheduleWidgetService: Injector.appInstance.get<ScheduleWidgetService>(),
+      scheduleActivityPlatform: Injector.appInstance
+          .get<ScheduleActivityPlatform>(),
     ),
   );
 }

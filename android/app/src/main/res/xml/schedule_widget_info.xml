@@ -11,4 +11,6 @@
     android:initialLayout="@layout/schedule_widget"
     android:previewLayout="@layout/schedule_widget"
     android:description="@string/schedule_widget_description"
+    android:configure="ru.bitcodersnn.unnstudenthub.schedulewidget.ScheduleWidgetConfigurationActivity"
+    android:widgetFeatures="reconfigurable|configuration_optional"
     android:widgetCategory="home_screen" />

@@ -6,14 +6,18 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/constants/main_page_paths.dart';
+import 'package:unn_mobile/core/misc/app_settings.dart';
 import 'package:unn_mobile/core/misc/birthday/birthday_greeting_manager.dart';
+import 'package:unn_mobile/core/misc/menu_order_preferences.dart';
 import 'package:unn_mobile/core/misc/user/current_user_sync_storage.dart';
+import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/common/profile_view_model.dart';
 import 'package:unn_mobile/ui/birthday/birthday_banner.dart';
 import 'package:unn_mobile/ui/builders/online_status_builder.dart';
 import 'package:unn_mobile/ui/router.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
 import 'package:unn_mobile/ui/views/main_page/main_page_route_data.dart';
+import 'package:unn_mobile/ui/views/main_page/menu/reorderable_menu_list.dart';
 import 'package:unn_mobile/ui/widgets/shimmer.dart';
 import 'package:unn_mobile/ui/widgets/shimmer_loading.dart';
 
@@ -34,83 +38,98 @@ class MainPageMenu extends StatelessWidget {
                 (route) => !route.isDisabled && (!route.onlineOnly || isOnline),
               )
               .toList(growable: false);
-          return SafeArea(
-            bottom: false,
-            child: ScrollConfiguration(
-              behavior: ScrollConfiguration.of(context)
-                  .copyWith(overscroll: false),
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.fromLTRB(16, 24, 16, 32),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Semantics(
-                      button: true,
-                      label: 'Открыть мой профиль',
-                      child: CupertinoButton(
-                        padding: EdgeInsets.zero,
-                        pressedOpacity: 0.75,
-                        onPressed: () => AppRouter.of(context).goToDestination(
-                          MainPagePaths.myProfile,
-                          initialLocation: true,
-                        ),
-                        child: _buildProfile(context),
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-                    ListenableBuilder(
-                      listenable: router.router.routeInformationProvider,
-                      builder: (context, _) => BirthdayBanner(
-                        userStorage: Injector.appInstance
-                            .get<CurrentUserSyncStorage>(),
-                        manager: Injector.appInstance
-                            .get<BirthdayGreetingManager>(),
-                        isActive:
-                            router
-                                .router
-                                .routeInformationProvider
-                                .value
-                                .uri
-                                .path ==
-                            router.locationFor(MainPagePaths.more),
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    Material(
-                      color: theme.colorScheme.surfaceContainerLow,
-                      borderRadius: BorderRadius.circular(24),
-                      clipBehavior: Clip.antiAlias,
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          for (
-                            int index = 0;
-                            index < routes.length;
-                            index++
-                          ) ...[
-                            if (index > 0)
-                              Divider(
-                                height: 1,
-                                thickness: 0.5,
-                                indent: 56,
-                                endIndent: 16,
-                                color: theme.colorScheme.outlineVariant
-                                    .withValues(alpha: 0.6),
-                              ),
-                            _buildDestination(context, routes[index]),
-                          ],
-                        ],
-                      ),
-                    ),
-                  ],
+          return ValueListenableBuilder<List<String>>(
+            valueListenable: AppSettings.moreMenuPaths,
+            builder: (context, savedPaths, _) {
+              final byPath = {
+                for (final route in routes) route.pagePath: route,
+              };
+              final ordered = MenuOrderPreferences.orderedPaths(
+                byPath.keys,
+                savedPaths,
+              ).map((path) => byPath[path]!).toList(growable: false);
+              return ReorderableMenuList(
+                routes: ordered,
+                header: _buildHeader(context, router),
+                itemBuilder: _buildDestination,
+                onReorder: (from, to) => _reorder(
+                  context,
+                  routes: ordered,
+                  available: configuration.destinations,
+                  from: from,
+                  to: to,
                 ),
-              ),
-            ),
+              );
+            },
           );
         },
       ),
     );
   }
+
+  Future<void> _reorder(
+    BuildContext context, {
+    required List<MainPageRouteData> routes,
+    required List<MainPageRouteData> available,
+    required int from,
+    required int to,
+  }) async {
+    if (from == to) {
+      return;
+    }
+    final paths = MenuOrderPreferences.reorder(
+      saved: AppSettings.moreMenuPaths.value,
+      available: available.map((route) => route.pagePath),
+      visible: routes.map((route) => route.pagePath).toList(),
+      from: from,
+      to: to,
+    );
+    try {
+      await AppSettings.updateMoreMenuPaths(paths);
+    } catch (error, stack) {
+      Injector.appInstance.get<LoggerService>().logError(error, stack);
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Не удалось сохранить порядок разделов'),
+          ),
+        );
+      }
+    }
+  }
+
+  Widget _buildHeader(BuildContext context, AppRouter router) => Padding(
+    padding: const EdgeInsets.only(bottom: 12),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Semantics(
+          button: true,
+          label: 'Открыть мой профиль',
+          child: CupertinoButton(
+            padding: EdgeInsets.zero,
+            pressedOpacity: 0.75,
+            onPressed: () => router.goToDestination(
+              MainPagePaths.myProfile,
+              initialLocation: true,
+            ),
+            child: _buildProfile(context),
+          ),
+        ),
+        const SizedBox(height: 24),
+        ListenableBuilder(
+          listenable: router.router.routeInformationProvider,
+          builder: (context, _) => BirthdayBanner(
+            userStorage: Injector.appInstance.get<CurrentUserSyncStorage>(),
+            manager: Injector.appInstance.get<BirthdayGreetingManager>(),
+            isActive:
+                router.router.routeInformationProvider.value.uri.path ==
+                router.locationFor(MainPagePaths.more),
+          ),
+        ),
+      ],
+    ),
+  );
 
   Widget _buildDestination(BuildContext context, MainPageRouteData route) {
     final theme = Theme.of(context);

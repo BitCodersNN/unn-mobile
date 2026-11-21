@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:unn_mobile/core/constants/main_page_paths.dart';
 import 'package:unn_mobile/core/misc/app_theme_controller.dart';
+import 'package:unn_mobile/core/misc/schedule_activity/schedule_activity_platform.dart';
 import 'package:unn_mobile/core/misc/user/current_user_sync_storage.dart';
 import 'package:unn_mobile/core/models/common/app_theme_mode.dart';
 import 'package:unn_mobile/core/services/interfaces/schedule_widget/schedule_widget_platform.dart';
@@ -23,6 +24,7 @@ class UnnMobile extends StatefulWidget {
   final CurrentUserSyncStorage currentUserStorage;
   final ScheduleWidgetPlatform scheduleWidgetPlatform;
   final ScheduleWidgetService scheduleWidgetService;
+  final ScheduleActivityPlatform scheduleActivityPlatform;
 
   const UnnMobile({
     required this.themeController,
@@ -30,6 +32,7 @@ class UnnMobile extends StatefulWidget {
     required this.currentUserStorage,
     required this.scheduleWidgetPlatform,
     required this.scheduleWidgetService,
+    required this.scheduleActivityPlatform,
     super.key,
   });
 
@@ -60,6 +63,7 @@ class _UnnMobileState extends State<UnnMobile> {
       widget.currentUserStorage,
       _router,
       _openPersonalSchedule,
+      widget.scheduleActivityPlatform,
     )..start(initialLaunch: _widgetLaunch);
   }
 

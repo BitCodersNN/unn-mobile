@@ -2,7 +2,7 @@
 // Copyright 2026 BitCodersNN
 
 import 'package:flutter/material.dart';
-import 'package:unn_mobile/core/misc/date_time_utilities/date_time_extensions.dart';
+import 'package:unn_mobile/core/misc/date_time_utilities/schedule_time.dart';
 import 'package:unn_mobile/core/misc/json/json_utils.dart';
 
 class _WeekRangeJsonKeys {
@@ -12,16 +12,18 @@ class _WeekRangeJsonKeys {
 
 class WeekRange {
   WeekRange({required this.weekOffset, DateTime? reference})
-    : reference = reference ?? DateTime.now();
+    : reference = ScheduleTime.inZone(reference ?? DateTime.now());
 
   final int weekOffset;
   final DateTime reference;
 
-  late final DateTime start = reference.startOfWeek.addWeeks(weekOffset);
+  late final DateTime start = ScheduleTime.startOfDay(reference)
+      .subtract(Duration(days: reference.weekday - DateTime.monday))
+      .add(Duration(days: DateTime.daysPerWeek * weekOffset));
 
-  late final DateTime end = start.endOfWeek;
+  late final DateTime end = start.add(const Duration(days: 6));
 
-  late final DateTime endExclusive = start.addWeeks(1);
+  late final DateTime endExclusive = start.add(const Duration(days: 7));
 
   bool contains(DateTime date) =>
       !date.isBefore(start) && date.isBefore(endExclusive);

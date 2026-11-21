@@ -25,12 +25,14 @@ import 'package:unn_mobile/core/misc/app_theme_controller.dart';
 import 'package:unn_mobile/core/misc/birthday/birthday_greeting_manager.dart';
 import 'package:unn_mobile/core/misc/git/git_folder.dart';
 import 'package:unn_mobile/core/misc/json/json_utils.dart';
+import 'package:unn_mobile/core/misc/schedule_activity/schedule_activity_platform.dart';
 import 'package:unn_mobile/core/misc/user/current_user_sync_storage.dart';
 import 'package:unn_mobile/core/models/about/authors_catalog.dart';
 import 'package:unn_mobile/core/models/birthday/birthday_greeting_catalog.dart';
 import 'package:unn_mobile/core/models/common/online_status_data.dart';
 import 'package:unn_mobile/core/models/feed/blog_post_type.dart';
 import 'package:unn_mobile/core/models/loading_page/loading_page_catalog.dart';
+import 'package:unn_mobile/core/models/schedule_widget/schedule_widget_lesson.dart';
 import 'package:unn_mobile/core/providers/implementations/authorisation/authorisation_data_provider_impl.dart';
 import 'package:unn_mobile/core/providers/implementations/birthday/birthday_greeting_provider_impl.dart';
 import 'package:unn_mobile/core/providers/implementations/common/app_theme_provider_impl.dart';
@@ -39,8 +41,10 @@ import 'package:unn_mobile/core/providers/implementations/feed/blog_post_provide
 import 'package:unn_mobile/core/providers/implementations/feed/last_feed_load_date_time_provider_impl.dart';
 import 'package:unn_mobile/core/providers/implementations/git/git_resource_cache_provider_impl.dart';
 import 'package:unn_mobile/core/providers/implementations/grade_book/mark_by_subject_provider_impl.dart';
+import 'package:unn_mobile/core/providers/implementations/main_page/menu_order_provider_impl.dart';
 import 'package:unn_mobile/core/providers/implementations/profile/user_data_provider_impl.dart';
 import 'package:unn_mobile/core/providers/implementations/schedule/offline_schedule_provider_impl.dart';
+import 'package:unn_mobile/core/providers/implementations/schedule_activity/schedule_activity_settings_provider_impl.dart';
 import 'package:unn_mobile/core/providers/interfaces/authorisation/auth_data_provider.dart';
 import 'package:unn_mobile/core/providers/interfaces/birthday/birthday_greeting_provider.dart';
 import 'package:unn_mobile/core/providers/interfaces/common/app_theme_provider.dart';
@@ -48,8 +52,10 @@ import 'package:unn_mobile/core/providers/interfaces/common/message_ignored_keys
 import 'package:unn_mobile/core/providers/interfaces/feed/blog_post_provider.dart';
 import 'package:unn_mobile/core/providers/interfaces/feed/last_feed_load_date_time_provider.dart';
 import 'package:unn_mobile/core/providers/interfaces/grade_book/mark_by_subject_provider.dart';
+import 'package:unn_mobile/core/providers/interfaces/main_page/menu_order_provider.dart';
 import 'package:unn_mobile/core/providers/interfaces/profile/user_data_provider.dart';
 import 'package:unn_mobile/core/providers/interfaces/schedule/offline_schedule_provider.dart';
+import 'package:unn_mobile/core/providers/interfaces/schedule_activity/schedule_activity_settings_provider.dart';
 import 'package:unn_mobile/core/repositories/implementations/git/git_resource_repository_impl.dart';
 import 'package:unn_mobile/core/repositories/interfaces/git/git_resource_repository.dart';
 import 'package:unn_mobile/core/services/implementations/authentication/source_auth_service_impl.dart';
@@ -86,6 +92,7 @@ import 'package:unn_mobile/core/services/implementations/feed/blog_post_receiver
 import 'package:unn_mobile/core/services/implementations/feed/blog_post_receivers/blog_post_pagination_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/feed/blog_post_receivers/refresh_blog_post_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/feed/blog_post_search_service_impl.dart';
+import 'package:unn_mobile/core/services/implementations/feed/blog_post_viewers_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/feed/featured_blog_post_action/important_blog_post_acknowledgement_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/feed/featured_blog_post_action/important_blog_post_users_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/feed/featured_blog_post_action/pinning_blog_post_service_impl.dart';
@@ -140,6 +147,7 @@ import 'package:unn_mobile/core/services/interfaces/feed/blog_post_receivers/blo
 import 'package:unn_mobile/core/services/interfaces/feed/blog_post_receivers/blog_post_pagination_service.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/blog_post_receivers/refresh_blog_post_service.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/blog_post_search_service.dart';
+import 'package:unn_mobile/core/services/interfaces/feed/blog_post_viewers_service.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/featured_blog_post_action/important_blog_post_acknowledgement_service.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/featured_blog_post_action/important_blog_post_users_service.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/featured_blog_post_action/pinning_blog_post_service.dart';
@@ -180,6 +188,7 @@ import 'package:unn_mobile/core/viewmodels/main_page/grades/grades_screen_view_m
 import 'package:unn_mobile/core/viewmodels/main_page/schedule/schedule_screen_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/settings/settings_screen_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/source/source_page_view_model.dart';
+import 'package:unn_mobile/ui/unn_mobile_colors.dart';
 
 void registerDependencies() {
   final injector = Injector.appInstance;
@@ -244,6 +253,9 @@ void registerDependencies() {
       }
       return ConsoleLoggerServiceImpl();
     })
+    ..registerSingleton<MenuOrderProvider>(
+      () => MenuOrderProviderImpl(get<StorageService>()),
+    )
     ..registerSingleton<OnlineStatusData>(OnlineStatusData.new)
     ..registerSingleton<StorageService>(StorageServiceImpl.new)
     ..registerSingleton<AppThemeProvider>(
@@ -412,6 +424,12 @@ void registerDependencies() {
     ..registerSingleton<OfflineScheduleProvider>(
       () => OfflineScheduleProviderImpl(get<StorageService>()),
     )
+    ..registerSingleton<ScheduleActivitySettingsProvider>(
+      () => ScheduleActivitySettingsProviderImpl(get<StorageService>()),
+    )
+    ..registerSingleton<ScheduleActivityPlatform>(
+      () => ScheduleActivityPlatform(get<LoggerService>()),
+    )
     ..registerSingleton<ScheduleWidgetPlatform>(
       () => ScheduleWidgetPlatformImpl(get<LoggerService>()),
     )
@@ -424,6 +442,12 @@ void registerDependencies() {
         get<OfflineScheduleProvider>(),
         get<ScheduleWidgetPlatform>(),
         get<LoggerService>(),
+        lessonBuilder: (subject) => ScheduleWidgetLesson.fromSubject(
+          subject,
+          accentColor: UnnMobileColors
+              .defaultScheduleSubjectTypeColors[subject.subjectTypeEnum]!
+              .toARGB32(),
+        ),
       ),
     )
     ..registerSingleton<ScheduleSearchHistoryService>(
@@ -477,6 +501,12 @@ void registerDependencies() {
     )
     ..registerDependency<ImportantBlogPostAcknowledgementService>(
       () => ImportantBlogPostAcknowledgementServiceImpl(
+        get<LoggerService>(),
+        getApiHelper(HostType.unnPortal),
+      ),
+    )
+    ..registerDependency<BlogPostViewersService>(
+      () => BlogPostViewersServiceImpl(
         get<LoggerService>(),
         getApiHelper(HostType.unnPortal),
       ),
@@ -702,7 +732,6 @@ void registerDependencies() {
         get<GitResourceRepository<LoadingPageCatalog>>(),
         get<LogoDownloaderService>(),
         get<CurrentUserSyncStorage>(),
-        get<StreamAuthService>(),
         get<GitResourceRepository<BirthdayGreetingCatalog>>(),
       ),
     )
@@ -747,6 +776,7 @@ void registerDependencies() {
         get<UnnAuthService>(),
         get<SourceAuthService>(),
         get<ScheduleWidgetService>(),
+        get<ScheduleActivityPlatform>(),
       ),
     )
     ..registerDependency(
