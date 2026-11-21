@@ -23,6 +23,7 @@ class ChangelogDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -61,11 +62,11 @@ class ChangelogDialog extends StatelessWidget {
         Expanded(
           child: ListView.separated(
             padding: const EdgeInsets.fromLTRB(16, 0, 16, 20),
-            itemCount: changelogReleases.length,
+            itemCount: filteredChangelog.length,
             separatorBuilder: (_, _) => const SizedBox(height: 12),
             itemBuilder: (context, index) => ChangelogReleaseCard(
-              key: ValueKey(changelogReleases[index].version),
-              release: changelogReleases[index],
+              key: ValueKey(filteredChangelog[index].version),
+              release: filteredChangelog[index],
               isLatest: index == 0,
             ),
           ),

@@ -31,8 +31,8 @@ class _RegularExpressionSource {
   static const nonDigitsPattern = r'\D';
   static const fourDigitYearPattern = r'\b\d{4}\b';
   static const timePattern = r'(\d{1,2}:\d{2})';
-  static final streamContentPattern = r'\(([^()]*)\)';
-  static final multiValueSeparatorPattern = r'[|;,]';
+  static const streamContentPattern = r'\(([^()]*)\)';
+  static const multiValueSeparatorPattern = r'[|;,]';
 }
 
 class RegularExpressions {

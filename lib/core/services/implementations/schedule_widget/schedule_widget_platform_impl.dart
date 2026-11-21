@@ -7,6 +7,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:unn_mobile/core/misc/json/json_utils.dart';
 import 'package:unn_mobile/core/models/schedule/schedule_cache_data.dart';
+import 'package:unn_mobile/core/models/schedule/subject.dart';
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
 import 'package:unn_mobile/core/services/interfaces/schedule_widget/schedule_widget_platform.dart';
 
@@ -16,7 +17,9 @@ class ScheduleWidgetPlatformImpl implements ScheduleWidgetPlatform {
   );
   final LoggerService _logger;
 
-  ScheduleWidgetPlatformImpl(this._logger);
+  final int Function(Subject) _accentColor;
+
+  ScheduleWidgetPlatformImpl(this._logger, {required this._accentColor});
 
   @override
   bool get isSupported =>
@@ -38,7 +41,14 @@ class ScheduleWidgetPlatformImpl implements ScheduleWidgetPlatform {
     bool refreshWidgets = true,
   }) => _channel.invokeMethod<void>(
     refreshWidgets ? 'writeCache' : 'writeCacheOrder',
-    jsonEncode(data.toJson()),
+    jsonEncode({
+      ...data.toJson(),
+      'subjectColors': {
+        for (final entry in data.entries)
+          for (final subject in entry.schedule.subjects)
+            subject.subjectType: _accentColor(subject),
+      },
+    }),
   );
 
   @override

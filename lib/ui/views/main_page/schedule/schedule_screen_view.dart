@@ -80,7 +80,7 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView> {
           });
         }
 
-        final bottomHeight = 112.0;
+        const bottomHeight = 112.0;
 
         return OnlineStatusBuilder(
           builder: (context, online) {
@@ -127,7 +127,7 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView> {
                       ),
                   ],
                   bottom: PreferredSize(
-                    preferredSize: Size.fromHeight(bottomHeight),
+                    preferredSize: const Size.fromHeight(bottomHeight),
                     child: MediaQuery.withNoTextScaling(
                       child: SizedBox(
                         height: bottomHeight,

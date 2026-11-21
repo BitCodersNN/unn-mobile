@@ -10,6 +10,7 @@ import 'package:unn_mobile/core/misc/authorisation/try_login_and_retrieve_data.d
 import 'package:unn_mobile/core/misc/cache/lru_cache.dart';
 import 'package:unn_mobile/core/misc/cache/restore_cache_then_refresh.dart';
 import 'package:unn_mobile/core/misc/date_time_utilities/date_time_extensions.dart';
+import 'package:unn_mobile/core/misc/date_time_utilities/schedule_time.dart';
 import 'package:unn_mobile/core/misc/date_time_utilities/week_range.dart';
 import 'package:unn_mobile/core/misc/user/current_user_sync_storage.dart';
 import 'package:unn_mobile/core/models/profile/employee/employee_data.dart';
@@ -60,7 +61,7 @@ class ScheduleTabViewModel extends BaseViewModel {
   bool get hasAnyId => _useRasp || defaultId != null || selectedId != null;
 
   int? get todayOrNextDayIndex =>
-      _firstNonEmptyDayIndex(DateTime.now().weekdayIndex);
+      _firstNonEmptyDayIndex(ScheduleTime.now().weekdayIndex);
 
   WeekRange get selectedWeek => _parent.selectedWeek;
   int get weekOffset => _parent.weekOffset;
@@ -197,16 +198,16 @@ class ScheduleTabViewModel extends BaseViewModel {
       failedToLoad = key.useRasp || needsDefaultIdRefresh;
       return;
     }
-    final subjects = await tryLoginAndRetrieveData<List<Subject>>(
-      () => key.useRasp
-          ? _scheduleService.getCurrentUserSchedule(
-              login!,
-              week.start,
-              cancelToken: token,
-            )
-          : _scheduleService.getSchedule(filter!, cancelToken: token),
-      () => null,
-    );
+    final subjects = key.useRasp
+        ? await _scheduleService.getCurrentUserSchedule(
+            login!,
+            week.start,
+            cancelToken: token,
+          )
+        : await tryLoginAndRetrieveData<List<Subject>>(
+            () => _scheduleService.getSchedule(filter!, cancelToken: token),
+            () => null,
+          );
     if (!_isCurrent(key, token)) {
       return;
     }

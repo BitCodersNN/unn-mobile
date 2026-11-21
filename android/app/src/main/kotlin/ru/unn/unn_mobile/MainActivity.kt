@@ -1,14 +1,17 @@
 package ru.bitcodersnn.unnstudenthub
 
+import ru.bitcodersnn.unnstudenthub.scheduleactivity.ScheduleActivityBridge
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
+import android.os.Bundle
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts.PickMultipleVisualMedia
 import androidx.core.content.FileProvider
 import androidx.core.net.toUri
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
+import io.flutter.embedding.engine.FlutterShellArgs
 import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodChannel
 import ru.bitcodersnn.unnstudenthub.schedulewidget.ScheduleWidgetBridge
@@ -32,6 +35,7 @@ data class OpenResult(val type: Int, val message: String)
 
 
 class MainActivity : FlutterActivity() {
+    private var scheduleActivityBridge: ScheduleActivityBridge? = null
     private var scheduleWidgetBridge: ScheduleWidgetBridge? = null
     class Container<T>(
         obj: T?,
@@ -52,8 +56,16 @@ class MainActivity : FlutterActivity() {
         var pickedUploadUris: Container<List<Uri>>? = null
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        if (savedInstanceState != null) {
+            intent.removeExtra(FlutterShellArgs.ARG_KEY_START_PAUSED)
+        }
+        super.onCreate(savedInstanceState)
+    }
+
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
+        scheduleActivityBridge = ScheduleActivityBridge(this, flutterEngine)
         scheduleWidgetBridge = ScheduleWidgetBridge(this, flutterEngine, intent)
         EventChannel(
             flutterEngine.dartExecutor.binaryMessenger,
@@ -121,6 +133,11 @@ class MainActivity : FlutterActivity() {
                 else -> result.notImplemented()
             }
         }
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        scheduleActivityBridge?.onRequestPermissionsResult(requestCode, grantResults)
     }
 
     override fun onNewIntent(intent: Intent) {
