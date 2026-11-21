@@ -8,7 +8,7 @@ flutter_native_splash:
     color: '#ffffff'
     color_dark: '#000000'
     # Transparent image prevents Android from falling back to the app icon.
-    image: assets/images/splash_image_ios.png
-    image_dark: assets/images/splash_image_ios.png
+    image: assets/images/splash/splash_image_ios.png
+    image_dark: assets/images/splash/splash_image_ios.png
     icon_background_color: '#ffffff'
     icon_background_color_dark: '#000000'
