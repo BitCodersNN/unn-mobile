@@ -16,7 +16,7 @@ class _ScheduleWidgetDataJsonKeys {
 }
 
 class ScheduleWidgetData {
-  static const int schemaVersion = 1;
+  static const int schemaVersion = 2;
 
   final int ownerId;
   final bool? useRasp;

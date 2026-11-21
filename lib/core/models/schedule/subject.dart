@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:unn_mobile/core/constants/date_pattern.dart';
 import 'package:unn_mobile/core/constants/regular_expressions.dart';
 import 'package:unn_mobile/core/misc/date_time_utilities/date_time_extensions.dart';
-import 'package:unn_mobile/core/misc/date_time_utilities/date_time_parser.dart';
+import 'package:unn_mobile/core/misc/date_time_utilities/schedule_time.dart';
 import 'package:unn_mobile/core/misc/json/json_utils.dart';
 import 'package:unn_mobile/core/models/schedule/address.dart';
 import 'package:unn_mobile/core/models/schedule/subject_type.dart';
@@ -126,7 +126,7 @@ class Subject {
       lecturer: getStringFromJson(jsonMap, _SubjectRaspJsonKeys.lector),
       syncId: getStringFromJson(jsonMap, _SubjectRaspJsonKeys.id),
       dateTimeRange: DateTimeRange(
-        start: DateTimeParser.parse(
+        start: ScheduleTime.parse(
           getStringFromJson(jsonMap, _SubjectRaspJsonKeys.fullStartTime),
           DatePattern.ddmmyyyyhhmmss,
         ),
@@ -156,5 +156,5 @@ class Subject {
     String date,
     String time, {
     pattern = DatePattern.ymmddhm,
-  }) => DateTimeParser.parse('$date $time', pattern);
+  }) => ScheduleTime.parse('$date $time', pattern);
 }

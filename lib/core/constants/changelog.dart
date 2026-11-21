@@ -1,17 +1,24 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2025 BitCodersNN
 
+import 'package:unn_mobile/core/misc/app_flavor.dart';
 import 'package:unn_mobile/core/models/changelog/changelog_release.dart';
 
 const List<ChangelogRelease> changelogReleases = [
   ChangelogRelease(
     version: '0.7.0 beta 5',
+    isTesting: true,
     changes: [
+      'Добавлена возможность открыть профиль пользователя из комментариев',
       'Добавлено прикрепление картинок при использовании «Поделиться» в ленте',
+      'Добавлено отображение количества просмотров постов и возможность просмотра списка пользователей, просмотревших пост',
+      'Добавлена возможность кастомизации виджета расписания',
+      'Добавлено отображение времени до начала пары и прогресса занятия в расписании, в том числе в виде уведомления',
     ],
   ),
   ChangelogRelease(
     version: '0.7.0 beta 4',
+    isTesting: true,
     changes: [
       'Редизайн ленты',
       'Редизайн диалога с изменениями',
@@ -22,6 +29,7 @@ const List<ChangelogRelease> changelogReleases = [
   ),
   ChangelogRelease(
     version: '0.7.0 beta 3',
+    isTesting: true,
     changes: [
       'Убрано лишнее разрешение READ_EXTERNAL_STORAGE',
       'Выполнен редизайн зачётной книжки',
@@ -32,6 +40,7 @@ const List<ChangelogRelease> changelogReleases = [
   ),
   ChangelogRelease(
     version: '0.7.0 beta 2',
+    isTesting: true,
     changes: [
       'Убраны некоторые лишние разрешения и обновлены версии фреймворков на Android',
       '[B]Добавлен виджет расписания[/B]',
@@ -39,6 +48,7 @@ const List<ChangelogRelease> changelogReleases = [
   ),
   ChangelogRelease(
     version: '0.7.0 beta 1',
+    isTesting: true,
     changes: [
       'Переделана навигация в приложении. Убрано боковое меню. Добавлена кастомизация нижнего меню',
     ],
@@ -209,3 +219,7 @@ const List<ChangelogRelease> changelogReleases = [
     ],
   ),
 ];
+
+final filteredChangelog = changelogReleases
+    .where((c) => AppFlavor.current().isTesting || !c.isTesting)
+    .toList(growable: false);

@@ -2,6 +2,7 @@
 // Copyright 2026 BitCodersNN
 
 import 'package:flutter/material.dart';
+import 'package:unn_mobile/ui/views/main_page/settings/widgets/settings_icon.dart';
 
 class SettingsSwitchTile extends StatelessWidget {
   final IconData icon;
@@ -22,7 +23,7 @@ class SettingsSwitchTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) => _SettingsTileTheme(
     child: SwitchListTile.adaptive(
-      secondary: _SettingsIcon(icon: icon),
+      secondary: SettingsIcon(icon: icon),
       title: Text(title),
       subtitle: Text(subtitle),
       value: value,
@@ -35,7 +36,7 @@ class SettingsActionTile extends StatelessWidget {
   final IconData icon;
   final String title;
   final String? subtitle;
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
   final Color? color;
   final bool showChevron;
 
@@ -52,7 +53,7 @@ class SettingsActionTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) => _SettingsTileTheme(
     child: ListTile(
-      leading: _SettingsIcon(icon: icon, color: color),
+      leading: SettingsIcon(icon: icon, color: color),
       title: Text(title),
       subtitle: subtitle == null ? null : Text(subtitle!),
       textColor: color,
@@ -63,6 +64,7 @@ class SettingsActionTile extends StatelessWidget {
               size: 22,
             )
           : null,
+      enabled: onTap != null,
       onTap: onTap,
     ),
   );
@@ -107,30 +109,6 @@ class _SettingsTileTheme extends StatelessWidget {
           ),
         ),
         child: child,
-      ),
-    );
-  }
-}
-
-class _SettingsIcon extends StatelessWidget {
-  final IconData icon;
-  final Color? color;
-
-  const _SettingsIcon({required this.icon, this.color});
-
-  @override
-  Widget build(BuildContext context) {
-    final foreground = color ?? Theme.of(context).colorScheme.primary;
-    return ExcludeSemantics(
-      child: Container(
-        width: 36,
-        height: 36,
-        decoration: BoxDecoration(
-          color: foreground.withValues(alpha: 0.08),
-          borderRadius: BorderRadius.circular(10),
-        ),
-        alignment: Alignment.center,
-        child: Icon(icon, color: foreground, size: 21),
       ),
     );
   }

@@ -4,76 +4,37 @@
 import SwiftUI
 import WidgetKit
 
-struct ScheduleEntry: TimelineEntry {
-    let date: Date
-    let data: ScheduleWidgetData?
-}
-
-struct ScheduleProvider: TimelineProvider {
-    func placeholder(in context: Context) -> ScheduleEntry {
-        let day = Calendar.current.startOfDay(for: Date())
-        let first = day.addingTimeInterval(10 * 3600)
-        let second = day.addingTimeInterval(12 * 3600)
-        let data = ScheduleWidgetData(
-            version: 1, ownerLabel: "Ваше расписание", updatedAt: day.timeIntervalSince1970 * 1000,
-            validFrom: day.timeIntervalSince1970 * 1000,
-            validUntil: day.addingTimeInterval(86400).timeIntervalSince1970 * 1000,
-            lessons: [
-                ScheduleWidgetLesson(title: "Разработка мобильных приложений", type: "Лекция", location: "301 / 2", lecturer: "", start: first.timeIntervalSince1970 * 1000, end: first.addingTimeInterval(5400).timeIntervalSince1970 * 1000),
-                ScheduleWidgetLesson(title: "Программная инженерия", type: "Практика", location: "412 / 2", lecturer: "", start: second.timeIntervalSince1970 * 1000, end: second.addingTimeInterval(5400).timeIntervalSince1970 * 1000)
-            ])
-        return ScheduleEntry(date: first, data: data)
-    }
-
-    func getSnapshot(in context: Context, completion: @escaping (ScheduleEntry) -> Void) {
-        completion(context.isPreview ? placeholder(in: context) : ScheduleEntry(date: Date(), data: ScheduleWidgetData.read()))
-    }
-
-    func getTimeline(in context: Context, completion: @escaping (Timeline<ScheduleEntry>) -> Void) {
-        let now = Date()
-        let data = ScheduleWidgetData.read()
-        let calendar = Calendar.current
-        let midnight = calendar.startOfDay(for: now)
-        let days = (1...14).compactMap { calendar.date(byAdding: .day, value: $0, to: midnight) }
-        let boundaries = data?.lessons.flatMap { [$0.startDate, $0.endDate] } ?? []
-        let dates = Array(Set([now] + days + boundaries.filter { $0 > now })).sorted().prefix(64)
-        let entries = dates.map { ScheduleEntry(date: $0, data: data) }
-        completion(Timeline(entries: entries, policy: .after((dates.last ?? now).addingTimeInterval(60))))
-    }
-}
-
 struct ScheduleWidgetView: View {
     let entry: ScheduleEntry
     @Environment(\.widgetFamily) private var family
-    private let accent = Color(red: 0, green: 0.54, blue: 0.50)
+    private let accent = SchedulePalette.accent
+    private var settings: ScheduleWidgetSettings { entry.settings }
 
     private var rowHeight: CGFloat {
+        let base: CGFloat
         switch family {
-        case .systemMedium: return 32
-        case .systemLarge: return 48
-        default: return 40
+        case .systemMedium: base = 30
+        case .systemLarge: base = 58
+        default: base = 42
         }
+        let extraLines = (settings.showLocation ? 1 : 0) + (settings.showLecturer ? 1 : 0)
+        return (base + CGFloat(extraLines) * 14) * settings.textSize.scale
     }
 
-    private var itemSpacing: CGFloat { family == .systemMedium ? 4 : 8 }
+    private var itemSpacing: CGFloat { family == .systemMedium ? 2 : 8 }
 
     private func lessonCapacity(for height: CGFloat) -> Int {
+        let familyLimit: Int
         switch family {
-        case .systemSmall: return 1
-        case .systemMedium: return 2
-        default: return max(1, min(6, Int((height - 64) / (rowHeight + itemSpacing))))
+        case .systemSmall: familyLimit = 1
+        case .systemMedium: familyLimit = 2
+        default: familyLimit = 6
         }
-    }
-
-    private var remaining: [ScheduleWidgetLesson] {
-        guard entry.data?.covers(entry.date) == true else { return [] }
-        return entry.data?.remaining(at: entry.date) ?? []
-    }
-
-    private var emptyMessage: String {
-        guard let data = entry.data else { return "Откройте приложение и войдите в аккаунт" }
-        guard data.covers(entry.date) else { return "Обновите расписание в приложении" }
-        return data.today(at: entry.date).isEmpty ? "Сегодня занятий нет" : "На сегодня занятий больше нет"
+        let headerHeight: CGFloat = (family == .systemMedium ? 30 : 36) * settings.textSize.scale
+        let footerHeight: CGFloat = 12 * settings.textSize.scale
+        let available = max(1, Int((height - headerHeight - footerHeight - 2 * itemSpacing) / (rowHeight + itemSpacing)))
+        let configuredLimit = settings.maxLessons == 0 ? familyLimit : settings.maxLessons
+        return min(available, familyLimit, configuredLimit)
     }
 
     var body: some View {
@@ -83,12 +44,12 @@ struct ScheduleWidgetView: View {
                 VStack(alignment: .leading, spacing: 3) {
                     HStack {
                         Label("Расписание", systemImage: "calendar")
-                            .font(.system(size: 13, weight: .semibold))
+                            .font(textFont(13, weight: .semibold))
                             .foregroundColor(accent)
                         Spacer(minLength: 0)
-                        if !remaining.isEmpty {
-                            Text("\(remaining.count)")
-                                .font(.system(size: 11, weight: .semibold))
+                        if !entry.remainingLessons.isEmpty {
+                            Text("\(entry.remainingLessons.count)")
+                                .font(textFont(11, weight: .semibold))
                                 .foregroundColor(accent)
                                 .frame(
                                     width: family == .systemMedium ? 16 : 20,
@@ -98,99 +59,149 @@ struct ScheduleWidgetView: View {
                         }
                     }
                     Text(dateLabel)
-                        .font(.system(size: family == .systemMedium ? 10 : 11))
+                        .font(textFont(family == .systemMedium ? 10 : 11))
                         .foregroundColor(.secondary)
                         .lineLimit(1)
                 }
-                if remaining.isEmpty {
+                if entry.remainingLessons.isEmpty {
                     Spacer(minLength: 0)
-                    Text(emptyMessage).font(.system(size: 13)).foregroundColor(.secondary)
+                    Text(entry.emptyMessage).font(textFont(13)).foregroundColor(.secondary)
                     Spacer(minLength: 0)
                 } else {
-                    ForEach(remaining.prefix(capacity)) { lesson in
+                    ForEach(entry.remainingLessons.prefix(capacity)) { lesson in
                         lessonRow(lesson)
                     }
                     Spacer(minLength: 0)
                 }
                 HStack(spacing: 4) {
-                    Text(remaining.count > capacity ? "Ещё \(remaining.count - capacity) · открыть" : "Открыть расписание")
+                    Text(entry.remainingLessons.count > capacity ? "Ещё \(entry.remainingLessons.count - capacity) · открыть" : "Открыть расписание")
                         .lineLimit(1).minimumScaleFactor(0.8)
                     Spacer(minLength: 0)
                     Image(systemName: "arrow.up.right")
                 }
-                .font(.system(size: 10, weight: .medium))
+                .font(textFont(10, weight: .medium))
                 .foregroundColor(accent)
             }
         }
         .padding(.horizontal, 14)
         .padding(.vertical, family == .systemMedium ? 8 : 14)
         .scheduleWidgetBackground()
-        .widgetURL(ScheduleWidgetConstants.url)
+        .widgetURL(ScheduleNavigation.url)
     }
 
     private var dateLabel: String {
-        let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "ru_RU")
-        formatter.dateFormat = "EEE, d MMM"
-        return [formatter.string(from: entry.date), entry.data?.ownerLabel ?? ""]
+        return [ScheduleTime.format(entry.date, pattern: "EEE, d MMM"), entry.data?.ownerLabel ?? ""]
             .filter { !$0.isEmpty }.joined(separator: " · ")
     }
 
-    private func lessonRow(_ lesson: ScheduleWidgetLesson) -> some View {
+    private func lessonRow(_ lesson: ScheduleLesson) -> some View {
         let current = lesson.startDate <= entry.date && entry.date < lesson.endDate
         let compact = family == .systemMedium
+        let lessonColor = SchedulePalette.subjectColor(lesson.accentColor)
         return HStack(alignment: .top, spacing: 7) {
-            RoundedRectangle(cornerRadius: 2).fill(accent).frame(width: 3)
-            VStack(alignment: .leading, spacing: compact ? 2 : 3) {
-                Text(lesson.title).font(.system(size: 13, weight: .semibold))
+            RoundedRectangle(cornerRadius: 2).fill(lessonColor).frame(width: 3)
+            VStack(alignment: .leading, spacing: compact ? 1 : 3) {
+                Text(lesson.title).font(textFont(13, weight: .semibold))
                     .lineLimit(family == .systemLarge ? 2 : 1)
-                Text([current ? "Сейчас" : lesson.type, lesson.location].filter { !$0.isEmpty }.joined(separator: " · "))
-                    .font(.system(size: 10)).foregroundColor(.secondary).lineLimit(1)
+                Text(current ? "Сейчас" : lesson.type)
+                    .font(textFont(10)).foregroundColor(.secondary).lineLimit(1)
+                if settings.showLocation && !lesson.location.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                    Text(lesson.location)
+                        .font(textFont(10)).foregroundColor(.secondary).lineLimit(1)
+                }
+                if settings.showLecturer && !lesson.lecturer.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                    Text(lesson.lecturer)
+                        .font(textFont(10)).foregroundColor(.secondary).lineLimit(1)
+                }
             }
-            Spacer(minLength: 0)
-            VStack(alignment: .trailing, spacing: compact ? 2 : 3) {
-                Text(timeLabel(lesson.startDate)).font(.system(size: 12, weight: .semibold))
-                Text(timeLabel(lesson.endDate)).font(.system(size: 10)).foregroundColor(.secondary)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            VStack(alignment: .trailing, spacing: 0) {
+                Text(timeLabel(lesson.startDate)).font(textFont(12, weight: .semibold))
+                Spacer(minLength: 3)
+                Text(timeLabel(lesson.endDate)).font(textFont(10)).foregroundColor(.secondary)
             }
+            .fixedSize(horizontal: true, vertical: false)
+            .frame(maxHeight: .infinity)
         }
+        .fixedSize(horizontal: false, vertical: true)
         .padding(.vertical, compact ? 1 : 4)
         .padding(.horizontal, 5)
-        .frame(height: rowHeight)
-        .background(RoundedRectangle(cornerRadius: 8).fill(current ? accent.opacity(0.08) : .clear))
+        .frame(height: rowHeight, alignment: .top)
+        .background(RoundedRectangle(cornerRadius: 8).fill(current ? lessonColor.opacity(0.08) : .clear))
         .accessibilityElement(children: .combine)
         .privacySensitive()
     }
 
     private func timeLabel(_ date: Date) -> String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "HH:mm"
-        return formatter.string(from: date)
+        ScheduleTime.format(date, pattern: "HH:mm")
+    }
+
+    private func textFont(_ size: CGFloat, weight: Font.Weight = .regular) -> Font {
+        .system(size: size * settings.textSize.scale, weight: weight)
     }
 }
 
-private extension View {
+extension View {
+    func scheduleWidgetBackground(transparent: Bool = false) -> some View {
+        modifier(ScheduleWidgetBackground(transparent: transparent))
+    }
+}
+
+private struct ScheduleWidgetBackground: ViewModifier {
+    let transparent: Bool
+    @Environment(\.colorScheme) private var colorScheme
+
     @ViewBuilder
-    func scheduleWidgetBackground() -> some View {
+    func body(content: Content) -> some View {
+        let color = transparent ? Color.clear : SchedulePalette.background(for: colorScheme)
         if #available(iOSApplicationExtension 17.0, *) {
-            containerBackground(for: .widget) { Color(UIColor.secondarySystemBackground) }
+            content.containerBackground(for: .widget) { color }
         } else {
-            background(Color(UIColor.secondarySystemBackground))
+            content.background(color)
         }
+    }
+}
+
+struct ScheduleWidget: Widget {
+    var body: some WidgetConfiguration {
+        makeConfiguration().scheduleWidgetPresentation()
+    }
+
+    private func makeConfiguration() -> some WidgetConfiguration {
+        if #available(iOS 17.0, *) {
+            return AppIntentConfiguration(
+                kind: ScheduleConstants.widgetKind,
+                intent: ScheduleWidgetConfiguration.self,
+                provider: ConfigurableScheduleProvider()
+            ) { entry in
+                ScheduleWidgetView(entry: entry)
+            }
+        } else {
+            return StaticConfiguration(kind: ScheduleConstants.widgetKind, provider: ScheduleProvider()) { entry in
+                ScheduleWidgetView(entry: entry)
+            }
+        }
+    }
+}
+
+private extension WidgetConfiguration {
+    func scheduleWidgetPresentation() -> some WidgetConfiguration {
+        configurationDisplayName("Расписание ННГУ")
+            .description("Оставшиеся занятия на сегодня")
+            .supportedFamilies([.systemSmall, .systemMedium, .systemLarge])
+            .contentMarginsDisabled()
     }
 }
 
 @main
-struct ScheduleWidget: Widget {
-    private var configuration: some WidgetConfiguration {
-        StaticConfiguration(kind: ScheduleWidgetConstants.kind, provider: ScheduleProvider()) { entry in
-            ScheduleWidgetView(entry: entry)
+struct ScheduleWidgets: WidgetBundle {
+    var body: some Widget {
+        ScheduleWidget()
+        if #available(iOS 16.1, *) {
+            ScheduleLockScreenWidget()
         }
-        .configurationDisplayName("Расписание ННГУ")
-        .description("Оставшиеся занятия на сегодня")
-        .supportedFamilies([.systemSmall, .systemMedium, .systemLarge])
-    }
-
-    var body: some WidgetConfiguration {
-        configuration.contentMarginsDisabled()
+        if #available(iOS 16.2, *) {
+            ScheduleLiveActivity()
+        }
     }
 }
