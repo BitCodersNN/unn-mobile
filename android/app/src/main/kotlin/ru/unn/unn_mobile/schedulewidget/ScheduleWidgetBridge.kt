@@ -30,18 +30,14 @@ class ScheduleWidgetBridge(private val context: Context, engine: FlutterEngine, 
     private fun handle(call: MethodCall, result: MethodChannel.Result) {
         val provider = ScheduleSnapshotProvider(context)
         when (call.method) {
-            "read" -> result.success(provider.readJson())
-            "write" -> {
+            "readCache" -> result.success(provider.readJson())
+            "writeCache", "writeCacheOrder" -> {
                 val value = requireNotNull(call.arguments as? String)
                 provider.writeJson(value)
-                ScheduleWidgetProvider.updateAll(context)
-                ScheduleLiveUpdate.update(context)
-                result.success(null)
-            }
-            "clear" -> {
-                provider.clear()
-                ScheduleWidgetProvider.updateAll(context)
-                ScheduleLiveUpdate.clear(context)
+                if (call.method == "writeCache") {
+                    ScheduleWidgetProvider.updateAll(context)
+                    ScheduleLiveUpdate.update(context)
+                }
                 result.success(null)
             }
             "consumeLaunch" -> {

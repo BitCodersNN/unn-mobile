@@ -10,7 +10,8 @@ enum ScheduleSnapshotReadError {
 }
 
 final class ScheduleSnapshotProvider {
-    private static let key = "schedule_widget_data"
+    private static let key = "schedule_cache"
+    private static let previousKey = "schedule_widget_data"
     private let defaults: UserDefaults?
 
     convenience init() {
@@ -34,17 +35,16 @@ final class ScheduleSnapshotProvider {
     func readResult() -> (data: ScheduleSnapshot?, error: ScheduleSnapshotReadError?) {
         guard isAvailable else { return (nil, .storageUnavailable) }
         guard let json = readJSON() else { return (nil, .missing) }
-        guard let data = ScheduleSnapshot.decode(json) else { return (nil, .invalid) }
-        return (data, nil)
+        guard let cache = ScheduleCacheData.decode(json) else { return (nil, .invalid) }
+        guard let snapshot = cache.snapshot() else { return (nil, .missing) }
+        return (snapshot, nil)
     }
 
     func writeJSON(_ value: String) -> Bool {
-        guard let defaults = defaults, ScheduleSnapshot.decode(value) != nil else { return false }
+        guard let defaults = defaults, ScheduleCacheData.decode(value) != nil else { return false }
         defaults.set(value, forKey: Self.key)
+        defaults.removeObject(forKey: Self.previousKey)
         return true
     }
 
-    func clear() {
-        defaults?.removeObject(forKey: Self.key)
-    }
 }

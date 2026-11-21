@@ -20,23 +20,21 @@ final class ScheduleWidgetBridge {
     }
 
     private func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
-        if ["read", "write", "clear"].contains(call.method) && !snapshotProvider.isAvailable {
+        if ["readCache", "writeCache", "writeCacheOrder"].contains(call.method) && !snapshotProvider.isAvailable {
             result(FlutterError(code: "APP_GROUP_UNAVAILABLE", message: "Schedule widget App Group is unavailable", details: nil))
             return
         }
         switch call.method {
-        case "read":
+        case "readCache":
             result(snapshotProvider.readJSON())
-        case "write":
+        case "writeCache", "writeCacheOrder":
             guard let value = call.arguments as? String, snapshotProvider.writeJSON(value) else {
                 result(FlutterError(code: "INVALID_DATA", message: "Invalid schedule widget data", details: nil))
                 return
             }
-            reloadSchedule()
-            result(nil)
-        case "clear":
-            snapshotProvider.clear()
-            reloadSchedule()
+            if call.method == "writeCache" {
+                reloadSchedule()
+            }
             result(nil)
         case "consumeLaunch":
             let launch = pendingLaunch

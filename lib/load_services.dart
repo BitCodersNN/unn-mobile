@@ -31,7 +31,6 @@ import 'package:unn_mobile/core/models/birthday/birthday_greeting_catalog.dart';
 import 'package:unn_mobile/core/models/common/online_status_data.dart';
 import 'package:unn_mobile/core/models/feed/blog_post_type.dart';
 import 'package:unn_mobile/core/models/loading_page/loading_page_catalog.dart';
-import 'package:unn_mobile/core/models/schedule_widget/schedule_widget_lesson.dart';
 import 'package:unn_mobile/core/providers/implementations/authorisation/authorisation_data_provider_impl.dart';
 import 'package:unn_mobile/core/providers/implementations/birthday/birthday_greeting_provider_impl.dart';
 import 'package:unn_mobile/core/providers/implementations/common/message_ignored_keys_provider_impl.dart';
@@ -413,7 +412,11 @@ void registerDependencies() {
       () => ExportScheduleServiceImpl(getApiHelper(HostType.unnPortal)),
     )
     ..registerSingleton<OfflineScheduleProvider>(
-      () => OfflineScheduleProviderImpl(get<StorageService>()),
+      () => OfflineScheduleProviderImpl(
+        get<StorageService>(),
+        get<LoggerService>(),
+        get<ScheduleWidgetPlatform>(),
+      ),
     )
     ..registerSingleton<ScheduleActivitySettingsProvider>(
       () => ScheduleActivitySettingsProviderImpl(get<StorageService>()),
@@ -422,7 +425,12 @@ void registerDependencies() {
       () => ScheduleActivityPlatform(get<LoggerService>()),
     )
     ..registerSingleton<ScheduleWidgetPlatform>(
-      () => ScheduleWidgetPlatformImpl(get<LoggerService>()),
+      () => ScheduleWidgetPlatformImpl(
+        get<LoggerService>(),
+        accentColor: (subject) => UnnMobileColors
+            .defaultScheduleSubjectTypeColors[subject.subjectTypeEnum]!
+            .toARGB32(),
+      ),
     )
     ..registerSingleton<ScheduleWidgetService>(
       () => ScheduleWidgetServiceImpl(
@@ -433,12 +441,6 @@ void registerDependencies() {
         get<OfflineScheduleProvider>(),
         get<ScheduleWidgetPlatform>(),
         get<LoggerService>(),
-        lessonBuilder: (subject) => ScheduleWidgetLesson.fromSubject(
-          subject,
-          accentColor: UnnMobileColors
-              .defaultScheduleSubjectTypeColors[subject.subjectTypeEnum]!
-              .toARGB32(),
-        ),
       ),
     )
     ..registerSingleton<ScheduleSearchHistoryService>(
