@@ -16,7 +16,7 @@ class ScheduleActivitySettingsProviderImpl
   ScheduleActivitySettingsProviderImpl(this._storage);
 
   @override
-  Future<ScheduleActivitySettings> load() async {
+  Future<ScheduleActivitySettings> getData() async {
     final value = await _storage.read(key: _key);
     if (value == null) {
       return const ScheduleActivitySettings();
@@ -33,6 +33,12 @@ class ScheduleActivitySettingsProviderImpl
   }
 
   @override
-  Future<void> save(ScheduleActivitySettings settings) =>
+  Future<void> saveData(ScheduleActivitySettings settings) =>
       _storage.write(key: _key, value: jsonEncode(settings.toJson()));
+
+  @override
+  Future<bool> isContained() => _storage.containsKey(key: _key);
+
+  @override
+  Future<void> removeData() => _storage.remove(key: _key);
 }

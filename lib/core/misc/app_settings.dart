@@ -29,7 +29,7 @@ class AppSettings {
   static Future<void> updateScheduleActivity(
     ScheduleActivitySettings settings,
   ) async {
-    await Injector.appInstance.get<ScheduleActivitySettingsProvider>().save(
+    await Injector.appInstance.get<ScheduleActivitySettingsProvider>().saveData(
       settings,
     );
     scheduleActivity.value = settings;
@@ -63,7 +63,7 @@ class AppSettings {
         .getData();
     scheduleActivity.value = await Injector.appInstance
         .get<ScheduleActivitySettingsProvider>()
-        .load();
+        .getData();
     vibrationEnabled = await _readValue(
       AppSettingsKeys.vibrationEnabled,
       defaultValue: true,
