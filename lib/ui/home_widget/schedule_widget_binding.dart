@@ -43,7 +43,6 @@ class ScheduleWidgetBinding with WidgetsBindingObserver {
     AppSettings.optionsSaved.subscribe(_onSettingsChanged);
     _platform.setOpenHandler(_requestOpen);
     unawaited(_consumeLaunch(initialLaunch));
-    unawaited(_configureActivity());
     _onRouteChanged();
   }
 
@@ -104,6 +103,7 @@ class ScheduleWidgetBinding with WidgetsBindingObserver {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _refreshScheduled = false;
       if (!_disposed && _mainPageVisible && _user.currentUserData != null) {
+        unawaited(_configureActivity());
         unawaited(_service.refresh());
       }
     });
@@ -111,17 +111,17 @@ class ScheduleWidgetBinding with WidgetsBindingObserver {
   }
 
   void _onSettingsChanged(dynamic _) {
-    unawaited(_configureActivity());
     if (_useRasp != AppSettings.useRaspSchedule) {
       _useRasp = AppSettings.useRaspSchedule;
       _refresh();
+    } else {
+      unawaited(_configureActivity());
     }
   }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
-      unawaited(_configureActivity());
       unawaited(_consumeLaunch());
       _refresh();
     }
