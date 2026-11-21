@@ -7,7 +7,12 @@ import WidgetKit
 struct ScheduleWidgetView: View {
     let entry: ScheduleEntry
     @Environment(\.widgetFamily) private var family
-    private let accent = SchedulePalette.accent
+    @Environment(\.colorScheme) private var colorScheme
+    private var palette: SchedulePalette {
+        entry.appearance.palette(systemDark: colorScheme == .dark, override: settings.palette.override)
+    }
+    private var accent: Color { SchedulePalette.color(palette.accent) }
+    private var secondary: Color { SchedulePalette.color(palette.secondary) }
     private var settings: ScheduleWidgetSettings { entry.settings }
 
     private var rowHeight: CGFloat {
@@ -60,12 +65,12 @@ struct ScheduleWidgetView: View {
                     }
                     Text(dateLabel)
                         .font(textFont(family == .systemMedium ? 10 : 11))
-                        .foregroundColor(.secondary)
+                        .foregroundColor(secondary)
                         .lineLimit(1)
                 }
                 if entry.remainingLessons.isEmpty {
                     Spacer(minLength: 0)
-                    Text(entry.emptyMessage).font(textFont(13)).foregroundColor(.secondary)
+                    Text(entry.emptyMessage).font(textFont(13)).foregroundColor(secondary)
                     Spacer(minLength: 0)
                 } else {
                     ForEach(entry.remainingLessons.prefix(capacity)) { lesson in
@@ -85,7 +90,8 @@ struct ScheduleWidgetView: View {
         }
         .padding(.horizontal, 14)
         .padding(.vertical, family == .systemMedium ? 8 : 14)
-        .scheduleWidgetBackground()
+        .foregroundColor(SchedulePalette.color(palette.text))
+        .scheduleWidgetBackground(SchedulePalette.color(palette.background))
         .widgetURL(ScheduleNavigation.url)
     }
 
@@ -97,28 +103,28 @@ struct ScheduleWidgetView: View {
     private func lessonRow(_ lesson: ScheduleLesson) -> some View {
         let current = lesson.startDate <= entry.date && entry.date < lesson.endDate
         let compact = family == .systemMedium
-        let lessonColor = SchedulePalette.subjectColor(lesson.accentColor)
+        let lessonColor = SchedulePalette.color(palette.lessonAccent(typeKey: lesson.typeKey, fallback: lesson.accentColor))
         return HStack(alignment: .top, spacing: 7) {
             RoundedRectangle(cornerRadius: 2).fill(lessonColor).frame(width: 3)
             VStack(alignment: .leading, spacing: compact ? 1 : 3) {
                 Text(lesson.title).font(textFont(13, weight: .semibold))
                     .lineLimit(family == .systemLarge ? 2 : 1)
                 Text(current ? "Сейчас" : lesson.type)
-                    .font(textFont(10)).foregroundColor(.secondary).lineLimit(1)
+                    .font(textFont(10)).foregroundColor(secondary).lineLimit(1)
                 if settings.showLocation && !lesson.location.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
                     Text(lesson.location)
-                        .font(textFont(10)).foregroundColor(.secondary).lineLimit(1)
+                        .font(textFont(10)).foregroundColor(secondary).lineLimit(1)
                 }
                 if settings.showLecturer && !lesson.lecturer.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
                     Text(lesson.lecturer)
-                        .font(textFont(10)).foregroundColor(.secondary).lineLimit(1)
+                        .font(textFont(10)).foregroundColor(secondary).lineLimit(1)
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             VStack(alignment: .trailing, spacing: 0) {
                 Text(timeLabel(lesson.startDate)).font(textFont(12, weight: .semibold))
                 Spacer(minLength: 3)
-                Text(timeLabel(lesson.endDate)).font(textFont(10)).foregroundColor(.secondary)
+                Text(timeLabel(lesson.endDate)).font(textFont(10)).foregroundColor(secondary)
             }
             .fixedSize(horizontal: true, vertical: false)
             .frame(maxHeight: .infinity)
@@ -142,18 +148,16 @@ struct ScheduleWidgetView: View {
 }
 
 extension View {
-    func scheduleWidgetBackground(transparent: Bool = false) -> some View {
-        modifier(ScheduleWidgetBackground(transparent: transparent))
+    func scheduleWidgetBackground(_ color: Color) -> some View {
+        modifier(ScheduleWidgetBackground(color: color))
     }
 }
 
 private struct ScheduleWidgetBackground: ViewModifier {
-    let transparent: Bool
-    @Environment(\.colorScheme) private var colorScheme
+    let color: Color
 
     @ViewBuilder
     func body(content: Content) -> some View {
-        let color = transparent ? Color.clear : SchedulePalette.background(for: colorScheme)
         if #available(iOSApplicationExtension 17.0, *) {
             content.containerBackground(for: .widget) { color }
         } else {

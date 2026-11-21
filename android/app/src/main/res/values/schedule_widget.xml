@@ -8,7 +8,14 @@
     <string name="schedule_widget_cancel">Отмена</string>
     <string name="schedule_widget_reset">Сбросить настройки</string>
     <string name="schedule_widget_theme">Тема виджета</string>
+    <string name="schedule_widget_theme_app">Как в приложении</string>
     <string name="schedule_widget_theme_system">Как в системе</string>
+    <string name="schedule_widget_palette">Палитра виджета</string>
+    <string name="schedule_widget_palette_app">По выбранной теме</string>
+    <string name="schedule_widget_palette_light_green">Бело-зелёная</string>
+    <string name="schedule_widget_palette_light_blue">Бело-синяя</string>
+    <string name="schedule_widget_palette_dark_green">Тёмно-зелёная</string>
+    <string name="schedule_widget_palette_dark_graphite">Графитовая</string>
     <string name="schedule_widget_theme_light">Светлая</string>
     <string name="schedule_widget_theme_dark">Тёмная</string>
     <string name="schedule_widget_text_size">Размер текста</string>

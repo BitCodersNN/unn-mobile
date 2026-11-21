@@ -14,6 +14,8 @@ class ScheduleWidgetPreferences(context: Context) {
             preferences.getInt(key(ScheduleWidgetSettings.TRANSPARENCY, widgetId), 0))
         putString(ScheduleWidgetSettings.THEME,
             preferences.getString(key(ScheduleWidgetSettings.THEME, widgetId), null))
+        putString(ScheduleWidgetSettings.PALETTE,
+            preferences.getString(key(ScheduleWidgetSettings.PALETTE, widgetId), null))
         putString(ScheduleWidgetSettings.TEXT_SIZE,
             preferences.getString(key(ScheduleWidgetSettings.TEXT_SIZE, widgetId), null))
         putInt(ScheduleWidgetSettings.MAX_LESSONS,
@@ -28,6 +30,7 @@ class ScheduleWidgetPreferences(context: Context) {
         preferences.edit()
             .putInt(key(ScheduleWidgetSettings.TRANSPARENCY, widgetId), settings.transparency)
             .putString(key(ScheduleWidgetSettings.THEME, widgetId), settings.theme.name)
+            .putString(key(ScheduleWidgetSettings.PALETTE, widgetId), settings.palette.key)
             .putString(key(ScheduleWidgetSettings.TEXT_SIZE, widgetId), settings.textSize.name)
             .putInt(key(ScheduleWidgetSettings.MAX_LESSONS, widgetId), settings.maxLessons)
             .putBoolean(key(ScheduleWidgetSettings.SHOW_LOCATION, widgetId), settings.showLocation)

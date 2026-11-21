@@ -8,6 +8,7 @@ abstract interface class ScheduleWidgetPlatform {
   bool get isSupported;
   Future<ScheduleWidgetData?> read();
   Future<void> write(ScheduleWidgetData? data);
+  Future<void> writeAppearance(Map<String, Object> appearance);
   Future<bool> consumeLaunch();
   void setOpenHandler(VoidCallback? handler);
 }

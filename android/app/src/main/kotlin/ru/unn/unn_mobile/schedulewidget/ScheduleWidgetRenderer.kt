@@ -4,13 +4,13 @@
 package ru.bitcodersnn.unnstudenthub.schedulewidget
 
 import android.content.Context
-import android.content.res.Configuration
 import android.os.Build
 import android.util.TypedValue
 import android.view.View
 import android.widget.RemoteViews
 import java.util.Calendar
 import ru.bitcodersnn.unnstudenthub.R
+import ru.bitcodersnn.unnstudenthub.schedule.ScheduleAppearance
 import ru.bitcodersnn.unnstudenthub.schedule.ScheduleLesson
 import ru.bitcodersnn.unnstudenthub.schedule.ScheduleNavigation
 import ru.bitcodersnn.unnstudenthub.schedule.SchedulePalette
@@ -23,30 +23,19 @@ class ScheduleWidgetRenderer(
     private val now: Long,
     private val settings: ScheduleWidgetSettings,
 ) {
-    private val colors = themedContext(settings.theme)
-    private val lightColors by lazy { themedContext(ScheduleWidgetTheme.LIGHT) }
-    private val darkColors by lazy { themedContext(ScheduleWidgetTheme.DARK) }
-
-    private fun themedContext(theme: ScheduleWidgetTheme): Context = context.createConfigurationContext(
-        Configuration(context.resources.configuration).apply {
-            val nightMode = when (theme) {
-                ScheduleWidgetTheme.SYSTEM -> uiMode and Configuration.UI_MODE_NIGHT_MASK
-                ScheduleWidgetTheme.LIGHT -> Configuration.UI_MODE_NIGHT_NO
-                ScheduleWidgetTheme.DARK -> Configuration.UI_MODE_NIGHT_YES
-            }
-            uiMode = (uiMode and Configuration.UI_MODE_NIGHT_MASK.inv()) or nightMode
-        },
-    )
+    private val appearance = ScheduleAppearance(context)
+    private val lightColors = settings.resolvePalette(appearance, systemDark = false)
+    private val darkColors = settings.resolvePalette(appearance, systemDark = true)
 
     fun render(height: Float): RemoteViews {
         val views = RemoteViews(context.packageName, R.layout.schedule_widget)
-        applyColor(views, R.id.schedule_widget_background, "setColorFilter", R.color.schedule_widget_background)
+        applyColor(views, R.id.schedule_widget_background, "setColorFilter", SchedulePalette::background)
         views.setInt(R.id.schedule_widget_background, "setImageAlpha", settings.backgroundAlpha)
-        applyColor(views, R.id.schedule_widget_settings, "setColorFilter", R.color.schedule_widget_secondary)
-        styleText(views, R.id.schedule_widget_title, 16f, R.color.schedule_widget_text)
-        styleText(views, R.id.schedule_widget_date, 12f, R.color.schedule_widget_secondary)
-        styleText(views, R.id.schedule_widget_empty, 14f, R.color.schedule_widget_secondary)
-        styleText(views, R.id.schedule_widget_footer, 11f, R.color.schedule_accent)
+        applyColor(views, R.id.schedule_widget_settings, "setColorFilter", SchedulePalette::secondary)
+        styleText(views, R.id.schedule_widget_title, 16f, SchedulePalette::text)
+        styleText(views, R.id.schedule_widget_date, 12f, SchedulePalette::secondary)
+        styleText(views, R.id.schedule_widget_empty, 14f, SchedulePalette::secondary)
+        styleText(views, R.id.schedule_widget_footer, 11f, SchedulePalette::accent)
 
         val day = ScheduleTime.dayStart(now)
         val tomorrow = (day.clone() as Calendar).apply { add(Calendar.DAY_OF_MONTH, 1) }.timeInMillis
@@ -91,11 +80,11 @@ class ScheduleWidgetRenderer(
 
     private fun lessonView(lesson: ScheduleLesson): RemoteViews {
         val row = RemoteViews(context.packageName, R.layout.schedule_widget_lesson)
-        val accent = SchedulePalette.lessonAccent(colors, lesson)
-        row.setInt(R.id.schedule_widget_lesson_accent, "setColorFilter", accent)
+        val accent: (SchedulePalette) -> Int = { it.lessonAccent(lesson) }
+        applyColor(row, R.id.schedule_widget_lesson_accent, "setColorFilter", accent)
         val current = lesson.start <= now && now < lesson.end
         row.setViewVisibility(R.id.schedule_widget_lesson_background, if (current) View.VISIBLE else View.GONE)
-        row.setInt(R.id.schedule_widget_lesson_background, "setColorFilter", accent)
+        applyColor(row, R.id.schedule_widget_lesson_background, "setColorFilter", accent)
         row.setInt(R.id.schedule_widget_lesson_background, "setImageAlpha", 20)
         row.setTextViewText(R.id.schedule_widget_lesson_title, lesson.title)
         row.setTextViewText(R.id.schedule_widget_lesson_detail,
@@ -108,27 +97,25 @@ class ScheduleWidgetRenderer(
             if (settings.showLecturer && lesson.lecturer.isNotBlank()) View.VISIBLE else View.GONE)
         row.setTextViewText(R.id.schedule_widget_lesson_start, ScheduleTime.format(lesson.start, "HH:mm"))
         row.setTextViewText(R.id.schedule_widget_lesson_end, ScheduleTime.format(lesson.end, "HH:mm"))
-        styleText(row, R.id.schedule_widget_lesson_title, 13f, R.color.schedule_widget_text)
-        styleText(row, R.id.schedule_widget_lesson_detail, 11f, R.color.schedule_widget_secondary)
-        styleText(row, R.id.schedule_widget_lesson_location, 11f, R.color.schedule_widget_secondary)
-        styleText(row, R.id.schedule_widget_lesson_lecturer, 11f, R.color.schedule_widget_secondary)
-        styleText(row, R.id.schedule_widget_lesson_start, 13f, R.color.schedule_widget_text)
-        styleText(row, R.id.schedule_widget_lesson_end, 11f, R.color.schedule_widget_secondary)
+        styleText(row, R.id.schedule_widget_lesson_title, 13f, SchedulePalette::text)
+        styleText(row, R.id.schedule_widget_lesson_detail, 11f, SchedulePalette::secondary)
+        styleText(row, R.id.schedule_widget_lesson_location, 11f, SchedulePalette::secondary)
+        styleText(row, R.id.schedule_widget_lesson_lecturer, 11f, SchedulePalette::secondary)
+        styleText(row, R.id.schedule_widget_lesson_start, 13f, SchedulePalette::text)
+        styleText(row, R.id.schedule_widget_lesson_end, 11f, SchedulePalette::secondary)
         return row
     }
 
-    private fun styleText(views: RemoteViews, id: Int, size: Float, colorId: Int) {
+    private fun styleText(views: RemoteViews, id: Int, size: Float, color: (SchedulePalette) -> Int) {
         views.setTextViewTextSize(id, TypedValue.COMPLEX_UNIT_SP, size * settings.textSize.scale)
-        applyColor(views, id, "setTextColor", colorId)
+        applyColor(views, id, "setTextColor", color)
     }
 
-    private fun applyColor(views: RemoteViews, id: Int, method: String, colorId: Int) {
-        if (settings.theme == ScheduleWidgetTheme.SYSTEM && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            views.setColorInt(id, method, lightColors.getColor(colorId), darkColors.getColor(colorId))
+    private fun applyColor(views: RemoteViews, id: Int, method: String, color: (SchedulePalette) -> Int) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            views.setColorInt(id, method, color(lightColors), color(darkColors))
         } else {
-            views.setInt(id, method, color(colorId))
+            views.setInt(id, method, color(if (appearance.systemDark) darkColors else lightColors))
         }
     }
-
-    private fun color(id: Int): Int = colors.getColor(id)
 }

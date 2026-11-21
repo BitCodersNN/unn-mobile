@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/schedule_widget_configuration"
     android:layout_width="match_parent" android:layout_height="match_parent"
     android:fillViewport="true" android:clipToPadding="false" android:fitsSystemWindows="true">
     <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
         android:orientation="vertical" android:padding="24dp">
-        <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+        <TextView android:id="@+id/schedule_widget_configuration_title"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
             android:text="@string/schedule_widget_settings" android:textSize="24sp"
             android:textStyle="bold" android:textColor="@color/schedule_widget_text"
             android:layout_marginBottom="24dp" android:accessibilityHeading="true" />
@@ -15,7 +17,8 @@
         <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
             android:orientation="horizontal" android:layout_marginTop="24dp"
             android:gravity="center_vertical">
-            <TextView android:layout_width="0dp" android:layout_weight="1"
+            <TextView android:id="@+id/schedule_widget_transparency_label"
+                android:layout_width="0dp" android:layout_weight="1"
                 android:layout_height="wrap_content" android:textSize="18sp"
                 android:labelFor="@id/schedule_widget_transparency_slider"
                 android:text="@string/schedule_widget_transparency"
@@ -27,28 +30,40 @@
         </LinearLayout>
         <SeekBar android:id="@+id/schedule_widget_transparency_slider"
             android:layout_width="match_parent" android:layout_height="48dp" android:max="100" />
-        <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+        <TextView android:id="@+id/schedule_widget_transparency_hint"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
             android:text="@string/schedule_widget_transparency_hint" android:textSize="14sp"
             android:textColor="@color/schedule_widget_secondary" />
-        <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+        <TextView android:id="@+id/schedule_widget_theme_label"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
             android:layout_marginTop="20dp" android:text="@string/schedule_widget_theme"
             android:labelFor="@id/schedule_widget_theme" android:textSize="16sp"
             android:textColor="@color/schedule_widget_text" />
         <Spinner android:id="@+id/schedule_widget_theme"
             android:layout_width="match_parent" android:layout_height="48dp" />
-        <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+        <TextView android:id="@+id/schedule_widget_palette_label"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:layout_marginTop="12dp" android:text="@string/schedule_widget_palette"
+            android:labelFor="@id/schedule_widget_palette" android:textSize="16sp"
+            android:textColor="@color/schedule_widget_text" />
+        <Spinner android:id="@+id/schedule_widget_palette"
+            android:layout_width="match_parent" android:layout_height="48dp" />
+        <TextView android:id="@+id/schedule_widget_text_size_label"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
             android:layout_marginTop="12dp" android:text="@string/schedule_widget_text_size"
             android:labelFor="@id/schedule_widget_text_size" android:textSize="16sp"
             android:textColor="@color/schedule_widget_text" />
         <Spinner android:id="@+id/schedule_widget_text_size"
             android:layout_width="match_parent" android:layout_height="48dp" />
-        <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+        <TextView android:id="@+id/schedule_widget_max_lessons_label"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
             android:layout_marginTop="12dp" android:text="@string/schedule_widget_max_lessons"
             android:labelFor="@id/schedule_widget_max_lessons" android:textSize="16sp"
             android:textColor="@color/schedule_widget_text" />
         <Spinner android:id="@+id/schedule_widget_max_lessons"
             android:layout_width="match_parent" android:layout_height="48dp" />
-        <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+        <TextView android:id="@+id/schedule_widget_lessons_hint"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
             android:text="@string/schedule_widget_lessons_hint" android:textSize="14sp"
             android:textColor="@color/schedule_widget_secondary" />
         <Switch android:id="@+id/schedule_widget_show_location"

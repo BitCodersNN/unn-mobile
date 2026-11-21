@@ -11,6 +11,7 @@ data class ScheduleLesson(
     val end: Long,
     val accentColor: Int? = null,
     val lecturer: String = "",
+    val typeKey: String? = null,
 ) {
     val identifier: String get() = "$start|$end|$title|$location"
 }

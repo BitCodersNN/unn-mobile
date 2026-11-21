@@ -96,7 +96,7 @@ abstract final class AppTheme {
       List.unmodifiable([
         ThemePalette(
           value: AppLightTheme.green,
-          label: 'Зелёная',
+          label: 'Бело-зелёная',
           theme: greenLight,
         ),
         ThemePalette(

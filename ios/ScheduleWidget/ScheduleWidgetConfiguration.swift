@@ -5,6 +5,20 @@ import AppIntents
 import WidgetKit
 
 @available(iOS 17.0, *)
+extension ScheduleWidgetPalette: AppEnum {
+    static var typeDisplayRepresentation: TypeDisplayRepresentation { "Палитра виджета" }
+    static var caseDisplayRepresentations: [ScheduleWidgetPalette: DisplayRepresentation] {
+        [
+            .app: "Как в приложении",
+            .lightGreen: "Бело-зелёная",
+            .lightBlue: "Бело-синяя",
+            .darkGreen: "Тёмно-зелёная",
+            .darkGraphite: "Графитовая"
+        ]
+    }
+}
+
+@available(iOS 17.0, *)
 extension ScheduleWidgetTextSize: AppEnum {
     static var typeDisplayRepresentation: TypeDisplayRepresentation { "Размер текста" }
     static var caseDisplayRepresentations: [ScheduleWidgetTextSize: DisplayRepresentation] {
@@ -46,8 +60,11 @@ enum ScheduleWidgetLessonLimit: String, AppEnum {
 struct ScheduleWidgetConfiguration: WidgetConfigurationIntent {
     static var title: LocalizedStringResource { "Настройки расписания" }
     static var description: IntentDescription {
-        "Выберите размер текста, количество занятий и информацию о них. Если места мало, занятий будет меньше."
+        "Выберите палитру, размер текста, количество занятий и информацию о них. Если места мало, занятий будет меньше."
     }
+
+    @Parameter(title: "Палитра виджета", default: .app)
+    var palette: ScheduleWidgetPalette
 
     @Parameter(title: "Размер текста", default: .normal)
     var textSize: ScheduleWidgetTextSize
@@ -63,6 +80,7 @@ struct ScheduleWidgetConfiguration: WidgetConfigurationIntent {
 
     static var parameterSummary: some ParameterSummary {
         Summary {
+            \.$palette
             \.$textSize
             \.$lessonLimit
             \.$showLocation
@@ -75,7 +93,8 @@ struct ScheduleWidgetConfiguration: WidgetConfigurationIntent {
             textSize: textSize,
             maxLessons: lessonLimit.count,
             showLocation: showLocation,
-            showLecturer: showLecturer
+            showLecturer: showLecturer,
+            palette: palette
         )
     }
 }

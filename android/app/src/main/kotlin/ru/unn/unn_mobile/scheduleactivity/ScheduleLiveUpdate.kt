@@ -13,9 +13,9 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import ru.bitcodersnn.unnstudenthub.R
+import ru.bitcodersnn.unnstudenthub.schedule.ScheduleAppearance
 import ru.bitcodersnn.unnstudenthub.schedule.ScheduleLesson
 import ru.bitcodersnn.unnstudenthub.schedule.ScheduleNavigation
-import ru.bitcodersnn.unnstudenthub.schedule.SchedulePalette
 import ru.bitcodersnn.unnstudenthub.schedule.ScheduleSnapshotProvider
 
 object ScheduleLiveUpdate {
@@ -110,7 +110,8 @@ object ScheduleLiveUpdate {
         val progress = if (active)
             (((now - lesson.start).coerceIn(0, duration) * 1000) / duration).toInt()
         else 1000
-        val accent = SchedulePalette.lessonAccent(context, lesson)
+        val appearance = ScheduleAppearance(context)
+        val accent = appearance.palette(appearance.systemDark).lessonAccent(lesson)
         val style = Notification.ProgressStyle()
             .setProgressSegments(listOf(Notification.ProgressStyle.Segment(1000).setColor(accent)))
             .setProgress(progress)

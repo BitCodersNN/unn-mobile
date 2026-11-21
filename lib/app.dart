@@ -14,6 +14,7 @@ import 'package:unn_mobile/core/services/interfaces/schedule_widget/schedule_wid
 import 'package:unn_mobile/core/services/interfaces/schedule_widget/schedule_widget_service.dart';
 import 'package:unn_mobile/core/viewmodels/factories/main_page_routes_view_models_factory.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/schedule/schedule_screen_view_model.dart';
+import 'package:unn_mobile/ui/home_widget/schedule_appearance.dart';
 import 'package:unn_mobile/ui/home_widget/schedule_widget_binding.dart';
 import 'package:unn_mobile/ui/router.dart';
 import 'package:unn_mobile/ui/theme/app_theme.dart';
@@ -65,7 +66,15 @@ class _UnnMobileState extends State<UnnMobile> {
       _openPersonalSchedule,
       widget.scheduleActivityPlatform,
     )..start(initialLaunch: _widgetLaunch);
+    widget.themeController.addListener(_syncScheduleAppearance);
+    _syncScheduleAppearance();
   }
+
+  void _syncScheduleAppearance() => unawaited(
+    widget.scheduleWidgetPlatform.writeAppearance(
+      buildScheduleAppearance(widget.themeController),
+    ),
+  );
 
   void _openPersonalSchedule() {
     final model = _routesViewModelsFactory.getCached<ScheduleScreenViewModel>();
@@ -83,6 +92,7 @@ class _UnnMobileState extends State<UnnMobile> {
 
   @override
   void dispose() {
+    widget.themeController.removeListener(_syncScheduleAppearance);
     _scheduleWidget.dispose();
     _router.dispose();
     _routesViewModelsFactory.dispose();

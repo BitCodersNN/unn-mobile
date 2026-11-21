@@ -45,6 +45,10 @@ class ScheduleWidgetPlatformImpl implements ScheduleWidgetPlatform {
   );
 
   @override
+  Future<void> writeAppearance(Map<String, Object> appearance) =>
+      _invoke<void>('writeAppearance', jsonEncode(appearance));
+
+  @override
   Future<bool> consumeLaunch() async =>
       await _invoke<bool>('consumeLaunch') ?? false;
 

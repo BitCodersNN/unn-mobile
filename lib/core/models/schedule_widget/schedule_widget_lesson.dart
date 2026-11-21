@@ -12,6 +12,7 @@ class _ScheduleWidgetLessonJsonKeys {
   static const String start = 'start';
   static const String end = 'end';
   static const String accentColor = 'accentColor';
+  static const String typeKey = 'typeKey';
 }
 
 class ScheduleWidgetLesson {
@@ -22,6 +23,7 @@ class ScheduleWidgetLesson {
   final DateTime start;
   final DateTime end;
   final int? accentColor;
+  final String? typeKey;
 
   const ScheduleWidgetLesson({
     required this.title,
@@ -31,6 +33,7 @@ class ScheduleWidgetLesson {
     required this.start,
     required this.end,
     this.accentColor,
+    this.typeKey,
   });
 
   factory ScheduleWidgetLesson.fromSubject(
@@ -38,6 +41,7 @@ class ScheduleWidgetLesson {
     int? accentColor,
   }) => ScheduleWidgetLesson(
     accentColor: accentColor,
+    typeKey: subject.subjectTypeEnum.name,
     title: subject.name,
     type: subject.subjectType,
     location: [
@@ -51,6 +55,7 @@ class ScheduleWidgetLesson {
 
   factory ScheduleWidgetLesson.fromJson(JsonMap json) => ScheduleWidgetLesson(
     accentColor: json[_ScheduleWidgetLessonJsonKeys.accentColor] as int?,
+    typeKey: json[_ScheduleWidgetLessonJsonKeys.typeKey] as String?,
     title: json[_ScheduleWidgetLessonJsonKeys.title]! as String,
     type: json[_ScheduleWidgetLessonJsonKeys.type]! as String,
     location: json[_ScheduleWidgetLessonJsonKeys.location]! as String,
@@ -70,6 +75,7 @@ class ScheduleWidgetLesson {
     _ScheduleWidgetLessonJsonKeys.lecturer: lecturer,
     _ScheduleWidgetLessonJsonKeys.start: start.millisecondsSinceEpoch,
     _ScheduleWidgetLessonJsonKeys.end: end.millisecondsSinceEpoch,
+    if (typeKey != null) _ScheduleWidgetLessonJsonKeys.typeKey: typeKey,
     if (accentColor != null)
       _ScheduleWidgetLessonJsonKeys.accentColor: accentColor,
   };

@@ -38,6 +38,14 @@ final class ScheduleWidgetBridge {
             snapshotProvider.clear()
             reloadSchedule()
             result(nil)
+        case "writeAppearance":
+            guard let value = call.arguments as? String,
+                  let changed = ScheduleAppearanceStore().save(value) else {
+                result(FlutterError(code: "INVALID_APPEARANCE", message: "Unable to store schedule appearance", details: nil))
+                return
+            }
+            if changed { reloadSchedule() }
+            result(nil)
         case "consumeLaunch":
             let launch = pendingLaunch
             pendingLaunch = false

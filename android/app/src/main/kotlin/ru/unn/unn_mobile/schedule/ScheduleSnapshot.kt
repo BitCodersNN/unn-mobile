@@ -33,6 +33,7 @@ data class ScheduleSnapshot(
                         accentColor = if (lesson.isNull("accentColor")) null
                             else lesson.getLong("accentColor").toInt(),
                         lecturer = lesson.optString("lecturer", ""),
+                        typeKey = if (lesson.isNull("typeKey")) null else lesson.getString("typeKey"),
                     )
                 }.sortedBy { it.start },
             )

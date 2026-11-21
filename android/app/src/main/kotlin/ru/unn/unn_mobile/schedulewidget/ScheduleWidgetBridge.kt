@@ -8,6 +8,7 @@ import android.content.Intent
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
+import ru.bitcodersnn.unnstudenthub.schedule.ScheduleAppearance
 import ru.bitcodersnn.unnstudenthub.schedule.ScheduleNavigation
 import ru.bitcodersnn.unnstudenthub.schedule.ScheduleSnapshotProvider
 import ru.bitcodersnn.unnstudenthub.scheduleactivity.ScheduleLiveUpdate
@@ -42,6 +43,14 @@ class ScheduleWidgetBridge(private val context: Context, engine: FlutterEngine, 
                 provider.clear()
                 ScheduleWidgetProvider.updateAll(context)
                 ScheduleLiveUpdate.clear(context)
+                result.success(null)
+            }
+            "writeAppearance" -> {
+                val value = requireNotNull(call.arguments as? String)
+                if (ScheduleAppearance(context).save(value)) {
+                    ScheduleWidgetProvider.updateAll(context)
+                    ScheduleLiveUpdate.update(context)
+                }
                 result.success(null)
             }
             "consumeLaunch" -> {
