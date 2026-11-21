@@ -6,6 +6,7 @@ import 'dart:async';
 import 'package:flutter/widgets.dart';
 import 'package:unn_mobile/core/constants/main_page_paths.dart';
 import 'package:unn_mobile/core/misc/app_settings.dart';
+import 'package:unn_mobile/core/misc/schedule_activity/schedule_activity_platform.dart';
 import 'package:unn_mobile/core/misc/user/current_user_sync_storage.dart';
 import 'package:unn_mobile/core/services/interfaces/schedule_widget/schedule_widget_platform.dart';
 import 'package:unn_mobile/core/services/interfaces/schedule_widget/schedule_widget_service.dart';
@@ -14,6 +15,7 @@ import 'package:unn_mobile/ui/router.dart';
 
 class ScheduleWidgetBinding with WidgetsBindingObserver {
   final ScheduleWidgetService _service;
+  final ScheduleActivityPlatform _activityPlatform;
   final ScheduleWidgetPlatform _platform;
   final CurrentUserSyncStorage _user;
   final AppRouter _router;
@@ -28,6 +30,7 @@ class ScheduleWidgetBinding with WidgetsBindingObserver {
     this._user,
     this._router,
     this._onOpen,
+    this._activityPlatform,
   );
 
   void start({Future<bool>? initialLaunch}) {
@@ -38,8 +41,12 @@ class ScheduleWidgetBinding with WidgetsBindingObserver {
     AppSettings.optionsSaved.subscribe(_onSettingsChanged);
     _platform.setOpenHandler(_requestOpen);
     unawaited(_consumeLaunch(initialLaunch));
+    unawaited(_configureActivity());
     _refresh();
   }
+
+  Future<void> _configureActivity() =>
+      _activityPlatform.configure(AppSettings.scheduleActivity.value);
 
   Future<void> _consumeLaunch([Future<bool>? launch]) async {
     if (await (launch ?? _platform.consumeLaunch()) && !_disposed) {
@@ -80,6 +87,7 @@ class ScheduleWidgetBinding with WidgetsBindingObserver {
   }
 
   void _onSettingsChanged(dynamic _) {
+    unawaited(_configureActivity());
     if (_useRasp != AppSettings.useRaspSchedule) {
       _useRasp = AppSettings.useRaspSchedule;
       _refresh();
@@ -89,6 +97,7 @@ class ScheduleWidgetBinding with WidgetsBindingObserver {
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
+      unawaited(_configureActivity());
       unawaited(_consumeLaunch());
       _refresh();
     }
