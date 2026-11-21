@@ -59,6 +59,13 @@ class SettingsScreenViewModel extends BaseViewModel {
 
   bool get vibrationEnabled => AppSettings.vibrationEnabled;
 
+  bool get showTabBarDate => AppSettings.showTabBarDate.value;
+
+  Future<void> updateShowTabBarDate({required bool value}) async {
+    await AppSettings.updateShowTabBarDate(value: value);
+    notifyListeners();
+  }
+
   set vibrationEnabled(bool value) {
     AppSettings.vibrationEnabled = value;
     AppSettings.save();

@@ -11,6 +11,7 @@ import 'package:unn_mobile/ui/views/main_page/profile/widgets/employment_info_ca
 import 'package:unn_mobile/ui/views/main_page/profile/widgets/general_info_card.dart';
 import 'package:unn_mobile/ui/views/main_page/profile/widgets/profile_page_header.dart';
 import 'package:unn_mobile/ui/views/main_page/profile/widgets/study_info_card.dart';
+import 'package:unn_mobile/ui/views/main_page/widgets/main_page_app_bar.dart';
 import 'package:unn_mobile/ui/widgets/shimmer.dart';
 import 'package:unn_mobile/ui/widgets/shimmer_loading.dart';
 
@@ -51,10 +52,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(
-      title: const Text('Профиль'),
-      forceMaterialTransparency: true,
-    ),
+    appBar: buildMainPageAppBar(context, title: 'Профиль'),
     body: BaseView<ProfileViewModel>(
       model: _model,
       builder: (context, model, _) {

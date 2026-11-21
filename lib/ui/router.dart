@@ -18,6 +18,7 @@ import 'package:unn_mobile/ui/views/main_page/main_page.dart';
 import 'package:unn_mobile/ui/views/main_page/main_page_route_data.dart';
 import 'package:unn_mobile/ui/views/main_page/main_page_routing.dart';
 import 'package:unn_mobile/ui/views/main_page/settings/settings.dart';
+import 'package:unn_mobile/ui/views/main_page/widgets/main_page_app_bar.dart';
 
 class AppRouter extends ChangeNotifier {
   final ValueListenable<List<String>> _tabPaths;
@@ -165,7 +166,15 @@ class AppRouter extends ChangeNotifier {
           name: route.pageTitle,
           pageBuilder: (context, state) => NoTransitionPage(
             key: ValueKey(route.pagePath),
-            child: route.builder(context, state),
+            child: MainPageTabScope(
+              title: route.pageTitle,
+              showDate: route.pagePath == MainPagePaths.more
+                  ? null
+                  : AppSettings.showTabBarDate,
+              child: Builder(
+                builder: (context) => route.builder(context, state),
+              ),
+            ),
           ),
           routes: _buildSubroutes(route.subroutes),
         ),
