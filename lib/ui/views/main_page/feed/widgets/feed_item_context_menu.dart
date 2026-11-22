@@ -175,6 +175,9 @@ Future<void> _openFeedItemContextMenu({
   );
   final image = await source.toImage(pixelRatio: pixelRatio);
   try {
+    if (!context.mounted) {
+      return;
+    }
     await _pushFeedItemMenuRoute(
       context: context,
       navigator: navigator,
