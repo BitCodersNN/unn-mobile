@@ -25,6 +25,8 @@ Future<T?> showAnchoredPopup<T>(
   if (source is! RenderBox || !source.attached) {
     return null;
   }
+  final enclosingRoute = ModalRoute.of(context);
+  final shellRoute = ModalRoute.of(Navigator.of(context).context);
   final navigator = Navigator.of(context, rootNavigator: true);
   final overlay = navigator.overlay!.context.findRenderObject()! as RenderBox;
   final route = _AnchoredPopupRoute<T>(
@@ -40,10 +42,48 @@ Future<T?> showAnchoredPopup<T>(
     themes: InheritedTheme.capture(from: context, to: navigator.context),
     dismissLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
   );
+  final popBlocker = _PopupPopBlocker();
+  enclosingRoute?.registerPopEntry(popBlocker);
+  if (shellRoute != enclosingRoute) {
+    shellRoute?.registerPopEntry(popBlocker);
+  }
+  try {
+    return await _pushAnchoredPopupRoute(
+      context: context,
+      navigator: navigator,
+      route: route,
+    );
+  } finally {
+    if (shellRoute != enclosingRoute) {
+      shellRoute?.unregisterPopEntry(popBlocker);
+    }
+    enclosingRoute?.unregisterPopEntry(popBlocker);
+    popBlocker.dispose();
+  }
+}
+
+Future<T?> _pushAnchoredPopupRoute<T>({
+  required BuildContext context,
+  required NavigatorState navigator,
+  required _AnchoredPopupRoute<T> route,
+}) async {
   triggerHaptic(HapticIntensity.medium);
   final result = await navigator.push(route);
   await route.completed;
   return context.mounted ? result : null;
+}
+
+class _PopupPopBlocker implements PopEntry<Object?> {
+  @override
+  final ValueNotifier<bool> canPopNotifier = ValueNotifier<bool>(false);
+
+  @override
+  void onPopInvoked(bool didPop) {}
+
+  @override
+  void onPopInvokedWithResult(bool didPop, Object? result) {}
+
+  void dispose() => canPopNotifier.dispose();
 }
 
 void dismissAnchoredPopup<T>(
@@ -120,7 +160,13 @@ class _AnchoredPopupRoute<T> extends PopupRoute<T> {
             return Stack(
               children: [
                 Positioned.fill(
-                  child: IgnorePointer(
+                  child: GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTap: () {
+                      if (ModalRoute.of(context)?.isCurrent ?? false) {
+                        Navigator.of(context).pop();
+                      }
+                    },
                     child: blurSigma > 0
                         ? BackdropFilter(
                             filter: ui.ImageFilter.blur(
