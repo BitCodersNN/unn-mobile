@@ -17,8 +17,15 @@ import 'package:unn_mobile/core/services/interfaces/giveaway_promo/announcement_
 class ResolvedAnnouncement {
   final AnnouncementItem item;
   final List<File> imageFiles;
+  final String? actionUrl;
 
-  const ResolvedAnnouncement({required this.item, this.imageFiles = const []});
+  const ResolvedAnnouncement({
+    required this.item,
+    this.imageFiles = const [],
+    this.actionUrl,
+  });
+
+  String? get effectiveActionUrl => actionUrl ?? item.action?.urls['default'];
 }
 
 class GiveawayPromoManager {
@@ -81,7 +88,13 @@ class GiveawayPromoManager {
       if (imageFiles == null) {
         continue;
       }
-      candidates.add(ResolvedAnnouncement(item: item, imageFiles: imageFiles));
+      candidates.add(
+        ResolvedAnnouncement(
+          item: item,
+          imageFiles: imageFiles,
+          actionUrl: item.action?.resolveUrl(env),
+        ),
+      );
     }
     return _selectCandidate(candidates, lastPickedId);
   }

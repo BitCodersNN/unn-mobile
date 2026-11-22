@@ -27,6 +27,7 @@ class AnnouncementEnvironmentProvider {
       isTesting: flavor.isTesting,
       storeName: storeName,
       platform: Platform.operatingSystem,
+      flavor: flavor.name,
       userType: _currentUserStorage?.currentUserData?.runtimeType,
     );
   }

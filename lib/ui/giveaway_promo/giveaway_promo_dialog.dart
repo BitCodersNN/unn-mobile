@@ -35,7 +35,7 @@ Future<void> showResolvedGiveawayPromoDialog(
     title: item.title,
     body: item.text,
     actionLabel: item.action?.label,
-    telegramUrl: item.action?.url,
+    telegramUrl: resolved.effectiveActionUrl,
     images: [for (final file in resolved.imageFiles) FileImage(file)],
     onShown: () => unawaited(promoManager.markShown(item.id)),
     onTelegramTap: () => promoManager.markActionClicked(item.id),

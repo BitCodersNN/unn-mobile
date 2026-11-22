@@ -10,18 +10,61 @@ import 'package:unn_mobile/core/models/giveaway_promo/announcement_target.dart';
 
 class AnnouncementAction {
   final String label;
-  final String url;
+  final Map<String, String> urls;
 
-  const AnnouncementAction({required this.label, required this.url});
+  const AnnouncementAction({required this.label, this.urls = const {}});
 
   factory AnnouncementAction.fromJson(JsonMap json) => AnnouncementAction(
     label: (json[AnnouncementJsonKeys.label] as String? ?? '').trim(),
-    url: (json[AnnouncementJsonKeys.url] as String? ?? '').trim(),
+    urls: _parseUrls(json[AnnouncementJsonKeys.urls]),
   );
+
+  String? resolveUrl(AnnouncementEnvironment env) {
+    if (urls.isEmpty) {
+      return null;
+    }
+    final normalizedUrls = <String, String>{
+      for (final entry in urls.entries)
+        AnnouncementTarget.normalizeToken(entry.key): entry.value,
+    };
+    final platform = AnnouncementTarget.normalizeToken(env.platform);
+    final flavor = AnnouncementTarget.normalizeToken(env.flavor);
+    final store = AnnouncementTarget.normalizeToken(env.storeName);
+    final candidateKeys = <String>[
+      if (platform.isNotEmpty && flavor.isNotEmpty) '$platform:$flavor',
+      if (platform.isNotEmpty && store.isNotEmpty) '$platform:$store',
+      if (platform == 'android' && flavor.isNotEmpty) flavor,
+      if (platform == 'android' && store.isNotEmpty) store,
+      if (platform.isNotEmpty) platform,
+      'default',
+    ];
+    for (final key in candidateKeys) {
+      final matched = normalizedUrls[key];
+      if (matched != null && matched.isNotEmpty) {
+        return matched;
+      }
+    }
+    return null;
+  }
+
+  static Map<String, String> _parseUrls(Object? raw) {
+    if (raw is! Map) {
+      return const {};
+    }
+    final result = <String, String>{};
+    for (final entry in raw.entries) {
+      final key = entry.key?.toString().trim() ?? '';
+      final value = entry.value is String ? (entry.value as String).trim() : '';
+      if (key.isNotEmpty && value.isNotEmpty) {
+        result[key] = value;
+      }
+    }
+    return Map<String, String>.unmodifiable(result);
+  }
 
   JsonMap toJson() => {
     AnnouncementJsonKeys.label: label,
-    AnnouncementJsonKeys.url: url,
+    AnnouncementJsonKeys.urls: urls,
   };
 }
 

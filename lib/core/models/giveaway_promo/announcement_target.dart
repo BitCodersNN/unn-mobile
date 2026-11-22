@@ -14,6 +14,7 @@ class AnnouncementEnvironment {
   final bool isTesting;
   final String storeName;
   final String platform;
+  final String flavor;
   final Type? userType;
 
   const AnnouncementEnvironment({
@@ -22,6 +23,7 @@ class AnnouncementEnvironment {
     required this.isTesting,
     required this.storeName,
     required this.platform,
+    this.flavor = '',
     this.userType,
   });
 }
@@ -87,8 +89,8 @@ class AnnouncementTarget {
       }
     }
     if (stores != null && stores!.isNotEmpty) {
-      final envStore = _normalizeToken(env.storeName);
-      if (!stores!.any((store) => _normalizeToken(store) == envStore)) {
+      final envStore = normalizeToken(env.storeName);
+      if (!stores!.any((store) => normalizeToken(store) == envStore)) {
         return false;
       }
     }
@@ -135,7 +137,7 @@ class AnnouncementTarget {
         .toList(growable: false);
   }
 
-  static String _normalizeToken(String value) =>
+  static String normalizeToken(String value) =>
       value.trim().toLowerCase().replaceAll(' ', '');
 
   JsonMap toJson() => {

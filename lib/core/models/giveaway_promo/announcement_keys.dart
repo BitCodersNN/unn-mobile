@@ -47,5 +47,5 @@ abstract final class AnnouncementJsonKeys {
   static const maxBuild = 'max_build';
 
   static const label = 'label';
-  static const url = 'url';
+  static const urls = 'urls';
 }
