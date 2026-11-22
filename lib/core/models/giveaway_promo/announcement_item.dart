@@ -86,8 +86,7 @@ class AnnouncementItem {
                   map[AnnouncementJsonKeys.body] as String? ??
                   '')
               .trim(),
-      images:
-          parseJsonStringList(map[AnnouncementJsonKeys.images]) ?? const [],
+      images: parseJsonStringList(map[AnnouncementJsonKeys.images]) ?? const [],
       period: AnnouncementPeriod.fromJson(map[AnnouncementJsonKeys.period]),
       policy: AnnouncementPolicy.fromJson(map[AnnouncementJsonKeys.policy]),
       action: rawAction is JsonMap

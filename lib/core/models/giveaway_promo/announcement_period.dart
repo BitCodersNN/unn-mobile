@@ -52,7 +52,8 @@ class AnnouncementPeriod {
   }
 
   JsonMap toJson() => {
-    if (startAt != null) AnnouncementJsonKeys.startAt: startAt!.toIso8601String(),
+    if (startAt != null)
+      AnnouncementJsonKeys.startAt: startAt!.toIso8601String(),
     if (endAt != null)
       AnnouncementJsonKeys.endAt: isEndDateOnly
           ? _formatDateOnly(endAt!)
