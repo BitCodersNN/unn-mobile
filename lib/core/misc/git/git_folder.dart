@@ -4,7 +4,8 @@
 enum GitPath {
   loadingScreen('loading_screen', 'loading_page_config.json'),
   authors('authors', 'authors_config.json'),
-  birthday('birthday', 'birthday_greetings.json');
+  birthday('birthday', 'birthday_greetings.json'),
+  announcements('announcements', 'giveaways.json');
 
   static const String branch = 'develop';
   final String directory;

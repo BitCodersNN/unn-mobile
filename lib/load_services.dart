@@ -24,6 +24,7 @@ import 'package:unn_mobile/core/misc/app_settings.dart';
 import 'package:unn_mobile/core/misc/app_theme_controller.dart';
 import 'package:unn_mobile/core/misc/birthday/birthday_greeting_manager.dart';
 import 'package:unn_mobile/core/misc/git/git_folder.dart';
+import 'package:unn_mobile/core/misc/giveaway_promo/giveaway_promo_manager.dart';
 import 'package:unn_mobile/core/misc/json/json_utils.dart';
 import 'package:unn_mobile/core/misc/schedule_activity/schedule_activity_platform.dart';
 import 'package:unn_mobile/core/misc/user/current_user_sync_storage.dart';
@@ -31,6 +32,7 @@ import 'package:unn_mobile/core/models/about/authors_catalog.dart';
 import 'package:unn_mobile/core/models/birthday/birthday_greeting_catalog.dart';
 import 'package:unn_mobile/core/models/common/online_status_data.dart';
 import 'package:unn_mobile/core/models/feed/blog_post_type.dart';
+import 'package:unn_mobile/core/models/giveaway_promo/announcement_catalog.dart';
 import 'package:unn_mobile/core/models/loading_page/loading_page_catalog.dart';
 import 'package:unn_mobile/core/models/schedule_widget/schedule_widget_lesson.dart';
 import 'package:unn_mobile/core/providers/implementations/authorisation/authorisation_data_provider_impl.dart';
@@ -40,6 +42,7 @@ import 'package:unn_mobile/core/providers/implementations/common/message_ignored
 import 'package:unn_mobile/core/providers/implementations/feed/blog_post_provider_impl.dart';
 import 'package:unn_mobile/core/providers/implementations/feed/last_feed_load_date_time_provider_impl.dart';
 import 'package:unn_mobile/core/providers/implementations/git/git_resource_cache_provider_impl.dart';
+import 'package:unn_mobile/core/providers/implementations/giveaway_promo/giveaway_promo_provider_impl.dart';
 import 'package:unn_mobile/core/providers/implementations/grade_book/mark_by_subject_provider_impl.dart';
 import 'package:unn_mobile/core/providers/implementations/main_page/menu_order_provider_impl.dart';
 import 'package:unn_mobile/core/providers/implementations/profile/user_data_provider_impl.dart';
@@ -51,6 +54,7 @@ import 'package:unn_mobile/core/providers/interfaces/common/app_theme_provider.d
 import 'package:unn_mobile/core/providers/interfaces/common/message_ignored_keys_provider.dart';
 import 'package:unn_mobile/core/providers/interfaces/feed/blog_post_provider.dart';
 import 'package:unn_mobile/core/providers/interfaces/feed/last_feed_load_date_time_provider.dart';
+import 'package:unn_mobile/core/providers/interfaces/giveaway_promo/giveaway_promo_provider.dart';
 import 'package:unn_mobile/core/providers/interfaces/grade_book/mark_by_subject_provider.dart';
 import 'package:unn_mobile/core/providers/interfaces/main_page/menu_order_provider.dart';
 import 'package:unn_mobile/core/providers/interfaces/profile/user_data_provider.dart';
@@ -101,6 +105,8 @@ import 'package:unn_mobile/core/services/implementations/feed/reaction_action_se
 import 'package:unn_mobile/core/services/implementations/feed/reaction_rating_list_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/git/git_config_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/git/git_json_resource_source.dart';
+import 'package:unn_mobile/core/services/implementations/giveaway_promo/announcement_image_downloader_service_impl.dart';
+import 'package:unn_mobile/core/services/implementations/giveaway_promo/announcement_resource_source.dart';
 import 'package:unn_mobile/core/services/implementations/grade_book/curriculum_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/grade_book/grade_book_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/loading_page/loading_page_resource_source.dart';
@@ -156,6 +162,7 @@ import 'package:unn_mobile/core/services/interfaces/feed/reaction_action_service
 import 'package:unn_mobile/core/services/interfaces/feed/reaction_rating_list_service.dart';
 import 'package:unn_mobile/core/services/interfaces/git/git_config_service.dart';
 import 'package:unn_mobile/core/services/interfaces/git/git_resource_source.dart';
+import 'package:unn_mobile/core/services/interfaces/giveaway_promo/announcement_image_downloader_service.dart';
 import 'package:unn_mobile/core/services/interfaces/grade_book/curriculum_service.dart';
 import 'package:unn_mobile/core/services/interfaces/grade_book/grade_book_service.dart';
 import 'package:unn_mobile/core/services/interfaces/loading_page/logo_downloader_service.dart';
@@ -279,6 +286,18 @@ void registerDependencies() {
         get<GitResourceRepository<BirthdayGreetingCatalog>>(),
       ),
     )
+    ..registerSingleton<GiveawayPromoProvider>(
+      () => GiveawayPromoProviderImpl(get<StorageService>()),
+    )
+    ..registerSingleton<GiveawayPromoManager>(
+      () => GiveawayPromoManager(
+        get<GiveawayPromoProvider>(),
+        get<LoggerService>(),
+        get<GitResourceRepository<AnnouncementCatalog>>(),
+        get<AnnouncementImageDownloaderService>(),
+        get<CurrentUserSyncStorage>(),
+      ),
+    )
     // =========================================================================
     // 2. СЕТЕВЫЕ ПОМОЩНИКИ (API HELPERS)
     // =========================================================================
@@ -352,6 +371,12 @@ void registerDependencies() {
     )
     ..registerSingleton<LogoDownloaderService>(
       () => LogoDownloaderServiceImpl(
+        get<LoggerService>(),
+        get<GitHubRawApiHelper>(),
+      ),
+    )
+    ..registerSingleton<AnnouncementImageDownloaderService>(
+      () => AnnouncementImageDownloaderServiceImpl(
         get<LoggerService>(),
         get<GitHubRawApiHelper>(),
       ),
@@ -845,6 +870,16 @@ void registerDependencies() {
     BirthdayGreetingCatalog.fromJson,
     cacheKey: GitResourceCacheKeys.birthday,
     toJson: (catalog) => catalog.toJson(),
+  );
+  registerGitResource<AnnouncementCatalog>(
+    GitPath.announcements,
+    AnnouncementCatalog.fromJson,
+    cacheKey: GitResourceCacheKeys.announcements,
+    toJson: (catalog) => catalog.toJson(),
+    source: AnnouncementResourceSource(
+      get<GitConfigService>(),
+      get<AnnouncementImageDownloaderService>(),
+    ),
   );
 
   for (final type in BlogPostType.values) {

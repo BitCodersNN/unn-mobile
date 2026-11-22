@@ -33,6 +33,8 @@ class _RegularExpressionSource {
   static const timePattern = r'(\d{1,2}:\d{2})';
   static const streamContentPattern = r'\(([^()]*)\)';
   static const multiValueSeparatorPattern = r'[|;,]';
+  static const isoDateOnlyPattern = r'^\d{4}-\d{2}-\d{2}$';
+  static const semverPrefixPattern = r'^v?(\d+(?:\.\d+)*)';
 }
 
 class RegularExpressions {
@@ -131,5 +133,13 @@ class RegularExpressions {
 
   static final multiValueSeparatorRegExp = RegExp(
     _RegularExpressionSource.multiValueSeparatorPattern,
+  );
+
+  static final isoDateOnlyRegExp = RegExp(
+    _RegularExpressionSource.isoDateOnlyPattern,
+  );
+
+  static final semverPrefixRegExp = RegExp(
+    _RegularExpressionSource.semverPrefixPattern,
   );
 }

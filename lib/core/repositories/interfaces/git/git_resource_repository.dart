@@ -7,6 +7,9 @@ abstract interface class GitResourceRepository<T> {
   /// Возвращает кешированный ресурс или загружает его при отсутствии кеша.
   Future<CachedGitResource<T>?> get();
 
+  /// Возвращает только кешированный ресурс без обращения к сети.
+  Future<CachedGitResource<T>?> getCached();
+
   /// Обновляет ресурс при изменении SHA, сохраняя прежний кеш при ошибке.
   Future<CachedGitResource<T>?> refresh();
 }
