@@ -99,7 +99,7 @@ class UnnMobileColors extends ThemeExtension<UnnMobileColors> {
     },
     ligtherTextColor: Color(0xFFAFC5BE),
     idkWhatColor: Color(0xFF93ABA2),
-    wideButtonBottomColor: Color(0xFF4CA99B),
+    wideButtonBottomColor: Color(0xFF3B766C),
     shimmerBaseColor: Color(0xFF203530),
     shimmerHighlightColor: Color(0xFF334A44),
   );

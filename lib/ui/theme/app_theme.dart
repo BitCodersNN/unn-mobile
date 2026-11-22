@@ -49,9 +49,9 @@ abstract final class AppTheme {
       );
 
   static final ThemeData darkGreen = _build(
-    _darkColors(const Color(0xFF79D7CA)).copyWith(
-      primary: const Color(0xFF79D7CA),
-      onPrimary: const Color(0xFF003832),
+    _darkColors(const Color(0xFF529388)).copyWith(
+      primary: const Color(0xFF529388),
+      onPrimary: const Color(0xFF06221E),
       primaryContainer: const Color(0xFF244E47),
       onPrimaryContainer: const Color(0xFFC0EEE3),
       surface: const Color(0xFF101D1B),
