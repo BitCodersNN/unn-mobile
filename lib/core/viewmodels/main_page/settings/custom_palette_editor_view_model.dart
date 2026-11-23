@@ -6,10 +6,14 @@ import 'package:unn_mobile/core/constants/regular_expressions.dart';
 import 'package:unn_mobile/core/models/common/custom_palette_config.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
 
-typedef PaletteThemeBuilder =
-    ThemeData Function(CustomPaletteConfig config, Brightness brightness);
-typedef PaletteSlotColorResolver =
-    Color Function(ThemeData theme, PaletteColorSlot slot);
+typedef PaletteThemeBuilder = ThemeData Function(
+  CustomPaletteConfig config,
+  Brightness brightness,
+);
+typedef PaletteSlotColorResolver = Color Function(
+  ThemeData theme,
+  PaletteColorSlot slot,
+);
 
 class CustomPaletteEditorViewModel extends BaseViewModel {
   final CustomPaletteConfig _initialConfig;
