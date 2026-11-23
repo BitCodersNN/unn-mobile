@@ -179,8 +179,7 @@ abstract final class CustomPaletteThemeBuilder {
         PaletteColorSlot.onSurface: scheme.onSurface,
         PaletteColorSlot.onSurfaceVariant: scheme.onSurfaceVariant,
         PaletteColorSlot.outlineVariant: scheme.outlineVariant,
-        if (wideButtonBottom != null)
-          PaletteColorSlot.wideButtonBottom: wideButtonBottom,
+        PaletteColorSlot.wideButtonBottom: ?wideButtonBottom,
       },
     );
   }
