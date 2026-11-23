@@ -160,7 +160,7 @@ abstract final class AppTheme {
       cardColor: colors.surfaceContainerLow,
       appBarTheme: AppBarTheme(
         scrolledUnderElevation: 3,
-        backgroundColor: isDark ? colors.surface : Colors.white,
+        backgroundColor: isDark ? colors.surface : colors.surfaceContainerLowest,
         foregroundColor: colors.onSurface,
       ),
       cupertinoOverrideTheme: CupertinoThemeData(
@@ -200,9 +200,9 @@ abstract final class AppTheme {
       snackBarTheme: SnackBarThemeData(
         backgroundColor: isDark
             ? colors.surfaceContainerHighest
-            : const Color(0xFF323232),
+            : colors.inverseSurface,
         contentTextStyle: TextStyle(
-          color: isDark ? colors.onSurface : const Color(0xFFF0F0F0),
+          color: isDark ? colors.onSurface : colors.onInverseSurface,
           fontSize: 16,
         ),
         actionTextColor:
