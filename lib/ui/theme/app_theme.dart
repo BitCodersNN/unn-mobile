@@ -5,6 +5,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:unn_mobile/core/models/common/app_dark_theme.dart';
 import 'package:unn_mobile/core/models/common/app_light_theme.dart';
+import 'package:unn_mobile/core/models/common/custom_palette_config.dart';
+import 'package:unn_mobile/ui/theme/custom_palette_theme_builder.dart';
 import 'package:unn_mobile/ui/theme/theme_palette.dart';
 import 'package:unn_mobile/ui/unn_mobile_colors.dart';
 
@@ -37,9 +39,10 @@ abstract final class AppTheme {
     UnnMobileColors.blueLight,
   );
 
-  static ColorScheme _darkColors(Color seed) =>
+  static ColorScheme _darkColors(Color seed, {Color? secondary}) =>
       ColorScheme.fromSeed(
         seedColor: seed,
+        secondary: secondary,
         brightness: Brightness.dark,
       ).copyWith(
         error: const Color(0xFFF2B8AD),
@@ -120,11 +123,71 @@ abstract final class AppTheme {
         ),
       ]);
 
-  static ThemeData lightThemeFor(AppLightTheme theme) =>
-      _themeFor(theme, lightPalettes);
+  static List<ThemePalette<AppLightTheme>> lightPalettesFor(
+    CustomPaletteConfig? custom,
+  ) => List.unmodifiable([
+    ...lightPalettes,
+    ThemePalette(
+      value: AppLightTheme.custom,
+      label: 'Своя',
+      theme: buildCustomTheme(
+        custom ?? CustomPaletteConfig.defaultLight(),
+        brightness: Brightness.light,
+      ),
+    ),
+  ]);
 
-  static ThemeData darkThemeFor(AppDarkTheme theme) =>
-      _themeFor(theme, darkPalettes);
+  static List<ThemePalette<AppDarkTheme>> darkPalettesFor(
+    CustomPaletteConfig? custom,
+  ) => List.unmodifiable([
+    ...darkPalettes,
+    ThemePalette(
+      value: AppDarkTheme.custom,
+      label: 'Своя',
+      theme: buildCustomTheme(
+        custom ?? CustomPaletteConfig.defaultDark(),
+        brightness: Brightness.dark,
+      ),
+    ),
+  ]);
+
+  static ThemeData lightThemeFor(
+    AppLightTheme theme, {
+    CustomPaletteConfig? custom,
+  }) => switch (theme) {
+    AppLightTheme.custom => buildCustomTheme(
+      custom ?? CustomPaletteConfig.defaultLight(),
+      brightness: Brightness.light,
+    ),
+    _ => _themeFor(theme, lightPalettes),
+  };
+
+  static ThemeData darkThemeFor(
+    AppDarkTheme theme, {
+    CustomPaletteConfig? custom,
+  }) => switch (theme) {
+    AppDarkTheme.custom => buildCustomTheme(
+      custom ?? CustomPaletteConfig.defaultDark(),
+      brightness: Brightness.dark,
+    ),
+    _ => _themeFor(theme, darkPalettes),
+  };
+
+  static ThemeData buildCustomTheme(
+    CustomPaletteConfig config, {
+    required Brightness brightness,
+  }) => CustomPaletteThemeBuilder.build(
+    config,
+    brightness: brightness,
+    darkColorsFactory: _darkColors,
+    themeFactory: _build,
+  );
+
+  static CustomPaletteConfig configFromTheme(ThemeData theme) =>
+      CustomPaletteThemeBuilder.configFromTheme(theme);
+
+  static Color colorForSlot(ThemeData theme, PaletteColorSlot slot) =>
+      CustomPaletteThemeBuilder.colorForSlot(theme, slot);
 
   static ThemeData _themeFor<T extends Enum>(
     T value,
@@ -135,8 +198,10 @@ abstract final class AppTheme {
     ColorScheme colors,
     UnnMobileColors extraColors, {
     Color? snackBarActionColor,
+    Color? cardColor,
   }) {
     final isDark = colors.brightness == Brightness.dark;
+    final effectiveCardColor = cardColor ?? colors.surfaceContainerLow;
     return ThemeData(
       useMaterial3: true,
       colorScheme: colors,
@@ -157,10 +222,10 @@ abstract final class AppTheme {
       primaryColor: colors.primary,
       scaffoldBackgroundColor: colors.surface,
       canvasColor: colors.surface,
-      cardColor: colors.surfaceContainerLow,
+      cardColor: effectiveCardColor,
       appBarTheme: AppBarTheme(
         scrolledUnderElevation: 3,
-        backgroundColor: isDark ? colors.surface : colors.surfaceContainerLowest,
+        backgroundColor: colors.surface,
         foregroundColor: colors.onSurface,
       ),
       cupertinoOverrideTheme: CupertinoThemeData(
@@ -171,7 +236,7 @@ abstract final class AppTheme {
         barBackgroundColor: colors.surface,
       ),
       cardTheme: CardThemeData(
-        color: colors.surfaceContainerLow,
+        color: effectiveCardColor,
         surfaceTintColor: Colors.transparent,
       ),
       dialogTheme: DialogThemeData(

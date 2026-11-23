@@ -1,10 +1,13 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2026 BitCodersNN
 
+import 'dart:convert';
+
 import 'package:unn_mobile/core/constants/string_keys/app_settings_keys.dart';
 import 'package:unn_mobile/core/models/common/app_dark_theme.dart';
 import 'package:unn_mobile/core/models/common/app_light_theme.dart';
 import 'package:unn_mobile/core/models/common/app_theme_mode.dart';
+import 'package:unn_mobile/core/models/common/custom_palette_config.dart';
 import 'package:unn_mobile/core/providers/interfaces/common/app_theme_provider.dart';
 import 'package:unn_mobile/core/services/interfaces/common/storage_service.dart';
 
@@ -55,6 +58,42 @@ class AppThemeProviderImpl implements AppThemeProvider {
   @override
   Future<void> saveLightTheme(AppLightTheme theme) =>
       _saveValue(AppSettingsKeys.lightTheme, theme.name);
+
+  @override
+  Future<CustomPaletteConfig?> readCustomLightPalette() =>
+      _readCustomPalette(AppSettingsKeys.customLightPalette);
+
+  @override
+  Future<void> saveCustomLightPalette(CustomPaletteConfig config) => _saveValue(
+    AppSettingsKeys.customLightPalette,
+    jsonEncode(config.toJson()),
+  );
+
+  @override
+  Future<CustomPaletteConfig?> readCustomDarkPalette() =>
+      _readCustomPalette(AppSettingsKeys.customDarkPalette);
+
+  @override
+  Future<void> saveCustomDarkPalette(CustomPaletteConfig config) => _saveValue(
+    AppSettingsKeys.customDarkPalette,
+    jsonEncode(config.toJson()),
+  );
+
+  Future<CustomPaletteConfig?> _readCustomPalette(String key) async {
+    final saved = await _storage.read(key: key);
+    if (saved == null) {
+      return null;
+    }
+    return CustomPaletteConfig.tryFromJson(_tryDecodeJson(saved));
+  }
+
+  Object? _tryDecodeJson(String raw) {
+    try {
+      return jsonDecode(raw);
+    } on FormatException {
+      return null;
+    }
+  }
 
   Future<void> _saveValue(String key, String value) {
     Future<void> write() => _storage.write(key: key, value: value);

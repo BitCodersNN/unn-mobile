@@ -33,7 +33,7 @@ class _LoadingPageState extends State<LoadingPage> {
         future: _loadingPages,
         builder: (context, snapshot) {
           final theme = Theme.of(context);
-          final backgroundColor = theme.colorScheme.surfaceContainerLowest;
+          final backgroundColor = theme.colorScheme.surface;
           final overlay =
               ThemeData.estimateBrightnessForColor(backgroundColor) ==
                   Brightness.dark

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-// Copyright 2025 BitCodersNN
+// Copyright 2026 BitCodersNN
 
 import 'dart:async';
 
@@ -7,7 +7,10 @@ import 'package:adaptive_dialog/adaptive_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:unn_mobile/core/misc/app_version.dart';
+import 'package:unn_mobile/core/models/common/app_dark_theme.dart';
+import 'package:unn_mobile/core/models/common/app_light_theme.dart';
 import 'package:unn_mobile/core/models/common/app_theme_mode.dart';
+import 'package:unn_mobile/core/models/common/custom_palette_config.dart';
 import 'package:unn_mobile/core/models/schedule_activity/schedule_activity_mode.dart';
 import 'package:unn_mobile/core/models/schedule_activity/schedule_activity_settings.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/settings/settings_screen_view_model.dart';
@@ -15,6 +18,7 @@ import 'package:unn_mobile/ui/main_page_locations.dart';
 import 'package:unn_mobile/ui/router.dart';
 import 'package:unn_mobile/ui/theme/app_theme.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
+import 'package:unn_mobile/ui/views/main_page/settings/custom_palette_editor_screen.dart';
 import 'package:unn_mobile/ui/views/main_page/settings/widgets/settings_minutes_slider.dart';
 import 'package:unn_mobile/ui/views/main_page/settings/widgets/settings_section.dart';
 import 'package:unn_mobile/ui/views/main_page/settings/widgets/settings_tile.dart';
@@ -82,6 +86,42 @@ class _SettingsScreenViewState extends State<SettingsScreenView>
         );
       }
     }
+  }
+
+  Future<void> _openCustomPaletteEditor(
+    SettingsScreenViewModel model, {
+    required Brightness brightness,
+  }) async {
+    final isDark = brightness == Brightness.dark;
+    final initialConfig = isDark
+        ? model.customDarkPalette ?? CustomPaletteConfig.defaultDark()
+        : model.customLightPalette ?? CustomPaletteConfig.defaultLight();
+    final presets = isDark ? AppTheme.darkPalettes : AppTheme.lightPalettes;
+    final result = await Navigator.of(context, rootNavigator: true)
+        .push<CustomPaletteConfig>(
+          MaterialPageRoute<CustomPaletteConfig>(
+            builder: (_) => CustomPaletteEditorScreen(
+              brightness: brightness,
+              initialConfig: initialConfig,
+              builtInPresets: presets,
+              onApply: (config) => unawaited(
+                _saveThemeChange(
+                  () => isDark
+                      ? model.saveCustomDarkPalette(config)
+                      : model.saveCustomLightPalette(config),
+                ),
+              ),
+            ),
+          ),
+        );
+    if (!mounted || result == null) {
+      return;
+    }
+    await _saveThemeChange(
+      () => isDark
+          ? model.saveCustomDarkPalette(result)
+          : model.saveCustomLightPalette(result),
+    );
   }
 
   Future<void> _customizeTabBar() async {
@@ -302,8 +342,16 @@ class _SettingsScreenViewState extends State<SettingsScreenView>
                       if (model.themeMode != AppThemeMode.dark)
                         ThemePaletteSelector(
                           title: 'Светлая палитра',
-                          palettes: AppTheme.lightPalettes,
+                          palettes: AppTheme.lightPalettesFor(
+                            model.customLightPalette,
+                          ),
                           selected: model.lightTheme,
+                          customValue: AppLightTheme.custom,
+                          isCustomConfigured: model.hasCustomLightPalette,
+                          onEditCustom: () => _openCustomPaletteEditor(
+                            model,
+                            brightness: Brightness.light,
+                          ),
                           onChanged: (palette) => _saveThemeChange(
                             () => model.setLightTheme(palette),
                           ),
@@ -311,8 +359,16 @@ class _SettingsScreenViewState extends State<SettingsScreenView>
                       if (model.themeMode != AppThemeMode.light)
                         ThemePaletteSelector(
                           title: 'Тёмная палитра',
-                          palettes: AppTheme.darkPalettes,
+                          palettes: AppTheme.darkPalettesFor(
+                            model.customDarkPalette,
+                          ),
                           selected: model.darkTheme,
+                          customValue: AppDarkTheme.custom,
+                          isCustomConfigured: model.hasCustomDarkPalette,
+                          onEditCustom: () => _openCustomPaletteEditor(
+                            model,
+                            brightness: Brightness.dark,
+                          ),
                           onChanged: (palette) => _saveThemeChange(
                             () => model.setDarkTheme(palette),
                           ),

@@ -12,9 +12,13 @@ Map<String, Object> buildScheduleAppearance(AppThemeController controller) => {
   'light': 'light_${controller.lightTheme.name}',
   'dark': 'dark_${controller.darkTheme.name}',
   'palettes': {
-    for (final palette in AppTheme.lightPalettes)
+    for (final palette in AppTheme.lightPalettesFor(
+      controller.customLightPalette,
+    ))
       'light_${palette.value.name}': _colors(palette.theme),
-    for (final palette in AppTheme.darkPalettes)
+    for (final palette in AppTheme.darkPalettesFor(
+      controller.customDarkPalette,
+    ))
       'dark_${palette.value.name}': _colors(palette.theme),
   },
 };

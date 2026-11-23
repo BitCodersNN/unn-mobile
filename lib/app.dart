@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-// Copyright 2025 BitCodersNN
+// Copyright 2026 BitCodersNN
 
 import 'dart:async';
 
@@ -112,8 +112,14 @@ class _UnnMobileState extends State<UnnMobile> {
     child: Consumer<AppThemeController>(
       builder: (context, themeController, _) => MaterialApp.router(
         routerConfig: _router.router,
-        theme: AppTheme.lightThemeFor(themeController.lightTheme),
-        darkTheme: AppTheme.darkThemeFor(themeController.darkTheme),
+        theme: AppTheme.lightThemeFor(
+          themeController.lightTheme,
+          custom: themeController.customLightPalette,
+        ),
+        darkTheme: AppTheme.darkThemeFor(
+          themeController.darkTheme,
+          custom: themeController.customDarkPalette,
+        ),
         themeMode: switch (themeController.mode) {
           AppThemeMode.system => ThemeMode.system,
           AppThemeMode.light => ThemeMode.light,

@@ -22,6 +22,7 @@ class UnnMobileColors extends ThemeExtension<UnnMobileColors> {
   final Map<MarkType, Color>? gradeMarkTypeColors;
   final Color? ligtherTextColor;
   final Color? idkWhatColor;
+  final Color? importantPostHighlight;
   final Color? wideButtonBottomColor;
   final Color shimmerBaseColor;
   final Color shimmerHighlightColor;
@@ -36,6 +37,7 @@ class UnnMobileColors extends ThemeExtension<UnnMobileColors> {
     required this.wideButtonBottomColor,
     required this.shimmerBaseColor,
     required this.shimmerHighlightColor,
+    this.importantPostHighlight,
   });
 
   static const light = UnnMobileColors(
@@ -122,6 +124,7 @@ class UnnMobileColors extends ThemeExtension<UnnMobileColors> {
     Map<MarkType, Color>? gradeMarkTypeColors,
     Color? ligtherTextColor,
     Color? idkWhatColor,
+    Color? importantPostHighlight,
     Color? wideButtonTopColor,
     Color? wideButtonBottomColor,
     Color? shimmerBaseColor,
@@ -135,6 +138,8 @@ class UnnMobileColors extends ThemeExtension<UnnMobileColors> {
     gradeMarkTypeColors: gradeMarkTypeColors ?? this.gradeMarkTypeColors,
     ligtherTextColor: ligtherTextColor ?? this.ligtherTextColor,
     idkWhatColor: idkWhatColor ?? this.idkWhatColor,
+    importantPostHighlight:
+        importantPostHighlight ?? this.importantPostHighlight,
     wideButtonBottomColor: wideButtonBottomColor ?? this.wideButtonBottomColor,
     shimmerBaseColor: shimmerBaseColor ?? this.shimmerBaseColor,
     shimmerHighlightColor: shimmerHighlightColor ?? this.shimmerHighlightColor,
@@ -184,6 +189,11 @@ class UnnMobileColors extends ThemeExtension<UnnMobileColors> {
         t,
       ),
       idkWhatColor: Color.lerp(idkWhatColor, otherColors.idkWhatColor, t),
+      importantPostHighlight: Color.lerp(
+        importantPostHighlight,
+        otherColors.importantPostHighlight,
+        t,
+      ),
       wideButtonBottomColor: Color.lerp(
         wideButtonBottomColor,
         otherColors.wideButtonBottomColor,

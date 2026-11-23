@@ -1,4 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2026 BitCodersNN
 
-enum AppDarkTheme { green, graphite }
+enum AppDarkTheme { green, graphite, custom }

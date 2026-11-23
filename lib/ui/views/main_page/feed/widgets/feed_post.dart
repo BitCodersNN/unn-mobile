@@ -82,6 +82,9 @@ class _FeedPostState extends State<FeedPost> {
     builder: (context, model, _) {
       final theme = Theme.of(context);
       final isDark = theme.brightness == Brightness.dark;
+      final importantColor =
+          theme.unnMobileColors?.importantPostHighlight ??
+          theme.colorScheme.error;
       return GestureDetector(
         onTap: widget.showingComments ? null : () => _openPost(context, model),
         child: Padding(
@@ -108,13 +111,13 @@ class _FeedPostState extends State<FeedPost> {
                           end: Alignment.bottomCenter,
                           colors: [
                             Color.alphaBlend(
-                              theme.colorScheme.error.withValues(
+                              importantColor.withValues(
                                 alpha: isDark ? 0.18 : 0.07,
                               ),
                               theme.colorScheme.surfaceContainerLowest,
                             ),
                             Color.alphaBlend(
-                              theme.colorScheme.error.withValues(
+                              importantColor.withValues(
                                 alpha: isDark ? 0.04 : 0,
                               ),
                               theme.colorScheme.surfaceContainerLowest,
@@ -124,9 +127,7 @@ class _FeedPostState extends State<FeedPost> {
                       : null,
                   border: Border.all(
                     color: model.isAnnouncement
-                        ? theme.colorScheme.error.withValues(
-                            alpha: isDark ? 0.48 : 0.2,
-                          )
+                        ? importantColor.withValues(alpha: isDark ? 0.48 : 0.2)
                         : theme.colorScheme.outlineVariant.withValues(
                             alpha: 0.6,
                           ),

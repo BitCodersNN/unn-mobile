@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-// Copyright 2025 BitCodersNN
+// Copyright 2026 BitCodersNN
 
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:permission_handler_platform_interface/permission_handler_platform_interface.dart';
@@ -10,6 +10,7 @@ import 'package:unn_mobile/core/misc/schedule_activity/schedule_activity_platfor
 import 'package:unn_mobile/core/models/common/app_dark_theme.dart';
 import 'package:unn_mobile/core/models/common/app_light_theme.dart';
 import 'package:unn_mobile/core/models/common/app_theme_mode.dart';
+import 'package:unn_mobile/core/models/common/custom_palette_config.dart';
 import 'package:unn_mobile/core/models/schedule_activity/schedule_activity_capabilities.dart';
 import 'package:unn_mobile/core/models/schedule_activity/schedule_activity_mode.dart';
 import 'package:unn_mobile/core/models/schedule_activity/schedule_activity_settings.dart';
@@ -66,6 +67,12 @@ class SettingsScreenViewModel extends BaseViewModel {
   AppThemeMode get themeMode => _themeController.mode;
   AppLightTheme get lightTheme => _themeController.lightTheme;
   AppDarkTheme get darkTheme => _themeController.darkTheme;
+  CustomPaletteConfig? get customLightPalette =>
+      _themeController.customLightPalette;
+  CustomPaletteConfig? get customDarkPalette =>
+      _themeController.customDarkPalette;
+  bool get hasCustomLightPalette => _themeController.hasCustomLightPalette;
+  bool get hasCustomDarkPalette => _themeController.hasCustomDarkPalette;
 
   Future<void> setThemeMode(AppThemeMode mode) =>
       _updateTheme(() => _themeController.setMode(mode));
@@ -75,6 +82,18 @@ class SettingsScreenViewModel extends BaseViewModel {
 
   Future<void> setDarkTheme(AppDarkTheme theme) =>
       _updateTheme(() => _themeController.setDarkTheme(theme));
+
+  Future<void> saveCustomLightPalette(CustomPaletteConfig config) =>
+      _updateTheme(() async {
+        await _themeController.setCustomLightPalette(config);
+        await _themeController.setLightTheme(AppLightTheme.custom);
+      });
+
+  Future<void> saveCustomDarkPalette(CustomPaletteConfig config) =>
+      _updateTheme(() async {
+        await _themeController.setCustomDarkPalette(config);
+        await _themeController.setDarkTheme(AppDarkTheme.custom);
+      });
 
   Future<void> _updateTheme(Future<void> Function() update) async {
     try {

@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:unn_mobile/core/models/common/app_dark_theme.dart';
 import 'package:unn_mobile/core/models/common/app_light_theme.dart';
 import 'package:unn_mobile/core/models/common/app_theme_mode.dart';
+import 'package:unn_mobile/core/models/common/custom_palette_config.dart';
 import 'package:unn_mobile/core/providers/interfaces/common/app_theme_provider.dart';
 
 class AppThemeController extends ChangeNotifier {
@@ -12,22 +13,32 @@ class AppThemeController extends ChangeNotifier {
   final _mode = _ThemePreference(AppThemeMode.system);
   final _lightTheme = _ThemePreference(AppLightTheme.green);
   final _darkTheme = _ThemePreference(AppDarkTheme.green);
+  final _customLightPalette = _ThemePreference<CustomPaletteConfig?>(null);
+  final _customDarkPalette = _ThemePreference<CustomPaletteConfig?>(null);
 
   AppThemeController(this._provider);
 
   AppThemeMode get mode => _mode.value;
   AppLightTheme get lightTheme => _lightTheme.value;
   AppDarkTheme get darkTheme => _darkTheme.value;
+  CustomPaletteConfig? get customLightPalette => _customLightPalette.value;
+  CustomPaletteConfig? get customDarkPalette => _customDarkPalette.value;
+  bool get hasCustomLightPalette => _customLightPalette.value != null;
+  bool get hasCustomDarkPalette => _customDarkPalette.value != null;
 
   Future<void> load() async {
-    final (mode, lightTheme, darkTheme) = await (
+    final (mode, lightTheme, darkTheme, customLight, customDark) = await (
       _provider.read(),
       _provider.readLightTheme(),
       _provider.readDarkTheme(),
+      _provider.readCustomLightPalette(),
+      _provider.readCustomDarkPalette(),
     ).wait;
     _mode.load(mode);
     _lightTheme.load(lightTheme);
     _darkTheme.load(darkTheme);
+    _customLightPalette.load(customLight);
+    _customDarkPalette.load(customDark);
     notifyListeners();
   }
 
@@ -45,9 +56,33 @@ class AppThemeController extends ChangeNotifier {
     save: _provider.saveDarkTheme,
     onChanged: notifyListeners,
   );
+
+  Future<void> setCustomLightPalette(CustomPaletteConfig config) =>
+      _updateCustomPalette(
+        _customLightPalette,
+        config,
+        _provider.saveCustomLightPalette,
+      );
+
+  Future<void> setCustomDarkPalette(CustomPaletteConfig config) =>
+      _updateCustomPalette(
+        _customDarkPalette,
+        config,
+        _provider.saveCustomDarkPalette,
+      );
+
+  Future<void> _updateCustomPalette(
+    _ThemePreference<CustomPaletteConfig?> preference,
+    CustomPaletteConfig config,
+    Future<void> Function(CustomPaletteConfig) save,
+  ) => preference.update(
+    config,
+    save: (value) => value == null ? Future<void>.value() : save(value),
+    onChanged: notifyListeners,
+  );
 }
 
-class _ThemePreference<T extends Enum> {
+class _ThemePreference<T> {
   T _value;
   T _savedValue;
   int _revision = 0;
