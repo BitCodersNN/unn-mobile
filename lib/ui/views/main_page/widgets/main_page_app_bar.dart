@@ -5,7 +5,8 @@ import 'dart:math' as math;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+import 'package:unn_mobile/core/constants/date_pattern.dart';
+import 'package:unn_mobile/core/misc/date_time_utilities/date_time_parser.dart';
 
 class MainPageTabScope extends InheritedNotifier<ValueListenable<bool>> {
   final String title;
@@ -72,7 +73,10 @@ AppBar buildMainPageAppBar(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                _dateFormat.format(DateTime.now()).toUpperCase(),
+                DateTimeParser.format(
+                  DateTime.now(),
+                  DatePattern.eeeedMMMM,
+                ).toUpperCase(),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: dateStyle,
@@ -86,5 +90,3 @@ AppBar buildMainPageAppBar(
     bottom: bottom,
   );
 }
-
-final _dateFormat = DateFormat('EEEE, d MMMM', 'ru_RU');
