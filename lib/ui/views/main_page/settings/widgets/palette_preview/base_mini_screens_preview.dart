@@ -183,12 +183,7 @@ class _MiniBottomNavBar extends StatelessWidget {
     final colors = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
-      decoration: BoxDecoration(
-        color: colors.surface,
-        border: Border(
-          top: BorderSide(color: colors.outlineVariant.withValues(alpha: 0.35)),
-        ),
-      ),
+      color: colors.surface,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
@@ -196,16 +191,10 @@ class _MiniBottomNavBar extends StatelessWidget {
             Builder(
               builder: (context) {
                 final isActive = i == activeIndex;
-                final iconWidget = Container(
+                final iconWidget = Padding(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 10,
                     vertical: 3,
-                  ),
-                  decoration: BoxDecoration(
-                    color: isActive
-                        ? colors.primaryContainer
-                        : Colors.transparent,
-                    borderRadius: BorderRadius.circular(10),
                   ),
                   child: Icon(
                     _items[i],
@@ -478,38 +467,33 @@ class _FeedMiniScreenBody extends StatelessWidget {
                     const SizedBox(height: 5),
                     Row(
                       children: [
-                        SlotHighlight(
-                          active: selectedSlot == PaletteColorSlot.primary,
-                          borderRadius: BorderRadius.circular(12),
-                          onTap: () => onSlotSelected(PaletteColorSlot.primary),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 2.5,
-                            ),
-                            decoration: BoxDecoration(
-                              color: colors.primaryContainer,
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Icon(
-                                  Icons.favorite_rounded,
-                                  size: 11,
-                                  color: colors.primary,
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 2.5,
+                          ),
+                          decoration: BoxDecoration(
+                            color: colors.surfaceContainerHigh,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.favorite_border_rounded,
+                                size: 11,
+                                color: colors.onSecondaryContainer,
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                '12',
+                                style: theme.textTheme.labelSmall?.copyWith(
+                                  color: colors.onSurfaceVariant,
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 9.5,
                                 ),
-                                const SizedBox(width: 4),
-                                Text(
-                                  '12',
-                                  style: theme.textTheme.labelSmall?.copyWith(
-                                    color: colors.primary,
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: 9.5,
-                                  ),
-                                ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
                         ),
                         const SizedBox(width: 6),
@@ -565,7 +549,6 @@ class _GradesMiniScreenBody extends StatelessWidget {
   static const _rows = [
     ('Математический анализ', 'Экзамен', MarkType.excellent, 'Отлично'),
     ('Алгоритмы и структуры', 'Экзамен', MarkType.good, 'Хорошо'),
-    ('Иностранный язык', 'Зачёт', MarkType.credited, 'Зачтено'),
   ];
 
   final PaletteColorSlot selectedSlot;
@@ -580,6 +563,7 @@ class _GradesMiniScreenBody extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
+    final summaryEndColor = Color.lerp(colors.primary, colors.secondary, 0.7)!;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -588,56 +572,82 @@ class _GradesMiniScreenBody extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Row(
-              children: [
-                SlotHighlight(
-                  active: selectedSlot == PaletteColorSlot.primary,
-                  borderRadius: BorderRadius.circular(10),
-                  onTap: () => onSlotSelected(PaletteColorSlot.primary),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 3,
-                    ),
-                    decoration: BoxDecoration(
-                      color: colors.primaryContainer,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Text(
-                      '3 семестр',
-                      style: theme.textTheme.labelSmall?.copyWith(
-                        color: colors.onPrimaryContainer,
-                        fontWeight: FontWeight.w600,
-                        fontSize: 10,
-                      ),
-                    ),
+            SlotHighlight(
+              active:
+                  selectedSlot == PaletteColorSlot.primary ||
+                  selectedSlot == PaletteColorSlot.secondary,
+              borderRadius: BorderRadius.circular(14),
+              onTap: () => onSlotSelected(
+                selectedSlot == PaletteColorSlot.primary
+                    ? PaletteColorSlot.secondary
+                    : PaletteColorSlot.primary,
+              ),
+              child: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(14),
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [colors.primary, summaryEndColor],
                   ),
                 ),
-                const SizedBox(width: 6),
-                SlotHighlight(
-                  active: selectedSlot == PaletteColorSlot.secondary,
-                  borderRadius: BorderRadius.circular(10),
-                  onTap: () => onSlotSelected(PaletteColorSlot.secondary),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 3,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.auto_stories_outlined,
+                          size: 13,
+                          color: colors.onPrimary,
+                        ),
+                        const SizedBox(width: 5),
+                        Expanded(
+                          child: Text(
+                            'Семестр 3',
+                            style: theme.textTheme.labelMedium?.copyWith(
+                              color: colors.onPrimary,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 11,
+                            ),
+                          ),
+                        ),
+                        Icon(
+                          Icons.keyboard_arrow_up_rounded,
+                          size: 15,
+                          color: colors.onPrimary,
+                        ),
+                      ],
                     ),
-                    decoration: BoxDecoration(
-                      color: colors.secondary.withValues(alpha: 0.14),
-                      borderRadius: BorderRadius.circular(10),
+                    const SizedBox(height: 6),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _MiniSummaryMetric(
+                            label: 'Средний за семестр',
+                            value: '4.67',
+                            foreground: colors.onPrimary,
+                            onTap: () =>
+                                onSlotSelected(PaletteColorSlot.primary),
+                          ),
+                        ),
+                        const SizedBox(width: 6),
+                        Expanded(
+                          child: _MiniSummaryMetric(
+                            label: 'За всё обучение',
+                            value: '4.54',
+                            foreground: colors.onPrimary,
+                            onTap: () =>
+                                onSlotSelected(PaletteColorSlot.secondary),
+                          ),
+                        ),
+                      ],
                     ),
-                    child: Text(
-                      'Ср. балл 4.67',
-                      style: theme.textTheme.labelSmall?.copyWith(
-                        color: colors.secondary,
-                        fontWeight: FontWeight.w600,
-                        fontSize: 10,
-                      ),
-                    ),
-                  ),
+                  ],
                 ),
-              ],
+              ),
             ),
             const SizedBox(height: 6),
             SlotHighlight(
@@ -750,6 +760,59 @@ class _GradesMiniScreenBody extends StatelessWidget {
                     ],
                   ],
                 ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _MiniSummaryMetric extends StatelessWidget {
+  final String label;
+  final String value;
+  final Color foreground;
+  final VoidCallback onTap;
+
+  const _MiniSummaryMetric({
+    required this.label,
+    required this.value,
+    required this.foreground,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 4),
+        decoration: BoxDecoration(
+          color: foreground.withValues(alpha: 0.14),
+          borderRadius: BorderRadius.circular(9),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.labelSmall?.copyWith(
+                color: foreground.withValues(alpha: 0.85),
+                fontSize: 8.5,
+              ),
+            ),
+            Text(
+              value,
+              style: theme.textTheme.labelLarge?.copyWith(
+                color: foreground,
+                fontWeight: FontWeight.w700,
+                fontSize: 12,
               ),
             ),
           ],
