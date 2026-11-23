@@ -35,6 +35,7 @@ class _RegularExpressionSource {
   static const multiValueSeparatorPattern = r'[|;,]';
   static const hexColor6Pattern = r'^#?([0-9a-fA-F]{6})$';
   static const allowedHexCharsPattern = r'[#0-9a-fA-F]';
+  static const customPaletteCodePattern = r'unn-palette:([A-Za-z0-9_-]+=*)';
 }
 
 class RegularExpressions {
@@ -141,5 +142,9 @@ class RegularExpressions {
 
   static final allowedHexCharsRegExp = RegExp(
     _RegularExpressionSource.allowedHexCharsPattern,
+  );
+
+  static final customPaletteCodeRegExp = RegExp(
+    _RegularExpressionSource.customPaletteCodePattern,
   );
 }

@@ -4,14 +4,11 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:injector/injector.dart';
-import 'package:share_plus/share_plus.dart';
 import 'package:unn_mobile/core/misc/feed/feed_post_share_preparer.dart';
 import 'package:unn_mobile/core/misc/haptic_utils.dart';
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/feed/feed_post_view_model.dart';
-
-Future<void>? _pendingShare;
+import 'package:unn_mobile/ui/actions/share_utils.dart';
 
 /// Открывает системную отправку текста поста вместе с доступными вложениями.
 Future<void> shareFeedPost(BuildContext context, FeedPostViewModel post) {
@@ -19,29 +16,23 @@ Future<void> shareFeedPost(BuildContext context, FeedPostViewModel post) {
   if (id == null) {
     return Future.value();
   }
-  return _pendingShare ??= _shareFeedPost(context, post).whenComplete(() {
-    _pendingShare = null;
-  });
+  return runGuardedShare(
+    context: context,
+    errorMessage: 'Не удалось поделиться постом',
+    action: (logger) => _shareFeedPost(context, post, logger),
+  );
 }
 
 Future<void> _shareFeedPost(
   BuildContext context,
   FeedPostViewModel post,
+  LoggerService logger,
 ) async {
-  final logger = Injector.appInstance.get<LoggerService>();
   final messenger = ScaffoldMessenger.maybeOf(context);
   final preparation = _SharePreparationIndicator.show(messenger);
-
   triggerHaptic(HapticIntensity.light);
   try {
     await _prepareAndShare(context, post, logger, preparation.close);
-  } catch (error, stack) {
-    logger.logError(error, stack);
-    if (messenger != null && messenger.mounted) {
-      messenger.showSnackBar(
-        const SnackBar(content: Text('Не удалось поделиться постом')),
-      );
-    }
   } finally {
     preparation.close();
   }
@@ -53,16 +44,7 @@ Future<void> _prepareAndShare(
   LoggerService logger,
   VoidCallback onPrepared,
 ) async {
-  final screen = Offset.zero & MediaQuery.sizeOf(context);
-  final renderObject = context.findRenderObject();
-  final rect = renderObject is RenderBox && renderObject.hasSize
-      ? (renderObject.localToGlobal(Offset.zero) & renderObject.size).intersect(
-          screen,
-        )
-      : Rect.zero;
-  final origin = rect.isEmpty
-      ? Rect.fromCenter(center: screen.center, width: 1, height: 1)
-      : rect;
+  final origin = resolveSharePositionOrigin(context);
   final content = await FeedPostSharePreparer(logger).prepare(
     htmlText: post.postText,
     authorName: post.profileViewModel?.userData?.fullname,
@@ -77,13 +59,7 @@ Future<void> _prepareAndShare(
   if (!context.mounted) {
     return;
   }
-  await SharePlus.instance.share(
-    ShareParams(
-      text: content.text,
-      files: content.files.isEmpty ? null : content.files,
-      sharePositionOrigin: origin,
-    ),
-  );
+  await shareContent(origin: origin, text: content.text, files: content.files);
   if (content.unavailableAttachments > 0 && context.mounted) {
     ScaffoldMessenger.maybeOf(context)?.showSnackBar(
       SnackBar(

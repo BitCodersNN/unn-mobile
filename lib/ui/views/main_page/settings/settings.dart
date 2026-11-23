@@ -14,11 +14,13 @@ import 'package:unn_mobile/core/models/common/custom_palette_config.dart';
 import 'package:unn_mobile/core/models/schedule_activity/schedule_activity_mode.dart';
 import 'package:unn_mobile/core/models/schedule_activity/schedule_activity_settings.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/settings/settings_screen_view_model.dart';
+import 'package:unn_mobile/ui/actions/custom_palette_share_action.dart';
 import 'package:unn_mobile/ui/main_page_locations.dart';
 import 'package:unn_mobile/ui/router.dart';
 import 'package:unn_mobile/ui/theme/app_theme.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
 import 'package:unn_mobile/ui/views/main_page/settings/custom_palette_editor_screen.dart';
+import 'package:unn_mobile/ui/views/main_page/settings/widgets/custom_palette_import_dialog.dart';
 import 'package:unn_mobile/ui/views/main_page/settings/widgets/settings_minutes_slider.dart';
 import 'package:unn_mobile/ui/views/main_page/settings/widgets/settings_section.dart';
 import 'package:unn_mobile/ui/views/main_page/settings/widgets/settings_tile.dart';
@@ -76,7 +78,7 @@ class _SettingsScreenViewState extends State<SettingsScreenView>
     await _saveThemeChange(() => model.setThemeMode(mode));
   }
 
-  Future<void> _saveThemeChange(Future<void> Function() update) async {
+  Future<bool> _saveThemeChange(Future<void> Function() update) async {
     try {
       await update();
     } catch (_) {
@@ -85,7 +87,45 @@ class _SettingsScreenViewState extends State<SettingsScreenView>
           const SnackBar(content: Text('Не удалось сохранить тему')),
         );
       }
+      return false;
     }
+    return true;
+  }
+
+  Future<void> _importCustomPalette(
+    SettingsScreenViewModel model, {
+    required Brightness brightness,
+  }) async {
+    final imported = await showCustomPaletteImportDialog(
+      context,
+      brightness: brightness,
+    );
+    if (!mounted || imported == null) {
+      return;
+    }
+    final isDark = brightness == Brightness.dark;
+    final saved = await _saveThemeChange(
+      () => isDark
+          ? model.saveCustomDarkPalette(imported)
+          : model.saveCustomLightPalette(imported),
+    );
+    if (mounted && saved) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text('Палитра загружена')));
+    }
+  }
+
+  Future<void> _shareCustomPalette(
+    SettingsScreenViewModel model, {
+    required Brightness brightness,
+  }) async {
+    final config = brightness == Brightness.dark
+        ? model.customDarkPalette
+        : model.customLightPalette;
+    if (config == null) {
+      return;
+    }
+    await shareCustomPalette(context, config, brightness: brightness);
   }
 
   Future<void> _openCustomPaletteEditor(
@@ -352,6 +392,14 @@ class _SettingsScreenViewState extends State<SettingsScreenView>
                             model,
                             brightness: Brightness.light,
                           ),
+                          onImportCustom: () => _importCustomPalette(
+                            model,
+                            brightness: Brightness.light,
+                          ),
+                          onShareCustom: () => _shareCustomPalette(
+                            model,
+                            brightness: Brightness.light,
+                          ),
                           onChanged: (palette) => _saveThemeChange(
                             () => model.setLightTheme(palette),
                           ),
@@ -366,6 +414,14 @@ class _SettingsScreenViewState extends State<SettingsScreenView>
                           customValue: AppDarkTheme.custom,
                           isCustomConfigured: model.hasCustomDarkPalette,
                           onEditCustom: () => _openCustomPaletteEditor(
+                            model,
+                            brightness: Brightness.dark,
+                          ),
+                          onImportCustom: () => _importCustomPalette(
+                            model,
+                            brightness: Brightness.dark,
+                          ),
+                          onShareCustom: () => _shareCustomPalette(
                             model,
                             brightness: Brightness.dark,
                           ),

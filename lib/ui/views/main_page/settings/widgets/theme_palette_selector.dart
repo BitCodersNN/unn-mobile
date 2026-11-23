@@ -3,6 +3,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:unn_mobile/ui/theme/theme_palette.dart';
+import 'package:unn_mobile/ui/widgets/context_menu/context_menu_action.dart';
+import 'package:unn_mobile/ui/widgets/context_menu/preview_context_menu.dart';
 
 class ThemePaletteSelector<T extends Enum> extends StatelessWidget {
   final String title;
@@ -14,6 +16,8 @@ class ThemePaletteSelector<T extends Enum> extends StatelessWidget {
   final T? customValue;
   final bool isCustomConfigured;
   final VoidCallback? onEditCustom;
+  final VoidCallback? onImportCustom;
+  final VoidCallback? onShareCustom;
 
   const ThemePaletteSelector({
     required this.title,
@@ -23,6 +27,8 @@ class ThemePaletteSelector<T extends Enum> extends StatelessWidget {
     this.customValue,
     this.isCustomConfigured = false,
     this.onEditCustom,
+    this.onImportCustom,
+    this.onShareCustom,
     super.key,
   });
 
@@ -54,21 +60,45 @@ class ThemePaletteSelector<T extends Enum> extends StatelessWidget {
                 final isCustom =
                     customValue != null && palette.value == customValue;
                 final isSelected = selected == palette.value;
+                final option = _PaletteOption(
+                  label: palette.label,
+                  colors: palette.theme.colorScheme,
+                  selected: isSelected,
+                  showGearPlaceholder: isCustom && !isCustomConfigured,
+                  showGearInsteadOfCard: isCustom && isCustomConfigured,
+                  onTap: isCustom && !isCustomConfigured
+                      ? () => onEditCustom?.call()
+                      : isCustom && isSelected && onEditCustom != null
+                      ? onEditCustom!
+                      : () => _onChanged(palette.value),
+                );
                 return SizedBox(
                   width: 142,
-                  child: _PaletteOption(
-                    label: palette.label,
-                    colors: palette.theme.colorScheme,
-                    selected: isSelected,
-                    showGearPlaceholder: isCustom && !isCustomConfigured,
-                    showGearInsteadOfCard: isCustom && isCustomConfigured,
-                    onTap: isCustom && !isCustomConfigured
-                        ? () => onEditCustom?.call()
-                        : isCustom && isSelected && onEditCustom != null
-                        ? onEditCustom!
-                        : () => _onChanged(palette.value),
-                    onLongPress: isCustom ? onEditCustom : null,
-                  ),
+                  child: isCustom
+                      ? PreviewContextMenu(
+                          borderRadius: BorderRadius.circular(14),
+                          actionsBuilder: (_) => [
+                            ContextMenuAction.text(
+                              label: 'Настроить',
+                              leadingIcon: const Icon(Icons.tune_rounded),
+                              onTap: onEditCustom,
+                            ),
+                            ContextMenuAction.text(
+                              label: 'Загрузить',
+                              leadingIcon: const Icon(Icons.download_rounded),
+                              onTap: onImportCustom,
+                            ),
+                            ContextMenuAction.text(
+                              label: 'Поделиться',
+                              leadingIcon: const Icon(Icons.share_outlined),
+                              enabled:
+                                  isCustomConfigured && onShareCustom != null,
+                              onTap: onShareCustom,
+                            ),
+                          ],
+                          child: option,
+                        )
+                      : option,
                 );
               },
             ),
@@ -86,14 +116,12 @@ class _PaletteOption extends StatelessWidget {
   final bool showGearPlaceholder;
   final bool showGearInsteadOfCard;
   final VoidCallback onTap;
-  final VoidCallback? onLongPress;
 
   const _PaletteOption({
     required this.label,
     required this.colors,
     required this.selected,
     required this.onTap,
-    this.onLongPress,
     this.showGearPlaceholder = false,
     this.showGearInsteadOfCard = false,
   });
@@ -119,7 +147,6 @@ class _PaletteOption extends StatelessWidget {
         clipBehavior: Clip.antiAlias,
         child: InkWell(
           onTap: onTap,
-          onLongPress: onLongPress,
           splashFactory: NoSplash.splashFactory,
           highlightColor: Colors.transparent,
           child: Column(
