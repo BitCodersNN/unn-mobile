@@ -10,6 +10,8 @@ import 'package:unn_mobile/core/misc/app_theme_controller.dart';
 import 'package:unn_mobile/core/misc/schedule_activity/schedule_activity_platform.dart';
 import 'package:unn_mobile/core/misc/user/current_user_sync_storage.dart';
 import 'package:unn_mobile/core/models/common/app_theme_mode.dart';
+import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
+import 'package:unn_mobile/core/services/interfaces/common/palette_link_platform.dart';
 import 'package:unn_mobile/core/services/interfaces/schedule_widget/schedule_widget_platform.dart';
 import 'package:unn_mobile/core/services/interfaces/schedule_widget/schedule_widget_service.dart';
 import 'package:unn_mobile/core/viewmodels/factories/main_page_routes_view_models_factory.dart';
@@ -18,6 +20,7 @@ import 'package:unn_mobile/ui/home_widget/schedule_appearance.dart';
 import 'package:unn_mobile/ui/home_widget/schedule_widget_binding.dart';
 import 'package:unn_mobile/ui/router.dart';
 import 'package:unn_mobile/ui/theme/app_theme.dart';
+import 'package:unn_mobile/ui/theme/palette_link_binding.dart';
 
 class UnnMobile extends StatefulWidget {
   final AppThemeController themeController;
@@ -26,6 +29,8 @@ class UnnMobile extends StatefulWidget {
   final ScheduleWidgetPlatform scheduleWidgetPlatform;
   final ScheduleWidgetService scheduleWidgetService;
   final ScheduleActivityPlatform scheduleActivityPlatform;
+  final PaletteLinkPlatform paletteLinkPlatform;
+  final LoggerService loggerService;
 
   const UnnMobile({
     required this.themeController,
@@ -34,6 +39,8 @@ class UnnMobile extends StatefulWidget {
     required this.scheduleWidgetPlatform,
     required this.scheduleWidgetService,
     required this.scheduleActivityPlatform,
+    required this.paletteLinkPlatform,
+    required this.loggerService,
     super.key,
   });
 
@@ -54,6 +61,7 @@ class _UnnMobileState extends State<UnnMobile> {
   );
 
   late final ScheduleWidgetBinding _scheduleWidget;
+  late final PaletteLinkBinding _paletteLink;
 
   @override
   void initState() {
@@ -66,6 +74,12 @@ class _UnnMobileState extends State<UnnMobile> {
       _openPersonalSchedule,
       widget.scheduleActivityPlatform,
     )..start(initialLaunch: _widgetLaunch);
+    _paletteLink = PaletteLinkBinding(
+      widget.paletteLinkPlatform,
+      widget.themeController,
+      _router,
+      widget.loggerService,
+    )..start();
     widget.themeController.addListener(_syncScheduleAppearance);
     _syncScheduleAppearance();
   }
@@ -92,6 +106,7 @@ class _UnnMobileState extends State<UnnMobile> {
 
   @override
   void dispose() {
+    _paletteLink.dispose();
     widget.themeController.removeListener(_syncScheduleAppearance);
     _scheduleWidget.dispose();
     _router.dispose();

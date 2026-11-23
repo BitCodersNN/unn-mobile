@@ -15,6 +15,42 @@ Future<CustomPaletteConfig?> showCustomPaletteImportDialog(
   builder: (_) => _CustomPaletteImportDialog(brightness: brightness),
 );
 
+Future<bool> showCustomPaletteConfirmImportDialog(
+  BuildContext context, {
+  required CustomPaletteConfig config,
+  required Brightness brightness,
+}) async =>
+    (await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Применить палитру?'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              'Она будет сохранена как своя '
+              '${brightness == Brightness.dark ? 'тёмная' : 'светлая'} '
+              'палитра.',
+            ),
+            const SizedBox(height: 14),
+            _PalettePreviewCard(config: config, brightness: brightness),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(false),
+            child: const Text('Отмена'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(dialogContext).pop(true),
+            child: const Text('Применить'),
+          ),
+        ],
+      ),
+    )) ??
+    false;
+
 class _CustomPaletteImportDialog extends StatefulWidget {
   final Brightness brightness;
 
@@ -29,6 +65,7 @@ class _CustomPaletteImportDialogState
     extends State<_CustomPaletteImportDialog> {
   final _controller = TextEditingController();
   CustomPaletteConfig? _decoded;
+  bool _hasInput = false;
 
   @override
   void initState() {
@@ -45,11 +82,13 @@ class _CustomPaletteImportDialogState
   }
 
   void _onTextChanged() {
+    final nextHasInput = _controller.text.trim().isNotEmpty;
     final next = CustomPaletteCodec.tryDecode(_controller.text);
-    if (next != _decoded || _controller.text.trim().isEmpty) {
-      setState(() => _decoded = next);
-    } else {
-      setState(() {});
+    if (next != _decoded || nextHasInput != _hasInput) {
+      setState(() {
+        _decoded = next;
+        _hasInput = nextHasInput;
+      });
     }
   }
 
@@ -66,9 +105,8 @@ class _CustomPaletteImportDialogState
 
   @override
   Widget build(BuildContext context) {
-    final hasInput = _controller.text.trim().isNotEmpty;
     final decoded = _decoded;
-    final showError = hasInput && decoded == null;
+    final showError = _hasInput && decoded == null;
 
     return AlertDialog(
       title: const Text('Загрузить палитру'),
@@ -77,14 +115,16 @@ class _CustomPaletteImportDialogState
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const Text('Вставьте код палитры, которым с вами поделились'),
+            const Text(
+              'Вставьте ссылку или код палитры, которым с вами поделились',
+            ),
             const SizedBox(height: 12),
             TextField(
               controller: _controller,
               minLines: 2,
               maxLines: 4,
               decoration: InputDecoration(
-                hintText: 'unn-palette:...',
+                hintText: 'https://... или unn-palette:...',
                 errorText: showError ? 'Некорректный код палитры' : null,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
@@ -98,7 +138,7 @@ class _CustomPaletteImportDialogState
             ),
             if (decoded != null) ...[
               const SizedBox(height: 12),
-              _PaletteImportPreview(
+              _PalettePreviewCard(
                 config: decoded,
                 brightness: widget.brightness,
               ),
@@ -122,11 +162,11 @@ class _CustomPaletteImportDialogState
   }
 }
 
-class _PaletteImportPreview extends StatelessWidget {
+class _PalettePreviewCard extends StatelessWidget {
   final CustomPaletteConfig config;
   final Brightness brightness;
 
-  const _PaletteImportPreview({required this.config, required this.brightness});
+  const _PalettePreviewCard({required this.config, required this.brightness});
 
   @override
   Widget build(BuildContext context) {

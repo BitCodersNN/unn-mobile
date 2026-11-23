@@ -73,6 +73,14 @@
 			<key>CFBundleURLName</key>
 			<string>ScheduleWidget</string>
 		</dict>
+		<dict>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>unnpalette</string>
+			</array>
+			<key>CFBundleURLName</key>
+			<string>PaletteLink</string>
+		</dict>
 	</array>
 	<key>FlutterDeepLinkingEnabled</key>
 	<false/>

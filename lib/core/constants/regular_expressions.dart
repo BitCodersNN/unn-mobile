@@ -36,6 +36,9 @@ class _RegularExpressionSource {
   static const hexColor6Pattern = r'^#?([0-9a-fA-F]{6})$';
   static const allowedHexCharsPattern = r'[#0-9a-fA-F]';
   static const customPaletteCodePattern = r'unn-palette:([A-Za-z0-9_-]+=*)';
+  static const paletteUrlPattern =
+      r'(?:unnpalette://|https://bitcodersnn\.github\.io/unn-mobile\.assets/palette)\S*';
+  static const trailingPunctuationPattern = r'''[.,;:!?)\]}"']+$''';
 }
 
 class RegularExpressions {
@@ -146,5 +149,13 @@ class RegularExpressions {
 
   static final customPaletteCodeRegExp = RegExp(
     _RegularExpressionSource.customPaletteCodePattern,
+  );
+
+  static final paletteUrlRegExp = RegExp(
+    _RegularExpressionSource.paletteUrlPattern,
+  );
+
+  static final trailingPunctuationRegExp = RegExp(
+    _RegularExpressionSource.trailingPunctuationPattern,
   );
 }

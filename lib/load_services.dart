@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-// Copyright 2025 BitCodersNN
+// Copyright 2026 BitCodersNN
 
 import 'package:flutter/foundation.dart';
 import 'package:injector/injector.dart';
@@ -70,6 +70,7 @@ import 'package:unn_mobile/core/services/implementations/common/file_data_servic
 import 'package:unn_mobile/core/services/implementations/common/firebase_logger_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/common/last_commit_sha_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/common/message_ignore_service_impl.dart';
+import 'package:unn_mobile/core/services/implementations/common/palette_link_platform_impl.dart';
 import 'package:unn_mobile/core/services/implementations/common/search_id_on_portal_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/common/storage_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/dialog/dialog_search_service_impl.dart';
@@ -125,6 +126,7 @@ import 'package:unn_mobile/core/services/interfaces/common/file_data_service.dar
 import 'package:unn_mobile/core/services/interfaces/common/last_commit_sha_service.dart';
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
 import 'package:unn_mobile/core/services/interfaces/common/message_ignore_service.dart';
+import 'package:unn_mobile/core/services/interfaces/common/palette_link_platform.dart';
 import 'package:unn_mobile/core/services/interfaces/common/search_id_on_portal_service.dart';
 import 'package:unn_mobile/core/services/interfaces/common/storage_service.dart';
 import 'package:unn_mobile/core/services/interfaces/dialog/dialog_search_service.dart';
@@ -265,6 +267,9 @@ void registerDependencies() {
     )
     ..registerSingleton<AppThemeController>(
       () => AppThemeController(get<AppThemeProvider>()),
+    )
+    ..registerSingleton<PaletteLinkPlatform>(
+      () => PaletteLinkPlatformImpl(get<LoggerService>()),
     )
     ..registerSingleton<AppOpenTracker>(
       () => AppOpenTracker(get<StorageService>()),

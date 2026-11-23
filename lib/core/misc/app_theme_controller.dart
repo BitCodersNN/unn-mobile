@@ -71,6 +71,19 @@ class AppThemeController extends ChangeNotifier {
         _provider.saveCustomDarkPalette,
       );
 
+  Future<void> applyCustomPalette(
+    CustomPaletteConfig config, {
+    required Brightness brightness,
+  }) async {
+    if (brightness == Brightness.dark) {
+      await setCustomDarkPalette(config);
+      await setDarkTheme(AppDarkTheme.custom);
+    } else {
+      await setCustomLightPalette(config);
+      await setLightTheme(AppLightTheme.custom);
+    }
+  }
+
   Future<void> _updateCustomPalette(
     _ThemePreference<CustomPaletteConfig?> preference,
     CustomPaletteConfig config,

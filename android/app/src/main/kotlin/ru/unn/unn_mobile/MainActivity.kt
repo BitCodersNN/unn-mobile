@@ -14,6 +14,7 @@ import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.embedding.engine.FlutterShellArgs
 import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodChannel
+import ru.bitcodersnn.unnstudenthub.palette.PaletteLinkBridge
 import ru.bitcodersnn.unnstudenthub.schedulewidget.ScheduleWidgetBridge
 import kotlinx.coroutines.*
 import org.json.JSONObject
@@ -37,6 +38,7 @@ data class OpenResult(val type: Int, val message: String)
 class MainActivity : FlutterActivity() {
     private var scheduleActivityBridge: ScheduleActivityBridge? = null
     private var scheduleWidgetBridge: ScheduleWidgetBridge? = null
+    private var paletteLinkBridge: PaletteLinkBridge? = null
     class Container<T>(
         obj: T?,
     ) {
@@ -67,6 +69,7 @@ class MainActivity : FlutterActivity() {
         super.configureFlutterEngine(flutterEngine)
         scheduleActivityBridge = ScheduleActivityBridge(this, flutterEngine)
         scheduleWidgetBridge = ScheduleWidgetBridge(this, flutterEngine, intent)
+        paletteLinkBridge = PaletteLinkBridge(flutterEngine, intent)
         EventChannel(
             flutterEngine.dartExecutor.binaryMessenger,
             FILE_PICKER_EVENTS,
@@ -144,6 +147,7 @@ class MainActivity : FlutterActivity() {
         super.onNewIntent(intent)
         setIntent(intent)
         scheduleWidgetBridge?.onNewIntent(intent)
+        paletteLinkBridge?.onNewIntent(intent)
     }
 
     private fun openGalleryFilePicker() {

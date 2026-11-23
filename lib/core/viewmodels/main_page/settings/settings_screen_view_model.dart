@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2026 BitCodersNN
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:permission_handler_platform_interface/permission_handler_platform_interface.dart';
 import 'package:unn_mobile/core/misc/app_settings.dart';
@@ -84,16 +85,20 @@ class SettingsScreenViewModel extends BaseViewModel {
       _updateTheme(() => _themeController.setDarkTheme(theme));
 
   Future<void> saveCustomLightPalette(CustomPaletteConfig config) =>
-      _updateTheme(() async {
-        await _themeController.setCustomLightPalette(config);
-        await _themeController.setLightTheme(AppLightTheme.custom);
-      });
+      _updateTheme(
+        () => _themeController.applyCustomPalette(
+          config,
+          brightness: Brightness.light,
+        ),
+      );
 
   Future<void> saveCustomDarkPalette(CustomPaletteConfig config) =>
-      _updateTheme(() async {
-        await _themeController.setCustomDarkPalette(config);
-        await _themeController.setDarkTheme(AppDarkTheme.custom);
-      });
+      _updateTheme(
+        () => _themeController.applyCustomPalette(
+          config,
+          brightness: Brightness.dark,
+        ),
+      );
 
   Future<void> _updateTheme(Future<void> Function() update) async {
     try {
