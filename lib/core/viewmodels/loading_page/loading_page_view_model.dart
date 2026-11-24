@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-// Copyright 2025 BitCodersNN
+// Copyright 2026 BitCodersNN
 
 import 'dart:async';
 import 'dart:io';
@@ -10,6 +10,7 @@ import 'package:unn_mobile/core/misc/authorisation/authorisation_request_result.
 import 'package:unn_mobile/core/misc/git/git_folder.dart';
 import 'package:unn_mobile/core/misc/user/current_user_sync_storage.dart';
 import 'package:unn_mobile/core/models/birthday/birthday_greeting_catalog.dart';
+import 'package:unn_mobile/core/models/git/cached_git_resource.dart';
 import 'package:unn_mobile/core/models/loading_page/loading_page_catalog.dart';
 import 'package:unn_mobile/core/models/loading_page/loading_page_data.dart';
 import 'package:unn_mobile/core/repositories/interfaces/git/git_resource_repository.dart';
@@ -30,6 +31,7 @@ class LoadingPageViewModel extends BaseViewModel {
 
   LoadingPageModel? _actualLoadingPage;
   File? _logoImage;
+  Future<CachedGitResource<LoadingPageCatalog>?>? _loadingPagesRefresh;
 
   LoadingPageViewModel(
     this._loggerService,
@@ -44,6 +46,9 @@ class LoadingPageViewModel extends BaseViewModel {
       _actualLoadingPage ?? const LoadingPageModel();
 
   File? get logoImage => _logoImage;
+
+  Future<CachedGitResource<LoadingPageCatalog>?> _refreshLoadingPages() =>
+      _loadingPagesRefresh ??= _loadingPages.refresh();
 
   Future<LoadingRouteTarget> decideRoute({
     required Future<void> loadingPageReady,
@@ -68,7 +73,7 @@ class LoadingPageViewModel extends BaseViewModel {
   }) async {
     final cached = await _loadingPages.get();
     final resource = cached?.data.isCurrentFormat == false
-        ? await _loadingPages.refresh() ?? cached
+        ? await _refreshLoadingPages() ?? cached
         : cached;
     final page = resource?.data.pageForDate(
       DateTime.now(),
@@ -90,7 +95,7 @@ class LoadingPageViewModel extends BaseViewModel {
 
     unawaited(_birthdayCatalog.refresh());
 
-    unawaited(_loadingPages.refresh());
+    unawaited(_refreshLoadingPages());
 
     try {
       authRequestResult = await _initializingApplicationService.refreshLogin();
