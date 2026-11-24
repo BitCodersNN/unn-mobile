@@ -45,7 +45,7 @@ class _ScheduleItemNormalState extends State<ScheduleItemNormal> {
       child: Container(
         decoration: BoxDecoration(
           color: widget.even
-              ? Theme.of(context).colorScheme.primary.withAlpha(20)
+              ? Theme.of(context).alternatingSurfaceColor
               : Theme.of(context).colorScheme.surface,
           borderRadius: const BorderRadius.horizontal(
             right: Radius.circular(12),

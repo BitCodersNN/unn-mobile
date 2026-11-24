@@ -3,10 +3,10 @@
 
 import 'package:flutter/material.dart';
 import 'package:unn_mobile/core/models/common/custom_palette_config.dart';
-import 'package:unn_mobile/core/models/schedule/subject_type.dart';
 import 'package:unn_mobile/ui/unn_mobile_colors.dart';
 import 'package:unn_mobile/ui/views/main_page/settings/widgets/palette_preview/centered_stage_scroll.dart';
 import 'package:unn_mobile/ui/views/main_page/settings/widgets/palette_preview/mini_preview_primitives.dart';
+import 'package:unn_mobile/ui/views/main_page/settings/widgets/palette_preview/schedule_preview_samples.dart';
 import 'package:unn_mobile/ui/views/main_page/settings/widgets/palette_preview/slot_highlight.dart';
 
 class WidgetMiniScreenPreview extends StatelessWidget {
@@ -24,8 +24,6 @@ class WidgetMiniScreenPreview extends StatelessWidget {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
     final isDark = theme.brightness == Brightness.dark;
-    final lectureColor = theme.getColorOfSubjectType(SubjectType.lecture);
-    final practiceColor = theme.getColorOfSubjectType(SubjectType.practice);
 
     return ColoredBox(
       color: isDark
@@ -60,54 +58,44 @@ class WidgetMiniScreenPreview extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const _WidgetHeader(),
+                _WidgetHeader(count: schedulePreviewSamples.length),
                 const SizedBox(height: 6),
-                SlotHighlight(
-                  active: selectedSlot == PaletteColorSlot.subjectLecture,
-                  borderRadius: BorderRadius.circular(
-                    MiniPreviewStyle.smallRadius,
+                for (var i = 0; i < schedulePreviewSamples.length; i++) ...[
+                  if (i > 0) const SizedBox(height: 4),
+                  Builder(
+                    builder: (context) {
+                      final lesson = schedulePreviewSamples[i];
+                      final lessonColor = theme.getColorOfSubjectType(
+                        lesson.type,
+                      );
+                      return SlotHighlight(
+                        active: selectedSlot == lesson.slot,
+                        borderRadius: BorderRadius.circular(
+                          MiniPreviewStyle.smallRadius,
+                        ),
+                        onTap: () => onSlotSelected(lesson.slot),
+                        child: MiniLessonTile(
+                          title: lesson.title,
+                          subtitle: lesson.widgetSubtitle,
+                          startTime: lesson.startTime,
+                          endTime: lesson.endTime,
+                          barColor: lessonColor,
+                          backgroundColor: lesson.isCurrent
+                              ? lessonColor.withValues(alpha: 0.08)
+                              : null,
+                          showBorder: false,
+                          borderRadius: MiniPreviewStyle.smallRadius,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 6,
+                            vertical: 3,
+                          ),
+                          barHeight: null,
+                          barSpacing: 7,
+                        ),
+                      );
+                    },
                   ),
-                  onTap: () => onSlotSelected(PaletteColorSlot.subjectLecture),
-                  child: MiniLessonTile(
-                    title: 'Математический анализ',
-                    subtitle: 'Сейчас · Ауд. 214',
-                    startTime: '09:00',
-                    endTime: '10:30',
-                    barColor: lectureColor,
-                    backgroundColor: lectureColor.withValues(alpha: 0.08),
-                    showBorder: false,
-                    borderRadius: MiniPreviewStyle.smallRadius,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 6,
-                      vertical: 4,
-                    ),
-                    barHeight: null,
-                    barSpacing: 7,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                SlotHighlight(
-                  active: selectedSlot == PaletteColorSlot.subjectPractice,
-                  borderRadius: BorderRadius.circular(
-                    MiniPreviewStyle.smallRadius,
-                  ),
-                  onTap: () => onSlotSelected(PaletteColorSlot.subjectPractice),
-                  child: MiniLessonTile(
-                    title: 'Дискретная математика',
-                    subtitle: 'Практика · Ауд. 305',
-                    startTime: '10:40',
-                    endTime: '12:10',
-                    barColor: practiceColor,
-                    showBorder: false,
-                    borderRadius: MiniPreviewStyle.smallRadius,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 6,
-                      vertical: 4,
-                    ),
-                    barHeight: null,
-                    barSpacing: 7,
-                  ),
-                ),
+                ],
                 const SizedBox(height: 6),
                 Row(
                   children: [
@@ -140,7 +128,9 @@ class WidgetMiniScreenPreview extends StatelessWidget {
 }
 
 class _WidgetHeader extends StatelessWidget {
-  const _WidgetHeader();
+  final int count;
+
+  const _WidgetHeader({required this.count});
 
   @override
   Widget build(BuildContext context) {
@@ -173,7 +163,7 @@ class _WidgetHeader extends StatelessWidget {
                 color: colors.primary.withValues(alpha: 0.12),
               ),
               child: Text(
-                '2',
+                '$count',
                 style: theme.textTheme.labelSmall?.copyWith(
                   color: colors.primary,
                   fontWeight: FontWeight.w600,
@@ -185,7 +175,7 @@ class _WidgetHeader extends StatelessWidget {
         ),
         const SizedBox(height: 2),
         Text(
-          'Пн, 24 нояб. · ИИТММ',
+          'Пн, 23 нояб. · ИИТММ',
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
           style: theme.textTheme.labelSmall?.copyWith(

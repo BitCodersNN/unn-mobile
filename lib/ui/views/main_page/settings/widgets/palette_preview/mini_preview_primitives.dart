@@ -2,6 +2,7 @@
 // Copyright 2026 BitCodersNN
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:unn_mobile/core/models/common/custom_palette_config.dart';
 import 'package:unn_mobile/ui/views/main_page/settings/widgets/palette_preview/slot_highlight.dart';
 
@@ -471,5 +472,175 @@ class HighlightedSlotDivider extends StatelessWidget {
       return Padding(padding: outerPadding!, child: highlighted);
     }
     return highlighted;
+  }
+}
+
+class MiniDayHeader extends StatelessWidget {
+  final String dayName;
+  final String dateLabel;
+  final bool isToday;
+  final PaletteColorSlot? selectedSlot;
+  final ValueChanged<PaletteColorSlot>? onSlotSelected;
+  final double fontSize;
+
+  const MiniDayHeader({
+    required this.dayName,
+    required this.dateLabel,
+    this.isToday = false,
+    this.selectedSlot,
+    this.onSlotSelected,
+    this.fontSize = MiniPreviewStyle.fontSizeBody,
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final dayStyle = theme.textTheme.labelSmall?.copyWith(
+      color: colors.onSurface,
+      fontWeight: FontWeight.bold,
+      fontSize: fontSize,
+    );
+
+    final dayTitle = selectedSlot != null && onSlotSelected != null
+        ? HighlightedSlotText(
+            text: dayName,
+            slot: PaletteColorSlot.onSurface,
+            selectedSlot: selectedSlot!,
+            onSlotSelected: onSlotSelected!,
+            style: dayStyle,
+          )
+        : Text(dayName, style: dayStyle);
+
+    return _TrailingRule(
+      color: theme.dividerColor.withValues(alpha: 0.25),
+      spacing: 6,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          dayTitle,
+          const SizedBox(width: 6),
+          Flexible(
+            child: Text(
+              dateLabel,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.labelSmall?.copyWith(
+                color: colors.onSurfaceVariant,
+                fontWeight: FontWeight.normal,
+                fontSize: fontSize,
+              ),
+            ),
+          ),
+          if (isToday) ...[
+            const SizedBox(width: 6),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1.5),
+              decoration: BoxDecoration(
+                color: colors.primary,
+                borderRadius: BorderRadius.circular(
+                  MiniPreviewStyle.mediumRadius,
+                ),
+              ),
+              child: Text(
+                'Сегодня',
+                style: TextStyle(
+                  color: colors.onPrimary,
+                  fontSize: MiniPreviewStyle.fontSizeMicro,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _TrailingRule extends SingleChildRenderObjectWidget {
+  final Color color;
+  final double spacing;
+
+  const _TrailingRule({
+    required this.color,
+    required this.spacing,
+    required Widget super.child,
+  });
+
+  @override
+  RenderObject createRenderObject(BuildContext context) =>
+      _RenderTrailingRule(color: color, spacing: spacing);
+
+  @override
+  void updateRenderObject(
+    BuildContext context,
+    _RenderTrailingRule renderObject,
+  ) {
+    renderObject
+      ..color = color
+      ..spacing = spacing;
+  }
+}
+
+class _RenderTrailingRule extends RenderProxyBox {
+  Color _color;
+  double _spacing;
+
+  _RenderTrailingRule({required this._color, required this._spacing});
+
+  Color get color => _color;
+
+  set color(Color value) {
+    if (_color == value) {
+      return;
+    }
+    _color = value;
+    markNeedsPaint();
+  }
+
+  double get spacing => _spacing;
+
+  set spacing(double value) {
+    if (_spacing == value) {
+      return;
+    }
+    _spacing = value;
+    markNeedsPaint();
+  }
+
+  @override
+  Size computeDryLayout(BoxConstraints constraints) {
+    final childSize = child!.getDryLayout(constraints.loosen());
+    final width = constraints.hasBoundedWidth
+        ? constraints.maxWidth
+        : childSize.width;
+    return constraints.constrain(Size(width, childSize.height));
+  }
+
+  @override
+  void performLayout() {
+    final child = this.child!
+      ..layout(constraints.loosen(), parentUsesSize: true);
+    final width = constraints.hasBoundedWidth
+        ? constraints.maxWidth
+        : child.size.width;
+    size = constraints.constrain(Size(width, child.size.height));
+  }
+
+  @override
+  void paint(PaintingContext context, Offset offset) {
+    super.paint(context, offset);
+    final child = this.child!;
+    final startX = child.size.width + _spacing;
+    if (startX < size.width) {
+      final top = offset.dy + (size.height - 1) / 2;
+      context.canvas.drawRect(
+        Rect.fromLTWH(offset.dx + startX, top, size.width - startX, 1),
+        Paint()..color = _color,
+      );
+    }
   }
 }

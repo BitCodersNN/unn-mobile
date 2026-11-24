@@ -103,9 +103,6 @@ abstract final class CustomPaletteThemeBuilder {
     final baseMarks = baseExtra.gradeMarkTypeColors!;
 
     final extraColors = baseExtra.copyWith(
-      scheduleDayHighlight: overrides[PaletteColorSlot.scheduleDayHighlight],
-      scheduleSubjectHighlight:
-          overrides[PaletteColorSlot.scheduleSubjectHighlight],
       scheduleSubjectTypeColors: {
         SubjectType.lecture:
             overrides[PaletteColorSlot.subjectLecture] ??
@@ -196,9 +193,6 @@ abstract final class CustomPaletteThemeBuilder {
       PaletteColorSlot.importantPostHighlight =>
         extra?.importantPostHighlight ?? scheme.error,
       PaletteColorSlot.wideButtonBottom => extra?.wideButtonBottomColor,
-      PaletteColorSlot.scheduleDayHighlight => extra?.scheduleDayHighlight,
-      PaletteColorSlot.scheduleSubjectHighlight =>
-        extra?.scheduleSubjectHighlight,
       PaletteColorSlot.subjectLecture =>
         extra?.scheduleSubjectTypeColors?[SubjectType.lecture],
       PaletteColorSlot.subjectPractice =>

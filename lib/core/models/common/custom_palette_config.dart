@@ -17,8 +17,6 @@ enum PaletteColorSlot {
   onSurfaceVariant(PaletteCategory.base),
   outlineVariant(PaletteCategory.base),
   wideButtonBottom(PaletteCategory.base),
-  scheduleDayHighlight(PaletteCategory.schedule),
-  scheduleSubjectHighlight(PaletteCategory.schedule),
   subjectLecture(PaletteCategory.schedule),
   subjectPractice(PaletteCategory.schedule),
   subjectLab(PaletteCategory.schedule),

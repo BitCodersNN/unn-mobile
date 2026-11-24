@@ -23,8 +23,6 @@ extension PaletteColorSlotLabel on PaletteColorSlot {
     PaletteColorSlot.onSurfaceVariant => 'Вторичный текст',
     PaletteColorSlot.outlineVariant => 'Разделители',
     PaletteColorSlot.wideButtonBottom => 'Низ кнопки',
-    PaletteColorSlot.scheduleDayHighlight => 'Подсветка дня',
-    PaletteColorSlot.scheduleSubjectHighlight => 'Текущая пара',
     PaletteColorSlot.subjectLecture => 'Лекция',
     PaletteColorSlot.subjectPractice => 'Практика',
     PaletteColorSlot.subjectLab => 'Лабораторная',

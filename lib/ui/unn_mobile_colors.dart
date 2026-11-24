@@ -1,8 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
-// Copyright 2025 BitCodersNN
+// Copyright 2026 BitCodersNN
 
 import 'package:flutter/material.dart';
-import 'package:unn_mobile/core/misc/date_time_utilities/date_time_extensions.dart';
 import 'package:unn_mobile/core/models/grade_book/mark_type.dart';
 import 'package:unn_mobile/core/models/schedule/subject_type.dart';
 
@@ -16,8 +15,6 @@ class UnnMobileColors extends ThemeExtension<UnnMobileColors> {
     SubjectType.unknown: Color(0xFF6E757C),
   };
 
-  final Color? scheduleDayHighlight;
-  final Color? scheduleSubjectHighlight;
   final Map<SubjectType, Color>? scheduleSubjectTypeColors;
   final Map<MarkType, Color>? gradeMarkTypeColors;
   final Color? ligtherTextColor;
@@ -27,8 +24,6 @@ class UnnMobileColors extends ThemeExtension<UnnMobileColors> {
   final Color shimmerHighlightColor;
 
   const UnnMobileColors({
-    required this.scheduleDayHighlight,
-    required this.scheduleSubjectHighlight,
     required this.scheduleSubjectTypeColors,
     required this.gradeMarkTypeColors,
     required this.ligtherTextColor,
@@ -39,8 +34,6 @@ class UnnMobileColors extends ThemeExtension<UnnMobileColors> {
   });
 
   static const light = UnnMobileColors(
-    scheduleDayHighlight: Color(0xFFEEEEEE),
-    scheduleSubjectHighlight: Color(0xFFFFF6E8),
     scheduleSubjectTypeColors: defaultScheduleSubjectTypeColors,
     gradeMarkTypeColors: {
       MarkType.perfect: Color(0xFF15803D),
@@ -60,7 +53,6 @@ class UnnMobileColors extends ThemeExtension<UnnMobileColors> {
   );
 
   static final blueLight = light.copyWith(
-    scheduleDayHighlight: const Color(0xFFF0F3F6),
     ligtherTextColor: const Color(0xFF59636E),
     wideButtonBottomColor: const Color(0xFF0550AE),
     shimmerBaseColor: const Color(0xFFE8EDF2),
@@ -68,8 +60,6 @@ class UnnMobileColors extends ThemeExtension<UnnMobileColors> {
   );
 
   static final warmLight = light.copyWith(
-    scheduleDayHighlight: const Color(0xFFEFE5D6),
-    scheduleSubjectHighlight: const Color(0xFFF8E9D2),
     ligtherTextColor: const Color(0xFF6E6054),
     wideButtonBottomColor: const Color(0xFF7F421E),
     shimmerBaseColor: const Color(0xFFEAE0D0),
@@ -77,8 +67,6 @@ class UnnMobileColors extends ThemeExtension<UnnMobileColors> {
   );
 
   static const dark = UnnMobileColors(
-    scheduleDayHighlight: Color(0xFF293F39),
-    scheduleSubjectHighlight: Color(0xFF3B3426),
     scheduleSubjectTypeColors: {
       SubjectType.lecture: Color(0xFF79C8BF),
       SubjectType.practice: Color(0xFFD99A80),
@@ -105,8 +93,6 @@ class UnnMobileColors extends ThemeExtension<UnnMobileColors> {
   );
 
   static final graphite = dark.copyWith(
-    scheduleDayHighlight: const Color(0xFF303040),
-    scheduleSubjectHighlight: const Color(0xFF40362D),
     ligtherTextColor: const Color(0xFFC1BECE),
     wideButtonBottomColor: const Color(0xFF9E88CF),
     shimmerBaseColor: const Color(0xFF252532),
@@ -114,8 +100,6 @@ class UnnMobileColors extends ThemeExtension<UnnMobileColors> {
   );
 
   static final warmDark = dark.copyWith(
-    scheduleDayHighlight: const Color(0xFF332B25),
-    scheduleSubjectHighlight: const Color(0xFF3F3122),
     ligtherTextColor: const Color(0xFFBFB0A3),
     wideButtonBottomColor: const Color(0xFFB3774B),
     shimmerBaseColor: const Color(0xFF2A231E),
@@ -124,8 +108,6 @@ class UnnMobileColors extends ThemeExtension<UnnMobileColors> {
 
   @override
   UnnMobileColors copyWith({
-    Color? scheduleDayHighlight,
-    Color? scheduleSubjectHighlight,
     Map<SubjectType, Color>? scheduleSubjectTypeColors,
     Map<MarkType, Color>? gradeMarkTypeColors,
     Color? ligtherTextColor,
@@ -134,9 +116,6 @@ class UnnMobileColors extends ThemeExtension<UnnMobileColors> {
     Color? shimmerBaseColor,
     Color? shimmerHighlightColor,
   }) => UnnMobileColors(
-    scheduleDayHighlight: scheduleDayHighlight ?? this.scheduleDayHighlight,
-    scheduleSubjectHighlight:
-        scheduleSubjectHighlight ?? this.scheduleSubjectHighlight,
     scheduleSubjectTypeColors:
         scheduleSubjectTypeColors ?? this.scheduleSubjectTypeColors,
     gradeMarkTypeColors: gradeMarkTypeColors ?? this.gradeMarkTypeColors,
@@ -160,16 +139,6 @@ class UnnMobileColors extends ThemeExtension<UnnMobileColors> {
     final UnnMobileColors otherColors = other as UnnMobileColors;
 
     return UnnMobileColors(
-      scheduleDayHighlight: Color.lerp(
-        scheduleDayHighlight,
-        otherColors.scheduleDayHighlight,
-        t,
-      ),
-      scheduleSubjectHighlight: Color.lerp(
-        scheduleSubjectHighlight,
-        otherColors.scheduleSubjectHighlight,
-        t,
-      ),
       scheduleSubjectTypeColors: Map.fromIterables(
         scheduleSubjectTypeColors!.keys,
         scheduleSubjectTypeColors!.keys.map((SubjectType key) {
@@ -234,21 +203,6 @@ extension ThemeDataExtension on ThemeData {
   Color getColorOfSubjectType(SubjectType subjectType) {
     final extraColors = extension<UnnMobileColors>()!;
     return extraColors.scheduleSubjectTypeColors![subjectType] ?? primaryColor;
-  }
-
-  Color getScheduleSurfaceColor(
-    DateTimeRange dateTimeRange, {
-    bool isEven = false,
-  }) {
-    final extraColors = extension<UnnMobileColors>()!;
-    if (DateTime.now().isBetween(
-      dateTimeRange.start.subtract(const Duration(minutes: 10)),
-      dateTimeRange.end,
-    )) {
-      return extraColors.scheduleSubjectHighlight!;
-    }
-
-    return isEven ? alternatingSurfaceColor : colorScheme.surface;
   }
 
   UnnMobileColors? get unnMobileColors => extension<UnnMobileColors>();
