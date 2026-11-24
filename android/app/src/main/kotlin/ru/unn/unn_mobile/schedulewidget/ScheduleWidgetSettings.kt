@@ -19,8 +19,10 @@ enum class ScheduleWidgetPalette(val key: String?, val label: Int) {
     APP(null, R.string.schedule_widget_palette_app),
     LIGHT_GREEN("light_green", R.string.schedule_widget_palette_light_green),
     LIGHT_BLUE("light_blue", R.string.schedule_widget_palette_light_blue),
+    LIGHT_WARM("light_warm", R.string.schedule_widget_palette_light_warm),
     DARK_GREEN("dark_green", R.string.schedule_widget_palette_dark_green),
     DARK_GRAPHITE("dark_graphite", R.string.schedule_widget_palette_dark_graphite),
+    DARK_WARM("dark_warm", R.string.schedule_widget_palette_dark_warm),
 }
 
 enum class ScheduleWidgetTextSize(val label: Int, val scale: Float) {

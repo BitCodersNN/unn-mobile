@@ -77,6 +77,16 @@ class UnnMobileColors extends ThemeExtension<UnnMobileColors> {
     shimmerHighlightColor: const Color(0xFFF6F8FA),
   );
 
+  static final warmLight = light.copyWith(
+    scheduleDayHighlight: const Color(0xFFEFE5D6),
+    scheduleSubjectHighlight: const Color(0xFFF8E9D2),
+    ligtherTextColor: const Color(0xFF6E6054),
+    idkWhatColor: const Color(0xFF8F7E70),
+    wideButtonBottomColor: const Color(0xFF7F421E),
+    shimmerBaseColor: const Color(0xFFEAE0D0),
+    shimmerHighlightColor: const Color(0xFFF7F1E7),
+  );
+
   static const dark = UnnMobileColors(
     scheduleDayHighlight: Color(0xFF293F39),
     scheduleSubjectHighlight: Color(0xFF3B3426),
@@ -114,6 +124,16 @@ class UnnMobileColors extends ThemeExtension<UnnMobileColors> {
     wideButtonBottomColor: const Color(0xFF9E88CF),
     shimmerBaseColor: const Color(0xFF252532),
     shimmerHighlightColor: const Color(0xFF3D3D4D),
+  );
+
+  static final warmDark = dark.copyWith(
+    scheduleDayHighlight: const Color(0xFF332B25),
+    scheduleSubjectHighlight: const Color(0xFF3F3122),
+    ligtherTextColor: const Color(0xFFBFB0A3),
+    idkWhatColor: const Color(0xFF9E8F82),
+    wideButtonBottomColor: const Color(0xFFB3774B),
+    shimmerBaseColor: const Color(0xFF2A231E),
+    shimmerHighlightColor: const Color(0xFF3D332C),
   );
 
   @override

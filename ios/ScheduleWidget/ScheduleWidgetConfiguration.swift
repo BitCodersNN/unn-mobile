@@ -12,8 +12,10 @@ extension ScheduleWidgetPalette: AppEnum {
             .app: "Как в приложении",
             .lightGreen: "Бело-зелёная",
             .lightBlue: "Бело-синяя",
+            .lightWarm: "Кремовая",
             .darkGreen: "Тёмно-зелёная",
-            .darkGraphite: "Графитовая"
+            .darkGraphite: "Графитовая",
+            .darkWarm: "Кофейная"
         ]
     }
 }

@@ -19,8 +19,10 @@ enum ScheduleWidgetPalette: String, CaseIterable, Sendable {
     case app
     case lightGreen = "light_green"
     case lightBlue = "light_blue"
+    case lightWarm = "light_warm"
     case darkGreen = "dark_green"
     case darkGraphite = "dark_graphite"
+    case darkWarm = "dark_warm"
 
     var override: String? { self == .app ? nil : rawValue }
 }

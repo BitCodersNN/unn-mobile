@@ -39,6 +39,28 @@ abstract final class AppTheme {
     UnnMobileColors.blueLight,
   );
 
+  static final ThemeData warmLight = _build(
+    ColorScheme.fromSeed(seedColor: const Color(0xFFA85D2F)).copyWith(
+      primary: const Color(0xFFA85D2F),
+      onPrimary: const Color(0xFFFFFBF5),
+      primaryContainer: const Color(0xFFF3DFCE),
+      onPrimaryContainer: const Color(0xFF5B2E12),
+      surface: const Color(0xFFFBF6EE),
+      onSurface: const Color(0xFF2C241E),
+      onSurfaceVariant: const Color(0xFF6E6054),
+      surfaceBright: const Color(0xFFFFFBF5),
+      surfaceDim: const Color(0xFFE3D7C7),
+      surfaceContainerLowest: const Color(0xFFFFFBF5),
+      surfaceContainerLow: const Color(0xFFF4ECE0),
+      surfaceContainer: const Color(0xFFEFE5D6),
+      surfaceContainerHigh: const Color(0xFFEAE0D0),
+      surfaceContainerHighest: const Color(0xFFE3D7C7),
+      outline: const Color(0xFF9A8B7D),
+      outlineVariant: const Color(0xFFE3D7C7),
+    ),
+    UnnMobileColors.warmLight,
+  );
+
   static ColorScheme _darkColors(Color seed, {Color? secondary}) =>
       ColorScheme.fromSeed(
         seedColor: seed,
@@ -95,6 +117,28 @@ abstract final class AppTheme {
     UnnMobileColors.graphite,
   );
 
+  static final ThemeData warmDark = _build(
+    _darkColors(const Color(0xFFD69A6C)).copyWith(
+      primary: const Color(0xFFD69A6C),
+      onPrimary: const Color(0xFF2D180A),
+      primaryContainer: const Color(0xFF4F3624),
+      onPrimaryContainer: const Color(0xFFF7DFCA),
+      surface: const Color(0xFF1A1512),
+      onSurface: const Color(0xFFEFE5DB),
+      onSurfaceVariant: const Color(0xFFBFB0A3),
+      surfaceDim: const Color(0xFF14100D),
+      surfaceBright: const Color(0xFF3D332C),
+      surfaceContainerLowest: const Color(0xFF14100D),
+      surfaceContainerLow: const Color(0xFF221C18),
+      surfaceContainer: const Color(0xFF2A231E),
+      surfaceContainerHigh: const Color(0xFF332B25),
+      surfaceContainerHighest: const Color(0xFF3D332C),
+      outline: const Color(0xFF8F8073),
+      outlineVariant: const Color(0xFF423830),
+    ),
+    UnnMobileColors.warmDark,
+  );
+
   static final List<ThemePalette<AppLightTheme>> lightPalettes =
       List.unmodifiable([
         ThemePalette(
@@ -106,6 +150,11 @@ abstract final class AppTheme {
           value: AppLightTheme.blue,
           label: 'Бело-синяя',
           theme: blueLight,
+        ),
+        ThemePalette(
+          value: AppLightTheme.warm,
+          label: 'Кремовая',
+          theme: warmLight,
         ),
       ]);
 
@@ -120,6 +169,11 @@ abstract final class AppTheme {
           value: AppDarkTheme.graphite,
           label: 'Графитовая',
           theme: darkGraphite,
+        ),
+        ThemePalette(
+          value: AppDarkTheme.warm,
+          label: 'Кофейная',
+          theme: warmDark,
         ),
       ]);
 
