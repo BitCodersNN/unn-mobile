@@ -2,16 +2,26 @@
 // Copyright 2026 BitCodersNN
 
 import 'package:flutter/material.dart';
+import 'package:unn_mobile/ui/views/main_page/settings/widgets/settings_minutes_slider.dart';
 
 class SettingsSection extends StatelessWidget {
   final String title;
   final List<Widget> children;
+  final double? dividerIndent;
 
   const SettingsSection({
     required this.title,
     required this.children,
+    this.dividerIndent,
     super.key,
   });
+
+  double _indentFor(int index) {
+    if (dividerIndent != null) {
+      return dividerIndent!;
+    }
+    return children[index - 1] is SettingsMinutesSlider ? 16 : 64;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +56,7 @@ class SettingsSection extends StatelessWidget {
                   if (index > 0)
                     Divider(
                       height: 1,
-                      indent: 64,
+                      indent: _indentFor(index),
                       endIndent: 16,
                       color: theme.colorScheme.outlineVariant.withValues(
                         alpha: 0.45,

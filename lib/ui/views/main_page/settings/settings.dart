@@ -372,6 +372,7 @@ class _SettingsScreenViewState extends State<SettingsScreenView>
                 children: [
                   SettingsSection(
                     title: 'Оформление',
+                    dividerIndent: 16,
                     children: [
                       SettingsActionTile(
                         icon: Icons.brightness_6_outlined,
