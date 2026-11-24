@@ -61,7 +61,6 @@ internal data class SchedulePalette(
 internal data class SchedulePaletteOption(
     val key: String?,
     val label: String,
-    val dark: Boolean? = null,
 )
 
 internal class ScheduleAppearance(context: Context) {
@@ -79,8 +78,7 @@ internal class ScheduleAppearance(context: Context) {
                 val item = array.optJSONObject(index) ?: continue
                 val key = (item.opt(KEY_OPTION_KEY) as? String)?.takeIf { it.isNotEmpty() } ?: continue
                 val label = (item.opt(KEY_OPTION_LABEL) as? String)?.takeIf { it.isNotEmpty() } ?: continue
-                val dark = item.opt(KEY_DARK) as? Boolean
-                add(SchedulePaletteOption(key = key, label = label, dark = dark))
+                add(SchedulePaletteOption(key = key, label = label))
             }
         }
     }

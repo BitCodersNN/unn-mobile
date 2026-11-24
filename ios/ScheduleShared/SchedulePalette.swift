@@ -39,7 +39,6 @@ struct SchedulePalette: Codable, Hashable {
 struct SchedulePaletteOption: Codable, Hashable, Sendable {
     let key: String
     let label: String
-    let dark: Bool
 }
 
 struct ScheduleAppearance: Codable, Hashable {
@@ -50,6 +49,17 @@ struct ScheduleAppearance: Codable, Hashable {
     let options: [SchedulePaletteOption]?
 
     static let fallback = Self(mode: "system", light: "", dark: "", palettes: [:], options: nil)
+
+    func compactForLiveActivity() -> ScheduleAppearance {
+        var filteredPalettes: [String: SchedulePalette] = [:]
+        if let lightPalette = palettes[light] {
+            filteredPalettes[light] = lightPalette
+        }
+        if let darkPalette = palettes[dark] {
+            filteredPalettes[dark] = darkPalette
+        }
+        return ScheduleAppearance(mode: mode, light: light, dark: dark, palettes: filteredPalettes, options: nil)
+    }
 
     func palette(systemDark: Bool, forcedDark: Bool? = nil, override: String? = nil) -> SchedulePalette {
         let overrideKey = override.flatMap { $0.isEmpty ? nil : $0 }

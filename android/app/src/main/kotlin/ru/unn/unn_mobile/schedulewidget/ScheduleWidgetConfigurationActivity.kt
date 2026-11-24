@@ -37,7 +37,6 @@ class ScheduleWidgetConfigurationActivity : Activity() {
     private val spinners = mutableListOf<Spinner>()
     private var paletteOptions: List<SchedulePaletteOption> = emptyList()
     private lateinit var paletteAdapter: ArrayAdapter<String>
-    private var expectedPaletteSelection: Int? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -80,13 +79,10 @@ class ScheduleWidgetConfigurationActivity : Activity() {
         }
         paletteOptions = buildPaletteOptions(ScheduleAppearance(this))
         paletteAdapter = bindSpinner(R.id.schedule_widget_palette, paletteOptions.map { it.label }) { position ->
-            if (expectedPaletteSelection == position) {
-                expectedPaletteSelection = null
-                return@bindSpinner
-            }
-            expectedPaletteSelection = null
             val selectedKey = paletteOptions.getOrNull(position)?.key
-            updateDraft(draft.copy(paletteKey = selectedKey))
+            if (selectedKey != draft.paletteKey) {
+                updateDraft(draft.copy(paletteKey = selectedKey))
+            }
         }
         bindSpinner(R.id.schedule_widget_text_size, ScheduleWidgetTextSize.entries.map { getString(it.label) }) {
             updateDraft(draft.copy(textSize = ScheduleWidgetTextSize.entries[it]))
@@ -143,7 +139,7 @@ class ScheduleWidgetConfigurationActivity : Activity() {
         updatingControls = true
         findViewById<SeekBar>(R.id.schedule_widget_transparency_slider).progress = draft.transparency
         findViewById<Spinner>(R.id.schedule_widget_theme).setSelection(draft.theme.ordinal)
-        selectPaletteOption(paletteIndexFor(draft.paletteKey))
+        findViewById<Spinner>(R.id.schedule_widget_palette).setSelection(paletteIndexFor(draft.paletteKey))
         updateThemeControl()
         findViewById<Spinner>(R.id.schedule_widget_text_size).setSelection(draft.textSize.ordinal)
         findViewById<Spinner>(R.id.schedule_widget_max_lessons).setSelection(draft.maxLessons)
@@ -183,14 +179,14 @@ class ScheduleWidgetConfigurationActivity : Activity() {
     private fun paletteIndexFor(paletteKey: String?): Int =
         paletteKey?.let { key -> paletteOptions.indexOfFirst { it.key == key }.takeIf { it >= 0 } } ?: 0
 
-    private fun selectPaletteOption(index: Int) {
-        val spinner = findViewById<Spinner>(R.id.schedule_widget_palette)
-        expectedPaletteSelection = index
-        spinner.setSelection(index)
-    }
-
     private fun refreshPaletteOptions(appearance: ScheduleAppearance) {
         val nextOptions = buildPaletteOptions(appearance)
+        if (appearance.options.isNotEmpty() &&
+            draft.paletteKey != null &&
+            nextOptions.none { it.key == draft.paletteKey }
+        ) {
+            draft = draft.copy(paletteKey = null)
+        }
         if (nextOptions == paletteOptions) return
         paletteOptions = nextOptions
         val previousUpdating = updatingControls
@@ -198,7 +194,7 @@ class ScheduleWidgetConfigurationActivity : Activity() {
         paletteAdapter.clear()
         paletteAdapter.addAll(nextOptions.map { it.label })
         paletteAdapter.notifyDataSetChanged()
-        selectPaletteOption(paletteIndexFor(draft.paletteKey))
+        findViewById<Spinner>(R.id.schedule_widget_palette).setSelection(paletteIndexFor(draft.paletteKey))
         updateThemeControl()
         updatingControls = previousUpdating
     }

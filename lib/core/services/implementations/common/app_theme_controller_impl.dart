@@ -36,12 +36,6 @@ class AppThemeControllerImpl extends ChangeNotifier
   CustomPaletteConfig? get customDarkPalette => _customDarkPalette.value;
 
   @override
-  bool get hasCustomLightPalette => _customLightPalette.value != null;
-
-  @override
-  bool get hasCustomDarkPalette => _customDarkPalette.value != null;
-
-  @override
   Future<void> load() async {
     final (mode, lightTheme, darkTheme, customLight, customDark) = await (
       _provider.read(),
@@ -57,9 +51,6 @@ class AppThemeControllerImpl extends ChangeNotifier
     _customDarkPalette.load(customDark);
     notifyListeners();
   }
-
-  @override
-  Future<void> reload() => load();
 
   @override
   Future<void> setMode(AppThemeMode mode) =>
@@ -78,22 +69,6 @@ class AppThemeControllerImpl extends ChangeNotifier
     save: _provider.saveDarkTheme,
     onChanged: notifyListeners,
   );
-
-  @override
-  Future<void> setCustomLightPalette(CustomPaletteConfig config) =>
-      _updateCustomPalette(
-        _customLightPalette,
-        config,
-        _provider.saveCustomLightPalette,
-      );
-
-  @override
-  Future<void> setCustomDarkPalette(CustomPaletteConfig config) =>
-      _updateCustomPalette(
-        _customDarkPalette,
-        config,
-        _provider.saveCustomDarkPalette,
-      );
 
   @override
   Future<void> applyCustomPalette(
@@ -167,16 +142,6 @@ class AppThemeControllerImpl extends ChangeNotifier
       await saveTheme(customTheme);
     }
   }
-
-  Future<void> _updateCustomPalette(
-    _ThemePreference<CustomPaletteConfig?> preference,
-    CustomPaletteConfig config,
-    Future<void> Function(CustomPaletteConfig) save,
-  ) => preference.update(
-    config,
-    save: (value) => value == null ? Future<void>.value() : save(value),
-    onChanged: notifyListeners,
-  );
 }
 
 class _ThemePreference<T> {

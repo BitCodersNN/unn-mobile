@@ -19,9 +19,9 @@ class PreviewMenuRoute extends PopupRoute<VoidCallback> {
   final ui.Image image;
   final Rect sourceRect;
   final BorderRadius borderRadius;
+  final double minActionsWidth;
   final List<ContextMenuAction> actions;
   final PreviewContextMenuAccessoryBuilder? topAccessoryBuilder;
-  final double minActionsWidth;
   final CapturedThemes themes;
   final String dismissLabel;
   final VoidCallback onClose;
@@ -30,9 +30,9 @@ class PreviewMenuRoute extends PopupRoute<VoidCallback> {
     required this.image,
     required this.sourceRect,
     required this.borderRadius,
+    required this.minActionsWidth,
     required this.actions,
     required this.topAccessoryBuilder,
-    required this.minActionsWidth,
     required this.themes,
     required this.dismissLabel,
     required this.onClose,

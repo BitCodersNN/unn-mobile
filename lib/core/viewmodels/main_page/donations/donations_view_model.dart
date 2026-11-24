@@ -7,6 +7,7 @@ import 'dart:ui';
 import 'package:flutter/foundation.dart';
 import 'package:unn_mobile/core/constants/api/path.dart';
 import 'package:unn_mobile/core/constants/api/protocol_type.dart';
+import 'package:unn_mobile/core/misc/hex_color.dart';
 import 'package:unn_mobile/core/services/interfaces/common/app_theme_controller.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
 
@@ -27,21 +28,6 @@ class DonationsThemeColors {
     required this.primary,
     required this.outline,
   });
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is DonationsThemeColors &&
-          background == other.background &&
-          surface == other.surface &&
-          foreground == other.foreground &&
-          muted == other.muted &&
-          primary == other.primary &&
-          outline == other.outline;
-
-  @override
-  int get hashCode =>
-      Object.hash(background, surface, foreground, muted, primary, outline);
 }
 
 class DonationsViewModel extends BaseViewModel {
@@ -50,17 +36,10 @@ class DonationsViewModel extends BaseViewModel {
   Uri? _pageUri;
   bool _pageLoaded = false;
   String _pageTheme = 'light';
-  String _pagePalette;
+  String _pagePalette = '';
   Map<String, String> _pageColors = const {};
 
-  DonationsViewModel(this._themeController)
-    : _pagePalette = _themeController.lightTheme.name;
-
-  Uri? get pageUri => _pageUri;
-  bool get pageLoaded => _pageLoaded;
-  String get pageTheme => _pageTheme;
-  String get pagePalette => _pagePalette;
-  Map<String, String> get pageColors => Map.unmodifiable(_pageColors);
+  DonationsViewModel(this._themeController);
 
   String get themeUpdateScript =>
       'window.setSupportTheme?.(${jsonEncode(_pageTheme)}, '
@@ -75,12 +54,12 @@ class DonationsViewModel extends BaseViewModel {
         ? _themeController.darkTheme.name
         : _themeController.lightTheme.name;
     _pageColors = {
-      'background': _toHex(colors.background),
-      'surface': _toHex(colors.surface),
-      'foreground': _toHex(colors.foreground),
-      'muted': _toHex(colors.muted),
-      'primary': _toHex(colors.primary),
-      'outline': _toHex(colors.outline),
+      'background': colors.background.toHexRgb(),
+      'surface': colors.surface.toHexRgb(),
+      'foreground': colors.foreground.toHexRgb(),
+      'muted': colors.muted.toHexRgb(),
+      'primary': colors.primary.toHexRgb(),
+      'outline': colors.outline.toHexRgb(),
     };
 
     if (_pageUri == null) {
@@ -109,7 +88,4 @@ class DonationsViewModel extends BaseViewModel {
   void onPageStarted() => _pageLoaded = false;
 
   void onPageFinished() => _pageLoaded = true;
-
-  static String _toHex(Color color) =>
-      (color.toARGB32() & 0x00ffffff).toRadixString(16).padLeft(6, '0');
 }

@@ -3,8 +3,6 @@
 
 import 'dart:ui';
 
-import 'package:flutter/material.dart';
-
 extension ColorParser on Color {
   /// String is in the format "aabbcc" or "ffaabbcc" with an optional leading "#".
   static Color? fromHex(String hexString) {
@@ -28,4 +26,9 @@ extension ColorParser on Color {
       '${(r * 255).round().toRadixString(16).padLeft(2, '0')}'
       '${(g * 255).round().toRadixString(16).padLeft(2, '0')}'
       '${(b * 255).round().toRadixString(16).padLeft(2, '0')}';
+}
+
+extension HexColorFormat on Color {
+  String toHexRgb() =>
+      (toARGB32() & 0xFFFFFF).toRadixString(16).padLeft(6, '0');
 }

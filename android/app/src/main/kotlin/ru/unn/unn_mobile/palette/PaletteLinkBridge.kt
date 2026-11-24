@@ -66,7 +66,7 @@ class PaletteLinkBridge(engine: FlutterEngine, initialIntent: Intent?) {
             return link
         }
 
-        fun extractPaletteLink(intent: Intent?): String? {
+        private fun extractPaletteLink(intent: Intent?): String? {
             if (intent?.action != Intent.ACTION_VIEW) return null
             if (intent.getBooleanExtra(EXTRA_CONSUMED, false)) return null
             val uri = intent.data ?: return null

@@ -40,27 +40,23 @@ Map<String, Object> buildScheduleAppearance(AppThemeController controller) {
         _option(
           key: '${_ScheduleAppearanceKeys.lightPrefix}${palette.value.name}',
           label: palette.label,
-          isDark: false,
         ),
       if (customLight != null)
         _option(
           key:
               '${_ScheduleAppearanceKeys.lightPrefix}${AppLightTheme.custom.name}',
           label: 'Своя светлая',
-          isDark: false,
         ),
       for (final palette in AppTheme.darkPalettes)
         _option(
           key: '${_ScheduleAppearanceKeys.darkPrefix}${palette.value.name}',
           label: palette.label,
-          isDark: true,
         ),
       if (customDark != null)
         _option(
           key:
               '${_ScheduleAppearanceKeys.darkPrefix}${AppDarkTheme.custom.name}',
           label: 'Своя тёмная',
-          isDark: true,
         ),
     ],
     _ScheduleAppearanceKeys.palettes: {
@@ -96,14 +92,9 @@ Map<String, Object> buildScheduleAppearance(AppThemeController controller) {
   };
 }
 
-Map<String, Object> _option({
-  required String key,
-  required String label,
-  required bool isDark,
-}) => {
+Map<String, Object> _option({required String key, required String label}) => {
   _ScheduleAppearanceKeys.key: key,
   _ScheduleAppearanceKeys.label: label,
-  _ScheduleAppearanceKeys.dark: isDark,
 };
 
 Map<String, Object> _colors(ThemeData theme, {required bool isDark}) {

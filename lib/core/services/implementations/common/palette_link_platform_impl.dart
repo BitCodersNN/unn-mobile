@@ -30,22 +30,18 @@ class PaletteLinkPlatformImpl implements PaletteLinkPlatform {
   }
 
   @override
-  void setOnLink(ValueChanged<String>? onLink) {
+  void setOnLink(ValueChanged<String> onLink) {
     if (!isMobilePlatform) {
       return;
     }
-    _channel.setMethodCallHandler(
-      onLink == null
-          ? null
-          : (call) async {
-              if (call.method != 'openPaletteLink') {
-                throw MissingPluginException();
-              }
-              if (call.arguments case final String link) {
-                onLink(link);
-              }
-            },
-    );
+    _channel.setMethodCallHandler((call) async {
+      if (call.method != 'openPaletteLink') {
+        throw MissingPluginException();
+      }
+      if (call.arguments case final String link) {
+        onLink(link);
+      }
+    });
   }
 
   @override

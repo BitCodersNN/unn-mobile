@@ -16,7 +16,7 @@ import 'package:unn_mobile/ui/widgets/segmented_tab_bar.dart';
 
 const double _editorMaxWidth = 640;
 
-class CustomPaletteEditorScreen extends StatefulWidget {
+class CustomPaletteEditorScreen extends StatelessWidget {
   final Brightness brightness;
   final CustomPaletteConfig initialConfig;
   final List<ThemePalette<Enum>> builtInPresets;
@@ -28,56 +28,35 @@ class CustomPaletteEditorScreen extends StatefulWidget {
     super.key,
   });
 
-  @override
-  State<CustomPaletteEditorScreen> createState() =>
-      _CustomPaletteEditorScreenState();
-}
-
-class _CustomPaletteEditorScreenState extends State<CustomPaletteEditorScreen> {
-  CustomPaletteConfig? _cachedConfig;
-  Brightness? _cachedBrightness;
-  ThemeData? _cachedPreviewTheme;
-
-  ThemeData _previewThemeFor(
-    CustomPaletteConfig config,
-    Brightness brightness,
-  ) {
-    if (_cachedPreviewTheme != null &&
-        _cachedConfig == config &&
-        _cachedBrightness == brightness) {
-      return _cachedPreviewTheme!;
-    }
-    _cachedConfig = config;
-    _cachedBrightness = brightness;
-    return _cachedPreviewTheme = AppTheme.buildCustomTheme(
-      config,
-      brightness: brightness,
-    );
-  }
-
-  Color _resolveSlotColor(
+  static Color _resolveSlotColor(
     CustomPaletteConfig config,
     Brightness brightness,
     PaletteColorSlot slot,
-  ) => AppTheme.colorForSlot(_previewThemeFor(config, brightness), slot);
+  ) => AppTheme.colorForSlot(
+    AppTheme.buildCustomTheme(config, brightness: brightness),
+    slot,
+  );
 
   @override
   Widget build(BuildContext context) => BaseView<CustomPaletteEditorViewModel>(
     createModel: () => CustomPaletteEditorViewModel(
-      initialConfig: widget.initialConfig,
-      brightness: widget.brightness,
+      initialConfig: initialConfig,
+      brightness: brightness,
       slotColorResolver: _resolveSlotColor,
     ),
     onDispose: (model) => model.dispose(),
     builder: (context, model, _) {
       final colors = Theme.of(context).colorScheme;
-      final previewTheme = _previewThemeFor(model.config, widget.brightness);
+      final previewTheme = AppTheme.buildCustomTheme(
+        model.config,
+        brightness: brightness,
+      );
 
       return Scaffold(
         backgroundColor: colors.surface,
         appBar: AppBar(
           title: Text(
-            widget.brightness == Brightness.dark
+            brightness == Brightness.dark
                 ? 'Своя тёмная палитра'
                 : 'Своя светлая палитра',
           ),
@@ -87,7 +66,7 @@ class _CustomPaletteEditorScreenState extends State<CustomPaletteEditorScreen> {
           actions: [
             MenuButton(
               entries: [
-                for (final preset in widget.builtInPresets)
+                for (final preset in builtInPresets)
                   AppMenuAction(
                     title: preset.label,
                     onSelected: () => model.applyPreset(

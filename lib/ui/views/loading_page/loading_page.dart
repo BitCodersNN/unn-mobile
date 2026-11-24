@@ -6,8 +6,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
-import 'package:provider/provider.dart';
-import 'package:unn_mobile/core/services/interfaces/common/app_theme_controller.dart';
 import 'package:unn_mobile/core/viewmodels/loading_page/loading_page_view_model.dart';
 import 'package:unn_mobile/ui/main_page_locations.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
@@ -41,14 +39,8 @@ class _LoadingPageState extends State<LoadingPage> {
   @override
   Widget build(BuildContext context) => BaseView<LoadingPageViewModel>(
     onModelReady: (model) {
-      final brightness = Theme.of(context).brightness;
-      final themeController = context.read<AppThemeController>();
-      final palette = brightness == Brightness.dark
-          ? themeController.darkTheme.name
-          : themeController.lightTheme.name;
       _loadingPages = model.initLoadingPages(
-        brightness: brightness,
-        palette: palette,
+        brightness: Theme.of(context).brightness,
       );
       unawaited(_navigateWhenReady(model));
     },

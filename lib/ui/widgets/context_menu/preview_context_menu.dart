@@ -17,9 +17,8 @@ class PreviewContextMenu extends StatefulWidget {
   final List<ContextMenuAction> Function(BuildContext) actionsBuilder;
   final PreviewContextMenuAccessoryBuilder? topAccessoryBuilder;
   final BorderRadius borderRadius;
-  final GlobalKey? previewKey;
   final double minActionsWidth;
-  final bool enabled;
+  final GlobalKey? previewKey;
   final Widget child;
 
   const PreviewContextMenu({
@@ -27,9 +26,8 @@ class PreviewContextMenu extends StatefulWidget {
     required this.child,
     this.topAccessoryBuilder,
     this.borderRadius = const BorderRadius.all(Radius.circular(24)),
-    this.previewKey,
     this.minActionsWidth = 220,
-    this.enabled = true,
+    this.previewKey,
     super.key,
   });
 
@@ -49,7 +47,7 @@ class _PreviewContextMenuState extends State<PreviewContextMenu> {
   }
 
   Future<void> _showMenu() async {
-    if (!widget.enabled || _openingMenu) {
+    if (_openingMenu) {
       return;
     }
     final source = (widget.previewKey ?? _previewKey).currentContext
@@ -76,32 +74,27 @@ class _PreviewContextMenuState extends State<PreviewContextMenu> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    if (!widget.enabled) {
-      return widget.child;
-    }
-    return GestureDetector(
-      onLongPress: _showMenu,
-      child: Opacity(
-        opacity: _menuOpen ? 0 : 1,
-        child: RepaintBoundary(
-          key: widget.previewKey ?? _previewKey,
-          child: widget.child,
-        ),
+  Widget build(BuildContext context) => GestureDetector(
+    onLongPress: _showMenu,
+    child: Opacity(
+      opacity: _menuOpen ? 0 : 1,
+      child: RepaintBoundary(
+        key: widget.previewKey ?? _previewKey,
+        child: widget.child,
       ),
-    );
-  }
+    ),
+  );
 }
 
 Future<void> _showPreviewContextMenu({
   required BuildContext context,
   required RenderRepaintBoundary source,
   required List<ContextMenuAction> actions,
+  required BorderRadius borderRadius,
+  required double minActionsWidth,
   required VoidCallback onOpen,
   required VoidCallback onClose,
   PreviewContextMenuAccessoryBuilder? topAccessoryBuilder,
-  BorderRadius borderRadius = const BorderRadius.all(Radius.circular(24)),
-  double minActionsWidth = 220,
 }) async {
   if (source.size.isEmpty) {
     return;
@@ -138,9 +131,9 @@ Future<void> _showPreviewContextMenu({
             image: image,
             sourceRect: rect,
             borderRadius: borderRadius,
+            minActionsWidth: minActionsWidth,
             actions: actions,
             topAccessoryBuilder: topAccessoryBuilder,
-            minActionsWidth: minActionsWidth,
             themes: themes,
             dismissLabel: dismissLabel,
             onOpen: onOpen,
@@ -160,9 +153,9 @@ Future<VoidCallback?> _pushPreviewMenuRoute({
   required ui.Image image,
   required Rect sourceRect,
   required BorderRadius borderRadius,
+  required double minActionsWidth,
   required List<ContextMenuAction> actions,
   required PreviewContextMenuAccessoryBuilder? topAccessoryBuilder,
-  required double minActionsWidth,
   required CapturedThemes themes,
   required String dismissLabel,
   required VoidCallback onOpen,
@@ -172,9 +165,9 @@ Future<VoidCallback?> _pushPreviewMenuRoute({
     image: image,
     sourceRect: sourceRect,
     borderRadius: borderRadius,
+    minActionsWidth: minActionsWidth,
     actions: actions,
     topAccessoryBuilder: topAccessoryBuilder,
-    minActionsWidth: minActionsWidth,
     themes: themes,
     dismissLabel: dismissLabel,
     onClose: onClose,

@@ -100,7 +100,7 @@ enum ScheduleActivityCoordinator {
                 accentColor: lesson.accentColor)
             return (attributes, lesson.typeKey)
         }.sorted { $0.attributes.start < $1.attributes.start }
-        let appearance = ScheduleAppearanceStore().read()
+        let appearance = ScheduleAppearanceStore().read()?.compactForLiveActivity()
         let desired = candidates.map(\.attributes)
         let typeKeysByIdentifier = Dictionary(
             candidates.map { ($0.attributes.identifier, $0.typeKey) }, uniquingKeysWith: { first, _ in first })

@@ -13,16 +13,11 @@ abstract interface class AppThemeController implements Listenable {
   AppDarkTheme get darkTheme;
   CustomPaletteConfig? get customLightPalette;
   CustomPaletteConfig? get customDarkPalette;
-  bool get hasCustomLightPalette;
-  bool get hasCustomDarkPalette;
 
   Future<void> load();
-  Future<void> reload();
   Future<void> setMode(AppThemeMode mode);
   Future<void> setLightTheme(AppLightTheme theme);
   Future<void> setDarkTheme(AppDarkTheme theme);
-  Future<void> setCustomLightPalette(CustomPaletteConfig config);
-  Future<void> setCustomDarkPalette(CustomPaletteConfig config);
   Future<void> applyCustomPalette(
     CustomPaletteConfig config, {
     required Brightness brightness,

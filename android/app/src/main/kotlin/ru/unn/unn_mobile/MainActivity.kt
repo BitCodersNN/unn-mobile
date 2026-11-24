@@ -24,10 +24,6 @@ const val FILE_PICKER_REQUEST = 1
 
 const val UPLOAD_FILE_PICKER_REQUEST = 2
 
-const val FILE_CHANNEL = "ru.bitcodersnn.unnstudenthub/files"
-
-const val FILE_PICKER_EVENTS = "ru.bitcodersnn.unnstudenthub/file_events"
-
 const val ARGUMENT_ERROR = "ARGUMENT_ERROR"
 
 const val EXECUTION_ERROR = "EXECUTION_ERROR"
@@ -73,11 +69,11 @@ class MainActivity : FlutterActivity() {
         paletteLinkBridge = PaletteLinkBridge(flutterEngine, intent)
         EventChannel(
             flutterEngine.dartExecutor.binaryMessenger,
-            FILE_PICKER_EVENTS,
+            BridgeChannels.FILE_PICKER_EVENTS,
         ).setStreamHandler(FilePickerHandler)
         MethodChannel(
             flutterEngine.dartExecutor.binaryMessenger,
-            FILE_CHANNEL,
+            BridgeChannels.FILE_CHANNEL,
         ).setMethodCallHandler methodCallback@{ call, result ->
             when (call.method) {
                 "pickDirectory" -> {

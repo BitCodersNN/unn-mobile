@@ -3,37 +3,32 @@
 
 import 'package:flutter/material.dart';
 import 'package:unn_mobile/ui/theme/theme_palette.dart';
-import 'package:unn_mobile/ui/views/main_page/settings/widgets/settings_section.dart';
 import 'package:unn_mobile/ui/widgets/context_menu/context_menu_action.dart';
 import 'package:unn_mobile/ui/widgets/context_menu/preview_context_menu.dart';
 
-class ThemePaletteSelector<T extends Enum> extends StatelessWidget
-    implements SettingsDividerIndent {
+class ThemePaletteSelector<T extends Enum> extends StatelessWidget {
   final String title;
   final T selected;
   final List<ThemePalette<T>> palettes;
   final ValueChanged<int> onSelected;
-  final T? customValue;
+  final T customValue;
   final bool isCustomConfigured;
-  final VoidCallback? onEditCustom;
-  final VoidCallback? onImportCustom;
-  final VoidCallback? onShareCustom;
+  final VoidCallback onEditCustom;
+  final VoidCallback onImportCustom;
+  final VoidCallback onShareCustom;
 
   const ThemePaletteSelector({
     required this.title,
     required this.palettes,
     required this.selected,
     required this.onSelected,
-    this.customValue,
+    required this.customValue,
+    required this.onEditCustom,
+    required this.onImportCustom,
+    required this.onShareCustom,
     this.isCustomConfigured = false,
-    this.onEditCustom,
-    this.onImportCustom,
-    this.onShareCustom,
     super.key,
   });
-
-  @override
-  double get dividerIndent => 16;
 
   @override
   Widget build(BuildContext context) {
@@ -60,8 +55,7 @@ class ThemePaletteSelector<T extends Enum> extends StatelessWidget
               separatorBuilder: (_, _) => const SizedBox(width: 12),
               itemBuilder: (context, index) {
                 final palette = palettes[index];
-                final isCustom =
-                    customValue != null && palette.value == customValue;
+                final isCustom = palette.value == customValue;
                 final isSelected = selected == palette.value;
                 final mode = !isCustom
                     ? _PaletteOptionMode.standard
@@ -73,10 +67,8 @@ class ThemePaletteSelector<T extends Enum> extends StatelessWidget
                   colors: palette.theme.colorScheme,
                   selected: isSelected,
                   mode: mode,
-                  onTap: isCustom && !isCustomConfigured
-                      ? () => onEditCustom?.call()
-                      : isCustom && isSelected && onEditCustom != null
-                      ? onEditCustom!
+                  onTap: isCustom && (!isCustomConfigured || isSelected)
+                      ? onEditCustom
                       : () => onSelected(index),
                 );
                 return SizedBox(
@@ -98,8 +90,7 @@ class ThemePaletteSelector<T extends Enum> extends StatelessWidget
                             ContextMenuAction.text(
                               label: 'Поделиться',
                               leadingIcon: const Icon(Icons.share_outlined),
-                              enabled:
-                                  isCustomConfigured && onShareCustom != null,
+                              enabled: isCustomConfigured,
                               onTap: onShareCustom,
                             ),
                           ],

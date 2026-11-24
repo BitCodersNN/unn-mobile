@@ -43,13 +43,13 @@ class MiniScreenFrame extends StatelessWidget {
   final Widget appBar;
   final Widget body;
   final Widget? bottomBar;
-  final VoidCallback? onBackgroundTap;
+  final VoidCallback onBackgroundTap;
 
   const MiniScreenFrame({
     required this.appBar,
     required this.body,
+    required this.onBackgroundTap,
     this.bottomBar,
-    this.onBackgroundTap,
     super.key,
   });
 
@@ -65,13 +65,11 @@ class MiniScreenFrame extends StatelessWidget {
             children: [
               appBar,
               Expanded(
-                child: onBackgroundTap == null
-                    ? body
-                    : GestureDetector(
-                        behavior: HitTestBehavior.translucent,
-                        onTap: onBackgroundTap,
-                        child: body,
-                      ),
+                child: GestureDetector(
+                  behavior: HitTestBehavior.translucent,
+                  onTap: onBackgroundTap,
+                  child: body,
+                ),
               ),
               ?bottomBar,
             ],
@@ -439,7 +437,6 @@ class HighlightedSlotDivider extends StatelessWidget {
   final EdgeInsetsGeometry? outerPadding;
   final EdgeInsetsGeometry? innerPadding;
   final double borderRadius;
-  final double thickness;
 
   const HighlightedSlotDivider({
     required this.selectedSlot,
@@ -447,18 +444,13 @@ class HighlightedSlotDivider extends StatelessWidget {
     this.outerPadding,
     this.innerPadding,
     this.borderRadius = MiniPreviewStyle.textHighlightRadius,
-    this.thickness = 1,
     super.key,
   });
 
   @override
   Widget build(BuildContext context) {
     final outlineVariant = Theme.of(context).colorScheme.outlineVariant;
-    Widget divider = Divider(
-      height: 1,
-      thickness: thickness,
-      color: outlineVariant,
-    );
+    Widget divider = Divider(height: 1, thickness: 1, color: outlineVariant);
     if (innerPadding != null) {
       divider = Padding(padding: innerPadding!, child: divider);
     }
@@ -478,7 +470,6 @@ class HighlightedSlotDivider extends StatelessWidget {
 class MiniDayHeader extends StatelessWidget {
   final String dayName;
   final String dateLabel;
-  final bool isToday;
   final PaletteColorSlot? selectedSlot;
   final ValueChanged<PaletteColorSlot>? onSlotSelected;
   final double fontSize;
@@ -486,7 +477,6 @@ class MiniDayHeader extends StatelessWidget {
   const MiniDayHeader({
     required this.dayName,
     required this.dateLabel,
-    this.isToday = false,
     this.selectedSlot,
     this.onSlotSelected,
     this.fontSize = MiniPreviewStyle.fontSizeBody,
@@ -534,26 +524,24 @@ class MiniDayHeader extends StatelessWidget {
               ),
             ),
           ),
-          if (isToday) ...[
-            const SizedBox(width: 6),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1.5),
-              decoration: BoxDecoration(
-                color: colors.primary,
-                borderRadius: BorderRadius.circular(
-                  MiniPreviewStyle.mediumRadius,
-                ),
-              ),
-              child: Text(
-                'Сегодня',
-                style: TextStyle(
-                  color: colors.onPrimary,
-                  fontSize: MiniPreviewStyle.fontSizeMicro,
-                  fontWeight: FontWeight.w500,
-                ),
+          const SizedBox(width: 6),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1.5),
+            decoration: BoxDecoration(
+              color: colors.primary,
+              borderRadius: BorderRadius.circular(
+                MiniPreviewStyle.mediumRadius,
               ),
             ),
-          ],
+            child: Text(
+              'Сегодня',
+              style: TextStyle(
+                color: colors.onPrimary,
+                fontSize: MiniPreviewStyle.fontSizeMicro,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
         ],
       ),
     );

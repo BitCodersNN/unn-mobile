@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2026 BitCodersNN
 
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 
 abstract interface class SettingsDividerIndent {
@@ -23,10 +25,18 @@ class SettingsSection extends StatelessWidget {
     if (dividerIndent != null) {
       return dividerIndent!;
     }
-    return switch (children[index - 1]) {
+    final previousIndent = switch (children[index - 1]) {
       final SettingsDividerIndent item => item.dividerIndent,
-      _ => 64,
+      _ => null,
     };
+    final currentIndent = switch (children[index]) {
+      final SettingsDividerIndent item => item.dividerIndent,
+      _ => null,
+    };
+    if (previousIndent != null && currentIndent != null) {
+      return math.min(previousIndent, currentIndent);
+    }
+    return previousIndent ?? currentIndent ?? 64;
   }
 
   @override

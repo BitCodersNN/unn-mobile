@@ -5,6 +5,6 @@ import 'package:flutter/foundation.dart';
 
 abstract interface class PaletteLinkPlatform {
   Future<String?> consumeInitialLink();
-  void setOnLink(ValueChanged<String>? onLink);
+  void setOnLink(ValueChanged<String> onLink);
   void dispose();
 }

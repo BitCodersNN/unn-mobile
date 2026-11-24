@@ -12,7 +12,6 @@ sealed class AppMenuEntry {
 
 final class AppMenuAction extends AppMenuEntry {
   final String title;
-  final String? subtitle;
   final IconData? icon;
   final Widget? leading;
   final VoidCallback onSelected;
@@ -22,7 +21,6 @@ final class AppMenuAction extends AppMenuEntry {
   const AppMenuAction({
     required this.title,
     required this.onSelected,
-    this.subtitle,
     this.icon,
     this.leading,
     this.enabled = true,
@@ -136,22 +134,7 @@ class _CupertinoMenuActionContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final label = action.subtitle == null
-        ? Text(action.title)
-        : Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(action.title),
-              const SizedBox(height: 2),
-              Text(
-                action.subtitle!,
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
-                ),
-              ),
-            ],
-          );
+    final label = Text(action.title);
 
     final content = action.leading == null
         ? label
@@ -212,22 +195,11 @@ class _MaterialMenuActionRow extends StatelessWidget {
             const SizedBox(width: 12),
           ],
           Flexible(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  action.title,
-                  style: (theme.textTheme.bodyLarge ?? const TextStyle())
-                      .copyWith(color: foregroundColor),
-                ),
-                if (action.subtitle != null)
-                  Text(
-                    action.subtitle!,
-                    style: (theme.textTheme.bodySmall ?? const TextStyle())
-                        .copyWith(color: colors.onSurfaceVariant),
-                  ),
-              ],
+            child: Text(
+              action.title,
+              style: (theme.textTheme.bodyLarge ?? const TextStyle()).copyWith(
+                color: foregroundColor,
+              ),
             ),
           ),
         ],

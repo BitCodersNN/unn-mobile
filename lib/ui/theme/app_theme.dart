@@ -11,13 +11,13 @@ import 'package:unn_mobile/ui/theme/theme_palette.dart';
 import 'package:unn_mobile/ui/unn_mobile_colors.dart';
 
 abstract final class AppTheme {
-  static final ThemeData greenLight = _build(
+  static final ThemeData _greenLight = _build(
     ColorScheme.fromSeed(seedColor: CustomPaletteConfig.defaultLightPrimary),
     UnnMobileColors.light,
     snackBarActionColor: CustomPaletteConfig.defaultLightPrimary,
   );
 
-  static final ThemeData blueLight = _build(
+  static final ThemeData _blueLight = _build(
     ColorScheme.fromSeed(seedColor: const Color(0xFF0969DA)).copyWith(
       primary: const Color(0xFF0969DA),
       onPrimary: Colors.white,
@@ -39,7 +39,7 @@ abstract final class AppTheme {
     UnnMobileColors.blueLight,
   );
 
-  static final ThemeData warmLight = _build(
+  static final ThemeData _warmLight = _build(
     ColorScheme.fromSeed(seedColor: const Color(0xFFA85D2F)).copyWith(
       primary: const Color(0xFFA85D2F),
       onPrimary: const Color(0xFFFFFBF5),
@@ -73,7 +73,7 @@ abstract final class AppTheme {
         onErrorContainer: const Color(0xFFFFDAD4),
       );
 
-  static final ThemeData darkGreen = _build(
+  static final ThemeData _darkGreen = _build(
     _darkColors(CustomPaletteConfig.defaultDarkPrimary).copyWith(
       primary: CustomPaletteConfig.defaultDarkPrimary,
       onPrimary: const Color(0xFF06221E),
@@ -95,7 +95,7 @@ abstract final class AppTheme {
     UnnMobileColors.dark,
   );
 
-  static final ThemeData darkGraphite = _build(
+  static final ThemeData _darkGraphite = _build(
     _darkColors(const Color(0xFFC3B2EF)).copyWith(
       primary: const Color(0xFFC3B2EF),
       onPrimary: const Color(0xFF33244D),
@@ -117,7 +117,7 @@ abstract final class AppTheme {
     UnnMobileColors.graphite,
   );
 
-  static final ThemeData warmDark = _build(
+  static final ThemeData _warmDark = _build(
     _darkColors(const Color(0xFFD69A6C)).copyWith(
       primary: const Color(0xFFD69A6C),
       onPrimary: const Color(0xFF2D180A),
@@ -144,17 +144,17 @@ abstract final class AppTheme {
         ThemePalette(
           value: AppLightTheme.green,
           label: 'Бело-зелёная',
-          theme: greenLight,
+          theme: _greenLight,
         ),
         ThemePalette(
           value: AppLightTheme.blue,
           label: 'Бело-синяя',
-          theme: blueLight,
+          theme: _blueLight,
         ),
         ThemePalette(
           value: AppLightTheme.warm,
           label: 'Кремовая',
-          theme: warmLight,
+          theme: _warmLight,
         ),
       ]);
 
@@ -163,17 +163,17 @@ abstract final class AppTheme {
         ThemePalette(
           value: AppDarkTheme.green,
           label: 'Тёмно-зелёная',
-          theme: darkGreen,
+          theme: _darkGreen,
         ),
         ThemePalette(
           value: AppDarkTheme.graphite,
           label: 'Графитовая',
-          theme: darkGraphite,
+          theme: _darkGraphite,
         ),
         ThemePalette(
           value: AppDarkTheme.warm,
           label: 'Кофейная',
-          theme: warmDark,
+          theme: _warmDark,
         ),
       ]);
 

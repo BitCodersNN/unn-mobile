@@ -49,9 +49,9 @@ abstract final class _JsonKeys {
 @immutable
 class CustomPaletteConfig {
   static const Color defaultLightPrimary = Color(0xFF00BBB0);
-  static const Color defaultLightSecondary = Color(0xFF006254);
+  static const Color _defaultLightSecondary = Color(0xFF006254);
   static const Color defaultDarkPrimary = Color(0xFF529388);
-  static const Color defaultDarkSecondary = Color(0xFF3B766C);
+  static const Color _defaultDarkSecondary = Color(0xFF3B766C);
 
   final Color primary;
   final Color secondary;
@@ -69,12 +69,12 @@ class CustomPaletteConfig {
 
   factory CustomPaletteConfig.defaultLight() => CustomPaletteConfig(
     primary: defaultLightPrimary,
-    secondary: defaultLightSecondary,
+    secondary: _defaultLightSecondary,
   );
 
   factory CustomPaletteConfig.defaultDark() => CustomPaletteConfig(
     primary: defaultDarkPrimary,
-    secondary: defaultDarkSecondary,
+    secondary: _defaultDarkSecondary,
   );
 
   Color? overrideOf(PaletteColorSlot slot) => switch (slot) {

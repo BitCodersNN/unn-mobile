@@ -34,7 +34,6 @@ class ScheduleMiniScreenBody extends StatelessWidget {
             MiniDayHeader(
               dayName: 'ПОНЕДЕЛЬНИК',
               dateLabel: '23 ноября',
-              isToday: true,
               selectedSlot: selectedSlot,
               onSlotSelected: onSlotSelected,
             ),

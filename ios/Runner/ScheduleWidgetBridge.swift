@@ -39,6 +39,10 @@ final class ScheduleWidgetBridge {
             reloadSchedule()
             result(nil)
         case "writeAppearance":
+            guard ScheduleAppGroup.resolve() != nil else {
+                result(FlutterError(code: "APP_GROUP_UNAVAILABLE", message: "Schedule widget App Group is unavailable", details: nil))
+                return
+            }
             guard let value = call.arguments as? String,
                   let changed = ScheduleAppearanceStore().save(value) else {
                 result(FlutterError(code: "INVALID_APPEARANCE", message: "Unable to store schedule appearance", details: nil))

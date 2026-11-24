@@ -79,47 +79,27 @@ class SettingsScreenViewModel extends BaseViewModel {
   CustomPaletteConfig? get customLightPalette =>
       customPalette(Brightness.light);
   CustomPaletteConfig? get customDarkPalette => customPalette(Brightness.dark);
-  bool get hasCustomLightPalette => hasCustomPalette(Brightness.light);
-  bool get hasCustomDarkPalette => hasCustomPalette(Brightness.dark);
+  bool get hasCustomLightPalette => _themeController.customLightPalette != null;
+  bool get hasCustomDarkPalette => _themeController.customDarkPalette != null;
 
   CustomPaletteConfig? customPalette(Brightness brightness) =>
       brightness == Brightness.dark
       ? _themeController.customDarkPalette
       : _themeController.customLightPalette;
 
-  bool hasCustomPalette(Brightness brightness) => brightness == Brightness.dark
-      ? _themeController.hasCustomDarkPalette
-      : _themeController.hasCustomLightPalette;
-
   Future<void> setThemeMode(AppThemeMode mode) =>
-      _updateTheme(() => _themeController.setMode(mode));
+      _themeController.setMode(mode);
 
   Future<void> setLightTheme(AppLightTheme theme) =>
-      _updateTheme(() => _themeController.setLightTheme(theme));
+      _themeController.setLightTheme(theme);
 
   Future<void> setDarkTheme(AppDarkTheme theme) =>
-      _updateTheme(() => _themeController.setDarkTheme(theme));
+      _themeController.setDarkTheme(theme);
 
   Future<void> saveCustomPalette(
     CustomPaletteConfig config, {
     required Brightness brightness,
-  }) => _updateTheme(
-    () => _themeController.applyCustomPalette(config, brightness: brightness),
-  );
-
-  Future<void> saveCustomLightPalette(CustomPaletteConfig config) =>
-      saveCustomPalette(config, brightness: Brightness.light);
-
-  Future<void> saveCustomDarkPalette(CustomPaletteConfig config) =>
-      saveCustomPalette(config, brightness: Brightness.dark);
-
-  Future<void> _updateTheme(Future<void> Function() update) async {
-    try {
-      await update();
-    } finally {
-      notifyListeners();
-    }
-  }
+  }) => _themeController.applyCustomPalette(config, brightness: brightness);
 
   bool get vibrationEnabled => AppSettings.vibrationEnabled;
 
@@ -162,7 +142,7 @@ class SettingsScreenViewModel extends BaseViewModel {
     await _activityPlatform.configure(AppSettings.scheduleActivity.value);
     await _scheduleWidget.clear();
     await Future.wait([_storageService.clear(), clearCache()]);
-    await _themeController.reload();
+    await _themeController.load();
   }
 
   Future<void> logout() async {

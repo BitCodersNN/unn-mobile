@@ -742,6 +742,7 @@ void registerDependencies() {
         get<LogoDownloaderService>(),
         get<CurrentUserSyncStorage>(),
         get<GitResourceRepository<BirthdayGreetingCatalog>>(),
+        get<AppThemeController>(),
       ),
     )
     ..registerDependency(

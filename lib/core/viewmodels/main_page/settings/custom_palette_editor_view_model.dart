@@ -4,6 +4,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/painting.dart';
 import 'package:unn_mobile/core/constants/regular_expressions.dart';
+import 'package:unn_mobile/core/misc/hex_color.dart';
 import 'package:unn_mobile/core/models/common/custom_palette_config.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
 
@@ -14,7 +15,7 @@ typedef PaletteSlotColorResolver = Color Function(
 );
 
 class CustomPaletteEditorViewModel extends BaseViewModel {
-  final Brightness brightness;
+  final Brightness _brightness;
   final PaletteSlotColorResolver _slotColorResolver;
 
   CustomPaletteConfig _config;
@@ -24,7 +25,7 @@ class CustomPaletteEditorViewModel extends BaseViewModel {
 
   CustomPaletteEditorViewModel({
     required CustomPaletteConfig initialConfig,
-    required this.brightness,
+    required this._brightness,
     required this._slotColorResolver,
   }) : _config = initialConfig {
     _currentHsv = HSVColor.fromColor(currentColor);
@@ -41,19 +42,14 @@ class CustomPaletteEditorViewModel extends BaseViewModel {
       .toList(growable: false);
 
   Color colorForSlot(PaletteColorSlot slot) =>
-      _config.overrideOf(slot) ?? _slotColorResolver(_config, brightness, slot);
+      _config.overrideOf(slot) ??
+      _slotColorResolver(_config, _brightness, slot);
 
   Color get currentColor => colorForSlot(_selectedSlot);
 
   HSVColor get currentHsv => _currentHsv;
 
-  String get currentHex {
-    final hex = (currentColor.toARGB32() & 0xFFFFFF)
-        .toRadixString(16)
-        .padLeft(6, '0')
-        .toUpperCase();
-    return '#$hex';
-  }
+  String get currentHex => '#${currentColor.toHexRgb().toUpperCase()}';
 
   bool get isCurrentSlotCustomized => _config.isCustomized(_selectedSlot);
 
@@ -138,7 +134,7 @@ class CustomPaletteEditorViewModel extends BaseViewModel {
     _currentHsv = HSVColor.fromColor(currentColor);
   }
 
-  CustomPaletteConfig _defaultConfig() => brightness == Brightness.dark
+  CustomPaletteConfig _defaultConfig() => _brightness == Brightness.dark
       ? CustomPaletteConfig.defaultDark()
       : CustomPaletteConfig.defaultLight();
 }

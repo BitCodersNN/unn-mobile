@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2026 BitCodersNN
 
+import 'package:unn_mobile/core/constants/palette_codec_constants.dart';
 import 'package:unn_mobile/core/misc/lru_cache.dart';
-import 'package:unn_mobile/core/models/common/custom_palette_codec.dart';
 
 class _RegularExpressionSource {
   static const keySigned = r"keySigned:\s*'([^']+)'";
@@ -37,11 +37,11 @@ class _RegularExpressionSource {
   static const hexColor6Pattern = r'^#?([0-9a-fA-F]{6})$';
   static const allowedHexCharsPattern = r'[#0-9a-fA-F]';
   static final customPaletteCodePattern =
-      '${RegExp.escape(CustomPaletteCodec.prefix)}([A-Za-z0-9_-]+=*)';
+      '${RegExp.escape(PaletteCodecConstants.prefix)}([A-Za-z0-9_-]+=*)';
   static final paletteUrlPattern =
-      '(?:${RegExp.escape(CustomPaletteCodec.deepLinkScheme)}://|'
-      'https://${RegExp.escape(CustomPaletteCodec.shareHost)}'
-      '${RegExp.escape(CustomPaletteCodec.sharePathPrefix)})\\S*';
+      '(?:${RegExp.escape(PaletteCodecConstants.deepLinkScheme)}://|'
+      'https://${RegExp.escape(PaletteCodecConstants.shareHost)}'
+      '${RegExp.escape(PaletteCodecConstants.sharePathPrefix)})\\S*';
   static const trailingPunctuationPattern = r'''[.,;:!?)\]}"']+$''';
 }
 

@@ -17,8 +17,6 @@ class ScheduleActivityPlatform {
 
   ScheduleActivityPlatform(this._logger);
 
-  bool get isMobile => isMobilePlatform;
-
   Future<void> configure(ScheduleActivitySettings settings) =>
       _invoke<void>('configure', jsonEncode(settings.toJson()));
 
@@ -34,7 +32,7 @@ class ScheduleActivityPlatform {
   }
 
   Future<T?> _invoke<T>(String method, [Object? arguments]) async {
-    if (!isMobile) {
+    if (!isMobilePlatform) {
       return null;
     }
     try {

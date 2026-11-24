@@ -4,6 +4,7 @@
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
+import 'package:unn_mobile/core/constants/palette_codec_constants.dart';
 import 'package:unn_mobile/core/constants/regular_expressions.dart';
 import 'package:unn_mobile/core/misc/json/json_utils.dart';
 import 'package:unn_mobile/core/models/common/custom_palette_config.dart';
@@ -42,31 +43,30 @@ abstract final class _UriParts {
 }
 
 abstract final class CustomPaletteCodec {
-  static const prefix = 'unn-palette:';
-  static const shareHost = 'bitcodersnn.github.io';
-  static const sharePathPrefix = '/unn-mobile.assets/palette';
-  static const sharePath = '$sharePathPrefix/';
-  static const deepLinkScheme = 'unnpalette';
+  static const prefix = PaletteCodecConstants.prefix;
+  static const shareHost = PaletteCodecConstants.shareHost;
+  static const sharePathPrefix = PaletteCodecConstants.sharePathPrefix;
+  static const sharePath = PaletteCodecConstants.sharePath;
+  static const deepLinkScheme = PaletteCodecConstants.deepLinkScheme;
   static const _maxLength = 8192;
 
-  static String encode(CustomPaletteConfig config) {
+  static String encode(CustomPaletteConfig config) =>
+      '$prefix${_encodePayload(config)}';
+
+  static String _encodePayload(CustomPaletteConfig config) {
     final jsonText = jsonEncode(config.toJson());
-    final encoded = base64UrlEncode(utf8.encode(jsonText)).replaceAll('=', '');
-    return '$prefix$encoded';
+    return base64UrlEncode(utf8.encode(jsonText)).replaceAll('=', '');
   }
 
   static Uri buildShareUri(
     CustomPaletteConfig config, {
     required Brightness brightness,
-  }) {
-    final payload = encode(config).substring(prefix.length);
-    return Uri.https(shareHost, sharePath, {
-      _QueryKeys.brightness: brightness == Brightness.dark
-          ? _BrightnessValues.dark
-          : _BrightnessValues.light,
-      _QueryKeys.config: payload,
-    });
-  }
+  }) => Uri.https(shareHost, sharePath, {
+    _QueryKeys.brightness: brightness == Brightness.dark
+        ? _BrightnessValues.dark
+        : _BrightnessValues.light,
+    _QueryKeys.config: _encodePayload(config),
+  });
 
   static CustomPaletteConfig? tryDecode(String raw) =>
       tryDecodeLink(raw)?.config;

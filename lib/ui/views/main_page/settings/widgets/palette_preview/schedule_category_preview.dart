@@ -76,7 +76,6 @@ class _ScheduleOverviewPage extends StatelessWidget {
           const MiniDayHeader(
             dayName: 'ПОНЕДЕЛЬНИК',
             dateLabel: '23 ноября',
-            isToday: true,
             fontSize: MiniPreviewStyle.fontSizeTitle,
           ),
           const SizedBox(height: 8),

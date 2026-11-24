@@ -84,7 +84,7 @@ class PreviewStatusFooter extends StatelessWidget {
                   for (var i = 0; i < pageCount; i++) ...[
                     if (i > 0) const SizedBox(width: 4),
                     GestureDetector(
-                      onTap: onPageTap != null ? () => onPageTap!(i) : null,
+                      onTap: () => onPageTap?.call(i),
                       behavior: HitTestBehavior.opaque,
                       child: AnimatedContainer(
                         duration: MiniPreviewStyle.animationDuration,
