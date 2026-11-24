@@ -174,8 +174,7 @@ abstract final class CustomPaletteThemeBuilder {
       secondary: scheme.secondary,
       overrides: {
         for (final slot in PaletteColorSlot.values)
-          if (!slot.isBaseAccent)
-            if (_tryColorForSlot(theme, slot) case final color?) slot: color,
+          if (!slot.isBaseAccent) slot: ?_tryColorForSlot(theme, slot),
       },
     );
   }
