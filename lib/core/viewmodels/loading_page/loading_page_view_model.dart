@@ -4,9 +4,8 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
-import 'package:go_router/go_router.dart';
 import 'package:unn_mobile/core/misc/authorisation/authorisation_request_result.dart';
 import 'package:unn_mobile/core/misc/git/git_folder.dart';
 import 'package:unn_mobile/core/misc/user/current_user_sync_storage.dart';
@@ -18,7 +17,8 @@ import 'package:unn_mobile/core/services/interfaces/authorisation/authorisation_
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
 import 'package:unn_mobile/core/services/interfaces/loading_page/logo_downloader_service.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
-import 'package:unn_mobile/ui/main_page_locations.dart';
+
+enum LoadingRouteTarget { auth, main }
 
 class LoadingPageViewModel extends BaseViewModel {
   final LoggerService _loggerService;
@@ -45,20 +45,13 @@ class LoadingPageViewModel extends BaseViewModel {
 
   File? get logoImage => _logoImage;
 
-  void decideRoute(
-    BuildContext context, {
+  Future<LoadingRouteTarget> decideRoute({
     required Future<void> loadingPageReady,
-  }) {
+  }) async {
     final ready = _waitForLoadingPage(loadingPageReady);
-    unawaited(
-      _init().then((value) async {
-        await ready;
-        await WidgetsBinding.instance.endOfFrame;
-        if (context.mounted) {
-          _goToScreen(context, value);
-        }
-      }),
-    );
+    final target = await _init();
+    await ready;
+    return target;
   }
 
   Future<void> _waitForLoadingPage(Future<void> ready) async {
@@ -92,15 +85,7 @@ class LoadingPageViewModel extends BaseViewModel {
           );
   }
 
-  void _goToScreen(BuildContext context, _TypeScreen typeScreen) {
-    final route = switch (typeScreen) {
-      _TypeScreen.authScreen => authPageRoute,
-      _TypeScreen.mainScreen => mainPageRoute,
-    };
-    GoRouter.of(context).go(route);
-  }
-
-  Future<_TypeScreen> _init() async {
+  Future<LoadingRouteTarget> _init() async {
     AuthRequestResult? authRequestResult;
 
     unawaited(_birthdayCatalog.refresh());
@@ -112,19 +97,19 @@ class LoadingPageViewModel extends BaseViewModel {
     } catch (error, stackTrace) {
       _loggerService.logError(error, stackTrace);
     }
-    final typeScreen = switch (authRequestResult) {
-      null => _TypeScreen.authScreen,
-      AuthRequestResult.success => _TypeScreen.mainScreen,
-      AuthRequestResult.noInternet => _TypeScreen.mainScreen,
-      AuthRequestResult.wrongCredentials => _TypeScreen.authScreen,
-      AuthRequestResult.unknown => _TypeScreen.authScreen,
+    final target = switch (authRequestResult) {
+      null => LoadingRouteTarget.auth,
+      AuthRequestResult.success => LoadingRouteTarget.main,
+      AuthRequestResult.noInternet => LoadingRouteTarget.main,
+      AuthRequestResult.wrongCredentials => LoadingRouteTarget.auth,
+      AuthRequestResult.unknown => LoadingRouteTarget.auth,
     };
 
-    if (typeScreen == _TypeScreen.mainScreen) {
+    if (target == LoadingRouteTarget.main) {
       await _initUserData();
     }
 
-    return typeScreen;
+    return target;
   }
 
   Future<void> _initUserData() async {
@@ -139,5 +124,3 @@ class LoadingPageViewModel extends BaseViewModel {
     }
   }
 }
-
-enum _TypeScreen { authScreen, mainScreen }

@@ -3,8 +3,10 @@
 
 import 'package:flutter/material.dart';
 import 'package:unn_mobile/ui/views/main_page/settings/widgets/settings_icon.dart';
+import 'package:unn_mobile/ui/views/main_page/settings/widgets/settings_section.dart';
 
-class SettingsSwitchTile extends StatelessWidget {
+class SettingsSwitchTile extends StatelessWidget
+    implements SettingsDividerIndent {
   final IconData icon;
   final String title;
   final String subtitle;
@@ -21,6 +23,9 @@ class SettingsSwitchTile extends StatelessWidget {
   });
 
   @override
+  double get dividerIndent => 64;
+
+  @override
   Widget build(BuildContext context) => _SettingsTileTheme(
     child: SwitchListTile.adaptive(
       secondary: SettingsIcon(icon: icon),
@@ -32,7 +37,8 @@ class SettingsSwitchTile extends StatelessWidget {
   );
 }
 
-class SettingsActionTile extends StatelessWidget {
+class SettingsActionTile extends StatelessWidget
+    implements SettingsDividerIndent {
   final IconData icon;
   final String title;
   final String? subtitle;
@@ -49,6 +55,9 @@ class SettingsActionTile extends StatelessWidget {
     this.showChevron = true,
     super.key,
   });
+
+  @override
+  double get dividerIndent => 64;
 
   @override
   Widget build(BuildContext context) => _SettingsTileTheme(

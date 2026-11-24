@@ -3,8 +3,8 @@
 
 import 'dart:convert';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:unn_mobile/core/misc/platform_utils.dart';
 import 'package:unn_mobile/core/models/schedule_activity/schedule_activity_capabilities.dart';
 import 'package:unn_mobile/core/models/schedule_activity/schedule_activity_settings.dart';
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
@@ -17,10 +17,7 @@ class ScheduleActivityPlatform {
 
   ScheduleActivityPlatform(this._logger);
 
-  bool get isMobile =>
-      !kIsWeb &&
-      (defaultTargetPlatform == TargetPlatform.android ||
-          defaultTargetPlatform == TargetPlatform.iOS);
+  bool get isMobile => isMobilePlatform;
 
   Future<void> configure(ScheduleActivitySettings settings) =>
       _invoke<void>('configure', jsonEncode(settings.toJson()));

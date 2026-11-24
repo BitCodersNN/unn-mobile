@@ -61,6 +61,7 @@ class MainActivity : FlutterActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         if (savedInstanceState != null) {
             intent.removeExtra(FlutterShellArgs.ARG_KEY_START_PAUSED)
+            PaletteLinkBridge.markConsumed(intent)
         }
         super.onCreate(savedInstanceState)
     }
@@ -148,6 +149,16 @@ class MainActivity : FlutterActivity() {
         setIntent(intent)
         scheduleWidgetBridge?.onNewIntent(intent)
         paletteLinkBridge?.onNewIntent(intent)
+    }
+
+    override fun cleanUpFlutterEngine(flutterEngine: FlutterEngine) {
+        paletteLinkBridge?.dispose()
+        paletteLinkBridge = null
+        scheduleWidgetBridge?.dispose()
+        scheduleWidgetBridge = null
+        scheduleActivityBridge?.dispose()
+        scheduleActivityBridge = null
+        super.cleanUpFlutterEngine(flutterEngine)
     }
 
     private fun openGalleryFilePicker() {

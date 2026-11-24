@@ -167,7 +167,7 @@ class _FeedPostState extends State<FeedPost> {
                                     vertical: 5,
                                   ),
                                   decoration: BoxDecoration(
-                                    color: theme.colorScheme.error.withValues(
+                                    color: importantColor.withValues(
                                       alpha: isDark ? 0.22 : 0.1,
                                     ),
                                     borderRadius: BorderRadius.circular(20),
@@ -175,7 +175,7 @@ class _FeedPostState extends State<FeedPost> {
                                   child: Text(
                                     'ВАЖНО',
                                     style: theme.textTheme.labelSmall?.copyWith(
-                                      color: theme.colorScheme.error,
+                                      color: importantColor,
                                       fontWeight: FontWeight.w700,
                                       letterSpacing: 0.5,
                                     ),

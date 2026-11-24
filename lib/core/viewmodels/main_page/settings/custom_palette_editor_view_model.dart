@@ -1,39 +1,33 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2026 BitCodersNN
 
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/painting.dart';
 import 'package:unn_mobile/core/constants/regular_expressions.dart';
 import 'package:unn_mobile/core/models/common/custom_palette_config.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
 
-typedef PaletteThemeBuilder = ThemeData Function(
-  CustomPaletteConfig config,
-  Brightness brightness,
-);
-typedef PaletteSlotColorResolver = Color Function(
-  ThemeData theme,
-  PaletteColorSlot slot,
-);
+typedef PaletteSlotColorResolver =
+    Color Function(
+      CustomPaletteConfig config,
+      Brightness brightness,
+      PaletteColorSlot slot,
+    );
 
 class CustomPaletteEditorViewModel extends BaseViewModel {
-  final CustomPaletteConfig _initialConfig;
   final Brightness brightness;
-  final PaletteThemeBuilder _themeBuilder;
   final PaletteSlotColorResolver _slotColorResolver;
 
   CustomPaletteConfig _config;
   PaletteCategory _selectedCategory = PaletteCategory.base;
   PaletteColorSlot _selectedSlot = PaletteColorSlot.surface;
-  ThemeData? _cachedPreviewTheme;
   late HSVColor _currentHsv;
 
   CustomPaletteEditorViewModel({
     required CustomPaletteConfig initialConfig,
     required this.brightness,
-    required this._themeBuilder,
     required this._slotColorResolver,
-  }) : _initialConfig = initialConfig,
-       _config = initialConfig {
+  }) : _config = initialConfig {
     _currentHsv = HSVColor.fromColor(currentColor);
   }
 
@@ -47,11 +41,9 @@ class CustomPaletteEditorViewModel extends BaseViewModel {
       .where((slot) => slot.category == _selectedCategory)
       .toList(growable: false);
 
-  ThemeData get previewTheme =>
-      _cachedPreviewTheme ??= _themeBuilder(_config, brightness);
-
   Color colorForSlot(PaletteColorSlot slot) =>
-      _slotColorResolver(previewTheme, slot);
+      _config.overrideOf(slot) ??
+      _slotColorResolver(_config, brightness, slot);
 
   Color get currentColor => colorForSlot(_selectedSlot);
 
@@ -66,10 +58,6 @@ class CustomPaletteEditorViewModel extends BaseViewModel {
   }
 
   bool get isCurrentSlotCustomized => _config.isCustomized(_selectedSlot);
-
-  bool isSlotCustomized(PaletteColorSlot slot) => _config.isCustomized(slot);
-
-  bool get hasChanges => _config != _initialConfig;
 
   void selectCategory(PaletteCategory category) {
     _selectedCategory = category;
@@ -112,7 +100,6 @@ class CustomPaletteEditorViewModel extends BaseViewModel {
     }
     final rgb = int.parse(match.group(1)!, radix: 16);
     _config = _config.withSlotColor(_selectedSlot, Color(0xFF000000 | rgb));
-    _cachedPreviewTheme = null;
     _syncHsvFromCurrentColor();
     notifyListeners();
     return true;
@@ -128,28 +115,24 @@ class CustomPaletteEditorViewModel extends BaseViewModel {
     } else {
       _config = _config.clearSlot(_selectedSlot);
     }
-    _cachedPreviewTheme = null;
     _syncHsvFromCurrentColor();
     notifyListeners();
   }
 
   void applyPreset(CustomPaletteConfig presetConfig) {
     _config = presetConfig;
-    _cachedPreviewTheme = null;
     _syncHsvFromCurrentColor();
     notifyListeners();
   }
 
   void resetAll() {
     _config = _defaultConfig();
-    _cachedPreviewTheme = null;
     _syncHsvFromCurrentColor();
     notifyListeners();
   }
 
   void _applyCurrentHsvColor() {
     _config = _config.withSlotColor(_selectedSlot, _currentHsv.toColor());
-    _cachedPreviewTheme = null;
     notifyListeners();
   }
 

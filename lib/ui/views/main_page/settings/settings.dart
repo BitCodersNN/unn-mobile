@@ -18,14 +18,21 @@ import 'package:unn_mobile/ui/actions/custom_palette_share_action.dart';
 import 'package:unn_mobile/ui/main_page_locations.dart';
 import 'package:unn_mobile/ui/router.dart';
 import 'package:unn_mobile/ui/theme/app_theme.dart';
+import 'package:unn_mobile/ui/theme/theme_palette.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
 import 'package:unn_mobile/ui/views/main_page/settings/custom_palette_editor_screen.dart';
-import 'package:unn_mobile/ui/views/main_page/settings/widgets/custom_palette_import_dialog.dart';
 import 'package:unn_mobile/ui/views/main_page/settings/widgets/settings_minutes_slider.dart';
 import 'package:unn_mobile/ui/views/main_page/settings/widgets/settings_section.dart';
 import 'package:unn_mobile/ui/views/main_page/settings/widgets/settings_tile.dart';
 import 'package:unn_mobile/ui/views/main_page/settings/widgets/theme_palette_selector.dart';
 import 'package:unn_mobile/ui/views/main_page/tab_bar/tab_bar_customization_sheet.dart';
+import 'package:unn_mobile/ui/widgets/dialogs/custom_palette_import_dialog.dart';
+
+const _themeLabels = {
+  AppThemeMode.system: 'Системная',
+  AppThemeMode.light: 'Светлая',
+  AppThemeMode.dark: 'Тёмная',
+};
 
 class SettingsScreenView extends StatefulWidget {
   final bool hasAccount;
@@ -39,6 +46,7 @@ class SettingsScreenView extends StatefulWidget {
 class _SettingsScreenViewState extends State<SettingsScreenView>
     with WidgetsBindingObserver {
   SettingsScreenViewModel? _model;
+  late final Future<String> _version = getAppVersion();
 
   @override
   void initState() {
@@ -58,13 +66,6 @@ class _SettingsScreenViewState extends State<SettingsScreenView>
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
-
-  late final Future<String> _version = getAppVersion();
-  static const _themeLabels = {
-    AppThemeMode.system: 'Системная',
-    AppThemeMode.light: 'Светлая',
-    AppThemeMode.dark: 'Тёмная',
-  };
 
   Future<void> _selectTheme(SettingsScreenViewModel model) async {
     final mode = await _selectSetting(
@@ -103,11 +104,8 @@ class _SettingsScreenViewState extends State<SettingsScreenView>
     if (!mounted || imported == null) {
       return;
     }
-    final isDark = brightness == Brightness.dark;
     final saved = await _saveThemeChange(
-      () => isDark
-          ? model.saveCustomDarkPalette(imported)
-          : model.saveCustomLightPalette(imported),
+      () => model.saveCustomPalette(imported, brightness: brightness),
     );
     if (mounted && saved) {
       ScaffoldMessenger.of(context)
@@ -119,9 +117,7 @@ class _SettingsScreenViewState extends State<SettingsScreenView>
     SettingsScreenViewModel model, {
     required Brightness brightness,
   }) async {
-    final config = brightness == Brightness.dark
-        ? model.customDarkPalette
-        : model.customLightPalette;
+    final config = model.customPalette(brightness);
     if (config == null) {
       return;
     }
@@ -133,9 +129,11 @@ class _SettingsScreenViewState extends State<SettingsScreenView>
     required Brightness brightness,
   }) async {
     final isDark = brightness == Brightness.dark;
-    final initialConfig = isDark
-        ? model.customDarkPalette ?? CustomPaletteConfig.defaultDark()
-        : model.customLightPalette ?? CustomPaletteConfig.defaultLight();
+    final initialConfig =
+        model.customPalette(brightness) ??
+        (isDark
+            ? CustomPaletteConfig.defaultDark()
+            : CustomPaletteConfig.defaultLight());
     final presets = isDark ? AppTheme.darkPalettes : AppTheme.lightPalettes;
     final result = await Navigator.of(context, rootNavigator: true)
         .push<CustomPaletteConfig>(
@@ -144,13 +142,6 @@ class _SettingsScreenViewState extends State<SettingsScreenView>
               brightness: brightness,
               initialConfig: initialConfig,
               builtInPresets: presets,
-              onApply: (config) => unawaited(
-                _saveThemeChange(
-                  () => isDark
-                      ? model.saveCustomDarkPalette(config)
-                      : model.saveCustomLightPalette(config),
-                ),
-              ),
             ),
           ),
         );
@@ -158,9 +149,7 @@ class _SettingsScreenViewState extends State<SettingsScreenView>
       return;
     }
     await _saveThemeChange(
-      () => isDark
-          ? model.saveCustomDarkPalette(result)
-          : model.saveCustomLightPalette(result),
+      () => model.saveCustomPalette(result, brightness: brightness),
     );
   }
 
@@ -225,91 +214,6 @@ class _SettingsScreenViewState extends State<SettingsScreenView>
     }
   }
 
-  Widget _scheduleActivitySection(SettingsScreenViewModel model) {
-    final status = model.activityStatus;
-    final isIOS = Theme.of(context).platform == TargetPlatform.iOS;
-    final enabled =
-        model.activitySettings.mode != ScheduleActivityMode.disabled;
-    return SettingsSection(
-      title: 'Расписание',
-      children: [
-        SettingsActionTile(
-          icon: Icons.calendar_today_outlined,
-          title: 'Источник своего расписания',
-          subtitle: model.useRaspSchedule
-              ? 'Загружается с rasp.unn.ru'
-              : 'Загружается с Портала',
-          onTap: () => _selectScheduleSource(model),
-        ),
-        SettingsMinutesSlider(
-          icon: Icons.timer_outlined,
-          title: 'Показывать до начала',
-          subtitle: 'Также для бейджа в расписании. 0 — только с начала пары.',
-          value: model.activitySettings.beforeMinutes,
-          min: ScheduleActivitySettings.minimumMinutes,
-          max: ScheduleActivitySettings.maximumMinutes,
-          onChangeEnd: (minutes) => unawaited(
-            model.updateActivitySettings(
-              model.activitySettings.copyWith(beforeMinutes: minutes),
-            ),
-          ),
-        ),
-        if (widget.hasAccount) ...[
-          SettingsActionTile(
-            icon: Icons.lock_clock_outlined,
-            title: isIOS ? 'Live Activities' : 'Live Updates',
-            subtitle: status?.supported == false
-                ? (isIOS ? 'Доступно с iOS 16.2' : 'Доступно с Android 16')
-                : model.activitySettings.mode.label,
-            onTap: status?.supported == false
-                ? null
-                : () => _selectActivityMode(model),
-          ),
-          if (model.activitySettings.mode == ScheduleActivityMode.brief)
-            SettingsMinutesSlider(
-              icon: Icons.hourglass_bottom_rounded,
-              title: 'Показывать после начала',
-              subtitle: '0 — скрывать с началом пары.',
-              value: model.activitySettings.initialMinutes,
-              min: ScheduleActivitySettings.minimumMinutes,
-              max: ScheduleActivitySettings.maximumMinutes,
-              onChangeEnd: (minutes) => unawaited(
-                model.updateActivitySettings(
-                  model.activitySettings.copyWith(initialMinutes: minutes),
-                ),
-              ),
-            ),
-          if (enabled && status?.authorized == false)
-            SettingsActionTile(
-              icon: Icons.notifications_off_outlined,
-              title: 'Разрешить отображение в системе',
-              subtitle: isIOS
-                  ? 'Включите Live Activities в настройках приложения'
-                  : 'Разрешите уведомления и Live Updates',
-              onTap: () => model.openActivitySettings(),
-            ),
-          if (enabled && !isIOS && status?.exactAlarms == false)
-            SettingsActionTile(
-              icon: Icons.alarm_outlined,
-              title: 'Точное время обновления',
-              subtitle: 'Без разрешения системы начало и завершение могут задерживаться',
-              onTap: () => model.openActivitySettings(exactAlarms: true),
-            ),
-          if (enabled && isIOS)
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: Text(
-                'Без сервера переходы и скрытие Live Activity в фоне могут задерживаться. '
-                'Планирование запуска доступно с iOS 26; на более ранних версиях нужно открыть приложение незадолго до пары. '
-                'Число запланированных активностей ограничивает iOS. Используется сохранённое личное расписание.',
-                style: Theme.of(context).textTheme.bodySmall,
-              ),
-            ),
-        ],
-      ],
-    );
-  }
-
   Future<void> _openSystemAppSettings(SettingsScreenViewModel model) async {
     final opened = await model.openSystemAppSettings();
     if (mounted && !opened) {
@@ -363,6 +267,7 @@ class _SettingsScreenViewState extends State<SettingsScreenView>
             _model = model;
             unawaited(model.refreshActivityStatus());
           },
+          onDispose: (model) => model.dispose(),
           builder: (context, model, _) => Align(
             alignment: Alignment.topCenter,
             child: ConstrainedBox(
@@ -370,142 +275,41 @@ class _SettingsScreenViewState extends State<SettingsScreenView>
               child: ListView(
                 padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
                 children: [
-                  SettingsSection(
-                    title: 'Оформление',
-                    dividerIndent: 16,
-                    children: [
-                      SettingsActionTile(
-                        icon: Icons.brightness_6_outlined,
-                        title: 'Тема',
-                        subtitle: _themeLabels[model.themeMode],
-                        onTap: () => _selectTheme(model),
-                      ),
-                      if (model.themeMode != AppThemeMode.dark)
-                        ThemePaletteSelector(
-                          title: 'Светлая палитра',
-                          palettes: AppTheme.lightPalettesFor(
-                            model.customLightPalette,
-                          ),
-                          selected: model.lightTheme,
-                          customValue: AppLightTheme.custom,
-                          isCustomConfigured: model.hasCustomLightPalette,
-                          onEditCustom: () => _openCustomPaletteEditor(
-                            model,
-                            brightness: Brightness.light,
-                          ),
-                          onImportCustom: () => _importCustomPalette(
-                            model,
-                            brightness: Brightness.light,
-                          ),
-                          onShareCustom: () => _shareCustomPalette(
-                            model,
-                            brightness: Brightness.light,
-                          ),
-                          onChanged: (palette) => _saveThemeChange(
-                            () => model.setLightTheme(palette),
-                          ),
-                        ),
-                      if (model.themeMode != AppThemeMode.light)
-                        ThemePaletteSelector(
-                          title: 'Тёмная палитра',
-                          palettes: AppTheme.darkPalettesFor(
-                            model.customDarkPalette,
-                          ),
-                          selected: model.darkTheme,
-                          customValue: AppDarkTheme.custom,
-                          isCustomConfigured: model.hasCustomDarkPalette,
-                          onEditCustom: () => _openCustomPaletteEditor(
-                            model,
-                            brightness: Brightness.dark,
-                          ),
-                          onImportCustom: () => _importCustomPalette(
-                            model,
-                            brightness: Brightness.dark,
-                          ),
-                          onShareCustom: () => _shareCustomPalette(
-                            model,
-                            brightness: Brightness.dark,
-                          ),
-                          onChanged: (palette) => _saveThemeChange(
-                            () => model.setDarkTheme(palette),
-                          ),
-                        ),
-                    ],
+                  _AppearanceSection(
+                    model: model,
+                    onSelectTheme: () => _selectTheme(model),
+                    onSaveThemeChange: _saveThemeChange,
+                    onEditCustomPalette: (brightness) =>
+                        _openCustomPaletteEditor(model, brightness: brightness),
+                    onImportCustomPalette: (brightness) =>
+                        _importCustomPalette(model, brightness: brightness),
+                    onShareCustomPalette: (brightness) =>
+                        _shareCustomPalette(model, brightness: brightness),
                   ),
-                  SettingsSection(
-                    title: 'Приложение',
-                    children: [
-                      SettingsSwitchTile(
-                        icon: Icons.vibration_rounded,
-                        title: 'Вибрация',
-                        subtitle: 'Тактильный отклик при действиях',
-                        value: model.vibrationEnabled,
-                        onChanged: (value) => model.vibrationEnabled = value,
-                      ),
-                      SettingsActionTile(
-                        icon: Icons.app_settings_alt_outlined,
-                        title: 'Системные настройки приложения',
-                        subtitle: 'Разрешения, уведомления и другие параметры',
-                        onTap: () => _openSystemAppSettings(model),
-                      ),
-                      if (widget.hasAccount) ...[
-                        SettingsActionTile(
-                          icon: Icons.tune_rounded,
-                          title: 'Быстрый доступ',
-                          subtitle: 'Состав и порядок вкладок нижнего меню',
-                          onTap: _customizeTabBar,
-                        ),
-                      ],
-                    ],
+                  _ApplicationSection(
+                    model: model,
+                    hasAccount: widget.hasAccount,
+                    onOpenSystemAppSettings: () =>
+                        _openSystemAppSettings(model),
+                    onCustomizeTabBar: _customizeTabBar,
                   ),
                   if (widget.hasAccount)
-                    SettingsSection(
-                      title: 'Лента',
-                      children: [
-                        SettingsActionTile(
-                          icon: Icons.chat_bubble_outline_rounded,
-                          title: 'Порядок комментариев',
-                          subtitle: model.reverseComments
-                              ? 'Сначала новые'
-                              : 'Сначала старые',
-                          onTap: () => _selectCommentOrder(model),
-                        ),
-                      ],
+                    _FeedSection(
+                      reverseComments: model.reverseComments,
+                      onSelectCommentOrder: () => _selectCommentOrder(model),
                     ),
-                  _scheduleActivitySection(model),
-                  SettingsSection(
-                    title: 'Данные приложения',
-                    children: [
-                      SettingsSwitchTile(
-                        icon: Icons.insights_outlined,
-                        title: 'Сбор телеметрии',
-                        subtitle:
-                            'Помогает находить ошибки и улучшать приложение',
-                        value: model.analyticsEnabled,
-                        onChanged: (value) => model.analyticsEnabled = value,
-                      ),
-                      SettingsActionTile(
-                        icon: Icons.cleaning_services_outlined,
-                        title: 'Очистить кэш',
-                        subtitle: 'Удалить временно загруженные файлы',
-                        showChevron: false,
-                        onTap: () => _clearCache(model),
-                      ),
-                    ],
+                  _ScheduleSection(
+                    model: model,
+                    hasAccount: widget.hasAccount,
+                    onSelectScheduleSource: () => _selectScheduleSource(model),
+                    onSelectActivityMode: () => _selectActivityMode(model),
+                  ),
+                  _AppDataSection(
+                    model: model,
+                    onClearCache: () => _clearCache(model),
                   ),
                   if (widget.hasAccount)
-                    SettingsSection(
-                      title: 'Аккаунт',
-                      children: [
-                        SettingsActionTile(
-                          icon: Icons.logout_rounded,
-                          title: 'Выйти из аккаунта',
-                          color: colors.error,
-                          showChevron: false,
-                          onTap: () => _logout(model),
-                        ),
-                      ],
-                    ),
+                    _AccountSection(onLogout: () => _logout(model)),
                   FutureBuilder<String>(
                     future: _version,
                     builder: (context, snapshot) => Padding(
@@ -527,4 +331,298 @@ class _SettingsScreenViewState extends State<SettingsScreenView>
       ),
     );
   }
+}
+
+class _AppearanceSection extends StatelessWidget {
+  final SettingsScreenViewModel model;
+  final VoidCallback onSelectTheme;
+  final Future<bool> Function(Future<void> Function() update) onSaveThemeChange;
+  final void Function(Brightness brightness) onEditCustomPalette;
+  final void Function(Brightness brightness) onImportCustomPalette;
+  final void Function(Brightness brightness) onShareCustomPalette;
+
+  const _AppearanceSection({
+    required this.model,
+    required this.onSelectTheme,
+    required this.onSaveThemeChange,
+    required this.onEditCustomPalette,
+    required this.onImportCustomPalette,
+    required this.onShareCustomPalette,
+  });
+
+  Widget _paletteSelector<T extends Enum>({
+    required Brightness brightness,
+    required String title,
+    required List<ThemePalette<T>> palettes,
+    required T selected,
+    required T customValue,
+    required bool isCustomConfigured,
+    required Future<void> Function(T palette) onSelectPalette,
+  }) => ThemePaletteSelector<T>(
+    title: title,
+    palettes: palettes,
+    selected: selected,
+    customValue: customValue,
+    isCustomConfigured: isCustomConfigured,
+    onEditCustom: () => onEditCustomPalette(brightness),
+    onImportCustom: () => onImportCustomPalette(brightness),
+    onShareCustom: () => onShareCustomPalette(brightness),
+    onSelected: (index) =>
+        onSaveThemeChange(() => onSelectPalette(palettes[index].value)),
+  );
+
+  @override
+  Widget build(BuildContext context) => SettingsSection(
+    title: 'Оформление',
+    dividerIndent: 16,
+    children: [
+      SettingsActionTile(
+        icon: Icons.brightness_6_outlined,
+        title: 'Тема',
+        subtitle: _themeLabels[model.themeMode],
+        onTap: onSelectTheme,
+      ),
+      if (model.themeMode != AppThemeMode.dark)
+        _paletteSelector<AppLightTheme>(
+          brightness: Brightness.light,
+          title: 'Светлая палитра',
+          palettes: AppTheme.lightPalettesFor(model.customLightPalette),
+          selected: model.lightTheme,
+          customValue: AppLightTheme.custom,
+          isCustomConfigured: model.hasCustomLightPalette,
+          onSelectPalette: model.setLightTheme,
+        ),
+      if (model.themeMode != AppThemeMode.light)
+        _paletteSelector<AppDarkTheme>(
+          brightness: Brightness.dark,
+          title: 'Тёмная палитра',
+          palettes: AppTheme.darkPalettesFor(model.customDarkPalette),
+          selected: model.darkTheme,
+          customValue: AppDarkTheme.custom,
+          isCustomConfigured: model.hasCustomDarkPalette,
+          onSelectPalette: model.setDarkTheme,
+        ),
+    ],
+  );
+}
+
+class _ApplicationSection extends StatelessWidget {
+  final SettingsScreenViewModel model;
+  final bool hasAccount;
+  final VoidCallback onOpenSystemAppSettings;
+  final VoidCallback onCustomizeTabBar;
+
+  const _ApplicationSection({
+    required this.model,
+    required this.hasAccount,
+    required this.onOpenSystemAppSettings,
+    required this.onCustomizeTabBar,
+  });
+
+  @override
+  Widget build(BuildContext context) => SettingsSection(
+    title: 'Приложение',
+    children: [
+      SettingsSwitchTile(
+        icon: Icons.vibration_rounded,
+        title: 'Вибрация',
+        subtitle: 'Тактильный отклик при действиях',
+        value: model.vibrationEnabled,
+        onChanged: (value) => model.vibrationEnabled = value,
+      ),
+      SettingsActionTile(
+        icon: Icons.app_settings_alt_outlined,
+        title: 'Системные настройки приложения',
+        subtitle: 'Разрешения, уведомления и другие параметры',
+        onTap: onOpenSystemAppSettings,
+      ),
+      if (hasAccount)
+        SettingsActionTile(
+          icon: Icons.tune_rounded,
+          title: 'Быстрый доступ',
+          subtitle: 'Состав и порядок вкладок нижнего меню',
+          onTap: onCustomizeTabBar,
+        ),
+    ],
+  );
+}
+
+class _FeedSection extends StatelessWidget {
+  final bool reverseComments;
+  final VoidCallback onSelectCommentOrder;
+
+  const _FeedSection({
+    required this.reverseComments,
+    required this.onSelectCommentOrder,
+  });
+
+  @override
+  Widget build(BuildContext context) => SettingsSection(
+    title: 'Лента',
+    children: [
+      SettingsActionTile(
+        icon: Icons.chat_bubble_outline_rounded,
+        title: 'Порядок комментариев',
+        subtitle: reverseComments ? 'Сначала новые' : 'Сначала старые',
+        onTap: onSelectCommentOrder,
+      ),
+    ],
+  );
+}
+
+class _ScheduleSection extends StatelessWidget {
+  final SettingsScreenViewModel model;
+  final bool hasAccount;
+  final VoidCallback onSelectScheduleSource;
+  final VoidCallback onSelectActivityMode;
+
+  const _ScheduleSection({
+    required this.model,
+    required this.hasAccount,
+    required this.onSelectScheduleSource,
+    required this.onSelectActivityMode,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final status = model.activityStatus;
+    final isIOS = Theme.of(context).platform == TargetPlatform.iOS;
+    final enabled =
+        model.activitySettings.mode != ScheduleActivityMode.disabled;
+    return SettingsSection(
+      title: 'Расписание',
+      children: [
+        SettingsActionTile(
+          icon: Icons.calendar_today_outlined,
+          title: 'Источник своего расписания',
+          subtitle: model.useRaspSchedule
+              ? 'Загружается с rasp.unn.ru'
+              : 'Загружается с Портала',
+          onTap: onSelectScheduleSource,
+        ),
+        SettingsMinutesSlider(
+          icon: Icons.timer_outlined,
+          title: 'Показывать до начала',
+          subtitle: 'Также для бейджа в расписании. 0 — только с начала пары.',
+          value: model.activitySettings.beforeMinutes,
+          min: ScheduleActivitySettings.minimumMinutes,
+          max: ScheduleActivitySettings.maximumMinutes,
+          onChangeEnd: (minutes) => unawaited(
+            model.updateActivitySettings(
+              model.activitySettings.copyWith(beforeMinutes: minutes),
+            ),
+          ),
+        ),
+        if (hasAccount) ...[
+          SettingsActionTile(
+            icon: Icons.lock_clock_outlined,
+            title: isIOS ? 'Live Activities' : 'Live Updates',
+            subtitle: status?.supported == false
+                ? (isIOS ? 'Доступно с iOS 16.2' : 'Доступно с Android 16')
+                : model.activitySettings.mode.label,
+            onTap: status?.supported == false ? null : onSelectActivityMode,
+          ),
+          if (model.activitySettings.mode == ScheduleActivityMode.brief)
+            SettingsMinutesSlider(
+              icon: Icons.hourglass_bottom_rounded,
+              title: 'Показывать после начала',
+              subtitle: '0 — скрывать с началом пары.',
+              value: model.activitySettings.initialMinutes,
+              min: ScheduleActivitySettings.minimumMinutes,
+              max: ScheduleActivitySettings.maximumMinutes,
+              onChangeEnd: (minutes) => unawaited(
+                model.updateActivitySettings(
+                  model.activitySettings.copyWith(initialMinutes: minutes),
+                ),
+              ),
+            ),
+          if (enabled && status?.authorized == false)
+            SettingsActionTile(
+              icon: Icons.notifications_off_outlined,
+              title: 'Разрешить отображение в системе',
+              subtitle: isIOS
+                  ? 'Включите Live Activities в настройках приложения'
+                  : 'Разрешите уведомления и Live Updates',
+              onTap: model.openActivitySettings,
+            ),
+          if (enabled && !isIOS && status?.exactAlarms == false)
+            SettingsActionTile(
+              icon: Icons.alarm_outlined,
+              title: 'Точное время обновления',
+              subtitle:
+                  'Без разрешения системы начало и завершение могут задерживаться',
+              onTap: () => model.openActivitySettings(exactAlarms: true),
+            ),
+          if (enabled && isIOS) const _IosActivityNotice(),
+        ],
+      ],
+    );
+  }
+}
+
+class _IosActivityNotice extends StatelessWidget
+    implements SettingsDividerIndent {
+  const _IosActivityNotice();
+
+  @override
+  double get dividerIndent => 16;
+
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.all(16),
+    child: Text(
+      'Без сервера переходы и скрытие Live Activity в фоне могут задерживаться. '
+      'Планирование запуска доступно с iOS 26; на более ранних версиях нужно открыть приложение незадолго до пары. '
+      'Число запланированных активностей ограничивает iOS. Используется сохранённое личное расписание.',
+      style: Theme.of(context).textTheme.bodySmall,
+    ),
+  );
+}
+
+class _AppDataSection extends StatelessWidget {
+  final SettingsScreenViewModel model;
+  final VoidCallback onClearCache;
+
+  const _AppDataSection({required this.model, required this.onClearCache});
+
+  @override
+  Widget build(BuildContext context) => SettingsSection(
+    title: 'Данные приложения',
+    children: [
+      SettingsSwitchTile(
+        icon: Icons.insights_outlined,
+        title: 'Сбор телеметрии',
+        subtitle: 'Помогает находить ошибки и улучшать приложение',
+        value: model.analyticsEnabled,
+        onChanged: (value) => model.analyticsEnabled = value,
+      ),
+      SettingsActionTile(
+        icon: Icons.cleaning_services_outlined,
+        title: 'Очистить кэш',
+        subtitle: 'Удалить временно загруженные файлы',
+        showChevron: false,
+        onTap: onClearCache,
+      ),
+    ],
+  );
+}
+
+class _AccountSection extends StatelessWidget {
+  final VoidCallback onLogout;
+
+  const _AccountSection({required this.onLogout});
+
+  @override
+  Widget build(BuildContext context) => SettingsSection(
+    title: 'Аккаунт',
+    children: [
+      SettingsActionTile(
+        icon: Icons.logout_rounded,
+        title: 'Выйти из аккаунта',
+        color: Theme.of(context).colorScheme.error,
+        showChevron: false,
+        onTap: onLogout,
+      ),
+    ],
+  );
 }

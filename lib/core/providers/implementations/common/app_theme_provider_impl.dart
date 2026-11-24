@@ -4,6 +4,7 @@
 import 'dart:convert';
 
 import 'package:unn_mobile/core/constants/string_keys/app_settings_keys.dart';
+import 'package:unn_mobile/core/misc/json/json_utils.dart';
 import 'package:unn_mobile/core/models/common/app_dark_theme.dart';
 import 'package:unn_mobile/core/models/common/app_light_theme.dart';
 import 'package:unn_mobile/core/models/common/app_theme_mode.dart';
@@ -84,15 +85,7 @@ class AppThemeProviderImpl implements AppThemeProvider {
     if (saved == null) {
       return null;
     }
-    return CustomPaletteConfig.tryFromJson(_tryDecodeJson(saved));
-  }
-
-  Object? _tryDecodeJson(String raw) {
-    try {
-      return jsonDecode(raw);
-    } on FormatException {
-      return null;
-    }
+    return CustomPaletteConfig.tryFromJson(tryDecodeJson(saved));
   }
 
   Future<void> _saveValue(String key, String value) {

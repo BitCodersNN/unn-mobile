@@ -21,7 +21,6 @@ import 'package:unn_mobile/core/api_helpers/implementations/web_unn_source_api_h
 import 'package:unn_mobile/core/constants/string_keys/git_resource_cache_keys.dart';
 import 'package:unn_mobile/core/misc/app_open_tracker.dart';
 import 'package:unn_mobile/core/misc/app_settings.dart';
-import 'package:unn_mobile/core/misc/app_theme_controller.dart';
 import 'package:unn_mobile/core/misc/birthday/birthday_greeting_manager.dart';
 import 'package:unn_mobile/core/misc/git/git_folder.dart';
 import 'package:unn_mobile/core/misc/json/json_utils.dart';
@@ -65,6 +64,7 @@ import 'package:unn_mobile/core/services/implementations/authentication/unn_auth
 import 'package:unn_mobile/core/services/implementations/certificate/certificate_downloader_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/certificate/certificate_path_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/certificate/certificate_service_impl.dart';
+import 'package:unn_mobile/core/services/implementations/common/app_theme_controller_impl.dart';
 import 'package:unn_mobile/core/services/implementations/common/console_logger_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/common/file_data_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/common/firebase_logger_service_impl.dart';
@@ -122,6 +122,7 @@ import 'package:unn_mobile/core/services/interfaces/authorisation/unn_authorisat
 import 'package:unn_mobile/core/services/interfaces/certificate/certificate_downloader_service.dart';
 import 'package:unn_mobile/core/services/interfaces/certificate/certificate_path_service.dart';
 import 'package:unn_mobile/core/services/interfaces/certificate/certificates_service.dart';
+import 'package:unn_mobile/core/services/interfaces/common/app_theme_controller.dart';
 import 'package:unn_mobile/core/services/interfaces/common/file_data_service.dart';
 import 'package:unn_mobile/core/services/interfaces/common/last_commit_sha_service.dart';
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
@@ -185,6 +186,7 @@ import 'package:unn_mobile/core/viewmodels/main_page/certificates_online/certifi
 import 'package:unn_mobile/core/viewmodels/main_page/certificates_online/certificates_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/chat/chat_inside_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/chat/chat_screen_view_model.dart';
+import 'package:unn_mobile/core/viewmodels/main_page/donations/donations_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/feed/feed_screen_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/grades/grades_screen_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/schedule/schedule_screen_view_model.dart';
@@ -266,7 +268,7 @@ void registerDependencies() {
       () => AppThemeProviderImpl(get<StorageService>()),
     )
     ..registerSingleton<AppThemeController>(
-      () => AppThemeController(get<AppThemeProvider>()),
+      () => AppThemeControllerImpl(get<AppThemeProvider>()),
     )
     ..registerSingleton<PaletteLinkPlatform>(
       () => PaletteLinkPlatformImpl(get<LoggerService>()),
@@ -785,6 +787,9 @@ void registerDependencies() {
         get<ScheduleWidgetService>(),
         get<ScheduleActivityPlatform>(),
       ),
+    )
+    ..registerDependency<DonationsViewModel>(
+      () => DonationsViewModel(get<AppThemeController>()),
     )
     ..registerDependency(
       () => ScheduleScreenViewModel(

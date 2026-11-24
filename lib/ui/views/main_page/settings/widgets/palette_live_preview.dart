@@ -3,11 +3,16 @@
 
 import 'package:flutter/material.dart';
 import 'package:unn_mobile/core/models/common/custom_palette_config.dart';
-import 'package:unn_mobile/ui/views/main_page/settings/widgets/palette_preview/base_mini_screens_preview.dart';
-import 'package:unn_mobile/ui/views/main_page/settings/widgets/palette_preview/category_previews.dart';
-import 'package:unn_mobile/ui/views/main_page/settings/widgets/palette_preview/slot_highlight.dart';
+import 'package:unn_mobile/ui/theme/palette_slot_labels.dart';
+import 'package:unn_mobile/ui/views/main_page/settings/widgets/palette_preview/base_category_preview.dart';
+import 'package:unn_mobile/ui/views/main_page/settings/widgets/palette_preview/centered_stage_scroll.dart';
+import 'package:unn_mobile/ui/views/main_page/settings/widgets/palette_preview/effects_category_preview.dart';
+import 'package:unn_mobile/ui/views/main_page/settings/widgets/palette_preview/grades_category_preview.dart';
+import 'package:unn_mobile/ui/views/main_page/settings/widgets/palette_preview/mini_preview_primitives.dart';
+import 'package:unn_mobile/ui/views/main_page/settings/widgets/palette_preview/preview_status_footer.dart';
+import 'package:unn_mobile/ui/views/main_page/settings/widgets/palette_preview/schedule_category_preview.dart';
 
-class PaletteLivePreview extends StatefulWidget {
+class PaletteLivePreview extends StatelessWidget {
   final ThemeData previewTheme;
   final PaletteCategory selectedCategory;
   final PaletteColorSlot selectedSlot;
@@ -24,56 +29,19 @@ class PaletteLivePreview extends StatefulWidget {
   });
 
   @override
-  State<PaletteLivePreview> createState() => _PaletteLivePreviewState();
-}
-
-class _PaletteLivePreviewState extends State<PaletteLivePreview> {
-  static const _basePageTitles = [
-    'Лента',
-    'Зачётка',
-    'Расписание',
-    'Настройки',
-  ];
-
-  late final PageController _pageController;
-  int _currentPage = 0;
-
-  @override
-  void initState() {
-    super.initState();
-    _pageController = PageController();
-  }
-
-  @override
-  void dispose() {
-    _pageController.dispose();
-    super.dispose();
-  }
-
-  void _onPageDotTap(int index) {
-    _pageController.animateToPage(
-      index,
-      duration: const Duration(milliseconds: 250),
-      curve: Curves.easeOutCubic,
-    );
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final previewTheme = widget.previewTheme;
     final colors = previewTheme.colorScheme;
-    final isSurfaceSelected = widget.selectedSlot == PaletteColorSlot.surface;
-    final isBase = widget.selectedCategory == PaletteCategory.base;
+    final isSurfaceSelected = selectedSlot == PaletteColorSlot.surface;
 
     return Theme(
       data: previewTheme,
       child: DecoratedBox(
         decoration: BoxDecoration(
           color: colors.surface,
-          borderRadius: BorderRadius.circular(22),
+          borderRadius: BorderRadius.circular(MiniPreviewStyle.outerRadius),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.08),
+              color: previewTheme.shadowColor.withValues(alpha: 0.08),
               blurRadius: 16,
               offset: const Offset(0, 6),
             ),
@@ -88,77 +56,94 @@ class _PaletteLivePreviewState extends State<PaletteLivePreview> {
         child: DecoratedBox(
           position: DecorationPosition.foreground,
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(22),
+            borderRadius: BorderRadius.circular(MiniPreviewStyle.outerRadius),
             border: Border.all(
               color: isSurfaceSelected
                   ? colors.primary
-                  : colors.outlineVariant.withValues(alpha: 0.6),
+                  : colors.outlineVariant.withValues(
+                      alpha: MiniPreviewStyle.outerBorderAlpha,
+                    ),
               width: isSurfaceSelected ? 1.5 : 1,
             ),
           ),
           child: ClipRRect(
-            borderRadius: BorderRadius.circular(21),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Expanded(
-                  child: AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 200),
-                    child: switch (widget.selectedCategory) {
-                      PaletteCategory.base => BaseCategoryPreview(
-                        key: const ValueKey(PaletteCategory.base),
-                        pageController: _pageController,
-                        selectedSlot: widget.selectedSlot,
-                        onSlotSelected: widget.onSlotSelected,
-                        onPageChanged: (index) {
-                          if (_currentPage != index) {
-                            setState(() => _currentPage = index);
-                          }
-                        },
-                      ),
-                      PaletteCategory.schedule => CenteredStageScroll(
-                        key: const ValueKey(PaletteCategory.schedule),
-                        onBackgroundTap: () =>
-                            widget.onSlotSelected(PaletteColorSlot.surface),
-                        child: ScheduleCategoryPreview(
-                          selectedSlot: widget.selectedSlot,
-                          onSlotSelected: widget.onSlotSelected,
-                        ),
-                      ),
-                      PaletteCategory.grades => CenteredStageScroll(
-                        key: const ValueKey(PaletteCategory.grades),
-                        onBackgroundTap: () =>
-                            widget.onSlotSelected(PaletteColorSlot.surface),
-                        child: GradesCategoryPreview(
-                          selectedSlot: widget.selectedSlot,
-                          onSlotSelected: widget.onSlotSelected,
-                        ),
-                      ),
-                      PaletteCategory.effects => CenteredStageScroll(
-                        key: const ValueKey(PaletteCategory.effects),
-                        onBackgroundTap: () =>
-                            widget.onSlotSelected(PaletteColorSlot.surface),
-                        child: EffectsCategoryPreview(
-                          selectedSlot: widget.selectedSlot,
-                          onSlotSelected: widget.onSlotSelected,
-                        ),
-                      ),
-                    },
+            borderRadius: BorderRadius.circular(
+              MiniPreviewStyle.innerClipRadius,
+            ),
+            child: AnimatedSwitcher(
+              duration: MiniPreviewStyle.categorySwitchDuration,
+              child: switch (selectedCategory) {
+                PaletteCategory.base => BaseCategoryPreview(
+                  key: const ValueKey(PaletteCategory.base),
+                  selectedSlot: selectedSlot,
+                  selectedSlotColor: selectedSlotColor,
+                  onSlotSelected: onSlotSelected,
+                ),
+                PaletteCategory.schedule => ScheduleCategoryPreview(
+                  key: const ValueKey(PaletteCategory.schedule),
+                  selectedSlot: selectedSlot,
+                  selectedSlotColor: selectedSlotColor,
+                  onSlotSelected: onSlotSelected,
+                ),
+                PaletteCategory.grades => _StaticCategoryPreview(
+                  key: const ValueKey(PaletteCategory.grades),
+                  slotLabel: selectedSlot.label,
+                  slotColor: selectedSlotColor,
+                  onBackgroundTap: () =>
+                      onSlotSelected(PaletteColorSlot.surface),
+                  child: GradesCategoryPreview(
+                    selectedSlot: selectedSlot,
+                    onSlotSelected: onSlotSelected,
                   ),
                 ),
-                PreviewStatusFooter(
-                  slotLabel: widget.selectedSlot.label,
-                  slotColor: widget.selectedSlotColor,
-                  pageTitle: isBase ? _basePageTitles[_currentPage] : null,
-                  pageCount: isBase ? _basePageTitles.length : 0,
-                  currentPage: _currentPage,
-                  onPageTap: isBase ? _onPageDotTap : null,
+                PaletteCategory.effects => _StaticCategoryPreview(
+                  key: const ValueKey(PaletteCategory.effects),
+                  slotLabel: selectedSlot.label,
+                  slotColor: selectedSlotColor,
+                  onBackgroundTap: () =>
+                      onSlotSelected(PaletteColorSlot.surface),
+                  child: EffectsCategoryPreview(
+                    selectedSlot: selectedSlot,
+                    onSlotSelected: onSlotSelected,
+                  ),
                 ),
-              ],
+              },
             ),
           ),
         ),
       ),
     );
   }
+}
+
+class _StaticCategoryPreview extends StatelessWidget {
+  final String slotLabel;
+  final Color slotColor;
+  final VoidCallback onBackgroundTap;
+  final Widget child;
+
+  const _StaticCategoryPreview({
+    required this.slotLabel,
+    required this.slotColor,
+    required this.onBackgroundTap,
+    required this.child,
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) => Column(
+    crossAxisAlignment: CrossAxisAlignment.stretch,
+    children: [
+      Expanded(
+        child: CenteredStageScroll(
+          onBackgroundTap: onBackgroundTap,
+          child: child,
+        ),
+      ),
+      PreviewStatusFooter(
+        slotLabel: slotLabel,
+        slotColor: slotColor,
+      ),
+    ],
+  );
 }

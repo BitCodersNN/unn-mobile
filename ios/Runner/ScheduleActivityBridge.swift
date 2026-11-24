@@ -11,7 +11,7 @@ final class ScheduleActivityBridge {
     private let settingsProvider = ScheduleActivitySettingsProvider()
 
     init(messenger: FlutterBinaryMessenger) {
-        channel = FlutterMethodChannel(name: "ru.bitcodersnn.unnstudenthub/schedule_activity",
+        channel = FlutterMethodChannel(name: ScheduleConstants.activityChannel,
                                        binaryMessenger: messenger)
         channel.setMethodCallHandler { [weak self] call, result in
             self?.handle(call, result: result)

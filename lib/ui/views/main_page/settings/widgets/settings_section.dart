@@ -2,7 +2,10 @@
 // Copyright 2026 BitCodersNN
 
 import 'package:flutter/material.dart';
-import 'package:unn_mobile/ui/views/main_page/settings/widgets/settings_minutes_slider.dart';
+
+abstract interface class SettingsDividerIndent {
+  double get dividerIndent;
+}
 
 class SettingsSection extends StatelessWidget {
   final String title;
@@ -20,7 +23,10 @@ class SettingsSection extends StatelessWidget {
     if (dividerIndent != null) {
       return dividerIndent!;
     }
-    return children[index - 1] is SettingsMinutesSlider ? 16 : 64;
+    return switch (children[index - 1]) {
+      final SettingsDividerIndent item => item.dividerIndent,
+      _ => 64,
+    };
   }
 
   @override

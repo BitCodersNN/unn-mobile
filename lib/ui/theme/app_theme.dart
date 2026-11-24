@@ -12,9 +12,9 @@ import 'package:unn_mobile/ui/unn_mobile_colors.dart';
 
 abstract final class AppTheme {
   static final ThemeData greenLight = _build(
-    ColorScheme.fromSeed(seedColor: const Color(0xFF00BBB0)),
+    ColorScheme.fromSeed(seedColor: CustomPaletteConfig.defaultLightPrimary),
     UnnMobileColors.light,
-    snackBarActionColor: const Color(0xFF00BBB0),
+    snackBarActionColor: CustomPaletteConfig.defaultLightPrimary,
   );
 
   static final ThemeData blueLight = _build(
@@ -74,8 +74,8 @@ abstract final class AppTheme {
       );
 
   static final ThemeData darkGreen = _build(
-    _darkColors(const Color(0xFF529388)).copyWith(
-      primary: const Color(0xFF529388),
+    _darkColors(CustomPaletteConfig.defaultDarkPrimary).copyWith(
+      primary: CustomPaletteConfig.defaultDarkPrimary,
       onPrimary: const Color(0xFF06221E),
       primaryContainer: const Color(0xFF244E47),
       onPrimaryContainer: const Color(0xFFC0EEE3),
@@ -177,6 +177,9 @@ abstract final class AppTheme {
         ),
       ]);
 
+  static final _lightCustomCache = _CustomThemeCache();
+  static final _darkCustomCache = _CustomThemeCache();
+
   static List<ThemePalette<AppLightTheme>> lightPalettesFor(
     CustomPaletteConfig? custom,
   ) => List.unmodifiable([
@@ -184,10 +187,7 @@ abstract final class AppTheme {
     ThemePalette(
       value: AppLightTheme.custom,
       label: 'Своя',
-      theme: buildCustomTheme(
-        custom ?? CustomPaletteConfig.defaultLight(),
-        brightness: Brightness.light,
-      ),
+      theme: _customThemeFor(custom, brightness: Brightness.light),
     ),
   ]);
 
@@ -198,10 +198,7 @@ abstract final class AppTheme {
     ThemePalette(
       value: AppDarkTheme.custom,
       label: 'Своя',
-      theme: buildCustomTheme(
-        custom ?? CustomPaletteConfig.defaultDark(),
-        brightness: Brightness.dark,
-      ),
+      theme: _customThemeFor(custom, brightness: Brightness.dark),
     ),
   ]);
 
@@ -209,8 +206,8 @@ abstract final class AppTheme {
     AppLightTheme theme, {
     CustomPaletteConfig? custom,
   }) => switch (theme) {
-    AppLightTheme.custom => buildCustomTheme(
-      custom ?? CustomPaletteConfig.defaultLight(),
+    AppLightTheme.custom => _customThemeFor(
+      custom,
       brightness: Brightness.light,
     ),
     _ => _themeFor(theme, lightPalettes),
@@ -220,22 +217,41 @@ abstract final class AppTheme {
     AppDarkTheme theme, {
     CustomPaletteConfig? custom,
   }) => switch (theme) {
-    AppDarkTheme.custom => buildCustomTheme(
-      custom ?? CustomPaletteConfig.defaultDark(),
+    AppDarkTheme.custom => _customThemeFor(
+      custom,
       brightness: Brightness.dark,
     ),
     _ => _themeFor(theme, darkPalettes),
   };
 
+  static ThemeData _customThemeFor(
+    CustomPaletteConfig? custom, {
+    required Brightness brightness,
+  }) => buildCustomTheme(
+    custom ??
+        (brightness == Brightness.dark
+            ? CustomPaletteConfig.defaultDark()
+            : CustomPaletteConfig.defaultLight()),
+    brightness: brightness,
+  );
+
   static ThemeData buildCustomTheme(
     CustomPaletteConfig config, {
     required Brightness brightness,
-  }) => CustomPaletteThemeBuilder.build(
-    config,
-    brightness: brightness,
-    darkColorsFactory: _darkColors,
-    themeFactory: _build,
-  );
+  }) {
+    final cache = brightness == Brightness.dark
+        ? _darkCustomCache
+        : _lightCustomCache;
+    return cache.getOrBuild(
+      config,
+      (resolved) => CustomPaletteThemeBuilder.build(
+        resolved,
+        brightness: brightness,
+        darkColorsFactory: _darkColors,
+        themeFactory: _build,
+      ),
+    );
+  }
 
   static CustomPaletteConfig configFromTheme(ThemeData theme) =>
       CustomPaletteThemeBuilder.configFromTheme(theme);
@@ -255,7 +271,7 @@ abstract final class AppTheme {
     Color? cardColor,
   }) {
     final isDark = colors.brightness == Brightness.dark;
-    final effectiveCardColor = cardColor ?? colors.surfaceContainerLow;
+    final effectiveCardColor = cardColor ?? colors.surfaceContainerLowest;
     return ThemeData(
       useMaterial3: true,
       colorScheme: colors,
@@ -330,6 +346,22 @@ abstract final class AppTheme {
       ),
       extensions: [extraColors],
     );
+  }
+}
+
+class _CustomThemeCache {
+  CustomPaletteConfig? _config;
+  ThemeData? _theme;
+
+  ThemeData getOrBuild(
+    CustomPaletteConfig config,
+    ThemeData Function(CustomPaletteConfig) builder,
+  ) {
+    if (_config == config && _theme != null) {
+      return _theme!;
+    }
+    _config = config;
+    return _theme = builder(config);
   }
 }
 

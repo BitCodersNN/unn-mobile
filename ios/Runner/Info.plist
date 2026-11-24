@@ -71,7 +71,7 @@
 				<string>unnhub</string>
 			</array>
 			<key>CFBundleURLName</key>
-			<string>ScheduleWidget</string>
+			<string>ru.bitcodersnn.unnstudenthub.schedule</string>
 		</dict>
 		<dict>
 			<key>CFBundleURLSchemes</key>
@@ -79,7 +79,7 @@
 				<string>unnpalette</string>
 			</array>
 			<key>CFBundleURLName</key>
-			<string>PaletteLink</string>
+			<string>ru.bitcodersnn.unnstudenthub.palette</string>
 		</dict>
 	</array>
 	<key>FlutterDeepLinkingEnabled</key>

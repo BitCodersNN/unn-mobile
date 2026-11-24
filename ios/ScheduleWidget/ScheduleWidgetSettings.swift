@@ -15,36 +15,24 @@ enum ScheduleWidgetTextSize: String, CaseIterable, Sendable {
     }
 }
 
-enum ScheduleWidgetPalette: String, CaseIterable, Sendable {
-    case app
-    case lightGreen = "light_green"
-    case lightBlue = "light_blue"
-    case lightWarm = "light_warm"
-    case darkGreen = "dark_green"
-    case darkGraphite = "dark_graphite"
-    case darkWarm = "dark_warm"
-
-    var override: String? { self == .app ? nil : rawValue }
-}
-
 struct ScheduleWidgetSettings {
     let textSize: ScheduleWidgetTextSize
     let maxLessons: Int
     let showLocation: Bool
     let showLecturer: Bool
-    let palette: ScheduleWidgetPalette
+    let paletteOverride: String?
 
     init(
         textSize: ScheduleWidgetTextSize = .normal,
         maxLessons: Int = 0,
         showLocation: Bool = true,
         showLecturer: Bool = false,
-        palette: ScheduleWidgetPalette = .app
+        paletteOverride: String? = nil
     ) {
         self.textSize = textSize
         self.maxLessons = min(6, max(0, maxLessons))
         self.showLocation = showLocation
         self.showLecturer = showLecturer
-        self.palette = palette
+        self.paletteOverride = paletteOverride
     }
 }

@@ -21,7 +21,6 @@ class UnnMobileColors extends ThemeExtension<UnnMobileColors> {
   final Map<SubjectType, Color>? scheduleSubjectTypeColors;
   final Map<MarkType, Color>? gradeMarkTypeColors;
   final Color? ligtherTextColor;
-  final Color? idkWhatColor;
   final Color? importantPostHighlight;
   final Color? wideButtonBottomColor;
   final Color shimmerBaseColor;
@@ -33,7 +32,6 @@ class UnnMobileColors extends ThemeExtension<UnnMobileColors> {
     required this.scheduleSubjectTypeColors,
     required this.gradeMarkTypeColors,
     required this.ligtherTextColor,
-    required this.idkWhatColor,
     required this.wideButtonBottomColor,
     required this.shimmerBaseColor,
     required this.shimmerHighlightColor,
@@ -43,14 +41,7 @@ class UnnMobileColors extends ThemeExtension<UnnMobileColors> {
   static const light = UnnMobileColors(
     scheduleDayHighlight: Color(0xFFEEEEEE),
     scheduleSubjectHighlight: Color(0xFFFFF6E8),
-    scheduleSubjectTypeColors: {
-      SubjectType.lecture: Color(0xFF1CA49C),
-      SubjectType.practice: Color(0xFFCD7255),
-      SubjectType.lab: Color(0xFF0961FF),
-      SubjectType.exam: Color(0xFFAA4B7E),
-      SubjectType.consult: Color(0xFF7D60D1),
-      SubjectType.unknown: Color(0xFF6E757C),
-    },
+    scheduleSubjectTypeColors: defaultScheduleSubjectTypeColors,
     gradeMarkTypeColors: {
       MarkType.perfect: Color(0xFF15803D),
       MarkType.excellent: Color(0xFF15803D),
@@ -63,7 +54,6 @@ class UnnMobileColors extends ThemeExtension<UnnMobileColors> {
       MarkType.noShow: Color(0xFF64748B),
     },
     ligtherTextColor: Color(0xFF717A84),
-    idkWhatColor: Color(0xFF989EA9),
     wideButtonBottomColor: Color(0xFF006254),
     shimmerBaseColor: Color(0xFFEBEBF4),
     shimmerHighlightColor: Color(0xFFF4F4F4),
@@ -81,7 +71,6 @@ class UnnMobileColors extends ThemeExtension<UnnMobileColors> {
     scheduleDayHighlight: const Color(0xFFEFE5D6),
     scheduleSubjectHighlight: const Color(0xFFF8E9D2),
     ligtherTextColor: const Color(0xFF6E6054),
-    idkWhatColor: const Color(0xFF8F7E70),
     wideButtonBottomColor: const Color(0xFF7F421E),
     shimmerBaseColor: const Color(0xFFEAE0D0),
     shimmerHighlightColor: const Color(0xFFF7F1E7),
@@ -110,7 +99,6 @@ class UnnMobileColors extends ThemeExtension<UnnMobileColors> {
       MarkType.noShow: Color(0xFFA9B8B2),
     },
     ligtherTextColor: Color(0xFFAFC5BE),
-    idkWhatColor: Color(0xFF93ABA2),
     wideButtonBottomColor: Color(0xFF3B766C),
     shimmerBaseColor: Color(0xFF203530),
     shimmerHighlightColor: Color(0xFF334A44),
@@ -120,7 +108,6 @@ class UnnMobileColors extends ThemeExtension<UnnMobileColors> {
     scheduleDayHighlight: const Color(0xFF303040),
     scheduleSubjectHighlight: const Color(0xFF40362D),
     ligtherTextColor: const Color(0xFFC1BECE),
-    idkWhatColor: const Color(0xFFAAA5B8),
     wideButtonBottomColor: const Color(0xFF9E88CF),
     shimmerBaseColor: const Color(0xFF252532),
     shimmerHighlightColor: const Color(0xFF3D3D4D),
@@ -130,7 +117,6 @@ class UnnMobileColors extends ThemeExtension<UnnMobileColors> {
     scheduleDayHighlight: const Color(0xFF332B25),
     scheduleSubjectHighlight: const Color(0xFF3F3122),
     ligtherTextColor: const Color(0xFFBFB0A3),
-    idkWhatColor: const Color(0xFF9E8F82),
     wideButtonBottomColor: const Color(0xFFB3774B),
     shimmerBaseColor: const Color(0xFF2A231E),
     shimmerHighlightColor: const Color(0xFF3D332C),
@@ -143,9 +129,7 @@ class UnnMobileColors extends ThemeExtension<UnnMobileColors> {
     Map<SubjectType, Color>? scheduleSubjectTypeColors,
     Map<MarkType, Color>? gradeMarkTypeColors,
     Color? ligtherTextColor,
-    Color? idkWhatColor,
     Color? importantPostHighlight,
-    Color? wideButtonTopColor,
     Color? wideButtonBottomColor,
     Color? shimmerBaseColor,
     Color? shimmerHighlightColor,
@@ -157,7 +141,6 @@ class UnnMobileColors extends ThemeExtension<UnnMobileColors> {
         scheduleSubjectTypeColors ?? this.scheduleSubjectTypeColors,
     gradeMarkTypeColors: gradeMarkTypeColors ?? this.gradeMarkTypeColors,
     ligtherTextColor: ligtherTextColor ?? this.ligtherTextColor,
-    idkWhatColor: idkWhatColor ?? this.idkWhatColor,
     importantPostHighlight:
         importantPostHighlight ?? this.importantPostHighlight,
     wideButtonBottomColor: wideButtonBottomColor ?? this.wideButtonBottomColor,
@@ -208,7 +191,6 @@ class UnnMobileColors extends ThemeExtension<UnnMobileColors> {
         otherColors.ligtherTextColor,
         t,
       ),
-      idkWhatColor: Color.lerp(idkWhatColor, otherColors.idkWhatColor, t),
       importantPostHighlight: Color.lerp(
         importantPostHighlight,
         otherColors.importantPostHighlight,

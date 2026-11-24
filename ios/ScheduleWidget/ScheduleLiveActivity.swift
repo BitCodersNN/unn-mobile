@@ -95,7 +95,7 @@ private struct ScheduleActivityCountdown: View {
 private extension ActivityViewContext where Attributes == ScheduleActivityAttributes {
     var islandPalette: SchedulePalette {
         guard let appearance = state.appearance else { return .fallback(dark: true) }
-        return appearance.palette(systemDark: true, override: appearance.dark)
+        return appearance.palette(systemDark: true, forcedDark: true, override: appearance.dark)
     }
 
     func palette(systemDark: Bool) -> SchedulePalette {

@@ -1,51 +1,42 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2026 BitCodersNN
 
+import 'dart:ui';
+
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 
-enum PaletteCategory {
-  base('База'),
-  schedule('Расписание'),
-  grades('Зачётка'),
-  effects('Эффекты');
-
-  final String label;
-
-  const PaletteCategory(this.label);
-}
+enum PaletteCategory { base, schedule, grades, effects }
 
 enum PaletteColorSlot {
-  surface(PaletteCategory.base, 'Фон экрана'),
-  cardSurface(PaletteCategory.base, 'Карточки'),
-  importantPostHighlight(PaletteCategory.base, 'Важный пост'),
-  primary(PaletteCategory.base, 'Основной акцент'),
-  secondary(PaletteCategory.base, 'Доп. акцент'),
-  onSurface(PaletteCategory.base, 'Основной текст'),
-  onSurfaceVariant(PaletteCategory.base, 'Вторичный текст'),
-  outlineVariant(PaletteCategory.base, 'Разделители'),
-  wideButtonBottom(PaletteCategory.base, 'Низ кнопки'),
-  scheduleDayHighlight(PaletteCategory.schedule, 'Подсветка дня'),
-  scheduleSubjectHighlight(PaletteCategory.schedule, 'Текущая пара'),
-  subjectLecture(PaletteCategory.schedule, 'Лекция'),
-  subjectPractice(PaletteCategory.schedule, 'Практика'),
-  subjectLab(PaletteCategory.schedule, 'Лабораторная'),
-  subjectExam(PaletteCategory.schedule, 'Экзамен'),
-  subjectConsult(PaletteCategory.schedule, 'Консультация'),
-  subjectUnknown(PaletteCategory.schedule, 'Другое'),
-  markExcellent(PaletteCategory.grades, 'Отлично'),
-  markGood(PaletteCategory.grades, 'Хорошо'),
-  markSatisfactory(PaletteCategory.grades, 'Удовлетворительно'),
-  markUnsatisfactory(PaletteCategory.grades, 'Неудовлетворительно'),
-  markCredited(PaletteCategory.grades, 'Зачтено'),
-  markNoShow(PaletteCategory.grades, 'Неявка'),
-  shimmerBase(PaletteCategory.effects, 'База шиммера'),
-  shimmerHighlight(PaletteCategory.effects, 'Блик шиммера');
+  surface(PaletteCategory.base),
+  cardSurface(PaletteCategory.base),
+  importantPostHighlight(PaletteCategory.base),
+  primary(PaletteCategory.base),
+  secondary(PaletteCategory.base),
+  onSurface(PaletteCategory.base),
+  onSurfaceVariant(PaletteCategory.base),
+  outlineVariant(PaletteCategory.base),
+  wideButtonBottom(PaletteCategory.base),
+  scheduleDayHighlight(PaletteCategory.schedule),
+  scheduleSubjectHighlight(PaletteCategory.schedule),
+  subjectLecture(PaletteCategory.schedule),
+  subjectPractice(PaletteCategory.schedule),
+  subjectLab(PaletteCategory.schedule),
+  subjectExam(PaletteCategory.schedule),
+  subjectConsult(PaletteCategory.schedule),
+  subjectUnknown(PaletteCategory.schedule),
+  markExcellent(PaletteCategory.grades),
+  markGood(PaletteCategory.grades),
+  markSatisfactory(PaletteCategory.grades),
+  markUnsatisfactory(PaletteCategory.grades),
+  markCredited(PaletteCategory.grades),
+  markNoShow(PaletteCategory.grades),
+  shimmerBase(PaletteCategory.effects),
+  shimmerHighlight(PaletteCategory.effects);
 
   final PaletteCategory category;
-  final String label;
 
-  const PaletteColorSlot(this.category, this.label);
+  const PaletteColorSlot(this.category);
 
   bool get isBaseAccent =>
       this == PaletteColorSlot.primary || this == PaletteColorSlot.secondary;
@@ -59,6 +50,11 @@ abstract final class _JsonKeys {
 
 @immutable
 class CustomPaletteConfig {
+  static const Color defaultLightPrimary = Color(0xFF00BBB0);
+  static const Color defaultLightSecondary = Color(0xFF006254);
+  static const Color defaultDarkPrimary = Color(0xFF529388);
+  static const Color defaultDarkSecondary = Color(0xFF3B766C);
+
   final Color primary;
   final Color secondary;
   final Map<PaletteColorSlot, Color> overrides;
@@ -74,13 +70,13 @@ class CustomPaletteConfig {
        );
 
   factory CustomPaletteConfig.defaultLight() => CustomPaletteConfig(
-    primary: const Color(0xFF00BBB0),
-    secondary: const Color(0xFF006254),
+    primary: defaultLightPrimary,
+    secondary: defaultLightSecondary,
   );
 
   factory CustomPaletteConfig.defaultDark() => CustomPaletteConfig(
-    primary: const Color(0xFF529388),
-    secondary: const Color(0xFF3B766C),
+    primary: defaultDarkPrimary,
+    secondary: defaultDarkSecondary,
   );
 
   Color? overrideOf(PaletteColorSlot slot) => switch (slot) {
@@ -158,16 +154,18 @@ class CustomPaletteConfig {
             .where((candidate) => candidate.name == key)
             .firstOrNull;
         if (slot != null && !slot.isBaseAccent) {
-          parsedOverrides[slot] = Color(value);
+          parsedOverrides[slot] = _opaqueColor(value);
         }
       }
     }
     return CustomPaletteConfig(
-      primary: Color(primaryValue),
-      secondary: Color(secondaryValue),
+      primary: _opaqueColor(primaryValue),
+      secondary: _opaqueColor(secondaryValue),
       overrides: parsedOverrides,
     );
   }
+
+  static Color _opaqueColor(int value) => Color(0xFF000000 | (value & 0xFFFFFF));
 
   @override
   bool operator ==(Object other) =>

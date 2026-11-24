@@ -3,8 +3,10 @@
 
 import 'package:flutter/material.dart';
 import 'package:unn_mobile/ui/views/main_page/settings/widgets/settings_icon.dart';
+import 'package:unn_mobile/ui/views/main_page/settings/widgets/settings_section.dart';
 
-class SettingsMinutesSlider extends StatefulWidget {
+class SettingsMinutesSlider extends StatefulWidget
+    implements SettingsDividerIndent {
   final IconData icon;
   final String title;
   final String? subtitle;
@@ -23,6 +25,9 @@ class SettingsMinutesSlider extends StatefulWidget {
     this.max = 60,
     super.key,
   });
+
+  @override
+  double get dividerIndent => 16;
 
   @override
   State<SettingsMinutesSlider> createState() => _SettingsMinutesSliderState();

@@ -41,7 +41,7 @@ abstract final class CustomPaletteThemeBuilder {
     final onPrimaryContainer =
         ThemeData.estimateBrightnessForColor(primaryContainer) ==
             Brightness.light
-        ? Color.lerp(config.primary, const Color(0xFF06221E), 0.7)!
+        ? Color.lerp(config.primary, Colors.black, 0.78)!
         : Color.lerp(config.primary, Colors.white, 0.78)!;
 
     var colorScheme = baseScheme.copyWith(
@@ -169,24 +169,23 @@ abstract final class CustomPaletteThemeBuilder {
 
   static CustomPaletteConfig configFromTheme(ThemeData theme) {
     final scheme = theme.colorScheme;
-    final wideButtonBottom = theme.unnMobileColors?.wideButtonBottomColor;
     return CustomPaletteConfig(
       primary: scheme.primary,
       secondary: scheme.secondary,
       overrides: {
-        PaletteColorSlot.surface: scheme.surface,
-        PaletteColorSlot.cardSurface: scheme.surfaceContainerLowest,
-        PaletteColorSlot.onSurface: scheme.onSurface,
-        PaletteColorSlot.onSurfaceVariant: scheme.onSurfaceVariant,
-        PaletteColorSlot.outlineVariant: scheme.outlineVariant,
-        PaletteColorSlot.wideButtonBottom: ?wideButtonBottom,
+        for (final slot in PaletteColorSlot.values)
+          if (!slot.isBaseAccent)
+            if (_tryColorForSlot(theme, slot) case final color?) slot: color,
       },
     );
   }
 
-  static Color colorForSlot(ThemeData theme, PaletteColorSlot slot) {
+  static Color colorForSlot(ThemeData theme, PaletteColorSlot slot) =>
+      _tryColorForSlot(theme, slot)!;
+
+  static Color? _tryColorForSlot(ThemeData theme, PaletteColorSlot slot) {
     final scheme = theme.colorScheme;
-    final extra = theme.unnMobileColors!;
+    final extra = theme.unnMobileColors;
     return switch (slot) {
       PaletteColorSlot.primary => scheme.primary,
       PaletteColorSlot.secondary => scheme.secondary,
@@ -196,41 +195,41 @@ abstract final class CustomPaletteThemeBuilder {
       PaletteColorSlot.onSurfaceVariant => scheme.onSurfaceVariant,
       PaletteColorSlot.outlineVariant => scheme.outlineVariant,
       PaletteColorSlot.importantPostHighlight =>
-        extra.importantPostHighlight ?? scheme.error,
-      PaletteColorSlot.wideButtonBottom => extra.wideButtonBottomColor!,
-      PaletteColorSlot.scheduleDayHighlight => extra.scheduleDayHighlight!,
+        extra?.importantPostHighlight ?? scheme.error,
+      PaletteColorSlot.wideButtonBottom => extra?.wideButtonBottomColor,
+      PaletteColorSlot.scheduleDayHighlight => extra?.scheduleDayHighlight,
       PaletteColorSlot.scheduleSubjectHighlight =>
-        extra.scheduleSubjectHighlight!,
+        extra?.scheduleSubjectHighlight,
       PaletteColorSlot.subjectLecture =>
-        extra.scheduleSubjectTypeColors![SubjectType.lecture]!,
+        extra?.scheduleSubjectTypeColors?[SubjectType.lecture],
       PaletteColorSlot.subjectPractice =>
-        extra.scheduleSubjectTypeColors![SubjectType.practice]!,
+        extra?.scheduleSubjectTypeColors?[SubjectType.practice],
       PaletteColorSlot.subjectLab =>
-        extra.scheduleSubjectTypeColors![SubjectType.lab]!,
+        extra?.scheduleSubjectTypeColors?[SubjectType.lab],
       PaletteColorSlot.subjectExam =>
-        extra.scheduleSubjectTypeColors![SubjectType.exam]!,
+        extra?.scheduleSubjectTypeColors?[SubjectType.exam],
       PaletteColorSlot.subjectConsult =>
-        extra.scheduleSubjectTypeColors![SubjectType.consult]!,
+        extra?.scheduleSubjectTypeColors?[SubjectType.consult],
       PaletteColorSlot.subjectUnknown =>
-        extra.scheduleSubjectTypeColors![SubjectType.unknown]!,
+        extra?.scheduleSubjectTypeColors?[SubjectType.unknown],
       PaletteColorSlot.markExcellent =>
-        extra.gradeMarkTypeColors![MarkType.excellent]!,
-      PaletteColorSlot.markGood => extra.gradeMarkTypeColors![MarkType.good]!,
+        extra?.gradeMarkTypeColors?[MarkType.excellent],
+      PaletteColorSlot.markGood => extra?.gradeMarkTypeColors?[MarkType.good],
       PaletteColorSlot.markSatisfactory =>
-        extra.gradeMarkTypeColors![MarkType.satisfactory]!,
+        extra?.gradeMarkTypeColors?[MarkType.satisfactory],
       PaletteColorSlot.markUnsatisfactory =>
-        extra.gradeMarkTypeColors![MarkType.notSatisfactory]!,
+        extra?.gradeMarkTypeColors?[MarkType.notSatisfactory],
       PaletteColorSlot.markCredited =>
-        extra.gradeMarkTypeColors![MarkType.credited]!,
+        extra?.gradeMarkTypeColors?[MarkType.credited],
       PaletteColorSlot.markNoShow =>
-        extra.gradeMarkTypeColors![MarkType.noShow]!,
-      PaletteColorSlot.shimmerBase => extra.shimmerBaseColor,
-      PaletteColorSlot.shimmerHighlight => extra.shimmerHighlightColor,
+        extra?.gradeMarkTypeColors?[MarkType.noShow],
+      PaletteColorSlot.shimmerBase => extra?.shimmerBaseColor,
+      PaletteColorSlot.shimmerHighlight => extra?.shimmerHighlightColor,
     };
   }
 
   static Color _contrastForeground(Color color) =>
       ThemeData.estimateBrightnessForColor(color) == Brightness.light
-      ? const Color(0xFF06221E)
+      ? Color.lerp(color, Colors.black, 0.86)!
       : Colors.white;
 }

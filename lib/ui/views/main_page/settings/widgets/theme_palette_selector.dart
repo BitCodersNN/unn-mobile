@@ -3,16 +3,16 @@
 
 import 'package:flutter/material.dart';
 import 'package:unn_mobile/ui/theme/theme_palette.dart';
+import 'package:unn_mobile/ui/views/main_page/settings/widgets/settings_section.dart';
 import 'package:unn_mobile/ui/widgets/context_menu/context_menu_action.dart';
 import 'package:unn_mobile/ui/widgets/context_menu/preview_context_menu.dart';
 
-class ThemePaletteSelector<T extends Enum> extends StatelessWidget {
+class ThemePaletteSelector<T extends Enum> extends StatelessWidget
+    implements SettingsDividerIndent {
   final String title;
   final T selected;
   final List<ThemePalette<T>> palettes;
-  // Обработчик вызывается только с T из списка палитр этого компонента.
-  // ignore: unsafe_variance
-  final ValueChanged<T> _onChanged;
+  final ValueChanged<int> onSelected;
   final T? customValue;
   final bool isCustomConfigured;
   final VoidCallback? onEditCustom;
@@ -23,7 +23,7 @@ class ThemePaletteSelector<T extends Enum> extends StatelessWidget {
     required this.title,
     required this.palettes,
     required this.selected,
-    required this._onChanged,
+    required this.onSelected,
     this.customValue,
     this.isCustomConfigured = false,
     this.onEditCustom,
@@ -31,6 +31,9 @@ class ThemePaletteSelector<T extends Enum> extends StatelessWidget {
     this.onShareCustom,
     super.key,
   });
+
+  @override
+  double get dividerIndent => 16;
 
   @override
   Widget build(BuildContext context) {
@@ -60,17 +63,21 @@ class ThemePaletteSelector<T extends Enum> extends StatelessWidget {
                 final isCustom =
                     customValue != null && palette.value == customValue;
                 final isSelected = selected == palette.value;
+                final mode = !isCustom
+                    ? _PaletteOptionMode.standard
+                    : isCustomConfigured
+                    ? _PaletteOptionMode.customConfigured
+                    : _PaletteOptionMode.customPlaceholder;
                 final option = _PaletteOption(
                   label: palette.label,
                   colors: palette.theme.colorScheme,
                   selected: isSelected,
-                  showGearPlaceholder: isCustom && !isCustomConfigured,
-                  showGearInsteadOfCard: isCustom && isCustomConfigured,
+                  mode: mode,
                   onTap: isCustom && !isCustomConfigured
                       ? () => onEditCustom?.call()
                       : isCustom && isSelected && onEditCustom != null
                       ? onEditCustom!
-                      : () => _onChanged(palette.value),
+                      : () => onSelected(index),
                 );
                 return SizedBox(
                   width: 142,
@@ -109,21 +116,21 @@ class ThemePaletteSelector<T extends Enum> extends StatelessWidget {
   }
 }
 
+enum _PaletteOptionMode { standard, customPlaceholder, customConfigured }
+
 class _PaletteOption extends StatelessWidget {
   final String label;
   final ColorScheme colors;
   final bool selected;
-  final bool showGearPlaceholder;
-  final bool showGearInsteadOfCard;
   final VoidCallback onTap;
+  final _PaletteOptionMode mode;
 
   const _PaletteOption({
     required this.label,
     required this.colors,
     required this.selected,
     required this.onTap,
-    this.showGearPlaceholder = false,
-    this.showGearInsteadOfCard = false,
+    this.mode = _PaletteOptionMode.standard,
   });
 
   @override
@@ -151,68 +158,7 @@ class _PaletteOption extends StatelessWidget {
           highlightColor: Colors.transparent,
           child: Column(
             children: [
-              ExcludeSemantics(
-                child: showGearPlaceholder
-                    ? Container(
-                        height: 92,
-                        color: theme.colorScheme.surfaceContainerHigh,
-                        alignment: Alignment.center,
-                        child: Icon(
-                          Icons.settings_rounded,
-                          size: 32,
-                          color: theme.colorScheme.onSurfaceVariant,
-                        ),
-                      )
-                    : Container(
-                        height: 92,
-                        padding: const EdgeInsets.all(12),
-                        color: colors.surface,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Align(
-                              alignment: Alignment.centerRight,
-                              child: Icon(
-                                selected
-                                    ? Icons.check_circle_rounded
-                                    : Icons.circle_outlined,
-                                color: selected
-                                    ? colors.primary
-                                    : colors.outline,
-                                size: 20,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            Expanded(
-                              child: showGearInsteadOfCard
-                                  ? Center(
-                                      child: Icon(
-                                        Icons.settings_rounded,
-                                        size: 28,
-                                        color: colors.primary,
-                                      ),
-                                    )
-                                  : Container(
-                                      width: double.infinity,
-                                      padding: const EdgeInsets.all(8),
-                                      decoration: BoxDecoration(
-                                        color: colors.surfaceContainerHigh,
-                                        borderRadius: BorderRadius.circular(6),
-                                      ),
-                                      alignment: Alignment.centerLeft,
-                                      child: FractionallySizedBox(
-                                        widthFactor: 0.65,
-                                        child: Container(
-                                          height: 4,
-                                          color: colors.primary,
-                                        ),
-                                      ),
-                                    ),
-                            ),
-                          ],
-                        ),
-                      ),
-              ),
+              ExcludeSemantics(child: _buildPreview(theme)),
               Expanded(
                 child: Center(
                   child: Padding(
@@ -232,4 +178,60 @@ class _PaletteOption extends StatelessWidget {
       ),
     );
   }
+
+  Widget _buildPreview(ThemeData theme) => switch (mode) {
+    _PaletteOptionMode.customPlaceholder => Container(
+      height: 92,
+      color: theme.colorScheme.surfaceContainerHigh,
+      alignment: Alignment.center,
+      child: Icon(
+        Icons.settings_rounded,
+        size: 32,
+        color: theme.colorScheme.onSurfaceVariant,
+      ),
+    ),
+    _PaletteOptionMode.customConfigured || _PaletteOptionMode.standard =>
+      Container(
+        height: 92,
+        padding: const EdgeInsets.all(12),
+        color: colors.surface,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Align(
+              alignment: Alignment.centerRight,
+              child: Icon(
+                selected ? Icons.check_circle_rounded : Icons.circle_outlined,
+                color: selected ? colors.primary : colors.outline,
+                size: 20,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Expanded(
+              child: mode == _PaletteOptionMode.customConfigured
+                  ? Center(
+                      child: Icon(
+                        Icons.settings_rounded,
+                        size: 28,
+                        color: colors.primary,
+                      ),
+                    )
+                  : Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: colors.surfaceContainerHigh,
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      alignment: Alignment.centerLeft,
+                      child: FractionallySizedBox(
+                        widthFactor: 0.65,
+                        child: Container(height: 4, color: colors.primary),
+                      ),
+                    ),
+            ),
+          ],
+        ),
+      ),
+  };
 }

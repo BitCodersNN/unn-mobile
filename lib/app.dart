@@ -6,10 +6,10 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:unn_mobile/core/constants/main_page_paths.dart';
-import 'package:unn_mobile/core/misc/app_theme_controller.dart';
 import 'package:unn_mobile/core/misc/schedule_activity/schedule_activity_platform.dart';
 import 'package:unn_mobile/core/misc/user/current_user_sync_storage.dart';
 import 'package:unn_mobile/core/models/common/app_theme_mode.dart';
+import 'package:unn_mobile/core/services/interfaces/common/app_theme_controller.dart';
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
 import 'package:unn_mobile/core/services/interfaces/common/palette_link_platform.dart';
 import 'package:unn_mobile/core/services/interfaces/schedule_widget/schedule_widget_platform.dart';
@@ -120,7 +120,7 @@ class _UnnMobileState extends State<UnnMobile> {
       Provider<MainPageRoutesViewModelsFactory>.value(
         value: _routesViewModelsFactory,
       ),
-      ChangeNotifierProvider<AppThemeController>.value(
+      ListenableProvider<AppThemeController>.value(
         value: widget.themeController,
       ),
     ],

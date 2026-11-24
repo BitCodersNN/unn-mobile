@@ -14,12 +14,16 @@ import Firebase
   ) -> Bool {
     FirebaseApp.configure()
     GeneratedPluginRegistrant.register(with: self)
-    if let registrar = registrar(forPlugin: "ScheduleWidgetBridge") {
+    if let registrar = registrar(forPlugin: "ScheduleActivityBridge") {
       scheduleActivityBridge = ScheduleActivityBridge(messenger: registrar.messenger())
+    }
+    if let registrar = registrar(forPlugin: "ScheduleWidgetBridge") {
       scheduleWidgetBridge = ScheduleWidgetBridge(
         messenger: registrar.messenger(),
         initialURL: launchOptions?[.url] as? URL
       )
+    }
+    if let registrar = registrar(forPlugin: "PaletteLinkBridge") {
       paletteLinkBridge = PaletteLinkBridge(
         messenger: registrar.messenger(),
         initialURL: launchOptions?[.url] as? URL
@@ -37,46 +41,5 @@ import Firebase
     return super.application(app, open: url, options: options)
   }
 
-}
-
-private final class PaletteLinkBridge {
-  private let channel: FlutterMethodChannel
-  private var pendingLink: String?
-
-  init(messenger: FlutterBinaryMessenger, initialURL: URL?) {
-    channel = FlutterMethodChannel(
-      name: "ru.bitcodersnn.unnstudenthub/palette_link",
-      binaryMessenger: messenger
-    )
-    pendingLink = Self.isPaletteURL(initialURL) ? initialURL?.absoluteString : nil
-    channel.setMethodCallHandler { [weak self] call, result in
-      self?.handle(call, result: result)
-    }
-  }
-
-  private func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
-    switch call.method {
-    case "consumeInitialLink":
-      let link = pendingLink
-      pendingLink = nil
-      result(link)
-    default:
-      result(FlutterMethodNotImplemented)
-    }
-  }
-
-  func handleURL(_ url: URL) -> Bool {
-    guard Self.isPaletteURL(url) else { return false }
-    let link = url.absoluteString
-    channel.invokeMethod("openPaletteLink", arguments: link) { [weak self] result in
-      let failed = result is FlutterError || (result as? NSObject) == FlutterMethodNotImplemented
-      self?.pendingLink = failed ? link : nil
-    }
-    return true
-  }
-
-  private static func isPaletteURL(_ url: URL?) -> Bool {
-    url?.scheme?.lowercased() == "unnpalette"
-  }
 }
  

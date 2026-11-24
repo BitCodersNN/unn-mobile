@@ -7,8 +7,10 @@ import 'package:unn_mobile/core/models/common/app_light_theme.dart';
 import 'package:unn_mobile/core/models/common/app_theme_mode.dart';
 import 'package:unn_mobile/core/models/common/custom_palette_config.dart';
 import 'package:unn_mobile/core/providers/interfaces/common/app_theme_provider.dart';
+import 'package:unn_mobile/core/services/interfaces/common/app_theme_controller.dart';
 
-class AppThemeController extends ChangeNotifier {
+class AppThemeControllerImpl extends ChangeNotifier
+    implements AppThemeController {
   final AppThemeProvider _provider;
   final _mode = _ThemePreference(AppThemeMode.system);
   final _lightTheme = _ThemePreference(AppLightTheme.green);
@@ -16,16 +18,30 @@ class AppThemeController extends ChangeNotifier {
   final _customLightPalette = _ThemePreference<CustomPaletteConfig?>(null);
   final _customDarkPalette = _ThemePreference<CustomPaletteConfig?>(null);
 
-  AppThemeController(this._provider);
+  AppThemeControllerImpl(this._provider);
 
+  @override
   AppThemeMode get mode => _mode.value;
+
+  @override
   AppLightTheme get lightTheme => _lightTheme.value;
+
+  @override
   AppDarkTheme get darkTheme => _darkTheme.value;
+
+  @override
   CustomPaletteConfig? get customLightPalette => _customLightPalette.value;
+
+  @override
   CustomPaletteConfig? get customDarkPalette => _customDarkPalette.value;
+
+  @override
   bool get hasCustomLightPalette => _customLightPalette.value != null;
+
+  @override
   bool get hasCustomDarkPalette => _customDarkPalette.value != null;
 
+  @override
   Future<void> load() async {
     final (mode, lightTheme, darkTheme, customLight, customDark) = await (
       _provider.read(),
@@ -42,21 +58,28 @@ class AppThemeController extends ChangeNotifier {
     notifyListeners();
   }
 
+  @override
+  Future<void> reload() => load();
+
+  @override
   Future<void> setMode(AppThemeMode mode) =>
       _mode.update(mode, save: _provider.save, onChanged: notifyListeners);
 
+  @override
   Future<void> setLightTheme(AppLightTheme theme) => _lightTheme.update(
     theme,
     save: _provider.saveLightTheme,
     onChanged: notifyListeners,
   );
 
+  @override
   Future<void> setDarkTheme(AppDarkTheme theme) => _darkTheme.update(
     theme,
     save: _provider.saveDarkTheme,
     onChanged: notifyListeners,
   );
 
+  @override
   Future<void> setCustomLightPalette(CustomPaletteConfig config) =>
       _updateCustomPalette(
         _customLightPalette,
@@ -64,6 +87,7 @@ class AppThemeController extends ChangeNotifier {
         _provider.saveCustomLightPalette,
       );
 
+  @override
   Future<void> setCustomDarkPalette(CustomPaletteConfig config) =>
       _updateCustomPalette(
         _customDarkPalette,
@@ -71,16 +95,76 @@ class AppThemeController extends ChangeNotifier {
         _provider.saveCustomDarkPalette,
       );
 
+  @override
   Future<void> applyCustomPalette(
     CustomPaletteConfig config, {
     required Brightness brightness,
+  }) => brightness == Brightness.dark
+      ? _applyCustomPalette(
+          config: config,
+          palettePref: _customDarkPalette,
+          themePref: _darkTheme,
+          customTheme: AppDarkTheme.custom,
+          savePalette: _provider.saveCustomDarkPalette,
+          saveTheme: _provider.saveDarkTheme,
+        )
+      : _applyCustomPalette(
+          config: config,
+          palettePref: _customLightPalette,
+          themePref: _lightTheme,
+          customTheme: AppLightTheme.custom,
+          savePalette: _provider.saveCustomLightPalette,
+          saveTheme: _provider.saveLightTheme,
+        );
+
+  Future<void> _applyCustomPalette<T>({
+    required CustomPaletteConfig config,
+    required _ThemePreference<CustomPaletteConfig?> palettePref,
+    required _ThemePreference<T> themePref,
+    required T customTheme,
+    required Future<void> Function(CustomPaletteConfig) savePalette,
+    required Future<void> Function(T) saveTheme,
   }) async {
-    if (brightness == Brightness.dark) {
-      await setCustomDarkPalette(config);
-      await setDarkTheme(AppDarkTheme.custom);
-    } else {
-      await setCustomLightPalette(config);
-      await setLightTheme(AppLightTheme.custom);
+    final paletteRev = palettePref.stage(config);
+    final themeRev = themePref.stage(customTheme);
+    if (paletteRev == null && themeRev == null) {
+      return;
+    }
+    notifyListeners();
+    try {
+      await _persistCustomPalette(
+        config: config,
+        paletteChanged: paletteRev != null,
+        themeChanged: themeRev != null,
+        customTheme: customTheme,
+        savePalette: savePalette,
+        saveTheme: saveTheme,
+      );
+    } catch (_) {
+      final rolledBackPalette = palettePref.rollback(paletteRev);
+      final rolledBackTheme = themePref.rollback(themeRev);
+      if (rolledBackPalette || rolledBackTheme) {
+        notifyListeners();
+      }
+      rethrow;
+    }
+    palettePref.commit(paletteRev, config);
+    themePref.commit(themeRev, customTheme);
+  }
+
+  Future<void> _persistCustomPalette<T>({
+    required CustomPaletteConfig config,
+    required bool paletteChanged,
+    required bool themeChanged,
+    required T customTheme,
+    required Future<void> Function(CustomPaletteConfig) savePalette,
+    required Future<void> Function(T) saveTheme,
+  }) async {
+    if (paletteChanged) {
+      await savePalette(config);
+    }
+    if (themeChanged) {
+      await saveTheme(customTheme);
     }
   }
 
@@ -105,8 +189,31 @@ class _ThemePreference<T> {
   T get value => _value;
 
   void load(T value) {
+    ++_revision;
     _value = value;
     _savedValue = value;
+  }
+
+  int? stage(T value) {
+    if (value == _value) {
+      return null;
+    }
+    _value = value;
+    return ++_revision;
+  }
+
+  void commit(int? revision, T value) {
+    if (revision != null && revision == _revision) {
+      _savedValue = value;
+    }
+  }
+
+  bool rollback(int? revision) {
+    if (revision == null || revision != _revision) {
+      return false;
+    }
+    _value = _savedValue;
+    return true;
   }
 
   Future<void> update(
@@ -114,21 +221,19 @@ class _ThemePreference<T> {
     required Future<void> Function(T) save,
     required VoidCallback onChanged,
   }) async {
-    if (value == _value) {
+    final revision = stage(value);
+    if (revision == null) {
       return;
     }
-    final revision = ++_revision;
-    _value = value;
     onChanged();
     try {
       await save(value);
     } catch (_) {
-      if (revision == _revision) {
-        _value = _savedValue;
+      if (rollback(revision)) {
         onChanged();
       }
       rethrow;
     }
-    _savedValue = value;
+    commit(revision, value);
   }
 }

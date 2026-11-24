@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2026 BitCodersNN
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:unn_mobile/core/misc/platform_utils.dart';
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
 import 'package:unn_mobile/core/services/interfaces/common/palette_link_platform.dart';
 
@@ -14,14 +14,9 @@ class PaletteLinkPlatformImpl implements PaletteLinkPlatform {
 
   PaletteLinkPlatformImpl(this._logger);
 
-  bool get _isSupported =>
-      !kIsWeb &&
-      (defaultTargetPlatform == TargetPlatform.android ||
-          defaultTargetPlatform == TargetPlatform.iOS);
-
   @override
   Future<String?> consumeInitialLink() async {
-    if (!_isSupported) {
+    if (!isMobilePlatform) {
       return null;
     }
     try {
@@ -36,18 +31,18 @@ class PaletteLinkPlatformImpl implements PaletteLinkPlatform {
 
   @override
   void setOnLink(ValueChanged<String>? onLink) {
-    if (!_isSupported) {
+    if (!isMobilePlatform) {
       return;
     }
     _channel.setMethodCallHandler(
       onLink == null
           ? null
           : (call) async {
-              if (call.method == 'openPaletteLink') {
-                final link = call.arguments as String?;
-                if (link != null) {
-                  onLink(link);
-                }
+              if (call.method != 'openPaletteLink') {
+                throw MissingPluginException();
+              }
+              if (call.arguments case final String link) {
+                onLink(link);
               }
             },
     );
@@ -55,7 +50,7 @@ class PaletteLinkPlatformImpl implements PaletteLinkPlatform {
 
   @override
   void dispose() {
-    if (!_isSupported) {
+    if (!isMobilePlatform) {
       return;
     }
     _channel.setMethodCallHandler(null);

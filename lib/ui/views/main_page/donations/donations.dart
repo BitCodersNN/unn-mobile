@@ -1,30 +1,33 @@
 // SPDX-License-Identifier: Apache-2.0
-// Copyright 2025 BitCodersNN
-
-import 'dart:convert';
+// Copyright 2026 BitCodersNN
 
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:unn_mobile/core/constants/api/path.dart';
-import 'package:unn_mobile/core/constants/api/protocol_type.dart';
-import 'package:unn_mobile/core/misc/app_theme_controller.dart';
+import 'package:unn_mobile/core/viewmodels/main_page/donations/donations_view_model.dart';
+import 'package:unn_mobile/ui/views/base_view.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:webview_flutter_android/webview_flutter_android.dart';
 
-class DonationsScreenView extends StatefulWidget {
+class DonationsScreenView extends StatelessWidget {
   const DonationsScreenView({super.key});
 
   @override
-  State<DonationsScreenView> createState() => _DonationsScreenViewState();
+  Widget build(BuildContext context) => BaseView<DonationsViewModel>(
+    onDispose: (model) => model.dispose(),
+    builder: (context, model, child) => _DonationsWebViewHost(model: model),
+  );
 }
 
-class _DonationsScreenViewState extends State<DonationsScreenView> {
+class _DonationsWebViewHost extends StatefulWidget {
+  final DonationsViewModel model;
+
+  const _DonationsWebViewHost({required this.model});
+
+  @override
+  State<_DonationsWebViewHost> createState() => _DonationsWebViewHostState();
+}
+
+class _DonationsWebViewHostState extends State<_DonationsWebViewHost> {
   late final WebViewController controller;
-  Uri? _pageUri;
-  bool _pageLoaded = false;
-  String _pageTheme = 'light';
-  late String _pagePalette;
-  Map<String, String> _pageColors = {};
 
   @override
   void initState() {
@@ -35,13 +38,13 @@ class _DonationsScreenViewState extends State<DonationsScreenView> {
       ..enableZoom(false)
       ..setNavigationDelegate(
         NavigationDelegate(
-          onPageStarted: (_) => _pageLoaded = false,
+          onPageStarted: (_) => widget.model.onPageStarted(),
           onPageFinished: (_) {
             if (!mounted) {
               return;
             }
-            _pageLoaded = true;
-            _updatePageTheme();
+            widget.model.onPageFinished();
+            controller.runJavaScript(widget.model.themeUpdateScript);
           },
         ),
       );
@@ -56,46 +59,25 @@ class _DonationsScreenViewState extends State<DonationsScreenView> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     final scheme = Theme.of(context).colorScheme;
-    final themeController = context.read<AppThemeController>();
-    _pageTheme = scheme.brightness == Brightness.dark ? 'dark' : 'light';
-    _pagePalette = scheme.brightness == Brightness.dark
-        ? themeController.darkTheme.name
-        : themeController.lightTheme.name;
-    String hex(Color color) =>
-        (color.toARGB32() & 0x00ffffff).toRadixString(16).padLeft(6, '0');
-    _pageColors = {
-      'background': hex(scheme.surface),
-      'surface': hex(scheme.surfaceContainerLow),
-      'foreground': hex(scheme.onSurface),
-      'muted': hex(scheme.onSurfaceVariant),
-      'primary': hex(scheme.primary),
-      'outline': hex(scheme.outlineVariant),
-    };
     controller.setBackgroundColor(scheme.surface);
-    if (_pageUri == null) {
-      final baseUri = Uri.parse(
-        '${ProtocolType.https.name}://${ApiPath.donation}',
-      );
-      _pageUri = baseUri.replace(
-        queryParameters: {
-          ...baseUri.queryParameters,
-          'embedded': '1',
-          'theme': _pageTheme,
-          'palette': _pagePalette,
-          ..._pageColors,
-        },
-      );
-      controller.loadRequest(_pageUri!);
-    } else if (_pageLoaded) {
-      _updatePageTheme();
-    }
-  }
-
-  void _updatePageTheme() {
-    controller.runJavaScript(
-      'window.setSupportTheme?.(${jsonEncode(_pageTheme)}, '
-      '${jsonEncode(_pageColors)}, ${jsonEncode(_pagePalette)});',
+    final action = widget.model.updateTheme(
+      brightness: scheme.brightness,
+      colors: DonationsThemeColors(
+        background: scheme.surface,
+        surface: scheme.surfaceContainerLow,
+        foreground: scheme.onSurface,
+        muted: scheme.onSurfaceVariant,
+        primary: scheme.primary,
+        outline: scheme.outlineVariant,
+      ),
     );
+    final initialUri = action.initialUri;
+    final script = action.script;
+    if (initialUri != null) {
+      controller.loadRequest(initialUri);
+    } else if (script != null) {
+      controller.runJavaScript(script);
+    }
   }
 
   @override

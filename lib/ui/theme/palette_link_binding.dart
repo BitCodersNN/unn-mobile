@@ -4,13 +4,13 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:unn_mobile/core/misc/app_theme_controller.dart';
 import 'package:unn_mobile/core/models/common/custom_palette_codec.dart';
+import 'package:unn_mobile/core/services/interfaces/common/app_theme_controller.dart';
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
 import 'package:unn_mobile/core/services/interfaces/common/palette_link_platform.dart';
 import 'package:unn_mobile/ui/main_page_locations.dart';
 import 'package:unn_mobile/ui/router.dart';
-import 'package:unn_mobile/ui/views/main_page/settings/widgets/custom_palette_import_dialog.dart';
+import 'package:unn_mobile/ui/widgets/dialogs/custom_palette_import_dialog.dart';
 
 class PaletteLinkBinding with WidgetsBindingObserver {
   final PaletteLinkPlatform _platform;
@@ -57,6 +57,11 @@ class PaletteLinkBinding with WidgetsBindingObserver {
     }
     final decoded = CustomPaletteCodec.tryDecodeLink(rawUrl);
     if (decoded == null) {
+      _logger.logError(
+        const FormatException('Invalid palette link'),
+        StackTrace.current,
+        information: [rawUrl],
+      );
       return;
     }
     _pendingDecoded = decoded;
@@ -94,6 +99,7 @@ class PaletteLinkBinding with WidgetsBindingObserver {
     final navContext =
         _router.router.routerDelegate.navigatorKey.currentContext;
     if (navContext == null || !navContext.mounted) {
+      _trySchedulePresentation();
       return;
     }
     final decoded = _pendingDecoded!;

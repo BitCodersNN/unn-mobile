@@ -3,9 +3,9 @@
 
 import 'dart:convert';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:unn_mobile/core/misc/json/json_utils.dart';
+import 'package:unn_mobile/core/misc/platform_utils.dart';
 import 'package:unn_mobile/core/models/schedule_widget/schedule_widget_data.dart';
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
 import 'package:unn_mobile/core/services/interfaces/schedule_widget/schedule_widget_platform.dart';
@@ -19,10 +19,7 @@ class ScheduleWidgetPlatformImpl implements ScheduleWidgetPlatform {
   ScheduleWidgetPlatformImpl(this._logger);
 
   @override
-  bool get isSupported =>
-      !kIsWeb &&
-      (defaultTargetPlatform == TargetPlatform.android ||
-          defaultTargetPlatform == TargetPlatform.iOS);
+  bool get isSupported => isMobilePlatform;
 
   @override
   Future<ScheduleWidgetData?> read() async {

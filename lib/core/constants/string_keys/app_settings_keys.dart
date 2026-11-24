@@ -5,8 +5,8 @@ class AppSettingsKeys {
   static const String themeMode = 'themeMode';
   static const String darkTheme = 'darkTheme';
   static const String lightTheme = 'lightTheme';
-  static const String customLightPalette = 'custom_light_palette';
-  static const String customDarkPalette = 'custom_dark_palette';
+  static const String customLightPalette = 'customLightPalette';
+  static const String customDarkPalette = 'customDarkPalette';
   static const String tabBarPaths = 'tabBarPaths';
   static const String moreMenuPaths = 'moreMenuPaths';
   static const String vibrationEnabled = 'vibrationEnabled';
