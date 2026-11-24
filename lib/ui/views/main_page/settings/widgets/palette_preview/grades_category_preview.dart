@@ -93,10 +93,7 @@ class GradesCategoryPreview extends StatelessWidget {
                             ),
                           ),
                           const SizedBox(width: 8),
-                          MiniMarkBadge(
-                            label: entry.$3,
-                            color: markColor,
-                          ),
+                          MiniMarkBadge(label: entry.$3, color: markColor),
                         ],
                       ),
                     ),

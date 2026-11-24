@@ -217,10 +217,7 @@ abstract final class AppTheme {
     AppDarkTheme theme, {
     CustomPaletteConfig? custom,
   }) => switch (theme) {
-    AppDarkTheme.custom => _customThemeFor(
-      custom,
-      brightness: Brightness.dark,
-    ),
+    AppDarkTheme.custom => _customThemeFor(custom, brightness: Brightness.dark),
     _ => _themeFor(theme, darkPalettes),
   };
 

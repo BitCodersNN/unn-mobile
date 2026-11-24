@@ -153,11 +153,7 @@ class _WidgetHeader extends StatelessWidget {
       children: [
         Row(
           children: [
-            Icon(
-              Icons.calendar_today_rounded,
-              size: 11,
-              color: colors.primary,
-            ),
+            Icon(Icons.calendar_today_rounded, size: 11, color: colors.primary),
             const SizedBox(width: 4),
             Text(
               'Расписание',

@@ -165,7 +165,8 @@ class CustomPaletteConfig {
     );
   }
 
-  static Color _opaqueColor(int value) => Color(0xFF000000 | (value & 0xFFFFFF));
+  static Color _opaqueColor(int value) =>
+      Color(0xFF000000 | (value & 0xFFFFFF));
 
   @override
   bool operator ==(Object other) =>

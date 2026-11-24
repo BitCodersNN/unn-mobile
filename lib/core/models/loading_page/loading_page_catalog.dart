@@ -62,9 +62,7 @@ class LoadingPageCatalog {
       return LoadingPageCatalog._(
         defaults: _parseGroup(json[_LoadingPageCatalogJsonKeys.defaults]),
         holidays: _parseGroup(json[_LoadingPageCatalogJsonKeys.holidays]),
-        facultyDays: _parseGroup(
-          json[_LoadingPageCatalogJsonKeys.facultyDays],
-        ),
+        facultyDays: _parseGroup(json[_LoadingPageCatalogJsonKeys.facultyDays]),
       );
     }
 

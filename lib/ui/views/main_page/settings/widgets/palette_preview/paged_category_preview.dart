@@ -9,10 +9,7 @@ class PreviewPage {
   final String title;
   final Widget child;
 
-  const PreviewPage({
-    required this.title,
-    required this.child,
-  });
+  const PreviewPage({required this.title, required this.child});
 }
 
 class PagedCategoryPreview extends StatefulWidget {
@@ -85,9 +82,7 @@ class _PagedCategoryPreviewState extends State<PagedCategoryPreview> {
                 setState(() => _currentPage = index);
               }
             },
-            children: [
-              for (final page in widget.pages) page.child,
-            ],
+            children: [for (final page in widget.pages) page.child],
           ),
         ),
         PreviewStatusFooter(

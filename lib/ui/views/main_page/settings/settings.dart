@@ -549,8 +549,7 @@ class _ScheduleSection extends StatelessWidget {
             SettingsActionTile(
               icon: Icons.alarm_outlined,
               title: 'Точное время обновления',
-              subtitle:
-                  'Без разрешения системы начало и завершение могут задерживаться',
+              subtitle: 'Без разрешения системы начало и завершение могут задерживаться',
               onTap: () => model.openActivitySettings(exactAlarms: true),
             ),
           if (enabled && isIOS) const _IosActivityNotice(),

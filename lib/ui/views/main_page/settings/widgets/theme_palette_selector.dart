@@ -190,48 +190,48 @@ class _PaletteOption extends StatelessWidget {
         color: theme.colorScheme.onSurfaceVariant,
       ),
     ),
-    _PaletteOptionMode.customConfigured || _PaletteOptionMode.standard =>
-      Container(
-        height: 92,
-        padding: const EdgeInsets.all(12),
-        color: colors.surface,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Align(
-              alignment: Alignment.centerRight,
-              child: Icon(
-                selected ? Icons.check_circle_rounded : Icons.circle_outlined,
-                color: selected ? colors.primary : colors.outline,
-                size: 20,
-              ),
+    _PaletteOptionMode.customConfigured ||
+    _PaletteOptionMode.standard => Container(
+      height: 92,
+      padding: const EdgeInsets.all(12),
+      color: colors.surface,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Align(
+            alignment: Alignment.centerRight,
+            child: Icon(
+              selected ? Icons.check_circle_rounded : Icons.circle_outlined,
+              color: selected ? colors.primary : colors.outline,
+              size: 20,
             ),
-            const SizedBox(height: 8),
-            Expanded(
-              child: mode == _PaletteOptionMode.customConfigured
-                  ? Center(
-                      child: Icon(
-                        Icons.settings_rounded,
-                        size: 28,
-                        color: colors.primary,
-                      ),
-                    )
-                  : Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: colors.surfaceContainerHigh,
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      alignment: Alignment.centerLeft,
-                      child: FractionallySizedBox(
-                        widthFactor: 0.65,
-                        child: Container(height: 4, color: colors.primary),
-                      ),
+          ),
+          const SizedBox(height: 8),
+          Expanded(
+            child: mode == _PaletteOptionMode.customConfigured
+                ? Center(
+                    child: Icon(
+                      Icons.settings_rounded,
+                      size: 28,
+                      color: colors.primary,
                     ),
-            ),
-          ],
-        ),
+                  )
+                : Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: colors.surfaceContainerHigh,
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    alignment: Alignment.centerLeft,
+                    child: FractionallySizedBox(
+                      widthFactor: 0.65,
+                      child: Container(height: 4, color: colors.primary),
+                    ),
+                  ),
+          ),
+        ],
       ),
+    ),
   };
 }

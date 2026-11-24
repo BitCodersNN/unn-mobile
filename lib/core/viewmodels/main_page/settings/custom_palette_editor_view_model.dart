@@ -7,12 +7,11 @@ import 'package:unn_mobile/core/constants/regular_expressions.dart';
 import 'package:unn_mobile/core/models/common/custom_palette_config.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
 
-typedef PaletteSlotColorResolver =
-    Color Function(
-      CustomPaletteConfig config,
-      Brightness brightness,
-      PaletteColorSlot slot,
-    );
+typedef PaletteSlotColorResolver = Color Function(
+  CustomPaletteConfig config,
+  Brightness brightness,
+  PaletteColorSlot slot,
+);
 
 class CustomPaletteEditorViewModel extends BaseViewModel {
   final Brightness brightness;
@@ -42,8 +41,7 @@ class CustomPaletteEditorViewModel extends BaseViewModel {
       .toList(growable: false);
 
   Color colorForSlot(PaletteColorSlot slot) =>
-      _config.overrideOf(slot) ??
-      _slotColorResolver(_config, brightness, slot);
+      _config.overrideOf(slot) ?? _slotColorResolver(_config, brightness, slot);
 
   Color get currentColor => colorForSlot(_selectedSlot);
 

@@ -425,9 +425,7 @@ class HighlightedSlotText extends StatelessWidget {
     }
     return SlotHighlight(
       active: enabled && selectedSlot == slot,
-      borderRadius: BorderRadius.circular(
-        MiniPreviewStyle.textHighlightRadius,
-      ),
+      borderRadius: BorderRadius.circular(MiniPreviewStyle.textHighlightRadius),
       onTap: () => onSlotSelected(slot),
       child: child,
     );

@@ -140,10 +140,7 @@ class _StaticCategoryPreview extends StatelessWidget {
           child: child,
         ),
       ),
-      PreviewStatusFooter(
-        slotLabel: slotLabel,
-        slotColor: slotColor,
-      ),
+      PreviewStatusFooter(slotLabel: slotLabel, slotColor: slotColor),
     ],
   );
 }
