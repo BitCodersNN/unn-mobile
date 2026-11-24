@@ -87,8 +87,8 @@ struct ScheduleWidgetConfiguration: WidgetConfigurationIntent {
         "Выберите палитру, размер текста, количество занятий и информацию о них. Если места мало, занятий будет меньше."
     }
 
-    @Parameter(title: "Палитра виджета", default: .app)
-    var palette: SchedulePaletteEntity
+    @Parameter(title: "Палитра виджета")
+    var palette: SchedulePaletteEntity?
 
     @Parameter(title: "Размер текста", default: .normal)
     var textSize: ScheduleWidgetTextSize
@@ -118,7 +118,7 @@ struct ScheduleWidgetConfiguration: WidgetConfigurationIntent {
             maxLessons: lessonLimit.count,
             showLocation: showLocation,
             showLecturer: showLecturer,
-            paletteOverride: palette.override
+            paletteOverride: palette?.override
         )
     }
 }

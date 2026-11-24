@@ -20,12 +20,6 @@ import 'package:unn_mobile/ui/widgets/wide_button.dart';
 
 enum _InputType { login, password }
 
-class _MenuItemValues {
-  static const settings = 'settings';
-  static const about = 'about';
-  static const support = 'support';
-}
-
 class AuthPage extends StatefulWidget {
   const AuthPage({super.key});
 
@@ -133,31 +127,23 @@ class _AuthPageState extends State<AuthPage> {
           title: const Text(_title),
           actions: [
             MenuButton(
-              enabled: true,
-              items: const [
-                SideMenuItem(
+              entries: [
+                AppMenuAction(
                   title: 'Настройки',
-                  value: _MenuItemValues.settings,
+                  onSelected: () =>
+                      GoRouter.of(context).go('$authPageRoute/$settingsPath'),
                 ),
-                SideMenuItem(
+                AppMenuAction(
                   title: 'Поддержать',
-                  value: _MenuItemValues.support,
+                  onSelected: () =>
+                      GoRouter.of(context).go('$authPageRoute/$supportPath'),
                 ),
-                SideMenuItem(title: 'О нас', value: _MenuItemValues.about),
+                AppMenuAction(
+                  title: 'О нас',
+                  onSelected: () =>
+                      GoRouter.of(context).go('$authPageRoute/$aboutPath'),
+                ),
               ],
-              onSelected: (item) {
-                switch (item) {
-                  case _MenuItemValues.settings:
-                    GoRouter.of(context).go('$authPageRoute/$settingsPath');
-                    break;
-                  case _MenuItemValues.about:
-                    GoRouter.of(context).go('$authPageRoute/$aboutPath');
-                    break;
-                  case _MenuItemValues.support:
-                    GoRouter.of(context).go('$authPageRoute/$supportPath');
-                    break;
-                }
-              },
             ),
           ],
         ),

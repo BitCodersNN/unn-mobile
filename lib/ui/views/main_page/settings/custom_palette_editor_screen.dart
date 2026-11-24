@@ -11,23 +11,10 @@ import 'package:unn_mobile/ui/unn_mobile_colors.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
 import 'package:unn_mobile/ui/views/main_page/settings/widgets/hsv_color_picker.dart';
 import 'package:unn_mobile/ui/views/main_page/settings/widgets/palette_live_preview.dart';
+import 'package:unn_mobile/ui/widgets/menu_button.dart';
 import 'package:unn_mobile/ui/widgets/segmented_tab_bar.dart';
 
 const double _editorMaxWidth = 640;
-
-sealed class _PresetMenuAction {
-  const _PresetMenuAction();
-}
-
-final class _ApplyPresetAction extends _PresetMenuAction {
-  final ThemeData theme;
-
-  const _ApplyPresetAction(this.theme);
-}
-
-final class _ResetAllAction extends _PresetMenuAction {
-  const _ResetAllAction();
-}
 
 class CustomPaletteEditorScreen extends StatefulWidget {
   final Brightness brightness;
@@ -98,10 +85,30 @@ class _CustomPaletteEditorScreenState extends State<CustomPaletteEditorScreen> {
           backgroundColor: colors.surface,
           scrolledUnderElevation: 0,
           actions: [
-            _PresetMenuButton(
-              builtInPresets: widget.builtInPresets,
-              onPresetSelected: model.applyPreset,
-              onResetAll: model.resetAll,
+            MenuButton(
+              entries: [
+                for (final preset in widget.builtInPresets)
+                  AppMenuAction(
+                    title: preset.label,
+                    onSelected: () => model.applyPreset(
+                      AppTheme.configFromTheme(preset.theme),
+                    ),
+                    leading: _PresetColorDot(
+                      color: preset.theme.colorScheme.primary,
+                    ),
+                  ),
+                const AppMenuDivider(),
+                AppMenuAction(
+                  title: 'Сбросить всё',
+                  onSelected: model.resetAll,
+                  icon: Icons.restart_alt_rounded,
+                  isDestructive: true,
+                ),
+              ],
+              icon: Icons.palette_outlined,
+              iconColor: colors.onSurfaceVariant,
+              tooltip: 'Пресеты и сброс',
+              sheetTitle: 'Пресеты и сброс',
             ),
           ],
         ),
@@ -190,65 +197,17 @@ class _CustomPaletteEditorScreenState extends State<CustomPaletteEditorScreen> {
   );
 }
 
-class _PresetMenuButton extends StatelessWidget {
-  final List<ThemePalette<Enum>> builtInPresets;
-  final ValueChanged<CustomPaletteConfig> onPresetSelected;
-  final VoidCallback onResetAll;
+class _PresetColorDot extends StatelessWidget {
+  final Color color;
 
-  const _PresetMenuButton({
-    required this.builtInPresets,
-    required this.onPresetSelected,
-    required this.onResetAll,
-  });
+  const _PresetColorDot({required this.color});
 
   @override
-  Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
-
-    return PopupMenuButton<_PresetMenuAction>(
-      tooltip: 'Пресеты и сброс',
-      icon: Icon(Icons.palette_outlined, color: colors.onSurfaceVariant),
-      onSelected: (action) {
-        switch (action) {
-          case _ApplyPresetAction(:final theme):
-            onPresetSelected(AppTheme.configFromTheme(theme));
-          case _ResetAllAction():
-            onResetAll();
-        }
-      },
-      itemBuilder: (context) => [
-        for (final preset in builtInPresets)
-          PopupMenuItem<_PresetMenuAction>(
-            value: _ApplyPresetAction(preset.theme),
-            child: Row(
-              children: [
-                Container(
-                  width: 14,
-                  height: 14,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: preset.theme.colorScheme.primary,
-                  ),
-                ),
-                const SizedBox(width: 10),
-                Text(preset.label),
-              ],
-            ),
-          ),
-        const PopupMenuDivider(),
-        const PopupMenuItem<_PresetMenuAction>(
-          value: _ResetAllAction(),
-          child: Row(
-            children: [
-              Icon(Icons.restart_alt_rounded, size: 18),
-              SizedBox(width: 10),
-              Text('Сбросить всё'),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
+  Widget build(BuildContext context) => Container(
+    width: 14,
+    height: 14,
+    decoration: BoxDecoration(shape: BoxShape.circle, color: color),
+  );
 }
 
 class _CategorySlotSelector extends StatelessWidget {

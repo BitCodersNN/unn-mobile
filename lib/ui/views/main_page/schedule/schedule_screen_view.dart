@@ -119,19 +119,15 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView> {
                       ),
                     if (!_search.isOpen)
                       MenuButton(
-                        enabled: online && model.canExport,
-                        items: const [
-                          SideMenuItemWithIcon(
-                            value: 'calendar',
-                            icon: Icons.calendar_month,
+                        entries: [
+                          AppMenuAction(
                             title: 'Экспорт в календарь',
+                            onSelected: () =>
+                                unawaited(runExportFlow(context, model)),
+                            icon: Icons.calendar_month,
+                            enabled: online && model.canExport,
                           ),
                         ],
-                        onSelected: (value) {
-                          if (value == 'calendar') {
-                            runExportFlow(context, model);
-                          }
-                        },
                       ),
                   ],
                   bottom: PreferredSize(
