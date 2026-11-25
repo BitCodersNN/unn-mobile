@@ -274,30 +274,39 @@ class _PalettePreviewCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: colors.outlineVariant),
       ),
-      child: Row(
-        children: [
-          for (var i = 0; i < swatches.length; i++) ...[
-            if (i > 0) const SizedBox(width: 6),
-            Container(
-              width: 18,
-              height: 18,
-              decoration: BoxDecoration(
-                color: swatches[i],
-                shape: BoxShape.circle,
-                border: Border.all(color: colors.outlineVariant),
+      child: Center(
+        child: IntrinsicWidth(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  for (var i = 0; i < swatches.length; i++) ...[
+                    if (i > 0) const SizedBox(width: 8),
+                    Container(
+                      width: 20,
+                      height: 20,
+                      decoration: BoxDecoration(
+                        color: swatches[i],
+                        shape: BoxShape.circle,
+                        border: Border.all(color: colors.outlineVariant),
+                      ),
+                    ),
+                  ],
+                ],
               ),
-            ),
-          ],
-          const SizedBox(width: 10),
-          Expanded(
-            child: Text(
-              'Палитра распознана',
-              style: Theme.of(context).textTheme.bodySmall
-                  ?.copyWith(color: colors.onSurface),
-              overflow: TextOverflow.ellipsis,
-            ),
+              const SizedBox(height: 8),
+              Text(
+                'Палитра распознана',
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.bodySmall
+                    ?.copyWith(color: colors.onSurface),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
