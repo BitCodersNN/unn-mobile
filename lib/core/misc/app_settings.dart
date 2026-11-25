@@ -53,7 +53,10 @@ class AppSettings {
       value: value.toString(),
     );
     _showTabBarDate.value = value;
+    optionsSaved.broadcast();
   }
+
+  static void resetShowTabBarDate() => _showTabBarDate.value = true;
 
   static Future<void> updateTabBarPaths(List<String> paths) async {
     final normalized = TabBarPreferences.normalize(paths);

@@ -166,15 +166,13 @@ class AppRouter extends ChangeNotifier {
           name: route.pageTitle,
           pageBuilder: (context, state) => NoTransitionPage(
             key: ValueKey(route.pagePath),
-            child: MainPageTabScope(
-              title: route.pageTitle,
-              showDate: route.pagePath == MainPagePaths.more
-                  ? null
-                  : AppSettings.showTabBarDate,
-              child: Builder(
-                builder: (context) => route.builder(context, state),
-              ),
-            ),
+            child: route.pagePath == MainPagePaths.more
+                ? route.builder(context, state)
+                : MainPageTabScope(
+                    title: route.pageTitle,
+                    showDate: AppSettings.showTabBarDate,
+                    child: route.builder(context, state),
+                  ),
           ),
           routes: _buildSubroutes(route.subroutes),
         ),

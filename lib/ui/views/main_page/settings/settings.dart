@@ -212,14 +212,11 @@ class _SettingsScreenViewState extends State<SettingsScreenView>
     SettingsScreenViewModel model,
     bool value,
   ) async {
-    try {
-      await model.updateShowTabBarDate(value: value);
-    } catch (_) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Не удалось сохранить настройку даты')),
-        );
-      }
+    final saved = await model.updateShowTabBarDate(value: value);
+    if (!saved && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Не удалось сохранить настройку даты')),
+      );
     }
   }
 
