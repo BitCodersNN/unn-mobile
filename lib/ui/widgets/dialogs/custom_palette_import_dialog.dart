@@ -292,9 +292,8 @@ class _PalettePreviewCard extends StatelessWidget {
           Expanded(
             child: Text(
               'Палитра распознана',
-              style: Theme.of(
-                context,
-              ).textTheme.bodySmall?.copyWith(color: colors.onSurface),
+              style: Theme.of(context).textTheme.bodySmall
+                  ?.copyWith(color: colors.onSurface),
               overflow: TextOverflow.ellipsis,
             ),
           ),
