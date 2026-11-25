@@ -2,11 +2,11 @@
 // Copyright 2026 BitCodersNN
 
 import 'dart:convert';
+import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
 import 'package:unn_mobile/core/constants/palette_codec_constants.dart';
 import 'package:unn_mobile/core/constants/regular_expressions.dart';
-import 'package:unn_mobile/core/misc/json/json_utils.dart';
 import 'package:unn_mobile/core/models/common/custom_palette_config.dart';
 
 @immutable
@@ -28,18 +28,46 @@ class DecodedPaletteLink {
 }
 
 abstract final class _QueryKeys {
-  static const brightness = 'b';
   static const config = 'c';
-}
-
-abstract final class _BrightnessValues {
-  static const light = 'light';
-  static const dark = 'dark';
 }
 
 abstract final class _UriParts {
   static const httpsScheme = 'https';
   static const deepLinkHost = 'import';
+}
+
+abstract final class _BinaryFormat {
+  static const version = 1;
+  static const versionMask = 0x3F;
+  static const hasBrightnessFlag = 0x40;
+  static const darkFlag = 0x80;
+  static const headerLength = 10;
+  static const bytesPerColor = 3;
+
+  // Stable bit order for binary serialization; append new slots at the end.
+  static const List<PaletteColorSlot> overrideSlots = [
+    PaletteColorSlot.surface,
+    PaletteColorSlot.cardSurface,
+    PaletteColorSlot.importantPostHighlight,
+    PaletteColorSlot.onSurface,
+    PaletteColorSlot.onSurfaceVariant,
+    PaletteColorSlot.outlineVariant,
+    PaletteColorSlot.wideButtonBottom,
+    PaletteColorSlot.subjectLecture,
+    PaletteColorSlot.subjectPractice,
+    PaletteColorSlot.subjectLab,
+    PaletteColorSlot.subjectExam,
+    PaletteColorSlot.subjectConsult,
+    PaletteColorSlot.subjectUnknown,
+    PaletteColorSlot.markExcellent,
+    PaletteColorSlot.markGood,
+    PaletteColorSlot.markSatisfactory,
+    PaletteColorSlot.markUnsatisfactory,
+    PaletteColorSlot.markCredited,
+    PaletteColorSlot.markNoShow,
+    PaletteColorSlot.shimmerBase,
+    PaletteColorSlot.shimmerHighlight,
+  ];
 }
 
 abstract final class CustomPaletteCodec {
@@ -50,22 +78,55 @@ abstract final class CustomPaletteCodec {
   static const deepLinkScheme = PaletteCodecConstants.deepLinkScheme;
   static const _maxLength = 8192;
 
-  static String encode(CustomPaletteConfig config) =>
-      '$prefix${_encodePayload(config)}';
+  static String encode(CustomPaletteConfig config, {Brightness? brightness}) =>
+      '$prefix${_encodePayload(config, brightness: brightness)}';
 
-  static String _encodePayload(CustomPaletteConfig config) {
-    final jsonText = jsonEncode(config.toJson());
-    return base64UrlEncode(utf8.encode(jsonText)).replaceAll('=', '');
+  static String _encodePayload(
+    CustomPaletteConfig config, {
+    Brightness? brightness,
+  }) {
+    var mask = 0;
+    final orderedOverrides = <Color>[];
+    for (var i = 0; i < _BinaryFormat.overrideSlots.length; i++) {
+      final color = config.overrides[_BinaryFormat.overrideSlots[i]];
+      if (color != null) {
+        mask |= 1 << i;
+        orderedOverrides.add(color);
+      }
+    }
+
+    final bytes = Uint8List(
+      _BinaryFormat.headerLength +
+          orderedOverrides.length * _BinaryFormat.bytesPerColor,
+    );
+    var header = _BinaryFormat.version;
+    if (brightness != null) {
+      header |= _BinaryFormat.hasBrightnessFlag;
+      if (brightness == Brightness.dark) {
+        header |= _BinaryFormat.darkFlag;
+      }
+    }
+    bytes[0] = header;
+    _writeRgb(bytes, 1, config.primary);
+    _writeRgb(bytes, 4, config.secondary);
+    bytes[7] = (mask >> 16) & 0xFF;
+    bytes[8] = (mask >> 8) & 0xFF;
+    bytes[9] = mask & 0xFF;
+
+    var offset = _BinaryFormat.headerLength;
+    for (final color in orderedOverrides) {
+      _writeRgb(bytes, offset, color);
+      offset += _BinaryFormat.bytesPerColor;
+    }
+
+    return base64UrlEncode(bytes).replaceAll('=', '');
   }
 
   static Uri buildShareUri(
     CustomPaletteConfig config, {
     required Brightness brightness,
   }) => Uri.https(shareHost, sharePath, {
-    _QueryKeys.brightness: brightness == Brightness.dark
-        ? _BrightnessValues.dark
-        : _BrightnessValues.light,
-    _QueryKeys.config: _encodePayload(config),
+    _QueryKeys.config: _encodePayload(config, brightness: brightness),
   });
 
   static CustomPaletteConfig? tryDecode(String raw) =>
@@ -89,15 +150,10 @@ abstract final class CustomPaletteCodec {
       if (payload == null) {
         continue;
       }
-      final config = _decodePayload(payload);
-      if (config != null) {
-        return DecodedPaletteLink(config: config);
+      final decoded = _decodePayload(payload);
+      if (decoded != null) {
+        return decoded;
       }
-    }
-
-    if (trimmed.startsWith('{')) {
-      final config = CustomPaletteConfig.tryFromJson(tryDecodeJson(trimmed));
-      return config == null ? null : DecodedPaletteLink(config: config);
     }
 
     return null;
@@ -150,15 +206,7 @@ abstract final class CustomPaletteCodec {
     if (payload == null || payload.isEmpty) {
       return null;
     }
-    final config = _decodePayload(payload);
-    if (config == null) {
-      return null;
-    }
-    final brightness = _parseBrightness(
-      uri.queryParameters[_QueryKeys.brightness] ??
-          fragmentParams[_QueryKeys.brightness],
-    );
-    return DecodedPaletteLink(config: config, brightness: brightness);
+    return _decodePayload(payload);
   }
 
   static bool _isPaletteUri(Uri uri) =>
@@ -170,26 +218,71 @@ abstract final class CustomPaletteCodec {
   static bool _isSharePath(String path) =>
       path == sharePathPrefix || path.startsWith('$sharePathPrefix/');
 
-  static Brightness? _parseBrightness(String? value) => switch (value) {
-    _BrightnessValues.light => Brightness.light,
-    _BrightnessValues.dark => Brightness.dark,
-    _ => null,
-  };
-
-  static CustomPaletteConfig? _decodePayload(String payload) {
+  static DecodedPaletteLink? _decodePayload(String payload) {
     if (payload.isEmpty || payload.length > _maxLength) {
       return null;
     }
     final bytes = _tryDecodeBase64(payload);
-    if (bytes == null) {
+    if (bytes == null || bytes.length < _BinaryFormat.headerLength) {
       return null;
     }
-    final jsonSource = _tryDecodeUtf8(bytes);
-    if (jsonSource == null) {
+    final header = bytes[0];
+    if ((header & _BinaryFormat.versionMask) != _BinaryFormat.version) {
       return null;
     }
-    return CustomPaletteConfig.tryFromJson(tryDecodeJson(jsonSource));
+
+    final brightness = (header & _BinaryFormat.hasBrightnessFlag) == 0
+        ? null
+        : (header & _BinaryFormat.darkFlag) != 0
+        ? Brightness.dark
+        : Brightness.light;
+
+    final primary = _readRgb(bytes, 1);
+    final secondary = _readRgb(bytes, 4);
+    final mask = (bytes[7] << 16) | (bytes[8] << 8) | bytes[9];
+    final slotCount = _BinaryFormat.overrideSlots.length;
+    if ((mask >> slotCount) != 0) {
+      return null;
+    }
+
+    final overrides = <PaletteColorSlot, Color>{};
+    var offset = _BinaryFormat.headerLength;
+    for (var i = 0; i < slotCount; i++) {
+      if ((mask & (1 << i)) != 0) {
+        if (offset + _BinaryFormat.bytesPerColor > bytes.length) {
+          return null;
+        }
+        overrides[_BinaryFormat.overrideSlots[i]] = _readRgb(bytes, offset);
+        offset += _BinaryFormat.bytesPerColor;
+      }
+    }
+    if (offset != bytes.length) {
+      return null;
+    }
+
+    return DecodedPaletteLink(
+      config: CustomPaletteConfig(
+        primary: primary,
+        secondary: secondary,
+        overrides: overrides,
+      ),
+      brightness: brightness,
+    );
   }
+
+  static void _writeRgb(Uint8List bytes, int offset, Color color) {
+    final argb = color.toARGB32();
+    bytes[offset] = (argb >> 16) & 0xFF;
+    bytes[offset + 1] = (argb >> 8) & 0xFF;
+    bytes[offset + 2] = argb & 0xFF;
+  }
+
+  static Color _readRgb(List<int> bytes, int offset) => Color(
+    0xFF000000 |
+        (bytes[offset] << 16) |
+        (bytes[offset + 1] << 8) |
+        bytes[offset + 2],
+  );
 
   static Map<String, String> _trySplitQueryString(String query) {
     try {
@@ -202,14 +295,6 @@ abstract final class CustomPaletteCodec {
   static List<int>? _tryDecodeBase64(String payload) {
     try {
       return base64Url.decode(base64Url.normalize(payload));
-    } on FormatException {
-      return null;
-    }
-  }
-
-  static String? _tryDecodeUtf8(List<int> bytes) {
-    try {
-      return utf8.decode(bytes);
     } on FormatException {
       return null;
     }
