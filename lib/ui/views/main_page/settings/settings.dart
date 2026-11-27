@@ -17,6 +17,7 @@ import 'package:unn_mobile/ui/views/main_page/settings/widgets/settings_minutes_
 import 'package:unn_mobile/ui/views/main_page/settings/widgets/settings_section.dart';
 import 'package:unn_mobile/ui/views/main_page/settings/widgets/settings_tile.dart';
 import 'package:unn_mobile/ui/views/main_page/tab_bar/tab_bar_customization_sheet.dart';
+import 'package:unn_mobile/ui/views/main_page/widgets/main_page_app_bar.dart';
 
 class SettingsScreenView extends StatefulWidget {
   final bool hasAccount;
@@ -207,6 +208,18 @@ class _SettingsScreenViewState extends State<SettingsScreenView>
     }
   }
 
+  Future<void> _updateShowTabBarDate(
+    SettingsScreenViewModel model,
+    bool value,
+  ) async {
+    final saved = await model.updateShowTabBarDate(value: value);
+    if (!saved && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Не удалось сохранить настройку даты')),
+      );
+    }
+  }
+
   Future<void> _clearCache(SettingsScreenViewModel model) async {
     await model.clearCache();
     if (mounted) {
@@ -238,11 +251,10 @@ class _SettingsScreenViewState extends State<SettingsScreenView>
     final colors = theme.colorScheme;
     return Scaffold(
       backgroundColor: colors.surfaceContainerLow,
-      appBar: AppBar(
-        title: const Text('Настройки'),
-        centerTitle: false,
+      appBar: buildMainPageAppBar(
+        context,
+        title: 'Настройки',
         backgroundColor: colors.surfaceContainerLow,
-        scrolledUnderElevation: 0,
       ),
       body: SafeArea(
         top: false,
@@ -268,20 +280,28 @@ class _SettingsScreenViewState extends State<SettingsScreenView>
                         value: model.vibrationEnabled,
                         onChanged: (value) => model.vibrationEnabled = value,
                       ),
+                      if (widget.hasAccount)
+                        SettingsSwitchTile(
+                          icon: Icons.today_outlined,
+                          title: 'Дата в заголовке',
+                          subtitle: 'Показывать дату на вкладках нижнего меню',
+                          value: model.showTabBarDate,
+                          onChanged: (value) =>
+                              unawaited(_updateShowTabBarDate(model, value)),
+                        ),
                       SettingsActionTile(
                         icon: Icons.app_settings_alt_outlined,
                         title: 'Системные настройки приложения',
                         subtitle: 'Разрешения, уведомления и другие параметры',
                         onTap: () => _openSystemAppSettings(model),
                       ),
-                      if (widget.hasAccount) ...[
+                      if (widget.hasAccount)
                         SettingsActionTile(
                           icon: Icons.tune_rounded,
                           title: 'Быстрый доступ',
                           subtitle: 'Состав и порядок вкладок нижнего меню',
                           onTap: _customizeTabBar,
                         ),
-                      ],
                     ],
                   ),
                   if (widget.hasAccount)
