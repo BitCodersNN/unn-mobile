@@ -21,8 +21,8 @@ import 'package:unn_mobile/core/models/schedule/schedule_cache_key.dart';
 import 'package:unn_mobile/core/models/schedule/schedule_filter.dart';
 import 'package:unn_mobile/core/models/schedule/schedule_search_suggestion_item.dart';
 import 'package:unn_mobile/core/models/schedule/subject.dart';
-import 'package:unn_mobile/core/providers/interfaces/schedule/offline_schedule_provider.dart';
 import 'package:unn_mobile/core/services/interfaces/common/search_id_on_portal_service.dart';
+import 'package:unn_mobile/core/services/interfaces/schedule/offline_schedule_service.dart';
 import 'package:unn_mobile/core/services/interfaces/schedule/schedule_search_history_service.dart';
 import 'package:unn_mobile/core/services/interfaces/schedule/schedule_service.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
@@ -35,7 +35,7 @@ class ScheduleTabViewModel extends BaseViewModel {
   final SearchIdOnPortalService _searchIdService;
   final ScheduleService _scheduleService;
   final ScheduleSearchHistoryService _searchHistoryService;
-  final OfflineScheduleProvider _offlineScheduleProvider;
+  final OfflineScheduleService _offlineScheduleService;
   final LRUCache<ScheduleCacheKey, OfflineSchedule> _cachedSchedules = LRUCache(
     ScheduleCacheLimits.maxEntries,
   );
@@ -73,7 +73,7 @@ class ScheduleTabViewModel extends BaseViewModel {
     this._searchIdService,
     this._scheduleService,
     this._searchHistoryService,
-    this._offlineScheduleProvider,
+    this._offlineScheduleService,
   );
 
   @override
@@ -217,7 +217,7 @@ class ScheduleTabViewModel extends BaseViewModel {
     }
     final data = OfflineSchedule(week, subjects);
     _showSchedule(key, data);
-    await _offlineScheduleProvider.saveSchedule(key, data);
+    await _offlineScheduleService.saveSchedule(key, data);
   }
 
   List<List<Subject>> partitionSchedule(List<Subject> schedule) =>
@@ -258,7 +258,7 @@ class ScheduleTabViewModel extends BaseViewModel {
       try {
         await restoreCacheThenRefresh<OfflineSchedule>(
           readCache: () async =>
-              await _offlineScheduleProvider.getSchedule(key) ?? cached,
+              await _offlineScheduleService.getSchedule(key) ?? cached,
           restore: (data) => _showSchedule(key, data),
           refresh: () => _loadFreshSchedule(week, key, token),
           isCurrent: () => _isCurrent(key, token),

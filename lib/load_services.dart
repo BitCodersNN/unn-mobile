@@ -106,6 +106,7 @@ import 'package:unn_mobile/core/services/implementations/profile/profile_of_curr
 import 'package:unn_mobile/core/services/implementations/profile/profile_search_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/profile/profile_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/schedule/export_schedule_service_impl.dart';
+import 'package:unn_mobile/core/services/implementations/schedule/offline_schedule_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/schedule/schedule_search_history_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/schedule/schedule_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/schedule_widget/schedule_widget_platform_impl.dart';
@@ -160,6 +161,7 @@ import 'package:unn_mobile/core/services/interfaces/profile/profile_of_current_u
 import 'package:unn_mobile/core/services/interfaces/profile/profile_search_service.dart';
 import 'package:unn_mobile/core/services/interfaces/profile/profile_service.dart';
 import 'package:unn_mobile/core/services/interfaces/schedule/export_schedule_service.dart';
+import 'package:unn_mobile/core/services/interfaces/schedule/offline_schedule_service.dart';
 import 'package:unn_mobile/core/services/interfaces/schedule/schedule_search_history_service.dart';
 import 'package:unn_mobile/core/services/interfaces/schedule/schedule_service.dart';
 import 'package:unn_mobile/core/services/interfaces/schedule_widget/schedule_widget_platform.dart';
@@ -418,6 +420,9 @@ void registerDependencies() {
         get<ScheduleWidgetPlatform>(),
       ),
     )
+    ..registerSingleton<OfflineScheduleService>(
+      () => OfflineScheduleServiceImpl(get<OfflineScheduleProvider>()),
+    )
     ..registerSingleton<ScheduleActivitySettingsProvider>(
       () => ScheduleActivitySettingsProviderImpl(get<StorageService>()),
     )
@@ -438,7 +443,7 @@ void registerDependencies() {
         get<AuthDataProvider>(),
         get<ScheduleService>(),
         get<SearchIdOnPortalService>(),
-        get<OfflineScheduleProvider>(),
+        get<OfflineScheduleService>(),
         get<ScheduleWidgetPlatform>(),
         get<LoggerService>(),
       ),
@@ -779,7 +784,7 @@ void registerDependencies() {
         get<ScheduleService>(),
         get<ScheduleSearchHistoryService>(),
         get<ExportScheduleService>(),
-        get<OfflineScheduleProvider>(),
+        get<OfflineScheduleService>(),
       ),
     )
     ..registerDependency(

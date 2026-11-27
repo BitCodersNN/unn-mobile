@@ -15,9 +15,9 @@ import 'package:unn_mobile/core/models/schedule/schedule_filter.dart';
 import 'package:unn_mobile/core/models/schedule/subject.dart';
 import 'package:unn_mobile/core/models/schedule_widget/schedule_widget_configuration.dart';
 import 'package:unn_mobile/core/providers/interfaces/authorisation/auth_data_provider.dart';
-import 'package:unn_mobile/core/providers/interfaces/schedule/offline_schedule_provider.dart';
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
 import 'package:unn_mobile/core/services/interfaces/common/search_id_on_portal_service.dart';
+import 'package:unn_mobile/core/services/interfaces/schedule/offline_schedule_service.dart';
 import 'package:unn_mobile/core/services/interfaces/schedule/schedule_service.dart';
 import 'package:unn_mobile/core/services/interfaces/schedule_widget/schedule_widget_platform.dart';
 import 'package:unn_mobile/core/services/interfaces/schedule_widget/schedule_widget_service.dart';
@@ -29,7 +29,7 @@ class ScheduleWidgetServiceImpl implements ScheduleWidgetService {
   final AuthDataProvider _credentials;
   final ScheduleService _scheduleService;
   final SearchIdOnPortalService _search;
-  final OfflineScheduleProvider _offline;
+  final OfflineScheduleService _offline;
   final ScheduleWidgetPlatform _platform;
   final LoggerService _logger;
 
