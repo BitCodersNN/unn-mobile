@@ -71,16 +71,32 @@ class _FeedItemContextMenuState extends State<FeedItemContextMenu> {
   }
 
   @override
-  Widget build(BuildContext context) => GestureDetector(
-    onLongPress: _showMenu,
-    child: Opacity(
-      opacity: _menuOpen ? 0 : 1,
-      child: RepaintBoundary(
-        key: widget.previewKey ?? _previewKey,
-        child: widget.child,
+  Widget build(BuildContext context) => PopScope(
+    canPop: !_menuOpen,
+    child: GestureDetector(
+      onLongPress: _showMenu,
+      child: Opacity(
+        opacity: _menuOpen ? 0 : 1,
+        child: RepaintBoundary(
+          key: widget.previewKey ?? _previewKey,
+          child: widget.child,
+        ),
       ),
     ),
   );
+}
+
+class _MenuPopBlocker implements PopEntry<Object?> {
+  @override
+  final ValueNotifier<bool> canPopNotifier = ValueNotifier<bool>(false);
+
+  @override
+  void onPopInvoked(bool didPop) {}
+
+  @override
+  void onPopInvokedWithResult(bool didPop, Object? result) {}
+
+  void dispose() => canPopNotifier.dispose();
 }
 
 Future<void> _showFeedItemContextMenu({
@@ -92,12 +108,57 @@ Future<void> _showFeedItemContextMenu({
   ReactionViewModelBase? reactions,
   BorderRadius borderRadius = const BorderRadius.all(Radius.circular(24)),
 }) async {
+  final enclosingRoute = ModalRoute.of(context);
+  final shellRoute = ModalRoute.of(Navigator.of(context).context);
   final navigator = Navigator.of(context, rootNavigator: true);
   final themes = InheritedTheme.capture(from: context, to: navigator.context);
   final dismissLabel = MaterialLocalizations.of(context)
       .modalBarrierDismissLabel;
   final devicePixelRatio = MediaQuery.devicePixelRatioOf(context);
   final overlay = navigator.overlay!.context.findRenderObject()! as RenderBox;
+  final popBlocker = _MenuPopBlocker();
+  enclosingRoute?.registerPopEntry(popBlocker);
+  if (shellRoute != enclosingRoute) {
+    shellRoute?.registerPopEntry(popBlocker);
+  }
+  try {
+    await _openFeedItemContextMenu(
+      context: context,
+      source: source,
+      overlay: overlay,
+      navigator: navigator,
+      themes: themes,
+      dismissLabel: dismissLabel,
+      devicePixelRatio: devicePixelRatio,
+      actions: actions,
+      onOpen: onOpen,
+      onClose: onClose,
+      reactions: reactions,
+      borderRadius: borderRadius,
+    );
+  } finally {
+    if (shellRoute != enclosingRoute) {
+      shellRoute?.unregisterPopEntry(popBlocker);
+    }
+    enclosingRoute?.unregisterPopEntry(popBlocker);
+    popBlocker.dispose();
+  }
+}
+
+Future<void> _openFeedItemContextMenu({
+  required BuildContext context,
+  required RenderRepaintBoundary source,
+  required RenderBox overlay,
+  required NavigatorState navigator,
+  required CapturedThemes themes,
+  required String dismissLabel,
+  required double devicePixelRatio,
+  required List<ContextMenuAction> actions,
+  required VoidCallback onOpen,
+  required VoidCallback onClose,
+  ReactionViewModelBase? reactions,
+  BorderRadius borderRadius = const BorderRadius.all(Radius.circular(24)),
+}) async {
   triggerHaptic(HapticIntensity.medium);
   await WidgetsBinding.instance.endOfFrame;
   if (!context.mounted) {
@@ -117,7 +178,9 @@ Future<void> _showFeedItemContextMenu({
     if (!context.mounted) {
       return;
     }
-    final route = _FeedItemMenuRoute(
+    await _pushFeedItemMenuRoute(
+      context: context,
+      navigator: navigator,
       image: image,
       sourceRect: rect,
       borderRadius: borderRadius,
@@ -125,16 +188,45 @@ Future<void> _showFeedItemContextMenu({
       reactions: reactions,
       themes: themes,
       dismissLabel: dismissLabel,
+      onOpen: onOpen,
       onClose: onClose,
     );
-    onOpen();
-    final action = await navigator.push(route);
-    await route.completed;
-    if (context.mounted) {
-      action?.call();
-    }
   } finally {
     image.dispose();
+  }
+}
+
+Future<void> _pushFeedItemMenuRoute({
+  required BuildContext context,
+  required NavigatorState navigator,
+  required ui.Image image,
+  required Rect sourceRect,
+  required BorderRadius borderRadius,
+  required List<ContextMenuAction> actions,
+  required ReactionViewModelBase? reactions,
+  required CapturedThemes themes,
+  required String dismissLabel,
+  required VoidCallback onOpen,
+  required VoidCallback onClose,
+}) async {
+  if (!context.mounted) {
+    return;
+  }
+  final route = _FeedItemMenuRoute(
+    image: image,
+    sourceRect: sourceRect,
+    borderRadius: borderRadius,
+    actions: actions,
+    reactions: reactions,
+    themes: themes,
+    dismissLabel: dismissLabel,
+    onClose: onClose,
+  );
+  onOpen();
+  final action = await navigator.push(route);
+  await route.completed;
+  if (context.mounted) {
+    action?.call();
   }
 }
 
@@ -209,7 +301,11 @@ class _FeedItemMenuRoute extends PopupRoute<VoidCallback> {
               Positioned.fill(
                 child: GestureDetector(
                   behavior: HitTestBehavior.opaque,
-                  onTap: () => Navigator.of(context).pop(),
+                  onTap: () {
+                    if (ModalRoute.of(context)?.isCurrent ?? false) {
+                      Navigator.of(context).pop();
+                    }
+                  },
                   child: BackdropFilter(
                     filter: ui.ImageFilter.blur(
                       sigmaX: 5 * progress,

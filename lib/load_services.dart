@@ -769,6 +769,7 @@ void registerDependencies() {
         get<SourceAuthService>(),
         get<ScheduleWidgetService>(),
         get<ScheduleActivityPlatform>(),
+        get<LoggerService>(),
       ),
     )
     ..registerDependency(

@@ -4,6 +4,7 @@
 import 'package:flutter/material.dart';
 import 'package:unn_mobile/core/constants/api/path.dart';
 import 'package:unn_mobile/core/constants/api/protocol_type.dart';
+import 'package:unn_mobile/ui/views/main_page/widgets/main_page_app_bar.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:webview_flutter_android/webview_flutter_android.dart';
 
@@ -39,10 +40,7 @@ class _DonationsScreenViewState extends State<DonationsScreenView> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Поддержать'),
-        forceMaterialTransparency: true,
-      ),
+      appBar: buildMainPageAppBar(context, title: 'Поддержать'),
       body: WebViewWidget(
         controller: controller..setBackgroundColor(theme.colorScheme.surface),
       ),

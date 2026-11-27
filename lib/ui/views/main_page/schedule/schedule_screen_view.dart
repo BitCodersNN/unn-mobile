@@ -18,6 +18,7 @@ import 'package:unn_mobile/ui/views/main_page/schedule/export_schedule_flow.dart
 import 'package:unn_mobile/ui/views/main_page/schedule/schedule_tab_view.dart';
 import 'package:unn_mobile/ui/views/main_page/schedule/widgets/schedule_search_suggestion_item_view.dart';
 import 'package:unn_mobile/ui/views/main_page/schedule/widgets/schedule_week_swipe.dart';
+import 'package:unn_mobile/ui/views/main_page/widgets/main_page_app_bar.dart';
 import 'package:unn_mobile/ui/widgets/menu_button.dart';
 import 'package:unn_mobile/ui/widgets/offline_overlay_displayer.dart';
 import 'package:unn_mobile/ui/widgets/search/search_controller.dart';
@@ -92,7 +93,8 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView> {
               length: model.sortedUserTypeList.length,
               initialIndex: 0,
               child: Scaffold(
-                appBar: AppBar(
+                appBar: buildMainPageAppBar(
+                  context,
                   leading: _search.isOpen
                       ? IconButton(
                           icon: const Icon(Icons.arrow_back),
@@ -100,8 +102,7 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView> {
                           onPressed: _search.close,
                         )
                       : null,
-                  title: const Text('Расписание'),
-                  forceMaterialTransparency: true,
+                  title: 'Расписание',
                   actions: [
                     if (online && !_search.isOpen)
                       IconButton(

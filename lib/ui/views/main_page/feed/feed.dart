@@ -4,7 +4,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:unn_mobile/core/misc/haptic_utils.dart';
 import 'package:unn_mobile/core/models/feed/feed_filter.dart';
@@ -16,6 +15,7 @@ import 'package:unn_mobile/ui/views/main_page/feed/widgets/feed_filter_swipe.dar
 import 'package:unn_mobile/ui/views/main_page/feed/widgets/feed_filters_bar.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/widgets/feed_posts_sliver.dart';
 import 'package:unn_mobile/ui/views/main_page/main_page_tab_state.dart';
+import 'package:unn_mobile/ui/views/main_page/widgets/main_page_app_bar.dart';
 import 'package:unn_mobile/ui/widgets/empty_state_widget.dart';
 import 'package:unn_mobile/ui/widgets/offline_overlay_displayer.dart';
 import 'package:unn_mobile/ui/widgets/refresh_loading_overlay.dart';
@@ -175,36 +175,10 @@ class FeedScreenViewState extends State<FeedScreenView>
           final canSelectFilter = _canSelectFilter(model, online);
           return Scaffold(
             backgroundColor: theme.colorScheme.surfaceContainerLow,
-            appBar: AppBar(
-              centerTitle: false,
-              titleSpacing: 16,
+            appBar: buildMainPageAppBar(
+              context,
+              title: 'Лента',
               backgroundColor: theme.colorScheme.surfaceContainerLow,
-              scrolledUnderElevation: 0,
-              toolbarHeight: 12 + MediaQuery.textScalerOf(context).scale(48),
-              title: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    DateFormat(
-                      'EEEE, d MMMM',
-                      'ru_RU',
-                    ).format(DateTime.now()).toUpperCase(),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: theme.textTheme.labelSmall?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                  Text(
-                    'Лента',
-                    style: theme.textTheme.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.w400,
-                    ),
-                  ),
-                ],
-              ),
-              automaticallyImplyLeading: false,
               actions: [
                 IconButton(
                   onPressed:
