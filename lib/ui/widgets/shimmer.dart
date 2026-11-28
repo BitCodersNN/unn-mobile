@@ -2,14 +2,7 @@
 // Copyright 2025 BitCodersNN
 
 import 'package:flutter/material.dart';
-
-const _shimmerGradient = LinearGradient(
-  colors: [Color(0xFFEBEBF4), Color(0xFFF4F4F4), Color(0xFFEBEBF4)],
-  stops: [0.1, 0.3, 0.4],
-  begin: Alignment(-1.0, -0.3),
-  end: Alignment(1.0, 0.3),
-  tileMode: TileMode.clamp,
-);
+import 'package:unn_mobile/ui/unn_mobile_colors.dart';
 
 class _SlidingGradientTransform extends GradientTransform {
   const _SlidingGradientTransform({required this.slidePercent});
@@ -25,13 +18,9 @@ class Shimmer extends StatefulWidget {
   static ShimmerState? of(BuildContext context) =>
       context.findAncestorStateOfType<ShimmerState>();
 
-  const Shimmer({
-    super.key,
-    this.linearGradient = _shimmerGradient,
-    this.child,
-  });
+  const Shimmer({super.key, this.linearGradient, this.child});
 
-  final LinearGradient linearGradient;
+  final LinearGradient? linearGradient;
   final Widget? child;
 
   @override
@@ -39,15 +28,33 @@ class Shimmer extends StatefulWidget {
 }
 
 class ShimmerState extends State<Shimmer> with SingleTickerProviderStateMixin {
-  Gradient get gradient => LinearGradient(
-    colors: widget.linearGradient.colors,
-    stops: widget.linearGradient.stops,
-    begin: widget.linearGradient.begin,
-    end: widget.linearGradient.end,
-    transform: _SlidingGradientTransform(
-      slidePercent: _shimmerController.value,
-    ),
-  );
+  Gradient get gradient {
+    final theme = Theme.of(context);
+    final extraColors = theme.unnMobileColors;
+    final base =
+        extraColors?.shimmerBaseColor ?? theme.colorScheme.surfaceContainer;
+    final highlight =
+        extraColors?.shimmerHighlightColor ??
+        theme.colorScheme.surfaceContainerHighest;
+    final gradient =
+        widget.linearGradient ??
+        LinearGradient(
+          colors: [base, highlight, base],
+          stops: const [0.1, 0.3, 0.4],
+          begin: const Alignment(-1.0, -0.3),
+          end: const Alignment(1.0, 0.3),
+        );
+    return LinearGradient(
+      colors: gradient.colors,
+      stops: gradient.stops,
+      begin: gradient.begin,
+      end: gradient.end,
+      tileMode: gradient.tileMode,
+      transform: _SlidingGradientTransform(
+        slidePercent: _shimmerController.value,
+      ),
+    );
+  }
 
   late AnimationController _shimmerController;
 

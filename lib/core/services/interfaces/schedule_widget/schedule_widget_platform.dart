@@ -12,6 +12,8 @@ abstract interface class ScheduleWidgetPlatform {
 
   /// Сохраняет общий кэш и обновляет нативные виджеты.
   Future<void> writeCache(ScheduleCacheData data, {bool refreshWidgets = true});
+
+  Future<void> writeAppearance(Map<String, Object> appearance);
   Future<bool> consumeLaunch();
   void setOpenHandler(VoidCallback? handler);
 }

@@ -11,7 +11,7 @@ final class ScheduleActivityBridge {
     private let settingsProvider = ScheduleActivitySettingsProvider()
 
     init(messenger: FlutterBinaryMessenger) {
-        channel = FlutterMethodChannel(name: "ru.bitcodersnn.unnstudenthub/schedule_activity",
+        channel = FlutterMethodChannel(name: ScheduleConstants.activityChannel,
                                        binaryMessenger: messenger)
         channel.setMethodCallHandler { [weak self] call, result in
             self?.handle(call, result: result)
@@ -86,20 +86,24 @@ enum ScheduleActivityCoordinator {
         }
         var requested = stateProvider.read()
         requested = requested.filter { $0.value > now.timeIntervalSince1970 }
-        let candidates = data.lessons.compactMap { lesson -> ScheduleActivityAttributes? in
+        let candidates = data.lessons.compactMap { lesson -> (attributes: ScheduleActivityAttributes, typeKey: String?)? in
             let end = settings.mode == "brief"
                 ? min(lesson.endDate, lesson.startDate.addingTimeInterval(settings.initialInterval))
                 : lesson.endDate
             let notice = lesson.startDate.addingTimeInterval(-settings.beforeInterval)
             guard lesson.endDate > lesson.startDate, end > now, end > notice else { return nil }
             if #available(iOS 26.0, *) {} else if notice > now { return nil }
-            return ScheduleActivityAttributes(
+            let attributes = ScheduleActivityAttributes(
                 identifier: "\(lesson.id)|\(settings.mode)|\(settings.beforeMinutes)|\(settings.initialMinutes)|\(lesson.accentColor ?? 0)",
                 title: lesson.title, type: lesson.type, location: lesson.location,
                 start: lesson.startDate, end: lesson.endDate, noticeStart: notice, displayUntil: end,
                 accentColor: lesson.accentColor)
-        }.sorted { $0.start < $1.start }
-        let desired = candidates
+            return (attributes, lesson.typeKey)
+        }.sorted { $0.attributes.start < $1.attributes.start }
+        let appearance = ScheduleAppearanceStore().read()?.compactForLiveActivity()
+        let desired = candidates.map(\.attributes)
+        let typeKeysByIdentifier = Dictionary(
+            candidates.map { ($0.attributes.identifier, $0.typeKey) }, uniquingKeysWith: { first, _ in first })
         let identifiers = Set(desired.map(\.identifier))
         let existing = Activity<ScheduleActivityAttributes>.activities
         for activity in existing where !identifiers.contains(activity.attributes.identifier)
@@ -107,19 +111,26 @@ enum ScheduleActivityCoordinator {
             await activity.end(nil, dismissalPolicy: .immediate)
         }
         for activity in existing where identifiers.contains(activity.attributes.identifier)
-                && activity.attributes.displayUntil > now
-                && activity.content.state.updatedAt < activity.attributes.start
-                && now >= activity.attributes.start {
+                && activity.attributes.displayUntil > now {
+            let attributes = activity.attributes
+            let state = activity.content.state
+            let typeKey = typeKeysByIdentifier[attributes.identifier] ?? nil
+            let started = now >= attributes.start
+            guard state.appearance != appearance || state.typeKey != typeKey
+                    || (started && state.updatedAt < attributes.start) else { continue }
             await activity.update(ActivityContent(
-                state: ScheduleActivityAttributes.ContentState(updatedAt: now),
-                staleDate: activity.attributes.displayUntil))
+                state: ScheduleActivityAttributes.ContentState(updatedAt: now, appearance: appearance, typeKey: typeKey),
+                staleDate: started ? attributes.displayUntil : attributes.start))
         }
         let running = Set(existing.filter { $0.activityState != .ended && $0.activityState != .dismissed }
             .map { $0.attributes.identifier })
         if UIApplication.shared.applicationState == .active {
             for attributes in desired where !running.contains(attributes.identifier) && requested[attributes.identifier] == nil {
                 do {
-                    try request(attributes, now: now)
+                    let state = ScheduleActivityAttributes.ContentState(
+                        updatedAt: now, appearance: appearance,
+                        typeKey: typeKeysByIdentifier[attributes.identifier] ?? nil)
+                    try request(attributes, state: state, now: now)
                 } catch {
                     let failure = error as NSError
                     NSLog("Schedule activity request failed (%@, %ld)", failure.domain, failure.code)
@@ -129,7 +140,7 @@ enum ScheduleActivityCoordinator {
             }
         }
         stateProvider.save(requested)
-        let boundaries = candidates.flatMap { [$0.noticeStart, $0.start, $0.displayUntil] }
+        let boundaries = desired.flatMap { [$0.noticeStart, $0.start, $0.displayUntil] }
             + [Date(timeIntervalSince1970: data.validUntil / 1000)]
         if let next = boundaries.filter({ $0 > now }).min() {
             timer = Timer.scheduledTimer(withTimeInterval: max(0.1, next.timeIntervalSinceNow), repeats: false) { _ in
@@ -139,9 +150,11 @@ enum ScheduleActivityCoordinator {
     }
 
     @available(iOS 16.2, *)
-    private static func request(_ attributes: ScheduleActivityAttributes, now: Date) throws {
+    private static func request(
+        _ attributes: ScheduleActivityAttributes, state: ScheduleActivityAttributes.ContentState, now: Date
+    ) throws {
         let content = ActivityContent(
-            state: ScheduleActivityAttributes.ContentState(updatedAt: now),
+            state: state,
             staleDate: attributes.start > now ? attributes.start : attributes.displayUntil)
         if #available(iOS 26.0, *), attributes.noticeStart > now {
             _ = try Activity.request(attributes: attributes, content: content, style: .standard,

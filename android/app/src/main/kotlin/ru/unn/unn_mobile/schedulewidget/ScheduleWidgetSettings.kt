@@ -5,8 +5,11 @@ package ru.bitcodersnn.unnstudenthub.schedulewidget
 
 import android.os.Bundle
 import ru.bitcodersnn.unnstudenthub.R
+import ru.bitcodersnn.unnstudenthub.schedule.ScheduleAppearance
+import ru.bitcodersnn.unnstudenthub.schedule.SchedulePalette
 
 enum class ScheduleWidgetTheme(val label: Int) {
+    APP(R.string.schedule_widget_theme_app),
     SYSTEM(R.string.schedule_widget_theme_system),
     LIGHT(R.string.schedule_widget_theme_light),
     DARK(R.string.schedule_widget_theme_dark),
@@ -20,7 +23,8 @@ enum class ScheduleWidgetTextSize(val label: Int, val scale: Float) {
 
 data class ScheduleWidgetSettings(
     val transparency: Int = 0,
-    val theme: ScheduleWidgetTheme = ScheduleWidgetTheme.SYSTEM,
+    val theme: ScheduleWidgetTheme = ScheduleWidgetTheme.APP,
+    val paletteKey: String? = null,
     val textSize: ScheduleWidgetTextSize = ScheduleWidgetTextSize.NORMAL,
     val maxLessons: Int = 0,
     val showLocation: Boolean = true,
@@ -28,9 +32,23 @@ data class ScheduleWidgetSettings(
 ) {
     val backgroundAlpha: Int get() = ((100 - transparency.coerceIn(0, 100)) * 255 + 50) / 100
 
+    internal fun resolvePalette(
+        appearance: ScheduleAppearance,
+        systemDark: Boolean = appearance.systemDark,
+    ): SchedulePalette {
+        val forcedDark = when (theme) {
+            ScheduleWidgetTheme.APP -> null
+            ScheduleWidgetTheme.SYSTEM -> systemDark
+            ScheduleWidgetTheme.LIGHT -> false
+            ScheduleWidgetTheme.DARK -> true
+        }
+        return appearance.palette(systemDark, forcedDark, paletteKey)
+    }
+
     fun toBundle(): Bundle = Bundle().apply {
         putInt(TRANSPARENCY, transparency)
         putString(THEME, theme.name)
+        putString(PALETTE, paletteKey)
         putString(TEXT_SIZE, textSize.name)
         putInt(MAX_LESSONS, maxLessons)
         putBoolean(SHOW_LOCATION, showLocation)
@@ -40,16 +58,18 @@ data class ScheduleWidgetSettings(
     companion object {
         const val TRANSPARENCY = "transparency"
         const val THEME = "theme"
+        const val PALETTE = "palette"
         const val TEXT_SIZE = "text_size"
         const val MAX_LESSONS = "max_lessons"
         const val SHOW_LOCATION = "show_location"
         const val SHOW_LECTURER = "show_lecturer"
-        val keys = listOf(TRANSPARENCY, THEME, TEXT_SIZE, MAX_LESSONS, SHOW_LOCATION, SHOW_LECTURER)
+        val keys = listOf(TRANSPARENCY, THEME, PALETTE, TEXT_SIZE, MAX_LESSONS, SHOW_LOCATION, SHOW_LECTURER)
 
         fun fromBundle(bundle: Bundle): ScheduleWidgetSettings = ScheduleWidgetSettings(
             transparency = bundle.getInt(TRANSPARENCY, 0).coerceIn(0, 100),
             theme = ScheduleWidgetTheme.entries.firstOrNull { it.name == bundle.getString(THEME) }
-                ?: ScheduleWidgetTheme.SYSTEM,
+                ?: ScheduleWidgetTheme.APP,
+            paletteKey = bundle.getString(PALETTE)?.takeIf { it.isNotEmpty() },
             textSize = ScheduleWidgetTextSize.entries.firstOrNull { it.name == bundle.getString(TEXT_SIZE) }
                 ?: ScheduleWidgetTextSize.NORMAL,
             maxLessons = bundle.getInt(MAX_LESSONS, 0).coerceIn(0, 6),

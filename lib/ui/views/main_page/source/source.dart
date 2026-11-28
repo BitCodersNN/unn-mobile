@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2025 BitCodersNN
 
+import 'dart:async';
+
 import 'package:adaptive_dialog/adaptive_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -13,12 +15,46 @@ import 'package:unn_mobile/ui/views/base_view.dart';
 import 'package:unn_mobile/ui/views/main_page/source/source_course_view.dart';
 import 'package:unn_mobile/ui/views/main_page/source/source_webinar_view.dart';
 import 'package:unn_mobile/ui/views/main_page/widgets/main_page_app_bar.dart';
+import 'package:unn_mobile/ui/widgets/menu_button.dart';
 import 'package:unn_mobile/ui/widgets/offline_overlay_displayer.dart';
 
 class SourcePageView extends StatelessWidget {
-  static const _selectSemesterKey = 'selectSemester';
-
   const SourcePageView({super.key});
+
+  Future<void> _selectSemester(
+    BuildContext context,
+    SourcePageViewModel model,
+  ) async {
+    final actions = model.semesters
+        .asMap()
+        .map(
+          (index, semester) => MapEntry(
+            index,
+            AlertDialogAction<int>(
+              key: index,
+              label: semester.toString(),
+              isDefaultAction: index == model.currentSemesterIndex,
+            ),
+          ),
+        )
+        .values
+        .toList();
+
+    final selectedSem = await showConfirmationDialog<int>(
+      context: context,
+      title: 'Выберите семестр',
+      actions: actions,
+      cancelLabel: 'Отмена',
+      shrinkWrap: true,
+      initialSelectedActionKey: model.currentSemesterIndex,
+    );
+
+    if (selectedSem == null) {
+      return;
+    }
+
+    model.setSemester(selectedSem);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,51 +79,14 @@ class SourcePageView extends StatelessWidget {
                 ),
                 actions: [
                   if (model.semesters.isNotEmpty)
-                    PopupMenuButton(
-                      itemBuilder: (context) => [
-                        const PopupMenuItem(
-                          value: _selectSemesterKey,
-                          child: Text('Выбрать семестр'),
+                    MenuButton(
+                      entries: [
+                        AppMenuAction(
+                          title: 'Выбрать семестр',
+                          onSelected: () =>
+                              unawaited(_selectSemester(context, model)),
                         ),
                       ],
-                      onSelected: (value) async {
-                        switch (value) {
-                          case _selectSemesterKey:
-                            final actions = model.semesters
-                                .asMap()
-                                .map(
-                                  (index, semester) => MapEntry(
-                                    index,
-                                    AlertDialogAction<int>(
-                                      key: index,
-                                      label: semester.toString(),
-                                      isDefaultAction:
-                                          index == model.currentSemesterIndex,
-                                    ),
-                                  ),
-                                )
-                                .values
-                                .toList();
-
-                            final selectedSem =
-                                await showConfirmationDialog<int>(
-                                  context: context,
-                                  title: 'Выберите семестр',
-                                  actions: actions,
-                                  cancelLabel: 'Отмена',
-                                  shrinkWrap: true,
-                                  initialSelectedActionKey:
-                                      model.currentSemesterIndex,
-                                );
-
-                            if (selectedSem == null) {
-                              return;
-                            }
-
-                            model.setSemester(selectedSem);
-                            break;
-                        }
-                      },
                     ),
                 ],
               ),

@@ -14,14 +14,16 @@ class GitResourceRepositoryImpl<T> implements GitResourceRepository<T> {
   final GitResourceSource<T> _source;
   final LastCommitShaService _shaService;
   final LoggerService _logger;
+  final bool Function(Object?) _needsRefresh;
   Future<CachedGitResource<T>?>? _refreshing;
 
   GitResourceRepositoryImpl(
     this._cache,
     this._source,
     this._shaService,
-    this._logger,
-  );
+    this._logger, {
+    bool Function(T)? needsRefresh,
+  }) : _needsRefresh = ((data) => needsRefresh?.call(data as T) ?? false);
 
   @override
   Future<CachedGitResource<T>?> get() async {
@@ -52,7 +54,8 @@ class GitResourceRepositoryImpl<T> implements GitResourceRepository<T> {
     CachedGitResource<T>? cached,
   ) async {
     final sha = await _shaService.getSha(gitPath: _source.path);
-    if (cached != null && (sha == null || sha == cached.sha)) {
+    if (cached != null &&
+        (sha == null || (sha == cached.sha && !_needsRefresh(cached.data)))) {
       return cached;
     }
     final data = await _source.load(revision: sha ?? GitPath.branch);

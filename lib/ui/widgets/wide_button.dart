@@ -28,6 +28,7 @@ class WideButton extends StatelessWidget {
         ),
         child: ElevatedButton(
           style: ElevatedButton.styleFrom(
+            foregroundColor: theme.colorScheme.onPrimary,
             backgroundColor: Colors.transparent,
             shadowColor: Colors.transparent,
             disabledBackgroundColor: theme.colorScheme.secondaryFixedDim,

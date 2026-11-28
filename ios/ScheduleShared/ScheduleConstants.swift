@@ -8,6 +8,8 @@ enum ScheduleConstants {
     static let widgetKind = "ScheduleWidget"
     static let lockScreenWidgetKind = "ScheduleLockScreenWidget"
     static let widgetChannel = "ru.bitcodersnn.unnstudenthub/schedule_widget"
+    static let activityChannel = "ru.bitcodersnn.unnstudenthub/schedule_activity"
+    static let paletteLinkChannel = "ru.bitcodersnn.unnstudenthub/palette_link"
 }
 
 

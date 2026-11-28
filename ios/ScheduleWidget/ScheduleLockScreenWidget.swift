@@ -20,11 +20,20 @@ struct ScheduleLockScreenWidget: Widget {
 @available(iOS 16.1, *)
 struct ScheduleLockScreenView: View {
     let entry: ScheduleEntry
+    @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.widgetRenderingMode) private var renderingMode
+
+    private var accent: Color {
+        guard renderingMode == .fullColor else { return .secondary }
+        let palette = entry.appearance.palette(systemDark: colorScheme == .dark)
+        let lesson = entry.currentOrNextLesson
+        return SchedulePalette.color(palette.lessonAccent(typeKey: lesson?.typeKey, fallback: lesson?.accentColor))
+    }
 
     var body: some View {
         HStack(spacing: 6) {
             Capsule()
-                .fill(.secondary)
+                .fill(accent)
                 .frame(width: 3)
             VStack(alignment: .leading, spacing: 0) {
                 if let lesson = entry.currentOrNextLesson {
@@ -55,7 +64,7 @@ struct ScheduleLockScreenView: View {
             .frame(maxWidth: .infinity, alignment: .leading)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
-        .scheduleWidgetBackground(transparent: true)
+        .scheduleWidgetBackground(.clear)
         .widgetURL(ScheduleNavigation.url)
         .accessibilityElement(children: .combine)
         .privacySensitive()

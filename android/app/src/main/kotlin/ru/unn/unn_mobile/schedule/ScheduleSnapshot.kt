@@ -18,6 +18,7 @@ internal class ScheduleCache private constructor(
     private val widget: JSONObject?,
     private val entries: JSONArray,
     private val subjectColors: JSONObject?,
+    private val subjectTypeKeys: JSONObject?,
 ) {
     fun snapshot(now: Long = System.currentTimeMillis()): ScheduleSnapshot? {
         val configuration = widget ?: return null
@@ -57,6 +58,7 @@ internal class ScheduleCache private constructor(
                         end = subject.getLong("end"),
                         accentColor = subjectColors?.takeIf { it.has(type) }?.getLong(type)?.toInt(),
                         lecturer = subject.getString("lecturer"),
+                        typeKey = subjectTypeKeys?.takeIf { it.has(type) && !it.isNull(type) }?.getString(type),
                     )
                 }
             }.sortedBy { it.start },
@@ -67,7 +69,12 @@ internal class ScheduleCache private constructor(
         fun decode(value: String): ScheduleCache {
             val json = JSONObject(value)
             require(json.getInt("version") == 1)
-            return ScheduleCache(json.optJSONObject("widget"), json.getJSONArray("entries"), json.optJSONObject("subjectColors"))
+            return ScheduleCache(
+                json.optJSONObject("widget"),
+                json.getJSONArray("entries"),
+                json.optJSONObject("subjectColors"),
+                json.optJSONObject("subjectTypeKeys"),
+            )
         }
     }
 }

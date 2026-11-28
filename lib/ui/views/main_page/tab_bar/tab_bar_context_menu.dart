@@ -157,10 +157,7 @@ class _TabBarContextMenuState extends State<_TabBarContextMenu>
     final left =
         (session.leftFor(session.heldPath) + session.itemWidth - menuWidth)
             .clamp(16.0, MediaQuery.sizeOf(context).width - menuWidth - 16);
-    final background = CupertinoDynamicColor.resolve(
-      CupertinoColors.tertiarySystemBackground,
-      context,
-    );
+    final background = theme.colorScheme.surfaceContainerHigh;
     return Material(
       type: MaterialType.transparency,
       child: IgnorePointer(
@@ -212,23 +209,31 @@ class _TabBarContextMenuState extends State<_TabBarContextMenu>
                     borderRadius: BorderRadius.circular(16),
                     child: ColoredBox(
                       color: background,
-                      child: CupertinoContextMenuAction(
+                      child: CupertinoButton(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
                         onPressed: () => _dismiss(
                           TabBarContextMenuResult(
                             paths: session.paths,
                             customize: true,
                           ),
                         ),
-                        trailingIcon: CupertinoIcons.gear,
-                        child: Text(
-                          'Настроить нижнее меню',
-                          style: TextStyle(
-                            color: CupertinoDynamicColor.resolve(
-                              CupertinoColors.label,
-                              context,
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                'Настроить нижнее меню',
+                                style: TextStyle(
+                                  color: theme.colorScheme.onSurface,
+                                  fontSize: 17,
+                                ),
+                              ),
                             ),
-                            fontSize: 17,
-                          ),
+                            const SizedBox(width: 16),
+                            Icon(
+                              CupertinoIcons.gear,
+                              color: theme.colorScheme.onSurface,
+                            ),
+                          ],
                         ),
                       ),
                     ),

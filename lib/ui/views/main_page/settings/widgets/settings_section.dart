@@ -1,17 +1,43 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2026 BitCodersNN
 
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
+
+abstract interface class SettingsDividerIndent {
+  double get dividerIndent;
+}
 
 class SettingsSection extends StatelessWidget {
   final String title;
   final List<Widget> children;
+  final double? dividerIndent;
 
   const SettingsSection({
     required this.title,
     required this.children,
+    this.dividerIndent,
     super.key,
   });
+
+  double _indentFor(int index) {
+    if (dividerIndent != null) {
+      return dividerIndent!;
+    }
+    final previousIndent = switch (children[index - 1]) {
+      final SettingsDividerIndent item => item.dividerIndent,
+      _ => null,
+    };
+    final currentIndent = switch (children[index]) {
+      final SettingsDividerIndent item => item.dividerIndent,
+      _ => null,
+    };
+    if (previousIndent != null && currentIndent != null) {
+      return math.min(previousIndent, currentIndent);
+    }
+    return previousIndent ?? currentIndent ?? 64;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +72,7 @@ class SettingsSection extends StatelessWidget {
                   if (index > 0)
                     Divider(
                       height: 1,
-                      indent: 64,
+                      indent: _indentFor(index),
                       endIndent: 16,
                       color: theme.colorScheme.outlineVariant.withValues(
                         alpha: 0.45,

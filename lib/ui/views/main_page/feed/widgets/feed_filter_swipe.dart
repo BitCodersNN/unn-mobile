@@ -4,6 +4,7 @@
 import 'package:flutter/material.dart';
 import 'package:unn_mobile/core/models/feed/feed_filter.dart';
 import 'package:unn_mobile/ui/widgets/swipe_pager.dart';
+import 'package:unn_mobile/ui/widgets/theme_aware_ticker_mode.dart';
 
 class FeedFilterSwipe extends StatefulWidget {
   final FeedFilter selected;
@@ -81,7 +82,7 @@ class _FeedFilterSwipeState extends State<FeedFilterSwipe> {
         final filter = FeedFilter.values[page];
         return _FeedFilterPage(
           key: ValueKey(filter),
-          child: TickerMode(
+          child: ThemeAwareTickerMode(
             enabled: filter == _visibleFilter,
             child: ExcludeFocus(
               excluding: filter != widget.selected,

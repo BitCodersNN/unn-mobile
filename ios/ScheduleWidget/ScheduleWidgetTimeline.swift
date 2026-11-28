@@ -8,6 +8,7 @@ struct ScheduleEntry: TimelineEntry {
     let date: Date
     let data: ScheduleSnapshot?
     let settings: ScheduleWidgetSettings
+    let appearance: ScheduleAppearance
     var readError: ScheduleSnapshotReadError? = nil
 
     var remainingLessons: [ScheduleLesson] {
@@ -34,6 +35,10 @@ struct ScheduleEntry: TimelineEntry {
 }
 
 enum ScheduleWidgetTimeline {
+    private static func readAppearance() -> ScheduleAppearance {
+        ScheduleAppearanceStore().read() ?? .fallback
+    }
+
     static func placeholder(settings: ScheduleWidgetSettings = ScheduleWidgetSettings()) -> ScheduleEntry {
         let day = ScheduleTime.calendar.startOfDay(for: Date())
         let first = day.addingTimeInterval(10 * 3600)
@@ -46,13 +51,14 @@ enum ScheduleWidgetTimeline {
                 ScheduleLesson(title: "Разработка мобильных приложений", type: "Лекция", location: "301 / 2", lecturer: "Преподаватель", start: first.timeIntervalSince1970 * 1000, end: first.addingTimeInterval(5400).timeIntervalSince1970 * 1000, accentColor: nil),
                 ScheduleLesson(title: "Программная инженерия", type: "Практика", location: "412 / 2", lecturer: "Преподаватель", start: second.timeIntervalSince1970 * 1000, end: second.addingTimeInterval(5400).timeIntervalSince1970 * 1000, accentColor: nil)
             ])
-        return ScheduleEntry(date: first, data: data, settings: settings)
+        return ScheduleEntry(date: first, data: data, settings: settings, appearance: readAppearance())
     }
 
     static func snapshot(isPreview: Bool, settings: ScheduleWidgetSettings = ScheduleWidgetSettings()) -> ScheduleEntry {
         if isPreview { return placeholder(settings: settings) }
         let result = ScheduleSnapshotProvider().readResult()
-        return ScheduleEntry(date: Date(), data: result.data, settings: settings, readError: result.error)
+        return ScheduleEntry(
+            date: Date(), data: result.data, settings: settings, appearance: readAppearance(), readError: result.error)
     }
 
     static func timeline(settings: ScheduleWidgetSettings = ScheduleWidgetSettings()) -> Timeline<ScheduleEntry> {
@@ -64,7 +70,10 @@ enum ScheduleWidgetTimeline {
         let days = (1...14).compactMap { calendar.date(byAdding: .day, value: $0, to: midnight) }
         let boundaries = data?.lessons.flatMap { [$0.startDate, $0.endDate] } ?? []
         let dates = Array(Set([now] + days + boundaries.filter { $0 > now })).sorted().prefix(64)
-        let entries = dates.map { ScheduleEntry(date: $0, data: data, settings: settings, readError: result.error) }
+        let appearance = readAppearance()
+        let entries = dates.map {
+            ScheduleEntry(date: $0, data: data, settings: settings, appearance: appearance, readError: result.error)
+        }
         return Timeline(entries: entries, policy: .after((dates.last ?? now).addingTimeInterval(60)))
     }
 }

@@ -6,6 +6,7 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:unn_mobile/core/misc/haptic_utils.dart';
+import 'package:unn_mobile/ui/widgets/route_pop_blocker.dart';
 
 enum AnchoredPopupPlacement { above, below }
 
@@ -25,8 +26,6 @@ Future<T?> showAnchoredPopup<T>(
   if (source is! RenderBox || !source.attached) {
     return null;
   }
-  final enclosingRoute = ModalRoute.of(context);
-  final shellRoute = ModalRoute.of(Navigator.of(context).context);
   final navigator = Navigator.of(context, rootNavigator: true);
   final overlay = navigator.overlay!.context.findRenderObject()! as RenderBox;
   final route = _AnchoredPopupRoute<T>(
@@ -42,24 +41,14 @@ Future<T?> showAnchoredPopup<T>(
     themes: InheritedTheme.capture(from: context, to: navigator.context),
     dismissLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
   );
-  final popBlocker = _PopupPopBlocker();
-  enclosingRoute?.registerPopEntry(popBlocker);
-  if (shellRoute != enclosingRoute) {
-    shellRoute?.registerPopEntry(popBlocker);
-  }
-  try {
-    return await _pushAnchoredPopupRoute(
+  return runWithBlockedRoutePop(
+    context,
+    () => _pushAnchoredPopupRoute(
       context: context,
       navigator: navigator,
       route: route,
-    );
-  } finally {
-    if (shellRoute != enclosingRoute) {
-      shellRoute?.unregisterPopEntry(popBlocker);
-    }
-    enclosingRoute?.unregisterPopEntry(popBlocker);
-    popBlocker.dispose();
-  }
+    ),
+  );
 }
 
 Future<T?> _pushAnchoredPopupRoute<T>({
@@ -71,19 +60,6 @@ Future<T?> _pushAnchoredPopupRoute<T>({
   final result = await navigator.push(route);
   await route.completed;
   return context.mounted ? result : null;
-}
-
-class _PopupPopBlocker implements PopEntry<Object?> {
-  @override
-  final ValueNotifier<bool> canPopNotifier = ValueNotifier<bool>(false);
-
-  @override
-  void onPopInvoked(bool didPop) {}
-
-  @override
-  void onPopInvokedWithResult(bool didPop, Object? result) {}
-
-  void dispose() => canPopNotifier.dispose();
 }
 
 void dismissAnchoredPopup<T>(

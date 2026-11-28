@@ -55,13 +55,14 @@ struct ScheduleCacheData: Decodable {
         let start: Double
         let end: Double
 
-        func lesson(accentColor: UInt32?) -> ScheduleLesson {
+        func lesson(accentColor: UInt32?, typeKey: String?) -> ScheduleLesson {
             ScheduleLesson(
                 title: name, type: type,
                 location: [auditorium, building]
                     .filter { !$0.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
                     .joined(separator: " / "),
-                lecturer: lecturer, start: start, end: end, accentColor: accentColor
+                lecturer: lecturer, start: start, end: end,
+                accentColor: accentColor, typeKey: typeKey
             )
         }
     }
@@ -70,6 +71,7 @@ struct ScheduleCacheData: Decodable {
     let widget: Configuration?
     let entries: [Entry]
     let subjectColors: [String: UInt32]?
+    let subjectTypeKeys: [String: String]?
 
     static func decode(_ value: String) -> Self? {
         guard let bytes = value.data(using: .utf8),
@@ -96,7 +98,9 @@ struct ScheduleCacheData: Decodable {
         return ScheduleSnapshot(
             ownerLabel: widget.ownerLabel,
             validFrom: first.start, validUntil: last.end,
-            lessons: weeks.flatMap(\.subjects).map { $0.lesson(accentColor: subjectColors?[$0.type]) }
+            lessons: weeks.flatMap(\.subjects).map {
+                $0.lesson(accentColor: subjectColors?[$0.type], typeKey: subjectTypeKeys?[$0.type])
+            }
                 .sorted { $0.start < $1.start }
         )
     }

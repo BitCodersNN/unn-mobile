@@ -47,12 +47,12 @@ class TextFieldWithBoxShadow extends StatelessWidget {
               decoration: BoxDecoration(
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.07),
+                    color: theme.shadowColor.withValues(alpha: 0.07),
                     blurRadius: 8.35,
                     offset: const Offset(0, 3.13),
                   ),
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.03),
+                    color: theme.shadowColor.withValues(alpha: 0.03),
                     blurRadius: 1,
                     offset: const Offset(0, 2),
                   ),

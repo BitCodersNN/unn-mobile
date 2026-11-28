@@ -3,6 +3,7 @@
 
 import 'dart:io';
 
+import 'package:path/path.dart' as p;
 import 'package:unn_mobile/core/api_helpers/api_helper.dart';
 import 'package:unn_mobile/core/constants/api/path.dart';
 import 'package:unn_mobile/core/misc/file_helpers/file_downloader.dart';
@@ -32,19 +33,39 @@ class LogoDownloaderServiceImpl implements LogoDownloaderService {
   }
 
   Future<File?> _downloadFile(String fileName, String revision) async {
+    final uri = Uri.parse(fileName);
+    final segments = uri.pathSegments;
+    if (uri.hasAuthority ||
+        uri.isAbsolute ||
+        uri.hasAbsolutePath ||
+        uri.hasQuery ||
+        uri.hasFragment ||
+        segments.length < 2 ||
+        segments.first != 'logos' ||
+        segments.any(
+          (segment) =>
+              segment.isEmpty ||
+              segment == '.' ||
+              segment == '..' ||
+              segment.contains('/') ||
+              segment.contains('\\'),
+        )) {
+      return null;
+    }
     final path = await getDownloadPath();
     if (path == null) {
       return null;
     }
+    final folder = segments.take(segments.length - 1).join('/');
     final name = shortenFileName(fileName);
-    final cached = await _validatedFile(File('$path/logos/$name'));
+    final cached = await _validatedFile(File(p.join(path, folder, name)));
     if (cached != null) {
       return cached;
     }
     final downloaded = await FileDownloader(
       _logger,
       _apiHelper,
-      downloadFolderName: 'logos',
+      downloadFolderName: folder,
       basePath:
           '${ApiPath.gitRepository}/${GitPath.loadingScreen.pathAt(revision)}',
     ).downloadFile(fileName, force: true);

@@ -1,23 +1,34 @@
 // SPDX-License-Identifier: Apache-2.0
-// Copyright 2025 BitCodersNN
+// Copyright 2026 BitCodersNN
 
 import 'package:flutter/material.dart';
-import 'package:unn_mobile/core/constants/api/path.dart';
-import 'package:unn_mobile/core/constants/api/protocol_type.dart';
+import 'package:unn_mobile/core/viewmodels/main_page/donations/donations_view_model.dart';
+import 'package:unn_mobile/ui/views/base_view.dart';
 import 'package:unn_mobile/ui/views/main_page/widgets/main_page_app_bar.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:webview_flutter_android/webview_flutter_android.dart';
 
-class DonationsScreenView extends StatefulWidget {
+class DonationsScreenView extends StatelessWidget {
   const DonationsScreenView({super.key});
 
   @override
-  State<DonationsScreenView> createState() => _DonationsScreenViewState();
+  Widget build(BuildContext context) => BaseView<DonationsViewModel>(
+    onDispose: (model) => model.dispose(),
+    builder: (context, model, child) => _DonationsWebViewHost(model: model),
+  );
 }
 
-class _DonationsScreenViewState extends State<DonationsScreenView> {
+class _DonationsWebViewHost extends StatefulWidget {
+  final DonationsViewModel model;
+
+  const _DonationsWebViewHost({required this.model});
+
+  @override
+  State<_DonationsWebViewHost> createState() => _DonationsWebViewHostState();
+}
+
+class _DonationsWebViewHostState extends State<_DonationsWebViewHost> {
   late final WebViewController controller;
-  String htmlContent = '';
 
   @override
   void initState() {
@@ -26,8 +37,17 @@ class _DonationsScreenViewState extends State<DonationsScreenView> {
     controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..enableZoom(false)
-      ..loadRequest(
-        Uri.parse('${ProtocolType.https.name}://${ApiPath.donation}'),
+      ..setNavigationDelegate(
+        NavigationDelegate(
+          onPageStarted: (_) => widget.model.onPageStarted(),
+          onPageFinished: (_) {
+            if (!mounted) {
+              return;
+            }
+            widget.model.onPageFinished();
+            controller.runJavaScript(widget.model.themeUpdateScript);
+          },
+        ),
       );
 
     final platform = controller.platform;
@@ -37,13 +57,33 @@ class _DonationsScreenViewState extends State<DonationsScreenView> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Scaffold(
-      appBar: buildMainPageAppBar(context, title: 'Поддержать'),
-      body: WebViewWidget(
-        controller: controller..setBackgroundColor(theme.colorScheme.surface),
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final scheme = Theme.of(context).colorScheme;
+    controller.setBackgroundColor(scheme.surface);
+    final action = widget.model.updateTheme(
+      brightness: scheme.brightness,
+      colors: DonationsThemeColors(
+        background: scheme.surface,
+        surface: scheme.surfaceContainerLow,
+        foreground: scheme.onSurface,
+        muted: scheme.onSurfaceVariant,
+        primary: scheme.primary,
+        outline: scheme.outlineVariant,
       ),
     );
+    final initialUri = action.initialUri;
+    final script = action.script;
+    if (initialUri != null) {
+      controller.loadRequest(initialUri);
+    } else if (script != null) {
+      controller.runJavaScript(script);
+    }
   }
+
+  @override
+  Widget build(BuildContext context) => Scaffold(
+    appBar: buildMainPageAppBar(context, title: 'Поддержать'),
+    body: WebViewWidget(controller: controller),
+  );
 }

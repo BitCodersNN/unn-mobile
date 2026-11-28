@@ -20,12 +20,6 @@ import 'package:unn_mobile/ui/widgets/wide_button.dart';
 
 enum _InputType { login, password }
 
-class _MenuItemValues {
-  static const settings = 'settings';
-  static const about = 'about';
-  static const support = 'support';
-}
-
 class AuthPage extends StatefulWidget {
   const AuthPage({super.key});
 
@@ -133,31 +127,23 @@ class _AuthPageState extends State<AuthPage> {
           title: const Text(_title),
           actions: [
             MenuButton(
-              enabled: true,
-              items: const [
-                SideMenuItem(
+              entries: [
+                AppMenuAction(
                   title: 'Настройки',
-                  value: _MenuItemValues.settings,
+                  onSelected: () =>
+                      GoRouter.of(context).go('$authPageRoute/$settingsPath'),
                 ),
-                SideMenuItem(
+                AppMenuAction(
                   title: 'Поддержать',
-                  value: _MenuItemValues.support,
+                  onSelected: () =>
+                      GoRouter.of(context).go('$authPageRoute/$supportPath'),
                 ),
-                SideMenuItem(title: 'О нас', value: _MenuItemValues.about),
+                AppMenuAction(
+                  title: 'О нас',
+                  onSelected: () =>
+                      GoRouter.of(context).go('$authPageRoute/$aboutPath'),
+                ),
               ],
-              onSelected: (item) {
-                switch (item) {
-                  case _MenuItemValues.settings:
-                    GoRouter.of(context).go('$authPageRoute/$settingsPath');
-                    break;
-                  case _MenuItemValues.about:
-                    GoRouter.of(context).go('$authPageRoute/$aboutPath');
-                    break;
-                  case _MenuItemValues.support:
-                    GoRouter.of(context).go('$authPageRoute/$supportPath');
-                    break;
-                }
-              },
             ),
           ],
         ),
@@ -178,6 +164,7 @@ class _AuthPageState extends State<AuthPage> {
                     child: SvgPicture.asset(
                       _logoAssetPath,
                       fit: BoxFit.contain,
+                      colorMapper: _AuthLogoColorMapper(theme.colorScheme),
                     ),
                   ),
                 ),
@@ -410,4 +397,42 @@ class _AuthPageState extends State<AuthPage> {
 
     await showChangelogDialog(context);
   }
+}
+
+class _AuthLogoColorMapper extends ColorMapper {
+  final ColorScheme colors;
+
+  const _AuthLogoColorMapper(this.colors);
+
+  Color _accentTint(double amount) =>
+      Color.lerp(colors.surfaceContainerLowest, colors.primary, amount)!;
+
+  @override
+  Color substitute(
+    String? id,
+    String elementName,
+    String attributeName,
+    Color color,
+  ) => switch (color.toARGB32()) {
+    0xFF1D60AD => colors.primary,
+    0xFF61A9FF =>
+      colors.brightness == Brightness.dark
+          ? colors.onPrimary
+          : colors.primaryContainer,
+    0xFF283252 => colors.onSurface,
+    0xFFA8BAE0 => _accentTint(0.36),
+    0xFFC6D3ED => _accentTint(0.23),
+    0xFFE5EAF2 => _accentTint(0.10),
+    0xFFF2F7FC => colors.surfaceContainerLow,
+    0xFFF9F9F9 => colors.onPrimary,
+    0xFFFFFFFF => colors.surfaceBright,
+    _ => color,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      other is _AuthLogoColorMapper && other.colors == colors;
+
+  @override
+  int get hashCode => colors.hashCode;
 }

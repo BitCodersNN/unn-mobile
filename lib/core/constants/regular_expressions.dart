@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
-// Copyright 2025 BitCodersNN
+// Copyright 2026 BitCodersNN
 
+import 'package:unn_mobile/core/constants/palette_codec_constants.dart';
 import 'package:unn_mobile/core/misc/cache/lru_cache.dart';
 
 class _RegularExpressionSource {
@@ -33,6 +34,15 @@ class _RegularExpressionSource {
   static const timePattern = r'(\d{1,2}:\d{2})';
   static const streamContentPattern = r'\(([^()]*)\)';
   static const multiValueSeparatorPattern = r'[|;,]';
+  static const hexColor6Pattern = r'^#?([0-9a-fA-F]{6})$';
+  static const allowedHexCharsPattern = r'[#0-9a-fA-F]';
+  static final customPaletteCodePattern =
+      '${RegExp.escape(PaletteCodecConstants.prefix)}([A-Za-z0-9_-]+=*)';
+  static final paletteUrlPattern =
+      '(?:${RegExp.escape(PaletteCodecConstants.deepLinkScheme)}://|'
+      'https://${RegExp.escape(PaletteCodecConstants.shareHost)}'
+      '${RegExp.escape(PaletteCodecConstants.sharePathPrefix)})\\S*';
+  static const trailingPunctuationPattern = r'''[.,;:!?)\]}"']+$''';
 }
 
 class RegularExpressions {
@@ -131,5 +141,25 @@ class RegularExpressions {
 
   static final multiValueSeparatorRegExp = RegExp(
     _RegularExpressionSource.multiValueSeparatorPattern,
+  );
+
+  static final hexColor6RegExp = RegExp(
+    _RegularExpressionSource.hexColor6Pattern,
+  );
+
+  static final allowedHexCharsRegExp = RegExp(
+    _RegularExpressionSource.allowedHexCharsPattern,
+  );
+
+  static final customPaletteCodeRegExp = RegExp(
+    _RegularExpressionSource.customPaletteCodePattern,
+  );
+
+  static final paletteUrlRegExp = RegExp(
+    _RegularExpressionSource.paletteUrlPattern,
+  );
+
+  static final trailingPunctuationRegExp = RegExp(
+    _RegularExpressionSource.trailingPunctuationPattern,
   );
 }

@@ -15,6 +15,7 @@ import 'package:unn_mobile/core/viewmodels/main_page/feed/reaction_view_model.da
 import 'package:unn_mobile/ui/actions/feed_post_share_action.dart';
 import 'package:unn_mobile/ui/actions/reaction_actions.dart';
 import 'package:unn_mobile/ui/actions/ui_action_handler.dart';
+import 'package:unn_mobile/ui/unn_mobile_colors.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/functions/anchored_reactions_window.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/widgets/attached_file.dart';
@@ -80,6 +81,10 @@ class _FeedPostState extends State<FeedPost> {
     model: widget.post,
     builder: (context, model, _) {
       final theme = Theme.of(context);
+      final isDark = theme.brightness == Brightness.dark;
+      final importantColor =
+          theme.unnMobileColors?.importantPostHighlight ??
+          theme.colorScheme.error;
       return GestureDetector(
         onTap: widget.showingComments ? null : () => _openPost(context, model),
         child: Padding(
@@ -106,16 +111,23 @@ class _FeedPostState extends State<FeedPost> {
                           end: Alignment.bottomCenter,
                           colors: [
                             Color.alphaBlend(
-                              theme.colorScheme.error.withValues(alpha: 0.07),
+                              importantColor.withValues(
+                                alpha: isDark ? 0.18 : 0.07,
+                              ),
                               theme.colorScheme.surfaceContainerLowest,
                             ),
-                            theme.colorScheme.surfaceContainerLowest,
+                            Color.alphaBlend(
+                              importantColor.withValues(
+                                alpha: isDark ? 0.04 : 0,
+                              ),
+                              theme.colorScheme.surfaceContainerLowest,
+                            ),
                           ],
                         )
                       : null,
                   border: Border.all(
                     color: model.isAnnouncement
-                        ? theme.colorScheme.error.withValues(alpha: 0.2)
+                        ? importantColor.withValues(alpha: isDark ? 0.48 : 0.2)
                         : theme.colorScheme.outlineVariant.withValues(
                             alpha: 0.6,
                           ),
@@ -155,15 +167,15 @@ class _FeedPostState extends State<FeedPost> {
                                     vertical: 5,
                                   ),
                                   decoration: BoxDecoration(
-                                    color: theme.colorScheme.error.withValues(
-                                      alpha: 0.1,
+                                    color: importantColor.withValues(
+                                      alpha: isDark ? 0.22 : 0.1,
                                     ),
                                     borderRadius: BorderRadius.circular(20),
                                   ),
                                   child: Text(
                                     'ВАЖНО',
                                     style: theme.textTheme.labelSmall?.copyWith(
-                                      color: theme.colorScheme.error,
+                                      color: importantColor,
                                       fontWeight: FontWeight.w700,
                                       letterSpacing: 0.5,
                                     ),
@@ -229,6 +241,12 @@ class _FeedPostState extends State<FeedPost> {
                               ),
                               child: FilledButton(
                                 style: FilledButton.styleFrom(
+                                  backgroundColor: isDark
+                                      ? theme.subduedButtonBackgroundColor
+                                      : null,
+                                  foregroundColor: isDark
+                                      ? theme.colorScheme.primary
+                                      : null,
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(14),
                                   ),

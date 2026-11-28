@@ -20,16 +20,19 @@ struct ScheduleWidgetSettings {
     let maxLessons: Int
     let showLocation: Bool
     let showLecturer: Bool
+    let paletteOverride: String?
 
     init(
         textSize: ScheduleWidgetTextSize = .normal,
         maxLessons: Int = 0,
         showLocation: Bool = true,
-        showLecturer: Bool = false
+        showLecturer: Bool = false,
+        paletteOverride: String? = nil
     ) {
         self.textSize = textSize
         self.maxLessons = min(6, max(0, maxLessons))
         self.showLocation = showLocation
         self.showLecturer = showLecturer
+        self.paletteOverride = paletteOverride
     }
 }

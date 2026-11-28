@@ -5,7 +5,9 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:go_router/go_router.dart';
 import 'package:unn_mobile/core/viewmodels/loading_page/loading_page_view_model.dart';
+import 'package:unn_mobile/ui/main_page_locations.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
 
 class LoadingPage extends StatefulWidget {
@@ -19,13 +21,35 @@ class _LoadingPageState extends State<LoadingPage> {
   late final Future<void> _loadingPages;
   final Completer<void> _logoFrame = Completer<void>();
 
+  Future<void> _navigateWhenReady(LoadingPageViewModel model) async {
+    final target = await model.decideRoute(
+      loadingPageReady: _waitForLogo(model),
+    );
+    await WidgetsBinding.instance.endOfFrame;
+    if (!mounted) {
+      return;
+    }
+    final route = switch (target) {
+      LoadingRouteTarget.auth => authPageRoute,
+      LoadingRouteTarget.main => mainPageRoute,
+    };
+    GoRouter.of(context).go(route);
+  }
+
   @override
   Widget build(BuildContext context) => BaseView<LoadingPageViewModel>(
+    onModelReady: (model) {
+      _loadingPages = model.initLoadingPages(
+        brightness: Theme.of(context).brightness,
+      );
+      unawaited(_navigateWhenReady(model));
+    },
+    onDispose: (model) => model.dispose(),
     builder: (context, model, child) => FutureBuilder<void>(
       future: _loadingPages,
       builder: (context, snapshot) {
         final theme = Theme.of(context);
-        final backgroundColor = theme.colorScheme.surfaceContainerLowest;
+        final backgroundColor = theme.colorScheme.surface;
         final overlay =
             ThemeData.estimateBrightnessForColor(backgroundColor) ==
                 Brightness.dark
@@ -45,10 +69,6 @@ class _LoadingPageState extends State<LoadingPage> {
         );
       },
     ),
-    onModelReady: (model) {
-      _loadingPages = model.initLoadingPages();
-      model.decideRoute(context, loadingPageReady: _waitForLogo(model));
-    },
   );
 
   Future<void> _waitForLogo(LoadingPageViewModel model) async {
@@ -67,7 +87,7 @@ class _LoadingPageState extends State<LoadingPage> {
   }
 
   Widget _buildContent(BuildContext context, LoadingPageViewModel model) {
-    final page = model.loadingPageData ?? model.defaultPageData;
+    final page = model.loadingPageData;
     return LayoutBuilder(
       builder: (context, constraints) => Center(
         child: ConstrainedBox(
@@ -88,10 +108,7 @@ class _LoadingPageState extends State<LoadingPage> {
                   flex: 0,
                   child: FittedBox(
                     fit: BoxFit.scaleDown,
-                    child: _text(
-                      page?.title ?? '',
-                      page?.titleStyle ?? const TextStyle(),
-                    ),
+                    child: _text(context, page.title, page.titleStyle),
                   ),
                 ),
                 if (model.logoImage != null) ...[
@@ -121,8 +138,8 @@ class _LoadingPageState extends State<LoadingPage> {
                     ),
                   ),
                 ],
-                if (page?.description != null &&
-                    page?.descriptionStyle != null) ...[
+                if (page.description != null &&
+                    page.descriptionStyle != null) ...[
                   const SizedBox(height: 20),
                   Flexible(
                     flex: 0,
@@ -133,8 +150,10 @@ class _LoadingPageState extends State<LoadingPage> {
                           maxWidth: constraints.maxWidth * 0.8,
                         ),
                         child: _text(
-                          page!.description!,
+                          context,
+                          page.description!,
                           page.descriptionStyle!,
+                          isDescription: true,
                         ),
                       ),
                     ),
@@ -149,14 +168,22 @@ class _LoadingPageState extends State<LoadingPage> {
   }
 
   Text _text(
+    BuildContext context,
     String title,
     TextStyle textStyle, {
     TextAlign textAlign = TextAlign.center,
-  }) => Text(
-    title,
-    style: textStyle,
-    textAlign: textAlign,
-    maxLines: 3,
-    overflow: TextOverflow.ellipsis,
-  );
+    bool isDescription = false,
+  }) {
+    final theme = Theme.of(context);
+    final textColor = isDescription
+        ? theme.colorScheme.onSurfaceVariant
+        : theme.colorScheme.onSurface;
+    return Text(
+      title,
+      style: textStyle.copyWith(color: textStyle.color ?? textColor),
+      textAlign: textAlign,
+      maxLines: 3,
+      overflow: TextOverflow.ellipsis,
+    );
+  }
 }

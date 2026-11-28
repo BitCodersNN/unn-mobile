@@ -3,9 +3,9 @@
 
 import 'dart:convert';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:unn_mobile/core/misc/json/json_utils.dart';
+import 'package:unn_mobile/core/misc/platform_utils.dart';
 import 'package:unn_mobile/core/models/schedule/schedule_cache_data.dart';
 import 'package:unn_mobile/core/models/schedule/subject.dart';
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
@@ -22,10 +22,7 @@ class ScheduleWidgetPlatformImpl implements ScheduleWidgetPlatform {
   ScheduleWidgetPlatformImpl(this._logger, {required this._accentColor});
 
   @override
-  bool get isSupported =>
-      !kIsWeb &&
-      (defaultTargetPlatform == TargetPlatform.android ||
-          defaultTargetPlatform == TargetPlatform.iOS);
+  bool get isSupported => isMobilePlatform;
 
   @override
   Future<ScheduleCacheData?> readCache() async {
@@ -48,8 +45,17 @@ class ScheduleWidgetPlatformImpl implements ScheduleWidgetPlatform {
           for (final subject in entry.schedule.subjects)
             subject.subjectType: _accentColor(subject),
       },
+      'subjectTypeKeys': {
+        for (final entry in data.entries)
+          for (final subject in entry.schedule.subjects)
+            subject.subjectType: subject.subjectTypeEnum.name,
+      },
     }),
   );
+
+  @override
+  Future<void> writeAppearance(Map<String, Object> appearance) =>
+      _invoke<void>('writeAppearance', jsonEncode(appearance));
 
   @override
   Future<bool> consumeLaunch() async =>

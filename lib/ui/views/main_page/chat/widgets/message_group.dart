@@ -49,7 +49,7 @@ class MessageGroup extends StatelessWidget {
                   ),
                   child: BBCodeText(
                     data: '[CENTER]${msgText ?? ''}[/CENTER]',
-                    stylesheet: getBBStyleSheet(),
+                    stylesheet: getBBStyleSheet(theme: theme),
                   ),
                 ),
               ),

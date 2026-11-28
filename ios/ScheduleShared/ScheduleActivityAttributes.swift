@@ -8,6 +8,8 @@ import Foundation
 struct ScheduleActivityAttributes: ActivityAttributes {
     struct ContentState: Codable, Hashable {
         var updatedAt: Date
+        var appearance: ScheduleAppearance? = nil
+        var typeKey: String? = nil
     }
 
     let identifier: String

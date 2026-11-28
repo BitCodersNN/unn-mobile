@@ -11,6 +11,7 @@ struct ScheduleLesson: Decodable, Identifiable {
     let start: Double
     let end: Double
     var accentColor: UInt32? = nil
+    var typeKey: String? = nil
 
     var id: String { "\(start)|\(end)|\(title)|\(location)" }
     var startDate: Date { Date(timeIntervalSince1970: start / 1000) }

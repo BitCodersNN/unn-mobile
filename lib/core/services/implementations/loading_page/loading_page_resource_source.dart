@@ -35,7 +35,7 @@ class LoadingPageResourceSource
 
   Future<void> _prepareLogos(LoadingPageCatalog pages, String revision) async {
     final files = await _logos.downloadFiles(
-      fileNames: pages.pages.map((page) => page.imagePath).toSet().toList(),
+      fileNames: pages.logoPaths.toList(),
       revision: revision,
     );
     if (files == null) {

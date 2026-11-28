@@ -5,6 +5,44 @@ import AppIntents
 import WidgetKit
 
 @available(iOS 17.0, *)
+struct SchedulePaletteEntity: AppEntity {
+    static let app = Self(id: "", label: "Как в приложении")
+
+    let id: String
+    let label: String
+
+    var override: String? { id.isEmpty ? nil : id }
+
+    static var typeDisplayRepresentation: TypeDisplayRepresentation { "Палитра виджета" }
+    static var defaultQuery: SchedulePaletteQuery { SchedulePaletteQuery() }
+
+    var displayRepresentation: DisplayRepresentation {
+        DisplayRepresentation(stringLiteral: label)
+    }
+}
+
+@available(iOS 17.0, *)
+struct SchedulePaletteQuery: EntityQuery {
+    func suggestedEntities() async throws -> [SchedulePaletteEntity] {
+        let options = ScheduleAppearanceStore().read()?.options ?? []
+        return [.app] + options.map { SchedulePaletteEntity(id: $0.key, label: $0.label) }
+    }
+
+    func entities(for identifiers: [String]) async throws -> [SchedulePaletteEntity] {
+        let optionsByKey = Dictionary(
+            (ScheduleAppearanceStore().read()?.options ?? []).map { ($0.key, $0.label) },
+            uniquingKeysWith: { first, _ in first }
+        )
+        return identifiers.map { id in
+            if id.isEmpty { return .app }
+            return SchedulePaletteEntity(id: id, label: optionsByKey[id] ?? id)
+        }
+    }
+
+    func defaultResult() async -> SchedulePaletteEntity? { .app }
+}
+
+@available(iOS 17.0, *)
 extension ScheduleWidgetTextSize: AppEnum {
     static var typeDisplayRepresentation: TypeDisplayRepresentation { "Размер текста" }
     static var caseDisplayRepresentations: [ScheduleWidgetTextSize: DisplayRepresentation] {
@@ -46,8 +84,11 @@ enum ScheduleWidgetLessonLimit: String, AppEnum {
 struct ScheduleWidgetConfiguration: WidgetConfigurationIntent {
     static var title: LocalizedStringResource { "Настройки расписания" }
     static var description: IntentDescription {
-        "Выберите размер текста, количество занятий и информацию о них. Если места мало, занятий будет меньше."
+        "Выберите палитру, размер текста, количество занятий и информацию о них. Если места мало, занятий будет меньше."
     }
+
+    @Parameter(title: "Палитра виджета")
+    var palette: SchedulePaletteEntity?
 
     @Parameter(title: "Размер текста", default: .normal)
     var textSize: ScheduleWidgetTextSize
@@ -63,6 +104,7 @@ struct ScheduleWidgetConfiguration: WidgetConfigurationIntent {
 
     static var parameterSummary: some ParameterSummary {
         Summary {
+            \.$palette
             \.$textSize
             \.$lessonLimit
             \.$showLocation
@@ -75,7 +117,8 @@ struct ScheduleWidgetConfiguration: WidgetConfigurationIntent {
             textSize: textSize,
             maxLessons: lessonLimit.count,
             showLocation: showLocation,
-            showLecturer: showLecturer
+            showLecturer: showLecturer,
+            paletteOverride: palette?.override
         )
     }
 }

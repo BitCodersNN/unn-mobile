@@ -10,16 +10,16 @@ struct ScheduleLiveActivity: Widget {
     var body: some WidgetConfiguration {
         ActivityConfiguration(for: ScheduleActivityAttributes.self) { context in
             ScheduleLiveActivityView(context: context)
-                .activitySystemActionForegroundColor(.primary)
+                .activitySystemActionForegroundColor(context.dynamicColor { $0.text })
                 .widgetURL(ScheduleNavigation.url)
         } dynamicIsland: { context in
             DynamicIsland {
                 DynamicIslandExpandedRegion(.center) {
-                    ScheduleLiveActivityView(context: context)
+                    ScheduleLiveActivityView(context: context, inDynamicIsland: true)
                 }
             } compactLeading: {
                 Image(systemName: "calendar")
-                    .foregroundStyle(SchedulePalette.subjectColor(context.attributes.accentColor))
+                    .foregroundStyle(SchedulePalette.color(context.accent(context.islandPalette)))
             } compactTrailing: {
                 ScheduleActivityCountdown(context: context)
                     .font(.caption.monospacedDigit())
@@ -28,7 +28,7 @@ struct ScheduleLiveActivity: Widget {
                 Image(systemName: "calendar")
             }
             .widgetURL(ScheduleNavigation.url)
-            .keylineTint(SchedulePalette.subjectColor(context.attributes.accentColor))
+            .keylineTint(SchedulePalette.color(context.accent(context.islandPalette)))
         }
     }
 }
@@ -36,25 +36,30 @@ struct ScheduleLiveActivity: Widget {
 @available(iOS 16.2, *)
 private struct ScheduleLiveActivityView: View {
     let context: ActivityViewContext<ScheduleActivityAttributes>
+    var inDynamicIsland = false
     @Environment(\.colorScheme) private var colorScheme
-    private var accent: Color { SchedulePalette.subjectColor(context.attributes.accentColor) }
+    private var palette: SchedulePalette {
+        inDynamicIsland ? context.islandPalette : context.palette(systemDark: colorScheme == .dark)
+    }
+    private var accent: Color { SchedulePalette.color(context.accent(palette)) }
+    private var secondary: Color { SchedulePalette.color(palette.secondary) }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack(alignment: .firstTextBaseline) {
                 Text(context.attributes.title).font(.headline).lineLimit(2)
                 Spacer(minLength: 8)
-                Text(context.attributes.type).font(.caption).foregroundStyle(.secondary)
+                Text(context.attributes.type).font(.caption).foregroundStyle(secondary)
             }
             if !context.attributes.location.isEmpty {
                 Label(context.attributes.location, systemImage: "mappin.and.ellipse")
-                    .font(.caption).foregroundStyle(.secondary).lineLimit(1)
+                    .font(.caption).foregroundStyle(secondary).lineLimit(1)
             }
             HStack {
                 Text(context.lessonHasStarted ? "Осталось" : "До начала")
                 ScheduleActivityCountdown(context: context).monospacedDigit()
                 Spacer(minLength: 8)
-                Text(context.attributes.end, style: .time).foregroundStyle(.secondary)
+                Text(context.attributes.end, style: .time).foregroundStyle(secondary)
             }
             .font(.subheadline)
             Group {
@@ -71,7 +76,8 @@ private struct ScheduleLiveActivityView: View {
         }
         .padding(14)
         .environment(\.timeZone, ScheduleTime.timeZone)
-        .activityBackgroundTint(SchedulePalette.background(for: colorScheme))
+        .foregroundStyle(SchedulePalette.color(palette.text))
+        .activityBackgroundTint(SchedulePalette.color(palette.background))
         .privacySensitive()
     }
 }
@@ -87,6 +93,25 @@ private struct ScheduleActivityCountdown: View {
 
 @available(iOS 16.2, *)
 private extension ActivityViewContext where Attributes == ScheduleActivityAttributes {
+    var islandPalette: SchedulePalette {
+        guard let appearance = state.appearance else { return .fallback(dark: true) }
+        return appearance.palette(systemDark: true, forcedDark: true)
+    }
+
+    func palette(systemDark: Bool) -> SchedulePalette {
+        (state.appearance ?? .fallback).palette(systemDark: systemDark)
+    }
+
+    func accent(_ palette: SchedulePalette) -> UInt32 {
+        palette.lessonAccent(typeKey: state.typeKey, fallback: attributes.accentColor)
+    }
+
+    func dynamicColor(_ getColor: @escaping (SchedulePalette) -> UInt32) -> Color {
+        Color(uiColor: UIColor { traits in
+            SchedulePalette.uiColor(getColor(palette(systemDark: traits.userInterfaceStyle == .dark)))
+        })
+    }
+
     var lessonHasStarted: Bool { isStale || Date() >= attributes.start }
 
     var lessonInterval: ClosedRange<Date> {
