@@ -2,7 +2,6 @@
 // Copyright 2025 BitCodersNN
 
 import 'package:unn_mobile/core/constants/academic_year.dart';
-import 'package:unn_mobile/core/misc/authorisation/try_login_and_retrieve_data.dart';
 import 'package:unn_mobile/core/misc/user/current_user_sync_storage.dart';
 import 'package:unn_mobile/core/models/grade_book/curriculum_semester.dart';
 import 'package:unn_mobile/core/models/grade_book/grade_book_summary.dart';
@@ -10,6 +9,7 @@ import 'package:unn_mobile/core/models/grade_book/grade_statistics.dart';
 import 'package:unn_mobile/core/models/grade_book/mark_by_subject.dart';
 import 'package:unn_mobile/core/models/profile/student/student_data.dart';
 import 'package:unn_mobile/core/providers/interfaces/grade_book/mark_by_subject_provider.dart';
+import 'package:unn_mobile/core/services/interfaces/common/online_request_service.dart';
 import 'package:unn_mobile/core/services/interfaces/grade_book/curriculum_service.dart';
 import 'package:unn_mobile/core/services/interfaces/grade_book/grade_book_service.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
@@ -21,6 +21,7 @@ class GradesScreenViewModel extends BaseViewModel {
   final MarkBySubjectProvider _markBySubjectProvider;
   final CurriculumService _curriculumService;
   final CurrentUserSyncStorage _userStorage;
+  final OnlineRequestService _onlineRequestService;
   final DateTime Function() _currentTime;
 
   List<GradeBookSemesterPageViewModel> _semesters = const [];
@@ -34,7 +35,8 @@ class GradesScreenViewModel extends BaseViewModel {
     this._gradeBookService,
     this._markBySubjectProvider,
     this._curriculumService,
-    this._userStorage, {
+    this._userStorage,
+    this._onlineRequestService, {
     DateTime Function()? currentTime,
   }) : _currentTime = currentTime ?? DateTime.now;
 
@@ -85,9 +87,9 @@ class GradesScreenViewModel extends BaseViewModel {
 
   Future<void> _loadGradeBook() async {
     final book = await _getGradeBook();
-    final curriculum = await tryLoginAndRetrieveData(
+    final curriculum = await _onlineRequestService.executeAuthorized(
       _curriculumService.getCurriculum,
-      () => _curriculum,
+      offline: () => _curriculum,
     );
     if (disposed) {
       return;
@@ -156,11 +158,11 @@ class GradesScreenViewModel extends BaseViewModel {
   }
 
   Future<Map<int, List<MarkBySubject>>?> _getGradeBook() =>
-      tryLoginAndRetrieveData(() async {
+      _onlineRequestService.executeAuthorized(() async {
         final gradeBook = await _gradeBookService.getGradeBook();
         if (gradeBook != null) {
           await _markBySubjectProvider.saveData(gradeBook);
         }
         return gradeBook;
-      }, _markBySubjectProvider.getData);
+      }, offline: _markBySubjectProvider.getData);
 }

@@ -18,6 +18,7 @@ import 'package:unn_mobile/ui/views/main_page/main_page.dart';
 import 'package:unn_mobile/ui/views/main_page/main_page_route_data.dart';
 import 'package:unn_mobile/ui/views/main_page/main_page_routing.dart';
 import 'package:unn_mobile/ui/views/main_page/settings/settings.dart';
+import 'package:unn_mobile/ui/views/main_page/widgets/main_page_app_bar.dart';
 import 'package:unn_mobile/ui/widgets/theme_aware_indexed_stack.dart';
 
 class AppRouter extends ChangeNotifier {
@@ -166,7 +167,13 @@ class AppRouter extends ChangeNotifier {
           name: route.pageTitle,
           pageBuilder: (context, state) => NoTransitionPage(
             key: ValueKey(route.pagePath),
-            child: route.builder(context, state),
+            child: route.pagePath == MainPagePaths.more
+                ? route.builder(context, state)
+                : MainPageTabScope(
+                    title: route.pageTitle,
+                    showDate: AppSettings.showTabBarDate,
+                    child: route.builder(context, state),
+                  ),
           ),
           routes: _buildSubroutes(route.subroutes),
         ),

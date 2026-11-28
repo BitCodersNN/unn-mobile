@@ -44,7 +44,7 @@ enum ScheduleWidgetTimeline {
         let first = day.addingTimeInterval(10 * 3600)
         let second = day.addingTimeInterval(12 * 3600)
         let data = ScheduleSnapshot(
-            version: ScheduleSnapshot.schemaVersion, ownerLabel: "Ваше расписание", updatedAt: day.timeIntervalSince1970 * 1000,
+            ownerLabel: "Ваше расписание",
             validFrom: day.timeIntervalSince1970 * 1000,
             validUntil: day.addingTimeInterval(86400).timeIntervalSince1970 * 1000,
             lessons: [

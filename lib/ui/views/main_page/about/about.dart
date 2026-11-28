@@ -10,6 +10,7 @@ import 'package:unn_mobile/core/models/about/author.dart';
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/about/about_view_model.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
+import 'package:unn_mobile/ui/views/main_page/widgets/main_page_app_bar.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class AboutScreenView extends StatelessWidget {
@@ -19,10 +20,7 @@ class AboutScreenView extends StatelessWidget {
   Widget build(BuildContext context) => BaseView<AboutViewModel>(
     onModelReady: (model) => model.init(),
     builder: (context, model, child) => Scaffold(
-      appBar: AppBar(
-        title: const Text('О нас'),
-        forceMaterialTransparency: true,
-      ),
+      appBar: buildMainPageAppBar(context, title: 'О нас'),
       body: LayoutBuilder(
         builder: (context, constraints) {
           final theme = Theme.of(context);

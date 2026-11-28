@@ -14,6 +14,7 @@ import 'package:unn_mobile/ui/builders/online_status_builder.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
 import 'package:unn_mobile/ui/views/main_page/source/source_course_view.dart';
 import 'package:unn_mobile/ui/views/main_page/source/source_webinar_view.dart';
+import 'package:unn_mobile/ui/views/main_page/widgets/main_page_app_bar.dart';
 import 'package:unn_mobile/ui/widgets/menu_button.dart';
 import 'package:unn_mobile/ui/widgets/offline_overlay_displayer.dart';
 
@@ -67,9 +68,9 @@ class SourcePageView extends StatelessWidget {
           builder: (context, model, child) => DefaultTabController(
             length: 2,
             child: Scaffold(
-              appBar: AppBar(
-                title: const Text('Материалы'),
-                forceMaterialTransparency: true,
+              appBar: buildMainPageAppBar(
+                context,
+                title: 'Материалы',
                 bottom: const TabBar.secondary(
                   tabs: [
                     Tab(child: Text('Учебные материалы')),

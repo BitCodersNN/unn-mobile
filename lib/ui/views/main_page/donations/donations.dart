@@ -4,6 +4,7 @@
 import 'package:flutter/material.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/donations/donations_view_model.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
+import 'package:unn_mobile/ui/views/main_page/widgets/main_page_app_bar.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:webview_flutter_android/webview_flutter_android.dart';
 
@@ -82,10 +83,7 @@ class _DonationsWebViewHostState extends State<_DonationsWebViewHost> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(
-      title: const Text('Поддержать'),
-      forceMaterialTransparency: true,
-    ),
+    appBar: buildMainPageAppBar(context, title: 'Поддержать'),
     body: WebViewWidget(controller: controller),
   );
 }

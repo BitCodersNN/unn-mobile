@@ -3,7 +3,7 @@
 
 import 'dart:async';
 
-import 'package:unn_mobile/core/misc/authorisation/try_login_and_retrieve_data.dart';
+import 'package:unn_mobile/core/misc/cache/restore_cache_then_refresh.dart';
 import 'package:unn_mobile/core/misc/html_utils/html_to_plain_text.dart';
 import 'package:unn_mobile/core/models/feed/blog_post.dart';
 import 'package:unn_mobile/core/models/feed/blog_post_type.dart';
@@ -11,6 +11,7 @@ import 'package:unn_mobile/core/models/feed/feed_filter.dart';
 import 'package:unn_mobile/core/providers/interfaces/feed/blog_post_provider.dart';
 import 'package:unn_mobile/core/providers/interfaces/feed/last_feed_load_date_time_provider.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation/stream_auth_service.dart';
+import 'package:unn_mobile/core/services/interfaces/common/online_request_service.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/blog_post_receivers/blog_post_pagination_service.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/blog_post_receivers/refresh_blog_post_service.dart';
 import 'package:unn_mobile/core/services/interfaces/feed/blog_post_search_service.dart';
@@ -37,6 +38,7 @@ class FeedScreenViewModel extends BaseViewModel
   final RefreshBlogPostService _blogPostServiceImpl;
 
   final BlogPostSearchService _searchService;
+  final OnlineRequestService _onlineRequestService;
 
   final Map<_FeedSelection, FeedPageState> _pages = {};
   final Map<FeedFilter, double> _scrollPositions = {};
@@ -191,6 +193,7 @@ class FeedScreenViewModel extends BaseViewModel
     this._blogPostServiceImpl,
     this._postPaginationService,
     this._searchService,
+    this._onlineRequestService,
   );
 
   Future<void> init() => _initialization ??= _initialize();
@@ -199,15 +202,20 @@ class FeedScreenViewModel extends BaseViewModel
 
   Future<void> _loadInitialPosts() async {
     final lastReadAt = await _lastFeedLoadDateTimeProvider.getData();
-    final cachedPosts = await _blogPostProvider.getData();
     if (disposed) {
       return;
     }
     _lastReadAt = lastReadAt;
-    _totalPosts.clear();
-    _addPostsToList(_totalPosts, cachedPosts);
-    notifyListeners();
-    await reload();
+    await restoreCacheThenRefresh<List<BlogPost>>(
+      readCache: _blogPostProvider.getData,
+      restore: (posts) {
+        _totalPosts.clear();
+        _addPostsToList(_totalPosts, posts);
+        notifyListeners();
+      },
+      refresh: reload,
+      isCurrent: () => !disposed,
+    );
   }
 
   void _addPostsToList(
@@ -314,22 +322,19 @@ class FeedScreenViewModel extends BaseViewModel
     }
     loadingMore = true;
     final requestPinRevision = _pinRevision;
-    final freshPosts =
-        await tryLoginAndRetrieveData<Map<BlogPostType, List<BlogPost>>>(
-          () async {
-            if (!await _ensureServerSelection(_selection)) {
-              return null;
-            }
-            return _postPaginationService.loadNextPageBlogPosts(
-              pageNumber: _page.pageNumber + 1,
-              pinIds: _page.lastPagePinIds,
-              signedParameters: _streamAuthService.signedParameters ?? '',
-              commentFormUID: _streamAuthService.commentFormUID ?? '',
-              blogCommentFormUID: _streamAuthService.blogCommentFormUID ?? '',
-            );
-          },
-          () => null,
-        );
+    final freshPosts = await _onlineRequestService
+        .executeAuthorized<Map<BlogPostType, List<BlogPost>>>(() async {
+          if (!await _ensureServerSelection(_selection)) {
+            return null;
+          }
+          return _postPaginationService.loadNextPageBlogPosts(
+            pageNumber: _page.pageNumber + 1,
+            pinIds: _page.lastPagePinIds,
+            signedParameters: _streamAuthService.signedParameters ?? '',
+            commentFormUID: _streamAuthService.commentFormUID ?? '',
+            blogCommentFormUID: _streamAuthService.blogCommentFormUID ?? '',
+          );
+        });
 
     if (freshPosts == null) {
       failedToLoad = true;
@@ -360,7 +365,7 @@ class FeedScreenViewModel extends BaseViewModel
       loadingMore = true;
     }
 
-    final posts = await tryLoginAndRetrieveData(() async {
+    final posts = await _onlineRequestService.executeAuthorized(() async {
       if (!await _ensureServerSelection(_selection)) {
         return null;
       }
@@ -369,7 +374,7 @@ class FeedScreenViewModel extends BaseViewModel
         signedParameters: _streamAuthService.signedParameters ?? '',
         commentFormUID: _streamAuthService.commentFormUID ?? '',
       );
-    }, () => null);
+    });
 
     if (posts == null) {
       if (updateMainPage) {

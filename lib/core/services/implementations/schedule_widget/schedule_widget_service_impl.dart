@@ -3,20 +3,21 @@
 
 import 'package:dio/dio.dart';
 import 'package:unn_mobile/core/misc/app_settings.dart';
-import 'package:unn_mobile/core/misc/authorisation/try_login_and_retrieve_data.dart';
 import 'package:unn_mobile/core/misc/date_time_utilities/week_range.dart';
 import 'package:unn_mobile/core/misc/user/current_user_sync_storage.dart';
 import 'package:unn_mobile/core/models/profile/employee/employee_data.dart';
 import 'package:unn_mobile/core/models/profile/student/student_data.dart';
 import 'package:unn_mobile/core/models/profile/user_data.dart';
+import 'package:unn_mobile/core/models/schedule/offline_schedule.dart';
+import 'package:unn_mobile/core/models/schedule/schedule_cache_key.dart';
 import 'package:unn_mobile/core/models/schedule/schedule_filter.dart';
 import 'package:unn_mobile/core/models/schedule/subject.dart';
-import 'package:unn_mobile/core/models/schedule_widget/schedule_widget_data.dart';
-import 'package:unn_mobile/core/models/schedule_widget/schedule_widget_lesson.dart';
+import 'package:unn_mobile/core/models/schedule_widget/schedule_widget_configuration.dart';
 import 'package:unn_mobile/core/providers/interfaces/authorisation/auth_data_provider.dart';
-import 'package:unn_mobile/core/providers/interfaces/schedule/offline_schedule_provider.dart';
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
+import 'package:unn_mobile/core/services/interfaces/common/online_request_service.dart';
 import 'package:unn_mobile/core/services/interfaces/common/search_id_on_portal_service.dart';
+import 'package:unn_mobile/core/services/interfaces/schedule/offline_schedule_service.dart';
 import 'package:unn_mobile/core/services/interfaces/schedule/schedule_service.dart';
 import 'package:unn_mobile/core/services/interfaces/schedule_widget/schedule_widget_platform.dart';
 import 'package:unn_mobile/core/services/interfaces/schedule_widget/schedule_widget_service.dart';
@@ -28,10 +29,10 @@ class ScheduleWidgetServiceImpl implements ScheduleWidgetService {
   final AuthDataProvider _credentials;
   final ScheduleService _scheduleService;
   final SearchIdOnPortalService _search;
-  final OfflineScheduleProvider _offline;
+  final OfflineScheduleService _offline;
   final ScheduleWidgetPlatform _platform;
+  final OnlineRequestService _onlineRequestService;
   final LoggerService _logger;
-  final ScheduleWidgetLesson Function(Subject) _lessonBuilder;
 
   Future<void>? _pending;
   CancelToken? _request;
@@ -46,9 +47,9 @@ class ScheduleWidgetServiceImpl implements ScheduleWidgetService {
     this._search,
     this._offline,
     this._platform,
-    this._logger, {
-    this._lessonBuilder = ScheduleWidgetLesson.fromSubject,
-  });
+    this._onlineRequestService,
+    this._logger,
+  );
 
   @override
   Future<void> refresh() {
@@ -93,65 +94,86 @@ class ScheduleWidgetServiceImpl implements ScheduleWidgetService {
       return;
     }
     final useRasp = AppSettings.useRaspSchedule;
-    final cached = await _platform.read();
+    await _offline.configureWidget(
+      ScheduleWidgetConfiguration(
+        ownerId: user.userId,
+        ownerLabel: user is StudentData
+            ? user.baseEduInfo.eduGroup
+            : 'Личное расписание',
+        type: user is StudentData ? IdType.student : IdType.lecturer,
+        useRasp: useRasp,
+      ),
+    );
     if (generation != _generation ||
         _userStorage.currentUserData?.userId != user.userId) {
       return;
     }
-    final cacheMatches =
-        cached != null &&
-        cached.ownerId == user.userId &&
-        cached.useRasp == useRasp;
-    if (cached != null && !cacheMatches) {
-      await _platform.write(null);
+    if (useRasp && user.login == null) {
+      return;
     }
     final token = CancelToken();
     _request = token;
+    _requestUseRasp = useRasp;
     final week = WeekRange(weekOffset: 0);
     final next = WeekRange(weekOffset: 1, reference: week.reference);
-    _requestUseRasp = useRasp;
     final loaded = useRasp
-        ? await _loadOnline(user, week, next, token, useRasp: true)
-        : await tryLoginAndRetrieveData<_LoadedSchedule>(
+        ? await _onlineRequestService.execute<_LoadedSchedule>(
+            () => _loadOnline(user, week, next, token, useRasp: true),
+          )
+        : await _onlineRequestService.executeAuthorized<_LoadedSchedule>(
             () => _loadOnline(user, week, next, token, useRasp: false),
-            () => null,
           );
-    if (generation != _generation ||
-        token.isCancelled ||
-        useRasp != AppSettings.useRaspSchedule) {
+    if (generation != _generation || token.isCancelled) {
       return;
     }
     _request = null;
-    if (loaded != null) {
-      await _publish(
-        user,
-        loaded.subjects,
-        week.start,
-        loaded.validUntil,
-        generation: generation,
+    if (loaded == null || !await _canSave(user, generation, useRasp: useRasp)) {
+      return;
+    }
+    await _cacheSchedule(user, loaded, week, useRasp: useRasp);
+  }
+
+  Future<bool> _canSave(
+    UserData user,
+    int generation, {
+    required bool useRasp,
+  }) async {
+    if (!await _credentials.isContained()) {
+      return false;
+    }
+    final credentials = await _credentials.getData();
+    return generation == _generation &&
+        _userStorage.currentUserData?.userId == user.userId &&
+        credentials.login == user.login &&
+        useRasp == AppSettings.useRaspSchedule;
+  }
+
+  Future<void> _cacheSchedule(
+    UserData user,
+    _LoadedSchedule loaded,
+    WeekRange firstWeek, {
+    required bool useRasp,
+  }) async {
+    final schedules = <ScheduleCacheKey, OfflineSchedule>{};
+    for (int offset = 0; ; offset++) {
+      final week = WeekRange(weekOffset: offset, reference: firstWeek.start);
+      if (!week.start.isBefore(loaded.validUntil)) {
+        break;
+      }
+      schedules[(
+        ownerId: user.userId,
+        type: user is StudentData ? IdType.student : IdType.lecturer,
+        id: null,
         useRasp: useRasp,
-      );
-      return;
-    }
-    if (cacheMatches) {
-      return;
-    }
-    final offline = await _offline.getData();
-    if (generation != _generation) {
-      return;
-    }
-    final saved =
-        offline[user is StudentData ? IdType.student : IdType.lecturer];
-    if (saved != null && saved.useRasp == useRasp) {
-      await _publish(
-        user,
-        saved.subjects,
-        saved.week.start,
-        saved.week.endExclusive,
-        generation: generation,
-        useRasp: useRasp,
+        weekStart: week.start,
+      )] = OfflineSchedule(
+        week,
+        loaded.subjects.where(
+          (subject) => week.contains(subject.dateTimeRange.start),
+        ),
       );
     }
+    await _offline.saveSchedules(schedules);
   }
 
   Future<_LoadedSchedule?> _loadOnline(
@@ -197,7 +219,7 @@ class ScheduleWidgetServiceImpl implements ScheduleWidgetService {
   Future<_LoadedSchedule?> _loadWeeks(
     WeekRange week,
     WeekRange next,
-    Future<List<Subject>?> Function(WeekRange week) load,
+    Future<List<Subject>?> Function(WeekRange) load,
   ) async {
     final results = await Future.wait([load(week), load(next)]);
     final current = results.first;
@@ -211,46 +233,12 @@ class ScheduleWidgetServiceImpl implements ScheduleWidgetService {
     );
   }
 
-  Future<void> _publish(
-    UserData user,
-    List<Subject> subjects,
-    DateTime start,
-    DateTime end, {
-    required int generation,
-    required bool useRasp,
-  }) async {
-    if (!await _credentials.isContained()) {
-      return;
-    }
-    final credentials = await _credentials.getData();
-    if (generation != _generation ||
-        _userStorage.currentUserData?.userId != user.userId ||
-        credentials.login != user.login ||
-        useRasp != AppSettings.useRaspSchedule) {
-      return;
-    }
-    await _platform.write(
-      ScheduleWidgetData(
-        ownerId: user.userId,
-        useRasp: useRasp,
-        ownerLabel: user is StudentData
-            ? user.baseEduInfo.eduGroup
-            : 'Личное расписание',
-        updatedAt: DateTime.now(),
-        validFrom: start,
-        validUntil: end,
-        lessons: subjects.map(_lessonBuilder),
-      ),
-    );
-  }
-
   @override
   Future<void> clear() async {
     _generation++;
     _refreshRequested = false;
     _request?.cancel();
     _request = null;
-    _requestUseRasp = null;
-    await _platform.write(null);
+    await _offline.configureWidget(null);
   }
 }

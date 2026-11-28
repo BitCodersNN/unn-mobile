@@ -17,6 +17,7 @@ import 'package:unn_mobile/core/models/schedule_activity/schedule_activity_setti
 import 'package:unn_mobile/core/services/interfaces/authorisation/source_authorisation_service.dart';
 import 'package:unn_mobile/core/services/interfaces/authorisation/unn_authorisation_service.dart';
 import 'package:unn_mobile/core/services/interfaces/common/app_theme_controller.dart';
+import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
 import 'package:unn_mobile/core/services/interfaces/common/storage_service.dart';
 import 'package:unn_mobile/core/services/interfaces/schedule_widget/schedule_widget_service.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
@@ -55,6 +56,7 @@ class SettingsScreenViewModel extends BaseViewModel {
 
   final UnnAuthService _authorizationService;
   final SourceAuthService _sourceAuthorizationService;
+  final LoggerService _loggerService;
 
   SettingsScreenViewModel(
     this._themeController,
@@ -63,6 +65,7 @@ class SettingsScreenViewModel extends BaseViewModel {
     this._sourceAuthorizationService,
     this._scheduleWidget,
     this._activityPlatform,
+    this._loggerService,
   ) {
     _themeController.addListener(notifyListeners);
   }
@@ -103,6 +106,19 @@ class SettingsScreenViewModel extends BaseViewModel {
 
   bool get vibrationEnabled => AppSettings.vibrationEnabled;
 
+  bool get showTabBarDate => AppSettings.showTabBarDate.value;
+
+  Future<bool> updateShowTabBarDate({required bool value}) async {
+    try {
+      await AppSettings.updateShowTabBarDate(value: value);
+    } catch (error, stackTrace) {
+      _loggerService.logError(error, stackTrace);
+      return false;
+    }
+    notifyListeners();
+    return true;
+  }
+
   set vibrationEnabled(bool value) {
     AppSettings.vibrationEnabled = value;
     AppSettings.save();
@@ -139,6 +155,7 @@ class SettingsScreenViewModel extends BaseViewModel {
 
   Future<void> clearEverything() async {
     AppSettings.scheduleActivity.value = const ScheduleActivitySettings();
+    AppSettings.resetShowTabBarDate();
     await _activityPlatform.configure(AppSettings.scheduleActivity.value);
     await _scheduleWidget.clear();
     await Future.wait([_storageService.clear(), clearCache()]);

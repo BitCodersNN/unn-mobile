@@ -9,6 +9,7 @@ import 'package:flutter/rendering.dart';
 import 'package:unn_mobile/core/misc/haptic_utils.dart';
 import 'package:unn_mobile/ui/widgets/context_menu/context_menu_action.dart';
 import 'package:unn_mobile/ui/widgets/context_menu/preview_menu_route.dart';
+import 'package:unn_mobile/ui/widgets/route_pop_blocker.dart';
 
 export 'package:unn_mobile/ui/widgets/context_menu/preview_menu_route.dart'
     show PreviewContextMenuAccessoryBuilder;
@@ -74,13 +75,16 @@ class _PreviewContextMenuState extends State<PreviewContextMenu> {
   }
 
   @override
-  Widget build(BuildContext context) => GestureDetector(
-    onLongPress: _showMenu,
-    child: Opacity(
-      opacity: _menuOpen ? 0 : 1,
-      child: RepaintBoundary(
-        key: widget.previewKey ?? _previewKey,
-        child: widget.child,
+  Widget build(BuildContext context) => PopScope(
+    canPop: !_menuOpen,
+    child: GestureDetector(
+      onLongPress: _showMenu,
+      child: Opacity(
+        opacity: _menuOpen ? 0 : 1,
+        child: RepaintBoundary(
+          key: widget.previewKey ?? _previewKey,
+          child: widget.child,
+        ),
       ),
     ),
   );
@@ -108,6 +112,41 @@ Future<void> _showPreviewContextMenu({
   final dismissLabel = MaterialLocalizations.of(context)
       .modalBarrierDismissLabel;
   final devicePixelRatio = MediaQuery.devicePixelRatioOf(context);
+  await runWithBlockedRoutePop(
+    context,
+    () => _openPreviewContextMenu(
+      context: context,
+      source: source,
+      overlay: overlay,
+      navigator: navigator,
+      themes: themes,
+      dismissLabel: dismissLabel,
+      devicePixelRatio: devicePixelRatio,
+      actions: actions,
+      topAccessoryBuilder: topAccessoryBuilder,
+      borderRadius: borderRadius,
+      minActionsWidth: minActionsWidth,
+      onOpen: onOpen,
+      onClose: onClose,
+    ),
+  );
+}
+
+Future<void> _openPreviewContextMenu({
+  required BuildContext context,
+  required RenderRepaintBoundary source,
+  required RenderBox overlay,
+  required NavigatorState navigator,
+  required CapturedThemes themes,
+  required String dismissLabel,
+  required double devicePixelRatio,
+  required List<ContextMenuAction> actions,
+  required BorderRadius borderRadius,
+  required double minActionsWidth,
+  required VoidCallback onOpen,
+  required VoidCallback onClose,
+  PreviewContextMenuAccessoryBuilder? topAccessoryBuilder,
+}) async {
   triggerHaptic(HapticIntensity.medium);
   await WidgetsBinding.instance.endOfFrame;
   if (!context.mounted) {

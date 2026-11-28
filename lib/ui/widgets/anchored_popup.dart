@@ -6,6 +6,7 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:unn_mobile/core/misc/haptic_utils.dart';
+import 'package:unn_mobile/ui/widgets/route_pop_blocker.dart';
 
 enum AnchoredPopupPlacement { above, below }
 
@@ -40,6 +41,21 @@ Future<T?> showAnchoredPopup<T>(
     themes: InheritedTheme.capture(from: context, to: navigator.context),
     dismissLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
   );
+  return runWithBlockedRoutePop(
+    context,
+    () => _pushAnchoredPopupRoute(
+      context: context,
+      navigator: navigator,
+      route: route,
+    ),
+  );
+}
+
+Future<T?> _pushAnchoredPopupRoute<T>({
+  required BuildContext context,
+  required NavigatorState navigator,
+  required _AnchoredPopupRoute<T> route,
+}) async {
   triggerHaptic(HapticIntensity.medium);
   final result = await navigator.push(route);
   await route.completed;
@@ -120,7 +136,13 @@ class _AnchoredPopupRoute<T> extends PopupRoute<T> {
             return Stack(
               children: [
                 Positioned.fill(
-                  child: IgnorePointer(
+                  child: GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTap: () {
+                      if (ModalRoute.of(context)?.isCurrent ?? false) {
+                        Navigator.of(context).pop();
+                      }
+                    },
                     child: blurSigma > 0
                         ? BackdropFilter(
                             filter: ui.ImageFilter.blur(

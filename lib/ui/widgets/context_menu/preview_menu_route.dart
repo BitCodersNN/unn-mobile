@@ -89,7 +89,11 @@ class PreviewMenuRoute extends PopupRoute<VoidCallback> {
               Positioned.fill(
                 child: GestureDetector(
                   behavior: HitTestBehavior.opaque,
-                  onTap: () => Navigator.of(context).pop(),
+                  onTap: () {
+                    if (ModalRoute.of(context)?.isCurrent ?? false) {
+                      Navigator.of(context).pop();
+                    }
+                  },
                   child: BackdropFilter(
                     filter: ui.ImageFilter.blur(
                       sigmaX: 5 * progress,

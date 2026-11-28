@@ -8,6 +8,7 @@ class AppSettingsKeys {
   static const String customLightPalette = 'customLightPalette';
   static const String customDarkPalette = 'customDarkPalette';
   static const String tabBarPaths = 'tabBarPaths';
+  static const String showTabBarDate = 'showTabBarDate';
   static const String moreMenuPaths = 'moreMenuPaths';
   static const String vibrationEnabled = 'vibrationEnabled';
   static const String analyticsEnabled = 'analyticsEnabled';

@@ -26,6 +26,7 @@ import 'package:unn_mobile/ui/views/main_page/settings/widgets/settings_section.
 import 'package:unn_mobile/ui/views/main_page/settings/widgets/settings_tile.dart';
 import 'package:unn_mobile/ui/views/main_page/settings/widgets/theme_palette_selector.dart';
 import 'package:unn_mobile/ui/views/main_page/tab_bar/tab_bar_customization_sheet.dart';
+import 'package:unn_mobile/ui/views/main_page/widgets/main_page_app_bar.dart';
 import 'package:unn_mobile/ui/widgets/dialogs/custom_palette_import_dialog.dart';
 
 const _themeLabels = {
@@ -223,6 +224,18 @@ class _SettingsScreenViewState extends State<SettingsScreenView>
     }
   }
 
+  Future<void> _updateShowTabBarDate(
+    SettingsScreenViewModel model,
+    bool value,
+  ) async {
+    final saved = await model.updateShowTabBarDate(value: value);
+    if (!saved && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Не удалось сохранить настройку даты')),
+      );
+    }
+  }
+
   Future<void> _clearCache(SettingsScreenViewModel model) async {
     await model.clearCache();
     if (mounted) {
@@ -254,11 +267,10 @@ class _SettingsScreenViewState extends State<SettingsScreenView>
     final colors = theme.colorScheme;
     return Scaffold(
       backgroundColor: colors.surfaceContainerLow,
-      appBar: AppBar(
-        title: const Text('Настройки'),
-        centerTitle: false,
+      appBar: buildMainPageAppBar(
+        context,
+        title: 'Настройки',
         backgroundColor: colors.surfaceContainerLow,
-        scrolledUnderElevation: 0,
       ),
       body: SafeArea(
         top: false,
@@ -289,6 +301,8 @@ class _SettingsScreenViewState extends State<SettingsScreenView>
                   _ApplicationSection(
                     model: model,
                     hasAccount: widget.hasAccount,
+                    onUpdateShowTabBarDate: (value) =>
+                        unawaited(_updateShowTabBarDate(model, value)),
                     onOpenSystemAppSettings: () =>
                         _openSystemAppSettings(model),
                     onCustomizeTabBar: _customizeTabBar,
@@ -409,12 +423,14 @@ class _AppearanceSection extends StatelessWidget {
 class _ApplicationSection extends StatelessWidget {
   final SettingsScreenViewModel model;
   final bool hasAccount;
+  final ValueChanged<bool> onUpdateShowTabBarDate;
   final VoidCallback onOpenSystemAppSettings;
   final VoidCallback onCustomizeTabBar;
 
   const _ApplicationSection({
     required this.model,
     required this.hasAccount,
+    required this.onUpdateShowTabBarDate,
     required this.onOpenSystemAppSettings,
     required this.onCustomizeTabBar,
   });
@@ -430,6 +446,14 @@ class _ApplicationSection extends StatelessWidget {
         value: model.vibrationEnabled,
         onChanged: (value) => model.vibrationEnabled = value,
       ),
+      if (hasAccount)
+        SettingsSwitchTile(
+          icon: Icons.today_outlined,
+          title: 'Дата в заголовке',
+          subtitle: 'Показывать дату на вкладках нижнего меню',
+          value: model.showTabBarDate,
+          onChanged: onUpdateShowTabBarDate,
+        ),
       SettingsActionTile(
         icon: Icons.app_settings_alt_outlined,
         title: 'Системные настройки приложения',
