@@ -9,7 +9,6 @@ import 'package:go_router/go_router.dart';
 import 'package:unn_mobile/core/misc/app_version.dart';
 import 'package:unn_mobile/core/models/common/app_dark_theme.dart';
 import 'package:unn_mobile/core/models/common/app_light_theme.dart';
-import 'package:unn_mobile/core/models/common/app_theme_mode.dart';
 import 'package:unn_mobile/core/models/common/custom_palette_config.dart';
 import 'package:unn_mobile/core/models/schedule_activity/schedule_activity_mode.dart';
 import 'package:unn_mobile/core/models/schedule_activity/schedule_activity_settings.dart';
@@ -30,9 +29,9 @@ import 'package:unn_mobile/ui/views/main_page/widgets/main_page_app_bar.dart';
 import 'package:unn_mobile/ui/widgets/dialogs/custom_palette_import_dialog.dart';
 
 const _themeLabels = {
-  AppThemeMode.system: 'Системная',
-  AppThemeMode.light: 'Светлая',
-  AppThemeMode.dark: 'Тёмная',
+  ThemeMode.system: 'Системная',
+  ThemeMode.light: 'Светлая',
+  ThemeMode.dark: 'Тёмная',
 };
 
 class SettingsScreenView extends StatefulWidget {
@@ -396,7 +395,7 @@ class _AppearanceSection extends StatelessWidget {
         subtitle: _themeLabels[model.themeMode],
         onTap: onSelectTheme,
       ),
-      if (model.themeMode != AppThemeMode.dark)
+      if (model.themeMode != ThemeMode.dark)
         _paletteSelector<AppLightTheme>(
           brightness: Brightness.light,
           title: 'Светлая палитра',
@@ -406,7 +405,7 @@ class _AppearanceSection extends StatelessWidget {
           isCustomConfigured: model.hasCustomLightPalette,
           onSelectPalette: model.setLightTheme,
         ),
-      if (model.themeMode != AppThemeMode.light)
+      if (model.themeMode != ThemeMode.light)
         _paletteSelector<AppDarkTheme>(
           brightness: Brightness.dark,
           title: 'Тёмная палитра',

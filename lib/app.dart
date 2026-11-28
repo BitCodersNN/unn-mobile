@@ -8,7 +8,6 @@ import 'package:provider/provider.dart';
 import 'package:unn_mobile/core/constants/main_page_paths.dart';
 import 'package:unn_mobile/core/misc/schedule_activity/schedule_activity_platform.dart';
 import 'package:unn_mobile/core/misc/user/current_user_sync_storage.dart';
-import 'package:unn_mobile/core/models/common/app_theme_mode.dart';
 import 'package:unn_mobile/core/services/interfaces/common/app_theme_controller.dart';
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
 import 'package:unn_mobile/core/services/interfaces/common/palette_link_platform.dart';
@@ -135,11 +134,7 @@ class _UnnMobileState extends State<UnnMobile> {
           themeController.darkTheme,
           custom: themeController.customDarkPalette,
         ),
-        themeMode: switch (themeController.mode) {
-          AppThemeMode.system => ThemeMode.system,
-          AppThemeMode.light => ThemeMode.light,
-          AppThemeMode.dark => ThemeMode.dark,
-        },
+        themeMode: themeController.mode,
         themeAnimationDuration: const Duration(milliseconds: 200),
       ),
     ),

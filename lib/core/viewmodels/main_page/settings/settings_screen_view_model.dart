@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2026 BitCodersNN
 
-import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:permission_handler_platform_interface/permission_handler_platform_interface.dart';
 import 'package:unn_mobile/core/misc/app_settings.dart';
@@ -9,7 +9,6 @@ import 'package:unn_mobile/core/misc/file_helpers/file_functions.dart';
 import 'package:unn_mobile/core/misc/schedule_activity/schedule_activity_platform.dart';
 import 'package:unn_mobile/core/models/common/app_dark_theme.dart';
 import 'package:unn_mobile/core/models/common/app_light_theme.dart';
-import 'package:unn_mobile/core/models/common/app_theme_mode.dart';
 import 'package:unn_mobile/core/models/common/custom_palette_config.dart';
 import 'package:unn_mobile/core/models/schedule_activity/schedule_activity_capabilities.dart';
 import 'package:unn_mobile/core/models/schedule_activity/schedule_activity_mode.dart';
@@ -76,7 +75,7 @@ class SettingsScreenViewModel extends BaseViewModel {
     super.dispose();
   }
 
-  AppThemeMode get themeMode => _themeController.mode;
+  ThemeMode get themeMode => _themeController.mode;
   AppLightTheme get lightTheme => _themeController.lightTheme;
   AppDarkTheme get darkTheme => _themeController.darkTheme;
   CustomPaletteConfig? get customLightPalette =>
@@ -90,7 +89,7 @@ class SettingsScreenViewModel extends BaseViewModel {
       ? _themeController.customDarkPalette
       : _themeController.customLightPalette;
 
-  Future<void> setThemeMode(AppThemeMode mode) =>
+  Future<void> setThemeMode(ThemeMode mode) =>
       _themeController.setMode(mode);
 
   Future<void> setLightTheme(AppLightTheme theme) =>

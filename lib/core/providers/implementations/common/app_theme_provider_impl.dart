@@ -3,11 +3,11 @@
 
 import 'dart:convert';
 
+import 'package:flutter/material.dart';
 import 'package:unn_mobile/core/constants/string_keys/app_settings_keys.dart';
 import 'package:unn_mobile/core/misc/json/json_utils.dart';
 import 'package:unn_mobile/core/models/common/app_dark_theme.dart';
 import 'package:unn_mobile/core/models/common/app_light_theme.dart';
-import 'package:unn_mobile/core/models/common/app_theme_mode.dart';
 import 'package:unn_mobile/core/models/common/custom_palette_config.dart';
 import 'package:unn_mobile/core/providers/interfaces/common/app_theme_provider.dart';
 import 'package:unn_mobile/core/services/interfaces/common/storage_service.dart';
@@ -19,10 +19,10 @@ class AppThemeProviderImpl implements AppThemeProvider {
   AppThemeProviderImpl(this._storage);
 
   @override
-  Future<AppThemeMode> read() => _readEnum(
+  Future<ThemeMode> read() => _readEnum(
     AppSettingsKeys.themeMode,
-    AppThemeMode.values,
-    AppThemeMode.system,
+    ThemeMode.values,
+    ThemeMode.system,
   );
 
   @override
@@ -49,7 +49,7 @@ class AppThemeProviderImpl implements AppThemeProvider {
   }
 
   @override
-  Future<void> save(AppThemeMode mode) =>
+  Future<void> save(ThemeMode mode) =>
       _saveValue(AppSettingsKeys.themeMode, mode.name);
 
   @override

@@ -1,10 +1,9 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2026 BitCodersNN
 
-import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:unn_mobile/core/models/common/app_dark_theme.dart';
 import 'package:unn_mobile/core/models/common/app_light_theme.dart';
-import 'package:unn_mobile/core/models/common/app_theme_mode.dart';
 import 'package:unn_mobile/core/models/common/custom_palette_config.dart';
 import 'package:unn_mobile/core/providers/interfaces/common/app_theme_provider.dart';
 import 'package:unn_mobile/core/services/interfaces/common/app_theme_controller.dart';
@@ -12,7 +11,7 @@ import 'package:unn_mobile/core/services/interfaces/common/app_theme_controller.
 class AppThemeControllerImpl extends ChangeNotifier
     implements AppThemeController {
   final AppThemeProvider _provider;
-  final _mode = _ThemePreference(AppThemeMode.system);
+  final _mode = _ThemePreference(ThemeMode.system);
   final _lightTheme = _ThemePreference(AppLightTheme.green);
   final _darkTheme = _ThemePreference(AppDarkTheme.green);
   final _customLightPalette = _ThemePreference<CustomPaletteConfig?>(null);
@@ -21,7 +20,7 @@ class AppThemeControllerImpl extends ChangeNotifier
   AppThemeControllerImpl(this._provider);
 
   @override
-  AppThemeMode get mode => _mode.value;
+  ThemeMode get mode => _mode.value;
 
   @override
   AppLightTheme get lightTheme => _lightTheme.value;
@@ -53,7 +52,7 @@ class AppThemeControllerImpl extends ChangeNotifier
   }
 
   @override
-  Future<void> setMode(AppThemeMode mode) =>
+  Future<void> setMode(ThemeMode mode) =>
       _mode.update(mode, save: _provider.save, onChanged: notifyListeners);
 
   @override
