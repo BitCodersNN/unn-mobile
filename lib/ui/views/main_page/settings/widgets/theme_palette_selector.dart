@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:unn_mobile/ui/theme/theme_palette.dart';
 import 'package:unn_mobile/ui/widgets/context_menu/context_menu_action.dart';
 import 'package:unn_mobile/ui/widgets/context_menu/preview_context_menu.dart';
+import 'package:unn_mobile/ui/widgets/horizontal_peek_list.dart';
 
 class ThemePaletteSelector<T extends Enum> extends StatelessWidget {
   final String title;
@@ -33,73 +34,78 @@ class ThemePaletteSelector<T extends Enum> extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final selectedIndex = palettes.indexWhere(
+      (palette) => palette.value == selected,
+    );
     return Padding(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.symmetric(vertical: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title, style: theme.textTheme.titleSmall),
-          const SizedBox(height: 4),
-          Text(
-            'Используется и при автоматической смене темы системой',
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(title, style: theme.textTheme.titleSmall),
+                const SizedBox(height: 4),
+                Text(
+                  'Используется и при автоматической смене темы системой',
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              ],
             ),
           ),
           const SizedBox(height: 14),
-          SizedBox(
+          HorizontalPeekList(
             height: 140,
-            child: ListView.separated(
-              scrollDirection: Axis.horizontal,
-              itemCount: palettes.length,
-              separatorBuilder: (_, _) => const SizedBox(width: 12),
-              itemBuilder: (context, index) {
-                final palette = palettes[index];
-                final isCustom = palette.value == customValue;
-                final isSelected = selected == palette.value;
-                final mode = !isCustom
-                    ? _PaletteOptionMode.standard
-                    : isCustomConfigured
-                    ? _PaletteOptionMode.customConfigured
-                    : _PaletteOptionMode.customPlaceholder;
-                final option = _PaletteOption(
-                  label: palette.label,
-                  colors: palette.theme.colorScheme,
-                  selected: isSelected,
-                  mode: mode,
-                  onTap: isCustom && (!isCustomConfigured || isSelected)
-                      ? onEditCustom
-                      : () => onSelected(index),
-                );
-                return SizedBox(
-                  width: 142,
-                  child: isCustom
-                      ? PreviewContextMenu(
-                          borderRadius: BorderRadius.circular(14),
-                          actionsBuilder: (_) => [
-                            ContextMenuAction.text(
-                              label: 'Настроить',
-                              leadingIcon: const Icon(Icons.tune_rounded),
-                              onTap: onEditCustom,
-                            ),
-                            ContextMenuAction.text(
-                              label: 'Загрузить',
-                              leadingIcon: const Icon(Icons.download_rounded),
-                              onTap: onImportCustom,
-                            ),
-                            ContextMenuAction.text(
-                              label: 'Поделиться',
-                              leadingIcon: const Icon(Icons.share_outlined),
-                              enabled: isCustomConfigured,
-                              onTap: onShareCustom,
-                            ),
-                          ],
-                          child: option,
-                        )
-                      : option,
-                );
-              },
-            ),
+            itemCount: palettes.length,
+            initialSelectedIndex: selectedIndex >= 0 ? selectedIndex : null,
+            itemBuilder: (context, index) {
+              final palette = palettes[index];
+              final isCustom = palette.value == customValue;
+              final isSelected = selected == palette.value;
+              final mode = !isCustom
+                  ? _PaletteOptionMode.standard
+                  : isCustomConfigured
+                  ? _PaletteOptionMode.customConfigured
+                  : _PaletteOptionMode.customPlaceholder;
+              final option = _PaletteOption(
+                label: palette.label,
+                colors: palette.theme.colorScheme,
+                selected: isSelected,
+                mode: mode,
+                onTap: isCustom && (!isCustomConfigured || isSelected)
+                    ? onEditCustom
+                    : () => onSelected(index),
+              );
+              return isCustom
+                  ? PreviewContextMenu(
+                      borderRadius: BorderRadius.circular(14),
+                      actionsBuilder: (_) => [
+                        ContextMenuAction.text(
+                          label: 'Настроить',
+                          leadingIcon: const Icon(Icons.tune_rounded),
+                          onTap: onEditCustom,
+                        ),
+                        ContextMenuAction.text(
+                          label: 'Загрузить',
+                          leadingIcon: const Icon(Icons.download_rounded),
+                          onTap: onImportCustom,
+                        ),
+                        ContextMenuAction.text(
+                          label: 'Поделиться',
+                          leadingIcon: const Icon(Icons.share_outlined),
+                          enabled: isCustomConfigured,
+                          onTap: onShareCustom,
+                        ),
+                      ],
+                      child: option,
+                    )
+                  : option;
+            },
           ),
         ],
       ),
@@ -153,7 +159,7 @@ class _PaletteOption extends StatelessWidget {
               Expanded(
                 child: Center(
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    padding: const EdgeInsets.symmetric(horizontal: 6),
                     child: Text(
                       label,
                       maxLines: 1,
