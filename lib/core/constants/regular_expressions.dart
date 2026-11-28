@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2025 BitCodersNN
 
-import 'package:unn_mobile/core/misc/lru_cache.dart';
+import 'package:unn_mobile/core/misc/cache/lru_cache.dart';
 
 class _RegularExpressionSource {
   static const keySigned = r"keySigned:\s*'([^']+)'";

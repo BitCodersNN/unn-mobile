@@ -10,11 +10,11 @@ import 'package:unn_mobile/core/misc/date_time_utilities/date_time_range_type.da
 import 'package:unn_mobile/core/misc/date_time_utilities/week_range.dart';
 import 'package:unn_mobile/core/misc/user/current_user_sync_storage.dart';
 import 'package:unn_mobile/core/models/profile/employee/employee_data.dart';
-import 'package:unn_mobile/core/models/schedule/offline_schedule.dart';
 import 'package:unn_mobile/core/models/schedule/schedule_filter.dart';
-import 'package:unn_mobile/core/providers/interfaces/schedule/offline_schedule_provider.dart';
+import 'package:unn_mobile/core/services/interfaces/common/online_request_service.dart';
 import 'package:unn_mobile/core/services/interfaces/common/search_id_on_portal_service.dart';
 import 'package:unn_mobile/core/services/interfaces/schedule/export_schedule_service.dart';
+import 'package:unn_mobile/core/services/interfaces/schedule/offline_schedule_service.dart';
 import 'package:unn_mobile/core/services/interfaces/schedule/schedule_search_history_service.dart';
 import 'package:unn_mobile/core/services/interfaces/schedule/schedule_service.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
@@ -28,9 +28,10 @@ class ScheduleScreenViewModel extends BaseViewModel
   final ScheduleService _scheduleService;
   final ScheduleSearchHistoryService _searchHistoryService;
   final ExportScheduleService _exportScheduleService;
-  final OfflineScheduleProvider _offlineScheduleProvider;
+  final OfflineScheduleService _offlineScheduleService;
+  final OnlineRequestService _onlineRequestService;
 
-  Map<IdType, OfflineSchedule>? offlineData;
+  Future<void>? _initialization;
 
   IdType get selectedUser => _selectedUser;
   set selectedUser(IdType value) {
@@ -73,7 +74,8 @@ class ScheduleScreenViewModel extends BaseViewModel
     this._scheduleService,
     this._searchHistoryService,
     this._exportScheduleService,
-    this._offlineScheduleProvider,
+    this._offlineScheduleService,
+    this._onlineRequestService,
   );
 
   @override
@@ -84,9 +86,9 @@ class ScheduleScreenViewModel extends BaseViewModel
     super.dispose();
   }
 
-  FutureOr<void> init() => busyCallAsync(() async {
-    offlineData = await _offlineScheduleProvider.getData();
+  Future<void> init() => _initialization ??= _initialize();
 
+  Future<void> _initialize() async {
     selectedUser = sortedUserTypeList.first;
     for (final type in sortedUserTypeList) {
       modelsByType[type] = ScheduleTabViewModel(
@@ -96,26 +98,18 @@ class ScheduleScreenViewModel extends BaseViewModel
         _searchIdOnPortalService,
         _scheduleService,
         _searchHistoryService,
-      )..offlineSchedule = offlineData![type];
+        _offlineScheduleService,
+        _onlineRequestService,
+      );
     }
-    await Future.wait(modelsByType.values.map((v) async => await v.init()));
-    await saveOfflineSchedule();
-  });
-
-  Future<void> refreshTab() async {
-    await Future.wait(modelsByType.values.map((e) async => await e.refresh()));
-    await saveOfflineSchedule();
+    notifyListeners();
+    await refreshTab();
   }
 
-  Future<void> saveOfflineSchedule() async {
-    modelsByType.forEach((key, value) {
-      if (value.offlineSchedule == null) {
-        return;
-      }
-      offlineData ??= {}; // По идее не должно быть нужно, но мало ли...
-      offlineData![key] = value.offlineSchedule!;
-    });
-    await _offlineScheduleProvider.saveData(offlineData);
+  Future<void> refreshTab() async {
+    await Future.wait(
+      modelsByType.values.map((model) async => await model.refresh()),
+    );
   }
 
   void nextWeek() => selectWeek(weekOffset + 1);

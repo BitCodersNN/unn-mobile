@@ -11,20 +11,17 @@ internal class ScheduleSnapshotProvider(context: Context) {
     fun readJson(): String? = preferences.getString(DATA_KEY, null)
 
     fun read(): ScheduleSnapshot? = readJson()?.let { value ->
-        runCatching { ScheduleSnapshot.decode(value) }.getOrNull()
+        runCatching { ScheduleCache.decode(value).snapshot() }.getOrNull()
     }
 
     fun writeJson(value: String) {
-        ScheduleSnapshot.decode(value)
-        preferences.edit().putString(DATA_KEY, value).apply()
-    }
-
-    fun clear() {
-        preferences.edit().remove(DATA_KEY).apply()
+        ScheduleCache.decode(value)
+        check(preferences.edit().putString(DATA_KEY, value).remove(PREVIOUS_DATA_KEY).commit())
     }
 
     private companion object {
         const val PREFERENCES = "schedule_widget"
-        const val DATA_KEY = "data"
+        const val DATA_KEY = "schedule_cache"
+        const val PREVIOUS_DATA_KEY = "data"
     }
 }
