@@ -5,4 +5,5 @@ class GitResourceCacheKeys {
   static const String loadingPages = 'loading_pages_key';
   static const String authors = 'authors_key';
   static const String birthday = 'birthday_greeting_catalog';
+  static const String announcements = 'announcements_catalog_key';
 }

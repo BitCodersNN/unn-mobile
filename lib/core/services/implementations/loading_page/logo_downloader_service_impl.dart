@@ -3,106 +3,32 @@
 
 import 'dart:io';
 
-import 'package:path/path.dart' as p;
-import 'package:unn_mobile/core/api_helpers/api_helper.dart';
-import 'package:unn_mobile/core/constants/api/path.dart';
-import 'package:unn_mobile/core/misc/file_helpers/file_downloader.dart';
-import 'package:unn_mobile/core/misc/file_helpers/file_functions.dart';
-import 'package:unn_mobile/core/misc/file_helpers/image_file_validator.dart';
 import 'package:unn_mobile/core/misc/git/git_folder.dart';
-import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
+import 'package:unn_mobile/core/services/implementations/git/git_image_downloader_base.dart';
 import 'package:unn_mobile/core/services/interfaces/loading_page/logo_downloader_service.dart';
 
-class LogoDownloaderServiceImpl implements LogoDownloaderService {
-  final LoggerService _logger;
-  final ApiHelper _apiHelper;
-
-  LogoDownloaderServiceImpl(this._logger, this._apiHelper);
+class LogoDownloaderServiceImpl extends GitImageDownloaderBase
+    implements LogoDownloaderService {
+  LogoDownloaderServiceImpl(super.logger, super.apiHelper);
 
   @override
-  Future<File?> downloadFile(
-    String fileName, {
-    required String revision,
-  }) async {
-    try {
-      return await _downloadFile(fileName, revision);
-    } catch (error, stack) {
-      _logger.logError(error, stack);
+  GitPath get gitPath => GitPath.loadingScreen;
+
+  @override
+  String? resolveDownloadFolder(List<String> segments) {
+    if (segments.length < 2 || segments.first != 'logos') {
       return null;
     }
+    return segments.take(segments.length - 1).join('/');
   }
 
-  Future<File?> _downloadFile(String fileName, String revision) async {
-    final uri = Uri.parse(fileName);
-    final segments = uri.pathSegments;
-    if (uri.hasAuthority ||
-        uri.isAbsolute ||
-        uri.hasAbsolutePath ||
-        uri.hasQuery ||
-        uri.hasFragment ||
-        segments.length < 2 ||
-        segments.first != 'logos' ||
-        segments.any(
-          (segment) =>
-              segment.isEmpty ||
-              segment == '.' ||
-              segment == '..' ||
-              segment.contains('/') ||
-              segment.contains('\\'),
-        )) {
-      return null;
-    }
-    final path = await getDownloadPath();
-    if (path == null) {
-      return null;
-    }
-    final folder = segments.take(segments.length - 1).join('/');
-    final name = shortenFileName(fileName);
-    final cached = await _validatedFile(File(p.join(path, folder, name)));
-    if (cached != null) {
-      return cached;
-    }
-    final downloaded = await FileDownloader(
-      _logger,
-      _apiHelper,
-      downloadFolderName: folder,
-      basePath:
-          '${ApiPath.gitRepository}/${GitPath.loadingScreen.pathAt(revision)}',
-    ).downloadFile(fileName, force: true);
-    return downloaded == null ? null : _validatedFile(downloaded);
-  }
-
-  Future<File?> _validatedFile(File file) async {
-    if (!await file.exists()) {
-      return null;
-    }
-    try {
-      await validateImageFile(file);
-    } catch (error, stack) {
-      _logger.logError(error, stack);
-      await _removeInvalidFile(file);
-      return null;
-    }
-    return file;
-  }
-
-  Future<void> _removeInvalidFile(File file) async {
-    try {
-      await file.delete();
-    } catch (error, stack) {
-      _logger.logError(error, stack);
-    }
-  }
+  @override
+  Future<File?> downloadFile(String fileName, {required String revision}) =>
+      downloadAndValidateFile(fileName, revision: revision);
 
   @override
   Future<List<File>?> downloadFiles({
     required List<String> fileNames,
     required String revision,
-  }) async {
-    final results = await Future.wait([
-      for (final fileName in fileNames)
-        downloadFile(fileName, revision: revision),
-    ]);
-    return results.any((file) => file == null) ? null : results.cast<File>();
-  }
+  }) => downloadAllFiles(fileNames: fileNames, revision: revision);
 }

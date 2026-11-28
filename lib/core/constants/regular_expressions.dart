@@ -34,6 +34,8 @@ class _RegularExpressionSource {
   static const timePattern = r'(\d{1,2}:\d{2})';
   static const streamContentPattern = r'\(([^()]*)\)';
   static const multiValueSeparatorPattern = r'[|;,]';
+  static const isoDateOnlyPattern = r'^\d{4}-\d{2}-\d{2}$';
+  static const semverPrefixPattern = r'^v?(\d+(?:\.\d+)*)';
   static const hexColor6Pattern = r'^#?([0-9a-fA-F]{6})$';
   static const allowedHexCharsPattern = r'[#0-9a-fA-F]';
   static final customPaletteCodePattern =
@@ -141,6 +143,14 @@ class RegularExpressions {
 
   static final multiValueSeparatorRegExp = RegExp(
     _RegularExpressionSource.multiValueSeparatorPattern,
+  );
+
+  static final isoDateOnlyRegExp = RegExp(
+    _RegularExpressionSource.isoDateOnlyPattern,
+  );
+
+  static final semverPrefixRegExp = RegExp(
+    _RegularExpressionSource.semverPrefixPattern,
   );
 
   static final hexColor6RegExp = RegExp(

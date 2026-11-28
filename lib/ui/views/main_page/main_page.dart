@@ -6,9 +6,11 @@ import 'package:go_router/go_router.dart';
 import 'package:injector/injector.dart';
 import 'package:unn_mobile/core/misc/app_open_tracker.dart';
 import 'package:unn_mobile/core/misc/birthday/birthday_greeting_manager.dart';
+import 'package:unn_mobile/core/misc/giveaway_promo/giveaway_promo_manager.dart';
 import 'package:unn_mobile/core/misc/user/current_user_sync_storage.dart';
 import 'package:unn_mobile/ui/birthday/birthday_greeting_host.dart';
 import 'package:unn_mobile/ui/builders/online_status_builder.dart';
+import 'package:unn_mobile/ui/giveaway_promo/giveaway_promo_dialog.dart';
 import 'package:unn_mobile/ui/main_page_locations.dart';
 import 'package:unn_mobile/ui/router.dart';
 import 'package:unn_mobile/ui/views/main_page/tab_bar/main_page_navigation_bar.dart';
@@ -17,15 +19,34 @@ import 'package:unn_mobile/ui/widgets/dialogs/changelog_dialog.dart';
 
 class MainPage extends StatefulWidget {
   final StatefulNavigationShell shell;
+  final GiveawayPromoManager? giveawayPromoManager;
+  final Future<bool> Function(String url)? onOpenPromoUrl;
 
-  const MainPage({required this.shell, super.key});
+  const MainPage({
+    required this.shell,
+    this.giveawayPromoManager,
+    this.onOpenPromoUrl,
+    super.key,
+  });
 
   @override
   State<MainPage> createState() => MainPageState();
 }
 
 class MainPageState extends State<MainPage> {
+  bool get _canPresentGiveawayPromo =>
+      mounted &&
+      (WidgetsBinding.instance.lifecycleState == null ||
+          WidgetsBinding.instance.lifecycleState ==
+              AppLifecycleState.resumed) &&
+      (ModalRoute.of(context)?.isCurrent ?? false);
+
   Future<void> _showStartupDialogs() async {
+    await _showVersionStartupDialogs();
+    await _showGiveawayPromoIfEligible();
+  }
+
+  Future<void> _showVersionStartupDialogs() async {
     if (!await Injector.appInstance
         .get<AppOpenTracker>()
         .isFirstTimeOpenOnVersion()) {
@@ -39,6 +60,25 @@ class MainPageState extends State<MainPage> {
       return;
     }
     await showChangelogDialog(context);
+  }
+
+  Future<void> _showGiveawayPromoIfEligible() async {
+    if (!_canPresentGiveawayPromo) {
+      return;
+    }
+    final promoManager =
+        widget.giveawayPromoManager ??
+        Injector.appInstance.get<GiveawayPromoManager>();
+    final resolved = await promoManager.pickAnnouncementForLaunch();
+    if (resolved == null || !mounted || !_canPresentGiveawayPromo) {
+      return;
+    }
+    await showResolvedGiveawayPromoDialog(
+      context,
+      resolved: resolved,
+      promoManager: promoManager,
+      onOpenUrl: widget.onOpenPromoUrl,
+    );
   }
 
   bool isRootScreen(BuildContext context) {
