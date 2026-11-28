@@ -16,6 +16,7 @@ import 'package:unn_mobile/ui/views/main_page/schedule/widgets/day_header.dart';
 import 'package:unn_mobile/ui/views/main_page/schedule/widgets/query_chip.dart';
 import 'package:unn_mobile/ui/views/main_page/schedule/widgets/schedule_item_normal.dart';
 import 'package:unn_mobile/ui/widgets/empty_state_widget.dart';
+import 'package:unn_mobile/ui/widgets/refresh_error_notice.dart';
 import 'package:unn_mobile/ui/widgets/refresh_loading_overlay.dart';
 
 class ScheduleTabView extends StatefulWidget {
@@ -237,30 +238,41 @@ class _ScheduleTabViewState extends State<ScheduleTabView> {
             return RefreshLoadingOverlay(
               isRefreshing: isSelectedWeek && model.isBusy,
               semanticsLabel: 'Обновление расписания',
-              child: Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Text(
-                        'На этой неделе занятий нет :)',
-                        softWrap: true,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  if (isSelectedWeek && model.failedToLoad)
+                    const RefreshErrorNotice(
+                      message: 'Не удалось обновить расписание.',
+                    ),
+                  Expanded(
+                    child: Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Text(
+                              'На этой неделе занятий нет :)',
+                              softWrap: true,
+                            ),
+                            if (model.foundName != null) ...[
+                              const SizedBox(height: 12),
+                              _queryResetChip(context, model),
+                              const SizedBox(height: 4),
+                            ],
+                            TextButton(
+                              onPressed: () async {
+                                await model.refresh();
+                              },
+                              child: const Text('Обновить'),
+                            ),
+                          ],
+                        ),
                       ),
-                      if (model.foundName != null) ...[
-                        const SizedBox(height: 12),
-                        _queryResetChip(context, model),
-                        const SizedBox(height: 4),
-                      ],
-                      TextButton(
-                        onPressed: () async {
-                          await model.refresh();
-                        },
-                        child: const Text('Обновить'),
-                      ),
-                    ],
+                    ),
                   ),
-                ),
+                ],
               ),
             );
           }
@@ -277,6 +289,12 @@ class _ScheduleTabViewState extends State<ScheduleTabView> {
                     key: _scrollAreaKey,
                     physics: const AlwaysScrollableScrollPhysics(),
                     slivers: [
+                      if (isSelectedWeek && model.failedToLoad)
+                        const SliverToBoxAdapter(
+                          child: RefreshErrorNotice(
+                            message: 'Не удалось обновить расписание. Потяните вниз, чтобы повторить.',
+                          ),
+                        ),
                       if (schedule.any((d) => d.isNotEmpty))
                         for (final (i, l) in schedule.indexed)
                           if (l.isNotEmpty) _dayGroup(i, l, theme, now),

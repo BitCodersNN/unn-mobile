@@ -66,6 +66,7 @@ import 'package:unn_mobile/core/services/implementations/common/file_data_servic
 import 'package:unn_mobile/core/services/implementations/common/firebase_logger_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/common/last_commit_sha_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/common/message_ignore_service_impl.dart';
+import 'package:unn_mobile/core/services/implementations/common/online_request_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/common/search_id_on_portal_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/common/storage_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/dialog/dialog_search_service_impl.dart';
@@ -122,6 +123,7 @@ import 'package:unn_mobile/core/services/interfaces/common/file_data_service.dar
 import 'package:unn_mobile/core/services/interfaces/common/last_commit_sha_service.dart';
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
 import 'package:unn_mobile/core/services/interfaces/common/message_ignore_service.dart';
+import 'package:unn_mobile/core/services/interfaces/common/online_request_service.dart';
 import 'package:unn_mobile/core/services/interfaces/common/search_id_on_portal_service.dart';
 import 'package:unn_mobile/core/services/interfaces/common/storage_service.dart';
 import 'package:unn_mobile/core/services/interfaces/dialog/dialog_search_service.dart';
@@ -319,6 +321,14 @@ void registerDependencies() {
         get<LoggerService>(),
       ),
     )
+    ..registerSingleton<OnlineRequestService>(
+      () => OnlineRequestServiceImpl(
+        get<UnnAuthService>(),
+        get<AuthRefreshService>(),
+        get<OnlineStatusData>(),
+        get<LoggerService>(),
+      ),
+    )
     ..registerSingleton<StreamAuthService>(
       () => StreamAuthServiceImpl(
         get<LoggerService>(),
@@ -445,6 +455,7 @@ void registerDependencies() {
         get<SearchIdOnPortalService>(),
         get<OfflineScheduleService>(),
         get<ScheduleWidgetPlatform>(),
+        get<OnlineRequestService>(),
         get<LoggerService>(),
       ),
     )
@@ -757,6 +768,7 @@ void registerDependencies() {
         get<RefreshBlogPostService>(),
         get<BlogPostPaginationService>(),
         get<BlogPostSearchService>(),
+        get<OnlineRequestService>(),
       ),
     )
     ..registerDependency(
@@ -765,6 +777,7 @@ void registerDependencies() {
         get<MarkBySubjectProvider>(),
         get<CurriculumService>(),
         get<CurrentUserSyncStorage>(),
+        get<OnlineRequestService>(),
       ),
     )
     ..registerDependency(
@@ -785,6 +798,7 @@ void registerDependencies() {
         get<ScheduleSearchHistoryService>(),
         get<ExportScheduleService>(),
         get<OfflineScheduleService>(),
+        get<OnlineRequestService>(),
       ),
     )
     ..registerDependency(
@@ -803,6 +817,7 @@ void registerDependencies() {
         get<DialogService>(),
         get<CurrentUserSyncStorage>(),
         get<DialogSearchService>(),
+        get<OnlineRequestService>(),
       ),
     )
     ..registerDependency(
@@ -810,6 +825,7 @@ void registerDependencies() {
         get<MainPageRoutesViewModelsFactory>(),
         get<MessageServiceAggregator>(),
         get<CurrentUserSyncStorage>(),
+        get<OnlineRequestService>(),
       ),
     )
     ..registerDependency(

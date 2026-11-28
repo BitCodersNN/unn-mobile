@@ -6,7 +6,6 @@ import 'dart:async';
 import 'package:dio/dio.dart';
 import 'package:unn_mobile/core/constants/schedule_cache_limits.dart';
 import 'package:unn_mobile/core/misc/app_settings.dart';
-import 'package:unn_mobile/core/misc/authorisation/try_login_and_retrieve_data.dart';
 import 'package:unn_mobile/core/misc/cache/lru_cache.dart';
 import 'package:unn_mobile/core/misc/cache/restore_cache_then_refresh.dart';
 import 'package:unn_mobile/core/misc/date_time_utilities/date_time_extensions.dart';
@@ -21,6 +20,7 @@ import 'package:unn_mobile/core/models/schedule/schedule_cache_key.dart';
 import 'package:unn_mobile/core/models/schedule/schedule_filter.dart';
 import 'package:unn_mobile/core/models/schedule/schedule_search_suggestion_item.dart';
 import 'package:unn_mobile/core/models/schedule/subject.dart';
+import 'package:unn_mobile/core/services/interfaces/common/online_request_service.dart';
 import 'package:unn_mobile/core/services/interfaces/common/search_id_on_portal_service.dart';
 import 'package:unn_mobile/core/services/interfaces/schedule/offline_schedule_service.dart';
 import 'package:unn_mobile/core/services/interfaces/schedule/schedule_search_history_service.dart';
@@ -36,6 +36,7 @@ class ScheduleTabViewModel extends BaseViewModel {
   final ScheduleService _scheduleService;
   final ScheduleSearchHistoryService _searchHistoryService;
   final OfflineScheduleService _offlineScheduleService;
+  final OnlineRequestService _onlineRequestService;
   final LRUCache<ScheduleCacheKey, OfflineSchedule> _cachedSchedules = LRUCache(
     ScheduleCacheLimits.maxEntries,
   );
@@ -74,6 +75,7 @@ class ScheduleTabViewModel extends BaseViewModel {
     this._scheduleService,
     this._searchHistoryService,
     this._offlineScheduleService,
+    this._onlineRequestService,
   );
 
   @override
@@ -95,22 +97,20 @@ class ScheduleTabViewModel extends BaseViewModel {
       return;
     }
     if (_userType == IdType.group && profile is StudentData) {
-      final groupId = await _searchIdService.findIdOnPortal(
-        profile.baseEduInfo.eduGroup,
-        IdType.group,
+      final groupId = await _onlineRequestService.execute(
+        () => _searchIdService.findIdOnPortal(
+          profile.baseEduInfo.eduGroup,
+          IdType.group,
+        ),
       );
       defaultId = groupId?.firstOrNull?.id;
       if (defaultId != null) {
         needsDefaultIdRefresh = false;
       }
     } else {
-      final currentUserId = await tryLoginAndRetrieveData(
-        () async {
-          final id = await _searchIdService.getIdOfLoggedInUser();
-
-          return id;
-        },
-        () {
+      final currentUserId = await _onlineRequestService.executeAuthorized(
+        _searchIdService.getIdOfLoggedInUser,
+        offline: () {
           needsDefaultIdRefresh = true;
           return null;
         },
@@ -199,14 +199,15 @@ class ScheduleTabViewModel extends BaseViewModel {
       return;
     }
     final subjects = key.useRasp
-        ? await _scheduleService.getCurrentUserSchedule(
-            login!,
-            week.start,
-            cancelToken: token,
+        ? await _onlineRequestService.execute<List<Subject>>(
+            () => _scheduleService.getCurrentUserSchedule(
+              login!,
+              week.start,
+              cancelToken: token,
+            ),
           )
-        : await tryLoginAndRetrieveData<List<Subject>>(
+        : await _onlineRequestService.executeAuthorized<List<Subject>>(
             () => _scheduleService.getSchedule(filter!, cancelToken: token),
-            () => null,
           );
     if (!_isCurrent(key, token)) {
       return;
@@ -235,7 +236,9 @@ class ScheduleTabViewModel extends BaseViewModel {
         return history;
       }
     }
-    return await _searchIdService.findIdOnPortal(text, _userType) ??
+    return await _onlineRequestService.execute(
+          () => _searchIdService.findIdOnPortal(text, _userType),
+        ) ??
         <ScheduleSearchSuggestionItem>[];
   }
 

@@ -3,7 +3,6 @@
 
 import 'package:dio/dio.dart';
 import 'package:unn_mobile/core/misc/app_settings.dart';
-import 'package:unn_mobile/core/misc/authorisation/try_login_and_retrieve_data.dart';
 import 'package:unn_mobile/core/misc/date_time_utilities/week_range.dart';
 import 'package:unn_mobile/core/misc/user/current_user_sync_storage.dart';
 import 'package:unn_mobile/core/models/profile/employee/employee_data.dart';
@@ -16,6 +15,7 @@ import 'package:unn_mobile/core/models/schedule/subject.dart';
 import 'package:unn_mobile/core/models/schedule_widget/schedule_widget_configuration.dart';
 import 'package:unn_mobile/core/providers/interfaces/authorisation/auth_data_provider.dart';
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
+import 'package:unn_mobile/core/services/interfaces/common/online_request_service.dart';
 import 'package:unn_mobile/core/services/interfaces/common/search_id_on_portal_service.dart';
 import 'package:unn_mobile/core/services/interfaces/schedule/offline_schedule_service.dart';
 import 'package:unn_mobile/core/services/interfaces/schedule/schedule_service.dart';
@@ -31,6 +31,7 @@ class ScheduleWidgetServiceImpl implements ScheduleWidgetService {
   final SearchIdOnPortalService _search;
   final OfflineScheduleService _offline;
   final ScheduleWidgetPlatform _platform;
+  final OnlineRequestService _onlineRequestService;
   final LoggerService _logger;
 
   Future<void>? _pending;
@@ -46,6 +47,7 @@ class ScheduleWidgetServiceImpl implements ScheduleWidgetService {
     this._search,
     this._offline,
     this._platform,
+    this._onlineRequestService,
     this._logger,
   );
 
@@ -106,16 +108,20 @@ class ScheduleWidgetServiceImpl implements ScheduleWidgetService {
         _userStorage.currentUserData?.userId != user.userId) {
       return;
     }
+    if (useRasp && user.login == null) {
+      return;
+    }
     final token = CancelToken();
     _request = token;
     _requestUseRasp = useRasp;
     final week = WeekRange(weekOffset: 0);
     final next = WeekRange(weekOffset: 1, reference: week.reference);
     final loaded = useRasp
-        ? await _loadOnline(user, week, next, token, useRasp: true)
-        : await tryLoginAndRetrieveData<_LoadedSchedule>(
+        ? await _onlineRequestService.execute<_LoadedSchedule>(
+            () => _loadOnline(user, week, next, token, useRasp: true),
+          )
+        : await _onlineRequestService.executeAuthorized<_LoadedSchedule>(
             () => _loadOnline(user, week, next, token, useRasp: false),
-            () => null,
           );
     if (generation != _generation || token.isCancelled) {
       return;

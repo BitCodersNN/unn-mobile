@@ -11,6 +11,7 @@ import 'package:unn_mobile/core/misc/date_time_utilities/week_range.dart';
 import 'package:unn_mobile/core/misc/user/current_user_sync_storage.dart';
 import 'package:unn_mobile/core/models/profile/employee/employee_data.dart';
 import 'package:unn_mobile/core/models/schedule/schedule_filter.dart';
+import 'package:unn_mobile/core/services/interfaces/common/online_request_service.dart';
 import 'package:unn_mobile/core/services/interfaces/common/search_id_on_portal_service.dart';
 import 'package:unn_mobile/core/services/interfaces/schedule/export_schedule_service.dart';
 import 'package:unn_mobile/core/services/interfaces/schedule/offline_schedule_service.dart';
@@ -28,6 +29,7 @@ class ScheduleScreenViewModel extends BaseViewModel
   final ScheduleSearchHistoryService _searchHistoryService;
   final ExportScheduleService _exportScheduleService;
   final OfflineScheduleService _offlineScheduleService;
+  final OnlineRequestService _onlineRequestService;
 
   Future<void>? _initialization;
 
@@ -73,6 +75,7 @@ class ScheduleScreenViewModel extends BaseViewModel
     this._searchHistoryService,
     this._exportScheduleService,
     this._offlineScheduleService,
+    this._onlineRequestService,
   );
 
   @override
@@ -96,6 +99,7 @@ class ScheduleScreenViewModel extends BaseViewModel
         _scheduleService,
         _searchHistoryService,
         _offlineScheduleService,
+        _onlineRequestService,
       );
     }
     notifyListeners();

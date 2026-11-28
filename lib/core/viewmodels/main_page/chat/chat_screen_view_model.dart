@@ -3,13 +3,13 @@
 
 import 'dart:async';
 
-import 'package:unn_mobile/core/misc/authorisation/try_login_and_retrieve_data.dart';
 import 'package:unn_mobile/core/misc/objects_with_pagination.dart';
 import 'package:unn_mobile/core/misc/user/current_user_sync_storage.dart';
 import 'package:unn_mobile/core/models/dialog/base_dialog_info.dart';
 import 'package:unn_mobile/core/models/dialog/dialog.dart';
 import 'package:unn_mobile/core/models/dialog/dialog_query_parameter.dart';
 import 'package:unn_mobile/core/models/dialog/preview_dialog.dart';
+import 'package:unn_mobile/core/services/interfaces/common/online_request_service.dart';
 import 'package:unn_mobile/core/services/interfaces/dialog/dialog_search_service.dart';
 import 'package:unn_mobile/core/services/interfaces/dialog/dialog_service.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
@@ -23,6 +23,8 @@ class ChatScreenViewModel extends BaseViewModel {
   final CurrentUserSyncStorage _currentUserSyncStorage;
 
   final DialogSearchService _searchService;
+
+  final OnlineRequestService _onlineRequestService;
 
   final List<Dialog> _dialogs = [];
 
@@ -38,6 +40,7 @@ class ChatScreenViewModel extends BaseViewModel {
     this._dialogService,
     this._currentUserSyncStorage,
     this._searchService,
+    this._onlineRequestService,
   );
 
   int? get currentUserId => _currentUserId;
@@ -68,14 +71,13 @@ class ChatScreenViewModel extends BaseViewModel {
   Future<PartialResult<Dialog>?> _getDialogItems({
     required int limit,
     DateTime? lastMessageDate,
-  }) => tryLoginAndRetrieveData<PartialResult<Dialog>>(
+  }) => _onlineRequestService.executeAuthorized<PartialResult<Dialog>>(
     () => _dialogService.getDialogs(
       dialogQueryParameter: DialogQueryParameter(
         limit: limit,
         lastMessageDate: lastMessageDate,
       ),
     ),
-    () => null,
   );
 
   FutureOr<void> _init(int failedAttempts) async {

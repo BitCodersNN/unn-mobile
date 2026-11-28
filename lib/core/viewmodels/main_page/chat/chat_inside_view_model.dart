@@ -6,7 +6,6 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:unn_mobile/core/aggregators/interfaces/message_service_aggregator.dart';
-import 'package:unn_mobile/core/misc/authorisation/try_login_and_retrieve_data.dart';
 import 'package:unn_mobile/core/misc/date_time_utilities/date_time_extensions.dart';
 import 'package:unn_mobile/core/misc/demo_mode_status.dart';
 import 'package:unn_mobile/core/misc/objects_with_pagination.dart';
@@ -16,6 +15,7 @@ import 'package:unn_mobile/core/models/dialog/base_dialog_info.dart';
 import 'package:unn_mobile/core/models/dialog/dialog.dart';
 import 'package:unn_mobile/core/models/dialog/message/enum/message_state.dart';
 import 'package:unn_mobile/core/models/dialog/message/message.dart';
+import 'package:unn_mobile/core/services/interfaces/common/online_request_service.dart';
 import 'package:unn_mobile/core/viewmodels/base_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/factories/main_page_routes_view_models_factory.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/chat/chat_screen_view_model.dart';
@@ -24,6 +24,7 @@ class ChatInsideViewModel extends BaseViewModel {
   final MainPageRoutesViewModelsFactory _routesViewModelFactory;
   final MessageServiceAggregator _messagesAggregator;
   final CurrentUserSyncStorage _currentUserSyncStorage;
+  final OnlineRequestService _onlineRequestService;
 
   ChatScreenViewModel? _dialogsViewModel;
 
@@ -56,6 +57,7 @@ class ChatInsideViewModel extends BaseViewModel {
     this._routesViewModelFactory,
     this._messagesAggregator,
     this._currentUserSyncStorage,
+    this._onlineRequestService,
   );
   int? get currentUserId => _currentUserSyncStorage.currentUserData?.bitrixId;
 
@@ -98,12 +100,12 @@ class ChatInsideViewModel extends BaseViewModel {
       return;
     }
 
-    final messages = await tryLoginAndRetrieveData<PaginatedResult<Message>>(
-      () => chatId == null
-          ? getMessagesByDialogId(_dialog!.dialogId.stringValue)
-          : _messagesAggregator.fetchByChatId(chatId: chatId!),
-      () => null,
-    );
+    final messages = await _onlineRequestService
+        .executeAuthorized<PaginatedResult<Message>>(
+          () => chatId == null
+              ? getMessagesByDialogId(_dialog!.dialogId.stringValue)
+              : _messagesAggregator.fetchByChatId(chatId: chatId!),
+        );
     if (messages == null) {
       _hasError = true;
       return;
@@ -172,15 +174,15 @@ class ChatInsideViewModel extends BaseViewModel {
     if (!_hasMessagesBefore) {
       return;
     }
-    final messages = await tryLoginAndRetrieveData<PaginatedResult<Message>?>(
-      () => chatId == null
-          ? getMessagesByDialogId(_dialog!.dialogId.stringValue)
-          : _messagesAggregator.fetchByChatId(
-              chatId: chatId!,
-              lastMessageId: _unpartitionedMessages.last.messageId,
-            ),
-      () => null,
-    );
+    final messages = await _onlineRequestService
+        .executeAuthorized<PaginatedResult<Message>?>(
+          () => chatId == null
+              ? getMessagesByDialogId(_dialog!.dialogId.stringValue)
+              : _messagesAggregator.fetchByChatId(
+                  chatId: chatId!,
+                  lastMessageId: _unpartitionedMessages.last.messageId,
+                ),
+        );
     if (messages == null) {
       _hasError = true;
       return;
@@ -247,12 +249,12 @@ class ChatInsideViewModel extends BaseViewModel {
     _dialogsViewModel = _routesViewModelFactory
         .getCached<ChatScreenViewModel>();
     fetchDialogFromRoot(chatId);
-    final messages = await tryLoginAndRetrieveData<PaginatedResult<Message>>(
-      () => this.chatId == null
-          ? getMessagesByDialogId(_dialog!.dialogId.stringValue)
-          : _messagesAggregator.fetchByChatId(chatId: this.chatId!),
-      () => null,
-    );
+    final messages = await _onlineRequestService
+        .executeAuthorized<PaginatedResult<Message>>(
+          () => this.chatId == null
+              ? getMessagesByDialogId(_dialog!.dialogId.stringValue)
+              : _messagesAggregator.fetchByChatId(chatId: this.chatId!),
+        );
     if (messages == null) {
       _hasError = true;
       return;
@@ -331,9 +333,8 @@ class ChatInsideViewModel extends BaseViewModel {
         if (chatId == null) {
           return false;
         }
-        final result = await tryLoginAndRetrieveData<T>(
+        final result = await _onlineRequestService.executeAuthorized<T>(
           sendFunction,
-          () => null,
         );
 
         await getNewMessages();
