@@ -33,12 +33,6 @@ object ScheduleLiveUpdate {
         update(context)
     }
 
-    fun clear(context: Context) {
-        context.getSharedPreferences(ScheduleActivitySettings.PREFERENCES, Context.MODE_PRIVATE)
-            .edit().remove(ScheduleActivitySettings.DISMISSED).apply()
-        update(context)
-    }
-
     fun update(context: Context) {
         if (Build.VERSION.SDK_INT < 36) return
         val manager = context.getSystemService(NotificationManager::class.java)
