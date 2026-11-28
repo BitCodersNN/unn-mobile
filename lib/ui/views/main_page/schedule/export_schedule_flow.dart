@@ -12,8 +12,9 @@ import 'package:unn_mobile/ui/widgets/dialogs/message_dialog.dart';
 
 Future<void> runExportFlow(
   BuildContext context,
-  ScheduleScreenViewModel model,
-) async {
+  ScheduleScreenViewModel model, {
+  VoidCallback? onOpenSearch,
+}) async {
   final permission = await model.askForExportPermission();
 
   if (permission == RequestCalendarPermissionResult.permanentlyDenied) {
@@ -21,7 +22,9 @@ Future<void> runExportFlow(
       final result = await showOkCancelAlertDialog(
         context: context,
         title: 'Доступ к календарю',
-        message: 'Приложению запрещён доступ к календарю. Разрешите его в настройках, чтобы экспортировать расписание.',
+        message:
+            'Приложению запрещён доступ к календарю. '
+            'Разрешите его в настройках, чтобы экспортировать расписание.',
         okLabel: 'Настройки',
         cancelLabel: 'Отмена',
       );
@@ -39,6 +42,7 @@ Future<void> runExportFlow(
     return;
   }
 
+  final usedRaspFallback = model.isExportUsingRaspFallback;
   final actions = DateTimeRangeType.values
       .map(
         (type) => AlertDialogAction<DateTimeRangeType>(
@@ -52,6 +56,11 @@ Future<void> runExportFlow(
   final selectedType = await showConfirmationDialog<DateTimeRangeType>(
     context: context,
     title: 'Экспортировать расписание',
+    message: usedRaspFallback
+        ? 'Сервис rasp.unn.ru не поддерживает экспорт в календарь, '
+              'поэтому расписание будет загружено с Портала ННГУ '
+              'и может незначительно отличаться.'
+        : null,
     actions: actions,
     cancelLabel: 'Отмена',
   );
@@ -59,8 +68,17 @@ Future<void> runExportFlow(
     return;
   }
 
-  final result = await model.exportSchedule(selectedType);
+  final exported = await model.exportSchedule(selectedType);
   if (!context.mounted) {
+    return;
+  }
+
+  if (!exported) {
+    await _showExportError(
+      context,
+      usedRaspFallback: usedRaspFallback,
+      onOpenSearch: onOpenSearch,
+    );
     return;
   }
 
@@ -70,11 +88,40 @@ Future<void> runExportFlow(
   if (Platform.isAndroid) {
     await showMessage(
       context,
-      result
-          ? 'Расписание экспортировано в календарь "Расписание ННГУ". \n'
-                'Возможно, понадобится включить настройку Device Calendar в приложении календаря.'
-          : 'Не удалось экспортировать. Попробуйте снова.',
-      messageKey: result ? 'export_schedule_success' : null,
+      'Расписание экспортировано в календарь "Расписание ННГУ". \n'
+      'Возможно, понадобится включить настройку Device Calendar в приложении календаря.',
+      messageKey: 'export_schedule_success',
     );
   }
+}
+
+Future<void> _showExportError(
+  BuildContext context, {
+  required bool usedRaspFallback,
+  VoidCallback? onOpenSearch,
+}) async {
+  final message = usedRaspFallback
+      ? 'Не удалось получить личное расписание с Портала ННГУ. '
+            'Попробуйте найти себя через поиск в расписании и выполнить экспорт оттуда.'
+      : 'Не удалось экспортировать расписание. Попробуйте снова.';
+
+  if (usedRaspFallback && onOpenSearch != null) {
+    final result = await showOkCancelAlertDialog(
+      context: context,
+      title: 'Не удалось экспортировать',
+      message: message,
+      okLabel: 'Открыть поиск',
+      cancelLabel: 'Закрыть',
+    );
+    if (result == OkCancelResult.ok && context.mounted) {
+      onOpenSearch();
+    }
+    return;
+  }
+
+  await showOkAlertDialog(
+    context: context,
+    title: 'Не удалось экспортировать',
+    message: message,
+  );
 }

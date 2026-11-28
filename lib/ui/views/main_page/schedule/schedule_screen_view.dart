@@ -115,8 +115,13 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView> {
                         entries: [
                           AppMenuAction(
                             title: 'Экспорт в календарь',
-                            onSelected: () =>
-                                unawaited(runExportFlow(context, model)),
+                            onSelected: () => unawaited(
+                              runExportFlow(
+                                context,
+                                model,
+                                onOpenSearch: _search.open,
+                              ),
+                            ),
                             icon: Icons.calendar_month,
                             enabled: online && model.canExport,
                           ),

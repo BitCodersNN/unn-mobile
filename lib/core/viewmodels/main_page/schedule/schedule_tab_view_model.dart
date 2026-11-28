@@ -4,6 +4,7 @@
 import 'dart:async';
 
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
 import 'package:unn_mobile/core/constants/schedule_cache_limits.dart';
 import 'package:unn_mobile/core/misc/app_settings.dart';
 import 'package:unn_mobile/core/misc/cache/lru_cache.dart';
@@ -59,7 +60,8 @@ class ScheduleTabViewModel extends BaseViewModel {
   bool _refreshRequested = false;
   CancelToken? _scheduleRequest;
 
-  bool get hasAnyId => _useRasp || defaultId != null || selectedId != null;
+  bool get hasAnyId =>
+      usesRaspSchedule || defaultId != null || selectedId != null;
 
   int? get todayOrNextDayIndex =>
       _firstNonEmptyDayIndex(ScheduleTime.now().weekdayIndex);
@@ -156,16 +158,27 @@ class ScheduleTabViewModel extends BaseViewModel {
     );
   }
 
-  bool get _useRasp =>
+  bool get usesRaspSchedule =>
       AppSettings.useRaspSchedule &&
       selectedId == null &&
       isIdTypeMatchingUser(_userType, _userStorage.currentUserData);
+
+  Future<ScheduleFilter?> resolveExportFilter(DateTimeRange range) async {
+    if (selectedId == null && defaultId == null) {
+      await refreshDefaultId();
+      if (disposed) {
+        return null;
+      }
+      updateFilter();
+    }
+    return searchFilter?.copyWith(dateTimeRange: range);
+  }
 
   ScheduleCacheKey cacheKeyFor(WeekRange week) => (
     ownerId: _userStorage.currentUserData?.userId ?? 0,
     type: _userType,
     id: selectedId,
-    useRasp: _useRasp,
+    useRasp: usesRaspSchedule,
     weekStart: week.start,
   );
 
