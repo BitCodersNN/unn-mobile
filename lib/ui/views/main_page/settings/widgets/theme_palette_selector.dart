@@ -3,61 +3,108 @@
 
 import 'package:flutter/material.dart';
 import 'package:unn_mobile/ui/theme/theme_palette.dart';
+import 'package:unn_mobile/ui/widgets/context_menu/context_menu_action.dart';
+import 'package:unn_mobile/ui/widgets/context_menu/preview_context_menu.dart';
+import 'package:unn_mobile/ui/widgets/horizontal_peek_list.dart';
 
 class ThemePaletteSelector<T extends Enum> extends StatelessWidget {
   final String title;
   final T selected;
   final List<ThemePalette<T>> palettes;
-  // Обработчик вызывается только с T из списка палитр этого компонента.
-  // ignore: unsafe_variance
-  final ValueChanged<T> _onChanged;
+  final ValueChanged<int> onSelected;
+  final T customValue;
+  final bool isCustomConfigured;
+  final VoidCallback onEditCustom;
+  final VoidCallback onImportCustom;
+  final VoidCallback onShareCustom;
 
   const ThemePaletteSelector({
     required this.title,
     required this.palettes,
     required this.selected,
-    required this._onChanged,
+    required this.onSelected,
+    required this.customValue,
+    required this.onEditCustom,
+    required this.onImportCustom,
+    required this.onShareCustom,
+    this.isCustomConfigured = false,
     super.key,
   });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final selectedIndex = palettes.indexWhere(
+      (palette) => palette.value == selected,
+    );
     return Padding(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.symmetric(vertical: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title, style: theme.textTheme.titleSmall),
-          const SizedBox(height: 4),
-          Text(
-            'Используется и при автоматической смене темы системой',
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(title, style: theme.textTheme.titleSmall),
+                const SizedBox(height: 4),
+                Text(
+                  'Используется и при автоматической смене темы системой',
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              ],
             ),
           ),
           const SizedBox(height: 14),
-          LayoutBuilder(
-            builder: (context, constraints) {
-              final columns = constraints.maxWidth < 280 ? 1 : 2;
-              final width =
-                  (constraints.maxWidth - 12 * (columns - 1)) / columns;
-              return Wrap(
-                spacing: 12,
-                runSpacing: 12,
-                children: [
-                  for (final palette in palettes)
-                    SizedBox(
-                      width: width,
-                      child: _PaletteOption(
-                        label: palette.label,
-                        colors: palette.theme.colorScheme,
-                        selected: selected == palette.value,
-                        onTap: () => _onChanged(palette.value),
-                      ),
-                    ),
-                ],
+          HorizontalPeekList(
+            height: 140,
+            itemCount: palettes.length,
+            initialSelectedIndex: selectedIndex >= 0 ? selectedIndex : null,
+            itemBuilder: (context, index) {
+              final palette = palettes[index];
+              final isCustom = palette.value == customValue;
+              final isSelected = selected == palette.value;
+              final mode = !isCustom
+                  ? _PaletteOptionMode.standard
+                  : isCustomConfigured
+                  ? _PaletteOptionMode.customConfigured
+                  : _PaletteOptionMode.customPlaceholder;
+              final option = _PaletteOption(
+                label: palette.label,
+                colors: palette.theme.colorScheme,
+                selected: isSelected,
+                mode: mode,
+                onTap: isCustom && (!isCustomConfigured || isSelected)
+                    ? onEditCustom
+                    : () => onSelected(index),
               );
+              return isCustom
+                  ? PreviewContextMenu(
+                      borderRadius: BorderRadius.circular(14),
+                      actionsBuilder: (_) => [
+                        ContextMenuAction.text(
+                          label: 'Настроить',
+                          leadingIcon: const Icon(Icons.tune_rounded),
+                          onTap: onEditCustom,
+                        ),
+                        ContextMenuAction.text(
+                          label: 'Загрузить',
+                          leadingIcon: const Icon(Icons.download_rounded),
+                          onTap: onImportCustom,
+                        ),
+                        ContextMenuAction.text(
+                          label: 'Поделиться',
+                          leadingIcon: const Icon(Icons.share_outlined),
+                          enabled: isCustomConfigured,
+                          onTap: onShareCustom,
+                        ),
+                      ],
+                      child: option,
+                    )
+                  : option;
             },
           ),
         ],
@@ -66,17 +113,21 @@ class ThemePaletteSelector<T extends Enum> extends StatelessWidget {
   }
 }
 
+enum _PaletteOptionMode { standard, customPlaceholder, customConfigured }
+
 class _PaletteOption extends StatelessWidget {
   final String label;
   final ColorScheme colors;
   final bool selected;
   final VoidCallback onTap;
+  final _PaletteOptionMode mode;
 
   const _PaletteOption({
     required this.label,
     required this.colors,
     required this.selected,
     required this.onTap,
+    this.mode = _PaletteOptionMode.standard,
   });
 
   @override
@@ -104,50 +155,19 @@ class _PaletteOption extends StatelessWidget {
           highlightColor: Colors.transparent,
           child: Column(
             children: [
-              ExcludeSemantics(
-                child: Container(
-                  height: 92,
-                  padding: const EdgeInsets.all(12),
-                  color: colors.surface,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: Icon(
-                          selected
-                              ? Icons.check_circle_rounded
-                              : Icons.circle_outlined,
-                          color: selected ? colors.primary : colors.outline,
-                          size: 20,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Expanded(
-                        child: Container(
-                          width: double.infinity,
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: colors.surfaceContainerHigh,
-                            borderRadius: BorderRadius.circular(6),
-                          ),
-                          alignment: Alignment.centerLeft,
-                          child: FractionallySizedBox(
-                            widthFactor: 0.65,
-                            child: Container(height: 4, color: colors.primary),
-                          ),
-                        ),
-                      ),
-                    ],
+              ExcludeSemantics(child: _buildPreview(theme)),
+              Expanded(
+                child: Center(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 6),
+                    child: Text(
+                      label,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      textAlign: TextAlign.center,
+                    ),
                   ),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 6,
-                  vertical: 10,
-                ),
-                child: Text(label, textAlign: TextAlign.center),
               ),
             ],
           ),
@@ -155,4 +175,60 @@ class _PaletteOption extends StatelessWidget {
       ),
     );
   }
+
+  Widget _buildPreview(ThemeData theme) => switch (mode) {
+    _PaletteOptionMode.customPlaceholder => Container(
+      height: 92,
+      color: theme.colorScheme.surfaceContainerHigh,
+      alignment: Alignment.center,
+      child: Icon(
+        Icons.settings_rounded,
+        size: 32,
+        color: theme.colorScheme.onSurfaceVariant,
+      ),
+    ),
+    _PaletteOptionMode.customConfigured ||
+    _PaletteOptionMode.standard => Container(
+      height: 92,
+      padding: const EdgeInsets.all(12),
+      color: colors.surface,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Align(
+            alignment: Alignment.centerRight,
+            child: Icon(
+              selected ? Icons.check_circle_rounded : Icons.circle_outlined,
+              color: selected ? colors.primary : colors.outline,
+              size: 20,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Expanded(
+            child: mode == _PaletteOptionMode.customConfigured
+                ? Center(
+                    child: Icon(
+                      Icons.settings_rounded,
+                      size: 28,
+                      color: colors.primary,
+                    ),
+                  )
+                : Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: colors.surfaceContainerHigh,
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    alignment: Alignment.centerLeft,
+                    child: FractionallySizedBox(
+                      widthFactor: 0.65,
+                      child: Container(height: 4, color: colors.primary),
+                    ),
+                  ),
+          ),
+        ],
+      ),
+    ),
+  };
 }

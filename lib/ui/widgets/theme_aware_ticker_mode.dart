@@ -38,7 +38,7 @@ class _ThemeAwareTickerModeState extends State<ThemeAwareTickerMode>
   }
 
   void _onTransitionStatus(AnimationStatus status) {
-    if (status == AnimationStatus.completed) {
+    if (status == AnimationStatus.completed && mounted) {
       setState(() {});
     }
   }
@@ -51,7 +51,9 @@ class _ThemeAwareTickerModeState extends State<ThemeAwareTickerMode>
 
   @override
   void dispose() {
-    _themeTransition.dispose();
+    _themeTransition
+      ..removeStatusListener(_onTransitionStatus)
+      ..dispose();
     super.dispose();
   }
 }

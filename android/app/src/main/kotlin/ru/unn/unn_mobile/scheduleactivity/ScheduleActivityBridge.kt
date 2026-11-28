@@ -17,20 +17,21 @@ import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import org.json.JSONObject
+import ru.bitcodersnn.unnstudenthub.BridgeChannels
 
 class ScheduleActivityBridge(private val activity: Activity, engine: FlutterEngine) {
+    private val channel = MethodChannel(engine.dartExecutor.binaryMessenger, BridgeChannels.SCHEDULE_ACTIVITY)
     private var permissionResult: MethodChannel.Result? = null
     private val requestCode = 9402
 
     init {
-        MethodChannel(engine.dartExecutor.binaryMessenger, "ru.bitcodersnn.unnstudenthub/schedule_activity")
-            .setMethodCallHandler { call, result ->
-                try {
-                    handle(call, result)
-                } catch (error: Exception) {
-                    result.error("SCHEDULE_ACTIVITY_ERROR", error.javaClass.simpleName, null)
-                }
+        channel.setMethodCallHandler { call, result ->
+            try {
+                handle(call, result)
+            } catch (error: Exception) {
+                result.error("SCHEDULE_ACTIVITY_ERROR", error.javaClass.simpleName, null)
             }
+        }
     }
 
     private fun handle(call: MethodCall, result: MethodChannel.Result) {
@@ -75,5 +76,10 @@ class ScheduleActivityBridge(private val activity: Activity, engine: FlutterEngi
         permissionResult?.success(grants.firstOrNull() == PackageManager.PERMISSION_GRANTED)
         permissionResult = null
         ScheduleLiveUpdate.update(activity)
+    }
+
+    fun dispose() {
+        channel.setMethodCallHandler(null)
+        permissionResult = null
     }
 }

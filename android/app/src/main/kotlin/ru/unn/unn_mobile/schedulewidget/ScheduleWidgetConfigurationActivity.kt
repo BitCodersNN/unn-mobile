@@ -26,14 +26,17 @@ import androidx.core.view.WindowCompat
 import ru.bitcodersnn.unnstudenthub.R
 import ru.bitcodersnn.unnstudenthub.schedule.ScheduleAppearance
 import ru.bitcodersnn.unnstudenthub.schedule.SchedulePalette
+import ru.bitcodersnn.unnstudenthub.schedule.SchedulePaletteOption
 
 class ScheduleWidgetConfigurationActivity : Activity() {
     private var draft = ScheduleWidgetSettings()
     private var updatingControls = false
     private lateinit var preview: FrameLayout
-    private val appearance by lazy { ScheduleAppearance(this) }
     private var colors: SchedulePalette? = null
+    private var needsRefresh = false
     private val spinners = mutableListOf<Spinner>()
+    private var paletteOptions: List<SchedulePaletteOption> = emptyList()
+    private lateinit var paletteAdapter: ArrayAdapter<String>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -74,8 +77,12 @@ class ScheduleWidgetConfigurationActivity : Activity() {
         bindSpinner(R.id.schedule_widget_theme, ScheduleWidgetTheme.entries.map { getString(it.label) }) {
             updateDraft(draft.copy(theme = ScheduleWidgetTheme.entries[it]))
         }
-        bindSpinner(R.id.schedule_widget_palette, ScheduleWidgetPalette.entries.map { getString(it.label) }) {
-            updateDraft(draft.copy(palette = ScheduleWidgetPalette.entries[it]))
+        paletteOptions = buildPaletteOptions(ScheduleAppearance(this))
+        paletteAdapter = bindSpinner(R.id.schedule_widget_palette, paletteOptions.map { it.label }) { position ->
+            val selectedKey = paletteOptions.getOrNull(position)?.key
+            if (selectedKey != draft.paletteKey) {
+                updateDraft(draft.copy(paletteKey = selectedKey))
+            }
         }
         bindSpinner(R.id.schedule_widget_text_size, ScheduleWidgetTextSize.entries.map { getString(it.label) }) {
             updateDraft(draft.copy(textSize = ScheduleWidgetTextSize.entries[it]))
@@ -103,19 +110,20 @@ class ScheduleWidgetConfigurationActivity : Activity() {
             })
     }
 
-    private fun bindSpinner(id: Int, labels: List<String>, onSelected: (Int) -> Unit) {
-        findViewById<Spinner>(id).apply {
-            adapter = object : ArrayAdapter<String>(
-                this@ScheduleWidgetConfigurationActivity, android.R.layout.simple_spinner_item, labels,
-            ) {
-                override fun getView(position: Int, convertView: View?, parent: ViewGroup): View =
-                    super.getView(position, convertView, parent).apply { colorSpinnerText(this) }
+    private fun bindSpinner(id: Int, labels: List<String>, onSelected: (Int) -> Unit): ArrayAdapter<String> {
+        val spinnerAdapter = object : ArrayAdapter<String>(
+            this@ScheduleWidgetConfigurationActivity, android.R.layout.simple_spinner_item, labels.toMutableList(),
+        ) {
+            override fun getView(position: Int, convertView: View?, parent: ViewGroup): View =
+                super.getView(position, convertView, parent).apply { colorSpinnerText(this) }
 
-                override fun getDropDownView(position: Int, convertView: View?, parent: ViewGroup): View =
-                    super.getDropDownView(position, convertView, parent).apply { colorSpinnerText(this) }
-            }.apply {
-                setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-            }
+            override fun getDropDownView(position: Int, convertView: View?, parent: ViewGroup): View =
+                super.getDropDownView(position, convertView, parent).apply { colorSpinnerText(this) }
+        }.apply {
+            setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        }
+        findViewById<Spinner>(id).apply {
+            adapter = spinnerAdapter
             spinners.add(this)
             onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
@@ -124,13 +132,14 @@ class ScheduleWidgetConfigurationActivity : Activity() {
                 override fun onNothingSelected(parent: AdapterView<*>) = Unit
             }
         }
+        return spinnerAdapter
     }
 
     private fun reflectDraft() {
         updatingControls = true
         findViewById<SeekBar>(R.id.schedule_widget_transparency_slider).progress = draft.transparency
         findViewById<Spinner>(R.id.schedule_widget_theme).setSelection(draft.theme.ordinal)
-        findViewById<Spinner>(R.id.schedule_widget_palette).setSelection(draft.palette.ordinal)
+        findViewById<Spinner>(R.id.schedule_widget_palette).setSelection(paletteIndexFor(draft.paletteKey))
         updateThemeControl()
         findViewById<Spinner>(R.id.schedule_widget_text_size).setSelection(draft.textSize.ordinal)
         findViewById<Spinner>(R.id.schedule_widget_max_lessons).setSelection(draft.maxLessons)
@@ -147,10 +156,13 @@ class ScheduleWidgetConfigurationActivity : Activity() {
     }
 
     private fun updateThemeControl() {
-        findViewById<Spinner>(R.id.schedule_widget_theme).isEnabled = draft.palette == ScheduleWidgetPalette.APP
+        val hasSelectedOption = draft.paletteKey != null && paletteOptions.any { it.key == draft.paletteKey }
+        findViewById<Spinner>(R.id.schedule_widget_theme).isEnabled = !hasSelectedOption
     }
 
     private fun renderDraft() {
+        val appearance = ScheduleAppearance(this)
+        refreshPaletteOptions(appearance)
         val palette = draft.resolvePalette(appearance)
         if (colors != palette) {
             colors = palette
@@ -159,6 +171,45 @@ class ScheduleWidgetConfigurationActivity : Activity() {
         preview.removeAllViews()
         preview.addView(ScheduleWidgetProvider.preview(this, draft).apply(this, preview))
         updateTransparency()
+    }
+
+    private fun buildPaletteOptions(appearance: ScheduleAppearance): List<SchedulePaletteOption> =
+        listOf(SchedulePaletteOption(null, getString(R.string.schedule_widget_palette_app))) + appearance.options
+
+    private fun paletteIndexFor(paletteKey: String?): Int =
+        paletteKey?.let { key -> paletteOptions.indexOfFirst { it.key == key }.takeIf { it >= 0 } } ?: 0
+
+    private fun refreshPaletteOptions(appearance: ScheduleAppearance) {
+        val nextOptions = buildPaletteOptions(appearance)
+        if (appearance.options.isNotEmpty() &&
+            draft.paletteKey != null &&
+            nextOptions.none { it.key == draft.paletteKey }
+        ) {
+            draft = draft.copy(paletteKey = null)
+        }
+        if (nextOptions == paletteOptions) return
+        paletteOptions = nextOptions
+        val previousUpdating = updatingControls
+        updatingControls = true
+        paletteAdapter.clear()
+        paletteAdapter.addAll(nextOptions.map { it.label })
+        paletteAdapter.notifyDataSetChanged()
+        findViewById<Spinner>(R.id.schedule_widget_palette).setSelection(paletteIndexFor(draft.paletteKey))
+        updateThemeControl()
+        updatingControls = previousUpdating
+    }
+
+    override fun onPause() {
+        needsRefresh = true
+        super.onPause()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (needsRefresh) {
+            needsRefresh = false
+            renderDraft()
+        }
     }
 
     private fun colorSpinnerText(view: View?) {

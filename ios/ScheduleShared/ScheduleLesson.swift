@@ -17,4 +17,3 @@ struct ScheduleLesson: Decodable, Identifiable {
     var startDate: Date { Date(timeIntervalSince1970: start / 1000) }
     var endDate: Date { Date(timeIntervalSince1970: end / 1000) }
 }
-

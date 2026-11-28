@@ -15,4 +15,13 @@ class OnlineStatusData {
   set isOnline(bool value) {
     _isOnline.value = value;
   }
+
+  void markOnline() {
+    timeOfLastOnline = DateTime.now();
+    _isOnline.value = true;
+  }
+
+  void markOffline() {
+    _isOnline.value = false;
+  }
 }

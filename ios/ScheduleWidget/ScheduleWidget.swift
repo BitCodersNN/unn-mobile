@@ -9,7 +9,7 @@ struct ScheduleWidgetView: View {
     @Environment(\.widgetFamily) private var family
     @Environment(\.colorScheme) private var colorScheme
     private var palette: SchedulePalette {
-        entry.appearance.palette(systemDark: colorScheme == .dark, override: settings.palette.override)
+        entry.appearance.palette(systemDark: colorScheme == .dark, override: settings.paletteOverride)
     }
     private var accent: Color { SchedulePalette.color(palette.accent) }
     private var secondary: Color { SchedulePalette.color(palette.secondary) }

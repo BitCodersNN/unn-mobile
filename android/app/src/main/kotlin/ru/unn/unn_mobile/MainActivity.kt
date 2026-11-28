@@ -14,6 +14,7 @@ import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.embedding.engine.FlutterShellArgs
 import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodChannel
+import ru.bitcodersnn.unnstudenthub.palette.PaletteLinkBridge
 import ru.bitcodersnn.unnstudenthub.schedulewidget.ScheduleWidgetBridge
 import kotlinx.coroutines.*
 import org.json.JSONObject
@@ -22,10 +23,6 @@ import java.io.File
 const val FILE_PICKER_REQUEST = 1
 
 const val UPLOAD_FILE_PICKER_REQUEST = 2
-
-const val FILE_CHANNEL = "ru.bitcodersnn.unnstudenthub/files"
-
-const val FILE_PICKER_EVENTS = "ru.bitcodersnn.unnstudenthub/file_events"
 
 const val ARGUMENT_ERROR = "ARGUMENT_ERROR"
 
@@ -37,6 +34,7 @@ data class OpenResult(val type: Int, val message: String)
 class MainActivity : FlutterActivity() {
     private var scheduleActivityBridge: ScheduleActivityBridge? = null
     private var scheduleWidgetBridge: ScheduleWidgetBridge? = null
+    private var paletteLinkBridge: PaletteLinkBridge? = null
     class Container<T>(
         obj: T?,
     ) {
@@ -59,6 +57,7 @@ class MainActivity : FlutterActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         if (savedInstanceState != null) {
             intent.removeExtra(FlutterShellArgs.ARG_KEY_START_PAUSED)
+            PaletteLinkBridge.markConsumed(intent)
         }
         super.onCreate(savedInstanceState)
     }
@@ -67,13 +66,14 @@ class MainActivity : FlutterActivity() {
         super.configureFlutterEngine(flutterEngine)
         scheduleActivityBridge = ScheduleActivityBridge(this, flutterEngine)
         scheduleWidgetBridge = ScheduleWidgetBridge(this, flutterEngine, intent)
+        paletteLinkBridge = PaletteLinkBridge(flutterEngine, intent)
         EventChannel(
             flutterEngine.dartExecutor.binaryMessenger,
-            FILE_PICKER_EVENTS,
+            BridgeChannels.FILE_PICKER_EVENTS,
         ).setStreamHandler(FilePickerHandler)
         MethodChannel(
             flutterEngine.dartExecutor.binaryMessenger,
-            FILE_CHANNEL,
+            BridgeChannels.FILE_CHANNEL,
         ).setMethodCallHandler methodCallback@{ call, result ->
             when (call.method) {
                 "pickDirectory" -> {
@@ -144,6 +144,17 @@ class MainActivity : FlutterActivity() {
         super.onNewIntent(intent)
         setIntent(intent)
         scheduleWidgetBridge?.onNewIntent(intent)
+        paletteLinkBridge?.onNewIntent(intent)
+    }
+
+    override fun cleanUpFlutterEngine(flutterEngine: FlutterEngine) {
+        paletteLinkBridge?.dispose()
+        paletteLinkBridge = null
+        scheduleWidgetBridge?.dispose()
+        scheduleWidgetBridge = null
+        scheduleActivityBridge?.dispose()
+        scheduleActivityBridge = null
+        super.cleanUpFlutterEngine(flutterEngine)
     }
 
     private fun openGalleryFilePicker() {

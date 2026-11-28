@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2025 BitCodersNN
 
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/painting.dart';
 import 'package:unn_mobile/core/misc/hex_color.dart';
 import 'package:unn_mobile/core/misc/json/json_utils.dart';
 

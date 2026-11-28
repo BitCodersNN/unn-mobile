@@ -40,6 +40,24 @@ class AppSettings {
     TabBarPreferences.defaultPaths,
   );
 
+  static final _showTabBarDate = ValueNotifier<bool>(true);
+
+  static ValueListenable<bool> get showTabBarDate => _showTabBarDate;
+
+  static Future<void> updateShowTabBarDate({required bool value}) async {
+    if (value == _showTabBarDate.value) {
+      return;
+    }
+    await Injector.appInstance.get<StorageService>().write(
+      key: AppSettingsKeys.showTabBarDate,
+      value: value.toString(),
+    );
+    _showTabBarDate.value = value;
+    optionsSaved.broadcast();
+  }
+
+  static void resetShowTabBarDate() => _showTabBarDate.value = true;
+
   static Future<void> updateTabBarPaths(List<String> paths) async {
     final normalized = TabBarPreferences.normalize(paths);
     await Injector.appInstance.get<StorageService>().write(
@@ -76,6 +94,11 @@ class AppSettings {
     );
     reverseComments = await _readValue(
       AppSettingsKeys.reverseComments,
+      defaultValue: true,
+      parser: bool.tryParse,
+    );
+    _showTabBarDate.value = await _readValue(
+      AppSettingsKeys.showTabBarDate,
       defaultValue: true,
       parser: bool.tryParse,
     );

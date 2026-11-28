@@ -1,7 +1,18 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2025 BitCodersNN
 
+import 'dart:convert';
+
 typedef JsonMap = Map<String, Object?>;
+
+/// Безопасно декодирует JSON-строку [source], возвращая `null` при ошибке формата.
+Object? tryDecodeJson(String source) {
+  try {
+    return jsonDecode(source);
+  } on FormatException {
+    return null;
+  }
+}
 
 /// Безопасно извлекает значение из [json] по ключу [key] и приводит его к типу [T].
 ///

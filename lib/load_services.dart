@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-// Copyright 2025 BitCodersNN
+// Copyright 2026 BitCodersNN
 
 import 'package:flutter/foundation.dart';
 import 'package:injector/injector.dart';
@@ -21,7 +21,6 @@ import 'package:unn_mobile/core/api_helpers/implementations/web_unn_source_api_h
 import 'package:unn_mobile/core/constants/string_keys/git_resource_cache_keys.dart';
 import 'package:unn_mobile/core/misc/app_open_tracker.dart';
 import 'package:unn_mobile/core/misc/app_settings.dart';
-import 'package:unn_mobile/core/misc/app_theme_controller.dart';
 import 'package:unn_mobile/core/misc/birthday/birthday_greeting_manager.dart';
 import 'package:unn_mobile/core/misc/git/git_folder.dart';
 import 'package:unn_mobile/core/misc/giveaway_promo/giveaway_promo_manager.dart';
@@ -34,7 +33,6 @@ import 'package:unn_mobile/core/models/common/online_status_data.dart';
 import 'package:unn_mobile/core/models/feed/blog_post_type.dart';
 import 'package:unn_mobile/core/models/giveaway_promo/announcement_catalog.dart';
 import 'package:unn_mobile/core/models/loading_page/loading_page_catalog.dart';
-import 'package:unn_mobile/core/models/schedule_widget/schedule_widget_lesson.dart';
 import 'package:unn_mobile/core/providers/implementations/authorisation/authorisation_data_provider_impl.dart';
 import 'package:unn_mobile/core/providers/implementations/birthday/birthday_greeting_provider_impl.dart';
 import 'package:unn_mobile/core/providers/implementations/common/app_theme_provider_impl.dart';
@@ -69,11 +67,14 @@ import 'package:unn_mobile/core/services/implementations/authentication/unn_auth
 import 'package:unn_mobile/core/services/implementations/certificate/certificate_downloader_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/certificate/certificate_path_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/certificate/certificate_service_impl.dart';
+import 'package:unn_mobile/core/services/implementations/common/app_theme_controller_impl.dart';
 import 'package:unn_mobile/core/services/implementations/common/console_logger_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/common/file_data_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/common/firebase_logger_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/common/last_commit_sha_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/common/message_ignore_service_impl.dart';
+import 'package:unn_mobile/core/services/implementations/common/online_request_service_impl.dart';
+import 'package:unn_mobile/core/services/implementations/common/palette_link_platform_impl.dart';
 import 'package:unn_mobile/core/services/implementations/common/search_id_on_portal_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/common/storage_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/dialog/dialog_search_service_impl.dart';
@@ -116,6 +117,7 @@ import 'package:unn_mobile/core/services/implementations/profile/profile_of_curr
 import 'package:unn_mobile/core/services/implementations/profile/profile_search_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/profile/profile_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/schedule/export_schedule_service_impl.dart';
+import 'package:unn_mobile/core/services/implementations/schedule/offline_schedule_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/schedule/schedule_search_history_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/schedule/schedule_service_impl.dart';
 import 'package:unn_mobile/core/services/implementations/schedule_widget/schedule_widget_platform_impl.dart';
@@ -127,10 +129,13 @@ import 'package:unn_mobile/core/services/interfaces/authorisation/unn_authorisat
 import 'package:unn_mobile/core/services/interfaces/certificate/certificate_downloader_service.dart';
 import 'package:unn_mobile/core/services/interfaces/certificate/certificate_path_service.dart';
 import 'package:unn_mobile/core/services/interfaces/certificate/certificates_service.dart';
+import 'package:unn_mobile/core/services/interfaces/common/app_theme_controller.dart';
 import 'package:unn_mobile/core/services/interfaces/common/file_data_service.dart';
 import 'package:unn_mobile/core/services/interfaces/common/last_commit_sha_service.dart';
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
 import 'package:unn_mobile/core/services/interfaces/common/message_ignore_service.dart';
+import 'package:unn_mobile/core/services/interfaces/common/online_request_service.dart';
+import 'package:unn_mobile/core/services/interfaces/common/palette_link_platform.dart';
 import 'package:unn_mobile/core/services/interfaces/common/search_id_on_portal_service.dart';
 import 'package:unn_mobile/core/services/interfaces/common/storage_service.dart';
 import 'package:unn_mobile/core/services/interfaces/dialog/dialog_search_service.dart';
@@ -171,6 +176,7 @@ import 'package:unn_mobile/core/services/interfaces/profile/profile_of_current_u
 import 'package:unn_mobile/core/services/interfaces/profile/profile_search_service.dart';
 import 'package:unn_mobile/core/services/interfaces/profile/profile_service.dart';
 import 'package:unn_mobile/core/services/interfaces/schedule/export_schedule_service.dart';
+import 'package:unn_mobile/core/services/interfaces/schedule/offline_schedule_service.dart';
 import 'package:unn_mobile/core/services/interfaces/schedule/schedule_search_history_service.dart';
 import 'package:unn_mobile/core/services/interfaces/schedule/schedule_service.dart';
 import 'package:unn_mobile/core/services/interfaces/schedule_widget/schedule_widget_platform.dart';
@@ -190,6 +196,7 @@ import 'package:unn_mobile/core/viewmodels/main_page/certificates_online/certifi
 import 'package:unn_mobile/core/viewmodels/main_page/certificates_online/certificates_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/chat/chat_inside_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/chat/chat_screen_view_model.dart';
+import 'package:unn_mobile/core/viewmodels/main_page/donations/donations_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/feed/feed_screen_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/grades/grades_screen_view_model.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/schedule/schedule_screen_view_model.dart';
@@ -271,7 +278,10 @@ void registerDependencies() {
       () => AppThemeProviderImpl(get<StorageService>()),
     )
     ..registerSingleton<AppThemeController>(
-      () => AppThemeController(get<AppThemeProvider>()),
+      () => AppThemeControllerImpl(get<AppThemeProvider>()),
+    )
+    ..registerSingleton<PaletteLinkPlatform>(
+      () => PaletteLinkPlatformImpl(get<LoggerService>()),
     )
     ..registerSingleton<AppOpenTracker>(
       () => AppOpenTracker(get<StorageService>()),
@@ -345,6 +355,14 @@ void registerDependencies() {
         get<AuthDataProvider>(),
         get<UnnAuthService>(),
         get<StorageService>(),
+        get<LoggerService>(),
+      ),
+    )
+    ..registerSingleton<OnlineRequestService>(
+      () => OnlineRequestServiceImpl(
+        get<UnnAuthService>(),
+        get<AuthRefreshService>(),
+        get<OnlineStatusData>(),
         get<LoggerService>(),
       ),
     )
@@ -449,7 +467,14 @@ void registerDependencies() {
       () => ExportScheduleServiceImpl(getApiHelper(HostType.unnPortal)),
     )
     ..registerSingleton<OfflineScheduleProvider>(
-      () => OfflineScheduleProviderImpl(get<StorageService>()),
+      () => OfflineScheduleProviderImpl(
+        get<StorageService>(),
+        get<LoggerService>(),
+        get<ScheduleWidgetPlatform>(),
+      ),
+    )
+    ..registerSingleton<OfflineScheduleService>(
+      () => OfflineScheduleServiceImpl(get<OfflineScheduleProvider>()),
     )
     ..registerSingleton<ScheduleActivitySettingsProvider>(
       () => ScheduleActivitySettingsProviderImpl(get<StorageService>()),
@@ -458,7 +483,12 @@ void registerDependencies() {
       () => ScheduleActivityPlatform(get<LoggerService>()),
     )
     ..registerSingleton<ScheduleWidgetPlatform>(
-      () => ScheduleWidgetPlatformImpl(get<LoggerService>()),
+      () => ScheduleWidgetPlatformImpl(
+        get<LoggerService>(),
+        accentColor: (subject) => UnnMobileColors
+            .defaultScheduleSubjectTypeColors[subject.subjectTypeEnum]!
+            .toARGB32(),
+      ),
     )
     ..registerSingleton<ScheduleWidgetService>(
       () => ScheduleWidgetServiceImpl(
@@ -466,15 +496,10 @@ void registerDependencies() {
         get<AuthDataProvider>(),
         get<ScheduleService>(),
         get<SearchIdOnPortalService>(),
-        get<OfflineScheduleProvider>(),
+        get<OfflineScheduleService>(),
         get<ScheduleWidgetPlatform>(),
+        get<OnlineRequestService>(),
         get<LoggerService>(),
-        lessonBuilder: (subject) => ScheduleWidgetLesson.fromSubject(
-          subject,
-          accentColor: UnnMobileColors
-              .defaultScheduleSubjectTypeColors[subject.subjectTypeEnum]!
-              .toARGB32(),
-        ),
       ),
     )
     ..registerSingleton<ScheduleSearchHistoryService>(
@@ -760,6 +785,7 @@ void registerDependencies() {
         get<LogoDownloaderService>(),
         get<CurrentUserSyncStorage>(),
         get<GitResourceRepository<BirthdayGreetingCatalog>>(),
+        get<AppThemeController>(),
       ),
     )
     ..registerDependency(
@@ -786,6 +812,7 @@ void registerDependencies() {
         get<RefreshBlogPostService>(),
         get<BlogPostPaginationService>(),
         get<BlogPostSearchService>(),
+        get<OnlineRequestService>(),
       ),
     )
     ..registerDependency(
@@ -794,6 +821,7 @@ void registerDependencies() {
         get<MarkBySubjectProvider>(),
         get<CurriculumService>(),
         get<CurrentUserSyncStorage>(),
+        get<OnlineRequestService>(),
       ),
     )
     ..registerDependency(
@@ -804,7 +832,11 @@ void registerDependencies() {
         get<SourceAuthService>(),
         get<ScheduleWidgetService>(),
         get<ScheduleActivityPlatform>(),
+        get<LoggerService>(),
       ),
+    )
+    ..registerDependency<DonationsViewModel>(
+      () => DonationsViewModel(get<AppThemeController>()),
     )
     ..registerDependency(
       () => ScheduleScreenViewModel(
@@ -813,7 +845,8 @@ void registerDependencies() {
         get<ScheduleService>(),
         get<ScheduleSearchHistoryService>(),
         get<ExportScheduleService>(),
-        get<OfflineScheduleProvider>(),
+        get<OfflineScheduleService>(),
+        get<OnlineRequestService>(),
       ),
     )
     ..registerDependency(
@@ -832,6 +865,7 @@ void registerDependencies() {
         get<DialogService>(),
         get<CurrentUserSyncStorage>(),
         get<DialogSearchService>(),
+        get<OnlineRequestService>(),
       ),
     )
     ..registerDependency(
@@ -839,6 +873,7 @@ void registerDependencies() {
         get<MainPageRoutesViewModelsFactory>(),
         get<MessageServiceAggregator>(),
         get<CurrentUserSyncStorage>(),
+        get<OnlineRequestService>(),
       ),
     )
     ..registerDependency(

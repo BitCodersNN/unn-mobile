@@ -30,7 +30,7 @@ class ScheduleWidgetPreferences(context: Context) {
         preferences.edit()
             .putInt(key(ScheduleWidgetSettings.TRANSPARENCY, widgetId), settings.transparency)
             .putString(key(ScheduleWidgetSettings.THEME, widgetId), settings.theme.name)
-            .putString(key(ScheduleWidgetSettings.PALETTE, widgetId), settings.palette.key)
+            .putString(key(ScheduleWidgetSettings.PALETTE, widgetId), settings.paletteKey)
             .putString(key(ScheduleWidgetSettings.TEXT_SIZE, widgetId), settings.textSize.name)
             .putInt(key(ScheduleWidgetSettings.MAX_LESSONS, widgetId), settings.maxLessons)
             .putBoolean(key(ScheduleWidgetSettings.SHOW_LOCATION, widgetId), settings.showLocation)

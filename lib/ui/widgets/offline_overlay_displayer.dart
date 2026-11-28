@@ -28,9 +28,9 @@ class _OfflineOverlayDisplayerState extends State<OfflineOverlayDisplayer> {
   bool _isOnline = false;
 
   @override
-  Widget build(BuildContext context) => Stack(
+  Widget build(BuildContext context) => Column(
     children: [
-      widget.child,
+      Expanded(child: widget.child),
       if (!_isOnline) OfflineOverlay(bottomOffset: widget.bottomOffset),
     ],
   );
@@ -47,8 +47,6 @@ class _OfflineOverlayDisplayerState extends State<OfflineOverlayDisplayer> {
       _isOnline = _onlineStatusData.isOnline;
     });
   }
-
-  void showOverlay() {}
 
   @override
   void dispose() {

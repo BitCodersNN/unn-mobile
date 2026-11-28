@@ -15,14 +15,6 @@ enum class ScheduleWidgetTheme(val label: Int) {
     DARK(R.string.schedule_widget_theme_dark),
 }
 
-enum class ScheduleWidgetPalette(val key: String?, val label: Int) {
-    APP(null, R.string.schedule_widget_palette_app),
-    LIGHT_GREEN("light_green", R.string.schedule_widget_palette_light_green),
-    LIGHT_BLUE("light_blue", R.string.schedule_widget_palette_light_blue),
-    DARK_GREEN("dark_green", R.string.schedule_widget_palette_dark_green),
-    DARK_GRAPHITE("dark_graphite", R.string.schedule_widget_palette_dark_graphite),
-}
-
 enum class ScheduleWidgetTextSize(val label: Int, val scale: Float) {
     SMALL(R.string.schedule_widget_text_small, 0.9f),
     NORMAL(R.string.schedule_widget_text_normal, 1f),
@@ -32,7 +24,7 @@ enum class ScheduleWidgetTextSize(val label: Int, val scale: Float) {
 data class ScheduleWidgetSettings(
     val transparency: Int = 0,
     val theme: ScheduleWidgetTheme = ScheduleWidgetTheme.APP,
-    val palette: ScheduleWidgetPalette = ScheduleWidgetPalette.APP,
+    val paletteKey: String? = null,
     val textSize: ScheduleWidgetTextSize = ScheduleWidgetTextSize.NORMAL,
     val maxLessons: Int = 0,
     val showLocation: Boolean = true,
@@ -50,13 +42,13 @@ data class ScheduleWidgetSettings(
             ScheduleWidgetTheme.LIGHT -> false
             ScheduleWidgetTheme.DARK -> true
         }
-        return appearance.palette(systemDark, forcedDark, palette.key)
+        return appearance.palette(systemDark, forcedDark, paletteKey)
     }
 
     fun toBundle(): Bundle = Bundle().apply {
         putInt(TRANSPARENCY, transparency)
         putString(THEME, theme.name)
-        putString(PALETTE, palette.key)
+        putString(PALETTE, paletteKey)
         putString(TEXT_SIZE, textSize.name)
         putInt(MAX_LESSONS, maxLessons)
         putBoolean(SHOW_LOCATION, showLocation)
@@ -77,8 +69,7 @@ data class ScheduleWidgetSettings(
             transparency = bundle.getInt(TRANSPARENCY, 0).coerceIn(0, 100),
             theme = ScheduleWidgetTheme.entries.firstOrNull { it.name == bundle.getString(THEME) }
                 ?: ScheduleWidgetTheme.APP,
-            palette = ScheduleWidgetPalette.entries.firstOrNull { it.key == bundle.getString(PALETTE) }
-                ?: ScheduleWidgetPalette.APP,
+            paletteKey = bundle.getString(PALETTE)?.takeIf { it.isNotEmpty() },
             textSize = ScheduleWidgetTextSize.entries.firstOrNull { it.name == bundle.getString(TEXT_SIZE) }
                 ?: ScheduleWidgetTextSize.NORMAL,
             maxLessons = bundle.getInt(MAX_LESSONS, 0).coerceIn(0, 6),

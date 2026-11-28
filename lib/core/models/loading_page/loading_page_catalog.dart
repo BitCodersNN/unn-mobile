@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2026 BitCodersNN
 
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:unn_mobile/core/misc/json/json_utils.dart';
 import 'package:unn_mobile/core/models/loading_page/loading_page_data.dart';
 
-abstract final class _Keys {
+abstract final class _LoadingPageCatalogJsonKeys {
   static const defaults = 'default';
   static const holidays = 'holidays';
   static const facultyDays = 'faculty_days';
@@ -42,25 +42,33 @@ class LoadingPageCatalog {
         _holidays.where((entry) => entry.matches(date)).firstOrNull ??
         _facultyDays.where((entry) => entry.matches(date)).firstOrNull ??
         defaultPage;
-    return page?.resolve(
+    if (page == null) {
+      return null;
+    }
+    return page.resolve(
       brightness: brightness,
       palette: palette,
-      fallbackLogo: defaultPage
-          ?.resolve(brightness: brightness, palette: palette)
-          .imagePath,
+      fallbackLogo: identical(page, defaultPage)
+          ? null
+          : defaultPage
+                ?.resolve(brightness: brightness, palette: palette)
+                .imagePath,
     );
   }
 
   factory LoadingPageCatalog.fromJson(Object? json) {
-    if (json is JsonMap && !json.containsKey(_Keys.legacyPages)) {
+    if (json is JsonMap &&
+        !json.containsKey(_LoadingPageCatalogJsonKeys.legacyPages)) {
       return LoadingPageCatalog._(
-        defaults: _parseGroup(json[_Keys.defaults]),
-        holidays: _parseGroup(json[_Keys.holidays]),
-        facultyDays: _parseGroup(json[_Keys.facultyDays]),
+        defaults: _parseGroup(json[_LoadingPageCatalogJsonKeys.defaults]),
+        holidays: _parseGroup(json[_LoadingPageCatalogJsonKeys.holidays]),
+        facultyDays: _parseGroup(json[_LoadingPageCatalogJsonKeys.facultyDays]),
       );
     }
 
-    final pages = _parseGroup(json is JsonMap ? json[_Keys.legacyPages] : json);
+    final pages = _parseGroup(
+      json is JsonMap ? json[_LoadingPageCatalogJsonKeys.legacyPages] : json,
+    );
     return LoadingPageCatalog._(
       defaults: pages.where((page) => !page.hasDate),
       holidays: pages.where((page) => page.hasDate),
@@ -69,14 +77,35 @@ class LoadingPageCatalog {
     );
   }
 
-  static List<LoadingPageEntry> _parseGroup(Object? json) =>
-      (json as List? ?? const [])
-          .map((item) => LoadingPageEntry.fromJson(item as JsonMap))
-          .toList();
+  static List<LoadingPageEntry> _parseGroup(Object? json) {
+    if (json is! List) {
+      return const [];
+    }
+    return [
+      for (final item in json)
+        if (item is JsonMap) LoadingPageEntry.fromJson(item),
+    ];
+  }
 
-  JsonMap toJson() => {
-    _Keys.defaults: _defaults.map((page) => page.toJson()).toList(),
-    _Keys.holidays: _holidays.map((page) => page.toJson()).toList(),
-    _Keys.facultyDays: _facultyDays.map((page) => page.toJson()).toList(),
-  };
+  JsonMap toJson() {
+    if (!isCurrentFormat) {
+      return {
+        _LoadingPageCatalogJsonKeys.legacyPages: [
+          for (final page in [..._defaults, ..._holidays, ..._facultyDays])
+            page.toJson(),
+        ],
+      };
+    }
+    return {
+      _LoadingPageCatalogJsonKeys.defaults: _defaults
+          .map((page) => page.toJson())
+          .toList(),
+      _LoadingPageCatalogJsonKeys.holidays: _holidays
+          .map((page) => page.toJson())
+          .toList(),
+      _LoadingPageCatalogJsonKeys.facultyDays: _facultyDays
+          .map((page) => page.toJson())
+          .toList(),
+    };
+  }
 }

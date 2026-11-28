@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:unn_mobile/core/constants/date_pattern.dart';
 import 'package:unn_mobile/core/misc/date_time_utilities/date_time_extensions.dart';
-import 'package:unn_mobile/core/misc/date_time_utilities/week_range.dart';
 import 'package:unn_mobile/core/models/schedule/schedule_filter.dart';
 import 'package:unn_mobile/core/models/schedule/schedule_search_suggestion_item.dart';
 import 'package:unn_mobile/core/viewmodels/factories/main_page_routes_view_models_factory.dart';
@@ -19,6 +18,7 @@ import 'package:unn_mobile/ui/views/main_page/schedule/export_schedule_flow.dart
 import 'package:unn_mobile/ui/views/main_page/schedule/schedule_tab_view.dart';
 import 'package:unn_mobile/ui/views/main_page/schedule/widgets/schedule_search_suggestion_item_view.dart';
 import 'package:unn_mobile/ui/views/main_page/schedule/widgets/schedule_week_swipe.dart';
+import 'package:unn_mobile/ui/views/main_page/widgets/main_page_app_bar.dart';
 import 'package:unn_mobile/ui/widgets/menu_button.dart';
 import 'package:unn_mobile/ui/widgets/offline_overlay_displayer.dart';
 import 'package:unn_mobile/ui/widgets/search/search_controller.dart';
@@ -87,20 +87,14 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView> {
           builder: (context, online) {
             final theme = Theme.of(context);
 
-            WeekRange week = model.selectedWeek;
-
-            if (!online &&
-                model.currentTab != null &&
-                !model.currentTab!.hasAnyId &&
-                model.currentTab!.offlineSchedule != null) {
-              week = model.currentTab!.offlineSchedule!.week;
-            }
+            final week = model.selectedWeek;
 
             return DefaultTabController(
               length: model.sortedUserTypeList.length,
               initialIndex: 0,
               child: Scaffold(
-                appBar: AppBar(
+                appBar: buildMainPageAppBar(
+                  context,
                   leading: _search.isOpen
                       ? IconButton(
                           icon: const Icon(Icons.arrow_back),
@@ -108,8 +102,7 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView> {
                           onPressed: _search.close,
                         )
                       : null,
-                  title: const Text('Расписание'),
-                  forceMaterialTransparency: true,
+                  title: 'Расписание',
                   actions: [
                     if (online && !_search.isOpen)
                       IconButton(
@@ -119,19 +112,15 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView> {
                       ),
                     if (!_search.isOpen)
                       MenuButton(
-                        enabled: online && model.canExport,
-                        items: const [
-                          SideMenuItemWithIcon(
-                            value: 'calendar',
-                            icon: Icons.calendar_month,
+                        entries: [
+                          AppMenuAction(
                             title: 'Экспорт в календарь',
+                            onSelected: () =>
+                                unawaited(runExportFlow(context, model)),
+                            icon: Icons.calendar_month,
+                            enabled: online && model.canExport,
                           ),
                         ],
-                        onSelected: (value) {
-                          if (value == 'calendar') {
-                            runExportFlow(context, model);
-                          }
-                        },
                       ),
                   ],
                   bottom: PreferredSize(
@@ -160,11 +149,7 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView> {
                                 Row(
                                   children: [
                                     IconButton(
-                                      onPressed: online
-                                          ? () {
-                                              model.previousWeek();
-                                            }
-                                          : null,
+                                      onPressed: model.previousWeek,
                                       icon: const Icon(Icons.arrow_left),
                                       iconSize: 32.0,
                                     ),
@@ -179,11 +164,7 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView> {
                                       ),
                                     ),
                                     IconButton(
-                                      onPressed: online
-                                          ? () {
-                                              model.nextWeek();
-                                            }
-                                          : null,
+                                      onPressed: model.nextWeek,
                                       icon: const Icon(Icons.arrow_right),
                                       iconSize: 32.0,
                                     ),
@@ -236,7 +217,7 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView> {
                 body: Stack(
                   children: [
                     ScheduleWeekSwipe(
-                      enabled: online && !_search.isOpen,
+                      enabled: !_search.isOpen,
                       weekOffset: model.weekOffset,
                       onWeekChanged: model.selectWeek,
                       weekBuilder: (context, weekOffset) => TabBarView(
@@ -287,9 +268,15 @@ class _ScheduleScreenViewState extends State<ScheduleScreenView> {
               ),
             );
           },
-          statusChanged: (_) => Future.wait(
-            model.modelsByType.values.map((t) async => await t.refresh()),
-          ).then((_) => model.saveOfflineSchedule()),
+          statusChanged: (online) async {
+            if (online) {
+              await Future.wait(
+                model.modelsByType.values
+                    .where((tab) => !tab.isBusy)
+                    .map((tab) async => await tab.refresh()),
+              );
+            }
+          },
         );
       },
       model: _viewModel,

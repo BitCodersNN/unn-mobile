@@ -17,15 +17,13 @@ class _OfflineOverlayState extends State<OfflineOverlay> {
   Future<void>? refreshAction;
   @override
   Widget build(BuildContext context) {
-    //final theme = Theme.of(context);
     final snackBarTheme = SnackBarTheme.of(context);
     return Padding(
       padding: EdgeInsets.only(bottom: widget.bottomOffset),
-      child: Align(
-        alignment: AlignmentDirectional.bottomStart,
-        child: AnimatedContainer(
-          color: snackBarTheme.backgroundColor,
-          duration: const Duration(milliseconds: 2000),
+      child: Material(
+        color: snackBarTheme.backgroundColor,
+        child: SafeArea(
+          top: false,
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: Row(

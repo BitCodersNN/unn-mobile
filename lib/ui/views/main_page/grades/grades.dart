@@ -8,6 +8,7 @@ import 'package:unn_mobile/core/misc/haptic_utils.dart';
 import 'package:unn_mobile/core/viewmodels/main_page/grades/grades_screen_view_model.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
 import 'package:unn_mobile/ui/views/main_page/grades/widgets/grade_book_content.dart';
+import 'package:unn_mobile/ui/views/main_page/widgets/main_page_app_bar.dart';
 import 'package:unn_mobile/ui/widgets/empty_state_widget.dart';
 import 'package:unn_mobile/ui/widgets/offline_overlay_displayer.dart';
 
@@ -23,10 +24,10 @@ class GradesScreenView extends StatelessWidget {
   Widget build(BuildContext context) => OfflineOverlayDisplayer(
     child: Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surfaceContainerLow,
-      appBar: AppBar(
-        title: const Text('Зачётная книжка'),
+      appBar: buildMainPageAppBar(
+        context,
+        title: 'Зачётная книжка',
         backgroundColor: Theme.of(context).colorScheme.surfaceContainerLow,
-        scrolledUnderElevation: 0,
       ),
       body: SafeArea(
         top: false,

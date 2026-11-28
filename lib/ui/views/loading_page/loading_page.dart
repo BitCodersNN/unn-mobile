@@ -5,9 +5,9 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:provider/provider.dart';
-import 'package:unn_mobile/core/misc/app_theme_controller.dart';
+import 'package:go_router/go_router.dart';
 import 'package:unn_mobile/core/viewmodels/loading_page/loading_page_view_model.dart';
+import 'package:unn_mobile/ui/main_page_locations.dart';
 import 'package:unn_mobile/ui/views/base_view.dart';
 
 class LoadingPage extends StatefulWidget {
@@ -21,47 +21,55 @@ class _LoadingPageState extends State<LoadingPage> {
   late final Future<void> _loadingPages;
   final Completer<void> _logoFrame = Completer<void>();
 
-  @override
-  Widget build(BuildContext context) {
-    final brightness = Theme.of(context).brightness;
-    final themeController = context.read<AppThemeController>();
-    final palette = brightness == Brightness.dark
-        ? themeController.darkTheme.name
-        : themeController.lightTheme.name;
-    return BaseView<LoadingPageViewModel>(
-      builder: (context, model, child) => FutureBuilder<void>(
-        future: _loadingPages,
-        builder: (context, snapshot) {
-          final theme = Theme.of(context);
-          final backgroundColor = theme.colorScheme.surfaceContainerLowest;
-          final overlay =
-              ThemeData.estimateBrightnessForColor(backgroundColor) ==
-                  Brightness.dark
-              ? SystemUiOverlayStyle.light
-              : SystemUiOverlayStyle.dark;
-          return AnnotatedRegion<SystemUiOverlayStyle>(
-            value: SystemUiOverlayStyle(
-              statusBarColor: backgroundColor,
-              statusBarBrightness: overlay.statusBarBrightness,
-              statusBarIconBrightness: overlay.statusBarIconBrightness,
-              systemStatusBarContrastEnforced: false,
-            ),
-            child: Scaffold(
-              backgroundColor: backgroundColor,
-              body: SafeArea(child: _buildContent(context, model)),
-            ),
-          );
-        },
-      ),
-      onModelReady: (model) {
-        _loadingPages = model.initLoadingPages(
-          brightness: brightness,
-          palette: palette,
-        );
-        model.decideRoute(context, loadingPageReady: _waitForLogo(model));
-      },
+  Future<void> _navigateWhenReady(LoadingPageViewModel model) async {
+    final target = await model.decideRoute(
+      loadingPageReady: _waitForLogo(model),
     );
+    await WidgetsBinding.instance.endOfFrame;
+    if (!mounted) {
+      return;
+    }
+    final route = switch (target) {
+      LoadingRouteTarget.auth => authPageRoute,
+      LoadingRouteTarget.main => mainPageRoute,
+    };
+    GoRouter.of(context).go(route);
   }
+
+  @override
+  Widget build(BuildContext context) => BaseView<LoadingPageViewModel>(
+    onModelReady: (model) {
+      _loadingPages = model.initLoadingPages(
+        brightness: Theme.of(context).brightness,
+      );
+      unawaited(_navigateWhenReady(model));
+    },
+    onDispose: (model) => model.dispose(),
+    builder: (context, model, child) => FutureBuilder<void>(
+      future: _loadingPages,
+      builder: (context, snapshot) {
+        final theme = Theme.of(context);
+        final backgroundColor = theme.colorScheme.surface;
+        final overlay =
+            ThemeData.estimateBrightnessForColor(backgroundColor) ==
+                Brightness.dark
+            ? SystemUiOverlayStyle.light
+            : SystemUiOverlayStyle.dark;
+        return AnnotatedRegion<SystemUiOverlayStyle>(
+          value: SystemUiOverlayStyle(
+            statusBarColor: backgroundColor,
+            statusBarBrightness: overlay.statusBarBrightness,
+            statusBarIconBrightness: overlay.statusBarIconBrightness,
+            systemStatusBarContrastEnforced: false,
+          ),
+          child: Scaffold(
+            backgroundColor: backgroundColor,
+            body: SafeArea(child: _buildContent(context, model)),
+          ),
+        );
+      },
+    ),
+  );
 
   Future<void> _waitForLogo(LoadingPageViewModel model) async {
     await _loadingPages;

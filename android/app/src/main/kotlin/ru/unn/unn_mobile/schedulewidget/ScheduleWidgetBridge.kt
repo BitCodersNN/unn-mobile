@@ -8,14 +8,15 @@ import android.content.Intent
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
+import ru.bitcodersnn.unnstudenthub.BridgeChannels
 import ru.bitcodersnn.unnstudenthub.schedule.ScheduleAppearance
 import ru.bitcodersnn.unnstudenthub.schedule.ScheduleNavigation
 import ru.bitcodersnn.unnstudenthub.schedule.ScheduleSnapshotProvider
 import ru.bitcodersnn.unnstudenthub.scheduleactivity.ScheduleLiveUpdate
 
-class ScheduleWidgetBridge(private val context: Context, engine: FlutterEngine, initialIntent: Intent?) {
-    private val channel = MethodChannel(engine.dartExecutor.binaryMessenger,
-        "ru.bitcodersnn.unnstudenthub/schedule_widget")
+class ScheduleWidgetBridge(context: Context, engine: FlutterEngine, initialIntent: Intent?) {
+    private val context = context.applicationContext
+    private val channel = MethodChannel(engine.dartExecutor.binaryMessenger, BridgeChannels.SCHEDULE_WIDGET)
     private var pendingLaunch: Boolean = ScheduleNavigation.isScheduleIntent(initialIntent)
 
     init {
@@ -31,18 +32,14 @@ class ScheduleWidgetBridge(private val context: Context, engine: FlutterEngine, 
     private fun handle(call: MethodCall, result: MethodChannel.Result) {
         val provider = ScheduleSnapshotProvider(context)
         when (call.method) {
-            "read" -> result.success(provider.readJson())
-            "write" -> {
+            "readCache" -> result.success(provider.readJson())
+            "writeCache", "writeCacheOrder" -> {
                 val value = requireNotNull(call.arguments as? String)
                 provider.writeJson(value)
-                ScheduleWidgetProvider.updateAll(context)
-                ScheduleLiveUpdate.update(context)
-                result.success(null)
-            }
-            "clear" -> {
-                provider.clear()
-                ScheduleWidgetProvider.updateAll(context)
-                ScheduleLiveUpdate.clear(context)
+                if (call.method == "writeCache") {
+                    ScheduleWidgetProvider.updateAll(context)
+                    ScheduleLiveUpdate.update(context)
+                }
                 result.success(null)
             }
             "writeAppearance" -> {
@@ -69,5 +66,9 @@ class ScheduleWidgetBridge(private val context: Context, engine: FlutterEngine, 
             override fun error(code: String, message: String?, details: Any?) { pendingLaunch = true }
             override fun notImplemented() { pendingLaunch = true }
         })
+    }
+
+    fun dispose() {
+        channel.setMethodCallHandler(null)
     }
 }

@@ -4,7 +4,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:unn_mobile/core/misc/haptic_utils.dart';
 import 'package:unn_mobile/core/models/feed/feed_filter.dart';
@@ -16,8 +15,11 @@ import 'package:unn_mobile/ui/views/main_page/feed/widgets/feed_filter_swipe.dar
 import 'package:unn_mobile/ui/views/main_page/feed/widgets/feed_filters_bar.dart';
 import 'package:unn_mobile/ui/views/main_page/feed/widgets/feed_posts_sliver.dart';
 import 'package:unn_mobile/ui/views/main_page/main_page_tab_state.dart';
+import 'package:unn_mobile/ui/views/main_page/widgets/main_page_app_bar.dart';
 import 'package:unn_mobile/ui/widgets/empty_state_widget.dart';
 import 'package:unn_mobile/ui/widgets/offline_overlay_displayer.dart';
+import 'package:unn_mobile/ui/widgets/refresh_error_notice.dart';
+import 'package:unn_mobile/ui/widgets/refresh_loading_overlay.dart';
 import 'package:unn_mobile/ui/widgets/search/animated_search_field.dart';
 import 'package:unn_mobile/ui/widgets/search/search_controller.dart';
 
@@ -171,38 +173,13 @@ class FeedScreenViewState extends State<FeedScreenView>
         onModelReady: (model) => model.init(),
         builder: (context, model, _) {
           final theme = Theme.of(context);
+          final canSelectFilter = _canSelectFilter(model, online);
           return Scaffold(
             backgroundColor: theme.colorScheme.surfaceContainerLow,
-            appBar: AppBar(
-              centerTitle: false,
-              titleSpacing: 16,
+            appBar: buildMainPageAppBar(
+              context,
+              title: 'Лента',
               backgroundColor: theme.colorScheme.surfaceContainerLow,
-              scrolledUnderElevation: 0,
-              toolbarHeight: 12 + MediaQuery.textScalerOf(context).scale(48),
-              title: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    DateFormat(
-                      'EEEE, d MMMM',
-                      'ru_RU',
-                    ).format(DateTime.now()).toUpperCase(),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: theme.textTheme.labelSmall?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                  Text(
-                    'Лента',
-                    style: theme.textTheme.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.w400,
-                    ),
-                  ),
-                ],
-              ),
-              automaticallyImplyLeading: false,
               actions: [
                 IconButton(
                   onPressed:
@@ -228,7 +205,7 @@ class FeedScreenViewState extends State<FeedScreenView>
                       unreadCounts: model.unreadCounts,
                       pinnedPostCount: model.pinnedPostCount,
                       position: _filterPosition,
-                      onSelected: online && !model.isBusy && !model.loadingMore
+                      onSelected: canSelectFilter
                           ? (filter) {
                               _filterPosition.value = null;
                               unawaited(_selectFilter(filter));
@@ -237,7 +214,16 @@ class FeedScreenViewState extends State<FeedScreenView>
                     ),
                   ),
                 ),
-                Expanded(child: _feedBody(context, model, online)),
+                Expanded(
+                  child: RefreshLoadingOverlay(
+                    isRefreshing:
+                        model.isBusy &&
+                        !model.isReplacingPosts &&
+                        model.visiblePosts.isNotEmpty,
+                    semanticsLabel: 'Обновление ленты',
+                    child: _feedBody(context, model, online),
+                  ),
+                ),
               ],
             ),
           );
@@ -246,6 +232,9 @@ class FeedScreenViewState extends State<FeedScreenView>
     ),
   );
 
+  bool _canSelectFilter(FeedScreenViewModel model, bool online) =>
+      online && !model.isBusy && !model.loadingMore;
+
   Widget _feedBody(
     BuildContext context,
     FeedScreenViewModel model,
@@ -253,8 +242,7 @@ class FeedScreenViewState extends State<FeedScreenView>
   ) {
     final filter = model.filter;
     final posts = model.visiblePosts;
-    final colors = Theme.of(context).colorScheme;
-    final canSelectFilter = online && !model.isBusy && !model.loadingMore;
+    final canSelectFilter = _canSelectFilter(model, online);
     return FeedFilterSwipe(
       selected: model.filter,
       enabled: canSelectFilter,
@@ -283,10 +271,11 @@ class FeedScreenViewState extends State<FeedScreenView>
               },
               child: RefreshIndicator.adaptive(
                 onRefresh: () async {
-                  if (online) {
-                    triggerHaptic(HapticIntensity.light);
-                    await model.reload(markLoadedPostsRead: true);
+                  if (model.isBusy || model.loadingMore) {
+                    return;
                   }
+                  triggerHaptic(HapticIntensity.light);
+                  await model.reload(markLoadedPostsRead: true);
                 },
                 child: CustomScrollView(
                   primary: true,
@@ -306,14 +295,10 @@ class FeedScreenViewState extends State<FeedScreenView>
                       ),
                     ),
                     if (model.failedToLoad)
-                      _notice(
-                        'Не удалось обновить ленту. Потяните вниз, чтобы повторить.',
-                        colors.error,
-                      ),
-                    if (!online && posts.isNotEmpty)
-                      _notice(
-                        'Показаны последние загруженные посты',
-                        colors.onSurfaceVariant,
+                      const SliverToBoxAdapter(
+                        child: RefreshErrorNotice(
+                          message: 'Не удалось обновить ленту. Потяните вниз, чтобы повторить.',
+                        ),
                       ),
                     if (model.isReplacingPosts || posts.isEmpty)
                       SliverFillRemaining(
@@ -351,7 +336,8 @@ class FeedScreenViewState extends State<FeedScreenView>
                         title: model.hasSearch ? 'Результаты поиска' : null,
                         groupByReadStatus: model.filter != FeedFilter.pinned,
                       ),
-                    if ((model.loadingMore || model.isBusy) &&
+                    if (model.loadingMore &&
+                        !model.isBusy &&
                         !model.isReplacingPosts &&
                         posts.isNotEmpty &&
                         online)
@@ -378,13 +364,6 @@ class FeedScreenViewState extends State<FeedScreenView>
       ),
     );
   }
-
-  Widget _notice(String message, Color color) => SliverToBoxAdapter(
-    child: Padding(
-      padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
-      child: Text(message, style: TextStyle(color: color)),
-    ),
-  );
 
   @override
   void dispose() {

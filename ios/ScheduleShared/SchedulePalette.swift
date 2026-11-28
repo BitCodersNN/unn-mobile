@@ -9,6 +9,7 @@ struct SchedulePalette: Codable, Hashable {
     let secondary: UInt32
     let accent: UInt32
     let subjects: [String: UInt32]
+    let dark: Bool?
 
     func lessonAccent(typeKey: String?, fallback: UInt32?) -> UInt32 {
         typeKey.flatMap { subjects[$0] } ?? fallback ?? accent
@@ -25,13 +26,19 @@ struct SchedulePalette: Codable, Hashable {
 
     static func fallback(dark: Bool) -> Self {
         Self(
-            background: dark ? 0xFF1C1C1E : 0xFFF2F2F7,
-            text: dark ? 0xFFFFFFFF : 0xFF1C1C1E,
-            secondary: dark ? 0xFFC6C6C8 : 0xFF636366,
+            background: dark ? 0xFF192522 : 0xFFF4FBFA,
+            text: dark ? 0xFFE0F1EC : 0xFF172B28,
+            secondary: dark ? 0xFFA2BBB3 : 0xFF637B77,
             accent: dark ? 0xFF69D9C9 : 0xFF00897F,
-            subjects: [:]
+            subjects: [:],
+            dark: dark
         )
     }
+}
+
+struct SchedulePaletteOption: Codable, Hashable, Sendable {
+    let key: String
+    let label: String
 }
 
 struct ScheduleAppearance: Codable, Hashable {
@@ -39,13 +46,32 @@ struct ScheduleAppearance: Codable, Hashable {
     let light: String
     let dark: String
     let palettes: [String: SchedulePalette]
+    let options: [SchedulePaletteOption]?
 
-    static let fallback = Self(mode: "system", light: "", dark: "", palettes: [:])
+    static let fallback = Self(mode: "system", light: "", dark: "", palettes: [:], options: nil)
 
-    func palette(systemDark: Bool, override: String? = nil) -> SchedulePalette {
-        let useDark = override.map { $0.hasPrefix("dark_") }
-            ?? (mode == "system" ? systemDark : mode == "dark")
-        return palettes[override ?? (useDark ? dark : light)] ?? .fallback(dark: useDark)
+    func compactForLiveActivity() -> ScheduleAppearance {
+        var filteredPalettes: [String: SchedulePalette] = [:]
+        if let lightPalette = palettes[light] {
+            filteredPalettes[light] = lightPalette
+        }
+        if let darkPalette = palettes[dark] {
+            filteredPalettes[dark] = darkPalette
+        }
+        return ScheduleAppearance(mode: mode, light: light, dark: dark, palettes: filteredPalettes, options: nil)
+    }
+
+    func palette(systemDark: Bool, forcedDark: Bool? = nil, override: String? = nil) -> SchedulePalette {
+        let overrideKey = override.flatMap { $0.isEmpty ? nil : $0 }
+        let overridePalette = overrideKey.flatMap { palettes[$0] }
+        let useDark: Bool
+        if let overrideKey {
+            useDark = overridePalette?.dark ?? overrideKey.hasPrefix("dark_")
+        } else {
+            useDark = forcedDark ?? (mode == "system" ? systemDark : mode == "dark")
+        }
+        let activeKey = useDark ? dark : light
+        return overridePalette ?? palettes[activeKey] ?? .fallback(dark: useDark)
     }
 }
 

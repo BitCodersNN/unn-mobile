@@ -5,17 +5,19 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:unn_mobile/core/models/common/app_dark_theme.dart';
 import 'package:unn_mobile/core/models/common/app_light_theme.dart';
+import 'package:unn_mobile/core/models/common/custom_palette_config.dart';
+import 'package:unn_mobile/ui/theme/custom_palette_theme_builder.dart';
 import 'package:unn_mobile/ui/theme/theme_palette.dart';
 import 'package:unn_mobile/ui/unn_mobile_colors.dart';
 
 abstract final class AppTheme {
-  static final ThemeData greenLight = _build(
-    ColorScheme.fromSeed(seedColor: const Color(0xFF00BBB0)),
+  static final ThemeData _greenLight = _build(
+    ColorScheme.fromSeed(seedColor: CustomPaletteConfig.defaultLightPrimary),
     UnnMobileColors.light,
-    snackBarActionColor: const Color(0xFF00BBB0),
+    snackBarActionColor: CustomPaletteConfig.defaultLightPrimary,
   );
 
-  static final ThemeData blueLight = _build(
+  static final ThemeData _blueLight = _build(
     ColorScheme.fromSeed(seedColor: const Color(0xFF0969DA)).copyWith(
       primary: const Color(0xFF0969DA),
       onPrimary: Colors.white,
@@ -37,9 +39,32 @@ abstract final class AppTheme {
     UnnMobileColors.blueLight,
   );
 
-  static ColorScheme _darkColors(Color seed) =>
+  static final ThemeData _warmLight = _build(
+    ColorScheme.fromSeed(seedColor: const Color(0xFFA85D2F)).copyWith(
+      primary: const Color(0xFFA85D2F),
+      onPrimary: const Color(0xFFFFFBF5),
+      primaryContainer: const Color(0xFFF3DFCE),
+      onPrimaryContainer: const Color(0xFF5B2E12),
+      surface: const Color(0xFFFBF6EE),
+      onSurface: const Color(0xFF2C241E),
+      onSurfaceVariant: const Color(0xFF6E6054),
+      surfaceBright: const Color(0xFFFFFBF5),
+      surfaceDim: const Color(0xFFE3D7C7),
+      surfaceContainerLowest: const Color(0xFFFFFBF5),
+      surfaceContainerLow: const Color(0xFFF4ECE0),
+      surfaceContainer: const Color(0xFFEFE5D6),
+      surfaceContainerHigh: const Color(0xFFEAE0D0),
+      surfaceContainerHighest: const Color(0xFFE3D7C7),
+      outline: const Color(0xFF9A8B7D),
+      outlineVariant: const Color(0xFFE3D7C7),
+    ),
+    UnnMobileColors.warmLight,
+  );
+
+  static ColorScheme _darkColors(Color seed, {Color? secondary}) =>
       ColorScheme.fromSeed(
         seedColor: seed,
+        secondary: secondary,
         brightness: Brightness.dark,
       ).copyWith(
         error: const Color(0xFFF2B8AD),
@@ -48,10 +73,10 @@ abstract final class AppTheme {
         onErrorContainer: const Color(0xFFFFDAD4),
       );
 
-  static final ThemeData darkGreen = _build(
-    _darkColors(const Color(0xFF79D7CA)).copyWith(
-      primary: const Color(0xFF79D7CA),
-      onPrimary: const Color(0xFF003832),
+  static final ThemeData _darkGreen = _build(
+    _darkColors(CustomPaletteConfig.defaultDarkPrimary).copyWith(
+      primary: CustomPaletteConfig.defaultDarkPrimary,
+      onPrimary: const Color(0xFF06221E),
       primaryContainer: const Color(0xFF244E47),
       onPrimaryContainer: const Color(0xFFC0EEE3),
       surface: const Color(0xFF101D1B),
@@ -70,7 +95,7 @@ abstract final class AppTheme {
     UnnMobileColors.dark,
   );
 
-  static final ThemeData darkGraphite = _build(
+  static final ThemeData _darkGraphite = _build(
     _darkColors(const Color(0xFFC3B2EF)).copyWith(
       primary: const Color(0xFFC3B2EF),
       onPrimary: const Color(0xFF33244D),
@@ -92,17 +117,44 @@ abstract final class AppTheme {
     UnnMobileColors.graphite,
   );
 
+  static final ThemeData _warmDark = _build(
+    _darkColors(const Color(0xFFD69A6C)).copyWith(
+      primary: const Color(0xFFD69A6C),
+      onPrimary: const Color(0xFF2D180A),
+      primaryContainer: const Color(0xFF4F3624),
+      onPrimaryContainer: const Color(0xFFF7DFCA),
+      surface: const Color(0xFF1A1512),
+      onSurface: const Color(0xFFEFE5DB),
+      onSurfaceVariant: const Color(0xFFBFB0A3),
+      surfaceDim: const Color(0xFF14100D),
+      surfaceBright: const Color(0xFF3D332C),
+      surfaceContainerLowest: const Color(0xFF14100D),
+      surfaceContainerLow: const Color(0xFF221C18),
+      surfaceContainer: const Color(0xFF2A231E),
+      surfaceContainerHigh: const Color(0xFF332B25),
+      surfaceContainerHighest: const Color(0xFF3D332C),
+      outline: const Color(0xFF8F8073),
+      outlineVariant: const Color(0xFF423830),
+    ),
+    UnnMobileColors.warmDark,
+  );
+
   static final List<ThemePalette<AppLightTheme>> lightPalettes =
       List.unmodifiable([
         ThemePalette(
           value: AppLightTheme.green,
           label: 'Бело-зелёная',
-          theme: greenLight,
+          theme: _greenLight,
         ),
         ThemePalette(
           value: AppLightTheme.blue,
           label: 'Бело-синяя',
-          theme: blueLight,
+          theme: _blueLight,
+        ),
+        ThemePalette(
+          value: AppLightTheme.warm,
+          label: 'Кремовая',
+          theme: _warmLight,
         ),
       ]);
 
@@ -111,20 +163,98 @@ abstract final class AppTheme {
         ThemePalette(
           value: AppDarkTheme.green,
           label: 'Тёмно-зелёная',
-          theme: darkGreen,
+          theme: _darkGreen,
         ),
         ThemePalette(
           value: AppDarkTheme.graphite,
           label: 'Графитовая',
-          theme: darkGraphite,
+          theme: _darkGraphite,
+        ),
+        ThemePalette(
+          value: AppDarkTheme.warm,
+          label: 'Кофейная',
+          theme: _warmDark,
         ),
       ]);
 
-  static ThemeData lightThemeFor(AppLightTheme theme) =>
-      _themeFor(theme, lightPalettes);
+  static final _lightCustomCache = _CustomThemeCache();
+  static final _darkCustomCache = _CustomThemeCache();
 
-  static ThemeData darkThemeFor(AppDarkTheme theme) =>
-      _themeFor(theme, darkPalettes);
+  static List<ThemePalette<AppLightTheme>> lightPalettesFor(
+    CustomPaletteConfig? custom,
+  ) => List.unmodifiable([
+    ...lightPalettes,
+    ThemePalette(
+      value: AppLightTheme.custom,
+      label: 'Своя',
+      theme: _customThemeFor(custom, brightness: Brightness.light),
+    ),
+  ]);
+
+  static List<ThemePalette<AppDarkTheme>> darkPalettesFor(
+    CustomPaletteConfig? custom,
+  ) => List.unmodifiable([
+    ...darkPalettes,
+    ThemePalette(
+      value: AppDarkTheme.custom,
+      label: 'Своя',
+      theme: _customThemeFor(custom, brightness: Brightness.dark),
+    ),
+  ]);
+
+  static ThemeData lightThemeFor(
+    AppLightTheme theme, {
+    CustomPaletteConfig? custom,
+  }) => switch (theme) {
+    AppLightTheme.custom => _customThemeFor(
+      custom,
+      brightness: Brightness.light,
+    ),
+    _ => _themeFor(theme, lightPalettes),
+  };
+
+  static ThemeData darkThemeFor(
+    AppDarkTheme theme, {
+    CustomPaletteConfig? custom,
+  }) => switch (theme) {
+    AppDarkTheme.custom => _customThemeFor(custom, brightness: Brightness.dark),
+    _ => _themeFor(theme, darkPalettes),
+  };
+
+  static ThemeData _customThemeFor(
+    CustomPaletteConfig? custom, {
+    required Brightness brightness,
+  }) => buildCustomTheme(
+    custom ??
+        (brightness == Brightness.dark
+            ? CustomPaletteConfig.defaultDark()
+            : CustomPaletteConfig.defaultLight()),
+    brightness: brightness,
+  );
+
+  static ThemeData buildCustomTheme(
+    CustomPaletteConfig config, {
+    required Brightness brightness,
+  }) {
+    final cache = brightness == Brightness.dark
+        ? _darkCustomCache
+        : _lightCustomCache;
+    return cache.getOrBuild(
+      config,
+      (resolved) => CustomPaletteThemeBuilder.build(
+        resolved,
+        brightness: brightness,
+        darkColorsFactory: _darkColors,
+        themeFactory: _build,
+      ),
+    );
+  }
+
+  static CustomPaletteConfig configFromTheme(ThemeData theme) =>
+      CustomPaletteThemeBuilder.configFromTheme(theme);
+
+  static Color colorForSlot(ThemeData theme, PaletteColorSlot slot) =>
+      CustomPaletteThemeBuilder.colorForSlot(theme, slot);
 
   static ThemeData _themeFor<T extends Enum>(
     T value,
@@ -135,8 +265,10 @@ abstract final class AppTheme {
     ColorScheme colors,
     UnnMobileColors extraColors, {
     Color? snackBarActionColor,
+    Color? cardColor,
   }) {
     final isDark = colors.brightness == Brightness.dark;
+    final effectiveCardColor = cardColor ?? colors.surfaceContainerLowest;
     return ThemeData(
       useMaterial3: true,
       colorScheme: colors,
@@ -157,10 +289,10 @@ abstract final class AppTheme {
       primaryColor: colors.primary,
       scaffoldBackgroundColor: colors.surface,
       canvasColor: colors.surface,
-      cardColor: colors.surfaceContainerLow,
+      cardColor: effectiveCardColor,
       appBarTheme: AppBarTheme(
         scrolledUnderElevation: 3,
-        backgroundColor: isDark ? colors.surface : Colors.white,
+        backgroundColor: colors.surface,
         foregroundColor: colors.onSurface,
       ),
       cupertinoOverrideTheme: CupertinoThemeData(
@@ -171,7 +303,7 @@ abstract final class AppTheme {
         barBackgroundColor: colors.surface,
       ),
       cardTheme: CardThemeData(
-        color: colors.surfaceContainerLow,
+        color: effectiveCardColor,
         surfaceTintColor: Colors.transparent,
       ),
       dialogTheme: DialogThemeData(
@@ -200,9 +332,9 @@ abstract final class AppTheme {
       snackBarTheme: SnackBarThemeData(
         backgroundColor: isDark
             ? colors.surfaceContainerHighest
-            : const Color(0xFF323232),
+            : colors.inverseSurface,
         contentTextStyle: TextStyle(
-          color: isDark ? colors.onSurface : const Color(0xFFF0F0F0),
+          color: isDark ? colors.onSurface : colors.onInverseSurface,
           fontSize: 16,
         ),
         actionTextColor:
@@ -211,6 +343,22 @@ abstract final class AppTheme {
       ),
       extensions: [extraColors],
     );
+  }
+}
+
+class _CustomThemeCache {
+  CustomPaletteConfig? _config;
+  ThemeData? _theme;
+
+  ThemeData getOrBuild(
+    CustomPaletteConfig config,
+    ThemeData Function(CustomPaletteConfig) builder,
+  ) {
+    if (_config == config && _theme != null) {
+      return _theme!;
+    }
+    _config = config;
+    return _theme = builder(config);
   }
 }
 

@@ -3,10 +3,11 @@
 
 import 'dart:convert';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:unn_mobile/core/misc/json/json_utils.dart';
-import 'package:unn_mobile/core/models/schedule_widget/schedule_widget_data.dart';
+import 'package:unn_mobile/core/misc/platform_utils.dart';
+import 'package:unn_mobile/core/models/schedule/schedule_cache_data.dart';
+import 'package:unn_mobile/core/models/schedule/subject.dart';
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
 import 'package:unn_mobile/core/services/interfaces/schedule_widget/schedule_widget_platform.dart';
 
@@ -16,32 +17,40 @@ class ScheduleWidgetPlatformImpl implements ScheduleWidgetPlatform {
   );
   final LoggerService _logger;
 
-  ScheduleWidgetPlatformImpl(this._logger);
+  final int Function(Subject) _accentColor;
+
+  ScheduleWidgetPlatformImpl(this._logger, {required this._accentColor});
 
   @override
-  bool get isSupported =>
-      !kIsWeb &&
-      (defaultTargetPlatform == TargetPlatform.android ||
-          defaultTargetPlatform == TargetPlatform.iOS);
+  bool get isSupported => isMobilePlatform;
 
   @override
-  Future<ScheduleWidgetData?> read() async {
-    final value = await _invoke<String>('read');
-    if (value == null) {
-      return null;
-    }
-    try {
-      return ScheduleWidgetData.fromJson(jsonDecode(value) as JsonMap);
-    } catch (error, stack) {
-      _logger.logError(error, stack);
-      return null;
-    }
+  Future<ScheduleCacheData?> readCache() async {
+    final value = await _channel.invokeMethod<String>('readCache');
+    return value == null
+        ? null
+        : ScheduleCacheData.fromJson(jsonDecode(value) as JsonMap);
   }
 
   @override
-  Future<void> write(ScheduleWidgetData? data) => _invoke<void>(
-    data == null ? 'clear' : 'write',
-    data == null ? null : jsonEncode(data.toJson()),
+  Future<void> writeCache(
+    ScheduleCacheData data, {
+    bool refreshWidgets = true,
+  }) => _channel.invokeMethod<void>(
+    refreshWidgets ? 'writeCache' : 'writeCacheOrder',
+    jsonEncode({
+      ...data.toJson(),
+      'subjectColors': {
+        for (final entry in data.entries)
+          for (final subject in entry.schedule.subjects)
+            subject.subjectType: _accentColor(subject),
+      },
+      'subjectTypeKeys': {
+        for (final entry in data.entries)
+          for (final subject in entry.schedule.subjects)
+            subject.subjectType: subject.subjectTypeEnum.name,
+      },
+    }),
   );
 
   @override

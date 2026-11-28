@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-// Copyright 2025 BitCodersNN
+// Copyright 2026 BitCodersNN
 
 import 'dart:io';
 
@@ -13,10 +13,11 @@ import 'package:injector/injector.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:unn_mobile/app.dart';
 import 'package:unn_mobile/core/misc/app_settings.dart';
-import 'package:unn_mobile/core/misc/app_theme_controller.dart';
 import 'package:unn_mobile/core/misc/schedule_activity/schedule_activity_platform.dart';
 import 'package:unn_mobile/core/misc/user/current_user_sync_storage.dart';
+import 'package:unn_mobile/core/services/interfaces/common/app_theme_controller.dart';
 import 'package:unn_mobile/core/services/interfaces/common/logger_service.dart';
+import 'package:unn_mobile/core/services/interfaces/common/palette_link_platform.dart';
 import 'package:unn_mobile/core/services/interfaces/schedule_widget/schedule_widget_platform.dart';
 import 'package:unn_mobile/core/services/interfaces/schedule_widget/schedule_widget_service.dart';
 import 'package:unn_mobile/core/viewmodels/factories/main_page_routes_view_models_factory.dart';
@@ -87,6 +88,8 @@ void main() async {
       scheduleWidgetService: Injector.appInstance.get<ScheduleWidgetService>(),
       scheduleActivityPlatform: Injector.appInstance
           .get<ScheduleActivityPlatform>(),
+      paletteLinkPlatform: Injector.appInstance.get<PaletteLinkPlatform>(),
+      loggerService: Injector.appInstance.get<LoggerService>(),
     ),
   );
 }
