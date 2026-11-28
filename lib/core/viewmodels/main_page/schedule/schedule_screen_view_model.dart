@@ -58,6 +58,8 @@ class ScheduleScreenViewModel extends BaseViewModel
 
   bool get canExport => currentTab?.hasAnyId ?? false;
 
+  bool get isExportUsingRaspFallback => currentTab?.usesRaspSchedule ?? false;
+
   int get weekNumber {
     final monday = selectedWeek.start;
     final semester = _semesterForWeek(selectedWeek);
@@ -137,23 +139,31 @@ class ScheduleScreenViewModel extends BaseViewModel
       _exportScheduleService.requestCalendarPermission();
 
   Future<bool> exportSchedule(DateTimeRangeType type) async {
+    final tab = currentTab;
+    if (tab == null) {
+      return false;
+    }
+
     final range = type.getRange(
       startDate: selectedWeek.start,
       referenceDate: selectedWeek.end,
     );
 
-    final exportScheduleFilter = currentTab?.searchFilter?.copyWith(
-      dateTimeRange: range,
-    );
-
+    final exportScheduleFilter = await tab.resolveExportFilter(range);
     if (exportScheduleFilter == null) {
       return false;
     }
 
-    final res = await _exportScheduleService.exportSchedule(
-      exportScheduleFilter,
-    );
-    return res == ExportScheduleResult.success;
+    return _tryExport(exportScheduleFilter);
+  }
+
+  Future<bool> _tryExport(ScheduleFilter filter) async {
+    try {
+      return await _exportScheduleService.exportSchedule(filter) ==
+          ExportScheduleResult.success;
+    } catch (_) {
+      return false;
+    }
   }
 
   Future openSettingsWindow() async {
