@@ -82,9 +82,8 @@ Future<void> runExportFlow(
     return;
   }
 
-  ScaffoldMessenger.of(
-    context,
-  ).showSnackBar(const SnackBar(content: Text('Экспорт завершён')));
+  ScaffoldMessenger.of(context)
+      .showSnackBar(const SnackBar(content: Text('Экспорт завершён')));
 
   if (Platform.isAndroid) {
     await showMessage(
