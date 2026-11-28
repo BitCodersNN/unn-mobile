@@ -89,8 +89,7 @@ class SettingsScreenViewModel extends BaseViewModel {
       ? _themeController.customDarkPalette
       : _themeController.customLightPalette;
 
-  Future<void> setThemeMode(ThemeMode mode) =>
-      _themeController.setMode(mode);
+  Future<void> setThemeMode(ThemeMode mode) => _themeController.setMode(mode);
 
   Future<void> setLightTheme(AppLightTheme theme) =>
       _themeController.setLightTheme(theme);

@@ -19,11 +19,8 @@ class AppThemeProviderImpl implements AppThemeProvider {
   AppThemeProviderImpl(this._storage);
 
   @override
-  Future<ThemeMode> read() => _readEnum(
-    AppSettingsKeys.themeMode,
-    ThemeMode.values,
-    ThemeMode.system,
-  );
+  Future<ThemeMode> read() =>
+      _readEnum(AppSettingsKeys.themeMode, ThemeMode.values, ThemeMode.system);
 
   @override
   Future<AppDarkTheme> readDarkTheme() => _readEnum(
